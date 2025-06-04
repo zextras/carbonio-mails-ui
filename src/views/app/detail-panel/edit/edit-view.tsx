@@ -61,7 +61,7 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients
 } from '../../../../store/editor';
-import { EditViewClosingReasons } from '../../../../types';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
@@ -74,6 +74,26 @@ export type EditViewProp = {
 export type EditViewHandle = {
 	closeEditView: () => void;
 };
+
+// TODO: sendAllowedStatus is completely flawed and full of logical errors
+function evaluateSendDisabledReason(
+	invalidRecipientsPresent: boolean,
+	isMailSizeWarning: boolean,
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined
+): string | undefined {
+	let sendDisabledReason;
+	if (invalidRecipientsPresent) {
+		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else if (isMailSizeWarning) {
+		sendDisabledReason = t(
+			'editor.warning.mail_size_exceeds_limit',
+			'The message size exceeds the limit. Please convert some attachments to smart links.'
+		);
+	} else {
+		sendDisabledReason = sendAllowedStatus?.reason;
+	}
+	return sendDisabledReason;
+}
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
@@ -146,10 +166,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const invalidRecipientsPresent = useMemo(
 		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
 		[bcc, cc, to]
-	);
-	const invalidRecipientsError = t(
-		'label.invalid_recipients',
-		`One or more recipients are invalid`
 	);
 
 	useEffect(() => {
@@ -545,10 +561,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		!draftId ||
 		invalidRecipientsPresent;
 
-	// TODO: sendAllowedStatus is completely flawed and full of logical errors
-	const sendDisabledReason = invalidRecipientsPresent
-		? invalidRecipientsError
-		: sendAllowedStatus?.reason;
+	const sendDisabledReason = evaluateSendDisabledReason(
+		invalidRecipientsPresent,
+		isMailSizeWarning,
+		sendAllowedStatus
+	);
+
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
