@@ -9,14 +9,14 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SearchMessageListItemCore } from './search-message-list-item-core';
-import { EditViewActions } from '../../../../constants';
-import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
-import { MailMessage } from '../../../../types';
-import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
-import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
+import { EditViewActions } from 'constants/index';
+import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { MailMessage } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
+import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;

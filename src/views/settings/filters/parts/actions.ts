@@ -9,8 +9,8 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { concat, filter, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { Filter } from '../../../../types';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { Filter } from 'types/index.d';
 
 export type ListType = {
 	isSelecting: boolean;

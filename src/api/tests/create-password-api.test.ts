@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createEncryptionPassword } from '../create-password-api';
+import { createEncryptionPassword } from 'api/create-password-api';
 
 describe('createEncryptionPassword', () => {
 	const apiURL = '/service/extension/encryption/password';

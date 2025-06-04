@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { useIsMessageView } from '../../../search/search-view-hooks';
-import FolderPanel from '../../folder-panel';
+import { setupTest } from '@test-setup';
+import FolderPanel from 'views/app/folder-panel';
+import { useIsMessageView } from 'views/search/search-view-hooks';
 
 jest.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: jest.fn() }));
 jest.mock('react-router-dom', () => ({

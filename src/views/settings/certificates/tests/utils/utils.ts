@@ -6,8 +6,8 @@
 
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { Certificate } from '../../../../../types/certificates/certificates';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { Certificate } from 'types/certificates/certificates';
 
 export const createAPIInterceptorToGetPersonalCertificates = (res?: Certificate[]): void => {
 	const response = [

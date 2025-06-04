@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { msgActionSoapApi } from '../../../api/msg-action-soap-api';
-import { MsgActionParameters, MsgActionResponse } from '../../../types/soap/msg-action';
-import { optimisticallyHandleMessageActions } from '../store';
+import { msgActionSoapApi } from 'api/msg-action-soap-api';
+import { optimisticallyHandleMessageActions } from 'store/emails/store';
+import { MsgActionParameters, MsgActionResponse } from 'types/soap/msg-action';
 
 export async function msgActionEmailStoreAction({
 	ids,

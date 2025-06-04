@@ -8,10 +8,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useMsgReplyAllFn } from './use-msg-reply-all';
-import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
+import { ConversationActionsDescriptors, EditViewActions } from 'constants/index';
+import { useMsgReplyAllFn } from 'hooks/actions/use-msg-reply-all';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 type ConvReplyAllFunctionsParameter = {
 	firstMessageId: string;

@@ -10,12 +10,12 @@ import {
 	NotificationConfig,
 	t
 } from '@zextras/carbonio-shell-ui';
-import { filter, sortBy, reverse, find, reject } from 'lodash';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { filter, find, reject, reverse, sortBy } from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { MAILS_ROUTE } from '../../../constants';
-import { IncompleteMessage, MailMessage } from '../../../types';
+import { MAILS_ROUTE } from 'constants/index';
+import { IncompleteMessage, MailMessage } from 'types/index.d';
 
 export const triggerNotification = (
 	messages: Array<IncompleteMessage | MailMessage>,

@@ -9,22 +9,19 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import { defaultBeforeAllTests } from '@jest-setup';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import {
-	GetSignaturesRequest,
-	GetSignaturesResponse
-} from '../../../../../api/get-signatures-soap-api';
-import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
-import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+	useBoard as mockedUseBoard,
+	useBoard
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -44,10 +41,10 @@ import {
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
-} from '../../../../../store/editor/editor-generators';
-import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+} from 'store/editor/editor-generators';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { generateMessage } from 'tests/generators/generateMessage';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -1054,7 +1051,7 @@ describe('Edit view', () => {
 					});
 
 					// Mock the board context
-					mockedUseBoard.mockImplementation(() => ({
+					useBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
 						context: { editorId: msg.id, folderId: FOLDERS.INBOX },
 						title: ''

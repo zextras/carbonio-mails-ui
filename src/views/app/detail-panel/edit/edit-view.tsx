@@ -17,36 +17,19 @@ import {
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, some } from 'lodash';
 
-import { checkSubjectAndAttachment } from './check-subject-attachment';
-import DropZoneAttachment from './dropzone-attachment';
-import { EditAttachmentsBlock } from './edit-attachments-block';
-import { createEditBoard } from './edit-view-board';
-import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
-import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
-import { useKeepOrDiscardDraft } from './parts/delete-draft';
-import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
-import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
-import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
-import { OptionsDropdown } from './parts/options-dropdown';
-import { RecipientsRows } from './parts/recipients-rows';
-import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
-import { SubjectRow } from './parts/subject-row';
-import { TextEditorContainer } from './parts/text-editor-container';
-import { WarningBanner } from './parts/warning-banner';
-import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
-import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
-import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
-import { buildArrayFromFileList } from '../../../../helpers/files';
-import { getAvailableAddresses } from '../../../../helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from '../../../../helpers/identities';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import { checkIsSmimeEnabled } from 'api/check-is-smime-enable-api';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
+import { GapContainer, GapRow } from 'commons/gap-container';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { buildArrayFromFileList } from 'helpers/files';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
 import {
 	useCertificatesStore,
 	useSmimeFeatureStore,
 	useSmimePasswordStore
-} from '../../../../store/certificates/store';
+} from 'store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,

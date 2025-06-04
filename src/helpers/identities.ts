@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserAccount, t } from '@zextras/carbonio-shell-ui';
+import type { Folders } from '@zextras/carbonio-ui-commons';
+import { getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, map, remove } from 'lodash';
 
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { getRootsMap } from '../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { Folders } from '../carbonio-ui-commons/types/folder';
-import { NO_ACCOUNT_NAME } from '../constants';
-import type { MailMessage, Participant } from '../types';
-import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
-import { getAvailableAddresses } from './get-available-addresses';
+import { NO_ACCOUNT_NAME } from 'constants/index';
+import { getFolderIdParts, getMessageOwnerAccountName } from 'helpers/folders';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import type { MailMessage, Participant } from 'types/index.d';
 
 /**
  * The name of the primary identity
@@ -509,21 +508,21 @@ export function getExtraAccountsIds(): Array<string> {
 }
 
 export {
-	PRIMARY_IDENTITY_NAME,
-	type IdentityDescriptor,
-	type MatchingReplyIdentity,
-	type RecipientWeight,
-	getNoIdentityPlaceholder,
-	getDefaultIdentity,
 	checkMatchingAddress,
 	computeIdentityWeight,
 	filterMatchingRecipients,
 	getAddressOwnerAccount,
+	getDefaultIdentity,
 	getIdentitiesDescriptors,
+	getIdentityDescription,
 	getIdentityFromParticipant,
 	getMessageSenderAccount,
 	getMessageSenderAddress,
+	getNoIdentityPlaceholder,
 	getRecipientReplyIdentity,
 	getRecipients,
-	getIdentityDescription
+	PRIMARY_IDENTITY_NAME,
+	type IdentityDescriptor,
+	type MatchingReplyIdentity,
+	type RecipientWeight
 };

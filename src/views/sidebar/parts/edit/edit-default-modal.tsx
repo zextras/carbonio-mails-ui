@@ -7,24 +7,25 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { includes, isEmpty } from 'lodash';
-
-import { FolderDetails } from './folder-details';
-import NameInputRow from './name-input';
-import { RetentionPolicies } from './retention-policies';
-import { ShareFolderProperties } from './share-folder-properties';
-import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { FolderActionsType, FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import {
 	allowedActionOnSharedAccount,
-	isValidFolderName
-} from '../../../../carbonio-ui-commons/utils/utils';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { ModalProps } from '../../../../types';
-import { RetentionPolicyState } from '../../commons/types';
-import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
+	FolderActionsType,
+	FOLDERS,
+	isValidFolderName,
+	ModalFooter,
+	ModalHeader
+} from '@zextras/carbonio-ui-commons';
+import { includes, isEmpty } from 'lodash';
+
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ModalProps } from 'types/index.d';
+import { RetentionPolicyState } from 'views/sidebar/commons/types';
+import { FolderDetails } from 'views/sidebar/parts/edit/folder-details';
+import NameInputRow from 'views/sidebar/parts/edit/name-input';
+import { RetentionPolicies } from 'views/sidebar/parts/edit/retention-policies';
+import { ShareFolderProperties } from 'views/sidebar/parts/edit/share-folder-properties';
+import { getFolderTranslatedName, useTranslatedSystemFolders } from 'views/sidebar/utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';

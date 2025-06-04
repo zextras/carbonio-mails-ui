@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PersonalCertificate } from '../store/certificates/store';
+import { PersonalCertificate } from 'store/certificates/store';
 
 export async function uploadPersonalCertificate(
 	certificate: PersonalCertificate,

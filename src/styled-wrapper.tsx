@@ -9,7 +9,7 @@ import React, { SVGProps } from 'react';
 import { Theme, ThemeProvider } from '@zextras/carbonio-design-system';
 import { createGlobalStyle } from 'styled-components';
 
-import { AnimatedLoader } from './assets/animated-loader';
+import { AnimatedLoader } from 'assets/animated-loader';
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
 

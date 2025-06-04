@@ -5,6 +5,12 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
+import {
+	CONTACT_TYPES,
+	ContactInputItem,
+	ParticipantRoleType,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';

@@ -5,9 +5,8 @@
  */
 
 import { Theme } from '@zextras/carbonio-design-system';
+import { ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { Control } from 'react-hook-form';
-
-import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
 
 export type SearchQueryItem = {
 	id: string;

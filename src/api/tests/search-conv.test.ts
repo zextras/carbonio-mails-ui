@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { SearchConvRequest } from '../../types';
-import { searchConvSoapApi } from '../search-conv-soap-api';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { searchConvSoapApi } from 'api/search-conv-soap-api';
+import { SearchConvRequest } from 'types/index.d';
 
 describe('searchConvSoapApi', () => {
 	test('the max property is set to 250_000', async () => {

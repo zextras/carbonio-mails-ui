@@ -5,8 +5,8 @@
  */
 // noinspection HtmlRequiredLangAttribute
 
-import type { MailMessagePart } from '../types';
-import { filterAttachmentsParts, getReferredContentIds } from './attachments';
+import { filterAttachmentsParts, getReferredContentIds } from 'helpers/attachments';
+import type { MailMessagePart } from 'types/index.d';
 
 describe('attachments', () => {
 	describe('getReferredContentIds', () => {

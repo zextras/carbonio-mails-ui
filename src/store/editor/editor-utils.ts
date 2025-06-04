@@ -6,14 +6,14 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, reduce, reject, some } from 'lodash';
 
-import { PROCESS_STATUS } from '../../constants';
-import { isContentIdEqual } from '../../helpers/attachments';
+import { PROCESS_STATUS } from 'constants/index';
+import { isContentIdEqual } from 'helpers/attachments';
 import type {
 	EditorOperationAllowedStatus,
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 /**
  *

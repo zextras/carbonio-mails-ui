@@ -8,11 +8,11 @@ import React from 'react';
 
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import * as storeModule from '../../../../../store/emails/store';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { MailMessage } from '../../../../../types';
-import { SearchMessageListItemWrapper } from '../search-message-list-item-wrapper';
+import { setupTest } from '@test-setup';
+import * as storeModule from 'store/emails/store';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { MailMessage } from 'types/index.d';
+import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 
 describe('SearchMessageListItemWrapper', () => {
 	beforeEach(() => {

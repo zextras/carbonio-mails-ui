@@ -7,10 +7,10 @@ import React, { lazy, Suspense, useMemo } from 'react';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ResizableContainer } from './resizable-container';
-import { Spinner } from '../assets/spinner';
-import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
-import { useViewLayout } from '../hooks/use-view-layout';
+import { Spinner } from 'assets/spinner';
+import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
+import { useViewLayout } from 'hooks/use-view-layout';
+import { ResizableContainer } from 'views/resizable-container';
 
 export type MailsListLayout = (typeof MAILS_VIEW_LAYOUTS)[keyof typeof MAILS_VIEW_LAYOUTS];
 

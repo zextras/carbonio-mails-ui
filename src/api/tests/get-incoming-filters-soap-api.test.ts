@@ -10,9 +10,9 @@ import { HttpResponse } from 'msw';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
-} from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
-import { getIncomingFiltersSoapApi } from '../get-incoming-filters-soap-api';
+} from '@test-utils/network/msw/create-api-interceptor';
+import { getIncomingFiltersSoapApi } from 'api/get-incoming-filters-soap-api';
+import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
 
 describe('getIncomingFiltersSoapApi', () => {
 	it('should fetch filter rules using soapFetch and normalize them', async () => {

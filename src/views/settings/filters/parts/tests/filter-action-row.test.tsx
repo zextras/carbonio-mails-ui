@@ -7,19 +7,17 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
+import { FOLDER_VIEW, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
-import { FOLDER_VIEW } from '../../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FilterAction } from 'types/index.d';
 import {
-	makeListItemsVisible,
-	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
-import { FilterAction } from '../../../../../types';
-import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
-import { getActionTranslations } from '../utils';
+	FilterActionRow,
+	FilterActionRowProps
+} from 'views/settings/filters/parts/filter-action-row';
+import { getActionTranslations } from 'views/settings/filters/parts/utils';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
 

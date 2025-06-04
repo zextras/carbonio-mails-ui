@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ServicesCatalog } from '../types';
+import { ServicesCatalog } from 'types/index.d';
 
 export const requestServiceCatalogApi = (): Promise<ServicesCatalog> =>
 	fetch('/services/catalog/services')

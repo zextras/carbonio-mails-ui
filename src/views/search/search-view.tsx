@@ -8,17 +8,17 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { Route, Routes } from 'react-router-dom';
 
-import { SearchConversationList } from './list/conversation/search-conversation-list';
-import { SearchMessageList } from './list/message/search-message-list';
-import SearchPanel from './panel/search-panel';
-import { AdvancedFilterButton } from './parts/advanced-filter-button';
-import { useIsMessageView, useRunSearch } from './search-view-hooks';
-import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
-import { API_REQUEST_STATUS } from '../../constants';
-import { Query } from './types/types';
-import { resetSearchAndPopulatedItems } from '../../store/emails/store';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { resetSearchAndPopulatedItems } from 'store/emails/store';
+import { SearchConversationList } from 'views/search/list/conversation/search-conversation-list';
+import { SearchMessageList } from 'views/search/list/message/search-message-list';
+import SearchPanel from 'views/search/panel/search-panel';
+import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button';
+import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
+import { Query } from 'views/search/types/types';
 
 const SearchView = ({
 	useDisableSearch,

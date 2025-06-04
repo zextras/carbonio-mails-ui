@@ -3,21 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import { FOLDER_VIEW, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { RedirectMessageActionRequest } from '../../types';
-import RedirectMessageAction from '../redirect-message-action';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { RedirectMessageActionRequest } from 'types/index.d';
+import RedirectMessageAction from 'ui-actions/redirect-message-action';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);

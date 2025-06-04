@@ -5,9 +5,9 @@
  */
 import React, { RefObject } from 'react';
 
-import { ConversationListItem } from './conversation-list-item';
-import { useConversationById } from '../../../../store/emails/store';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { useConversationById } from 'store/emails/store';
+import { ConversationListItem } from 'views/app/folder-panel/conversations/conversation-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 type ConversationListItemComponentProps = {
 	conversationId: string;

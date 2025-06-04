@@ -7,9 +7,9 @@ import React, { memo } from 'react';
 
 import { noop } from 'lodash';
 
-import { MessageListItem } from './message-list-item';
-import { useMessageById } from '../../../../store/emails/store';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { useMessageById } from 'store/emails/store';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 export type ListItemComponentProps = {
 	messageId: string;

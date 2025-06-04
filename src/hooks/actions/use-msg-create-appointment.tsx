@@ -6,19 +6,18 @@
 import { useCallback, useMemo } from 'react';
 
 import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getRoot } from '@zextras/carbonio-ui-commons';
 import { isNull } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getRoot } from '../../carbonio-ui-commons/store/zustand/folder';
-import { MessageActionsDescriptors } from '../../constants';
-import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
-import { isSpam, isDraft } from '../../helpers/folders';
-import { extractBody } from '../../store/editor-slice-utils';
-import { getMessageEmailStoreAction } from '../../store/emails/actions/get-message';
-import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
-import { CalendarType, SenderType } from '../../types/calendar';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MessageActionsDescriptors } from 'constants/index';
+import { getAttendees, getOptionalsAttendees, getSenderByOwner } from 'helpers/appointmemt';
+import { isDraft, isSpam } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { extractBody } from 'store/editor-slice-utils';
+import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { CalendarType, SenderType } from 'types/calendar/index.d';
+import type { ActionFn, MailMessage, UIActionDescriptor } from 'types/index.d';
 
 export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): ActionFn => {
 	const { createSnackbar } = useUiUtilities();

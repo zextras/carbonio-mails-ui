@@ -1,17 +1,51 @@
 # SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
 
 # SPDX-License-Identifier: CC0-1.0
+
+# Node modules
 /node_modules/
-/pkg/
+
+# Build output
 /build/
-/sdk/
 /dist/
-/e2e/output/
-/.idea
-/junit.xml
+/pkg/
+/sdk/
+
+# Test output
 /coverage
+/coverage/
+/junit.xml
+/e2e/output/
+
+# IDEs and editors
+/.idea/
+/.vscode/
+/*.sublime-workspace
+/*.sublime-project
+*.sw?
+*.DS_Store
+*.log
+
+# OS files
 .DS_Store
-.tool-versions
-.vscode/
-coverage
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+.env
+.env.*
+*.local
+*.tgz
 zextras-carbonio-*.tgz
+/tool-versions
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

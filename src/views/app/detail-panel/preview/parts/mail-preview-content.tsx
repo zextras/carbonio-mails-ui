@@ -13,13 +13,13 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 
-import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
-import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
-import type { IncompleteMessage, MailMessage } from '../../../../../types';
-import AttachmentsBlock from '../attachments-block';
-import ReadReceiptModal from '../read-receipt-modal';
+import { MailMessageRenderer } from 'commons/mail-message-renderer/mail-message-renderer';
+import { isFocusModeMailView } from 'helpers/external-tabs';
+import SharedInviteReply from 'integrations/shared-invite-reply/index';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import type { IncompleteMessage, MailMessage } from 'types/index.d';
+import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
+import ReadReceiptModal from 'views/app/detail-panel/preview/read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 

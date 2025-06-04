@@ -3,23 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-
-import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import {
+	Folder,
+	FOLDER_VIEW,
+	FOLDERS,
 	getFolder,
 	getFoldersArrayByRoot,
 	getFoldersMap,
 	getRootsMap,
 	useFolderStore
-} from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+} from '@zextras/carbonio-ui-commons';
+
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import {
 	getFolderOwnerAccountName,
 	getFoldersArray,
@@ -27,8 +28,8 @@ import {
 	isSpam,
 	isTrash,
 	isTrashed
-} from '../../../../helpers/folders';
-import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+} from 'helpers/folders';
+import { FolderSelector, FolderSelectorProps } from 'views/sidebar/commons/folder-selector';
 
 describe('Folder selector', () => {
 	test('The selector is visible', () => {

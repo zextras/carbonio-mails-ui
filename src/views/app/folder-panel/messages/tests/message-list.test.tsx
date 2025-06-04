@@ -6,28 +6,21 @@
 
 import React from 'react';
 
-import { screen, act, waitFor, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import {
-	makeListItemsVisible,
-	setupTest,
-	triggerLoadMore,
-	within
-} from '../../../../../carbonio-ui-commons/test/test-setup';
-import * as useSelection from '../../../../../hooks/use-selection';
-import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
-import { FolderState, MsgActionRequest } from '../../../../../types';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
-import { MessageList } from '../message-list';
+import { within, setupTest, triggerLoadMore, makeListItemsVisible } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import * as useSelection from 'hooks/use-selection';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateCompleteMessageFromAPI } from 'tests/generators/api';
+import { FolderState, MsgActionRequest } from 'types/index.d';
+import { MessageList } from 'views/app/folder-panel/messages/message-list';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

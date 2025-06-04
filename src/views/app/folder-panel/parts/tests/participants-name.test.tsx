@@ -3,21 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import {
-	generateMessage,
-	populateMessagesInEmailStore
-} from '../../../../../tests/generators/generateMessage';
-import { ParticipantsName } from '../participants-name';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
 
 describe('ParticipantsName component', () => {
 	it('renders participants string for inbox folder', async () => {

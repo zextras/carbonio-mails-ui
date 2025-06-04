@@ -11,11 +11,11 @@ import { isNil, map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { normalizeDropdownActionItem } from '../../../../../helpers/actions';
-import { useMsgActions } from '../../../../../hooks/actions/use-msg-actions';
-import { useSelection } from '../../../../../hooks/use-selection';
-import { useTagDropdownItem } from '../../../../../hooks/use-tag-dropdown-item';
-import { AppContext, MailMessage } from '../../../../../types';
+import { normalizeDropdownActionItem } from 'helpers/actions';
+import { useMsgActions } from 'hooks/actions/use-msg-actions';
+import { useSelection } from 'hooks/use-selection';
+import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
+import { AppContext, MailMessage } from 'types/index.d';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;

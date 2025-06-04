@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import * as Shell from '@zextras/carbonio-shell-ui';
 
-import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
-import { MAIL_APP_ID, MAILS_ROUTE } from '../../constants';
-import { useSearchRegisterer } from '../use-search-registerer';
+import { setupHook } from '@test-setup';
+import { useSearchRegisterer } from 'app-utils/use-search-registerer';
+import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 
 describe('useSearchView', () => {
 	it('should add search view if integration is available', () => {
