@@ -85,10 +85,7 @@ function evaluateSendDisabledReason(
 	if (invalidRecipientsPresent) {
 		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
 	} else if (isMailSizeWarning) {
-		sendDisabledReason = t(
-			'editor.warning.mail_size_exceeds_limit',
-			'The message size exceeds the limit. Please convert some attachments to smart links.'
-		);
+		sendDisabledReason = t('label.message_size_exceeded', 'The message size exceeds the limit.');
 	} else {
 		sendDisabledReason = sendAllowedStatus?.reason;
 	}
