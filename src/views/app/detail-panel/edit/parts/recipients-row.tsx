@@ -13,12 +13,8 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 import { Participant } from '../../../../../types';
-import { isValidEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
+import { isValidEmail } from 'views/search/parts/utils';
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;

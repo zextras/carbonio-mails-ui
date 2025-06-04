@@ -7,13 +7,9 @@
 import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { CONTACT_TYPES, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { CONTACT_TYPES, ContactInputProps, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { CONTACT_TYPES } from '../../../../../../carbonio-ui-commons/integrations/constants';
-import { DefaultContactInput } from '../../../../../../carbonio-ui-commons/integrations/default-contact-input';
-import * as contactInput from '../../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputProps } from '../../../../../../carbonio-ui-commons/integrations/types';
+import { UserEvent, setupTest } from '@test-setup';
 import {
 	generateMockContactInputItem,
 	mockContactInput

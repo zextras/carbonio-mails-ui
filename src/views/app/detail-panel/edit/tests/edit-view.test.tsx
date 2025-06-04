@@ -15,36 +15,11 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import { defaultBeforeAllTests } from '@jest-setup';
-import { setupTest } from '@test-setup';
-import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
-import {
-	useBoard as mockedUseBoard,
-	useBoard
-} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor
-} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
-import {
-	generateEditAsNewEditor,
-	generateNewMessageEditor,
-	generateReplyAllMsgEditor,
-	generateReplyMsgEditor
-} from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
-import { generateMessage } from 'tests/generators/generateMessage';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -55,8 +30,34 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
-import { EditView, EditViewProp } from '../edit-view';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
+import { EditView, EditViewProp } from '../edit-view';
+import { defaultBeforeAllTests } from '@jest-setup';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import {
+	useBoard as mockedUseBoard,
+	useBoard
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	createSoapAPIInterceptor,
+	createAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get-share-info';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
+import {
+	generateEditAsNewEditor,
+	generateNewMessageEditor,
+	generateReplyAllMsgEditor,
+	generateReplyMsgEditor
+} from 'store/editor/editor-generators';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
