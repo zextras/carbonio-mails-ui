@@ -13,7 +13,8 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { Participant } from 'types/index.d';
+import { Participant } from '../../../../../types';
+import { isValidEmail } from 'views/search/parts/utils';
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;
@@ -86,7 +87,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 							email: recipient.address,
 							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 						},
-						error: recipient.error
+						error: !isValidEmail(recipient.address)
 					}
 				);
 			}),
@@ -99,7 +100,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			placeholder={label}
 			onChange={onContactInputChange}
 			defaultValue={recipientsAsContacts}
-			hasError={some(recipients ?? [], { error: true })}
+			hasError={some(recipientsAsContacts ?? [], { error: true })}
 			dragAndDropEnabled
 			orderedAccountIds={orderedAccountIds}
 		/>

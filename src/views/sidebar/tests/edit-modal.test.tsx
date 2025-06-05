@@ -33,18 +33,6 @@ const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => 
 	acl: undefined
 });
 
-const aSharedFolder = (folder: Partial<Folder> = {}): Folder => ({
-	...generateFolder(folder),
-	acl: {
-		grant: [
-			{
-				perm: 'r',
-				gt: 'all'
-			}
-		]
-	}
-});
-
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
 		const closeModal = jest.fn();

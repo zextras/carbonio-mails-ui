@@ -7,9 +7,14 @@
 import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { CONTACT_TYPES, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import {
+	CONTACT_TYPES,
+	ContactInputProps,
+	ParticipantRole,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 
-import { setupTest, UserEvent } from '@test-setup';
+import { UserEvent, setupTest } from '@test-setup';
 import {
 	generateMockContactInputItem,
 	mockContactInput
@@ -20,12 +25,18 @@ import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row'
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
 };
-
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useContactInput: jest.fn()
 }));
 
+const ContactInputWithError = ({ defaultValue }: ContactInputProps): React.JSX.Element => (
+	<>
+		{defaultValue.map((value, i) =>
+			value.error ? <p key={i} data-testid={`recipient-error-${i}`}></p> : <></>
+		)}
+	</>
+);
 describe('recipients-row', () => {
 	describe('when contact input integration available', () => {
 		it('should call onChange with value of given type when adding a new value in input', async () => {
@@ -135,10 +146,9 @@ describe('recipients-row', () => {
 					onRecipientsChange={mockOnChange}
 				></RecipientsRow>
 			);
-
 			expect(
 				await screen.findByText(
-					'[{"id":"someone@test.com","label":"someone@test.com","value":{"id":"someone@test.com","email":"someone@test.com","type":"DISTRIBUTION_LIST"},"error":true}]'
+					'[{"id":"someone@test.com","label":"someone@test.com","value":{"id":"someone@test.com","email":"someone@test.com","type":"DISTRIBUTION_LIST"},"error":false}]'
 				)
 			).toBeInTheDocument();
 		});
@@ -160,6 +170,64 @@ describe('recipients-row', () => {
 
 			expect(await screen.findByText('valid@ema.il')).toBeInTheDocument();
 		});
+	});
+});
+
+describe('RecipientsRow', () => {
+	beforeEach(() => {
+		(useContactInput as jest.Mock).mockReturnValue(ContactInputWithError);
+	});
+	test('should display error when email is invalid and error true', async () => {
+		setupTest(
+			<RecipientsRow
+				type={ParticipantRole.TO}
+				label={'to'}
+				recipients={[
+					{
+						type: ParticipantRole.TO,
+						address: 'invalid-email',
+						error: true
+					}
+				]}
+				onRecipientsChange={jest.fn()}
+			/>
+		);
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
+	});
+
+	test('should display error when email is invalid and error is missing', async () => {
+		setupTest(
+			<RecipientsRow
+				type={ParticipantRole.TO}
+				label={'to'}
+				recipients={[
+					{
+						type: ParticipantRole.TO,
+						address: 'invalid-email'
+					}
+				]}
+				onRecipientsChange={jest.fn()}
+			/>
+		);
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
+	});
+
+	test('should display error when email is invalid and error is false', async () => {
+		setupTest(
+			<RecipientsRow
+				type={ParticipantRole.TO}
+				label={'to'}
+				recipients={[
+					{
+						type: ParticipantRole.TO,
+						address: 'invalid-email',
+						error: false
+					}
+				]}
+				onRecipientsChange={jest.fn()}
+			/>
+		);
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
 	});
 });
 

@@ -15,21 +15,38 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
-
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
-import { checkIsSmimeEnabled } from 'api/check-is-smime-enable-api';
+import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
 import { GapContainer, GapRow } from 'commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
 import { buildArrayFromFileList } from 'helpers/files';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
 import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
+import { filter, map, some } from 'lodash';
 import {
 	useCertificatesStore,
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+
+import { checkSubjectAndAttachment } from './check-subject-attachment';
+import DropZoneAttachment from './dropzone-attachment';
+import { EditAttachmentsBlock } from './edit-attachments-block';
+import { createEditBoard } from './edit-view-board';
+import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
+import { useKeepOrDiscardDraft } from './parts/delete-draft';
+import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
+import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
+import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
+import { OptionsDropdown } from './parts/options-dropdown';
+import { RecipientsRows } from './parts/recipients-rows';
+import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
+import { SubjectRow } from './parts/subject-row';
+import { TextEditorContainer } from './parts/text-editor-container';
+import { WarningBanner } from './parts/warning-banner';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -41,28 +58,13 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
-	useEditorIsSmimeEncrypt
-} from 'store/editor/index';
-import { checkSubjectAndAttachment } from 'views/app/detail-panel/edit/check-subject-attachment';
-import DropZoneAttachment from 'views/app/detail-panel/edit/dropzone-attachment';
-import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
-import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
-import { ChangeSignaturesDropdown } from 'views/app/detail-panel/edit/parts/change-signatures-dropdown';
-import { useKeepOrDiscardDraft } from 'views/app/detail-panel/edit/parts/delete-draft';
-import { EditViewDraftSaveInfo } from 'views/app/detail-panel/edit/parts/edit-view-draft-save-info';
-import { EditViewIdentitySelector } from 'views/app/detail-panel/edit/parts/edit-view-identity-selector';
-import { EditViewSendButtons } from 'views/app/detail-panel/edit/parts/edit-view-send-buttons';
-import { LargeFileUploadInfoBanner } from 'views/app/detail-panel/edit/parts/large-file-upload-info-banner';
-import { OptionsDropdown } from 'views/app/detail-panel/edit/parts/options-dropdown';
-import { RecipientsRows } from 'views/app/detail-panel/edit/parts/recipients-rows';
-import { SizeExceededWarningBanner } from 'views/app/detail-panel/edit/parts/size-exceeded-waring-banner';
-import { SubjectRow } from 'views/app/detail-panel/edit/parts/subject-row';
-import { TextEditorContainer } from 'views/app/detail-panel/edit/parts/text-editor-container';
-import { WarningBanner } from 'views/app/detail-panel/edit/parts/warning-banner';
-import { EditViewClosingReasons } from 'types/index.d';
-import { updateEditorWithSmartLinks } from 'ui-actions/utils';
-import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
+} from '../../../../store/editor';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
+import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
+import { isValidEmail } from '../../../search/parts/utils';
+import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
 	editorId: string;
@@ -72,6 +74,23 @@ export type EditViewProp = {
 export type EditViewHandle = {
 	closeEditView: () => void;
 };
+
+// TODO: sendAllowedStatus is completely flawed and full of logical errors
+function evaluateSendDisabledReason(
+	invalidRecipientsPresent: boolean,
+	isMailSizeWarning: boolean,
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined
+): string | undefined {
+	let sendDisabledReason;
+	if (invalidRecipientsPresent) {
+		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else if (isMailSizeWarning) {
+		sendDisabledReason = t('label.message_size_exceeded', 'The message size exceeds the limit.');
+	} else {
+		sendDisabledReason = sendAllowedStatus?.reason;
+	}
+	return sendDisabledReason;
+}
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
@@ -138,6 +157,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 
+	const {
+		recipients: { to, cc, bcc }
+	} = useEditorRecipients(editorId);
+	const invalidRecipientsPresent = useMemo(
+		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
+		[bcc, cc, to]
+	);
+
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
@@ -152,7 +179,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	useEffect(() => {
 		if (!isCarbonioCE) {
-			checkIsSmimeEnabled().then((res) => {
+			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
 				if ('data' in res) {
 					useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 				} else {
@@ -524,6 +551,19 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			onSendError
 		]
 	);
+	const sendDisabled =
+		isMailSizeWarning ||
+		!sendAllowedStatus?.allowed ||
+		isConvertingToSmartLink ||
+		!draftId ||
+		invalidRecipientsPresent;
+
+	const sendDisabledReason = evaluateSendDisabledReason(
+		invalidRecipientsPresent,
+		isMailSizeWarning,
+		sendAllowedStatus
+	);
+
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -580,13 +620,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={
-								isMailSizeWarning ||
-								!sendAllowedStatus?.allowed ||
-								isConvertingToSmartLink ||
-								!draftId
-							}
-							tooltip={sendAllowedStatus?.reason ?? ''}
+							disabled={sendDisabled}
+							tooltip={sendDisabledReason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>

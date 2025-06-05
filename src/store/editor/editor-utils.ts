@@ -64,7 +64,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
-			reason: t('label.draft_save_in_progress', 'Saving draft in progress         ')
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress')
 		};
 	}
 
@@ -97,7 +97,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
-			reason: t('label.invalid_recipients', `A recipient's address is spelled incorrectly`)
+			reason: t('label.invalid_recipients', `One or more recipients are invalid`)
 		};
 	}
 
