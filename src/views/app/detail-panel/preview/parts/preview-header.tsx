@@ -323,7 +323,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										flexBasis: 'fit-content',
 										whiteSpace: 'nowrap',
 										overflow: 'hidden',
-										minWidth: '8rem'
+										minWidth: '12.5rem'
 									}}
 								>
 									{showTagIcon && (
