@@ -8,21 +8,21 @@ import { useEffect, useMemo } from 'react';
 
 import { debounce } from 'lodash';
 
-import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
-import {
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation,
-	SearchRequestStatus
-} from '../../../types';
-import { getMessageEmailStoreAction } from '../actions/get-message';
-import { searchConvEmailStoreAction } from '../actions/search-conv-action';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
 	useConversationById,
 	useConversationStatus,
 	useMessageById,
 	useMessageStatus
-} from '../store';
+} from 'store/emails/store';
+import {
+	IncompleteMessage,
+	MailMessage,
+	NormalizedConversation,
+	SearchRequestStatus
+} from 'types/index.d';
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;

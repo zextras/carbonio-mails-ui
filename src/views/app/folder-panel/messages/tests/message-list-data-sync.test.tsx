@@ -7,28 +7,25 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import {
-	makeListItemsVisible,
-	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateMessageFromAPI } from '../../../../../tests/generators/api';
-import { SearchRequest, SearchResponse } from '../../../../../types';
-import { useSyncDataHandler } from '../../../../sidebar/commons/use-sync-data-handler';
-import { simulateReplyToSingleMessageConversation } from '../../tests/utils';
-import { MessageList } from '../message-list';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateMessageFromAPI } from 'tests/generators/api';
+import { SearchRequest, SearchResponse } from 'types/index.d';
+import { MessageList } from 'views/app/folder-panel/messages/message-list';
+import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
+import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
 }));
 
-jest.mock('../../../../../carbonio-ui-commons/worker', () => ({
-	...jest.requireActual('../../../../../carbonio-ui-commons/worker'),
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
 		postMessage: jest.fn()
 	},

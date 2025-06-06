@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { type MailVerificationHeader } from './soap';
-import { type SoapMailParticipant } from './soap-mail-participant';
+import { type MailVerificationHeader } from 'types/soap/soap';
+import { type SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 type MailHeaderAttrs = {
 	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;

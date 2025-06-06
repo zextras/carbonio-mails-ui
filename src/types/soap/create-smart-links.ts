@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ZimbraRequest } from './zimbra-request';
-import { SmartLinkAttachment } from '../attachments';
+import { SmartLinkAttachment } from 'types/attachments/index.d';
+import { ZimbraRequest } from 'types/soap/zimbra-request';
 
 export type CreateSmartLinksRequest = ZimbraRequest & {
 	attachments: Array<SmartLinkAttachment>;

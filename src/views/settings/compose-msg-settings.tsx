@@ -16,12 +16,12 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import Heading from './components/settings-heading';
-import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
-import CustomSelect from './filters/parts/custom-select';
-import { composingMsgSubSection } from './subsections';
-import { ColorPicker } from '../../commons/color-picker';
-import { UpdateSettingsProps } from '../../types';
+import { ColorPicker } from 'commons/color-picker';
+import { UpdateSettingsProps } from 'types/index.d';
+import Heading from 'views/settings/components/settings-heading';
+import { getFontSizesOptions, findLabel, getFonts } from 'views/settings/components/utils';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { composingMsgSubSection } from 'views/settings/subsections';
 
 type ComposeMessagesProps = {
 	settingsObj: Record<string, string>;

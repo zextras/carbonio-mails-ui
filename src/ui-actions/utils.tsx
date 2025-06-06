@@ -9,14 +9,14 @@ import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
-import { createSmartLinksSoapApi } from '../api/create-smart-links-soap-api';
-import { useEditorsStore } from '../store/editor/store';
+import { createSmartLinksSoapApi } from 'api/create-smart-links-soap-api';
+import { useEditorsStore } from 'store/editor/store';
 import type {
 	CreateSmartLinksResponse,
 	SmartLinkUrl,
 	MailsEditorV2,
 	MessageAction
-} from '../types';
+} from 'types/index.d';
 
 /**
  *

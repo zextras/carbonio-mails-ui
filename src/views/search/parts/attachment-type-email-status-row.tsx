@@ -3,28 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Controller } from 'react-hook-form';
 
 import {
 	attachmentTypeItemsConstant,
 	AttachmentTypeItemsConstantProps,
 	emailStatusItemsConstant,
 	EmailStatusItemsConstantProps
-} from '../../../constants';
-import type {
-	AttachTypeEmailStatusRowPropType,
-	ChipOnAdd,
-	ChipOnAddItem,
-	ChipOnAddProps
-} from '../../../types';
+} from 'constants/index';
+import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/index.d';
+import { FormValuesControlProps } from 'views/search/types/types';
 
-const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
-	compProps
-}): ReactElement => {
-	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
+export const AttachmentTypeEmailStatusRow = ({
+	control
+}: FormValuesControlProps): React.JSX.Element => {
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(
@@ -78,16 +74,6 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		[chipOnAdd, emailStatusItems]
 	);
 
-	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void => setAttachmentType(value),
-		[setAttachmentType]
-	);
-
-	const emailStatusOnChange = useCallback(
-		(value: ChipItem[]): void => setEmailStatus(value),
-		[setEmailStatus]
-	);
-
 	const attachmentTypePlaceholder = useMemo(
 		() => t('label.attachment_type', 'Attachment type'),
 		[]
@@ -101,38 +87,48 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					disabled
-					placeholder={attachmentTypePlaceholder}
-					value={attachmentType}
-					options={attachmentTypeOptions}
-					disableOptions={false}
-					background="gray5"
-					onAdd={attachmentTypeChipOnAdd}
-					onChange={attachmentTypeOnChange}
-					icon="ChevronDown"
-					requireUniqueChips
-					data-testid="attachmentTypeSelect"
+				<Controller
+					control={control}
+					name={'attachmentType'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							disabled
+							placeholder={attachmentTypePlaceholder}
+							value={value}
+							options={attachmentTypeOptions}
+							disableOptions={false}
+							background="gray5"
+							onAdd={attachmentTypeChipOnAdd}
+							onChange={onChange}
+							icon="ChevronDown"
+							requireUniqueChips
+							data-testid="attachmentTypeSelect"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					disabled
-					placeholder={emailStatusPlaceholder}
-					value={emailStatus}
-					options={emailStatusOptions}
-					background="gray5"
-					disableOptions={false}
-					onAdd={emailStatusChipOnAdd}
-					onChange={emailStatusOnChange}
-					icon="ChevronDown"
-					bottomBorderColor="transparent"
-					requireUniqueChips
-					data-testid="emailStatusSelect"
+				<Controller
+					control={control}
+					name={'emailStatus'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							disabled
+							placeholder={emailStatusPlaceholder}
+							value={value}
+							options={emailStatusOptions}
+							background="gray5"
+							disableOptions={false}
+							onAdd={emailStatusChipOnAdd}
+							onChange={onChange}
+							icon="ChevronDown"
+							bottomBorderColor="transparent"
+							requireUniqueChips
+							data-testid="emailStatusSelect"
+						/>
+					)}
 				/>
 			</Container>
 		</Container>
 	);
 };
-
-export default AttachmentTypeEmailStatusRow;

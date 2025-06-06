@@ -8,12 +8,12 @@ import { useCallback, useMemo } from 'react';
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { computeAndUpdateEditorStatus } from './commons';
-import { getEditor } from './editors';
-import { sendMsgFromEditor } from '../../../api/send-msg';
-import { createCancelableTimer } from '../../../helpers/timers';
-import { MailsEditorV2 } from '../../../types';
-import { useEditorsStore } from '../store';
+import { sendMsgFromEditor } from 'api/send-msg';
+import { createCancelableTimer } from 'helpers/timers';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { getEditor } from 'store/editor/hooks/editors';
+import { useEditorsStore } from 'store/editor/store';
+import { MailsEditorV2 } from 'types/index.d';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;

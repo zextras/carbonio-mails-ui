@@ -6,16 +6,16 @@
 
 import { map } from 'lodash';
 
-import { searchConvSoapApi } from '../../../api/search-conv-soap-api';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { normalizeCompleteMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { NormalizedConversation, SearchConvResponse } from '../../../types';
+import { searchConvSoapApi } from 'api/search-conv-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	updateMessages,
 	getConversationById,
 	updateConversations,
 	updateConversationStatus
-} from '../store';
+} from 'store/emails/store';
+import { NormalizedConversation, SearchConvResponse } from 'types/index.d';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));

@@ -3,25 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ParticipantRole, useTagStore } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
-import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
-import { setMessagesInEmailStore } from '../../../../../store/emails/store';
-import { ASSERTIONS } from '../../../../../tests/constants';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import type { MessageListItemProps } from '../../../../../types';
-import { MessageListItem } from '../message-list-item';
+import { setupTest } from '@test-setup';
+import { generateFolders } from '@test-utils/folders/folders-generator';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { setMessagesInEmailStore } from 'store/emails/store';
+import { ASSERTIONS } from 'tests/constants';
+import { generateMessage } from 'tests/generators/generateMessage';
+import type { MessageListItemProps } from 'types/index.d';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 describe.each`
 	type                     | isSearchModule

@@ -8,8 +8,8 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { SendLaterModal } from './send-later-modal';
-import { AnimatedLoader } from '../../../../../assets/animated-loader';
+import { AnimatedLoader } from 'assets/animated-loader';
+import { SendLaterModal } from 'views/app/detail-panel/edit/parts/send-later-modal';
 
 export type EditViewSendButtonsProps = {
 	onSendLater: (autoSendTime: number) => void;

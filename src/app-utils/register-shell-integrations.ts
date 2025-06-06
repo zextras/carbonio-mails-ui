@@ -9,7 +9,7 @@ import { registerFunctions } from '@zextras/carbonio-shell-ui';
 import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
-} from '../integrations/shared-functions';
+} from 'integrations/shared-functions';
 
 export const registerShellIntegrations = (): void => {
 	registerFunctions(

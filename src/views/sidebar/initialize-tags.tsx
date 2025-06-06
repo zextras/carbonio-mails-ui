@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useInitializeTags } from '../../carbonio-ui-commons/hooks/use-initialize-tags';
+import { useInitializeTags } from '@zextras/carbonio-ui-commons';
 
 export const InitializeTags = (): null => {
 	useInitializeTags();

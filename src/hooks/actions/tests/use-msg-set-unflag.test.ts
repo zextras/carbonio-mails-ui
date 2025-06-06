@@ -8,10 +8,10 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from '../use-msg-set-unflag';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from 'hooks/actions/use-msg-set-unflag';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useMsgSetUnflag', () => {
 	describe('Descriptor', () => {

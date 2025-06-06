@@ -6,8 +6,8 @@
 import type { Theme } from '@zextras/carbonio-design-system';
 import { isNil } from 'lodash';
 
-import type { EditorAttachmentFiles } from '../types/editor';
-import type { AttachmentPart } from '../types/messages';
+import type { EditorAttachmentFiles } from 'types/editor/index.d';
+import type { AttachmentPart } from 'types/messages/index.d';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 

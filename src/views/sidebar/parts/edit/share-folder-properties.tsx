@@ -18,19 +18,16 @@ import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui
 import { map } from 'lodash';
 import styled from 'styled-components';
 
-import { Context } from './edit-context';
-import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import {
-	findLabel,
-	ShareCalendarRoleOptions
-} from '../../../../integrations/shared-invite-reply/parts/utils';
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { findLabel, ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import type {
 	ActionProps,
 	GranteeInfoProps,
 	GranteeProps,
 	ShareFolderPropertiesProps
-} from '../../../../types';
+} from 'types/index.d';
+import { Context } from 'views/sidebar/parts/edit/edit-context';
 
 const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
 	background-color: ${({ theme, $hovered }): string =>

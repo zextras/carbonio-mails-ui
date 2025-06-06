@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen, within } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { ShowTag } from '../../filter-actions/show-tag';
+import { setupTest } from '@test-setup';
+import { ShowTag } from 'views/settings/filters/parts/filter-actions/show-tag';
 
 const BLACK = '#000000';
 const COLOR_2 = '#29B6F6';

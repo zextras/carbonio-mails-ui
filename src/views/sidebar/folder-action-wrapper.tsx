@@ -5,10 +5,10 @@
  */
 import React from 'react';
 
-import { Dropdown, Row, Padding } from '@zextras/carbonio-design-system';
+import { Dropdown, Padding, Row } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-ui-commons';
 
-import { useFolderActions } from './use-folder-actions';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 type FolderActionWrapperProps = {
 	folder: Folder;

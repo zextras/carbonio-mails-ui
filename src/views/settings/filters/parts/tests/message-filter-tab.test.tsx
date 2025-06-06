@@ -4,19 +4,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import React from 'react';
 
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import { FilterRulesAPIResponse } from '../../../../../api/get-filters';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { Filter } from '../../../../../types';
-import { makeAllItemsVisible, mockFilter } from '../../tests/test-utils';
-import { getFiltermanager } from '../filter-manager';
-import { MessageFilterTab } from '../message-filter-tab';
+import { setupTest } from '@test-setup';
+import { FilterRulesAPIResponse } from 'api/get-filters';
+import { Filter } from 'types/index.d';
+import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
+import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
+import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

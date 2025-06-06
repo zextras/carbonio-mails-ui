@@ -9,13 +9,13 @@ import { Container, useSnackbar } from '@zextras/carbonio-design-system';
 import { filter, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FilterList } from './filter-list';
-import { FilterManagerProps } from './filter-manager';
-import LoadingShimmer from './loading-shimmer';
-import { useFilterSelection } from './use-filter-selection';
-import { FilterRulesAPIResponse } from '../../../../api/get-filters';
-import { Filter } from '../../../../types';
-import Heading from '../../components/settings-heading';
+import { FilterRulesAPIResponse } from 'api/get-filters';
+import { Filter } from 'types/index.d';
+import Heading from 'views/settings/components/settings-heading';
+import { FilterList } from 'views/settings/filters/parts/filter-list';
+import { FilterManagerProps } from 'views/settings/filters/parts/filter-manager';
+import LoadingShimmer from 'views/settings/filters/parts/loading-shimmer';
+import { useFilterSelection } from 'views/settings/filters/parts/use-filter-selection';
 
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;

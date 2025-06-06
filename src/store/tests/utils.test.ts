@@ -6,7 +6,7 @@
 
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
-import { extractIdsFromMessagesAndConversations, getCompleteMessageId } from '../utils';
+import { extractIdsFromMessagesAndConversations, getCompleteMessageId } from 'store/utils';
 
 describe('extractIdsFromMessagesAndConversations', () => {
 	test('should return an empty array when no messages or conversations are passed', () => {

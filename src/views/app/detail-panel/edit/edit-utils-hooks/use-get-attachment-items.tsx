@@ -6,7 +6,7 @@
 
 import React, { ReactElement } from 'react';
 
-import type { MailsEditor } from '../../../../../types';
+import type { MailsEditor } from 'types/index.d';
 
 type UseGetAttachItemsPropType = {
 	onFileClick: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;

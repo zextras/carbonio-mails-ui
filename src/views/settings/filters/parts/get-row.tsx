@@ -4,20 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
 import type { TFunction } from 'i18next';
-import MessageCondition from './create-filters-conditions/message';
-import FromToCondition from './create-filters-conditions/from-to';
-import SizeCondition from './create-filters-conditions/size';
-import DateCondition from './create-filters-conditions/date';
-import BodyCondition from './create-filters-conditions/body';
-import AttachmentCondition from './create-filters-conditions/attachment';
-import ReadReceiptCondition from './create-filters-conditions/read-receipt';
-import AddressInCondition from './create-filters-conditions/address-in';
-import CalendarCondition from './create-filters-conditions/calendar';
-import HeaderCondition from './create-filters-conditions/header';
-import SocialCondition from './create-filters-conditions/social';
-import DefaultCondition from './create-filters-conditions/default';
-import { capitalise } from '../../../sidebar/utils';
+
+import AddressInCondition from 'views/settings/filters/parts/create-filters-conditions/address-in';
+import AttachmentCondition from 'views/settings/filters/parts/create-filters-conditions/attachment';
+import BodyCondition from 'views/settings/filters/parts/create-filters-conditions/body';
+import CalendarCondition from 'views/settings/filters/parts/create-filters-conditions/calendar';
+import DateCondition from 'views/settings/filters/parts/create-filters-conditions/date';
+import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
+import FromToCondition from 'views/settings/filters/parts/create-filters-conditions/from-to';
+import HeaderCondition from 'views/settings/filters/parts/create-filters-conditions/header';
+import MessageCondition from 'views/settings/filters/parts/create-filters-conditions/message';
+import ReadReceiptCondition from 'views/settings/filters/parts/create-filters-conditions/read-receipt';
+import SizeCondition from 'views/settings/filters/parts/create-filters-conditions/size';
+import SocialCondition from 'views/settings/filters/parts/create-filters-conditions/social';
+import { capitalise } from 'views/sidebar/utils';
 
 type GetRowProps = {
 	index: number;

@@ -5,10 +5,10 @@
  */
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { CreateMountpointError } from './errors/create-mountpoint-error';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { ISoapFolderObj } from '../types';
+import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
+import { ISoapFolderObj } from 'types/index.d';
 
 type MountpointSpecType = {
 	l?: string;

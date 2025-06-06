@@ -10,10 +10,10 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ACTION_OPTIONS } from '../constants';
-import CustomSelect from './custom-select';
-import { getActionComponent, getActionsInitialValues } from './utils';
-import { ActionKey, FilterAction } from '../../../../types';
+import { ActionKey, FilterAction } from 'types/index.d';
+import { ACTION_OPTIONS } from 'views/settings/filters/constants';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { getActionComponent, getActionsInitialValues } from 'views/settings/filters/parts/utils';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;

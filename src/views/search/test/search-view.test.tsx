@@ -6,27 +6,22 @@
 
 import React, { ReactElement } from 'react';
 
-import { act, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import * as searchSoapApi from '../../../api/search-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import {
-	screen,
-	makeListItemsVisible,
-	setupTest,
-	within
-} from '../../../carbonio-ui-commons/test/test-setup';
-import * as useSelection from '../../../hooks/use-selection';
-import { TESTID_SELECTORS } from '../../../tests/constants';
-import { generateSoapConversationMessage } from '../../../tests/generators/api';
+import { within, makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import * as searchSoapApi from 'api/search-soap-api';
+import * as useSelection from 'hooks/use-selection';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -41,8 +36,8 @@ import {
 	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage
-} from '../../../types';
-import SearchView from '../search-view';
+} from 'types/index.d';
+import SearchView from 'views/search/search-view';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
@@ -686,26 +681,36 @@ describe('SearchView', () => {
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[], noop]);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [true, noop],
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />);
-		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+		await waitFor(async () => {
+			setupTest(<SearchView {...searchViewProps} />);
 		});
+
+		const advancedFiltersButton = screen.getByRole('button', {
+			name: 'Advanced Filters'
+		});
+
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeDisabled();
 	});
 
 	it('should not call search API if query empty', async () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[], noop]);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};
@@ -713,8 +718,9 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />);
 
 		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+			name: 'Advanced Filters'
 		});
+
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
 		expect(searchSpy).not.toHaveBeenCalled();

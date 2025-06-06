@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { isFulfilled, isRejected } from '../promises';
+import { isFulfilled, isRejected } from 'helpers/promises';
 
 describe('Promises helpers functions', () => {
 	describe('PromiseSettledResult', () => {

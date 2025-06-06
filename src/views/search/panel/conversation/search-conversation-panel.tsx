@@ -10,10 +10,10 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
-import { SearchPanelHeader } from '../../extra-window/search-panel-header';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
+import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
+import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } = useParams() as { conversationId: string };

@@ -7,7 +7,7 @@ import React from 'react';
 
 import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
 
-import { HeaderNavigationActionItem } from '../../../../../hooks/use-preview-header-navigation';
+import { HeaderNavigationActionItem } from 'hooks/use-preview-header-navigation';
 
 export const NavigationIconButton = ({
 	item

@@ -6,10 +6,14 @@
 import React, { FC, useMemo } from 'react';
 
 import { IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import type { Folder } from '@zextras/carbonio-ui-commons';
 import { Link } from 'react-router-dom';
 
-import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from './utils';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getSystemFolderTranslatedName
+} from 'views/sidebar/utils';
 
 const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);

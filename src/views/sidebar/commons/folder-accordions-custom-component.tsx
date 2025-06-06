@@ -7,13 +7,16 @@ import React, { useMemo } from 'react';
 
 import { AccordionItem, Avatar, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import styled from 'styled-components';
 
-import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { Folder } from '../../../types';
-import { getFolderTranslatedName, getFolderIconName, getFolderIconColor } from '../utils';
-import { StatusIcon } from './status-icon';
+import { Folder } from 'types/index.d';
+import { StatusIcon } from 'views/sidebar/commons/status-icon';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getFolderTranslatedName
+} from 'views/sidebar/utils';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));

@@ -6,14 +6,14 @@
 
 import { find } from 'lodash';
 
-import { EditViewActions } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { MailMessage } from '../../../types';
-import { generateEditor } from '../editor-generators';
-import { getEditor } from '../hooks/editors';
+import { EditViewActions } from 'constants/index';
+import { generateEditor } from 'store/editor/editor-generators';
+import { getEditor } from 'store/editor/hooks/editors';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MailMessage } from 'types/index.d';
 
-jest.mock('../hooks/editors', () => ({
-	...jest.requireActual('../hooks/editors'),
+jest.mock('store/editor/hooks/editors', () => ({
+	...jest.requireActual('store/editor/hooks/editors'),
 	getEditor: jest.fn()
 }));
 

@@ -8,9 +8,9 @@ import React, { CSSProperties, useMemo, useRef } from 'react';
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
 import styled, { css } from 'styled-components';
 
-import { BORDERS } from '../constants';
-import { Border, useResize } from '../hooks/use-resize';
-import { useViewLayout } from '../hooks/use-view-layout';
+import { BORDERS } from 'constants/index';
+import { Border, useResize } from 'hooks/use-resize';
+import { useViewLayout } from 'hooks/use-view-layout';
 
 const RESIZABLE_BORDER_SIZE = '1rem';
 

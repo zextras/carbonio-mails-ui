@@ -4,24 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook } from '@testing-library/react';
+import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendMessagesToMessagesSlice,
+	getUseEmailStoreAndHooksForTesting,
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
 	updateMessages,
 	updateMessagesResultsLoadingStatus,
 	useMessageById,
-	useMessagesByIds,
-	useMessagesIdsByFolder,
 	useMessageIndexSlice,
-	getUseEmailStoreAndHooksForTesting
-} from '../../../store';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';
+	useMessagesByIds,
+	useMessagesIdsByFolder
+} from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
 

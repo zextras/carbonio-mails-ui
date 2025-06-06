@@ -8,8 +8,8 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { IncomingFiltersTab } from './incoming-filters-tab';
-import { OutgoingFiltersTab } from './outgoing-filters-tab';
+import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
+import { OutgoingFiltersTab } from 'views/settings/filters/outgoing-filters-tab';
 
 export const FilterTabs: FC = (): ReactElement => {
 	const [t] = useTranslation();

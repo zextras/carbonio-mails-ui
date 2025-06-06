@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, ReactElement } from 'react';
 
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
@@ -11,7 +11,7 @@ import { map } from 'lodash';
 import {
 	ColorContainer,
 	TextUpperCase
-} from '../../../../integrations/shared-invite-reply/parts/styled-components';
+} from 'integrations/shared-invite-reply/parts/styled-components';
 
 type LabelFactoryPropsType = {
 	selected: Array<{ label: string; value: string }>;

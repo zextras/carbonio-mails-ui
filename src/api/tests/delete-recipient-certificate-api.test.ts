@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { deleteRecipientCertificate } from '../delete-recipient-certificate-api';
+import { deleteRecipientCertificate } from 'api/delete-recipient-certificate-api';
 
 describe('deleteRecipientCertificate', () => {
 	const email = 'test@example.com';

@@ -3,108 +3,46 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { useContactInput } from '@zextras/carbonio-ui-commons';
+import { Controller } from 'react-hook-form';
 
-import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import { SearchEmailValue } from '../../../types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
-type ReceivedSentAddressRowProps = {
-	compProps: {
-		receivedFromAddresses: Array<SearchEmailValue>;
-		handleReceivedFromInput: (arg: Array<ContactInputItem>) => void;
-		sentToAddresses: Array<SearchEmailValue>;
-		handleSentToInput: (arg: Array<ContactInputItem>) => void;
-	};
-};
-
-function newChipFromAddress(searchValue: SearchEmailValue): ContactInputItem {
-	const { email } = searchValue;
-	return {
-		id: email,
-		label: email,
-		value: {
-			id: email,
-			email,
-			type: CONTACT_TYPES.CONTACT
-		}
-	};
-}
-export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
-	compProps
-}): ReactElement => {
-	const { receivedFromAddresses, handleReceivedFromInput, sentToAddresses, handleSentToInput } =
-		compProps;
-
-	const [sentToChips, setSentToChips] = useState<Record<string, ContactInputItem | undefined>>({});
-	const [receivedFromChips, setReceivedFromChips] = useState<
-		Record<string, ContactInputItem | undefined>
-	>({});
-
+export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();
-
-	const handleReceivedFromChange = useCallback(
-		(contacts: Array<ContactInputItem>) => {
-			const newValues = {} as Record<string, ContactInputItem>;
-			contacts.forEach((contact: ContactInputItem) => {
-				newValues[contact.value.email] = contact;
-			});
-			setReceivedFromChips(newValues);
-			handleReceivedFromInput(contacts);
-		},
-		[handleReceivedFromInput]
-	);
-
-	const handleSentToChange = useCallback(
-		(contacts: Array<ContactInputItem>) => {
-			const newValues = {} as Record<string, ContactInputItem>;
-			contacts.forEach((contact: ContactInputItem) => {
-				newValues[contact.value.email] = contact;
-			});
-			setSentToChips(newValues);
-			handleSentToInput(contacts);
-		},
-		[handleSentToInput]
-	);
-
-	const internalReceivedFromAddress: ContactInputItem[] = useMemo(
-		() =>
-			map(receivedFromAddresses, (address) => {
-				const existingChip = receivedFromChips[address.email];
-				return existingChip ?? newChipFromAddress(address);
-			}),
-		[receivedFromAddresses, receivedFromChips]
-	);
-	const internalSentToAddress: ContactInputItem[] = useMemo(
-		() =>
-			map(sentToAddresses, (address) => {
-				const existingChip = sentToChips[address.email];
-				return existingChip ?? newChipFromAddress(address);
-			}),
-		[sentToAddresses, sentToChips]
-	);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				<ContactInput
-					data-testid={'received-from-input'}
-					placeholder={t('label.from', 'From')}
-					onChange={handleReceivedFromChange}
-					defaultValue={internalReceivedFromAddress}
+				<Controller
+					control={control}
+					name={'receivedFrom'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ContactInput
+							data-testid={'received-from-input'}
+							placeholder={t('label.from', 'From')}
+							onChange={onChange}
+							defaultValue={value}
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				<ContactInput
-					data-testid={'sent-to-input'}
-					placeholder={t('label.to', 'To')}
-					onChange={handleSentToChange}
-					defaultValue={internalSentToAddress}
+				<Controller
+					control={control}
+					name={'sentTo'}
+					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
+						<ContactInput
+							data-testid={'sent-to-input'}
+							placeholder={t('label.to', 'To')}
+							onChange={onChange}
+							defaultValue={value}
+						/>
+					)}
 				/>
 			</Container>
 		</Container>
