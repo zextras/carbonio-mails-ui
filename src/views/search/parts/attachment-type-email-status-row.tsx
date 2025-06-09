@@ -16,7 +16,7 @@ import {
 	EmailStatusItemsConstantProps
 } from 'constants/index';
 import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/index.d';
-import { FormValuesControlProps } from 'views/search/types/types';
+import { FormValuesControlProps, KeywordState } from 'views/search/types/types';
 
 export const AttachmentTypeEmailStatusRow = ({
 	control
@@ -48,16 +48,23 @@ export const AttachmentTypeEmailStatusRow = ({
 		[]
 	);
 
+	const attachmentPrefix = "Attachment";
+
 	const attachmentTypeChipOnAdd = useCallback(
-		(label: unknown): ChipOnAdd =>
-			chipOnAdd({
+		(label: string, values:KeywordState): ChipOnAdd | undefined => {
+			const alreadyExists = values.some( item => item.label === `${attachmentPrefix}:${label}`)
+			if (alreadyExists) {
+				return undefined
+			}
+			return chipOnAdd({
 				items: attachmentTypeItems,
-				label: label as string,
-				preText: 'Attachment',
+				label: label,
+				preText: attachmentPrefix,
 				hasAvatar: true,
 				isGeneric: true,
 				isQueryFilter: true
-			}),
+			})
+		},
 		[chipOnAdd, attachmentTypeItems]
 	);
 
@@ -98,8 +105,16 @@ export const AttachmentTypeEmailStatusRow = ({
 							options={attachmentTypeOptions}
 							disableOptions={false}
 							background="gray5"
-							onAdd={attachmentTypeChipOnAdd}
-							onChange={onChange}
+							onAdd={ (label) =>  {
+								if (typeof label !== "string") {
+									return undefined;
+								}
+								return attachmentTypeChipOnAdd(label, value) as any
+							}}
+							onChange={ (chips) => {
+								const validChips = chips.filter((chip) => chip !== undefined);
+								onChange(validChips);
+							} }
 							icon="ChevronDown"
 							requireUniqueChips
 							data-testid="attachmentTypeSelect"

@@ -92,8 +92,8 @@ export const TagFolderRow = ({
 
 	const tagChipOnAdd = useCallback(
 		(label: string, values:KeywordState): ChipOnAdd | undefined => {
-			const alredyExists = values.some( ({label:currentLabel}) => currentLabel === `tag:${label}` )
-			if (alredyExists) {
+			const alreadyExists = values.some( ({label:currentLabel}) => currentLabel === `tag:${label}` )
+			if (alreadyExists) {
 				return undefined;
 			}
 			const chipBg = tagOptions.filter((tag) => tag.label === label);
