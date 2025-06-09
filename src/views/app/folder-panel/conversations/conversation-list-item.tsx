@@ -10,7 +10,6 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
@@ -36,9 +35,6 @@ export type ConversationListItemProps = {
 	deselectAll: () => void;
 	folderId?: string;
 };
-const CollapseElement = styled(Container)<{ $open: boolean }>`
-	display: ${({ $open }): string => ($open ? 'block' : 'none')};
-`;
 
 export const ConversationListItem = memo(function ConversationListItem({
 	conversation,
@@ -171,8 +167,8 @@ export const ConversationListItem = memo(function ConversationListItem({
 				/>
 			)}
 			{open && conversation.messagesInConversation > 1 && (
-				<CollapseElement
-					$open={open}
+				<Container
+					style={{ display: open ? 'block' : 'none' }}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"
@@ -187,7 +183,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 						isSearchModule={isSearchModule}
 						setDraggedIds={setDraggedIds}
 					/>
-				</CollapseElement>
+				</Container>
 			)}
 		</Container>
 	);

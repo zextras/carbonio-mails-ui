@@ -88,10 +88,7 @@ export const AdvancedFilterModal = ({
 			/>
 			<Divider />
 
-			<ScrollableContainer
-				padding={{ horizontal: 'medium', vertical: 'small' }}
-				mainAlignment={'flex-start'}
-			>
+			<ScrollableContainer>
 				<FormProvider {...methods}>
 					<ToggleFilters />
 					<SubjectKeywordRow control={control} />

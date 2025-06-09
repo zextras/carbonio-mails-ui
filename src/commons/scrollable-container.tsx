@@ -3,10 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import React, { ReactElement } from 'react';
 
-export const ScrollableContainer = styled(Container)`
-	overflow-y: auto;
-	height: 'fit-content';
-`;
+import { Container } from '@zextras/carbonio-design-system';
+
+export const ScrollableContainer = ({
+	children
+}: {
+	children: ReactElement;
+}): React.JSX.Element => (
+	<Container
+		padding={{ horizontal: 'medium', vertical: 'small' }}
+		mainAlignment={'flex-start'}
+		style={{
+			overflowY: 'auto',
+			height: 'fit-content'
+		}}
+	>
+		{children}
+	</Container>
+);
