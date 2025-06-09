@@ -62,6 +62,7 @@ export const SubjectKeywordRow = ({ control }: FormValuesControlProps): ReactEle
 							]}
 							onChange={onChange}
 							onAdd={keywordChipOnAdd}
+							requireUniqueChips
 						/>
 					)}
 				/>
