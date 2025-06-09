@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,
+	ChipInputProps,
 	Container,
 	CustomModal,
 	Icon,
@@ -23,7 +24,7 @@ import { Controller, UseFormSetValue } from 'react-hook-form';
 import { isSharedAccountFolder } from 'helpers/folders';
 import type { ChipOnAdd, Folder } from 'types/index.d';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
-import { AdvancedFilterModalFormValues, FormValuesControlProps } from 'views/search/types/types';
+import { AdvancedFilterModalFormValues, FormValuesControlProps, KeywordState } from 'views/search/types/types';
 import { getFolderIconColor } from 'views/sidebar/utils';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
@@ -90,7 +91,11 @@ export const TagFolderRow = ({
 	);
 
 	const tagChipOnAdd = useCallback(
-		(label: unknown): ChipOnAdd => {
+		(label: string, values:KeywordState): ChipOnAdd | undefined => {
+			const alredyExists = values.some( ({label:currentLabel}) => currentLabel === `tag:${label}` )
+			if (alredyExists) {
+				return undefined;
+			}
 			const chipBg = tagOptions.filter((tag) => tag.label === label);
 			return chipOnAdd(
 				label as string,
@@ -153,11 +158,18 @@ export const TagFolderRow = ({
 							defaultValue={[]}
 							options={tagOptions}
 							value={value}
-							onChange={onChange}
-							onAdd={tagChipOnAdd}
+							onChange={(chips) => {
+								const validChips = chips.filter((chip) => chip !== undefined);
+								onChange(validChips);
+							}}
+							onAdd={(label) => {
+								if (typeof label !== "string") {
+									return undefined;
+								}
+								return tagChipOnAdd(label, value) as any
+							}}
 							disableOptions={false}
 							disabled
-							requireUniqueChips
 							data-testid="tagInput"
 						/>
 					)}
@@ -177,7 +189,6 @@ export const TagFolderRow = ({
 							onAdd={folderChipOnAdd}
 							disabled
 							iconAction={openFolderModal}
-							requireUniqueChips
 							data-testid="folderInput"
 						/>
 					)}
