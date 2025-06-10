@@ -13,22 +13,31 @@ import {
 	Icon,
 	Padding,
 	Row,
-	Text
+	Text,
+	type Theme,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import LabelRow from 'integrations/shared-invite-reply/parts/label-row';
 import ResponseActions from 'integrations/shared-invite-reply/parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
 import type { MailMessage } from 'types/index.d';
 
-const InviteContainer = styled(Container)`
-	border: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
-	border-radius: 0.875rem;
-	margin: ${({ theme }): string => theme.sizes.padding.extrasmall};
-`;
+type InviteContainerStyle = {
+	border: string;
+	borderRadius: string;
+	margin: string;
+};
+
+function getInviteContainerStyle(theme: Theme): InviteContainerStyle {
+	return {
+		border: `0.0625rem solid ${theme.palette.gray2.regular}`,
+		borderRadius: '0.875rem',
+		margin: theme.sizes.padding.extrasmall
+	};
+}
 
 type SharedCalendarResponseReturnType = {
 	sharedContent: string;
@@ -39,6 +48,8 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
 	mailMsg
 }): ReactElement => {
+	const theme = useTheme();
+
 	const rights = useMemo(
 		() => sharedContent?.split('<link ')[1].split('perm="')[1].split('" ')[0],
 		[sharedContent]
@@ -119,7 +130,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	const [showMoreInfo, setShowMoreInfo] = useState(false);
 
 	return (
-		<InviteContainer>
+		<Container style={getInviteContainerStyle(theme)}>
 			<Container
 				padding={{ top: 'medium', horizontal: 'large', bottom: 'extrasmall' }}
 				width="100%"
@@ -213,7 +224,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 					</>
 				)}
 			</Container>
-		</InviteContainer>
+		</Container>
 	);
 };
 
