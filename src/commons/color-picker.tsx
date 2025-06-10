@@ -7,33 +7,61 @@ import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { Container, Icon } from '@zextras/carbonio-design-system';
 import { HexColorPicker } from 'react-colorful';
-import styled from 'styled-components';
 
 import useClickOutside from 'hooks/use-click-outside-picker';
 import { ColorContainer } from 'integrations/shared-invite-reply/parts/styled-components';
 
-const ColorBox = styled(Container)<{ $disabled: boolean; $color: string }>`
-	width: 1.75rem;
-	height: 1.75rem;
-	border-radius: 0.5rem;
-	border: 0.1875rem solid #fff;
-	box-shadow:
-		0 0 0 0.0625rem rgba(0, 0, 0, 0.1),
-		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1);
-	cursor: ${({ $disabled }): string => ($disabled ? 'no-drop' : 'pointer')};
-	background-color: ${({ $color }): string => $color};
-	opacity: ${({ $disabled }): string => ($disabled ? '0.5' : '1')};
-`;
+type ColorPickerStyle = {
+	width: string;
+	height: string;
+	borderRadius: string;
+	border: string;
+	boxShadow: string;
+	cursor: string;
+	backgroundColor: string;
+	opacity: string;
+};
 
-const PopOver = styled(Container)`
-	position: absolute;
-	top: calc(100% + 0.125rem);
-	left: 0;
-	width: 12.5rem;
-	height: 12.5rem;
-	border-radius: 0.5625rem;
-	box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.15);
-`;
+function getColorPickerStyle({
+	disabled,
+	color
+}: {
+	disabled: boolean;
+	color: string;
+}): ColorPickerStyle {
+	return {
+		width: '1.75rem',
+		height: '1.75rem',
+		borderRadius: '0.5rem',
+		border: '0.1875rem solid #fff',
+		boxShadow: '0 0 0 0.0625rem rgba(0, 0, 0, 0.1), inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1)',
+		cursor: disabled ? 'no-drop' : 'pointer',
+		backgroundColor: color,
+		opacity: disabled ? '0.5' : '1'
+	};
+}
+
+type PopOverStyle = {
+	position: 'absolute';
+	top: string;
+	left: string;
+	width: string;
+	height: string;
+	borderRadius: string;
+	boxShadow: string;
+};
+
+function getPopOverStyle(): PopOverStyle {
+	return {
+		position: 'absolute',
+		top: 'calc(100% + 0.125rem)',
+		left: '0',
+		width: '12.5rem',
+		height: '12.5rem',
+		borderRadius: '0.5625rem',
+		boxShadow: '0 0.375rem 0.75rem rgba(0, 0, 0, 0.15)'
+	};
+}
 
 export const ColorPicker: FC<{
 	color: string;
@@ -60,11 +88,14 @@ export const ColorPicker: FC<{
 			height="3rem"
 		>
 			<Container style={{ position: 'relative' }} orientation="horizontal" width="fit">
-				<ColorBox $color={color} $disabled={disabled} data-testid="color-picker-color-box" />
+				<Container
+					style={getColorPickerStyle({ disabled, color })}
+					data-testid="color-picker-color-box"
+				/>
 				{isOpen && (
-					<PopOver ref={popover}>
+					<Container ref={popover} style={getPopOverStyle()}>
 						<HexColorPicker color={color} onChange={onChange} />
-					</PopOver>
+					</Container>
 				)}
 				<Icon
 					size="large"
