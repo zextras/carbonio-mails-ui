@@ -9,15 +9,9 @@ import { Container, Icon, Padding, Text } from '@zextras/carbonio-design-system'
 import { t } from '@zextras/carbonio-shell-ui';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchPanelTextLine } from 'views/backup-search/parts/backup-search-panel-text-line';
-
-const SearchIcon = styled(Icon)`
-	width: 3.3rem;
-	height: 3.3rem;
-`;
 
 export const BackupSearchPanel = (): React.JSX.Element => {
 	const restoreEmailsTitle = t(
@@ -57,7 +51,7 @@ export const BackupSearchPanel = (): React.JSX.Element => {
 		</Container>
 	) : (
 		<Container background="gray5">
-			<SearchIcon icon="Search" color="gray1" />
+			<Icon icon="Search" color="gray1" width={'3.3rem'} height={'3.3rem'} />
 			<Padding all="medium">
 				<Text
 					color="gray1"
