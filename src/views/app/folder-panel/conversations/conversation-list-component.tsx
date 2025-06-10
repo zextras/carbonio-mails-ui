@@ -9,7 +9,6 @@ import React, { RefObject, memo, useEffect, useMemo } from 'react';
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
-import styled from 'styled-components';
 
 import { getConversationById } from 'store/emails/store';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
@@ -19,13 +18,20 @@ import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/mult
 import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
 import ShimmerList from 'views/search/shimmer-list';
 
-const DragImageContainer = styled.div`
-	position: absolute;
-	top: -312.5rem;
-	left: -312.5rem;
-	transform: translate(-100%, -100%);
-	width: 35vw;
-`;
+type DragImageContainerStyle = {
+	position: 'absolute';
+	top: string;
+	left: string;
+	transform: string;
+	width: string;
+};
+const getDragImageContainerStyle = (): DragImageContainerStyle => ({
+	position: 'absolute',
+	top: '-312.5rem',
+	left: '-312.5rem',
+	transform: 'translate(-100%, -100%)',
+	width: '35vw'
+});
 
 const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
 	<>
@@ -192,9 +198,9 @@ export const ConversationListComponent = memo(function ConversationListComponent
 							</Padding>
 						</Container>
 					)}
-					<DragImageContainer ref={dragImageRef}>
+					<Container ref={dragImageRef} style={getDragImageContainerStyle()}>
 						<DragItems draggedIds={draggedIds ?? {}} />
-					</DragImageContainer>
+					</Container>
 				</>
 			) : (
 				<ShimmerList count={totalConversations} delay={500} />
