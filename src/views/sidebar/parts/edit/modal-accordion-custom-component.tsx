@@ -13,10 +13,10 @@ import {
 	Icon,
 	Padding,
 	Row,
-	Tooltip
+	Tooltip,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { isRoot } from 'helpers/folders';
 import {
@@ -53,14 +53,10 @@ const getFolderAbsPathParts = (
 	return matches[1].split('/');
 };
 
-const FittedRow = styled(Row)`
-	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
-	height: 3rem;
-`;
-
 const ModalAccordionCustomComponent: FC<{
 	item: AccordionItemType;
 }> = ({ item }) => {
+	const theme = useTheme();
 	const iconName = getFolderIconName(item);
 	const iconColor = getFolderIconColor(item);
 	const parts = getFolderAbsPathParts(item);
@@ -76,14 +72,18 @@ const ModalAccordionCustomComponent: FC<{
 	}));
 
 	return isRoot(item.id) ? (
-		<FittedRow data-testid={`folder-accordion-root-${item.id}`}>
+		<Row
+			data-testid={`folder-accordion-root-${item.id}`}
+			height={'3rem'}
+			style={{ maxWidth: `calc(100% - (2 * ${theme.sizes.padding.small}))` }}
+		>
 			<Padding horizontal="small">
 				<Avatar label={item.label ?? ''} size="medium" />
 			</Padding>
 			<Tooltip label={item.label} placement="right" maxWidth="100%">
 				<AccordionItem item={item} />
 			</Tooltip>
-		</FittedRow>
+		</Row>
 	) : (
 		<Container
 			data-testid={`folder-accordion-item-${item.id}`}

@@ -12,11 +12,11 @@ import {
 	Divider,
 	Padding,
 	Text,
-	Tooltip
+	Tooltip,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import styled from 'styled-components';
 
 import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
@@ -29,12 +29,8 @@ import type {
 } from 'types/index.d';
 import { Context } from 'views/sidebar/parts/edit/edit-context';
 
-const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
-	background-color: ${({ theme, $hovered }): string =>
-		$hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
-`;
-
 export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOptions, hovered }) => {
+	const theme = useTheme();
 	const role = useMemo(
 		() => findLabel(shareCalendarRoleOptions, grant.perm || ''),
 		[shareCalendarRoleOptions, grant.perm]
@@ -48,7 +44,12 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={label} $hovered={hovered} />
+				<Chip
+					label={label}
+					style={{
+						backgroundColor: hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular
+					}}
+				/>
 			</Text>
 		</Container>
 	);
