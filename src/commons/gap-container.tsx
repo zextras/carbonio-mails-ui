@@ -10,30 +10,42 @@ import {
 	ContainerProps,
 	getPadding,
 	Row,
-	RowProps
+	RowProps,
+	Theme,
+	useTheme
 } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
 
 type GapContainerProps = ContainerProps & { gap?: ContainerProps['padding'] };
 
 type GapRowProps = RowProps & { gap?: RowProps['padding'] };
 
-const StyledGapContainer = styled(Container)<{ $gap?: ContainerProps['padding'] }>`
-	gap: ${({ theme, $gap }): undefined | string | 0 => $gap && getPadding($gap, theme)};
-`;
+const getStyledGapContainer = ({
+	gap,
+	theme
+}: {
+	gap?: ContainerProps['padding'];
+	theme: Theme;
+}): { gap: string | 0 | undefined } => ({ gap: gap && getPadding(gap, theme) });
 
-const StyledGapRow = styled(Row)<{ $gap?: ContainerProps['padding'] }>`
-	gap: ${({ theme, $gap }): undefined | string | 0 => $gap && getPadding($gap, theme)};
-`;
+const getGapRowStyle = ({
+	gap,
+	theme
+}: {
+	gap?: ContainerProps['padding'];
+	theme: Theme;
+}): { gap: string | 0 | undefined } => ({
+	gap: gap && getPadding(gap, theme)
+});
 
 const GapContainer = React.forwardRef<HTMLDivElement, GapContainerProps>(function GapContainerFn(
 	{ children, gap, ...rest },
 	ref
 ) {
+	const theme = useTheme();
 	return (
-		<StyledGapContainer ref={ref} $gap={gap} {...rest}>
+		<Container ref={ref} style={getStyledGapContainer({ gap, theme })} {...rest}>
 			{children}
-		</StyledGapContainer>
+		</Container>
 	);
 });
 
@@ -41,10 +53,11 @@ const GapRow = React.forwardRef<HTMLDivElement, GapRowProps>(function GapRowFn(
 	{ children, gap, ...rest },
 	ref
 ) {
+	const theme = useTheme();
 	return (
-		<StyledGapRow ref={ref} $gap={gap} {...rest}>
+		<Row ref={ref} style={getGapRowStyle({ theme, gap })} {...rest}>
 			{children}
-		</StyledGapRow>
+		</Row>
 	);
 });
 
