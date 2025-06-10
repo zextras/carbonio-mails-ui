@@ -5,25 +5,22 @@
  */
 import React, { HTMLAttributes } from 'react';
 
-import styled from 'styled-components';
-
 // TODO add supports for 	italic, strikethrough and underlined
 export type TextStylerProps = HTMLAttributes<HTMLSpanElement> & {
 	bold?: boolean;
 };
-
-const StyledSpan = styled.span<{ $bold?: boolean }>`
-	display: inline-block;
-	font-weight: ${({ $bold }): false | undefined | string => $bold && 'bold'};
-`;
 
 export const TextStyler = React.forwardRef<HTMLSpanElement, TextStylerProps>(function TextStylerFn(
 	{ children, bold, ...rest },
 	ref
 ) {
 	return (
-		<StyledSpan ref={ref} $bold={bold} {...rest}>
+		<span
+			ref={ref}
+			style={{ display: 'inline-block', fontWeight: bold ? 'bold' : 'regular' }}
+			{...rest}
+		>
 			{children}
-		</StyledSpan>
+		</span>
 	);
 });
