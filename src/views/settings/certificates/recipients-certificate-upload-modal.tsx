@@ -9,11 +9,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Button, Container, Input, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-
-const FileInput = styled.input`
-	display: none;
-`;
 
 type RecipientsCertificateUploadModalProps = {
 	onConfirm: (certificateContent: string | ArrayBuffer) => void;
@@ -96,11 +91,13 @@ export const RecipientsCertificateUploadModal = ({
 						</Tooltip>
 					</Padding>
 				</Container>
-				<FileInput
+				<Input
 					type="file"
 					ref={inputRef}
 					data-testid="certificate-file-input"
 					onChange={handleFileChange}
+					style={{ display: 'none' }}
+					// TODO CO-2127 is this property needed?
 					accept=".crt,.pem"
 				/>
 				<ModalFooter

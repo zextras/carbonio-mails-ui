@@ -72,7 +72,6 @@ describe('RecipientsCertificateUploadModal', () => {
 		const button = screen.getByRole('button', {
 			name: 'Upload'
 		});
-		expect(button).toBeInTheDocument();
 		expect(button).toBeDisabled();
 	});
 });
