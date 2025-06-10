@@ -32,7 +32,6 @@ import { signaturesSubSection, setDefaultSignaturesSubSection } from 'views/sett
 const DeleteButton = styled(Button)`
 	display: none;
 `;
-
 const Signature = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
@@ -47,12 +46,17 @@ const Signature = styled(Row)`
 		}
 	}
 `;
-const EditorWrapper = styled.div`
-	width: 100%;
-	height: 100%;
-	overflow-y: auto;
-	position: relative;
-`;
+const getEditorWrapperStyle = (): {
+	width: string;
+	height: string;
+	overflowY: 'auto';
+	position: 'relative';
+} => ({
+	width: '100%',
+	height: '100%',
+	overflowY: 'auto',
+	position: 'relative'
+});
 
 /**
  * Temporary type narrowed to the only properties/methods used in this context
@@ -171,7 +175,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Tooltip label={item.label} overflowTooltip>
 							<Text weight="bold">{item.label}</Text>
 						</Tooltip>
-						<DeleteButton
+						<Button
+							style={{ display: 'none' }}
 							label={t('label.delete', 'Delete')}
 							type="outlined"
 							color="error"
@@ -321,7 +326,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								onChange={onSignatureNameChange}
 							/>
 							{composerIsAvailable && (
-								<EditorWrapper>
+								<div style={getEditorWrapperStyle()}>
 									<Composer
 										data-testid={'signature-editor'}
 										value={currentSignature?.description ?? ''}
@@ -329,7 +334,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 										disabled={editingDisabled}
 										onEditorChange={onSignatureContentChange}
 									/>
-								</EditorWrapper>
+								</div>
 							)}
 						</Container>
 					</Container>
