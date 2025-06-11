@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,
-	ChipInputProps,
 	Container,
 	CustomModal,
 	Icon,
