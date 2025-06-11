@@ -705,4 +705,48 @@ describe('Advanced filter modal', () => {
 			expect(within(toggle).getByTestId('icon: ToggleRight')).toBeInTheDocument();
 		});
 	});
+
+	it('should prevent adding duplicated values for keywords', async () => {
+		const updateQueryMock = jest.fn();
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: updateQueryMock
+		};
+
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
+		const keywordInput = screen.getByTestId('keywords-input');
+		const keywordInputEle = within(keywordInput).getByRole('textbox');
+
+		// Add first keyword
+		await user.click(keywordInputEle);
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.type(keywordInputEle, '[Enter]');
+
+		// Try to add the same keyword again
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.type(keywordInputEle, '[Enter]');
+
+		// Click search button
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+		await user.click(confirmButton);
+
+		// Verify that only one instance of the keyword was added
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledTimes(1);
+		});
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith({
+				includeSharedFolders: false,
+				query: [
+					{
+						hasAvatar: false,
+						isGeneric: true,
+						label: 'test keyword'
+					}
+				]
+			});
+		});
+	});
 });
