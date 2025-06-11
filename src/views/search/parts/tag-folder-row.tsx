@@ -24,7 +24,11 @@ import { Controller, UseFormSetValue } from 'react-hook-form';
 import { isSharedAccountFolder } from 'helpers/folders';
 import type { ChipOnAdd, Folder } from 'types/index.d';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
-import { AdvancedFilterModalFormValues, FormValuesControlProps, KeywordState } from 'views/search/types/types';
+import {
+	AdvancedFilterModalFormValues,
+	FormValuesControlProps,
+	KeywordState
+} from 'views/search/types/types';
 import { getFolderIconColor } from 'views/sidebar/utils';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
@@ -91,8 +95,10 @@ export const TagFolderRow = ({
 	);
 
 	const tagChipOnAdd = useCallback(
-		(label: string, values:KeywordState): ChipOnAdd | undefined => {
-			const alreadyExists = values.some( ({label:currentLabel}) => currentLabel === `tag:${label}` )
+		(label: string, values: KeywordState): ChipOnAdd | undefined => {
+			const alreadyExists = values.some(
+				({ label: currentLabel }) => currentLabel === `tag:${label}`
+			);
 			if (alreadyExists) {
 				return undefined;
 			}
@@ -163,10 +169,10 @@ export const TagFolderRow = ({
 								onChange(validChips);
 							}}
 							onAdd={(label) => {
-								if (typeof label !== "string") {
+								if (typeof label !== 'string') {
 									return undefined;
 								}
-								return tagChipOnAdd(label, value) as any
+								return tagChipOnAdd(label, value) as any;
 							}}
 							disableOptions={false}
 							disabled
