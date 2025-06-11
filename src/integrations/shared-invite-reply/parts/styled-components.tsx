@@ -5,9 +5,9 @@
  */
 import React, { ReactNode } from 'react';
 
-import { Container, Text, useTheme } from '@zextras/carbonio-design-system';
+import { Container, ContainerProps, useTheme } from '@zextras/carbonio-design-system';
 
-export const Square = (color: string): React.JSX.Element => {
+export const Square = ({ color }: { color: string }): React.JSX.Element => {
 	const theme = useTheme();
 
 	return (
@@ -27,14 +27,17 @@ export const Square = (color: string): React.JSX.Element => {
 
 export const ColorContainer = ({
 	disabled,
-	children
+	children,
+	...rest
 }: {
-	disabled: boolean;
+	disabled?: boolean;
 	children: ReactNode;
-}): React.JSX.Element => {
+} & ContainerProps &
+	React.RefAttributes<HTMLDivElement>): React.JSX.Element => {
 	const theme = useTheme();
 	return (
 		<Container
+			{...rest}
 			style={{
 				borderBottom: `0.0625rem solid ${theme.palette.gray2.regular}`,
 				cursor: disabled ? 'no-drop' : 'pointer'
@@ -44,7 +47,3 @@ export const ColorContainer = ({
 		</Container>
 	);
 };
-
-export const TextUpperCase = ({ children }: { children: ReactNode }): React.JSX.Element => (
-	<Text style={{ textTransform: 'capitalize' }}>{children}</Text>
-);

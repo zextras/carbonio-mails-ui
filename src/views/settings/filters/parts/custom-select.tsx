@@ -8,10 +8,7 @@ import React, { FC, ReactElement } from 'react';
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import {
-	ColorContainer,
-	TextUpperCase
-} from 'integrations/shared-invite-reply/parts/styled-components';
+import { ColorContainer } from 'integrations/shared-invite-reply/parts/styled-components';
 
 type LabelFactoryPropsType = {
 	selected: Array<{ label: string; value: string }>;
@@ -37,7 +34,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		padding={{
 			all: 'extrasmall'
 		}}
-		$disabled={disabled}
+		disabled={disabled}
 		minHeight="3rem"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
@@ -54,7 +51,9 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 				>
 					{label}
 				</Text>
-				<TextUpperCase color={disabled ? 'gray2' : 'text'}>{selected?.[0]?.label}</TextUpperCase>
+				<Text style={{ textTransform: 'capitalize' }} color={disabled ? 'gray2' : 'text'}>
+					{selected?.[0]?.label}
+				</Text>
 			</Row>
 		</Row>
 		<Icon
@@ -74,7 +73,7 @@ const getItems = (items: Array<{ label: string; value: any }>): GetItemsReturnTy
 		customComponent: (
 			<Container width="100%" mainAlignment="space-between" orientation="horizontal" height="fit">
 				<Padding left="small">
-					<TextUpperCase>{el?.label}</TextUpperCase>
+					<Text style={{ textTransform: 'capitalize' }}>{el?.label}</Text>
 				</Padding>
 			</Container>
 		)

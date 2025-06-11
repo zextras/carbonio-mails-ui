@@ -83,7 +83,7 @@ export const ColorPicker: FC<{
 			padding={{
 				all: 'small'
 			}}
-			style={{ cursor: disabled ? 'no-drop' : 'pointer' }}
+			disabled={disabled}
 			onClick={(): void | null => (disabled ? null : setIsOpen(true))}
 			height="3rem"
 		>

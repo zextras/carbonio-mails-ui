@@ -10,11 +10,7 @@ import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-d
 import { CustomLabelFactoryProps, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import {
-	ColorContainer,
-	Square,
-	TextUpperCase
-} from 'integrations/shared-invite-reply/parts/styled-components';
+import { ColorContainer, Square } from 'integrations/shared-invite-reply/parts/styled-components';
 
 const LabelFactory = ({
 	selected,
@@ -46,10 +42,10 @@ const LabelFactory = ({
 					<Text size="small" color={open || focus ? 'primary' : 'secondary'}>
 						{label}
 					</Text>
-					<TextUpperCase>{selectedColor.label}</TextUpperCase>
+					<Text style={{ textTransform: 'capitalize' }}>{selectedColor.label}</Text>
 				</Row>
 				<Padding right="small">
-					<Square $color={ZIMBRA_STANDARD_COLORS[parseInt(selectedColor.value, 10)].hex} />
+					<Square color={ZIMBRA_STANDARD_COLORS[parseInt(selectedColor.value, 10)].hex} />
 				</Padding>
 			</Row>
 			<Icon
@@ -87,9 +83,9 @@ export default function ColorSelect({
 							height="fit"
 						>
 							<Padding left="small">
-								<TextUpperCase>{colorLabel}</TextUpperCase>
+								<Text style={{ textTransform: 'capitalize' }}>{colorLabel}</Text>
 							</Padding>
-							<Square $color={el.hex} />
+							<Square color={el.hex} />
 						</Container>
 					)
 				};
