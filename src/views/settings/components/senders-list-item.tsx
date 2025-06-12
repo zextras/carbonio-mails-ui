@@ -6,9 +6,9 @@
 
 import React, { FC, ReactElement, useCallback, useState } from 'react';
 
+import styled from '@emotion/styled/macro';
 import { Container, Text, Row, Button } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 const ListItem = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
