@@ -13,6 +13,7 @@ import React, {
 	useState
 } from 'react';
 
+import styled from '@emotion/styled/macro';
 import {
 	Avatar,
 	AvatarPropTypes,
@@ -38,7 +39,6 @@ import {
 import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
