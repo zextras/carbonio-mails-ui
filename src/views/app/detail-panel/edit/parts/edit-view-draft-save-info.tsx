@@ -9,9 +9,9 @@ import { Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 
+import { StickyTimeContainer, StickyTime } from './edit-view-components';
 import { TIMEOUTS } from 'constants/index';
 import { DraftSaveProcessStatus } from 'types/index.d';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus }> = ({
 	processStatus
@@ -32,8 +32,8 @@ export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus 
 	return (
 		<>
 			{visible && (
-				<StyledComp.StickyTimeContainer>
-					<StyledComp.StickyTime>
+				<StickyTimeContainer>
+					<StickyTime>
 						<Row
 							crossAlignment="flex-end"
 							background="gray5"
@@ -46,8 +46,8 @@ export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus 
 								})}
 							</Text>
 						</Row>
-					</StyledComp.StickyTime>
-				</StyledComp.StickyTimeContainer>
+					</StickyTime>
+				</StickyTimeContainer>
 			)}
 		</>
 	);
