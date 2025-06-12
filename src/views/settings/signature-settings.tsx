@@ -5,6 +5,7 @@
  */
 import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
 
+import styled from '@emotion/styled/macro';
 import {
 	Container,
 	FormSubSection,
@@ -15,18 +16,17 @@ import {
 	Tooltip,
 	Text,
 	FormSection,
-	Input
+	Input,
+	List
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { reject, concat, map } from 'lodash';
-import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
-import { ListOld } from 'views/settings/list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from 'views/settings/subsections';
 
 const DeleteButton = styled(Button)`
@@ -309,11 +309,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							/>
 							<Container height="31.25rem">
 								{signatures.length > 0 && (
-									<ListOld
-										data-testid={'signatures-list'}
-										items={signatures ?? []}
-										ItemComponent={ListItem}
-									/>
+									<List data-testid={'signatures-list'}>
+										{signatures.map((signature) => (
+											<ListItem item={signature} key={signature.id} />
+										))}
+									</List>
 								)}
 							</Container>
 						</Container>
