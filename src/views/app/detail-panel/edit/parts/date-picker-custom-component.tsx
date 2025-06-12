@@ -5,8 +5,8 @@
  */
 import React, { FC, useEffect, useState, forwardRef, MouseEvent } from 'react';
 
+import styled from '@emotion/styled/macro';
 import { Row, IconButton, Input } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
 
 type CustomComponentProps = {
 	value: string | number;
