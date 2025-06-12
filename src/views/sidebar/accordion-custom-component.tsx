@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
+import React, { CSSProperties, FC, useMemo } from 'react';
 
 import {
 	AccordionItem,
@@ -15,7 +15,8 @@ import {
 	Icon,
 	Padding,
 	Row,
-	Tooltip
+	Tooltip,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import {
@@ -26,7 +27,6 @@ import {
 	ROOT_NAME
 } from '@zextras/carbonio-ui-commons';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { isDraft } from 'helpers/folders';
@@ -44,37 +44,39 @@ import {
 	getTotalUnreadCountInSubfolders,
 	handleDragEnter
 } from 'views/sidebar/utils';
+import { Theme } from '@emotion/react';
 
-const FittedRow = styled(Row)`
-	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
-	height: 3rem;
-`;
+const fittedRowStyle = (theme:Theme):CSSProperties => ({
+	maxWidth: `calc(100% - (2 * ${theme.sizes.padding.small} ))`,
+	height: "3rem"
+});
 
-export const DropOverlayContainer = styled(Container)<{ $folder: Folder }>`
-	position: absolute;
-	width: calc(15.5rem - ${({ $folder }): number => $folder.depth - 2}rem);
-	height: 100%;
-	background: ${({ theme }): string => theme.palette.primary.regular};
-	border-radius: 0.25rem;
-	border: 0.25rem solid #d5e3f6;
-	opacity: 0.4;
-`;
+const dropOverlayContainerStyle = ({ folder, theme }:{ folder: Folder, theme:Theme }):CSSProperties => ({
+	position: "absolute",
+	width: `calc(15.5rem - ${folder.depth - 2}rem)`,
+	height: "100%",
+	background: theme.palette.primary.regular,
+	borderRadius: "0.25rem",
+	border: "0.25rem solid #d5e3f6",
+	opacity: "0.4"
+})
 
-const DropDenyOverlayContainer = styled(Container)<{ $folder: Folder }>`
-	position: absolute;
-	width: calc(15.5rem - ${({ $folder }): number => $folder.depth - 2}rem);
-	height: 100%;
-	background: ${({ theme }): string => theme.palette.gray1.regular};
-	border-radius: 0.25rem;
-	border: 0.25rem solid #d5e3f6;
-	opacity: 0.4;
-`;
+const dropDenyOverlayContainerStyle = ({ folder, theme }:{ folder: Folder, theme:Theme }):CSSProperties => ({
+	position: "absolute",
+	width: `calc(15.5rem - ${folder.depth - 2}rem)`,
+	height: "100%",
+	background: theme.palette.gray1.regular,
+	borderRadius: "0.25rem",
+	border: "0.25rem solid #d5e3f6",
+	opacity: "0.4"
+})
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const { displayName, name } = useUserAccount();
+	const theme = useTheme();
 	const accountName = displayName ?? name;
 	const { folderId } = useParams<{ folderId: string }>();
 	const navigate = useNavigate();
@@ -270,14 +272,14 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 
 	if (folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME))
 		return (
-			<FittedRow>
+			<Row style={fittedRowStyle(theme)}>
 				<Padding left="small">
 					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
 				</Padding>
 				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
 					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem} />
 				</Tooltip>
-			</FittedRow>
+			</Row>
 		);
 
 	return (
@@ -302,8 +304,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 							folder
 						)
 					}
-					overlayAcceptComponent={<DropOverlayContainer $folder={folder} />}
-					overlayDenyComponent={<DropDenyOverlayContainer $folder={folder} />}
+					overlayAcceptComponent={<Container style={dropOverlayContainerStyle({ folder, theme })} />}
+					overlayDenyComponent={<Container style={dropDenyOverlayContainerStyle({ folder, theme })} />}
 				>
 					<Drag
 						type="folder"

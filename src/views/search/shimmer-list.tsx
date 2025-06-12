@@ -7,7 +7,8 @@ import React, { FC } from 'react';
 
 import { Shimmer, Container } from '@zextras/carbonio-design-system';
 import { times } from 'lodash';
-import styled, { keyframes } from 'styled-components';
+import { keyframes } from '@emotion/react';
+import styled from '@emotion/styled/macro';
 
 const fadeIn = keyframes`
 	0% { opacity: 0 }

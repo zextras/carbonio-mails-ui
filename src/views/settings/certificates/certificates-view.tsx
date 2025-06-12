@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import { useSmimePasswordStore } from 'store/certificates/store';
@@ -24,6 +23,7 @@ import { CertificatePasswordModal } from 'views/settings/certificates/certificat
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 import PersonalCertificatesSettings from 'views/settings/certificates/personal-certificates-settings';
 import RecipientsCertificateSettings from 'views/settings/certificates/recipients-certificates-settings';
+import styled from '@emotion/styled/macro';
 
 const CustomBreadcrumbs = styled(Breadcrumbs)`
 	.breadcrumbCrumb {

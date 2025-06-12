@@ -9,7 +9,6 @@ import React, { FC, useCallback, useState } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
@@ -23,9 +22,10 @@ import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conver
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
 
-const CollapseElement = styled(Container)<{ $open: boolean }>`
-	display: ${({ $open }): string => ($open ? 'block' : 'none')};
-`;
+function displayValue(open:boolean): "block" | "none" {
+	return open ? 'block' : 'none';
+}
+
 type SearchConversationListItemProps = {
 	conversationId: string;
 	selecting: boolean;
@@ -50,7 +50,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
-	const { id, isDraft, parent } = messages[0];
+	const { parent } = messages[0];
 	const navigate = useNavigate();
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -129,8 +129,8 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				/>
 			)}
 			{open && (
-				<CollapseElement
-					$open={open}
+				<Container
+					style={{ display: (open ? 'block' : 'none') }}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"
@@ -141,7 +141,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						messages={messages}
 						conversationStatus={conversationStatus}
 					/>
-				</CollapseElement>
+				</Container>
 			)}
 		</Container>
 	);

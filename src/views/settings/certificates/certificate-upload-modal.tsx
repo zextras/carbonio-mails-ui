@@ -19,14 +19,9 @@ import {
 } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { PersonalCertificate } from 'store/certificates/store';
 import { handleCertificateFileUpload } from 'views/settings/certificates/certificate-utils';
-
-const FileInput = styled.input`
-	display: none;
-`;
 
 type CertificateUploadModalPropType = {
 	onConfirm: (certificate: PersonalCertificate, isSelected: boolean) => void;
@@ -145,11 +140,14 @@ export const CertificateUploadModal = ({
 						</Padding>
 					</Row>
 				</Container>
-				<FileInput
+				<Input
+					style={{display: "none"}}
 					type="file"
 					ref={inputRef}
 					data-testid="certificate-file-input"
 					onChange={onChange}
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore type should be fixed on the DS
 					accept=".p12"
 				/>
 				<ModalFooter

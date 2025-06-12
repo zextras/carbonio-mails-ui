@@ -8,14 +8,9 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { Container, Icon, IconButton, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import { TIMEOUTS } from 'constants/index';
 import { AttachmentUploadProcessStatus } from 'types/index.d';
-
-export const UploadingRow = styled(Row)`
-	display: flex;
-`;
 
 export const AttachmentUploadStatus: FC<{
 	uploadStatus: AttachmentUploadProcessStatus;
@@ -41,7 +36,7 @@ export const AttachmentUploadStatus: FC<{
 	}, [uploadStatus.status]);
 
 	return (
-		<UploadingRow padding={{ horizontal: 'small', vertical: 'small' }} crossAlignment={'center'}>
+		<Row style={{display: "flex"}} padding={{ horizontal: 'small', vertical: 'small' }} crossAlignment={'center'}>
 			{uploadStatus.status === 'running' && (
 				<>
 					<Padding right="extrasmall" />
@@ -73,6 +68,6 @@ export const AttachmentUploadStatus: FC<{
 					<Icon icon={'CheckmarkCircle2'} color={'success'} size="medium" />
 				</Row>
 			)}
-		</UploadingRow>
+		</Row>
 	);
 };

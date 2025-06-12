@@ -4,24 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Theme } from '@emotion/react';
+import styled from '@emotion/styled/macro';
 import { Container } from '@zextras/carbonio-design-system';
-import styled, { DefaultTheme } from 'styled-components';
 
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 
-export const HoverContainer = styled(Container).attrs(() => ({
-	background: 'transparent'
-}))<{ $hoverBackground: keyof DefaultTheme['palette'] }>`
-	width: 100%;
-	position: relative;
-	cursor: pointer;
-	text-decoration: none;
+export const HoverContainer = styled(Container)<{ $hoverBackground: keyof Theme['palette'] }>`
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent; /* Equivalent to .attrs(() => ({ background: 'transparent' })) */
 
-	&:hover {
-		background: ${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover};
+  &:hover {
+    background: ${({ $hoverBackground, theme }) => theme?.palette[$hoverBackground]?.hover || 'primary'};
 
-		& ${HoverBarContainer} {
-			display: flex;
-		}
-	}
+    & ${HoverBarContainer} {
+      display: flex;
+    }
+  }
 `;

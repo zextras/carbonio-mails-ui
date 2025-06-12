@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { memo, useEffect, useMemo } from 'react';
+import React, { CSSProperties, memo, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { DragItems } from 'views/app/folder-panel/messages/message-list-drag-component';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
@@ -16,13 +15,13 @@ import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/mult
 import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
 import ShimmerList from 'views/search/shimmer-list';
 
-const DragImageContainer = styled.div`
-	position: absolute;
-	top: -312.5rem;
-	left: -312.5rem;
-	transform: translate(-100%, -100%);
-	width: 35vw;
-`;
+const dragImageContainer:CSSProperties = {
+	position: "absolute", 
+	top: "-312.5rem",
+	left: "-312.5rem",
+	transform: "translate(-100%, -100%)",
+	width: "35vw"
+};
 
 export type MessageListComponentProps = {
 	// the text to display in the side panel
@@ -163,9 +162,9 @@ export const MessageListComponent = memo(function MessageListComponent({
 						</Padding>
 					</Container>
 				)}
-				<DragImageContainer ref={dragImageRef}>
+				<div style={dragImageContainer} ref={dragImageRef}>
 					<DragItems draggedIds={draggedIds ?? {}} />
-				</DragImageContainer>
+				</div>
 			</>
 		</>
 	);
