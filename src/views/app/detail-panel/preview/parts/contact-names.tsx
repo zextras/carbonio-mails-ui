@@ -23,6 +23,7 @@ const ContactSubText = styled(Text)`
 		}
 	}
 `;
+
 const ContactName: FC<{
 	showOverflow?: boolean;
 	contacts: Participant[];
