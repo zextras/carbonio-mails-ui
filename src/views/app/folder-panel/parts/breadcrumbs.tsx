@@ -5,6 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
+import styled from '@emotion/styled/macro';
 import {
 	Container,
 	IconCheckbox,
@@ -14,7 +15,6 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
