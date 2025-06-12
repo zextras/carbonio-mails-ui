@@ -9,10 +9,10 @@ import { Container, Icon, Link, Padding, Row, Text } from '@zextras/carbonio-des
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { RowContainer, ColContainer } from './parts/edit-view-components';
 import { useEditorAttachments } from 'store/editor/index';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 import { AttachmentPreview } from 'views/app/detail-panel/edit/attachment-preview';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
@@ -42,8 +42,8 @@ export const EditAttachmentsBlock: FC<{
 	});
 
 	return allAttachments.length > 0 ? (
-		<StyledComp.RowContainer background="gray6">
-			<StyledComp.ColContainer $occupyFull>
+		<RowContainer background="gray6">
+			<ColContainer $occupyFull>
 				<Container crossAlignment="flex-start">
 					<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) =>
@@ -105,8 +105,8 @@ export const EditAttachmentsBlock: FC<{
 						</Link>
 					</Row>
 				</Container>
-			</StyledComp.ColContainer>
-		</StyledComp.RowContainer>
+			</ColContainer>
+		</RowContainer>
 	) : (
 		<></>
 	);
