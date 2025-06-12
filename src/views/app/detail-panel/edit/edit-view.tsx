@@ -15,23 +15,10 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
-import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
-import { GapContainer, GapRow } from 'commons/gap-container';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
-import { buildArrayFromFileList } from 'helpers/files';
-import { getAvailableAddresses } from 'helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
 import { filter, map, some } from 'lodash';
-import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from 'store/certificates/store';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
-import DropZoneAttachment from './dropzone-attachment';
+import { DropZoneAttachment } from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -65,6 +52,19 @@ import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../.
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
+import { GapContainer, GapRow } from 'commons/gap-container';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { buildArrayFromFileList } from 'helpers/files';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
+import {
+	useCertificatesStore,
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from 'store/certificates/store';
 
 export type EditViewProp = {
 	editorId: string;
