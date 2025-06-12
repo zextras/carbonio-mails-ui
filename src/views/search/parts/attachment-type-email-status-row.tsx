@@ -121,7 +121,6 @@ export const AttachmentTypeEmailStatusRow = ({
 								onChange(validChips);
 							}}
 							icon="ChevronDown"
-							requireUniqueChips
 							data-testid="attachmentTypeSelect"
 						/>
 					)}
@@ -151,7 +150,6 @@ export const AttachmentTypeEmailStatusRow = ({
 							}}
 							icon="ChevronDown"
 							bottomBorderColor="transparent"
-							requireUniqueChips
 							data-testid="emailStatusSelect"
 						/>
 					)}
