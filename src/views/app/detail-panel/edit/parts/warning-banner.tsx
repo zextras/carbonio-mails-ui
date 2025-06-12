@@ -5,16 +5,16 @@
  */
 import React from 'react';
 
+import { Theme } from '@emotion/react';
 import { Icon, IconProps, Padding, Text } from '@zextras/carbonio-design-system';
-import { DefaultTheme } from 'styled-components';
 
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
+import { BannerContainer } from './edit-view-components';
 
 type WarningBannerProps = {
 	text: string;
 	icon: IconProps['icon'];
 	iconColor: IconProps['color'];
-	bottomBorderColor: keyof DefaultTheme['palette'];
+	bottomBorderColor: keyof Theme['palette'];
 };
 
 export const WarningBanner = ({
@@ -23,7 +23,7 @@ export const WarningBanner = ({
 	iconColor,
 	bottomBorderColor
 }: WarningBannerProps): JSX.Element => (
-	<StyledComp.BannerContainer
+	<BannerContainer
 		orientation="horizontal"
 		mainAlignment="flex-start"
 		crossAlignment="center"
@@ -36,5 +36,5 @@ export const WarningBanner = ({
 			<Icon icon={icon} color={iconColor} size="large" />
 		</Padding>
 		<Text>{text}</Text>
-	</StyledComp.BannerContainer>
+	</BannerContainer>
 );
