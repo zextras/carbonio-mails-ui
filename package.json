@@ -78,6 +78,8 @@
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.0",
 		"@mui/icons-material": "^5.15.12",
 		"@mui/material": "^5.15.12",
 		"@types/webpack": "^5.28.2",

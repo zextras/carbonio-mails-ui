@@ -34,7 +34,7 @@ import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import StyledWrapper from 'styled-wrapper';
+import { StyledWrapper } from 'styled-wrapper';
 import { FolderActionWrapper } from 'views/sidebar/folder-action-wrapper';
 import {
 	folderHasChildren,

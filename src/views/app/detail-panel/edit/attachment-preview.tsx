@@ -32,7 +32,7 @@ import {
 } from 'store/editor/editor-utils';
 import { useEditorUploadProcess } from 'store/editor/hooks/updload';
 import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/index';
-import StyledWrapper from 'styled-wrapper';
+import { StyledWrapper } from 'styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/attachment-upload-status';
 import { ToggleSmartLinkButton } from 'views/app/detail-panel/edit/parts/toggle-smart-link-button';
