@@ -6,18 +6,28 @@
 
 import React from 'react';
 
-import { Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import { Theme } from '@emotion/react';
+import { Container, Icon, Padding, Row, Text, useTheme } from '@zextras/carbonio-design-system';
 
-const BannerContainer = styled(Container)`
-	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
-	padding: 0.5rem 1rem;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	height: 3.625rem;
-	border-radius: 0.125rem 0.125rem 0 0;
-`;
+function getBannerContainerStyle({ theme }: { theme: Theme }): {
+	borderBottom: string;
+	padding: string;
+	display: 'flex';
+	flexDirection: 'row';
+	alignItems: string;
+	height: string;
+	borderRadius: string;
+} {
+	return {
+		borderBottom: `0.0625rem solid ${theme.palette.warning.regular}`,
+		padding: '0.5rem 1rem',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		height: '3.625rem',
+		borderRadius: '0.125rem 0.125rem 0 0'
+	};
+}
 
 type WarningBannerProps = {
 	warningLabel: string;
@@ -26,47 +36,52 @@ type WarningBannerProps = {
 export const WarningBanner = ({
 	warningLabel,
 	children
-}: WarningBannerProps): React.JSX.Element => (
-	<BannerContainer
-		orientation="horizontal"
-		mainAlignment="space-between"
-		crossAlignment="center"
-		padding={{ all: 'large' }}
-		height="3.625rem"
-		background="#FFF7DE"
-		width="100%"
-	>
-		<Row
-			height="fit"
-			orientation="vertical"
-			display="flex"
-			wrap="nowrap"
-			mainAlignment="flex-start"
-			style={{
-				flexGrow: 1,
-				flexDirection: 'row'
-			}}
+}: WarningBannerProps): React.JSX.Element => {
+	const theme = useTheme();
+
+	return (
+		<Container
+			orientation="horizontal"
+			mainAlignment="space-between"
+			crossAlignment="center"
+			padding={{ all: 'large' }}
+			height="3.625rem"
+			background="#FFF7DE"
+			width="100%"
+			style={getBannerContainerStyle({ theme })}
 		>
-			<Padding right="large">
-				<Icon icon="AlertTriangleOutline" color="warning" size="large" />
-			</Padding>
-			<Text overflow="break-word" size="small">
-				{warningLabel}
-			</Text>
-		</Row>
-		<Row
-			height="fit"
-			orientation="vertical"
-			display="flex"
-			wrap="nowrap"
-			mainAlignment="flex-end"
-			padding={{ left: 'small' }}
-			style={{
-				flexGrow: 1,
-				flexDirection: 'row'
-			}}
-		>
-			{children}
-		</Row>
-	</BannerContainer>
-);
+			<Row
+				height="fit"
+				orientation="vertical"
+				display="flex"
+				wrap="nowrap"
+				mainAlignment="flex-start"
+				style={{
+					flexGrow: 1,
+					flexDirection: 'row'
+				}}
+			>
+				<Padding right="large">
+					<Icon icon="AlertTriangleOutline" color="warning" size="large" />
+				</Padding>
+				<Text overflow="break-word" size="small">
+					{warningLabel}
+				</Text>
+			</Row>
+			<Row
+				height="fit"
+				orientation="vertical"
+				display="flex"
+				wrap="nowrap"
+				mainAlignment="flex-end"
+				padding={{ left: 'small' }}
+				style={{
+					flexGrow: 1,
+					flexDirection: 'row'
+				}}
+			>
+				{children}
+			</Row>
+		</Container>
+	);
+};
