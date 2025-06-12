@@ -5,9 +5,9 @@
  */
 import React, { useMemo } from 'react';
 
+import styled from '@emotion/styled/macro';
 import { IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import { WarningBanner } from 'commons/mail-message-renderer/warning-banner';
 
