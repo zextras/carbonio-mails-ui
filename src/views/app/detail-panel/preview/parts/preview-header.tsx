@@ -49,7 +49,7 @@ import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-na
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 import { MailMsgPreviewActions } from 'views/app/detail-panel/preview/parts/mail-message-preview-actions';
 import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
-import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
+import { OnBehalfOfDisplayer } from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
 
 const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;

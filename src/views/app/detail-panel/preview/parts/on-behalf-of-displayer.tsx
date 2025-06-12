@@ -3,28 +3,39 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import { getColor, Tooltip, Text } from '@zextras/carbonio-design-system';
+import { Theme } from '@emotion/react';
+import { getColor, Tooltip, Text, useTheme } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
-import styled from 'styled-components';
 
-import type { Participant, MailMessage } from 'types/index.d';
+import { Participant, MailMessage } from 'types';
 
-const StyledText = styled.span<{ $isRead?: string | boolean; $color?: string }>`
-	padding: 0 0.125rem;
-	color: ${({ theme, $color, $isRead }): string =>
-		($color && getColor($color, theme)) ||
-		($isRead && theme.palette.text.regular) ||
-		theme.palette.primary.regular};
-
-	font-weight: ${({ theme, $isRead }): number =>
-		$isRead ? theme.fonts.weight.regular : theme.fonts.weight.bold};
-`;
-const OnBehalfOfDisplayer: FC<{
+function getSpanStyle({
+	theme,
+	isRead,
+	color
+}: {
+	theme: Theme;
+	isRead?: string | boolean;
+	color?: string;
+}): { padding: string; color: string; fontWeight: number } {
+	return {
+		padding: '0 0.125rem',
+		color:
+			(color && getColor(color, theme)) ||
+			(isRead && theme.palette.text.regular) ||
+			theme.palette.primary.regular,
+		fontWeight: isRead ? theme.fonts.weight.regular : theme.fonts.weight.bold
+	};
+}
+export const OnBehalfOfDisplayer = ({
+	compProps: { senderContact, mainContact, message }
+}: {
 	compProps: { senderContact: Participant; mainContact: Participant; message: MailMessage };
-}> = ({ compProps: { senderContact, mainContact, message } }): ReactElement => {
+}): React.JSX.Element => {
+	const theme = useTheme();
 	const [mainContactFullName, mainContactAddress] = useMemo(
 		() => [capitalize(mainContact.fullName || mainContact.name), mainContact.address],
 		[mainContact]
@@ -39,18 +50,18 @@ const OnBehalfOfDisplayer: FC<{
 	const messageLabel = useMemo(
 		(): React.JSX.Element => (
 			<>
-				<StyledText $isRead={message.read ?? ''}>{fullName}</StyledText>
-				<StyledText $color="secondary" $isRead={message.read}>
+				<span style={getSpanStyle({ theme, isRead: message.read ?? '' })}>{fullName}</span>
+				<span style={getSpanStyle({ theme, color: 'secondary', isRead: message.read })}>
 					{` <${address}> `}
-				</StyledText>
-				<StyledText $color="text">{behalfOfLabel}</StyledText>
-				<StyledText $isRead={message.read}>{mainContactFullName}</StyledText>
-				<StyledText $color="secondary" $isRead={message.read}>
+				</span>
+				<span style={getSpanStyle({ theme, color: 'text' })}>{behalfOfLabel}</span>
+				<span style={getSpanStyle({ theme, isRead: message.read })}>{mainContactFullName}</span>
+				<span style={getSpanStyle({ theme, color: 'secondary', isRead: message.read })}>
 					{` <${mainContactAddress}> `}
-				</StyledText>
+				</span>
 			</>
 		),
-		[address, behalfOfLabel, fullName, mainContactAddress, mainContactFullName, message.read]
+		[address, behalfOfLabel, fullName, mainContactAddress, mainContactFullName, message.read, theme]
 	);
 
 	return (
@@ -59,5 +70,3 @@ const OnBehalfOfDisplayer: FC<{
 		</Tooltip>
 	);
 };
-
-export default OnBehalfOfDisplayer;
