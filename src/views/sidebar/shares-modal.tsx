@@ -35,14 +35,8 @@ import {
 	values
 } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { createMountpointSoapApi } from 'api/create-mountpoint-soap-api';
-
-const ContainerEl = styled(Container)`
-	overflow-y: auto;
-	display: block;
-`;
 
 // TODO remove the "any" after the Accordion component refactor in the DS
 const CustomItem: FC<any> = ({ item: folder }) => {
@@ -160,9 +154,17 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 					onChange={filterResults}
 				/>
 			</Row>
-			<ContainerEl orientation="vertical" mainAlignment="flex-start" maxHeight="40vh">
+			<Container
+				orientation="vertical"
+				mainAlignment="flex-start"
+				maxHeight="40vh"
+				style={{
+					overflowY: 'auto',
+					display: 'block'
+				}}
+			>
 				<Accordion items={nestedData} background="gray6" />
-			</ContainerEl>
+			</Container>
 			<Row
 				padding={{
 					all: 'small'
