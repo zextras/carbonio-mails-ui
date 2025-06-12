@@ -97,7 +97,9 @@ export const RecipientsCertificateUploadModal = ({
 					data-testid="certificate-file-input"
 					onChange={handleFileChange}
 					style={{ display: 'none' }}
-					// TODO CO-2127 is this property needed?
+					// TODO: properly type input component in DS
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					accept=".crt,.pem"
 				/>
 				<ModalFooter
