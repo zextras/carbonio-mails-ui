@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import { useSelection } from 'hooks/use-selection';
 import type { AppContext, SearchListProps } from 'types/index.d';
-import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-components';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';

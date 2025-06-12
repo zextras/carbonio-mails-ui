@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useEditorAttachments } from 'store/editor/index';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 import { AttachmentPreview } from 'views/app/detail-panel/edit/attachment-preview';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];

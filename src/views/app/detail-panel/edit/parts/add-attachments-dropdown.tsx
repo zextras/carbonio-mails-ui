@@ -31,7 +31,7 @@ import {
 	useUploadFromFiles,
 	UseUploadFromFilesResult
 } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
