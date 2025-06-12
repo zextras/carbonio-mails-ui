@@ -5,6 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled/macro';
 import {
 	Dropdown,
 	Row,
@@ -17,7 +18,6 @@ import {
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
-import styled from 'styled-components';
 
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
@@ -31,7 +31,10 @@ import {
 	useUploadFromFiles,
 	UseUploadFromFilesResult
 } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
+import {
+	FileInput,
+	ResizedIconCheckbox
+} from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -183,7 +186,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				control={control}
 				defaultValue={{}}
 				render={(): ReactElement => (
-					<StyledComp.FileInput
+					<FileInput
 						type="file"
 						ref={inputRef}
 						data-testid="file-input"
@@ -198,7 +201,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
 				<Dropdown items={actionsItems} display="inline-block">
-					<StyledComp.ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
+					<ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
 				</Dropdown>
 			</Tooltip>
 		</SelectorContainer>
