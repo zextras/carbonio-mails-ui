@@ -7,11 +7,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
-import {
-	getIntegratedComponent,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
@@ -20,8 +16,6 @@ import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/m
 import type { IncompleteMessage, MailMessage } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
-
-const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
 type MailPreviewContentProps = {
 	message: MailMessage | IncompleteMessage;
@@ -44,6 +38,8 @@ export const MailPreviewContent = ({
 		});
 	}, [messageId]);
 
+	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
+
 	const showAppointmentInvite = useMemo(
 		() =>
 			message.isInvite &&
@@ -53,7 +49,7 @@ export const MailPreviewContent = ({
 				message.invite?.[0]?.comp[0].method === 'COUNTER') &&
 			integrationAvailable &&
 			InviteResponse,
-		[message]
+		[InviteResponse, integrationAvailable, message.invite, message.isInvite]
 	);
 
 	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
