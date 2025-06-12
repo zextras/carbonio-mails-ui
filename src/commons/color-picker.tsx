@@ -9,7 +9,7 @@ import { Container, Icon } from '@zextras/carbonio-design-system';
 import { HexColorPicker } from 'react-colorful';
 
 import useClickOutside from 'hooks/use-click-outside-picker';
-import { ColorContainer } from 'integrations/shared-invite-reply/parts/styled-components';
+import { ColorContainer } from 'integrations/shared-invite-reply/parts/components';
 
 type ColorPickerStyle = {
 	width: string;

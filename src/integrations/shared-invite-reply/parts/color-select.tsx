@@ -10,7 +10,7 @@ import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-d
 import { CustomLabelFactoryProps, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { ColorContainer, Square } from 'integrations/shared-invite-reply/parts/styled-components';
+import { ColorContainer, Square } from 'integrations/shared-invite-reply/parts/components';
 
 const LabelFactory = ({
 	selected,

@@ -8,7 +8,7 @@ import React, { FC, ReactElement } from 'react';
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import { ColorContainer } from 'integrations/shared-invite-reply/parts/styled-components';
+import { ColorContainer } from 'integrations/shared-invite-reply/parts/components';
 
 type LabelFactoryPropsType = {
 	selected: Array<{ label: string; value: string }>;
