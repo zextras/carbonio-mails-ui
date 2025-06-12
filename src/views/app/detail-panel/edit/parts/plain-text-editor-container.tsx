@@ -9,10 +9,10 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
+import { TextArea } from './edit-view-components';
 import { plainTextToHTML } from 'commons/utils';
 import { useEditorText, useEditorTextProvider } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-components';
 
 export const SAVE_EDITOR_DELAY = 2000;
 
@@ -86,7 +86,7 @@ export const PlainTextEditorContainer = ({
 
 	return (
 		<Container background={'gray6'} height="fit">
-			<StyledComp.TextArea
+			<TextArea
 				data-testid="MailPlainTextEditor"
 				ref={textAreaRef}
 				defaultValue={initialValueRef.current}
