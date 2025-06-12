@@ -5,18 +5,19 @@
  */
 import React from 'react';
 
-import { Button, Container, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import { Theme } from '@emotion/react';
+import { Button, Container, Tooltip, useModal, useTheme } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import type { AdvancedFilterButtonProps } from 'types/index.d';
 import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
 
-const BorderContainer = styled(Container)`
-	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
-	border-right: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
-`;
-
+function getBorderContainerStyle(theme: Theme): { borderBottom: string; borderRight: string } {
+	return {
+		borderBottom: `0.0625rem solid ${theme.palette.gray2.regular}`,
+		borderRight: `0.0625rem solid ${theme.palette.gray2.regular}`
+	};
+}
 export const AdvancedFilterButton = ({
 	query,
 	onSearchConfirm,
@@ -25,6 +26,7 @@ export const AdvancedFilterButton = ({
 	invalidQueryTooltip
 }: AdvancedFilterButtonProps): React.JSX.Element => {
 	const [t] = useTranslation();
+	const theme = useTheme();
 	const { createModal, closeModal } = useModal();
 	const modalId = 'advanced-filter-modal';
 
@@ -35,12 +37,13 @@ export const AdvancedFilterButton = ({
 			maxWidth="100%"
 			disabled={!searchDisabled || !invalidQueryTooltip}
 		>
-			<BorderContainer
+			<Container
 				padding={{ all: 'small' }}
 				height="fit"
 				mainAlignment="flex-start"
 				crossAlignment="flex-start"
 				borderRadius="none"
+				style={getBorderContainerStyle(theme)}
 			>
 				<Button
 					onClick={(): void => {
@@ -67,7 +70,7 @@ export const AdvancedFilterButton = ({
 					disabled={searchDisabled}
 					icon="Options2Outline"
 				/>
-			</BorderContainer>
+			</Container>
 		</Tooltip>
 	);
 };
