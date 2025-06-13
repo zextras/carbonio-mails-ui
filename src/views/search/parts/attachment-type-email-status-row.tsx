@@ -7,16 +7,15 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller } from 'react-hook-form';
-
 import {
 	attachmentTypeItemsConstant,
 	AttachmentTypeItemsConstantProps,
 	emailStatusItemsConstant,
 	EmailStatusItemsConstantProps
 } from 'constants/index';
+import { Controller } from 'react-hook-form';
 import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/index.d';
-import { FormValuesControlProps } from 'views/search/types/types';
+import { FormValuesControlProps, KeywordState } from 'views/search/types/types';
 
 export const AttachmentTypeEmailStatusRow = ({
 	control
@@ -48,29 +47,42 @@ export const AttachmentTypeEmailStatusRow = ({
 		[]
 	);
 
+	const attachmentPrefix = 'Attachment';
+	const emailStatusPrefix = 'Is';
+
 	const attachmentTypeChipOnAdd = useCallback(
-		(label: unknown): ChipOnAdd =>
-			chipOnAdd({
+		(label: string, values: KeywordState): ChipOnAdd | undefined => {
+			const alreadyExists = values.some((item) => item.label === `${attachmentPrefix}:${label}`);
+			if (alreadyExists) {
+				return undefined;
+			}
+			return chipOnAdd({
 				items: attachmentTypeItems,
-				label: label as string,
-				preText: 'Attachment',
+				label,
+				preText: attachmentPrefix,
 				hasAvatar: true,
 				isGeneric: true,
 				isQueryFilter: true
-			}),
+			});
+		},
 		[chipOnAdd, attachmentTypeItems]
 	);
 
 	const emailStatusChipOnAdd = useCallback(
-		(label: unknown): ChipOnAdd =>
-			chipOnAdd({
+		(label: string, values: KeywordState): ChipOnAdd | undefined => {
+			const alreadyExists = values.some((item) => item.label === `${emailStatusPrefix}:${label}`);
+			if (alreadyExists) {
+				return undefined;
+			}
+			return chipOnAdd({
 				items: emailStatusItems,
-				label: label as string,
-				preText: 'Is',
+				label,
+				preText: emailStatusPrefix,
 				hasAvatar: false,
 				isGeneric: true,
 				isQueryFilter: true
-			}),
+			});
+		},
 		[chipOnAdd, emailStatusItems]
 	);
 
@@ -98,10 +110,18 @@ export const AttachmentTypeEmailStatusRow = ({
 							options={attachmentTypeOptions}
 							disableOptions={false}
 							background="gray5"
-							onAdd={attachmentTypeChipOnAdd}
-							onChange={onChange}
+							onAdd={(label) => {
+								if (typeof label !== 'string') {
+									return undefined;
+								}
+								// fix typings on DS
+								return attachmentTypeChipOnAdd(label, value) as any;
+							}}
+							onChange={(chips) => {
+								const validChips = chips.filter((chip) => chip !== undefined);
+								onChange(validChips);
+							}}
 							icon="ChevronDown"
-							requireUniqueChips
 							data-testid="attachmentTypeSelect"
 						/>
 					)}
@@ -119,11 +139,19 @@ export const AttachmentTypeEmailStatusRow = ({
 							options={emailStatusOptions}
 							background="gray5"
 							disableOptions={false}
-							onAdd={emailStatusChipOnAdd}
-							onChange={onChange}
+							onAdd={(label) => {
+								if (typeof label !== 'string') {
+									return undefined;
+								}
+								// fix typings on DS
+								return emailStatusChipOnAdd(label, value) as any;
+							}}
+							onChange={(chips) => {
+								const validChips = chips.filter((chip) => chip !== undefined);
+								onChange(validChips);
+							}}
 							icon="ChevronDown"
 							bottomBorderColor="transparent"
-							requireUniqueChips
 							data-testid="emailStatusSelect"
 						/>
 					)}
