@@ -6,11 +6,11 @@
 
 import { Theme } from '@emotion/react';
 import styled, { StyledComponent } from '@emotion/styled/macro';
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, ContainerProps } from '@zextras/carbonio-design-system';
 
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 
-export const HoverContainer: StyledComponent<{ $hoverBackground: keyof Theme['palette'] }> = styled(
+export const HoverContainer: StyledComponent<ContainerProps & { $hoverBackground: keyof Theme['palette'] }> = styled(
 	Container
 )<{ $hoverBackground: keyof Theme['palette'] }>`
 	width: 100%;
