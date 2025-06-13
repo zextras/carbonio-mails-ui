@@ -6,6 +6,7 @@
 
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Breadcrumbs,
 	Container,
@@ -23,7 +24,6 @@ import { CertificatePasswordModal } from 'views/settings/certificates/certificat
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 import PersonalCertificatesSettings from 'views/settings/certificates/personal-certificates-settings';
 import RecipientsCertificateSettings from 'views/settings/certificates/recipients-certificates-settings';
-import styled from '@emotion/styled/macro';
 
 const CustomBreadcrumbs = styled(Breadcrumbs)`
 	.breadcrumbCrumb {

@@ -5,7 +5,7 @@
  */
 
 import { Theme } from '@emotion/react';
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 
 export const HoverBarContainer = styled(Container)<{ background: keyof Theme['palette'] }>`

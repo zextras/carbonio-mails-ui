@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
 	Avatar,
 	Container,

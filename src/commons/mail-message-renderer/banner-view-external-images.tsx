@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import { IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 

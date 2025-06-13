@@ -6,7 +6,7 @@
 import React, { CSSProperties, useMemo, useRef } from 'react';
 
 import { css } from '@emotion/react';
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
 
 import { BORDERS } from 'constants/index';

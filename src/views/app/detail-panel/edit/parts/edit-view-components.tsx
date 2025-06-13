@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import { Container, IconCheckbox, Row, Theme } from '@zextras/carbonio-design-system';
 
 export const FileInput = styled.input`

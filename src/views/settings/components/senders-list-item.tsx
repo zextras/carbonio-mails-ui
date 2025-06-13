@@ -6,8 +6,8 @@
 
 import React, { FC, ReactElement, useCallback, useState } from 'react';
 
-import styled from '@emotion/styled/macro';
-import { Container, Text, Row, Button } from '@zextras/carbonio-design-system';
+import styled from '@emotion/styled';
+import { Button, Container, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 const ListItem = styled(Row)`

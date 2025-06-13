@@ -5,6 +5,7 @@
  */
 import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
@@ -12,7 +13,6 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { getFolderIdParts } from 'helpers/folders';
 import type { ItemAvatarType, Participant } from 'types/index.d';
 import { TooltipWrapper } from 'views/app/folder-panel/parts/tooltip-wrapper';
-import styled from '@emotion/styled/macro';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;

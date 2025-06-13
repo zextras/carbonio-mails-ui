@@ -3,31 +3,31 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
-	Container,
-	FormSubSection,
-	Row,
 	Button,
-	SelectItem,
 	ButtonProps,
-	Tooltip,
-	Text,
+	Container,
 	FormSection,
+	FormSubSection,
 	Input,
-	List
+	List,
+	Row,
+	SelectItem,
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { reject, concat, map } from 'lodash';
+import { concat, map, reject } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
-import { signaturesSubSection, setDefaultSignaturesSubSection } from 'views/settings/subsections';
+import { setDefaultSignaturesSubSection, signaturesSubSection } from 'views/settings/subsections';
 
 const DeleteButton = styled(Button)`
 	display: none;

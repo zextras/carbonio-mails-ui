@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useState, forwardRef, MouseEvent } from 'react';
+import React, { FC, forwardRef, MouseEvent, useEffect, useState } from 'react';
 
-import styled from '@emotion/styled/macro';
-import { Row, IconButton, Input } from '@zextras/carbonio-design-system';
+import styled from '@emotion/styled';
+import { IconButton, Input, Row } from '@zextras/carbonio-design-system';
 
 type CustomComponentProps = {
 	value: string | number;

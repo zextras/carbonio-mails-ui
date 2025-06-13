@@ -5,7 +5,7 @@
  */
 import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,

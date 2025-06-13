@@ -6,8 +6,8 @@
 
 import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'react';
 
-import styled from '@emotion/styled/macro';
-import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
+import styled from '@emotion/styled';
+import { Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 

@@ -28,6 +28,7 @@ import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import styled from '@emotion/styled';
 import { getFileExtension } from 'commons/utilities';
 import { useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
@@ -58,7 +59,6 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from 'views/app/detail-panel/preview/utils/index';
-import styled from '@emotion/styled/macro';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments

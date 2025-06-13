@@ -13,7 +13,7 @@ import React, {
 	useState
 } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
 	Avatar,
 	AvatarPropTypes,

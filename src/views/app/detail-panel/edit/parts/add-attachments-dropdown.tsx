@@ -5,15 +5,15 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
 	Dropdown,
-	Row,
-	Text,
-	Tooltip,
+	DropdownItem,
 	Icon,
 	Padding,
-	DropdownItem
+	Row,
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';

@@ -5,7 +5,7 @@
  */
 
 import { Theme } from '@emotion/react';
-import styled, { StyledComponent } from '@emotion/styled/macro';
+import styled, { StyledComponent } from '@emotion/styled';
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
 
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';

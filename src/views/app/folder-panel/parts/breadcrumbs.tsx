@@ -5,7 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
-import styled from '@emotion/styled/macro';
+import styled from '@emotion/styled';
 import {
 	Container,
 	IconCheckbox,
