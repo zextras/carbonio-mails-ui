@@ -3,12 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 
-import { AccordionItem, Avatar, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import {
+	AccordionItem,
+	Avatar,
+	Padding,
+	Row,
+	Theme,
+	Tooltip,
+	useTheme
+} from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { Folder } from 'types/index.d';
 import { StatusIcon } from 'views/sidebar/commons/status-icon';
@@ -18,16 +25,17 @@ import {
 	getFolderTranslatedName
 } from 'views/sidebar/utils';
 
-const FittedRow = styled(Row)`
-	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
-	height: 3rem;
-`;
+const fittedRowStyle = (theme: Theme): CSSProperties => ({
+	maxWidth: `calc(100% - (2 * ${theme.sizes.padding.small}))`,
+	height: '3rem'
+});
 
 export const FolderAccordionCustomComponent = ({
 	folder
 }: {
 	folder: Folder;
 }): React.JSX.Element => {
+	const theme = useTheme();
 	const accountName = useUserAccount().name;
 
 	const textProps: { size: 'small' } = useMemo(
@@ -59,7 +67,7 @@ export const FolderAccordionCustomComponent = ({
 		folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME);
 
 	return (
-		<FittedRow>
+		<Row style={fittedRowStyle(theme)}>
 			{showAvatar && (
 				<Padding left="small">
 					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
@@ -70,6 +78,6 @@ export const FolderAccordionCustomComponent = ({
 					<StatusIcon folder={folder} />
 				</AccordionItem>
 			</Tooltip>
-		</FittedRow>
+		</Row>
 	);
 };

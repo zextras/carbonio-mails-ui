@@ -5,23 +5,26 @@
  */
 
 import { Theme } from '@emotion/react';
-import styled from '@emotion/styled/macro';
+import styled, { StyledComponent } from '@emotion/styled/macro';
 import { Container } from '@zextras/carbonio-design-system';
 
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 
-export const HoverContainer = styled(Container)<{ $hoverBackground: keyof Theme['palette'] }>`
-  width: 100%;
-  position: relative;
-  cursor: pointer;
-  text-decoration: none;
-  background: transparent; /* Equivalent to .attrs(() => ({ background: 'transparent' })) */
+export const HoverContainer: StyledComponent<{ $hoverBackground: keyof Theme['palette'] }> = styled(
+	Container
+)<{ $hoverBackground: keyof Theme['palette'] }>`
+	width: 100%;
+	position: relative;
+	cursor: pointer;
+	text-decoration: none;
+	background: transparent;
 
-  &:hover {
-    background: ${({ $hoverBackground, theme }) => theme?.palette[$hoverBackground]?.hover || 'primary'};
+	&:hover {
+		background: ${({ $hoverBackground, theme }): string =>
+			theme?.palette[$hoverBackground]?.hover || 'primary'};
 
-    & ${HoverBarContainer} {
-      display: flex;
-    }
-  }
+		& ${HoverBarContainer} {
+			display: flex;
+		}
+	}
 `;

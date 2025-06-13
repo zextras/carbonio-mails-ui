@@ -22,7 +22,7 @@ import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conver
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
 
-function displayValue(open:boolean): "block" | "none" {
+function displayValue(open: boolean): 'block' | 'none' {
 	return open ? 'block' : 'none';
 }
 
@@ -130,7 +130,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			)}
 			{open && (
 				<Container
-					style={{ display: (open ? 'block' : 'none') }}
+					style={{ display: open ? 'block' : 'none' }}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"

@@ -36,7 +36,11 @@ export const AttachmentUploadStatus: FC<{
 	}, [uploadStatus.status]);
 
 	return (
-		<Row style={{display: "flex"}} padding={{ horizontal: 'small', vertical: 'small' }} crossAlignment={'center'}>
+		<Row
+			style={{ display: 'flex' }}
+			padding={{ horizontal: 'small', vertical: 'small' }}
+			crossAlignment={'center'}
+		>
 			{uploadStatus.status === 'running' && (
 				<>
 					<Padding right="extrasmall" />

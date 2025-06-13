@@ -141,7 +141,7 @@ export const CertificateUploadModal = ({
 					</Row>
 				</Container>
 				<Input
-					style={{display: "none"}}
+					style={{ display: 'none' }}
 					type="file"
 					ref={inputRef}
 					data-testid="certificate-file-input"

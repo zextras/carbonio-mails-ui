@@ -15,12 +15,12 @@ import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/mult
 import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
 import ShimmerList from 'views/search/shimmer-list';
 
-const dragImageContainer:CSSProperties = {
-	position: "absolute", 
-	top: "-312.5rem",
-	left: "-312.5rem",
-	transform: "translate(-100%, -100%)",
-	width: "35vw"
+const dragImageContainer: CSSProperties = {
+	position: 'absolute',
+	top: '-312.5rem',
+	left: '-312.5rem',
+	transform: 'translate(-100%, -100%)',
+	width: '35vw'
 };
 
 export type MessageListComponentProps = {

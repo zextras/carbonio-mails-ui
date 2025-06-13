@@ -6,6 +6,7 @@
 
 import React, { ReactElement, useCallback, useState } from 'react';
 
+import styled from '@emotion/styled/macro';
 import {
 	Avatar,
 	Collapse,
@@ -20,10 +21,15 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { Folder } from 'types/index.d';
 import { FlatFolder, type FlaFolderProps } from 'views/sidebar/commons/flatten-folders/flat-folder';
+
+const CustomListItem = styled(ListItem)((props) => ({
+	background: props.background || 'gray6',
+	activeBackground: props.activeBackground || 'highlight',
+	selectedBackground: props.selectedBackground || 'gray5'
+}));
 
 type FlatRootProps = FlaFolderProps & {
 	childrenFolders: Array<Folder>;
@@ -34,12 +40,6 @@ type FlatRootProps = FlaFolderProps & {
 };
 
 const FOLDER_ROW_HEIGHT = '2.6rem';
-
-const CustomListItem = styled(ListItem).attrs({
-	background: 'gray6',
-	activeBackground: 'highlight',
-	selectedBackground: 'gray5'
-})``;
 
 const CustomContainer = styled(Container)<{ $active?: boolean }>`
 	&:hover {

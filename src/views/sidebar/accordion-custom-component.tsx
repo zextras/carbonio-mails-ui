@@ -46,30 +46,42 @@ import {
 } from 'views/sidebar/utils';
 import { Theme } from '@emotion/react';
 
-const fittedRowStyle = (theme:Theme):CSSProperties => ({
+const fittedRowStyle = (theme: Theme): CSSProperties => ({
 	maxWidth: `calc(100% - (2 * ${theme.sizes.padding.small} ))`,
-	height: "3rem"
+	height: '3rem'
 });
 
-const dropOverlayContainerStyle = ({ folder, theme }:{ folder: Folder, theme:Theme }):CSSProperties => ({
-	position: "absolute",
+const dropOverlayContainerStyle = ({
+	folder,
+	theme
+}: {
+	folder: Folder;
+	theme: Theme;
+}): CSSProperties => ({
+	position: 'absolute',
 	width: `calc(15.5rem - ${folder.depth - 2}rem)`,
-	height: "100%",
+	height: '100%',
 	background: theme.palette.primary.regular,
-	borderRadius: "0.25rem",
-	border: "0.25rem solid #d5e3f6",
-	opacity: "0.4"
-})
+	borderRadius: '0.25rem',
+	border: '0.25rem solid #d5e3f6',
+	opacity: '0.4'
+});
 
-const dropDenyOverlayContainerStyle = ({ folder, theme }:{ folder: Folder, theme:Theme }):CSSProperties => ({
-	position: "absolute",
+const dropDenyOverlayContainerStyle = ({
+	folder,
+	theme
+}: {
+	folder: Folder;
+	theme: Theme;
+}): CSSProperties => ({
+	position: 'absolute',
 	width: `calc(15.5rem - ${folder.depth - 2}rem)`,
-	height: "100%",
+	height: '100%',
 	background: theme.palette.gray1.regular,
-	borderRadius: "0.25rem",
-	border: "0.25rem solid #d5e3f6",
-	opacity: "0.4"
-})
+	borderRadius: '0.25rem',
+	border: '0.25rem solid #d5e3f6',
+	opacity: '0.4'
+});
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
@@ -304,8 +316,12 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 							folder
 						)
 					}
-					overlayAcceptComponent={<Container style={dropOverlayContainerStyle({ folder, theme })} />}
-					overlayDenyComponent={<Container style={dropDenyOverlayContainerStyle({ folder, theme })} />}
+					overlayAcceptComponent={
+						<Container style={dropOverlayContainerStyle({ folder, theme })} />
+					}
+					overlayDenyComponent={
+						<Container style={dropDenyOverlayContainerStyle({ folder, theme })} />
+					}
 				>
 					<Drag
 						type="folder"

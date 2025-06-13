@@ -16,9 +16,8 @@ export const HoverBarContainer = styled(Container)<{ background: keyof Theme['pa
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ background, theme } : { background:keyof Theme['palette'], theme:Theme }): string => { 
-			return theme.palette[background].hover 
-		}}
+		${({ background, theme }: { background: keyof Theme['palette']; theme: Theme }): string =>
+			theme.palette[background].hover}
 	);
 	width: calc(100% - 4rem);
 	height: 45%;
