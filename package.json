@@ -45,6 +45,7 @@
 		"@babel/preset-typescript": "^7.21.0",
 		"@commitlint/cli": "^19.1.0",
 		"@commitlint/config-conventional": "^19.1.0",
+		"@emotion/babel-plugin": "^11.13.5",
 		"@faker-js/faker": "^8.4.1",
 		"@reduxjs/toolkit": "^1.9.3",
 		"@testing-library/dom": "^10.4.0",
