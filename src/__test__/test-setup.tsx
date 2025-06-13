@@ -28,7 +28,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, MemoryRouterProps, Route, RouteProps, Routes } from 'react-router-dom';
 import { Store } from 'redux';
 
-import { EmotionThemeProvider } from './emotion-theme-provider';
+import { EmotionThemeProvider } from '../emotion-theme-provider';
 import { getAppI18n } from './i18n/i18n-test-factory';
 import { previewContextMock, PreviewsManagerContext } from '@test-utils/carbonio-ui-preview';
 
