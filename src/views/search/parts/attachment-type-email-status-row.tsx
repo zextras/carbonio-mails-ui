@@ -114,7 +114,7 @@ export const AttachmentTypeEmailStatusRow = ({
 								if (typeof label !== 'string') {
 									return undefined;
 								}
-								// TODO: fix DS typing
+								// fix typings on DS
 								return attachmentTypeChipOnAdd(label, value) as any;
 							}}
 							onChange={(chips) => {
@@ -143,7 +143,7 @@ export const AttachmentTypeEmailStatusRow = ({
 								if (typeof label !== 'string') {
 									return undefined;
 								}
-								// TODO: fix DS typing
+								// fix typings on DS
 								return emailStatusChipOnAdd(label, value) as any;
 							}}
 							onChange={(chips) => {

@@ -171,7 +171,7 @@ export const TagFolderRow = ({
 								if (typeof label !== 'string') {
 									return undefined;
 								}
-								// TODO: fix DS typing
+								// fix typings on DS
 								return tagChipOnAdd(label, value) as any;
 							}}
 							disableOptions={false}
