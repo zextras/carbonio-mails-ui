@@ -21,7 +21,6 @@ import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
 import { Query } from 'views/search/types/types';
 
 const SearchView = ({
-	useDisableSearch,
 	useQuery,
 	ResultsHeader
 }: SearchViewProps): React.JSX.Element => {
@@ -32,7 +31,7 @@ const SearchView = ({
 	const isMessageView = useIsMessageView();
 
 	const invalidQueryTooltip = useMemo(
-		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
+		() => t('label.invalid_query', 'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results.'),
 		[]
 	);
 
@@ -49,11 +48,10 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
+	const { searchResults, isInvalidQuery, queryToString, executeSearch } =
 		useRunSearch({
 			query,
 			updateQuery,
-			useDisableSearch,
 			invalidQueryTooltip,
 			isSharedFolderIncluded
 		});
@@ -122,7 +120,6 @@ const SearchView = ({
 									query={query as Query}
 									isSharedFolderIncluded={isSharedFolderIncluded}
 									onSearchConfirm={onSearchConfirm}
-									searchDisabled={searchDisabled}
 									invalidQueryTooltip={invalidQueryTooltip}
 								/>
 								{isMessageView ? (

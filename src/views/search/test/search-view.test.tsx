@@ -155,7 +155,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -177,7 +177,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -208,7 +208,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -242,7 +242,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -279,7 +279,7 @@ describe('SearchView', () => {
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
 			};
 			const { count, setCount } = fakeCounter();
@@ -317,7 +317,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -373,7 +373,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -396,7 +396,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -455,7 +455,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -484,7 +484,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -541,7 +541,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -570,7 +570,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -620,7 +620,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -660,7 +660,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
+				
 				ResultsHeader: resultsHeader
 			};
 
@@ -680,29 +680,6 @@ describe('SearchView', () => {
 		});
 	});
 
-	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
-		const mockUseQuery = jest.fn();
-		mockUseQuery.mockReturnValue([[], noop]);
-
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const searchViewProps: SearchViewProps = {
-			useQuery: mockUseQuery,
-			useDisableSearch: () => [true, noop],
-			ResultsHeader: resultsHeader
-		};
-
-		await waitFor(async () => {
-			setupTest(<SearchView {...searchViewProps} />);
-		});
-
-		const advancedFiltersButton = screen.getByRole('button', {
-			name: 'Advanced Filters'
-		});
-
-		expect(advancedFiltersButton).toBeVisible();
-		expect(advancedFiltersButton).toBeDisabled();
-	});
-
 	it('should not call search API if query empty', async () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const mockUseQuery = jest.fn();
@@ -711,7 +688,7 @@ describe('SearchView', () => {
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: mockUseQuery,
-			useDisableSearch: () => [false, noop],
+			
 			ResultsHeader: resultsHeader
 		};
 
@@ -724,70 +701,6 @@ describe('SearchView', () => {
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
 		expect(searchSpy).not.toHaveBeenCalled();
-	});
-
-	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
-			'Search',
-			buildSoapErrorResponseBody({
-				detailCode: 'mail.QUERY_PARSE_ERROR',
-				reason: 'Failed to execute search'
-			})
-		);
-		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-			m: {}
-		} as GetMsgResponse);
-
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const setSearchDisabled = jest.fn();
-		const queryChip: QueryChip = {
-			hasAvatar: false,
-			id: '0',
-			label: 'ciao'
-		};
-
-		const mockUseQuery = jest.fn();
-		mockUseQuery.mockReturnValue([[queryChip], noop]);
-		const searchViewProps: SearchViewProps = {
-			useQuery: mockUseQuery,
-			useDisableSearch: () => [false, setSearchDisabled],
-			ResultsHeader: resultsHeader
-		};
-
-		setupTest(<SearchView {...searchViewProps} />);
-		await interceptor;
-		await waitFor(() => expect(setSearchDisabled).toHaveBeenCalled());
-	});
-
-	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
-			'Search',
-			buildSoapErrorResponseBody({
-				detailCode: 'Other code',
-				reason: 'Failed to execute search'
-			})
-		);
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const setSearchDisabled = jest.fn();
-		const queryChip: QueryChip = {
-			hasAvatar: false,
-			id: '0',
-			label: 'ciao'
-		};
-		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[queryChip], noop],
-			useDisableSearch: () => [false, setSearchDisabled],
-			ResultsHeader: resultsHeader
-		};
-
-		setupTest(<SearchView {...searchViewProps} />);
-
-		await interceptor;
-		act(() => {
-			jest.advanceTimersByTime(10_000);
-		});
-
-		expect(setSearchDisabled).not.toHaveBeenCalled();
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
@@ -817,7 +730,7 @@ describe('SearchView', () => {
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: mockUseQuery,
-			useDisableSearch: () => [false, noop],
+			
 			ResultsHeader: resultsHeader
 		};
 

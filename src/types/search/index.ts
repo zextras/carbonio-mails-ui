@@ -36,7 +36,6 @@ export type AdvancedFilterButtonProps = {
 	query: Query;
 	isSharedFolderIncluded: boolean;
 	onSearchConfirm: (options: { query: Query; includeSharedFolders: boolean }) => void;
-	searchDisabled: boolean;
 	invalidQueryTooltip?: string;
 };
 

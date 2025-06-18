@@ -21,7 +21,6 @@ export const AdvancedFilterButton = ({
 	query,
 	onSearchConfirm,
 	isSharedFolderIncluded,
-	searchDisabled,
 	invalidQueryTooltip
 }: AdvancedFilterButtonProps): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -33,7 +32,6 @@ export const AdvancedFilterButton = ({
 			label={invalidQueryTooltip}
 			placement="top"
 			maxWidth="100%"
-			disabled={!searchDisabled || !invalidQueryTooltip}
 		>
 			<BorderContainer
 				padding={{ all: 'small' }}
@@ -64,7 +62,6 @@ export const AdvancedFilterButton = ({
 					type={'outlined'}
 					width="fill"
 					label={t('label.single_advanced_filter', 'Advanced Filters')}
-					disabled={searchDisabled}
 					icon="Options2Outline"
 				/>
 			</BorderContainer>

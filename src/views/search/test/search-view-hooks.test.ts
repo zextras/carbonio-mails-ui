@@ -43,14 +43,11 @@ describe('search view hooks', () => {
 			c: [],
 			more: false
 		});
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		const useDisableSearch = (): [boolean, Function] => [false, noop];
 
 		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
-				useDisableSearch,
 				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
@@ -85,14 +82,11 @@ describe('search view hooks', () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		const useDisableSearch = (): [boolean, Function] => [false, noop];
 
 		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
-				useDisableSearch,
 				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
@@ -120,7 +114,6 @@ describe('search view hooks', () => {
 		});
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		// eslint-disable-next-line @typescript-eslint/ban-types
-		const useDisableSearch = (): [boolean, Function] => [false, noop];
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
 			buildSoapErrorResponseBody({
@@ -139,7 +132,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				useDisableSearch,
 				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
@@ -184,7 +176,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				useDisableSearch,
 				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
@@ -232,7 +223,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				useDisableSearch,
 				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
