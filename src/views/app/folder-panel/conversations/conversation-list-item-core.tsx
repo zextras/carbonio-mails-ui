@@ -35,6 +35,11 @@ type ConversationListItemCoreProps = {
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
 	) => void;
 };
+
+function cleanSubject(subject: string): string {
+	return subject.replace(/^(RE:|FWD:)\s*/i, '').trim();
+}
+
 export const ConversationListItemCore = ({
 	conversation,
 	selected,
@@ -109,7 +114,7 @@ export const ConversationListItemCore = ({
 		[open, t]
 	);
 	const subject = useMemo(
-		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		() => cleanSubject(conversation.subject) || t('label.no_subject_with_tags', '<No Subject>'),
 		[conversation.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
