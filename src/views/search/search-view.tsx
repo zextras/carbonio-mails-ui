@@ -64,15 +64,15 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 			isSharedFolderIncluded
 		});
 
-	const containsSpacialCharacter = useMemo(
+	const containsSpecialCharacter = useMemo(
 		() => query.some((ch) => ch.value !== undefined && containsSpecialCharacters(ch.value)),
 		[query]
 	);
 
-	const resultLabelType = containsSpacialCharacter ? 'warning' : undefined;
+	const resultLabelType = containsSpecialCharacter ? 'warning' : undefined;
 
 	const resultLabel = useMemo(() => {
-		if (containsSpacialCharacter) {
+		if (containsSpecialCharacter) {
 			return invalidQueryTooltip;
 		}
 		if (!query.length) return '';
@@ -83,7 +83,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip, containsSpacialCharacter]);
+	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
@@ -133,7 +133,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 									query={query as Query}
 									isSharedFolderIncluded={isSharedFolderIncluded}
 									onSearchConfirm={onSearchConfirm}
-									invalidQueryTooltip={containsSpacialCharacter ? invalidQueryTooltip : undefined}
+									invalidQueryTooltip={containsSpecialCharacter ? invalidQueryTooltip : undefined}
 								/>
 								{isMessageView ? (
 									<SearchMessageList
