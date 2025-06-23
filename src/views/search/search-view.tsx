@@ -20,6 +20,15 @@ import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button'
 import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
 import { Query } from 'views/search/types/types';
 
+const specialChars = ["~","'","!","#","$","%","^","&","(",")","_","?","/","{","}","[","]",";",":","-","+","<",">"]
+const prefixes = ["is", "Attachment", "Subject", "Tag", /* FIXME */]
+
+const containsSpecialCharacters = (value:string):boolean => {
+	const prefix = prefixes.find( pr => value.startsWith(`${pr}:`) );
+	const text =  prefix !== undefined ? value.substring(prefix.length+1) : value;
+	return specialChars.some( specialChar => text.includes(specialChar) );
+};
+
 const SearchView = ({
 	useQuery,
 	ResultsHeader
@@ -52,14 +61,17 @@ const SearchView = ({
 		useRunSearch({
 			query,
 			updateQuery,
-			invalidQueryTooltip,
 			isSharedFolderIncluded
 		});
 
-	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
+	const containsSpacialCharacter = useMemo( () => 
+		query.some(ch => ch.value !== undefined && containsSpecialCharacters(ch.value))
+	, [query])	
+
+	const resultLabelType = containsSpacialCharacter ? 'warning' : undefined;
 
 	const resultLabel = useMemo(() => {
-		if (isInvalidQuery) {
+		if (containsSpacialCharacter) {
 			return invalidQueryTooltip;
 		}
 		if (!query.length) return '';
@@ -70,7 +82,7 @@ const SearchView = ({
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip]);
+	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip, containsSpacialCharacter]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
@@ -120,7 +132,7 @@ const SearchView = ({
 									query={query as Query}
 									isSharedFolderIncluded={isSharedFolderIncluded}
 									onSearchConfirm={onSearchConfirm}
-									invalidQueryTooltip={invalidQueryTooltip}
+									invalidQueryTooltip={containsSpacialCharacter ? invalidQueryTooltip : undefined}
 								/>
 								{isMessageView ? (
 									<SearchMessageList

@@ -38,7 +38,6 @@ type UseRunSearchProps = {
 	query: QueryChip[];
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	updateQuery: Function;
-	invalidQueryTooltip: string;
 	isSharedFolderIncluded: boolean;
 };
 
@@ -137,7 +136,6 @@ type UseRunSearchReturnType = {
 export function useRunSearch({
 	query,
 	updateQuery,
-	invalidQueryTooltip,
 	isSharedFolderIncluded
 }: UseRunSearchProps): UseRunSearchReturnType {
 	const settings = useUserSettings();
@@ -180,7 +178,7 @@ export function useRunSearch({
 				handleSearchResults({ searchResponse });
 			}
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, queryToString]
+		[isMessageView, prefLocale, queryToString]
 	);
 
 	return {

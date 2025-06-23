@@ -28,11 +28,6 @@ export const AdvancedFilterButton = ({
 	const modalId = 'advanced-filter-modal';
 
 	return (
-		<Tooltip
-			label={invalidQueryTooltip}
-			placement="top"
-			maxWidth="100%"
-		>
 			<BorderContainer
 				padding={{ all: 'small' }}
 				height="fit"
@@ -65,6 +60,5 @@ export const AdvancedFilterButton = ({
 					icon="Options2Outline"
 				/>
 			</BorderContainer>
-		</Tooltip>
 	);
 };
