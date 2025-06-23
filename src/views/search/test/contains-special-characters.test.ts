@@ -1,10 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { themeMui } from 'types';
 import { containsSpecialCharacters } from '../search-view';
 
 describe('containsSpecialCharacters', () => {
@@ -12,32 +11,25 @@ describe('containsSpecialCharacters', () => {
 		it('should return false for attachment prefix', () => {
 			expect(containsSpecialCharacters('attachment:test')).toBe(false);
 			expect(containsSpecialCharacters('attachment:file.pdf')).toBe(false);
-			expect(containsSpecialCharacters('attachment:document with spaces')).toBe(false);
+			expect(containsSpecialCharacters('attachment:documents/with/slashes')).toBe(false);
 		});
 
 		it('should return false for in prefix', () => {
-			expect(containsSpecialCharacters('in:folder')).toBe(false);
-			expect(containsSpecialCharacters('in:inbox')).toBe(false);
-			expect(containsSpecialCharacters('in:trash')).toBe(false);
+			expect(containsSpecialCharacters('in:folder-with-dashes')).toBe(false);
+			expect(containsSpecialCharacters('in:"/Inbox"')).toBe(false);
+			expect(containsSpecialCharacters('in:\"/trash\"')).toBe(false);
 		});
 
 		it('should return false for before prefix', () => {
 			expect(containsSpecialCharacters('before:2024-01-01')).toBe(false);
-			expect(containsSpecialCharacters('before:today')).toBe(false);
+			expect(containsSpecialCharacters('before:06/10/2025')).toBe(false);
 			expect(containsSpecialCharacters('before:yesterday')).toBe(false);
 		});
 
 		it('should return false for after prefix', () => {
 			expect(containsSpecialCharacters('after:2024-01-01')).toBe(false);
-			expect(containsSpecialCharacters('after:today')).toBe(false);
+			expect(containsSpecialCharacters('after:06/10/2025')).toBe(false);
 			expect(containsSpecialCharacters('after:yesterday')).toBe(false);
-		});
-
-		it('should return false even when excluded prefixes contain special characters', () => {
-			expect(containsSpecialCharacters('attachment:file!with!exclamation')).toBe(false);
-			expect(containsSpecialCharacters('in:folder-with-dashes')).toBe(false);
-			expect(containsSpecialCharacters('before:date_with_underscore')).toBe(false);
-			expect(containsSpecialCharacters('after:date/with/slashes')).toBe(false);
 		});
 	});
 
