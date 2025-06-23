@@ -152,7 +152,7 @@ describe('ConversationListItemCore', () => {
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
 
-	it('should remove FTD: prefix when it appears at the start of the subject', async () => {
+	it('should remove FWD: prefix when it appears at the start of the subject', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({
 				conversationParams: { id: '123', tags: [tagsArray[0].name], subject: 'FWD: Test Subject' },
@@ -209,7 +209,7 @@ describe('ConversationListItemCore', () => {
 				conversationParams: {
 					id: '123',
 					tags: [tagsArray[0].name],
-					subject: 'Test RE: FTW: Subject'
+					subject: 'Test RE: FWD: Subject'
 				},
 				conversationMessagesNumber: 3
 			})
@@ -227,6 +227,6 @@ describe('ConversationListItemCore', () => {
 			/>
 		);
 
-		expect(await screen.findByText('Test RE: FTW: Subject')).toBeInTheDocument();
+		expect(await screen.findByText('Test RE: FWD: Subject')).toBeInTheDocument();
 	});
 });
