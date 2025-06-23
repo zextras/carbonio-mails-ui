@@ -4,56 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-// Import the function from the search-view file
-// Note: We need to extract the function for testing since it's not exported
-const specialChars = [
-	'~',
-	"'",
-	'!',
-	'#',
-	'$',
-	'%',
-	'^',
-	'&',
-	'(',
-	')',
-	'_',
-	'?',
-	'/',
-	'{',
-	'}',
-	'[',
-	']',
-	';',
-	':',
-	'-',
-	'+',
-	'<',
-	'>'
-];
-const prefixes = [
-	'has',
-	'is',
-	'Subject',
-	'from',
-	'to',
-	'attachment',
-	'smaller',
-	'larger',
-	'after',
-	'before',
-	'tag',
-	'in'
-];
-
-const containsSpecialCharacters = (value: string): boolean => {
-	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
-	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
-		return false;
-	}
-	const text = prefix ? value.substring(prefix.length + 1) : value;
-	return specialChars.some((specialChar) => text.includes(specialChar));
-};
+import { themeMui } from 'types';
+import { containsSpecialCharacters } from '../search-view';
 
 describe('containsSpecialCharacters', () => {
 	describe('should return false for excluded prefixes', () => {
@@ -215,17 +167,14 @@ describe('containsSpecialCharacters', () => {
 		});
 
 		it('should handle case sensitivity', () => {
-			// Function only matches exact prefixes, so different case prefixes should not match
-			// and the entire string will be checked for special characters
-			expect(containsSpecialCharacters('HAS:test')).toBe(true); // "HAS" not a prefix, checks whole string
-			expect(containsSpecialCharacters('Has:test')).toBe(true); // "Has" not a prefix, checks whole string
-			expect(containsSpecialCharacters('has:TEST!')).toBe(true); // Special char in value
+			expect(containsSpecialCharacters('HAS:test')).toBe(true);
+			expect(containsSpecialCharacters('Has:test')).toBe(true);
+			expect(containsSpecialCharacters('has:TEST!')).toBe(true);
 		});
 
 		it('should handle partial prefix matches', () => {
-			// Function only matches exact prefixes, not partial ones
-			expect(containsSpecialCharacters('hasattachment:test')).toBe(true); // "hasattachment" not a prefix, checks whole string
-			expect(containsSpecialCharacters('hasattachment:test!')).toBe(true); // Special char in value
+			expect(containsSpecialCharacters('hasattachment:test')).toBe(true);
+			expect(containsSpecialCharacters('hasattachment:test!')).toBe(true);
 		});
 
 		it('should handle multiple special characters', () => {
@@ -312,28 +261,11 @@ describe('containsSpecialCharacters', () => {
 
 	describe('should test all prefixes', () => {
 		it('should handle all prefixes correctly', () => {
-			const allPrefixes = [
-				'has',
-				'is',
-				'Subject',
-				'from',
-				'to',
-				'attachment',
-				'smaller',
-				'larger',
-				'after',
-				'before',
-				'tag',
-				'in'
-			];
-
-			// Test excluded prefixes
 			expect(containsSpecialCharacters('attachment:test!')).toBe(false);
 			expect(containsSpecialCharacters('in:test!')).toBe(false);
 			expect(containsSpecialCharacters('before:test!')).toBe(false);
 			expect(containsSpecialCharacters('after:test!')).toBe(false);
 
-			// Test other prefixes
 			expect(containsSpecialCharacters('has:test!')).toBe(true);
 			expect(containsSpecialCharacters('is:test!')).toBe(true);
 			expect(containsSpecialCharacters('Subject:test!')).toBe(true);

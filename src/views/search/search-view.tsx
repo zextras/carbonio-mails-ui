@@ -23,7 +23,7 @@ import { Query } from 'views/search/types/types';
 const specialChars = ["~","'","!","#","$","%","^","&","(",")","_","?","/","{","}","[","]",";",":","-","+","<",">"]
 const prefixes = ["has", "is", "Subject", "from", "to", "attachment", "smaller", "larger", "after", "before",  "tag", "in"]
 
-const containsSpecialCharacters = (value: string): boolean => {
+export const containsSpecialCharacters = (value: string): boolean => {
 	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
 	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
 		return false;
