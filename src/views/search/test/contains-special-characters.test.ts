@@ -169,6 +169,16 @@ describe('containsSpecialCharacters', () => {
 			expect(containsSpecialCharacters('hasattachment:test!')).toBe(true);
 		});
 
+		it('should handle undefined prefix (no matching prefix)', () => {
+			expect(containsSpecialCharacters('unknownprefix')).toBe(false);
+			expect(containsSpecialCharacters('randomvalue')).toBe(false);
+			expect(containsSpecialCharacters('customtext')).toBe(false);
+			expect(containsSpecialCharacters('unknown:test')).toBe(true);
+			expect(containsSpecialCharacters('random:file-with-dash')).toBe(true);
+			expect(containsSpecialCharacters('custom:document_with_underscore')).toBe(true);
+			expect(containsSpecialCharacters('other:path/to/file')).toBe(true);
+		});
+
 		it('should handle multiple special characters', () => {
 			expect(containsSpecialCharacters('test!@#$%')).toBe(true);
 			expect(containsSpecialCharacters('file-with_underscore!')).toBe(true);
