@@ -24,18 +24,15 @@ const specialChars = ["~","'","!","#","$","%","^","&","(",")","_","?","/","{","}
 const prefixes = ["has", "is", "Subject", "from", "to", "attachment", "smaller", "larger", "after", "before",  "tag", "in"]
 
 const containsSpecialCharacters = (value: string): boolean => {
-	const prefix = prefixes.find(pr => value.startsWith(`${pr}:`));
-	if (prefix === "attachment" || prefix === "in" || prefix === "before" || prefix === "after") {
-	  return false;
+	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
+	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
+		return false;
 	}
 	const text = prefix ? value.substring(prefix.length + 1) : value;
 	return specialChars.some((specialChar) => text.includes(specialChar));
-  };
+};
 
-const SearchView = ({
-	useQuery,
-	ResultsHeader
-}: SearchViewProps): React.JSX.Element => {
+const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
@@ -67,9 +64,10 @@ const SearchView = ({
 			isSharedFolderIncluded
 		});
 
-	const containsSpacialCharacter = useMemo( () => 
-		query.some(ch => ch.value !== undefined && containsSpecialCharacters(ch.value))
-	, [query])	
+	const containsSpacialCharacter = useMemo(
+		() => query.some((ch) => ch.value !== undefined && containsSpecialCharacters(ch.value)),
+		[query]
+	);
 
 	const resultLabelType = containsSpacialCharacter ? 'warning' : undefined;
 
