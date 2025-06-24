@@ -26,7 +26,6 @@ import {
 	FOCUS_MODE_MAIL_VIEW_ROUTE
 } from 'constants/index';
 import { useSmimeFeatureStore } from 'store/certificates/store';
-import FocusModeMailView from 'views/app/detail-panel/focus-mode-mail-view';
 import { getSettingsSubSections } from 'views/settings/subsections';
 
 const LazyAppView = lazy(
@@ -53,6 +52,13 @@ const LazyCertificatsView = lazy(
 
 const LazySidebarView = lazy(
 	() => import(/* webpackChunkName: "mail-sidebar-view" */ '../views/sidebar/sidebar')
+);
+
+const LazyFocusModeMailView = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mail-sidebar-view" */ '../views/app/detail-panel/focus-mode-mail-view'
+		)
 );
 
 const AppView = (): React.JSX.Element => (
@@ -91,6 +97,14 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<ModalManager>
 			<LazySidebarView {...props} />
+		</ModalManager>
+	</Suspense>
+);
+
+const FocusModeMailView = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<ModalManager>
+			<LazyFocusModeMailView />
 		</ModalManager>
 	</Suspense>
 );
