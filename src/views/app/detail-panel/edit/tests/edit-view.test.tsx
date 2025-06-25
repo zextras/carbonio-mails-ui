@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
@@ -51,6 +51,7 @@ import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
 	SaveDraftRequest,
+	SaveDraftResponse,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
@@ -147,6 +148,15 @@ const clearAndInsertText =
 		await user.clear(target);
 		await user.type(target, text);
 	};
+
+const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JSX.Element => {
+	const [close, setClose] = useState(false);
+	return (
+		<div data-testid="email-input">
+			{!close && <EditView {...{ editorId: editor.id, closeController: () => setClose(true) }} />}
+		</div>
+	);
+};
 
 jest.mock('../../../../../store/editor', () => ({
 	...jest.requireActual('../../../../../store/editor'),
@@ -416,48 +426,95 @@ describe('Edit view', () => {
 		});
 	});
 
-	describe('send email with attachment to convert to smart link', () => {
+	describe('send email', () => {
 		beforeAll(() => {
 			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 		});
 
-		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
 			createCheckSmimeEnabledAPIInterceptor();
-			// setup api interceptor and mail to send editor
-			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 			setupEditorStore({ editors: [] });
 			const editor = await readyToBeSentEditorTestCase({
 				id: '123-testId',
 				did: '123-testId',
-				savedAttachments: [
-					{
-						filename: 'large-document.pdf',
-						contentType: 'application/pdf',
-						requiresSmartLinkConversion: true,
-						size: 81290955,
-						messageId: '123-testId',
-						partName: '2',
-						isInline: false
-					}
-				]
+				isRichText: false,
+				savedAttachments: [],
+				unsavedAttachments: []
 			});
 			addEditor({ id: editor.id, editor });
 
-			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />);
+			const sendMsgInterceptor = createSoapAPIInterceptor<
+				SaveDraftRequest,
+				SaveDraftResponse | ErrorSoapBodyResponse
+			>('SendMsg');
+			createSoapAPIInterceptor('SaveDraft');
+			const { user } = setupTest(<TestingEditViewUnmount editor={editor} />);
 			const btnSend = screen.queryByTestId('BtnSendMailMulti');
 			await waitFor(() => expect(btnSend).toBeEnabled());
+			const text = faker.lorem.paragraph();
+			const area = screen.getByTestId('MailPlainTextEditor');
+
+			// Insert the text into the text area
+			await waitFor(clearAndInsertText(user, area, text));
+
 			await act(async () => {
 				await user.click(btnSend as HTMLElement);
 			});
 
-			await apiInterceptor;
-			await waitFor(() => screen.findByText('label.error_try_again'));
-			expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
+
+			const sendMsgRequest = await sendMsgInterceptor;
+
+			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
+		});
+		describe('with attachment to convert to smart link', () => {
+			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				createAPIInterceptor(
+					'post',
+					'/service/soap/GetShareInfoRequest',
+					HttpResponse.json(getEmptyMSWShareInfoResponse())
+				);
+				createCheckSmimeEnabledAPIInterceptor();
+				// setup api interceptor and mail to send editor
+				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+				setupEditorStore({ editors: [] });
+				const editor = await readyToBeSentEditorTestCase({
+					id: '123-testId',
+					did: '123-testId',
+					savedAttachments: [
+						{
+							filename: 'large-document.pdf',
+							contentType: 'application/pdf',
+							requiresSmartLinkConversion: true,
+							size: 81290955,
+							messageId: '123-testId',
+							partName: '2',
+							isInline: false
+						}
+					]
+				});
+				addEditor({ id: editor.id, editor });
+
+				const { user } = setupTest(
+					<EditView {...{ editorId: editor.id, closeController: noop }} />
+				);
+				const btnSend = screen.queryByTestId('BtnSendMailMulti');
+				await waitFor(() => expect(btnSend).toBeEnabled());
+				await act(async () => {
+					await user.click(btnSend as HTMLElement);
+				});
+
+				await apiInterceptor;
+				await waitFor(() => screen.findByText('label.error_try_again'));
+				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+			});
 		});
 	});
 
