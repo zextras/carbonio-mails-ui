@@ -7,7 +7,7 @@
 
 import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 
-import { saveSettings } from '../save-settings';
+import { saveSettings } from 'views/settings/save-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	xmlSoapFetch: jest.fn<ReturnType<typeof xmlSoapFetch>, Parameters<typeof xmlSoapFetch>>(),

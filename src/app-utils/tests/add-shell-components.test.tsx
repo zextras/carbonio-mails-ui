@@ -7,10 +7,10 @@
 import { addBoardView, addRoute, addSettingsView, upsertApp } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from '../../constants';
-import { mockAdvancedAccountAPI } from '../../tests/utils';
-import { addComponentsToShell } from '../add-shell-components';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { addComponentsToShell } from 'app-utils/add-shell-components';
+import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from 'constants/index';
+import { mockAdvancedAccountAPI } from 'tests/utils';
 
 beforeEach(() => {
 	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));

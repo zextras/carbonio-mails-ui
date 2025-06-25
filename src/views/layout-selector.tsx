@@ -8,8 +8,8 @@ import React, { useEffect, useMemo } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { matchPath, useLocation } from 'react-router-dom';
 
-import { MAILS_ROUTE } from '../constants';
-import { useViewLayout } from '../hooks/use-view-layout';
+import { MAILS_ROUTE } from 'constants/index';
+import { useViewLayout } from 'hooks/use-view-layout';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;

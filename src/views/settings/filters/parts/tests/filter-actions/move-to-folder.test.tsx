@@ -3,19 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDER_VIEW } from '../../../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../../../carbonio-ui-commons/constants/folders';
-import { generateFolder } from '../../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { populateFoldersStore } from '../../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import {
-	makeListItemsVisible,
-	setupTest
-} from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { MovetoFolder } from '../../filter-actions/move-to-folder';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { MovetoFolder } from 'views/settings/filters/parts/filter-actions/move-to-folder';
 
 describe('Move to Folder', () => {
 	it('should render initial folder destination in input', async () => {

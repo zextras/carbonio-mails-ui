@@ -5,9 +5,9 @@
  */
 import React from 'react';
 
-import { ConversationMessagePreview } from './conversation-message-preview';
-import { Spinner } from '../../../assets/spinner';
-import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
+import { Spinner } from 'assets/spinner';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
 
 export const ConversationMessagePreviewWrapper = ({
 	convMessageId,

@@ -9,7 +9,7 @@ import {
 	getQuotedTextFromOriginalContent,
 	htmlEncode,
 	trim
-} from '../get-quoted-text-util';
+} from 'commons/get-quoted-text-util';
 
 describe('Get Quoted Test Utils', () => {
 	describe('trim', () => {

@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getMsgSoapApi } from '../../api/get-msg-soap-api';
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { getAttachmentParts, isContentIdEqual } from '../attachments';
+import { getMsgSoapApi } from 'api/get-msg-soap-api';
+import { getAttachmentParts, isContentIdEqual } from 'helpers/attachments';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 
 describe('attachments', () => {
 	describe('getAttachmentParts', () => {

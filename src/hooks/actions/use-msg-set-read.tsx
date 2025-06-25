@@ -8,10 +8,10 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
-import { isDraft } from '../../helpers/folders';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
+import { isDraft } from 'helpers/folders';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type MsgSetReadFunctionsParameter = {
 	ids: Array<string>;

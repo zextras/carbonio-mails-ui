@@ -6,9 +6,9 @@
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoap
-} from './normalize-message';
-import { generateMessageFromAPI } from '../tests/generators/api';
-import { SoapMailMessagePart } from '../types';
+} from 'normalizations/normalize-message';
+import { generateMessageFromAPI } from 'tests/generators/api';
+import { SoapMailMessagePart } from 'types/index.d';
 
 describe('Normalize message', () => {
 	describe('Truncated mail body part', () => {

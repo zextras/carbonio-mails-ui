@@ -15,7 +15,20 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
+import { GapContainer, GapRow } from 'commons/gap-container';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { buildArrayFromFileList } from 'helpers/files';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
+import { filter, map, some } from 'lodash';
+import {
+	useCertificatesStore,
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from 'store/certificates/store';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -34,19 +47,6 @@ import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
-import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
-import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
-import { buildArrayFromFileList } from '../../../../helpers/files';
-import { getAvailableAddresses } from '../../../../helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from '../../../../helpers/identities';
-import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from '../../../../store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -58,10 +58,12 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
-	useEditorIsSmimeEncrypt
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
 } from '../../../../store/editor';
-import { EditViewClosingReasons } from '../../../../types';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
+import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
@@ -72,6 +74,23 @@ export type EditViewProp = {
 export type EditViewHandle = {
 	closeEditView: () => void;
 };
+
+// TODO: sendAllowedStatus is completely flawed and full of logical errors
+function evaluateSendDisabledReason(
+	invalidRecipientsPresent: boolean,
+	isMailSizeWarning: boolean,
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined
+): string | undefined {
+	let sendDisabledReason;
+	if (invalidRecipientsPresent) {
+		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else if (isMailSizeWarning) {
+		sendDisabledReason = t('label.message_size_exceeded', 'The message size exceeds the limit.');
+	} else {
+		sendDisabledReason = sendAllowedStatus?.reason;
+	}
+	return sendDisabledReason;
+}
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
@@ -138,6 +157,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 
+	const {
+		recipients: { to, cc, bcc }
+	} = useEditorRecipients(editorId);
+	const invalidRecipientsPresent = useMemo(
+		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
+		[bcc, cc, to]
+	);
+
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
@@ -152,7 +179,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	useEffect(() => {
 		if (!isCarbonioCE) {
-			checkIsSmimeEnabled().then((res) => {
+			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
 				if ('data' in res) {
 					useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 				} else {
@@ -524,6 +551,19 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			onSendError
 		]
 	);
+	const sendDisabled =
+		isMailSizeWarning ||
+		!sendAllowedStatus?.allowed ||
+		isConvertingToSmartLink ||
+		!draftId ||
+		invalidRecipientsPresent;
+
+	const sendDisabledReason = evaluateSendDisabledReason(
+		invalidRecipientsPresent,
+		isMailSizeWarning,
+		sendAllowedStatus
+	);
+
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -580,13 +620,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={
-								isMailSizeWarning ||
-								!sendAllowedStatus?.allowed ||
-								isConvertingToSmartLink ||
-								!draftId
-							}
-							tooltip={sendAllowedStatus?.reason ?? ''}
+							disabled={sendDisabled}
+							tooltip={sendDisabledReason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>

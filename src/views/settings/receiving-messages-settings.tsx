@@ -16,10 +16,15 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
-import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
-import { receivingMessagesSubSection } from './subsections';
-import { MAIL_APP_ID } from '../../constants';
-import type { ReceivingMessagesSettingsType } from '../../types';
+import { MAIL_APP_ID } from 'constants/index';
+import type { ReceivingMessagesSettingsType } from 'types/index.d';
+import {
+	NotifyFolderOpts,
+	ReadReceiptOpts,
+	MsgsFromMeOpts,
+	findLabel
+} from 'views/settings/components/utils';
+import { receivingMessagesSubSection } from 'views/settings/subsections';
 
 const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	settingsObj,

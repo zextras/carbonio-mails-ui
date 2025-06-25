@@ -5,9 +5,9 @@
  */
 import axios from 'axios';
 
-import { convertToDecimal } from '../../commons/utilities';
-import { parse } from '../upload-attachments-api';
-import { uploadFileApi } from '../upload-file-api';
+import { parse } from 'api/upload-attachments-api';
+import { uploadFileApi } from 'api/upload-file-api';
+import { convertToDecimal } from 'commons/utilities';
 
 jest.mock('axios');
 jest.mock('../upload-attachments-api');

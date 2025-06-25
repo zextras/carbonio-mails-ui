@@ -8,11 +8,11 @@ import React, { useCallback, useMemo } from 'react';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveMessage } from '../../ui-actions/move-msg';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { MoveMessage } from 'ui-actions/move-msg';
 
 export const useMsgMoveToFolderFn = ({
 	folderId,

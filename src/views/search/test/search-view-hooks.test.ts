@@ -9,24 +9,21 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import * as searchSoapApi from '../../../api/search-soap-api';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import * as searchSoapApi from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	setSearchResultsByConversation,
 	useConversationById,
 	useMessageById,
 	useSearchResults
-} from '../../../store/emails/store';
-import {
-	generateConversationFromAPI,
-	generateConvMessageFromAPI
-} from '../../../tests/generators/api';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { SearchRequest, SearchResponse } from '../../../types';
-import { useRunSearch, useLoadMoreForSearchSlice } from '../search-view-hooks';
+} from 'store/emails/store';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { SearchRequest, SearchResponse } from 'types/index.d';
+import { useLoadMoreForSearchSlice, useRunSearch } from 'views/search/search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {

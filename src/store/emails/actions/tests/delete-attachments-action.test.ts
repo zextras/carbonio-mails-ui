@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { deleteAttachmentsSoapApi } from '../../../../api/delete-all-attachments-soap-api';
-import { handleDeleteAttachments } from '../../store';
-import { deleteAttachmentsEmailStoreAction } from '../delete-attachments-action';
+import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
+import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
+import { handleDeleteAttachments } from 'store/emails/store';
 
 jest.mock('../../../../api/delete-all-attachments-soap-api');
 jest.mock('../../store');

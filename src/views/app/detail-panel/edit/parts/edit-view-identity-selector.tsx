@@ -25,14 +25,10 @@ import {
 	getIdentityDescriptor,
 	getNoIdentityPlaceholder,
 	IdentityDescriptor
-} from '../../../../../helpers/identities';
-import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
-import {
-	useEditorIdentityId,
-	useEditorSignatureId,
-	useEditorText
-} from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
+} from 'helpers/identities';
+import { getMailBodyWithSignature } from 'helpers/signatures';
+import { useEditorIdentityId, useEditorSignatureId, useEditorText } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;

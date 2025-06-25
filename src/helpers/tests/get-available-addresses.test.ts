@@ -6,8 +6,8 @@
 
 import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { NO_ACCOUNT_NAME } from '../../constants';
-import { getAvailableAddresses } from '../get-available-addresses';
+import { NO_ACCOUNT_NAME } from 'constants/index';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	getUserAccount: jest.fn(),

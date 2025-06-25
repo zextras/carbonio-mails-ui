@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { DataProps } from '@zextras/carbonio-ui-commons';
 import { isEmpty, isNil, omitBy } from 'lodash';
 
-import type { Folder } from '../carbonio-ui-commons/types';
-import { DataProps } from '../carbonio-ui-commons/types/sidebar';
-import { FolderActionResponse } from '../types';
+import { FolderActionResponse } from 'types/index.d';
 
 export type FolderActionProps = {
 	folder: Folder | DataProps | Omit<Folder, 'parent'>;

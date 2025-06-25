@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
+
 import { Padding, Row, Text } from '@zextras/carbonio-design-system';
 
 const Heading: FC<{

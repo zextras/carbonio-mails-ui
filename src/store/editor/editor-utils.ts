@@ -6,14 +6,14 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, reduce, reject, some } from 'lodash';
 
-import { PROCESS_STATUS } from '../../constants';
-import { isContentIdEqual } from '../../helpers/attachments';
+import { PROCESS_STATUS } from 'constants/index';
+import { isContentIdEqual } from 'helpers/attachments';
 import type {
 	EditorOperationAllowedStatus,
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 /**
  *
@@ -64,7 +64,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
-			reason: t('label.draft_save_in_progress', 'Saving draft in progress         ')
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress')
 		};
 	}
 
@@ -97,7 +97,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
-			reason: t('label.invalid_recipients', `A recipient's address is spelled incorrectly`)
+			reason: t('label.invalid_recipients', `One or more recipients are invalid`)
 		};
 	}
 

@@ -7,11 +7,11 @@ import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
-import EditPermissionsModal from './edit-permissions-modal';
-import type { ModalProps } from '../../types';
-import { Context } from './parts/edit/edit-context';
-import MainEditModal from './parts/edit/edit-default-modal';
-import ShareRevokeModal from './parts/edit/share-revoke-modal';
+import type { ModalProps } from 'types/index.d';
+import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
+import { Context } from 'views/sidebar/parts/edit/edit-context';
+import MainEditModal from 'views/sidebar/parts/edit/edit-default-modal';
+import ShareRevokeModal from 'views/sidebar/parts/edit/share-revoke-modal';
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [activeModal, setActiveModal] = useState('default');
@@ -49,6 +49,7 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 						grant={Object.keys(activeGrant).length > 0 ? activeGrant : folder?.acl?.grant[0]}
 					/>
 				)}
+
 				{activeModal === 'share' && <EditPermissionsModal folder={folder} onClose={onClose} />}
 			</Container>
 		</Context.Provider>

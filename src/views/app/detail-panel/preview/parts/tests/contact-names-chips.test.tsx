@@ -8,16 +8,16 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 
-import { ParticipantRoleType } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { Participant } from '../../../../../../types';
+import { screen, setupTest } from '@test-setup';
+import { Participant } from 'types/index.d';
+import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
 import {
-	copyEmailToClipboard,
-	sendMsg
-} from '../../../../../../ui-actions/participant-displayer-actions';
-import { ContactNameChip, generateChipName } from '../contact-names-chips';
+	ContactNameChip,
+	generateChipName
+} from 'views/app/detail-panel/preview/parts/contact-names-chips';
 
 jest.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
 	sendMsg: jest.fn(),

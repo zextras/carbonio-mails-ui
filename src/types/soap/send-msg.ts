@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SoapDraftMessageObj } from './save-draft';
+import { SoapDraftMessageObj } from 'types/soap/save-draft';
 
 export type SoapSendMsgRequest = {
 	_jsns: string;

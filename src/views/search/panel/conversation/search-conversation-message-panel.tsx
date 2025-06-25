@@ -7,8 +7,8 @@ import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
-import MailPreview from '../../../app/detail-panel/preview/mail-preview';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export type SearchConversationMessagePreviewProps = {
 	convMessageId: string;

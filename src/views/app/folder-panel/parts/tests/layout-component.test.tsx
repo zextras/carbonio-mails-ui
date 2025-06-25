@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
-import { act } from '@testing-library/react';
+import { act, within } from '@testing-library/react';
 
-import { screen, setupTest, within } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../../constants';
-import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
-import { LayoutComponent } from '../layout-component';
+import { screen, setupTest } from '@test-setup';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { mockLayoutStorage } from 'tests/layouts-utils';
+import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
 describe('LayoutComponent', () => {
 	test('the icon has width 1.25rem', async () => {

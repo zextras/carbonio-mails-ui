@@ -17,9 +17,9 @@ import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { includes } from 'lodash';
 
-import { CreateFilterContext } from '../create-filter-context';
-import CustomSelect from '../custom-select';
-import { getSizeOptions, getSizeUnit, findDefaultValue } from '../utils';
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { getSizeOptions, getSizeUnit, findDefaultValue } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	t: TFunction;

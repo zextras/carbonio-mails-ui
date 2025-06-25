@@ -7,12 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import {
-	isFocusModeMailView,
-	openConversationStandalonePreview
-} from '../../helpers/external-tabs';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isFocusModeMailView, openConversationStandalonePreview } from 'helpers/external-tabs';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
