@@ -20,8 +20,45 @@ import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button'
 import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
 import { Query } from 'views/search/types/types';
 
-const specialChars = ["~","'","!","#","$","%","^","&","(",")","_","?","/","{","}","[","]",";",":","-","+","<",">"]
-const prefixes = ["has", "is", "Subject", "from", "to", "attachment", "smaller", "larger", "after", "before",  "tag", "in"]
+const specialChars = [
+	'~',
+	"'",
+	'!',
+	'#',
+	'$',
+	'%',
+	'^',
+	'&',
+	'(',
+	')',
+	'_',
+	'?',
+	'/',
+	'{',
+	'}',
+	'[',
+	']',
+	';',
+	':',
+	'-',
+	'+',
+	'<',
+	'>'
+];
+const prefixes = [
+	'has',
+	'is',
+	'Subject',
+	'from',
+	'to',
+	'attachment',
+	'smaller',
+	'larger',
+	'after',
+	'before',
+	'tag',
+	'in'
+];
 
 export const containsSpecialCharacters = (value: string): boolean => {
 	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
@@ -40,7 +77,11 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 	const isMessageView = useIsMessageView();
 
 	const invalidQueryTooltip = useMemo(
-		() => t('label.invalid_query', 'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results.'),
+		() =>
+			t(
+				'label.invalid_query',
+				'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results.'
+			),
 		[]
 	);
 
@@ -57,12 +98,11 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchResults, isInvalidQuery, queryToString, executeSearch } =
-		useRunSearch({
-			query,
-			updateQuery,
-			isSharedFolderIncluded
-		});
+	const { searchResults, isInvalidQuery, queryToString, executeSearch } = useRunSearch({
+		query,
+		updateQuery,
+		isSharedFolderIncluded
+	});
 
 	const containsSpecialCharacter = useMemo(
 		() => query.some((ch) => ch.value !== undefined && containsSpecialCharacters(ch.value)),
@@ -83,7 +123,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
+	}, [searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 

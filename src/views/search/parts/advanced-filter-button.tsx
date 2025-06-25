@@ -28,37 +28,37 @@ export const AdvancedFilterButton = ({
 	const modalId = 'advanced-filter-modal';
 
 	return (
-			<BorderContainer
-				padding={{ all: 'small' }}
-				height="fit"
-				mainAlignment="flex-start"
-				crossAlignment="flex-start"
-				borderRadius="none"
-			>
-				<Button
-					onClick={(): void => {
-						createModal(
-							{
-								id: modalId,
-								maxHeight: '90vh',
-								size: 'medium',
-								children: (
-									<AdvancedFilterModal
-										query={query}
-										isSharedFolderIncluded={isSharedFolderIncluded}
-										onSearchConfirm={onSearchConfirm}
-										onClose={(): void => closeModal(modalId)}
-									/>
-								)
-							},
-							true
-						);
-					}}
-					type={'outlined'}
-					width="fill"
-					label={t('label.single_advanced_filter', 'Advanced Filters')}
-					icon="Options2Outline"
-				/>
-			</BorderContainer>
+		<BorderContainer
+			padding={{ all: 'small' }}
+			height="fit"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			borderRadius="none"
+		>
+			<Button
+				onClick={(): void => {
+					createModal(
+						{
+							id: modalId,
+							maxHeight: '90vh',
+							size: 'medium',
+							children: (
+								<AdvancedFilterModal
+									query={query}
+									isSharedFolderIncluded={isSharedFolderIncluded}
+									onSearchConfirm={onSearchConfirm}
+									onClose={(): void => closeModal(modalId)}
+								/>
+							)
+						},
+						true
+					);
+				}}
+				type={'outlined'}
+				width="fill"
+				label={t('label.single_advanced_filter', 'Advanced Filters')}
+				icon="Options2Outline"
+			/>
+		</BorderContainer>
 	);
 };

@@ -17,7 +17,7 @@ describe('containsSpecialCharacters', () => {
 		it('should return false for in prefix', () => {
 			expect(containsSpecialCharacters('in:folder-with-dashes')).toBe(false);
 			expect(containsSpecialCharacters('in:"/Inbox"')).toBe(false);
-			expect(containsSpecialCharacters('in:\"/trash\"')).toBe(false);
+			expect(containsSpecialCharacters('in:"tr%sh"')).toBe(false);
 		});
 
 		it('should return false for before prefix', () => {

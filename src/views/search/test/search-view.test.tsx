@@ -155,7 +155,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -177,7 +177,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -208,7 +208,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -242,7 +242,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -279,7 +279,7 @@ describe('SearchView', () => {
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
 			};
 			const { count, setCount } = fakeCounter();
@@ -317,7 +317,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -373,7 +373,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -396,7 +396,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -455,7 +455,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -484,7 +484,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
@@ -541,7 +541,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -570,7 +570,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -620,7 +620,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -660,7 +660,7 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				
+
 				ResultsHeader: resultsHeader
 			};
 
@@ -688,7 +688,7 @@ describe('SearchView', () => {
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: mockUseQuery,
-			
+
 			ResultsHeader: resultsHeader
 		};
 
@@ -730,7 +730,7 @@ describe('SearchView', () => {
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: mockUseQuery,
-			
+
 			ResultsHeader: resultsHeader
 		};
 
