@@ -5,8 +5,8 @@
  */
 import { TFunction } from 'i18next';
 
-import { VALID_MAIL_AUTHENTICATION_HEADERS } from '../../../../../constants';
-import { MailAuthenticationHeaders, Sensitivity } from '../../../../../types';
+import { VALID_MAIL_AUTHENTICATION_HEADERS } from 'constants/index';
+import { MailAuthenticationHeaders, Sensitivity } from 'types/index.d';
 
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,

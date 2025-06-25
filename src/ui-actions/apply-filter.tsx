@@ -8,9 +8,9 @@ import React from 'react';
 import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { ApplyFilterModal } from './modals/apply-filter-modal';
-import { FilterActionsDescriptors } from '../constants';
-import { UIAction } from '../types';
+import { FilterActionsDescriptors } from 'constants/index';
+import { UIAction } from 'types/index.d';
+import { ApplyFilterModal } from 'ui-actions/modals/apply-filter-modal';
 
 export type ApplyFilterUIActionExecutionParams = {
 	criteria: {

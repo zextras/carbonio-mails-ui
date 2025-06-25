@@ -11,7 +11,7 @@ import {
 	getMessageIsFromExternalDomainFromAPI,
 	getMessageIdFromMailHeadersFromAPI,
 	getSensitivityHeaderFromAPI
-} from '../mail-header-utils';
+} from 'normalizations/mail-header-utils';
 
 describe('getMessageIsFromExternalDomainFromAPI', () => {
 	it('should return false when the From address is from the same domain as the ownerAccount', () => {

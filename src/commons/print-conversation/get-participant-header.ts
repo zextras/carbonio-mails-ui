@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map } from 'lodash';
-import type { Participant } from '../../types';
+
+import type { Participant } from 'types/index.d';
 
 export const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(

@@ -16,17 +16,19 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { Controller, UseFormSetValue } from 'react-hook-form';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
-import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../carbonio-ui-commons/types/tags';
-import { isSharedAccountFolder } from '../../../helpers/folders';
-import type { ChipOnAdd, Folder } from '../../../types';
-import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
-import { getFolderIconColor } from '../../sidebar/utils';
-import { AdvancedFilterModalFormValues, FormValuesControlProps } from '../types/types';
+import { isSharedAccountFolder } from 'helpers/folders';
+import type { ChipOnAdd, Folder } from 'types/index.d';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
+import {
+	AdvancedFilterModalFormValues,
+	FormValuesControlProps,
+	KeywordState
+} from 'views/search/types/types';
+import { getFolderIconColor } from 'views/sidebar/utils';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
 	setValue: UseFormSetValue<AdvancedFilterModalFormValues>;
@@ -92,7 +94,13 @@ export const TagFolderRow = ({
 	);
 
 	const tagChipOnAdd = useCallback(
-		(label: unknown): ChipOnAdd => {
+		(label: string, values: KeywordState): ChipOnAdd | undefined => {
+			const alreadyExists = values.some(
+				({ label: currentLabel }) => currentLabel === `tag:${label}`
+			);
+			if (alreadyExists) {
+				return undefined;
+			}
 			const chipBg = tagOptions.filter((tag) => tag.label === label);
 			return chipOnAdd(
 				label as string,
@@ -155,11 +163,19 @@ export const TagFolderRow = ({
 							defaultValue={[]}
 							options={tagOptions}
 							value={value}
-							onChange={onChange}
-							onAdd={tagChipOnAdd}
+							onChange={(chips) => {
+								const validChips = chips.filter((chip) => chip !== undefined);
+								onChange(validChips);
+							}}
+							onAdd={(label) => {
+								if (typeof label !== 'string') {
+									return undefined;
+								}
+								// fix typings on DS
+								return tagChipOnAdd(label, value) as any;
+							}}
 							disableOptions={false}
 							disabled
-							requireUniqueChips
 							data-testid="tagInput"
 						/>
 					)}
@@ -179,7 +195,6 @@ export const TagFolderRow = ({
 							onAdd={folderChipOnAdd}
 							disabled
 							iconAction={openFolderModal}
-							requireUniqueChips
 							data-testid="folderInput"
 						/>
 					)}

@@ -6,12 +6,12 @@
 
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { SortBy } from '@zextras/carbonio-ui-commons';
 
-import { SortBy } from '../../carbonio-ui-commons/types';
-import { AdvancedFilterModalFormValues, Query } from '../../views/search/types/types';
-import { NormalizedConversation } from '../conversations';
-import { IncompleteMessage, MailMessage } from '../messages';
-import { ErrorType, SearchRequestStatus } from '../state';
+import { NormalizedConversation } from 'types/conversations/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages/index.d';
+import { ErrorType, SearchRequestStatus } from 'types/state/index.d';
+import { AdvancedFilterModalFormValues, Query } from 'views/search/types/types';
 
 export type SearchListProps = {
 	searchResults: Array<string>;

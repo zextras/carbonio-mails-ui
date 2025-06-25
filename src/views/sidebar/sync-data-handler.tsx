@@ -6,11 +6,10 @@
 import React, { FC, useEffect } from 'react';
 
 import { updatePrimaryBadge } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 
-import { useSyncDataHandler } from './commons/use-sync-data-handler';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { MAILS_ROUTE } from '../../constants';
+import { MAILS_ROUTE } from 'constants/index';
+import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const InboxBadgeUpdater = (): null => {
 	const inbox = useFolder(FOLDERS.INBOX);

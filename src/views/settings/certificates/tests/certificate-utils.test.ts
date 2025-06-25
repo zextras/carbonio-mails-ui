@@ -9,7 +9,7 @@ const errorMessage = 'snackbar.uploadCertificate.failToVerifyCertificate';
 import forge from 'node-forge';
 import * as pkijs from 'pkijs';
 
-import { handleCertificateFileUpload } from '../certificate-utils';
+import { handleCertificateFileUpload } from 'views/settings/certificates/certificate-utils';
 
 describe('handleCertificateFileUpload', () => {
 	let file: File;

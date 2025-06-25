@@ -6,8 +6,8 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { MAIL_VERIFICATION_HEADERS } from '../constants';
-import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from '../types';
+import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
+import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/index.d';
 
 export async function getMsgDecryptSoapApi({
 	msgId,

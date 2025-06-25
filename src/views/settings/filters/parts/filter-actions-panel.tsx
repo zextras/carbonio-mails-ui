@@ -9,10 +9,10 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FilterActionRow } from './filter-action-row';
-import { getActionTranslations } from './utils';
-import { FilterAction } from '../../../../types';
-import Heading from '../../components/settings-heading';
+import { FilterAction } from 'types/index.d';
+import Heading from 'views/settings/components/settings-heading';
+import { FilterActionRow } from 'views/settings/filters/parts/filter-action-row';
+import { getActionTranslations } from 'views/settings/filters/parts/utils';
 
 export type FilterActionsProps = {
 	isIncoming: boolean;

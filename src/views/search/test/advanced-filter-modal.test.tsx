@@ -3,35 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act, ReactNode } from 'react';
+import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
 import { screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
+import { getTags } from '@zextras/carbonio-ui-commons';
 import { format } from 'date-fns';
-import { useForm, FormProvider } from 'react-hook-form';
-
-import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { TIMERS } from 'tests/constants';
+import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
 import {
-	EDIT_ACTION,
-	generateMockContactInputItem,
-	mockContactInput
-} from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { TIMERS } from '../../../tests/constants';
-import { AdvancedFilterModal } from '../advanced-filter-modal';
-import {
-	AdvancedFilterModalProps,
-	AdvancedFilterModalFormValues,
-	Query,
-	SearchQueryItem
-} from '../types/types';
-import { getAdvancedFiltersDefaultValues } from '../utils';
+	defaultProps,
+	defaultValues,
+	emptyQuery,
+	renderWithUseForm
+} from 'views/search/test/test-advanced-filter-modal-common-utils';
+import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
+import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
-jest.mock('../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	getTags: jest.fn()
 }));
 
@@ -46,22 +41,6 @@ async function selectOption(
 	const selectOption = await screen.findByText(optionText);
 	await user.click(selectOption);
 }
-
-const emptyQuery: Query = [];
-const defaultValues = getAdvancedFiltersDefaultValues(emptyQuery, false);
-
-const renderWithUseForm = async (
-	component: React.JSX.Element,
-	formValues: Partial<AdvancedFilterModalFormValues> = {}
-): Promise<{ user: UserEvent }> => {
-	const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
-		const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues: formValues });
-		return <FormProvider {...methods}>{children}</FormProvider>;
-	};
-
-	const { user } = setupTest(<Wrapper>{component}</Wrapper>);
-	return { user };
-};
 
 async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>): Promise<void> {
 	const updateQueryMock = jest.fn();
@@ -99,13 +78,6 @@ async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>):
 }
 
 describe('Advanced filter modal', () => {
-	const defaultProps: AdvancedFilterModalProps = {
-		isSharedFolderIncluded: false,
-		onClose: jest.fn(),
-		query: emptyQuery,
-		onSearchConfirm: jest.fn()
-	};
-
 	it('render the advanced filter modal', () => {
 		renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
@@ -330,85 +302,6 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it('should remove edit action from query chip for "to" and "from" fields', async () => {
-		const valueToAdd = generateMockContactInputItem();
-		valueToAdd.actions = [EDIT_ACTION];
-		mockContactInput({ valueToAdd });
-
-		const updateQueryMock = jest.fn();
-
-		const props: AdvancedFilterModalProps = {
-			...defaultProps,
-			onSearchConfirm: updateQueryMock
-		};
-
-		const query: SearchQueryItem = {
-			id: 'query1',
-			label: 'from:someone@test.com',
-			value: 'someone@test.com'
-		};
-
-		const customDefaultValues = getAdvancedFiltersDefaultValues([query], false);
-		const { user } = await renderWithUseForm(
-			<AdvancedFilterModal {...props} />,
-			customDefaultValues
-		);
-		const sentTo = screen.getByTestId('sent-to-input');
-		await user.type(sentTo, 'validEmail@test.com');
-		await user.type(sentTo, '[Enter]');
-		const receivedFrom = screen.getByTestId('received-from-input');
-		await user.type(receivedFrom, 'validEmail2@test.com');
-		await user.type(receivedFrom, '[Enter]');
-		expect(sentTo).toBeInTheDocument();
-		const confirmButton = screen.getByText('action.search');
-		await user.click(confirmButton);
-		await waitFor(() => {
-			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-		});
-		await waitFor(() => {
-			expect(updateQueryMock).toHaveBeenCalledWith(
-				expect.objectContaining({
-					query: [
-						expect.objectContaining({
-							actions: []
-						}),
-						expect.objectContaining({
-							actions: []
-						})
-					]
-				})
-			);
-		});
-	});
-
-	it('should display "to" and "from" with edit action in their inputs', async () => {
-		const valueToAdd = generateMockContactInputItem();
-		valueToAdd.actions = [EDIT_ACTION];
-		mockContactInput({ valueToAdd });
-
-		const updateQueryMock = jest.fn();
-
-		const props: AdvancedFilterModalProps = {
-			...defaultProps,
-			onSearchConfirm: updateQueryMock
-		};
-
-		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
-
-		const sentTo = screen.getByTestId('sent-to-input');
-		await user.type(sentTo, 'validEmail@test.com');
-		await user.type(sentTo, '[Enter]');
-		const receivedFrom = screen.getByTestId('received-from-input');
-		await user.type(receivedFrom, 'validEmail2@test.com');
-		await user.type(receivedFrom, '[Enter]');
-		expect(sentTo).toBeInTheDocument();
-		const confirmButton = screen.getByText('action.search');
-		await user.click(confirmButton);
-		const mockContactInputValues = await screen.findAllByTestId('mockedContactValue');
-		expect(mockContactInputValues[0]).toHaveTextContent(/"icon":"EditOutline"/);
-		expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
-	});
-
 	it('reset filters button should be enabled if query is not empty', async () => {
 		const query = [
 			{
@@ -602,15 +495,6 @@ describe('Advanced filter modal', () => {
 	it(`should reset 'sent after' when reset button is pressed`, async () => {
 		await checkResetAndSearchButton(async (user) => {
 			const inputElement = screen.getByPlaceholderText('search.sent_after');
-			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
-			await user.type(inputElement, dateString);
-			await user.tab();
-		});
-	});
-
-	it(`should reset 'sent on' when reset button is pressed`, async () => {
-		await checkResetAndSearchButton(async (user) => {
-			const inputElement = screen.getByPlaceholderText('search.sent_on');
 			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
 			await user.type(inputElement, dateString);
 			await user.tab();
@@ -818,6 +702,175 @@ describe('Advanced filter modal', () => {
 		await waitFor(() => {
 			const toggle = screen.getByTestId('isSharedFolderIncludedToggle');
 			expect(within(toggle).getByTestId('icon: ToggleRight')).toBeInTheDocument();
+		});
+	});
+
+	it('should prevent adding duplicated values for keywords', async () => {
+		const updateQueryMock = jest.fn();
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: updateQueryMock
+		};
+
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
+		const keywordInput = screen.getByTestId('keywords-input');
+		const keywordInputEle = within(keywordInput).getByRole('textbox');
+
+		// Add first keyword
+		await user.click(keywordInputEle);
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.type(keywordInputEle, '[Enter]');
+
+		// Try to add the same keyword again
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.type(keywordInputEle, '[Enter]');
+
+		// Click search button
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+		await user.click(confirmButton);
+
+		// Verify that only one instance of the keyword was added
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledTimes(1);
+		});
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith({
+				includeSharedFolders: false,
+				query: [
+					{
+						hasAvatar: false,
+						isGeneric: true,
+						label: 'test keyword'
+					}
+				]
+			});
+		});
+	});
+
+	it('should forbid the user from entering the same attachment type twice', async () => {
+		const updateQueryMock = jest.fn();
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: updateQueryMock,
+			query: []
+		};
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues([], false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
+		);
+
+		await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
+		await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
+
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					query: [
+						expect.objectContaining({
+							isQueryFilter: true,
+							label: 'Attachment:attachment_type.application',
+							value: 'attachment:application/*'
+						})
+					]
+				})
+			);
+		});
+	});
+
+	it('should forbid the user from entering the same email status twice', async () => {
+		const updateQueryMock = jest.fn();
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: updateQueryMock,
+			query: []
+		};
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues([], false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
+		);
+
+		await selectOption(user, 'emailStatusSelect', 'email_status.unread');
+		await selectOption(user, 'emailStatusSelect', 'email_status.unread');
+
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					query: [
+						expect.objectContaining({
+							isQueryFilter: true,
+							label: 'Is:email_status.unread',
+							value: 'is:unread'
+						})
+					]
+				})
+			);
+		});
+	});
+
+	it('should forbid the user from entering the same tag twice', async () => {
+		(getTags as jest.Mock).mockReturnValue(mockTags);
+
+		const updateQueryMock = jest.fn();
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: updateQueryMock,
+			query: []
+		};
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues([], false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
+		);
+
+		const selectElement = screen.getByTestId('tagInput');
+		expect(selectElement).toBeInTheDocument();
+		await user.click(selectElement);
+		const selectOption = screen.getAllByTestId('dropdown-item')[0];
+		await user.click(selectOption);
+		await user.click(selectElement);
+		const selectOption1 = screen.getAllByTestId('dropdown-item')[0];
+		await user.click(selectOption1);
+
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					query: [
+						expect.objectContaining({
+							isQueryFilter: true,
+							label: 'tag:Tagged',
+							value: 'tag:"Tagged"'
+						})
+					]
+				})
+			);
 		});
 	});
 });

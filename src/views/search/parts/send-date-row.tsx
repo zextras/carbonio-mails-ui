@@ -9,7 +9,7 @@ import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Controller } from 'react-hook-form';
 
-import { FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 const PICKER_DATE_FORMAT = 'P';
 
@@ -18,27 +18,6 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
-				<Controller
-					control={control}
-					name={'sentBefore'}
-					render={({ field: { onChange, value } }): React.JSX.Element => (
-						<DateTimePicker
-							width="fill"
-							label={t('search.sent_before', 'Sent before')}
-							enableChips
-							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-							dateFormat={PICKER_DATE_FORMAT}
-							locale={prefLocale}
-							showTimeSelect={false}
-							selected={value}
-							defaultValue={value}
-							onChange={onChange}
-							data-testid="sentBeforeInput"
-						/>
-					)}
-				/>
-			</Container>
-			<Container padding={{ horizontal: 'extrasmall' }}>
 				<Controller
 					control={control}
 					name={'sentAfter'}
@@ -62,20 +41,20 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 			<Container padding={{ left: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={'sentOn'}
+					name={'sentBefore'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
-							label={t('search.sent_on', 'Sent on')}
+							label={t('search.sent_before', 'Sent before')}
 							enableChips
 							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 							dateFormat={PICKER_DATE_FORMAT}
 							locale={prefLocale}
 							showTimeSelect={false}
-							onChange={onChange}
 							selected={value}
 							defaultValue={value}
-							data-testid="sentOnInput"
+							onChange={onChange}
+							data-testid="sentBeforeInput"
 						/>
 					)}
 				/>

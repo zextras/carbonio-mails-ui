@@ -9,14 +9,14 @@ import produce from 'immer';
 import { filter, find, forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { NormalizedPartialConversation } from '../../../normalizations/normalize-conversation';
+import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation
-} from '../../../types';
-import { PartialIncompleteMessage } from '../../../views/sidebar/commons/types';
+} from 'types/index.d';
+import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
 function deleteConversationsInSearch(
 	state: EmailsStoreState,

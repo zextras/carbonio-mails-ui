@@ -8,14 +8,14 @@ import React, { memo, useMemo } from 'react';
 
 import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';
-import { MessageListItem } from '../messages/message-list-item';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useSelection } from 'hooks/use-selection';
+import type { AppContext, IncompleteMessage, SearchRequestStatus } from 'types/index.d';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 type ConversationMessagesListProps = {
 	activeItemId?: string;

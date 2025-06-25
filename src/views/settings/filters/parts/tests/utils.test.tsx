@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { findDefaultValue } from '../utils';
+import { findDefaultValue } from 'views/settings/filters/parts/utils';
 
 type OptionalFlag = {
 	flagName?: string;

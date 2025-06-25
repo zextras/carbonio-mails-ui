@@ -17,13 +17,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
-import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
-import { MAILS_ROUTE } from '../../../../constants';
-import { isFocusModeMailView } from '../../../../helpers/external-tabs';
-import { useViewLayout } from '../../../../hooks/use-view-layout';
-import type { MailMessage } from '../../../../types';
-import { LayoutComponent } from '../../folder-panel/parts/layout-component';
+import { MAILS_ROUTE } from 'constants/index';
+import { isFocusModeMailView } from 'helpers/external-tabs';
+import { useViewLayout } from 'hooks/use-view-layout';
+import type { MailMessage } from 'types/index.d';
+import { ConversationPreviewHeaderNavigation } from 'views/app/detail-panel/preview/conversation-preview-header-navigation';
+import { MessagePreviewHeaderNavigation } from 'views/app/detail-panel/preview/message-preview-header-navigation';
+import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
 const PreviewHeaderNavigation = ({
 	itemType

@@ -6,7 +6,7 @@
 
 import { registerFunctions } from '@zextras/carbonio-shell-ui';
 
-import { registerShellIntegrations } from '../register-shell-integrations';
+import { registerShellIntegrations } from 'app-utils/register-shell-integrations';
 
 describe('registerShellIntegrations', () => {
 	it('should called with the correct parameters', async () => {

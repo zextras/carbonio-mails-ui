@@ -9,7 +9,7 @@ import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Controller } from 'react-hook-form';
 
-import { FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 export const SubjectKeywordRow = ({ control }: FormValuesControlProps): ReactElement => {
 	const keywordChipOnAdd = useCallback(
@@ -62,6 +62,7 @@ export const SubjectKeywordRow = ({ control }: FormValuesControlProps): ReactEle
 							]}
 							onChange={onChange}
 							onAdd={keywordChipOnAdd}
+							requireUniqueChips
 						/>
 					)}
 				/>

@@ -7,15 +7,15 @@ import { useMemo } from 'react';
 
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
-import type { Geometry } from './use-resize';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
 	LOCAL_STORAGE_VIEW_SIZES,
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
-} from '../constants';
-import type { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-view';
+} from 'constants/index';
+import type { Geometry } from 'hooks/use-resize';
+import type { MailsListLayout, MailsSplitLayoutOrientation } from 'views/folder-view';
 
 export type UseViewLayoutResult = {
 	readonly currentLayout: MailsListLayout;

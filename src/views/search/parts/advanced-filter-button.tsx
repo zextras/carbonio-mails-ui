@@ -9,8 +9,8 @@ import { Button, Container, Tooltip, useModal } from '@zextras/carbonio-design-s
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import type { AdvancedFilterButtonProps } from '../../../types';
-import { AdvancedFilterModal } from '../advanced-filter-modal';
+import type { AdvancedFilterButtonProps } from 'types/index.d';
+import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
 
 const BorderContainer = styled(Container)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};

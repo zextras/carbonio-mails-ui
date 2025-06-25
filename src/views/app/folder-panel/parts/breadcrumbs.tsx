@@ -16,9 +16,9 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { LayoutComponent } from './layout-component';
-import { SortingComponent } from './sorting-component';
-import { getFolderPathForBreadcrumb } from '../../../../helpers/folders';
+import { getFolderPathForBreadcrumb } from 'helpers/folders';
+import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
+import { SortingComponent } from 'views/app/folder-panel/parts/sorting-component';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
 	svg {

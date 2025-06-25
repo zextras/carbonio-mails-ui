@@ -7,15 +7,14 @@
 import React from 'react';
 
 import { act, screen, waitFor, within } from '@testing-library/react';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations } from '../../../../../store/emails/store';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { ConversationsMultipleSelectionActions } from '../conversations-multiple-selection-actions';
+import { setupTest } from '@test-setup';
+import { tags } from '@test-utils/tags/tags';
+import { updateConversations } from 'store/emails/store';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 
 describe('ConversationsMultipleSelectionActions', () => {
 	describe('Mark as read action', () => {

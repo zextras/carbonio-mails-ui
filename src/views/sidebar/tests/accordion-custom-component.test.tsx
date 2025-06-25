@@ -7,18 +7,14 @@
 import React from 'react';
 
 import { screen, within } from '@testing-library/react';
+import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import assert from 'node:assert';
 
-import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import {
-	generateFolder,
-	generateFolderLink
-} from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { getMocksContext } from '../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import AccordionCustomComponent from '../accordion-custom-component';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import AccordionCustomComponent from 'views/sidebar/accordion-custom-component';
 
 describe('accordion-custom-component', () => {
 	it('should render without crashing', () => {
@@ -127,5 +123,33 @@ describe('accordion-custom-component', () => {
 		const userRootItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
 		expect(userRootItem).toBeInTheDocument();
 		expect(within(userRootItem).getByText(fullName)).toBeInTheDocument();
+	});
+
+	it('should display Drafts folder counter on shared Account', () => {
+		const identity = createFakeIdentity();
+		const sharedDraft = {
+			...generateFolderLink('100', '101', identity),
+			absFolderPath: '/Drafts',
+			id: FOLDERS.DRAFTS,
+			n: 87
+		};
+
+		setupTest(<AccordionCustomComponent item={sharedDraft} />);
+
+		expect(screen.getByText(87)).toBeInTheDocument();
+	});
+
+	it('should not display message counter on shared account Trash folder', () => {
+		const identity = createFakeIdentity();
+		const sharedDraft = {
+			...generateFolderLink('100', '101', identity),
+			absFolderPath: '/Drafts',
+			id: FOLDERS.TRASH,
+			n: 87
+		};
+
+		setupTest(<AccordionCustomComponent item={sharedDraft} />);
+
+		expect(screen.queryByText(87)).not.toBeInTheDocument();
 	});
 });

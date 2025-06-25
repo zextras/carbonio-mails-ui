@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
-import * as shareFolderModule from '../../../api/share-folder-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import EditPermissionsModal from '../edit-permissions-modal';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import * as shareFolderModule from 'api/share-folder-soap-api';
+import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);
@@ -43,7 +43,7 @@ describe('edit-permissions-modal', () => {
 			} as const
 		];
 
-		const folder = {
+		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
 			name: 'Inbox',

@@ -16,20 +16,19 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-
-import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
-import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
-import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
-	ShareCalendarRoleOptions,
-	findLabel
-} from '../../integrations/shared-invite-reply/parts/utils';
+	ContactInputItem,
+	ModalFooter,
+	ModalHeader,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
+
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import { shareFolderSoapApi } from 'api/share-folder-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
+import { EditPermissionsModalProps } from 'types/sidebar/index.d';
+import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({

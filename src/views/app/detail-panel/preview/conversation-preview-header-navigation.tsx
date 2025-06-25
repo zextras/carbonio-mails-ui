@@ -7,9 +7,9 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { NavigationIconButton } from './parts/navigation-icon-button';
-import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
-import { useConversationIndexSlice } from '../../../../store/emails/store';
+import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
+import { useConversationIndexSlice } from 'store/emails/store';
+import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, conversationId } = useParams() as {

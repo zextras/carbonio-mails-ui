@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
-import { DistributionListIcon } from '../distribution-list-icon';
+import { setupTest } from '@test-setup';
+import { DistributionListIcon } from 'views/app/detail-panel/preview/parts/info-block/distribution-list-icon';
 
 describe('DistributionListIcon', () => {
 	it('correctly renders the component', async () => {

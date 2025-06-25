@@ -6,7 +6,11 @@
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { CreateSmartLinksRequest, CreateSmartLinksResponse, SmartLinkAttachment } from '../types';
+import {
+	CreateSmartLinksRequest,
+	CreateSmartLinksResponse,
+	SmartLinkAttachment
+} from 'types/index.d';
 
 export async function createSmartLinksSoapApi(
 	attachmentsToConvert: Array<SmartLinkAttachment>

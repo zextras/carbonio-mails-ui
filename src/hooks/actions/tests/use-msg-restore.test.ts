@@ -6,14 +6,13 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { useMsgRestoreDescriptor, useMsgRestoreFn } from '../use-msg-restore';
+import { setupHook, screen } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useMsgRestoreDescriptor, useMsgRestoreFn } from 'hooks/actions/use-msg-restore';
+import { TIMERS } from 'tests/constants';
 
 describe('useMsgRestore', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });

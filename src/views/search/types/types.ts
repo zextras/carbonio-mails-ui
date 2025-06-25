@@ -5,9 +5,8 @@
  */
 
 import { Theme } from '@zextras/carbonio-design-system';
+import { ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { Control } from 'react-hook-form';
-
-import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
 
 export type SearchQueryItem = {
 	id: string;
@@ -44,7 +43,6 @@ export type AdvancedFilterModalFormValues = {
 	isUnread: boolean;
 	sentBefore: Date | null;
 	sentAfter: Date | null;
-	sentOn: Date | null;
 	sizeSmaller: KeywordState;
 	sizeLarger: KeywordState;
 	receivedFrom: Array<ContactInputItem>;

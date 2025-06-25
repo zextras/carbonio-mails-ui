@@ -6,8 +6,8 @@
 
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { checkEncryptionPassword } from '../check-password-api';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { checkEncryptionPassword } from 'api/check-password-api';
 
 describe('checkEncryptionPassword', () => {
 	it('returns data when password is correct', async () => {

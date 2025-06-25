@@ -6,7 +6,7 @@
 import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import { isArray, map } from 'lodash';
 
-import { MAIL_APP_ID } from '../../constants';
+import { MAIL_APP_ID } from 'constants/index';
 
 type AccountSettings = {
 	[key: string]: string | number | Array<string | number> | undefined;

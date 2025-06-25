@@ -5,17 +5,17 @@
  */
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
-import { getParticipantsFromMessage } from '../helpers/messages';
-import { getCertificatesPassword } from '../store/certificates/certificate';
-import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
-import { generateMailRequest } from '../store/editor-slice-utils';
-import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
-import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
-import { getMessageWithExistingParticipantsEmailStoreAction } from '../store/emails/actions/get-message-with-existing-participants';
-import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
+import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
+import { getParticipantsFromMessage } from 'helpers/messages';
+import { getCertificatesPassword } from 'store/certificates/certificate';
+import { createSoapSendMsgRequestFromEditor } from 'store/editor/editor-transformations';
+import { generateMailRequest } from 'store/editor-slice-utils';
+import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
+import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
+import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
 
 export const sendMsg = async ({
 	msg

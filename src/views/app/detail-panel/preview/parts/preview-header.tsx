@@ -14,40 +14,42 @@ import React, {
 } from 'react';
 
 import {
-	Container,
-	Text,
 	Avatar,
+	AvatarPropTypes,
+	Chip,
+	Container,
+	Dropdown,
 	Icon,
+	IconButton,
 	Padding,
 	Row,
+	Text,
 	Tooltip,
-	Chip,
-	Dropdown,
-	IconButton,
-	getColor,
-	AvatarPropTypes
+	getColor
 } from '@zextras/carbonio-design-system';
-import { useUserAccounts, t } from '@zextras/carbonio-shell-ui';
+import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	ParticipantRole,
+	Tag,
+	ZIMBRA_STANDARD_COLORS,
+	useRunSearchIntegration,
+	useSortedTagsArray
+} from '@zextras/carbonio-ui-commons';
 import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ContactNameChip } from './contact-names-chips';
-import { MailInfoBlock } from './info-block/mail-info-block';
-import { MailMsgPreviewActions } from './mail-message-preview-actions';
-import MessageContactsList from './message-contact-list';
-import OnBehalfOfDisplayer from './on-behalf-of-displayer';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
-import { useRunSearchIntegration } from '../../../../../carbonio-ui-commons/integrations/search/use-run-search';
-import { useSortedTagsArray } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
-import { getTimeLabel, participantToString } from '../../../../../commons/utils';
-import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
-import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage } from '../../../../../types';
-import { useTagExist } from '../../../../../ui-actions/tag-actions';
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { getNoIdentityPlaceholder } from 'helpers/identities';
+import { retrieveAttachmentsType } from 'store/editor-slice-utils';
+import type { MailMessage } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
+import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
+import { MailMsgPreviewActions } from 'views/app/detail-panel/preview/parts/mail-message-preview-actions';
+import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
+import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
 
 const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;
@@ -321,7 +323,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										flexBasis: 'fit-content',
 										whiteSpace: 'nowrap',
 										overflow: 'hidden',
-										minWidth: '8rem'
+										minWidth: '12.5rem'
 									}}
 								>
 									{showTagIcon && (

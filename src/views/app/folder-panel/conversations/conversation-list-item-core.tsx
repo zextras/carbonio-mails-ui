@@ -6,25 +6,23 @@
 import React, { useCallback, useMemo } from 'react';
 
 import {
-	Text,
 	Badge,
+	Button,
 	Container,
 	Icon,
 	Padding,
 	Row,
-	Tooltip,
-	Button
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
-import { uniqBy, reduce, includes, forEach, filter, isEmpty } from 'lodash';
+import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/participants-name';
-import { RowInfo } from '../parts/row-info';
+import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
@@ -37,6 +35,11 @@ type ConversationListItemCoreProps = {
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
 	) => void;
 };
+
+function cleanSubject(subject: string): string {
+	return subject.replace(/^(RE:|FWD:)\s*/i, '').trim();
+}
+
 export const ConversationListItemCore = ({
 	conversation,
 	selected,
@@ -111,7 +114,7 @@ export const ConversationListItemCore = ({
 		[open, t]
 	);
 	const subject = useMemo(
-		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		() => cleanSubject(conversation.subject) || t('label.no_subject_with_tags', '<No Subject>'),
 		[conversation.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(

@@ -7,12 +7,10 @@ import React, { useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { CONTACT_TYPES, ContactInputProps, useContactInput } from '@zextras/carbonio-ui-commons';
 import { Controller } from 'react-hook-form';
 
-import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputProps } from '../../../carbonio-ui-commons/integrations/types';
-import { FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();

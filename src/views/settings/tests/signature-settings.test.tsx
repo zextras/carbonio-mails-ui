@@ -9,12 +9,12 @@ import { within } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { screen, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { TESTID_SELECTORS } from '../../../tests/constants';
-import { buildSignature } from '../../../tests/generators/signatures';
-import { handleGetSignaturesRequest } from '../../../tests/mocks/network/msw/handle-get-signatures';
-import type { SignatureSettingsPropsType, SignItemType } from '../../../types';
-import SignatureSettings from '../signature-settings';
+import { setupTest, screen } from '@test-setup';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { buildSignature } from 'tests/generators/signatures';
+import { handleGetSignaturesRequest } from 'tests/mocks/network/msw/handle-get-signatures';
+import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
+import SignatureSettings from 'views/settings/signature-settings';
 
 const FIND_TIMEOUT = 2000;
 

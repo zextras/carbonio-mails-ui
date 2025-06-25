@@ -9,16 +9,16 @@ import { ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-syst
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { AttachmentTypeEmailStatusRow } from './parts/attachment-type-email-status-row';
-import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
-import { SendReceivedDateRow } from './parts/send-date-row';
-import { SizeLargerSizeSmallerRow } from './parts/size-smaller-size-larger-row';
-import { SubjectKeywordRow } from './parts/subject-keyword-row';
-import { TagFolderRow } from './parts/tag-folder-row';
-import { ToggleFilters } from './parts/toggle-filters';
-import { AdvancedFilterModalProps, AdvancedFilterModalFormValues } from './types/types';
-import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
-import { ScrollableContainer } from '../../commons/scrollable-container';
+import { ScrollableContainer } from 'commons/scrollable-container';
+import { AttachmentTypeEmailStatusRow } from 'views/search/parts/attachment-type-email-status-row';
+import { ReceivedSentAddressRow } from 'views/search/parts/received-sent-address-row';
+import { SendReceivedDateRow } from 'views/search/parts/send-date-row';
+import { SizeLargerSizeSmallerRow } from 'views/search/parts/size-smaller-size-larger-row';
+import { SubjectKeywordRow } from 'views/search/parts/subject-keyword-row';
+import { TagFolderRow } from 'views/search/parts/tag-folder-row';
+import { ToggleFilters } from 'views/search/parts/toggle-filters';
+import { AdvancedFilterModalProps, AdvancedFilterModalFormValues } from 'views/search/types/types';
+import { getAdvancedFiltersDefaultValues, getQueryToBe } from 'views/search/utils';
 
 export const AdvancedFilterModal = ({
 	query,
@@ -47,7 +47,6 @@ export const AdvancedFilterModal = ({
 		setValue('isUnread', false);
 		setValue('sentBefore', null);
 		setValue('sentAfter', null);
-		setValue('sentOn', null);
 		setValue('sizeSmaller', []);
 		setValue('sizeLarger', []);
 		setValue('receivedFrom', []);

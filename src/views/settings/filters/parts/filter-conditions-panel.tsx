@@ -8,10 +8,10 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import CustomSelect from './custom-select';
-import { FilterConditionRow } from './filter-condition-row';
-import { getFieldOptions, findDefaultValue } from './utils';
-import Heading from '../../components/settings-heading';
+import Heading from 'views/settings/components/settings-heading';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { FilterConditionRow } from 'views/settings/filters/parts/filter-condition-row';
+import { getFieldOptions, findDefaultValue } from 'views/settings/filters/parts/utils';
 
 type FilterTestConditionRowProps = any;
 

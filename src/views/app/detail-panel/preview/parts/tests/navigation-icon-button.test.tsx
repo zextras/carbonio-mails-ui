@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { NavigationIconButton } from '../navigation-icon-button';
+import { screen, setupTest } from '@test-setup';
+import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
 describe('NavigationIconButton', () => {
 	test('renders correctly', () => {

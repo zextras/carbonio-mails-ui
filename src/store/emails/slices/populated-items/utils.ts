@@ -6,26 +6,25 @@
 /* eslint-disable no-param-reassign */
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
 import { filter, forEach, keyBy, merge } from 'lodash';
-import { UseBoundStore, StoreApi } from 'zustand';
+import { StoreApi, UseBoundStore } from 'zustand';
 
-import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { CONVACTIONS } from '../../../../commons/utilities';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
+import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
-	MailMessage,
-	IncompleteMessage,
+	ConvActionParameters,
 	EmailsStoreState,
+	IncompleteMessage,
+	MailMessage,
+	MsgActionParameters,
 	NormalizedConversation,
 	SearchRequestStatus,
-	type ConvActionResponse,
-	MsgActionParameters,
-	ConvActionParameters
-} from '../../../../types';
+	type ConvActionResponse
+} from 'types/index.d';
 
 function useConversationMessages(
 	conversationId: string,

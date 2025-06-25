@@ -4,10 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {
-	type AdvancedAccountStore,
-	useAdvancedAccountStore
-} from '../store/advanced-account/store';
+import { type AdvancedAccountStore, useAdvancedAccountStore } from 'store/advanced-account/store';
 
 export const advancedAccountApi = (): Promise<AdvancedAccountStore> =>
 	fetch('/zx/login/v3/account')

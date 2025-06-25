@@ -7,21 +7,20 @@ import React, { useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { ConversationListComponent } from './conversation-list-component';
-import { useLoadMoreForConversationList } from './conversation-list-hooks';
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
-import { getFolderIdParts } from '../../../../helpers/folders';
-import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext } from '../../../../types';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { getFolderIdParts } from 'helpers/folders';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
+import { useSelection } from 'hooks/use-selection';
+import type { AppContext } from 'types/index.d';
+import { ConversationListComponent } from 'views/app/folder-panel/conversations/conversation-list-component';
+import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
+import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
+import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 
 export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
