@@ -151,4 +151,82 @@ describe('ConversationListItemCore', () => {
 
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
+
+	it('should remove FWD: prefix when it appears at the start of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', tags: [tagsArray[0].name], subject: 'FWD: Test Subject' },
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test Subject')).toBeInTheDocument();
+		expect(screen.queryByText('FWD: Test Subject')).not.toBeInTheDocument();
+	});
+
+	it('should remove RE: prefix when it appears at the start of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: {
+					id: '123',
+					tags: [tagsArray[0].name],
+					subject: 'RE: Test Subject'
+				},
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test Subject')).toBeInTheDocument();
+		expect(screen.queryByText('RE: Test Subject')).not.toBeInTheDocument();
+	});
+	it('should preserve RE: or FWD: when not at the beginning of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: {
+					id: '123',
+					tags: [tagsArray[0].name],
+					subject: 'Test RE: FWD: Subject'
+				},
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test RE: FWD: Subject')).toBeInTheDocument();
+	});
 });
