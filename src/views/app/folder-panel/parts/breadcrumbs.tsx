@@ -31,7 +31,7 @@ export const Breadcrumbs: FC<{
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	folderPath: string;
-	folderId?: string;
+	folderId: string;
 	isSearchModule?: boolean;
 }> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const iconCheckboxLabel = useMemo(

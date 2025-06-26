@@ -1,44 +1,49 @@
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Dropdown, DropdownItem, IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Dropdown, DropdownItem, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
+import { isSent } from 'helpers/folders';
 import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types/index.d';
 import { getTooltipLabel } from 'views/app/folder-panel/parts/utils/utils';
 
-export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
+type SortingOption = {
+	value: string;
+	label: string;
+};
+
+type SortDirection = 'Asc' | 'Desc';
+
+export const SortingComponent = ({ folderId }: { folderId: string }): React.JSX.Element => {
 	const buttonRef = useRef<HTMLDivElement>(null);
 	const { prefs } = useUserSettings();
 	const navigate = useNavigate();
+	const { isMessageView } = useAppContext<AppContext>();
 
 	const prefSortOrder = useMemo(
-		() => prefs?.zimbraPrefSortOrder,
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
 		[prefs?.zimbraPrefSortOrder]
-	) as string;
-	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+	);
+
+	const { sortType, sortDirection } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 
 	const [sortDirectionState, setSortDirectionState] = useState(sortDirection);
-
-	const iconButtonIconProps = useMemo(
-		() =>
-			sortDirectionState === SORTING_DIRECTION.ASCENDING
-				? SORT_ICONS.ASCENDING
-				: SORT_ICONS.DESCENDING,
-		[sortDirectionState]
-	);
 	const [sortingTypeState, setSortingTypeState] = useState(sortType);
+
 	useEffect(() => {
 		setSortDirectionState(sortDirection);
 		setSortingTypeState(sortType);
@@ -46,12 +51,16 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 
 	const tooltipLabel = useMemo(
 		() => getTooltipLabel(sortingTypeState, sortDirectionState),
-		[sortDirectionState, sortingTypeState]
+		[sortingTypeState, sortDirectionState]
 	);
 
-	const { isMessageView } = useAppContext<AppContext>();
+	const iconButtonIcon =
+		sortDirectionState === SORTING_DIRECTION.ASCENDING
+			? SORT_ICONS.ASCENDING
+			: SORT_ICONS.DESCENDING;
+
 	const performSearch = useCallback(
-		async (sortBy: string): Promise<void> => {
+		(sortBy: string) => {
 			searchEmailStoreAction({
 				folderId,
 				limit: 100,
@@ -62,168 +71,95 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 		[folderId, isMessageView]
 	);
 
-	const switchAscendingOrDescendingOrder = useCallback(() => {
-		setSortDirectionState((prev) =>
-			prev === SORTING_DIRECTION.ASCENDING
-				? SORTING_DIRECTION.DESCENDING
-				: SORTING_DIRECTION.ASCENDING
-		);
-		const newSortDirection =
+	const applySort = useCallback(
+		(type: string, direction: SortDirection) => {
+			const sortBy = `${type}${direction}`;
+			setSortingTypeState(type);
+			setSortDirectionState(direction);
+			performSearch(sortBy);
+			updateSortingSettings({
+				prefSortOrder,
+				sortingTypeValue: type,
+				sortingDirection: direction,
+				folderId
+			});
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+		},
+		[folderId, navigate, performSearch, prefSortOrder]
+	);
+
+	const toggleDirection = useCallback(() => {
+		const newDirection =
 			sortDirectionState === SORTING_DIRECTION.ASCENDING
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
-		const sortBy = `${sortingTypeState}${newSortDirection}`;
-		performSearch(sortBy);
-		updateSortingSettings({
-			prefSortOrder,
-			sortingTypeValue: sortingTypeState,
-			sortingDirection: newSortDirection,
-			folderId
-		});
+		applySort(sortingTypeState, newDirection);
+	}, [sortDirectionState, sortingTypeState, applySort]);
 
-		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-	}, [folderId, navigate, performSearch, prefSortOrder, sortDirectionState, sortingTypeState]);
-
-	const selectSortingType = useCallback(
-		(sortingTypeValue: string) => {
-			setSortingTypeState(sortingTypeValue);
-			performSearch(`${sortingTypeValue}${sortDirectionState}`);
-			updateSortingSettings({
-				prefSortOrder,
-				sortingTypeValue,
-				sortingDirection: sortDirectionState,
-				folderId
-			});
-
-			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-		},
-		[folderId, navigate, performSearch, prefSortOrder, sortDirectionState]
+	const handleSortTypeChange = useCallback(
+		(type: string) => applySort(type, sortDirectionState),
+		[applySort, sortDirectionState]
 	);
 
-	const sortUnread = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.unread.value);
-	}, [selectSortingType]);
+	const sortingOptions = useMemo(() => {
+		const options: SortingOption[] = [
+			SORTING_OPTIONS.unread,
+			SORTING_OPTIONS.important,
+			SORTING_OPTIONS.flagged,
+			SORTING_OPTIONS.attachment,
+			SORTING_OPTIONS.date,
+			SORTING_OPTIONS.subject
+		];
 
-	const sortTo = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.to.value);
-	}, [selectSortingType]);
+		if (isSent(folderId)) {
+			options.push(SORTING_OPTIONS.to);
+		} else {
+			options.push(SORTING_OPTIONS.from);
+		}
 
-	const sortFlagged = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.flagged.value);
-	}, [selectSortingType]);
+		return options;
+	}, [folderId]);
 
-	const sortDate = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.date.value);
-	}, [selectSortingType]);
-
-	const sortFrom = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.from.value);
-	}, [selectSortingType]);
-
-	const sortSubject = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.subject.value);
-	}, [selectSortingType]);
-
-	const sortAttachment = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.attachment.value);
-	}, [selectSortingType]);
-
-	const sortImportant = useCallback(() => {
-		selectSortingType(SORTING_OPTIONS.important.value);
-	}, [selectSortingType]);
-
-	const items: Array<DropdownItem> = [
+	const dropdownItems: DropdownItem[] = [
 		{
-			id: 'activity-1',
+			id: 'toggle-direction',
 			label:
 				sortDirectionState === SORTING_DIRECTION.ASCENDING
 					? t('sorting_dropdown.descendingOrder', 'Descending order')
 					: t('sorting_dropdown.ascendingOrder', 'Ascending order'),
-			onClick: switchAscendingOrDescendingOrder,
+			onClick: toggleDirection,
 			icon:
 				sortDirectionState === SORTING_DIRECTION.DESCENDING
 					? SORT_ICONS.ASCENDING
 					: SORT_ICONS.DESCENDING
 		},
-		{
-			id: `${SORTING_OPTIONS.unread.value}-id`,
-			label: t('sorting_dropdown.unread', 'Unread'),
-			selected: sortingTypeState === SORTING_OPTIONS.unread.value,
-			onClick: sortUnread,
-			icon: sortingTypeState === SORTING_OPTIONS.unread.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
-		{
-			id: `${SORTING_OPTIONS.important.value}-id`,
-			label: t('sorting_dropdown.important', 'Important'),
-			selected: sortingTypeState === SORTING_OPTIONS.important.value,
-			onClick: sortImportant,
-			icon:
-				sortingTypeState === SORTING_OPTIONS.important.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
-		{
-			id: `${SORTING_OPTIONS.flagged.value}-id`,
-			label: t('sorting_dropdown.flagged', 'Flagged'),
-			selected: sortingTypeState === SORTING_OPTIONS.flagged.value,
-			onClick: sortFlagged,
-			icon: sortingTypeState === SORTING_OPTIONS.flagged.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
-		{
-			id: `${SORTING_OPTIONS.attachment.value}-id`,
-			label: t('sorting_dropdown.attachment', 'Attachment'),
-			selected: sortingTypeState === SORTING_OPTIONS.attachment.value,
-			onClick: sortAttachment,
-			icon:
-				sortingTypeState === SORTING_OPTIONS.attachment.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
-		...(folderId !== FOLDERS.SENT
-			? [
-					{
-						id: `${SORTING_OPTIONS.from.value}-id`,
-						label: t('sorting_dropdown.from', 'From'),
-						selected: sortingTypeState === SORTING_OPTIONS.from.value,
-						onClick: sortFrom,
-						icon:
-							sortingTypeState === SORTING_OPTIONS.from.value ? 'RadioButtonOn' : 'RadioButtonOff'
-					}
-				]
-			: []),
-		...(folderId === FOLDERS.SENT
-			? [
-					{
-						id: `${SORTING_OPTIONS.to.value}-id`,
-						label: t('sorting_dropdown.to', 'To'),
-						selected: sortingTypeState === SORTING_OPTIONS.to.value,
-						onClick: sortTo,
-						icon: sortingTypeState === SORTING_OPTIONS.to.value ? 'RadioButtonOn' : 'RadioButtonOff'
-					}
-				]
-			: []),
-		{
-			id: `${SORTING_OPTIONS.date.value}-id`,
-			label: t('sorting_dropdown.date', 'Date'),
-			selected: sortingTypeState === SORTING_OPTIONS.date.value,
-			onClick: sortDate,
-			icon: sortingTypeState === SORTING_OPTIONS.date.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
-		{
-			id: `${SORTING_OPTIONS.subject.value}-id`,
-			label: t('sorting_dropdown.subject', 'Subject'),
-			selected: sortingTypeState === SORTING_OPTIONS.subject.value,
-			onClick: sortSubject,
-			icon: sortingTypeState === SORTING_OPTIONS.subject.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		}
+		...sortingOptions.map(({ value, label }) => ({
+			id: `${value}-id`,
+			label: t(`sorting_dropdown.${value}`, label),
+			selected: sortingTypeState === value,
+			onClick: () => handleSortTypeChange(value),
+			icon: sortingTypeState === value ? 'RadioButtonOn' : 'RadioButtonOff'
+		}))
 	];
+
 	return (
 		<Tooltip label={tooltipLabel} placement="top">
 			<Dropdown
-				items={items}
+				items={dropdownItems}
 				multiple
 				itemPaddingBetween="large"
 				itemIconSize="large"
 				selectedBackgroundColor="highlight"
 				data-testid="sorting-dropdown"
 			>
-				<IconButton icon={iconButtonIconProps} size="large" ref={buttonRef} onClick={noop} />
+				<Button
+					type="ghost"
+					icon={iconButtonIcon}
+					color="gray0"
+					size="large"
+					ref={buttonRef}
+					onClick={noop}
+				/>
 			</Dropdown>
 		</Tooltip>
 	);
