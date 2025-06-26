@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button, Dropdown, DropdownItem, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Dropdown, DropdownItem, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
@@ -132,6 +132,15 @@ export const SortingComponent = ({ folderId }: { folderId: string }): React.JSX.
 				sortDirectionState === SORTING_DIRECTION.DESCENDING
 					? SORT_ICONS.ASCENDING
 					: SORT_ICONS.DESCENDING
+		},
+		{
+			id: 'divider-1',
+			type: 'divider'
+		},
+		{
+			id: 'sort-by-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
 		},
 		...sortingOptions.map(({ value, label }) => ({
 			id: `${value}-id`,
