@@ -24,7 +24,7 @@ describe('deleteRecipientCertificate', () => {
 		const mockResponse = { ok: false, status: 404, statusText: 'Not Found' };
 		global.fetch = jest.fn(() => Promise.resolve(mockResponse)) as jest.Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((message) => {
+		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
 			/* mock implementation */
 		});
 
@@ -39,7 +39,7 @@ describe('deleteRecipientCertificate', () => {
 		const errorMessage = 'Network error';
 		global.fetch = jest.fn(() => Promise.reject(new Error(errorMessage))) as jest.Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((message) => {
+		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
 			/* mock implementation */
 		});
 

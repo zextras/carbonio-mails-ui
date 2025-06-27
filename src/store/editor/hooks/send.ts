@@ -36,13 +36,13 @@ const sendFromEditor = (
 	editorId: MailsEditorV2['id'],
 	options?: SendMessageOptions
 ): SendMessageResult => {
-	const editor = getEditor({ id: editorId });
-	if (!editor) {
+	const editorExist = getEditor({ id: editorId });
+	if (!editorExist) {
 		console.warn('Cannot find the editor', editorId);
 		return {};
 	}
 
-	if (!editor.sendAllowedStatus?.allowed) {
+	if (!editorExist.sendAllowedStatus?.allowed) {
 		return {};
 	}
 
@@ -71,6 +71,7 @@ const sendFromEditor = (
 
 	cancelableTimer.promise
 		.then(() => {
+			const editor = getEditor({ id: editorId });
 			editor?.identityId &&
 				sendMsgFromEditor({ editor })
 					.then((res) => {

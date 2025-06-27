@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.25.5 (2025-06-25)
+
+
+### Bug Fixes
+
+* on send editor will add the complete text ([4ea4af7](https://github.com/zextras/carbonio-mails-ui/commit/4ea4af7676952c58997053951cd497b38ddb17be))
+
 ### 1.25.4 (2025-06-06)
 
 ### 1.25.3 (2025-05-30)

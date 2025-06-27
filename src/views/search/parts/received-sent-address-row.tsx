@@ -3,17 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { useContactInput } from '@zextras/carbonio-ui-commons';
+import { CONTACT_TYPES, ContactInputProps, useContactInput } from '@zextras/carbonio-ui-commons';
 import { Controller } from 'react-hook-form';
 
 import { FormValuesControlProps } from 'views/search/types/types';
 
 export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();
+
+	const chipLabelFactory = useCallback<NonNullable<ContactInputProps['chipLabelFactory']>>(
+		(value, defaultLabel): string => {
+			if (value.type === CONTACT_TYPES.CONTACT) {
+				return value.email;
+			}
+			return defaultLabel;
+		},
+		[]
+	);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
@@ -27,6 +37,7 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 							placeholder={t('label.from', 'From')}
 							onChange={onChange}
 							defaultValue={value}
+							chipLabelFactory={chipLabelFactory}
 						/>
 					)}
 				/>
@@ -35,12 +46,13 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 				<Controller
 					control={control}
 					name={'sentTo'}
-					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ContactInput
 							data-testid={'sent-to-input'}
 							placeholder={t('label.to', 'To')}
 							onChange={onChange}
 							defaultValue={value}
+							chipLabelFactory={chipLabelFactory}
 						/>
 					)}
 				/>
