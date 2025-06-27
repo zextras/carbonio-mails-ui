@@ -48,7 +48,6 @@ describe('search view hooks', () => {
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
-				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
 		);
@@ -87,7 +86,6 @@ describe('search view hooks', () => {
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
-				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
 		);
@@ -132,7 +130,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
 		);
@@ -176,7 +173,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
 		);
@@ -223,7 +219,6 @@ describe('search view hooks', () => {
 					}
 				],
 				updateQuery: noop,
-				invalidQueryTooltip: 'INVALID',
 				isSharedFolderIncluded: false
 			})
 		);
