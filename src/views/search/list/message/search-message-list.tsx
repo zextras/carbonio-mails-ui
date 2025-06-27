@@ -105,24 +105,22 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	return (
 		<>
 			{!isInvalidQuery && !loading && (
-				<>
-					<SearchListHeader
-						itemIds={messageIds}
-						selected={selected}
+				<SearchListHeader
+					itemIds={messageIds}
+					selected={selected}
+					deselectAll={deselectAll}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
+				>
+					<MessagesMultipleSelectionActions
+						ids={selectedIds}
 						deselectAll={deselectAll}
-						isSelectModeOn={isSelectModeOn}
-						setIsSelectModeOn={setIsSelectModeOn}
-						selectAll={selectAll}
-						isAllSelected={isAllSelected}
-						selectAllModeOff={selectAllModeOff}
-					>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={''}
-						/>
-					</SearchListHeader>
-				</>
+						folderId={''}
+					/>
+				</SearchListHeader>
 			)}
 
 			{!loading && (
