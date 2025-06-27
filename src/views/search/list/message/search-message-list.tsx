@@ -25,7 +25,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	query,
 	loading,
 	isInvalidQuery,
-	hasMore
+	hasMore,
+	searchResultsStatus
 }) => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
@@ -49,16 +50,14 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery) return null;
-
-		if (totalMessages === 0) {
+		if (searchResultsStatus === 'fulfilled' && messageIds.length === 0 && !loading) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, totalMessages]);
+	}, [searchResultsStatus, messageIds, loading]);
 
 	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
@@ -123,7 +122,11 @@ export const SearchMessageList: FC<SearchListProps> = ({
 							folderId={''}
 						/>
 					</SearchListHeader>
+				</>
+			)}
 
+			{!loading && (
+				<>
 					{totalMessages > 0 || hasMore ? (
 						<CustomList
 							onListBottom={onScrollBottom}

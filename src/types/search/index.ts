@@ -19,6 +19,7 @@ export type SearchListProps = {
 	loading: boolean;
 	isInvalidQuery: boolean;
 	hasMore?: boolean;
+	searchResultsStatus?: SearchRequestStatus;
 };
 
 export type SearchChipItem = ChipItem & {

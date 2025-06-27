@@ -80,7 +80,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 		() =>
 			t(
 				'label.invalid_query',
-				'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results.'
+				'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results for:'
 			),
 		[]
 	);
@@ -182,6 +182,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 										loading={loading}
 										isInvalidQuery={isInvalidQuery}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
 								) : (
 									<SearchConversationList
@@ -190,6 +191,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 										loading={loading}
 										isInvalidQuery={isInvalidQuery}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
 								)}
 							</Container>
