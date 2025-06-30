@@ -87,7 +87,7 @@ export const MessageListItem = memo(function MessageListItem({
 	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
-				debouncedPushHistory.cancel();
+				debouncedPushHistory();
 				const { id, isDraft } = message;
 				if (isDraft) {
 					createEditBoard({
