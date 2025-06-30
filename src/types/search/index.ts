@@ -19,6 +19,7 @@ export type SearchListProps = {
 	loading: boolean;
 	isInvalidQuery: boolean;
 	hasMore?: boolean;
+	searchResultsStatus?: SearchRequestStatus;
 };
 
 export type SearchChipItem = ChipItem & {
@@ -36,7 +37,6 @@ export type AdvancedFilterButtonProps = {
 	query: Query;
 	isSharedFolderIncluded: boolean;
 	onSearchConfirm: (options: { query: Query; includeSharedFolders: boolean }) => void;
-	searchDisabled: boolean;
 	invalidQueryTooltip?: string;
 };
 

@@ -21,7 +21,6 @@ export const AdvancedFilterButton = ({
 	query,
 	onSearchConfirm,
 	isSharedFolderIncluded,
-	searchDisabled,
 	invalidQueryTooltip
 }: AdvancedFilterButtonProps): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -29,45 +28,37 @@ export const AdvancedFilterButton = ({
 	const modalId = 'advanced-filter-modal';
 
 	return (
-		<Tooltip
-			label={invalidQueryTooltip}
-			placement="top"
-			maxWidth="100%"
-			disabled={!searchDisabled || !invalidQueryTooltip}
+		<BorderContainer
+			padding={{ all: 'small' }}
+			height="fit"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			borderRadius="none"
 		>
-			<BorderContainer
-				padding={{ all: 'small' }}
-				height="fit"
-				mainAlignment="flex-start"
-				crossAlignment="flex-start"
-				borderRadius="none"
-			>
-				<Button
-					onClick={(): void => {
-						createModal(
-							{
-								id: modalId,
-								maxHeight: '90vh',
-								size: 'medium',
-								children: (
-									<AdvancedFilterModal
-										query={query}
-										isSharedFolderIncluded={isSharedFolderIncluded}
-										onSearchConfirm={onSearchConfirm}
-										onClose={(): void => closeModal(modalId)}
-									/>
-								)
-							},
-							true
-						);
-					}}
-					type={'outlined'}
-					width="fill"
-					label={t('label.single_advanced_filter', 'Advanced Filters')}
-					disabled={searchDisabled}
-					icon="Options2Outline"
-				/>
-			</BorderContainer>
-		</Tooltip>
+			<Button
+				onClick={(): void => {
+					createModal(
+						{
+							id: modalId,
+							maxHeight: '90vh',
+							size: 'medium',
+							children: (
+								<AdvancedFilterModal
+									query={query}
+									isSharedFolderIncluded={isSharedFolderIncluded}
+									onSearchConfirm={onSearchConfirm}
+									onClose={(): void => closeModal(modalId)}
+								/>
+							)
+						},
+						true
+					);
+				}}
+				type={'outlined'}
+				width="fill"
+				label={t('label.single_advanced_filter', 'Advanced Filters')}
+				icon="Options2Outline"
+			/>
+		</BorderContainer>
 	);
 };

@@ -38,9 +38,6 @@ type UseRunSearchProps = {
 	query: QueryChip[];
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	updateQuery: Function;
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	useDisableSearch: () => [boolean, Function];
-	invalidQueryTooltip: string;
 	isSharedFolderIncluded: boolean;
 };
 
@@ -130,7 +127,6 @@ export function useIsMessageView(): boolean {
 }
 
 type UseRunSearchReturnType = {
-	searchDisabled: boolean;
 	queryToString: string;
 	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
@@ -140,11 +136,8 @@ type UseRunSearchReturnType = {
 export function useRunSearch({
 	query,
 	updateQuery,
-	useDisableSearch,
-	invalidQueryTooltip,
 	isSharedFolderIncluded
 }: UseRunSearchProps): UseRunSearchReturnType {
-	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
@@ -179,18 +172,16 @@ export function useRunSearch({
 				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
 				setIsInvalidQuery(true);
-				setSearchDisabled(true, invalidQueryTooltip);
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
 				setIsInvalidQuery(false);
 				handleSearchResults({ searchResponse });
 			}
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, queryToString, setSearchDisabled]
+		[isMessageView, prefLocale, queryToString]
 	);
 
 	return {
-		searchDisabled,
 		searchResults,
 		isInvalidQuery,
 		queryToString,
