@@ -25,7 +25,8 @@ export const SearchConversationList = ({
 	query,
 	loading,
 	isInvalidQuery,
-	hasMore
+	hasMore,
+	searchResultsStatus
 }: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams() as { itemId?: string };
 	const loadingMore = useRef<boolean>(false);
@@ -49,17 +50,14 @@ export const SearchConversationList = ({
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (isInvalidQuery) {
-			return null;
-		}
-		if (isEmpty(conversationIds)) {
+		if (searchResultsStatus === 'fulfilled' && conversationIds.length === 0 && !loading) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, conversationIds]);
+	}, [searchResultsStatus, conversationIds, loading]);
 
 	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
@@ -131,6 +129,10 @@ export const SearchConversationList = ({
 						/>
 					</SearchListHeader>
 					<Divider color="gray2" />
+				</>
+			)}
+			{!loading && (
+				<>
 					{totalConversations > 0 || hasMore ? (
 						<CustomList
 							onListBottom={(): void => {

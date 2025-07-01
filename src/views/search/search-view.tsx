@@ -20,11 +20,56 @@ import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button'
 import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
 import { Query } from 'views/search/types/types';
 
-const SearchView = ({
-	useDisableSearch,
-	useQuery,
-	ResultsHeader
-}: SearchViewProps): React.JSX.Element => {
+const specialChars = [
+	'~',
+	"'",
+	'!',
+	'#',
+	'$',
+	'%',
+	'^',
+	'&',
+	'(',
+	')',
+	'_',
+	'?',
+	'/',
+	'{',
+	'}',
+	'[',
+	']',
+	';',
+	':',
+	'-',
+	'+',
+	'<',
+	'>'
+];
+const prefixes = [
+	'has',
+	'is',
+	'Subject',
+	'from',
+	'to',
+	'attachment',
+	'smaller',
+	'larger',
+	'after',
+	'before',
+	'tag',
+	'in'
+];
+
+export const containsSpecialCharacters = (value: string): boolean => {
+	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
+	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
+		return false;
+	}
+	const text = prefix ? value.substring(prefix.length + 1) : value;
+	return specialChars.some((specialChar) => text.includes(specialChar));
+};
+
+const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
@@ -32,7 +77,11 @@ const SearchView = ({
 	const isMessageView = useIsMessageView();
 
 	const invalidQueryTooltip = useMemo(
-		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
+		() =>
+			t(
+				'label.invalid_query',
+				'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results for:'
+			),
 		[]
 	);
 
@@ -49,19 +98,21 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
-		useRunSearch({
-			query,
-			updateQuery,
-			useDisableSearch,
-			invalidQueryTooltip,
-			isSharedFolderIncluded
-		});
+	const { searchResults, isInvalidQuery, queryToString, executeSearch } = useRunSearch({
+		query,
+		updateQuery,
+		isSharedFolderIncluded
+	});
 
-	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
+	const containsSpecialCharacter = useMemo(
+		() => query.some((ch) => ch.value !== undefined && containsSpecialCharacters(ch.value)),
+		[query]
+	);
+
+	const resultLabelType = containsSpecialCharacter ? 'warning' : undefined;
 
 	const resultLabel = useMemo(() => {
-		if (isInvalidQuery) {
+		if (containsSpecialCharacter) {
 			return invalidQueryTooltip;
 		}
 		if (!query.length) return '';
@@ -72,7 +123,7 @@ const SearchView = ({
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip]);
+	}, [searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
@@ -122,8 +173,7 @@ const SearchView = ({
 									query={query as Query}
 									isSharedFolderIncluded={isSharedFolderIncluded}
 									onSearchConfirm={onSearchConfirm}
-									searchDisabled={searchDisabled}
-									invalidQueryTooltip={invalidQueryTooltip}
+									invalidQueryTooltip={containsSpecialCharacter ? invalidQueryTooltip : undefined}
 								/>
 								{isMessageView ? (
 									<SearchMessageList
@@ -132,6 +182,7 @@ const SearchView = ({
 										loading={loading}
 										isInvalidQuery={isInvalidQuery}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
 								) : (
 									<SearchConversationList
@@ -140,6 +191,7 @@ const SearchView = ({
 										loading={loading}
 										isInvalidQuery={isInvalidQuery}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
 								)}
 							</Container>
