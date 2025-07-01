@@ -125,7 +125,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			debouncedPushHistory.cancel();
+			debouncedPushHistory();
 			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 
