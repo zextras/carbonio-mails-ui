@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import moment from 'moment';
 import { type MailMessage } from '../../types';
@@ -29,12 +30,12 @@ export function getHeader(msg: MailMessage, content: string): string {
                     <tr>
                         <td align="left">
                             <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
-                                ${getParticipantHeader(from, 'From')}
-                                ${getSubject(subject, 'Subject')}
-                                ${getParticipantHeader(to, 'To')} 
-                                ${getParticipantHeader(cc, 'Cc')}
-                                ${getParticipantHeader(bcc, 'Bcc')}
-                                ${getParticipantHeader(replyTo, 'Reply To')}
+                                ${getParticipantHeader(from, t('label.from', 'From'))}
+                                ${getSubject(subject, t('label.subject', 'Subject'))}
+                                ${getParticipantHeader(to, t('label.to', 'To'))} 
+                                ${getParticipantHeader(cc, t('label.cc', 'Cc'))}
+                                ${getParticipantHeader(bcc, t('label.bcc', 'Bcc'))}
+                                ${getParticipantHeader(replyTo, t('label.reply_to', 'Reply To'))}
                         </table>
                         </td>
                         <td valign='top'>
