@@ -6,8 +6,10 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
+import * as sendDeliveryReportSoapApiMock from '../../../../../api/send-delivery-request-soap-api';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import ReadReceiptModal from '../read-receipt-modal';
@@ -19,7 +21,8 @@ const baseMessageWithReadReadReceiptRequested = generateMessage({
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	soapFetch: jest.fn(),
-	t: jest.fn((key, defaultValue) => defaultValue)
+	t: jest.fn((key, defaultValue) => defaultValue),
+	useUserSettings: jest.fn()
 }));
 
 describe('ReadReceiptModal', () => {
@@ -72,5 +75,50 @@ describe('ReadReceiptModal', () => {
 		await user.click(notifyButton);
 
 		expect(mockOnClose).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not render modal when open is false', () => {
+		setupTest(
+			<ReadReceiptModal
+				open={false}
+				onClose={jest.fn()}
+				message={baseMessageWithReadReadReceiptRequested}
+				readReceiptSetting="ask"
+			/>
+		);
+		expect(screen.queryByText('Read receipt required')).not.toBeInTheDocument();
+	});
+
+	it('should always trigger notify when read receipt setting is set to "always"', async () => {
+		(useUserSettings as jest.Mock).mockReturnValue({
+			prefs: { zimbraPrefMailSendReadReceipts: 'always' }
+		});
+
+		const onCloseMock = jest.fn();
+
+		const sendDeliveryReportSoapApiSpy = jest.spyOn(
+			sendDeliveryReportSoapApiMock,
+			'sendDeliveryReportSoapApi'
+		);
+
+		await act(async () => {
+			setupTest(
+				<ReadReceiptModal
+					open={false}
+					onClose={onCloseMock}
+					message={baseMessageWithReadReadReceiptRequested}
+					readReceiptSetting="always"
+				/>
+			);
+		});
+
+		expect(screen.queryByText('Read receipt required')).not.toBeInTheDocument();
+
+		expect(sendDeliveryReportSoapApiSpy).toHaveBeenCalledWith('12345');
+
+		expect(screen.getByTestId('snackbar')).toBeInTheDocument();
+		expect(screen.getByText('A read receipt has been sent for this message')).toBeInTheDocument();
+
+		expect(onCloseMock).toHaveBeenCalledTimes(1);
 	});
 });
