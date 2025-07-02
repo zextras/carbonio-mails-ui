@@ -110,7 +110,7 @@ export function generateQueryString(
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
-	// Filter out advanced filter chips from files-ui that have queryChipsToAdvancedFiltersValue property
+	// Filter out advanced filter chips from files-ui
 	const filteredQuery = query.filter((c) => !('queryChipsToAdvancedFiltersValue' in c));
 	const queryString = filteredQuery.map((c) => convertSearchChipToString(c)).join(' ');
 
@@ -249,7 +249,7 @@ function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 				excludeLabels.includes(queryItem.label) ||
 				excludePrefixes.some((prefix) => queryItem.label.startsWith(prefix)) ||
 				queryItem.isQueryFilter ||
-				// Exclude advanced filter chips from files-ui that have queryChipsToAdvancedFiltersValue property
+				// Exclude advanced filter chips from files-ui
 				'queryChipsToAdvancedFiltersValue' in queryItem;
 
 			return !isExcluded;

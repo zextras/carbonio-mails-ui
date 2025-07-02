@@ -54,26 +54,26 @@ describe('generateQueryString', () => {
 	it('should exclude chips with queryChipsToAdvancedFiltersValue property from query string generation', () => {
 		const queryWithAdvancedFilters = [
 			{ id: '0-yuliya', value: 'yuliya', label: 'yuliya' },
-			{ 
+			{
 				id: '1-folder',
-				value: 'LOCAL_ROOT', 
+				value: 'LOCAL_ROOT',
 				label: 'in:Home',
 				queryChipsToAdvancedFiltersValue: {
 					cascade: { value: true },
 					folderId: { value: 'LOCAL_ROOT', label: 'in:Home' }
 				}
 			},
-			{ 
+			{
 				id: '2-owner',
-				value: '74565421-1f37-4184-b8a5-d9b818d89248', 
+				value: '74565421-1f37-4184-b8a5-d9b818d89248',
 				label: 'Name Surname',
 				queryChipsToAdvancedFiltersValue: {
 					ownerId: { value: '74565421-1f37-4184-b8a5-d9b818d89248' }
 				}
 			},
-			{ 
+			{
 				id: '3-type',
-				value: 'FOLDER', 
+				value: 'FOLDER',
 				label: 'Folder',
 				queryChipsToAdvancedFiltersValue: {
 					type: { value: 'FOLDER' }
@@ -314,26 +314,26 @@ describe('getAdvancedFiltersDefaultValues', () => {
 	it('should exclude chips with queryChipsToAdvancedFiltersValue from keywords', () => {
 		const queryWithAdvancedFilters = [
 			{ id: '0-yuliya', value: 'yuliya', label: 'yuliya' },
-			{ 
+			{
 				id: '1-folder',
-				value: 'LOCAL_ROOT', 
+				value: 'LOCAL_ROOT',
 				label: 'in:Home',
 				queryChipsToAdvancedFiltersValue: {
 					cascade: { value: true },
 					folderId: { value: 'LOCAL_ROOT', label: 'in:Home' }
 				}
 			},
-			{ 
+			{
 				id: '2-owner',
-				value: '74565421-1f37-4184-b8a5-d9b818d89248', 
+				value: '74565421-1f37-4184-b8a5-d9b818d89248',
 				label: 'Name Surname',
 				queryChipsToAdvancedFiltersValue: {
 					ownerId: { value: '74565421-1f37-4184-b8a5-d9b818d89248' }
 				}
 			},
-			{ 
+			{
 				id: '3-type',
-				value: 'FOLDER', 
+				value: 'FOLDER',
 				label: 'Folder',
 				queryChipsToAdvancedFiltersValue: {
 					type: { value: 'FOLDER' }

@@ -105,12 +105,14 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 	});
 
 	const containsSpecialCharacter = useMemo(
-		() => query.some((ch) => 
-			ch.value !== undefined && 
-			containsSpecialCharacters(ch.value) && 
-			// Exclude advanced filter chips from files-ui that have queryChipsToAdvancedFiltersValue property
-			!('queryChipsToAdvancedFiltersValue' in ch)
-		),
+		() =>
+			query.some(
+				(ch) =>
+					ch.value !== undefined &&
+					containsSpecialCharacters(ch.value) &&
+					// Exclude advanced filter chips from files-ui
+					!('queryChipsToAdvancedFiltersValue' in ch)
+			),
 		[query]
 	);
 

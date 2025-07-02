@@ -762,4 +762,108 @@ describe('SearchView', () => {
 		expect(navigate).toHaveBeenCalledWith('../message/10', { replace: true });
 		expect(navigate).toHaveBeenCalledTimes(1);
 	});
+
+	it('should call onSearchConfirm with correct parameters when advanced filters are applied', async () => {
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test'
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChip], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		const { user } = setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.results_for');
+
+		const advancedFiltersButton = screen.getByRole('button', {
+			name: 'Advanced Filters'
+		});
+		await user.click(advancedFiltersButton);
+
+		await screen.findByText('Advanced Filters');
+
+		const searchButton = screen.getByRole('button', {
+			name: 'action.search'
+		});
+		await user.click(searchButton);
+
+		expect(mockUpdateQuery).toHaveBeenCalled();
+	});
+
+	it('should not show special character warning for chips with queryChipsToAdvancedFiltersValue', async () => {
+		const queryChipWithAdvancedFilters: any = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test!',
+			value: 'test!',
+			queryChipsToAdvancedFiltersValue: {
+				folderId: { value: 'LOCAL_ROOT', label: 'in:Home' }
+			}
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChipWithAdvancedFilters], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.results_for');
+
+		expect(screen.queryByText('label.invalid_query')).not.toBeInTheDocument();
+	});
+
+	it('should show special character warning for chips without queryChipsToAdvancedFiltersValue', async () => {
+		const queryChipWithSpecialChars: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test!',
+			value: 'test!'
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChipWithSpecialChars], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.invalid_query');
+
+		expect(screen.getByText('label.invalid_query')).toBeInTheDocument();
+	});
 });
