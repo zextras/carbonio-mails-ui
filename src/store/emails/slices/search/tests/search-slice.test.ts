@@ -6,9 +6,7 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
@@ -22,7 +20,9 @@ import {
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
 	resetSearchAndPopulatedItems
-} from '../../../store';
+} from 'store/emails/store';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 describe('emails store search slice', () => {

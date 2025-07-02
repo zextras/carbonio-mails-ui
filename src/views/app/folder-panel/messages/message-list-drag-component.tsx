@@ -8,8 +8,8 @@ import React from 'react';
 
 import { map, noop } from 'lodash';
 
-import { MessageListItem } from './message-list-item';
-import { getMessageById } from '../../../../store/emails/store';
+import { getMessageById } from 'store/emails/store';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 export const DragItems = ({
 	draggedIds

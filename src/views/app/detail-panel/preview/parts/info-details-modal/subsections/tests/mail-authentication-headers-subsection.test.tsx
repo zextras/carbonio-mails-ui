@@ -6,8 +6,10 @@
 
 import React from 'react';
 
-import { setupTest, screen } from '../../../../../../../../carbonio-ui-commons/test/test-setup';
-import { MailAuthenticationHeadersSubsection } from '../mail-authentication-headers-subsection';
+import { screen } from '@testing-library/react';
+
+import { setupTest } from '@test-setup';
+import { MailAuthenticationHeadersSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/mail-authentication-headers-subsection';
 
 describe('MailAuthenticationHeadersSubsection', () => {
 	test('correctly renders all attributes when present', () => {

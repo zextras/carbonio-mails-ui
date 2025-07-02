@@ -7,11 +7,11 @@ import React, { useEffect } from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { MessagePreviewPanel } from './message-preview-panel';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { isFocusModeMailView } from '../../../helpers/external-tabs';
-import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
-import { useMessageStatus } from '../../../store/emails/store';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { isFocusModeMailView } from 'helpers/external-tabs';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import { useMessageStatus } from 'store/emails/store';
+import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	const { folderId, messageId } = useParams() as {

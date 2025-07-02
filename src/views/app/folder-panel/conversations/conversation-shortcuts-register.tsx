@@ -5,7 +5,7 @@
  */
 import { useEffect } from 'react';
 
-import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
+import { useConversationKeyboardShortcuts } from 'hooks/use-conversation-keyboard-shortcuts';
 
 type ConversationShortcutsRegisterProps = {
 	conversationId: string;

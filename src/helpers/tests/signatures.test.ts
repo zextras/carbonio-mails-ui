@@ -6,14 +6,14 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
-import { LineType } from '../../commons/utils';
+import { LineType } from 'commons/utils';
 import {
 	composeMailBodyWithSignature,
 	getSignatures,
 	getSignatureValue,
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL
-} from '../signatures';
+} from 'helpers/signatures';
 
 describe('Signatures', () => {
 	describe('composeMailBodyWithSignature', () => {

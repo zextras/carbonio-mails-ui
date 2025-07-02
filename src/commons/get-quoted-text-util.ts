@@ -6,7 +6,7 @@
 
 import { orderBy } from 'lodash';
 
-import { LineType } from './utils';
+import { LineType } from 'commons/utils';
 
 const contentType = 'text/html';
 const NON_WHITESPACE_REGEX = /\S+/;

@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { t as mockT } from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { PRIMARY_IDENTITY_NAME } from '../../../../helpers/identities';
-import { SignItemType } from '../../../../types';
-import SelectIdentitySignature from '../select-identity-signature';
+import { setupTest } from '@test-setup';
+import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
+import { SignItemType } from 'types/index.d';
+import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	t: jest.fn((key, defaultValue) => defaultValue)

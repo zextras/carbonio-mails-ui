@@ -9,11 +9,11 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { Spinner } from '../../../../assets/spinner';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
-import { ConversationMessagePreviewWrapper } from '../../../app/detail-panel/conversation-message-preview-wrapper';
-import { SearchPanelHeader } from '../search-panel-header';
+import { Spinner } from 'assets/spinner';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
+import { ConversationMessagePreviewWrapper } from 'views/app/detail-panel/conversation-message-preview-wrapper';
+import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 
 type SearchConversationExtraWindowContainerPanelProps = { conversationId: string };
 

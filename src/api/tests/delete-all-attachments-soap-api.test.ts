@@ -5,7 +5,7 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { deleteAttachmentsSoapApi } from '../delete-all-attachments-soap-api';
+import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	soapFetch: jest.fn()

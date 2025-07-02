@@ -8,9 +8,9 @@ import React from 'react';
 import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MailAuthenticationHeaderRow } from './mail-authentication-header-row';
-import { MailAuthenticationHeaders } from '../../../../../../../types';
-import { getAuthenticationHeadersIconColor } from '../../utils';
+import { MailAuthenticationHeaders } from 'types/index.d';
+import { MailAuthenticationHeaderRow } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/mail-authentication-header-row';
+import { getAuthenticationHeadersIconColor } from 'views/app/detail-panel/preview/parts/utils';
 
 type MailGeneralInfoSubsectionProps = {
 	authenticationMailsHeaders: MailAuthenticationHeaders;

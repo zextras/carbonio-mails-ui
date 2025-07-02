@@ -5,16 +5,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
-import { searchSoapApi } from '../../../../api/search-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	appendMessagesToMessagesSlice,
 	updateMessagesResultsLoadingStatus
-} from '../../../../store/emails/store';
-import { SearchResponse } from '../../../../types';
+} from 'store/emails/store';
+import { SearchResponse } from 'types/index.d';
 
 function handleLoadMoreResults({
 	searchResponse,

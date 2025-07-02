@@ -8,7 +8,7 @@ import React from 'react';
 
 import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 
-import { useOnMouseHover } from '../use-on-mouse-hover';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 
 describe('useOnMouseHover', () => {
 	const hoverElementDataTestId = 'hover-element';

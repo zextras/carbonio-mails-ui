@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { sendShareNotificationSoapApi } from '../send-share-notification-soap-api';
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
 
 describe('sendShareNotificationSoapApi', () => {
 	const mockResponse = { success: true };

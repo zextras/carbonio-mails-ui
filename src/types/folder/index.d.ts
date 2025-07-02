@@ -8,9 +8,9 @@ import React, { ReactNode } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
-import { UIActionDescriptor } from '../actions';
-import { Conversation } from '../conversations';
-import { IncompleteMessage, MailMessage } from '../messages';
+import { UIActionDescriptor } from 'types/actions/index.d';
+import { Conversation } from 'types/conversations/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages/index.d';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 

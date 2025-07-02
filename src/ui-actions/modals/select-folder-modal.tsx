@@ -7,12 +7,11 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import type { Folder, RootFolder } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { isNil } from 'lodash';
 
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import type { Folder, RootFolder } from '../../carbonio-ui-commons/types/folder';
-import { FolderSelector } from '../../views/sidebar/commons/folder-selector';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type SelectFolderModalProps = {
 	folder?: Folder | RootFolder;

@@ -15,17 +15,16 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { BackupSearchMessageListItem } from './backup-search-message-list-item';
-import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
-import { restoreMessagesApi } from '../../../api/restore-messages-api';
-import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
-import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
-import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
-import { useSelection } from '../../../hooks/use-selection';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
+import { restoreMessagesApi } from 'api/restore-messages-api';
+import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from 'constants/index';
+import { useSelection } from 'hooks/use-selection';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
+import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);

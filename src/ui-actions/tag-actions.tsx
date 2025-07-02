@@ -15,14 +15,18 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import {
+	Tag,
+	TagsActionsType,
+	useTags,
+	ZIMBRA_STANDARD_COLORS,
+	DeleteTagModal
+} from '@zextras/carbonio-ui-commons';
 import { find, reduce, some } from 'lodash';
 
-import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
-import { TagsActionsType, ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants';
-import { useTags } from '../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../carbonio-ui-commons/types/tags';
-import type { ArgumentType, ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
-import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
+import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
+import { ArgumentType } from 'types/tags';
+import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,

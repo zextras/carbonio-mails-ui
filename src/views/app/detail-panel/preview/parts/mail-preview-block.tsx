@@ -6,22 +6,21 @@
 import React, { FC, useMemo } from 'react';
 
 import {
-	Container,
-	Row,
-	Padding,
-	Icon,
-	Text,
 	Button,
-	Divider
+	Container,
+	Divider,
+	Icon,
+	Padding,
+	Row,
+	Text
 } from '@zextras/carbonio-design-system';
+import { FOLDERS, getFolderIdParts } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import PreviewHeader from './preview-header';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { getFolderIdParts } from '../../../../../carbonio-ui-commons/helpers/folders';
-import { useMsgSetNotSpamFn } from '../../../../../hooks/actions/use-msg-set-not-spam';
-import { MailMessage } from '../../../../../types';
+import { useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
+import { MailMessage } from 'types/index.d';
+import PreviewHeader from 'views/app/detail-panel/preview/parts/preview-header';
 
 type MailPreviewBlockType = {
 	message: MailMessage;

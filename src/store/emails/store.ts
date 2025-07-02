@@ -8,7 +8,18 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
-import { NormalizedPartialConversation } from '../../normalizations/normalize-conversation';
+import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
+import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
+import { createConversationIndexSlice } from 'store/emails/slices/conversations/conversations-index-slice';
+import { conversationIndexSliceUtils } from 'store/emails/slices/conversations/utils';
+import { createMessageIndexSlice } from 'store/emails/slices/messages/messages-slice';
+import { messageIndexSliceUtils } from 'store/emails/slices/messages/utils';
+import { createPopulatedItemsSlice } from 'store/emails/slices/populated-items/populated-items-slice';
+import { populatedItemsSliceUtils } from 'store/emails/slices/populated-items/utils';
+import { createSearchIndexSlice } from 'store/emails/slices/search/search-slice';
+import { searchSliceUtils } from 'store/emails/slices/search/utils';
+import { syncDataHandlerUtils } from 'store/emails/sync-data-handler/utils';
+import { createTaskQueueManager } from 'store/emails/task-management/create-task-queue-manager';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -20,19 +31,8 @@ import {
 	ConvActionResponse,
 	MsgActionParameters,
 	ConvActionParameters
-} from '../../types';
-import { createConversationIndexSlice } from './slices/conversations/conversations-index-slice';
-import { conversationIndexSliceUtils } from './slices/conversations/utils';
-import { createMessageIndexSlice } from './slices/messages/messages-slice';
-import { messageIndexSliceUtils } from './slices/messages/utils';
-import { createPopulatedItemsSlice } from './slices/populated-items/populated-items-slice';
-import { populatedItemsSliceUtils } from './slices/populated-items/utils';
-import { createSearchIndexSlice } from './slices/search/search-slice';
-import { searchSliceUtils } from './slices/search/utils';
-import { syncDataHandlerUtils } from './sync-data-handler/utils';
-import { createTaskQueueManager } from './task-management/create-task-queue-manager';
-import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
-import { PartialIncompleteMessage } from '../../views/sidebar/commons/types';
+} from 'types/index.d';
+import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
 type TaskManagement = {
 	queue: Array<() => Promise<void>>;

@@ -9,7 +9,7 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import {
 	modifyFilterRulesSoapApi,
 	modifyOutgoingFilterRulesSoapApi
-} from '../modify-filter-rules-soap-api';
+} from 'api/modify-filter-rules-soap-api';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	soapFetch: jest.fn()

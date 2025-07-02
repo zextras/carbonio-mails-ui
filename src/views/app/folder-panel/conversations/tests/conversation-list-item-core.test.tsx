@@ -7,15 +7,16 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { useTags } from '@zextras/carbonio-ui-commons';
 
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { ConversationListItemCore } from '../conversation-list-item-core';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 
@@ -149,5 +150,83 @@ describe('ConversationListItemCore', () => {
 		);
 
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
+	});
+
+	it('should remove FWD: prefix when it appears at the start of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', tags: [tagsArray[0].name], subject: 'FWD: Test Subject' },
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test Subject')).toBeInTheDocument();
+		expect(screen.queryByText('FWD: Test Subject')).not.toBeInTheDocument();
+	});
+
+	it('should remove RE: prefix when it appears at the start of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: {
+					id: '123',
+					tags: [tagsArray[0].name],
+					subject: 'RE: Test Subject'
+				},
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test Subject')).toBeInTheDocument();
+		expect(screen.queryByText('RE: Test Subject')).not.toBeInTheDocument();
+	});
+	it('should preserve RE: or FWD: when not at the beginning of the subject', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: {
+					id: '123',
+					tags: [tagsArray[0].name],
+					subject: 'Test RE: FWD: Subject'
+				},
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggleMultipleSelection={mockToggle}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+			/>
+		);
+
+		expect(await screen.findByText('Test RE: FWD: Subject')).toBeInTheDocument();
 	});
 });

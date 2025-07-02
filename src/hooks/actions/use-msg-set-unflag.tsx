@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MessageActionsDescriptors } from 'constants/index';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useMsgSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);

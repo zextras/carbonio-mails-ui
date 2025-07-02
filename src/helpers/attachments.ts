@@ -9,13 +9,13 @@ import { useMemo } from 'react';
 import { useTheme } from '@zextras/carbonio-design-system';
 import { isNil, reduce } from 'lodash';
 
-import { calcColor } from '../commons/utilities';
+import { calcColor } from 'commons/utilities';
 import type {
 	AbstractAttachment,
 	MailMessagePart,
 	SavedAttachment,
 	UnsavedAttachment
-} from '../types';
+} from 'types/index.d';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 export const CIDURL_REGEX = '^(?:cid:)*(.+)$';

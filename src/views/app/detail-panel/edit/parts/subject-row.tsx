@@ -14,8 +14,8 @@ import {
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt,
 	useEditorSubject
-} from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
+} from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
 
 export type SubjectRowProps = {
 	editorId: MailsEditorV2['id'];

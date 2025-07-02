@@ -6,7 +6,7 @@
 
 import { act, waitFor } from '@testing-library/react';
 
-import { getUseEmailStoreAndHooksForTesting } from '../../store';
+import { getUseEmailStoreAndHooksForTesting } from 'store/emails/store';
 
 const { useEmailsStore } = getUseEmailStoreAndHooksForTesting();
 

@@ -5,15 +5,11 @@
  */
 import { Config } from 'jest';
 
-import { defaultConfig } from './src/carbonio-ui-commons/test/jest-config';
-
-/*
- * For a detailed explanation regarding each configuration property and type check, visit:
- * https://jestjs.io/docs/configuration
- */
-
 const config: Config = {
-	...defaultConfig,
+	testEnvironment: '<rootDir>/src/__test__/jsdom-extended.ts',
+	setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
+	clearMocks: true,
+	collectCoverage: true,
 	collectCoverageFrom: [
 		'src/**/*.{js,ts}(x)?',
 		'!**/__mocks__/**', // Exclude mock files
@@ -23,13 +19,32 @@ const config: Config = {
 		'!src/tests/**', // Exclude test files from src/tests
 		'!src/**/test/mocks/**' // Exclude test files from src/**/test/mocks
 	],
-	moduleNameMapper: {
-		...defaultConfig.moduleNameMapper,
-		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
-	},
-	collectCoverage: true,
+	coverageDirectory: 'coverage',
+	coverageProvider: 'babel',
 	coverageReporters: ['lcov', 'html'],
-	testTimeout: 20000
+	testTimeout: 20000,
+	fakeTimers: {
+		enableGlobally: true
+	},
+	maxWorkers: '50%',
+	moduleDirectories: ['node_modules', 'utils', 'src'],
+	moduleNameMapper: {
+		'\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+			'<rootDir>/__mocks__/fileMock.js',
+		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js',
+		'^uuid$': require.resolve('uuid'),
+		'^@test-utils/(.*)$': '<rootDir>/src/__test__/mocks/$1',
+		'^@test-setup$': '<rootDir>/src/__test__/test-setup.tsx',
+		'^@jest-setup$': '<rootDir>/jest-setup.ts'
+	},
+	reporters: ['default', 'jest-junit'],
+	testEnvironmentOptions: {
+		customExportConditions: ['']
+	},
+	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons).+\\.js$'],
+	transform: {
+		'^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { configFile: './babel.config.jest.js' }]
+	}
 };
 
 export default config;

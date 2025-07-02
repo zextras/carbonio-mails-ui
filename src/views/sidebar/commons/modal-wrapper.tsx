@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactNode } from 'react';
+
 import { CustomModal } from '@zextras/carbonio-design-system';
 
 const ModalWrapper: FC<{

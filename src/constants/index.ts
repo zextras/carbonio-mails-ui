@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
-
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const MAILS_ROUTE = 'mails';
 
