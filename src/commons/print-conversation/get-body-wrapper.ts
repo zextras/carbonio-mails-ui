@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { escape } from 'lodash';
 
 export function getBodyWrapper({ content, subject }: { content: string; subject: string }): string {
 	return `
@@ -15,7 +16,7 @@ export function getBodyWrapper({ content, subject }: { content: string; subject:
                         padding-left: 0.25rem;
                         display: flex;
                         align-items: center;">
-							<b>${subject}</b>
+							<b>${escape(subject)}</b>
 						</div>
 						<hr />
 					</td>
