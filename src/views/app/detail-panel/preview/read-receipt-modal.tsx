@@ -3,25 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect } from 'react';
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
-
 import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import type { MailMessage } from 'types/index.d';
 
-type CompProps = {
+import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
+import { updateMessages } from '../../../../store/emails/store';
+
+type ReadReceiptModalProps = {
 	open: boolean;
 	onClose: () => void;
 	message: MailMessage;
 	readReceiptSetting: string | undefined | number | Array<string | number>;
 };
 
-const ReadReceiptModal: FC<CompProps> = ({
+const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	open,
 	onClose,
 	message,
@@ -29,17 +30,20 @@ const ReadReceiptModal: FC<CompProps> = ({
 }): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
 
-	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);
-	const onConfirm = useCallback(() => {
+	const onDoNotConfirm = useCallback(() => {
 		msgActionEmailStoreAction({
 			operation: 'update',
 			ids: [message?.id],
 			flag: 'n'
+		}).then(() => {
+			updateMessages([{ ...message, isReadReceiptRequested: false }]);
 		});
-	}, [message?.id]);
+		onClose();
+	}, [message, onClose]);
 
 	const onNotify = useCallback(() => {
 		sendDeliveryReportSoapApi(message.id).then(() => {
+			updateMessages([{ ...message, isReadReceiptRequested: false }]);
 			createSnackbar({
 				key: `read-receipt-sent`,
 				replace: true,
@@ -50,43 +54,37 @@ const ReadReceiptModal: FC<CompProps> = ({
 			});
 		});
 		onClose();
-	}, [createSnackbar, message.id, onClose]);
+	}, [createSnackbar, message, onClose]);
 
 	useEffect(() => {
 		if (message?.isReadReceiptRequested && readReceiptSetting === 'always' && !message?.isSentByMe)
 			onNotify();
 	}, [message?.isReadReceiptRequested, onNotify, readReceiptSetting, message?.isSentByMe]);
 
-	const confirmLabel = useMemo(() => t('label.do_not_notify', 'Do not notify'), []);
-	const notifyLabel = useMemo(() => t('label.notify', 'Notify'), []);
-	const messageLineOne = useMemo(
-		() =>
-			t(
-				'messages.read_receipt_1',
-				'The sender of this message has requested to be notified when you read this message.'
-			),
-		[]
-	);
-	const messageLineTwo = useMemo(
-		() => t('messages.read_receipt_2', 'Do you wish to notify the sender?'),
-		[]
-	);
-
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh">
 			<Container padding={{ all: 'large' }}>
-				<ModalHeader title={title} showCloseIcon onClose={onClose} />
+				<ModalHeader
+					title={t('label.read_receipt_req', 'Read receipt required')}
+					showCloseIcon
+					onClose={onClose}
+				/>
 				<Container crossAlignment="flex-start">
-					<Text overflow="break-word">{messageLineOne}</Text>
+					<Text overflow="break-word">
+						{t(
+							'messages.read_receipt_1',
+							'The sender of this message has requested to be notified when you read this message.'
+						)}
+					</Text>
 					<Padding top="large">
-						<Text>{messageLineTwo}</Text>
+						<Text>{t('messages.read_receipt_2', 'Do you wish to notify the sender?')}</Text>
 					</Padding>
 				</Container>
 				<ModalFooter
 					onConfirm={onNotify}
-					secondaryAction={onConfirm}
-					secondaryLabel={confirmLabel}
-					label={notifyLabel}
+					secondaryAction={onDoNotConfirm}
+					secondaryLabel={t('label.do_not_notify', 'Do not notify')}
+					label={t('label.notify', 'Notify')}
 					secondaryBtnType="outlined"
 					secondaryColor="primary"
 				/>
