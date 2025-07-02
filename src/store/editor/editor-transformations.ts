@@ -158,7 +158,8 @@ const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
 ): string =>
-	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize};">${content}</div></body></html>`;
+// TODO: This style applier was setting a color: black props which breaks the darkmode visualization. Is all this style actually needed?
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
