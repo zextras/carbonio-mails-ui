@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { escape } from 'lodash';
 
 export const getSubject = (content: string, subject: string): string => `<tr>
     <td style="
@@ -15,5 +16,5 @@ export const getSubject = (content: string, subject: string): string => `<tr>
        font-style: normal;
        font-weight: 400;
        font-size: 0.875rem;
-       line-height: 1.3125rem;">${content}</span></td>
+       line-height: 1.3125rem;">${escape(content)}</span></td>
     </tr>`;

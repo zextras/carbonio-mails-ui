@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.25.7 (2025-07-01)
+
+### 1.25.6 (2025-06-27)
+
+
+### Bug Fixes
+
+* avoid enable darkmode on old prop is set ([507d302](https://github.com/zextras/carbonio-mails-ui/commit/507d302b22fadd516e7432abcea495a89e590062))
+
 ### 1.25.5 (2025-06-25)
 
 
