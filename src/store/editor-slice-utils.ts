@@ -238,7 +238,7 @@ export function generateReplyText(
 		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
 		`<br /><br /><hr id="${
 			LineType.HTML_SEP_ID
-		}" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
+		}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
 			labels.from
 		}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`
 	];
