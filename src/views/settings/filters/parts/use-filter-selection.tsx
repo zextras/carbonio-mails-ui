@@ -7,8 +7,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { cloneDeep, concat, isEmpty, map, omit } from 'lodash';
 
-import { Filter } from '../../../../types';
-import { FiltersListType } from '../types';
+import { Filter } from 'types/index.d';
+import { FiltersListType } from 'views/settings/filters/types';
 
 export const useFilterSelection = (
 	firstList: Array<Filter>,

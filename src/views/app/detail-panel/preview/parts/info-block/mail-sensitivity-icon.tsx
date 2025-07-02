@@ -8,8 +8,11 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { Sensitivity } from '../../../../../../types';
-import { getMailSensitivityIconColor, getMailSensitivityLabel } from '../utils';
+import { Sensitivity } from 'types/index.d';
+import {
+	getMailSensitivityIconColor,
+	getMailSensitivityLabel
+} from 'views/app/detail-panel/preview/parts/utils';
 
 export const MailSensitivityIcon = ({
 	sensitivity

@@ -8,9 +8,9 @@ import React, { useCallback } from 'react';
 
 import { noop } from 'lodash';
 
-import { MovetoFolder } from './move-to-folder';
-import { FilterFileInto, Folder } from '../../../../../types';
-import { ActionComponentProps } from '../../types';
+import { FilterFileInto, Folder } from 'types/index.d';
+import { MovetoFolder } from 'views/settings/filters/parts/filter-actions/move-to-folder';
+import { ActionComponentProps } from 'views/settings/filters/types';
 
 export const ActionMoveToFolderComponent = ({
 	value,

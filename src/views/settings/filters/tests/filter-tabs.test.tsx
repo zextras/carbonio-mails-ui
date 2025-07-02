@@ -8,10 +8,10 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { FilterTabs } from '../filter-tabs';
-import { mockFilter } from './test-utils';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FilterTabs } from 'views/settings/filters/filter-tabs';
+import { mockFilter } from 'views/settings/filters/tests/test-utils';
 
 describe('FilterTabs', () => {
 	it('should display Incoming and Outgoing filters tab titles', async () => {

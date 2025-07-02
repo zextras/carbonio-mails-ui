@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { SearchSoapApiParams, SearchRequest, SearchResponse } from '../types';
+import type { SearchSoapApiParams, SearchRequest, SearchResponse } from 'types/index.d';
 
 export async function searchSoapApi({
 	folderId,

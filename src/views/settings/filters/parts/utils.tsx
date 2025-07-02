@@ -9,14 +9,14 @@ import React from 'react';
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterAction, FilterActions } from '../../../../types';
-import { ACTION_OPTIONS } from '../constants';
-import { OnFilterActionChange } from '../types';
-import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
-import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
-import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
-import { ActionTagComponent } from './filter-actions/action-tag-component';
-import { getMarkAsOptions } from './filter-actions/mark-as-utils';
+import { ActionKey, FilterAction, FilterActions } from 'types/index.d';
+import { ACTION_OPTIONS } from 'views/settings/filters/constants';
+import { ActionMarkAsComponent } from 'views/settings/filters/parts/filter-actions/action-mark-as-component';
+import { ActionMoveToFolderComponent } from 'views/settings/filters/parts/filter-actions/action-move-to-folder-component';
+import { ActionRedirectToComponent } from 'views/settings/filters/parts/filter-actions/action-redirect-to-component';
+import { ActionTagComponent } from 'views/settings/filters/parts/filter-actions/action-tag-component';
+import { getMarkAsOptions } from 'views/settings/filters/parts/filter-actions/mark-as-utils';
+import { OnFilterActionChange } from 'views/settings/filters/types';
 
 type DomainOption = {
 	label: string;

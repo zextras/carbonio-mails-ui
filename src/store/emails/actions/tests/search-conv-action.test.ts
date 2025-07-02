@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { searchConvSoapApi } from '../../../../api/search-conv-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeCompleteMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { searchConvSoapApi } from 'api/search-conv-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
 	updateMessages,
 	getConversationById,
 	updateConversations,
 	updateConversationStatus
-} from '../../store';
-import { searchConvEmailStoreAction } from '../search-conv-action';
+} from 'store/emails/store';
 
 jest.mock('../../../../api/search-conv-soap-api');
 jest.mock('../../../../normalizations/normalize-message');

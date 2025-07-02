@@ -6,15 +6,18 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useMsgMoveToTrashDescriptor, useMsgMoveToTrashFn } from '../use-msg-move-to-trash';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useMsgMoveToTrashDescriptor,
+	useMsgMoveToTrashFn
+} from 'hooks/actions/use-msg-move-to-trash';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useMsgMoveToTrash', () => {
 	populateFoldersStore();

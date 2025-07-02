@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getEditor } from './editors';
-import { MailsEditorV2 } from '../../../types';
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from '../editor-utils';
-import { useEditorsStore } from '../store';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
+import { getEditor } from 'store/editor/hooks/editors';
+import { useEditorsStore } from 'store/editor/store';
+import { MailsEditorV2 } from 'types/index.d';
 
 /**
  * Analyzes the given editor and updates in the store the allow status for the

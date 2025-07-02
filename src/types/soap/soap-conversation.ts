@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SoapMailMessage } from './soap-mail-message';
-import { SoapMailParticipant } from './soap-mail-participant';
+import { SoapMailMessage } from 'types/soap/soap-mail-message';
+import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 export type SoapConversation = {
 	readonly id: string;

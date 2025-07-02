@@ -7,11 +7,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 
 import { Button, Container, Input, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 
 const FileInput = styled.input`
 	display: none;

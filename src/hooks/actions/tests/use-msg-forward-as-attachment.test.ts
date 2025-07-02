@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addBoard } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
+import { setupHook } from '@test-setup';
+import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgForwardAsAttachmentDescriptor,
 	useMsgForwardAsAttachmentFn
-} from '../use-msg-forward-as-attachment';
+} from 'hooks/actions/use-msg-forward-as-attachment';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgForwardAsAttachment', () => {
 	const msg = generateMessage();

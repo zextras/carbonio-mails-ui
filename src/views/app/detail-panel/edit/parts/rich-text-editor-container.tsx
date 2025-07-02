@@ -9,17 +9,13 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import type { TinyMCE, Editor } from 'tinymce';
 
-import * as StyledComp from './edit-view-styled-components';
-import { handleEditorPaste } from './editor-paste-handler';
-import type { TextEditorContainerProps } from './text-editor-container';
-import { buildArrayFromFileList } from '../../../../../helpers/files';
-import {
-	useEditorAttachments,
-	useEditorText,
-	useEditorTextProvider
-} from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
-import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
+import { buildArrayFromFileList } from 'helpers/files';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
+import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
+import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {
 	editor: TinyMCE;

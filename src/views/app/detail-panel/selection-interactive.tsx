@@ -7,12 +7,17 @@ import React, { useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { DraftMessages, SentMessages, SpamMessages, TrashMessages } from './utils';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolderIdParts } from '../../../helpers/folders';
-import { useConversationsIdsByFolder } from '../../../store/emails/store';
+import { getFolderIdParts } from 'helpers/folders';
+import { useConversationsIdsByFolder } from 'store/emails/store';
+import {
+	DraftMessages,
+	SentMessages,
+	SpamMessages,
+	TrashMessages
+} from 'views/app/detail-panel/utils';
 
 export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
 	const { folderId } = useParams() as { folderId: string };

@@ -10,14 +10,14 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
-import { MessageListItemCore } from './message-list-item-core';
-import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
-import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
-import { MessageListItemProps } from '../../../../types';
-import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { MessageListItemProps } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
+import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
 
 type RouteParams = {
 	folderId: string;
@@ -87,7 +87,7 @@ export const MessageListItem = memo(function MessageListItem({
 	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
-				debouncedPushHistory.cancel();
+				debouncedPushHistory();
 				const { id, isDraft } = message;
 				if (isDraft) {
 					createEditBoard({

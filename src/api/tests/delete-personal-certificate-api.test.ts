@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { deletePersonalCertificate } from '../delete-personal-certificate-api';
+import { deletePersonalCertificate } from 'api/delete-personal-certificate-api';
 
 describe('deletePersonalCertificate', () => {
 	beforeEach(() => {

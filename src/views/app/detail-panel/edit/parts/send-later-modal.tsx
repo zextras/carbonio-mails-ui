@@ -7,12 +7,11 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import moment from 'moment';
 
-import { DatePickerCustomComponent } from './date-picker-custom-component';
-import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { DatePickerCustomComponent } from 'views/app/detail-panel/edit/parts/date-picker-custom-component';
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;

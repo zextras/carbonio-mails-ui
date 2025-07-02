@@ -15,16 +15,16 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { applyFilterRulesSoapApi } from '../../api/apply-filter-rules-soap-api';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { GapContainer } from '../../commons/gap-container';
-import { TextStyler } from '../../commons/text-styler';
-import { TIMEOUTS } from '../../constants';
-import { getFolderIconColor } from '../../views/sidebar/utils';
-import type { ApplyFilterUIActionExecutionParams } from '../apply-filter';
-import { getSelectFoldersUIAction } from '../select-folders';
+import { applyFilterRulesSoapApi } from 'api/apply-filter-rules-soap-api';
+import { GapContainer } from 'commons/gap-container';
+import { TextStyler } from 'commons/text-styler';
+import { TIMEOUTS } from 'constants/index';
+import type { ApplyFilterUIActionExecutionParams } from 'ui-actions/apply-filter';
+import { getSelectFoldersUIAction } from 'ui-actions/select-folders';
+import { getFolderIconColor } from 'views/sidebar/utils';
 
 export type ApplyFilterModalProps = {
 	criteria: ApplyFilterUIActionExecutionParams['criteria'];

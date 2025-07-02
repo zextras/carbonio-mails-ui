@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
-import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 
 type UseGetPublicUrlPropType = {
 	addPublicLinkFromFiles: (filesResponse: UseGetPublicUrlRespType[]) => void;

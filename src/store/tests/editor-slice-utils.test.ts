@@ -5,14 +5,12 @@
  */
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
+import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/account-generator';
-import { AvailableAddress } from '../../carbonio-ui-commons/types/identities';
-import { getAvailableAddresses } from '../../helpers/get-available-addresses';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { retrieveALL, retrieveCC, retrieveReplyTo } from '../editor-slice-utils';
+import { generateAccount } from '@test-utils/accounts/account-generator';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { retrieveALL, retrieveCC, retrieveReplyTo } from 'store/editor-slice-utils';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()

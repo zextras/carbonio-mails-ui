@@ -9,10 +9,10 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../../constants';
-import { isSpam } from '../../helpers/folders';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from 'constants/index';
+import { isSpam } from 'helpers/folders';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type MsgSetNotSpam = {
 	ids: Array<string>;

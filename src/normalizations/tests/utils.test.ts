@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
-import { getTagIds } from '../utils';
+import { getTags } from '@zextras/carbonio-ui-commons';
 
-jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
+import { getTagIds } from 'normalizations/utils';
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	getTags: jest.fn()
 }));
 

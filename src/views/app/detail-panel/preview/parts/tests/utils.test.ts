@@ -6,14 +6,14 @@
 
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { MAIL_SENSITIVITY_HEADER } from '../../../../../../constants';
-import { MailAuthenticationHeader } from '../../../../../../types';
+import { MAIL_SENSITIVITY_HEADER } from 'constants/index';
+import { MailAuthenticationHeader } from 'types/index.d';
 import {
 	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel
-} from '../utils';
+} from 'views/app/detail-panel/preview/parts/utils';
 
 describe('getAuthenticationHeadersIconColor', () => {
 	it('should return "warning" when headers is an empty object', () => {

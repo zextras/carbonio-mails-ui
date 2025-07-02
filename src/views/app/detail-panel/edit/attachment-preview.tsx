@@ -19,24 +19,24 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { AttachmentUploadStatus } from './attachment-upload-status';
-import { ToggleSmartLinkButton } from './parts/toggle-smart-link-button';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
 	getSizeDescription,
 	useAttachmentIconColor
-} from '../../../../helpers/attachments';
-import { getEditor, useEditorAttachments, useEditorSubject } from '../../../../store/editor';
+} from 'helpers/attachments';
 import {
 	isAttachmentUploading,
 	isSavedAttachment,
 	isUnsavedAttachment
-} from '../../../../store/editor/editor-utils';
-import { useEditorUploadProcess } from '../../../../store/editor/hooks/updload';
-import StyledWrapper from '../../../../styled-wrapper';
-import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
-import { getAttachmentsLink } from '../preview/utils';
+} from 'store/editor/editor-utils';
+import { useEditorUploadProcess } from 'store/editor/hooks/updload';
+import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/index';
+import StyledWrapper from 'styled-wrapper';
+import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/attachment-upload-status';
+import { ToggleSmartLinkButton } from 'views/app/detail-panel/edit/parts/toggle-smart-link-button';
+import { getAttachmentsLink } from 'views/app/detail-panel/preview/utils/index';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;

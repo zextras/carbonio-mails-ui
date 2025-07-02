@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act } from '@testing-library/react';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { find, forEach } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags/store';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useMsgApplyTagDescriptor,
+	useMsgApplyTagSubDescriptors
+} from 'hooks/actions/use-msg-apply-tag';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();

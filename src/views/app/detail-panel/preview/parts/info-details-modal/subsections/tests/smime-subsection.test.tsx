@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../../../carbonio-ui-commons/test/test-setup';
-import { MessageSignature } from '../../../../../../../../types';
-import { SmimeSubsection } from '../smime-subsection';
+import { setupTest } from '@test-setup';
+import { MessageSignature } from 'types/index.d';
+import { SmimeSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/smime-subsection';
 
 describe('SmimeSubsection', () => {
 	const signature: MessageSignature = {

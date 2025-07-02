@@ -6,31 +6,25 @@
 import React, { useCallback, useMemo } from 'react';
 
 import {
-	Text,
+	Badge,
+	Button,
+	Container,
+	Icon,
 	Padding,
 	Row,
-	Container,
-	Badge,
-	Tooltip,
-	Icon,
-	Button
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
+import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags/hooks';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
-import {
-	NormalizedConversation,
-	SearchRequestStatus,
-	TextReadValuesProps
-} from '../../../../types';
-import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from '../../../app/folder-panel/parts/participants-name';
-import { RowInfo } from '../../../app/folder-panel/parts/row-info';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import { NormalizedConversation, SearchRequestStatus, TextReadValuesProps } from 'types/index.d';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type SearchConversationListItemCoreProps = {
 	conversation: NormalizedConversation;

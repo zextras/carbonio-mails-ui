@@ -4,14 +4,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { UpdateSettingsProps } from '../../../types/settings';
-import ComposeMessage from '../compose-msg-settings';
+import { setupTest } from '@test-setup';
+import { UpdateSettingsProps } from 'types/settings/index.d';
+import ComposeMessage from 'views/settings/compose-msg-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	t: jest.fn((key) => key)

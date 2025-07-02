@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { isDraft, isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isDraft, isTrash } from 'helpers/folders';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useConvShowOriginalFn = (firstMessageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
