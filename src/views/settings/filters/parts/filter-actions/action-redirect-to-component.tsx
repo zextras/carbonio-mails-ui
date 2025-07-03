@@ -6,13 +6,12 @@
 
 import React, { useCallback } from 'react';
 
+import { CONTACT_TYPES, ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { v4 as uuidv4 } from 'uuid';
 
-import { RedirectTo } from './redirect-to';
-import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
-import { FilterRedirect } from '../../../../../types';
-import { ActionComponentProps } from '../../types';
+import { FilterRedirect } from 'types/index.d';
+import { RedirectTo } from 'views/settings/filters/parts/filter-actions/redirect-to';
+import { ActionComponentProps } from 'views/settings/filters/types';
 
 export const ActionRedirectToComponent = ({
 	value,

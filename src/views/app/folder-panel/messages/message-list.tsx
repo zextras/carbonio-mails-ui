@@ -6,21 +6,20 @@
 import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { CustomListItem, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { MessageListComponent } from './message-list-component';
-import { useLoadMoreForMessageList } from './message-list-hooks';
-import { MessageListItemComponent } from './message-list-item-component';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
-import { getFolderIdParts } from '../../../../helpers/folders';
-import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useFetchMessagesByFolder } from '../../../../hooks/use-fetch-messages-by-folder';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext } from '../../../../types';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { getFolderIdParts } from 'helpers/folders';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
+import { useSelection } from 'hooks/use-selection';
+import type { AppContext } from 'types/index.d';
+import { MessageListComponent } from 'views/app/folder-panel/messages/message-list-component';
+import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
+import { MessageListItemComponent } from 'views/app/folder-panel/messages/message-list-item-component';
 
 export const MessageList = (): React.JSX.Element => {
 	const [t] = useTranslation();

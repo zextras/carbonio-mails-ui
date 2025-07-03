@@ -5,15 +5,15 @@
  */
 
 import { addBoard } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
+import { setupHook } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvForwardAsAttachmentDescriptor,
 	useConvForwardAsAttachmentFn
-} from '../use-conv-forward-as-attachment';
+} from 'hooks/actions/use-conv-forward-as-attachment';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useConvForwardAsAttachment', () => {
 	const msg = generateMessage();

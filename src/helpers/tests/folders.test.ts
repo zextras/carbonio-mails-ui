@@ -4,19 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
-
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import {
+	FOLDER_VIEW,
+	FOLDERS,
 	getFolder,
 	getFoldersMap,
 	getLinksArray,
 	getRootsMap
-} from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { NO_ACCOUNT_NAME } from '../../constants';
-import { generateMessage } from '../../tests/generators/generateMessage';
+} from '@zextras/carbonio-ui-commons';
+
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { NO_ACCOUNT_NAME } from 'constants/index';
 import {
 	getFolderIdParts,
 	getFolderOwnerAccountName,
@@ -29,7 +28,8 @@ import {
 	isSent,
 	isTrash,
 	isTrashed
-} from '../folders';
+} from 'helpers/folders';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('Folder id', () => {
 	test('with zid', () => {

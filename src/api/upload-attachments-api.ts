@@ -8,7 +8,7 @@ import axios from 'axios';
 import { map, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import { convertToDecimal } from '../commons/utilities';
+import { convertToDecimal } from 'commons/utilities';
 
 export type UploadAttachmentResponse = Array<{ aid: string } | null>;
 

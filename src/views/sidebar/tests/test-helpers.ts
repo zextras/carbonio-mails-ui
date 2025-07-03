@@ -6,7 +6,7 @@
 
 import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 
-import { SoapIncompleteMessage, SoapConversation } from '../../../types';
+import { SoapIncompleteMessage, SoapConversation } from 'types/index.d';
 
 export function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({

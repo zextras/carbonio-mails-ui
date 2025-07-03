@@ -8,26 +8,23 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import {
+	folderWorker,
+	tagsWorker,
+	useFolderStore,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import {
-	HandleFoldersNotifyProps,
-	HandleTagsNotifyProps,
-	SoapPartialConversation,
-	SoapPartialIncompleteMessage
-} from './types';
-import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
-import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
-} from '../../../normalizations/normalize-conversation';
+} from 'normalizations/normalize-conversation';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoap
-} from '../../../normalizations/normalize-message';
+} from 'normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
@@ -35,9 +32,15 @@ import {
 	handleNotifyMessagesCreated,
 	handleNotifyMessagesModified,
 	updateMessages
-} from '../../../store/emails/store';
-import { triggerNotification } from '../../../store/emails/sync-data-handler/trigger-notification';
-import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
+} from 'store/emails/store';
+import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
+import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from 'types/index.d';
+import {
+	HandleFoldersNotifyProps,
+	HandleTagsNotifyProps,
+	SoapPartialConversation,
+	SoapPartialIncompleteMessage
+} from 'views/sidebar/commons/types';
 
 export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>

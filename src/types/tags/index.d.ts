@@ -7,12 +7,11 @@
 import React, { ComponentType } from 'react';
 
 import {
+	ItemType as AccordionItemType,
 	CloseModalFn,
-	CreateModalFn,
-	ItemType as AccordionItemType
+	CreateModalFn
 } from '@zextras/carbonio-design-system';
-
-import { Tag } from '../../carbonio-ui-commons/types/tags';
+import { Tag } from '@zextras/carbonio-ui-commons';
 
 export type TagActionItemType = {
 	id: string;

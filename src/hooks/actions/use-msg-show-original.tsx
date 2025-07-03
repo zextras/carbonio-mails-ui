@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isDraft, isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isDraft, isTrash } from 'helpers/folders';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useMsgShowOriginalFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(

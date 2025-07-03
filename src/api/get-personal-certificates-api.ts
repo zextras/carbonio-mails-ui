@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Certificate } from '../types/certificates/certificates';
+import { Certificate } from 'types/certificates/certificates';
 
 export async function getPersonalCertificates(
 	email?: string

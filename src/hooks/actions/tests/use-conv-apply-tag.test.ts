@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act } from '@testing-library/react';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { find, forEach } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags/store';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { ConvActionRequest } from '../../../types';
-import { useConvApplyTagDescriptor, useConvApplyTagSubDescriptors } from '../use-conv-apply-tag';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvApplyTagDescriptor,
+	useConvApplyTagSubDescriptors
+} from 'hooks/actions/use-conv-apply-tag';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { ConvActionRequest } from 'types/index.d';
 
 const tagA = { id: '1', name: 'a', label: 'a', color: 3 };
 const tagB = { id: '2', name: 'b', label: 'b', color: 3 };

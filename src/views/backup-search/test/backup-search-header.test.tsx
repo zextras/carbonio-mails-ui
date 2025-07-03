@@ -7,13 +7,13 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { removeRoute } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { removeRoute } from '@zextras/carbonio-shell-ui';
 
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
-import { BackupSearchHeader } from '../parts/backup-search-header';
+import { setupTest } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchHeader } from 'views/backup-search/parts/backup-search-header';
 
 describe('Backup search header', () => {
 	it('renders correctly queryParams with italian locale', () => {

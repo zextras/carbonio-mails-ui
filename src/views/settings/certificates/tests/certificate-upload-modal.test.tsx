@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { CertificateUploadModal } from '../certificate-upload-modal';
+import { setupTest } from '@test-setup';
+import { CertificateUploadModal } from 'views/settings/certificates/certificate-upload-modal';
 
 describe('CertificateUploadModal', () => {
 	const onConfirm = jest.fn();

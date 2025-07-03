@@ -17,13 +17,12 @@ import {
 	Tooltip,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { handleCertificateFileUpload } from './certificate-utils';
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
-import { PersonalCertificate } from '../../../store/certificates/store';
+import { PersonalCertificate } from 'store/certificates/store';
+import { handleCertificateFileUpload } from 'views/settings/certificates/certificate-utils';
 
 const FileInput = styled.input`
 	display: none;

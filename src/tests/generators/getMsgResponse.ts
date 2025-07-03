@@ -6,10 +6,9 @@
 
 import { faker } from '@faker-js/faker';
 import { SoapResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import type { GetMsgResponse, Participant, SoapMailParticipant } from '../../types';
+import type { GetMsgResponse, Participant, SoapMailParticipant } from 'types/index.d';
 
 /**
  *
@@ -122,4 +121,4 @@ const generateGetMsgResponse = ({
 	return result;
 };
 
-export { type GetMsgResponseGenerationParams, generateGetMsgResponse };
+export { generateGetMsgResponse, type GetMsgResponseGenerationParams };

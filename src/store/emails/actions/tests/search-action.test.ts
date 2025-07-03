@@ -9,16 +9,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { searchSoapApi } from '../../../../api/search-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
 	setConversationsInEmailStore,
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
-} from '../../store';
-import { searchEmailStoreAction } from '../search-action';
+} from 'store/emails/store';
 
 jest.mock('../../../../api/search-soap-api');
 jest.mock('../../store');

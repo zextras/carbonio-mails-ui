@@ -7,8 +7,11 @@ import { produce } from 'immer';
 import { find, remove } from 'lodash';
 import { create } from 'zustand';
 
-import { filterSavedInlineAttachment, filterUnsavedInlineAttachment } from './editor-utils';
-import { getUnsavedAttachmentIndex } from './store-utils';
+import {
+	filterSavedInlineAttachment,
+	filterUnsavedInlineAttachment
+} from 'store/editor/editor-utils';
+import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
@@ -16,7 +19,7 @@ import {
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({

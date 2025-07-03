@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { EnterPasswordModal } from '../enter-password-modal';
+import { setupTest } from '@test-setup';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 describe('EnterPasswordModal', () => {
 	const onClose = jest.fn();

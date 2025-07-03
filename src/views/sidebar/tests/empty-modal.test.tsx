@@ -3,19 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
+import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { SoapFolderAction } from '../../../types';
-import { EmptyModal } from '../empty-modal';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { SoapFolderAction } from 'types/index.d';
+import { EmptyModal } from 'views/sidebar/empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {

@@ -6,17 +6,16 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
-import { isFocusModeMailView } from '../../helpers/external-tabs';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import type { ActionFn, UIActionDescriptor } from '../../types';
-import { useInSearchModule } from '../../ui-actions/utils';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
+import { isFocusModeMailView } from 'helpers/external-tabs';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import type { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { useInSearchModule } from 'ui-actions/utils';
 
 const useRestoreMessage = (): ((
 	ids: Array<string>,

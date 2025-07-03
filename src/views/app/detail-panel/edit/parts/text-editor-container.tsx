@@ -9,10 +9,10 @@ import React, { FC } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 
-import { PlainTextEditorContainer } from './plain-text-editor-container';
-import { RichTextEditorContainer } from './rich-text-editor-container';
-import { useEditorIsRichText } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
+import { useEditorIsRichText } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import { PlainTextEditorContainer } from 'views/app/detail-panel/edit/parts/plain-text-editor-container';
+import { RichTextEditorContainer } from 'views/app/detail-panel/edit/parts/rich-text-editor-container';
 
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];

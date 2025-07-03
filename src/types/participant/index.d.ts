@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 
 export type Participant = {
 	type: ParticipantRoleType;

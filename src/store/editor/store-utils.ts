@@ -6,8 +6,8 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 
-import { TIMEOUTS } from '../../constants';
-import { EditorsStateTypeV2, UnsavedAttachment } from '../../types';
+import { TIMEOUTS } from 'constants/index';
+import { EditorsStateTypeV2, UnsavedAttachment } from 'types/index.d';
 
 export const getUnsavedAttachmentIndex = (
 	state: EditorsStateTypeV2,

@@ -9,11 +9,11 @@ import { Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { EditViewActions, MessageActionsDescriptors } from '../../constants';
-import { isDraft } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
-import { useUiUtilities } from '../use-ui-utilities';
+import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
+import { isDraft } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgEditDraftFn = (
 	messageId: string,

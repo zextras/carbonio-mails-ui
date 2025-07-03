@@ -8,9 +8,9 @@ import React, { useEffect } from 'react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { WarningBanner } from './warning-banner';
-import { useEditorsStore } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
+import { useEditorsStore } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import { WarningBanner } from 'views/app/detail-panel/edit/parts/warning-banner';
 
 function calculateTotalSmartLinksSize(savedAttachments: MailsEditorV2['savedAttachments']): number {
 	if (!savedAttachments) return 0;

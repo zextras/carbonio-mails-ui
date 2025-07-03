@@ -6,15 +6,15 @@
 
 import { map } from 'lodash';
 
-import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
-import { getMsgDecryptSoapApi } from '../../../api/get-msg-soap-api-decrypt';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { getMsgSoapApi } from 'api/get-msg-soap-api';
+import { getMsgDecryptSoapApi } from 'api/get-msg-soap-api-decrypt';
+import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap
-} from '../../../normalizations/normalize-message';
-import { GetMsgResponse, MailMessage } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../store';
+} from 'normalizations/normalize-message';
+import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { GetMsgResponse, MailMessage } from 'types/index.d';
 
 function handleGetMsgResponse(response: GetMsgResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));

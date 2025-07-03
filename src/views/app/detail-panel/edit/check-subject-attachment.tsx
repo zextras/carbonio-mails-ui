@@ -9,9 +9,9 @@ import React from 'react';
 import { CloseModalFn, CreateModalFn, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { LineType } from '../../../../commons/utils';
-import { getEditor } from '../../../../store/editor';
-import type { MailsEditorV2 } from '../../../../types';
+import { LineType } from 'commons/utils';
+import { getEditor } from 'store/editor/index';
+import type { MailsEditorV2 } from 'types/index.d';
 
 export const attachmentWords: Array<string> = [
 	t('messages.modal.send_anyway.attach', 'attach'),
