@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -85,12 +85,18 @@ export const RichTextEditorContainer = ({
 		const { plainText, richText } = useEditorsStore.getState().editors[editorId].text;
 		setText({ plainText, richText }, { syncTextProvider: false });
 	}, [editorId, setText]);
-
+	const debouncedSetText = useMemo(
+		() =>
+			debounce(() => {
+				useEditorsStore.getState().setText(editorId, getCurrentText() as MailsEditorV2['text']);
+			}, 150),
+		[editorId, getCurrentText]
+	);
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
-		useEditorsStore.getState().setText(editorId, getCurrentText() as MailsEditorV2['text']);
+		debouncedSetText();
 		timeoutId.current = setTimeout(() => {
 			if (!composerRef.current) {
 				return;
@@ -101,7 +107,7 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [editorId, getCurrentText, saveEditor]);
+	}, [debouncedSetText, saveEditor]);
 
 	const onComposerClose = useCallback(() => {
 		saveEditor();
