@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -15,6 +16,7 @@ import type { TextEditorContainerProps } from './text-editor-container';
 import { buildArrayFromFileList } from '../../../../../helpers/files';
 import {
 	useEditorAttachments,
+	useEditorsStore,
 	useEditorText,
 	useEditorTextProvider
 } from '../../../../../store/editor';
@@ -80,15 +82,21 @@ export const RichTextEditorContainer = ({
 			return;
 		}
 
-		const plainText = composerRef.current.getContent({ format: 'text' });
-		const richText = composerRef.current.getContent({ format: 'html' });
+		const { plainText, richText } = useEditorsStore.getState().editors[editorId].text;
 		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [setText]);
-
+	}, [editorId, setText]);
+	const debouncedSetText = useMemo(
+		() =>
+			debounce(() => {
+				useEditorsStore.getState().setText(editorId, getCurrentText() as MailsEditorV2['text']);
+			}, 150),
+		[editorId, getCurrentText]
+	);
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
+		debouncedSetText();
 		timeoutId.current = setTimeout(() => {
 			if (!composerRef.current) {
 				return;
@@ -99,7 +107,7 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [saveEditor]);
+	}, [debouncedSetText, saveEditor]);
 
 	const onComposerClose = useCallback(() => {
 		saveEditor();
@@ -157,7 +165,7 @@ export const RichTextEditorContainer = ({
 
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
-				if (!editor) return () => {};
+				if (!editor) return noop;
 				editor.on('paste', (event) => {
 					const editViewWrapper = document.querySelector(
 						'[data-testid="edit-view-editor"]'
