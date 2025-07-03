@@ -6,7 +6,7 @@
 
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
-import { NO_ACCOUNT_NAME } from '../../constants';
+import { NO_ACCOUNT_NAME } from 'constants/index';
 
 export function getCompleteHTML({ content }: { content: string }): string {
 	const accountName = getUserAccount()?.name ?? NO_ACCOUNT_NAME;

@@ -3,17 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { FolderActionWrapper } from '../folder-action-wrapper';
-import { useFolderActions } from '../use-folder-actions';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FolderActionWrapper } from 'views/sidebar/folder-action-wrapper';
+import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 jest.mock('../use-folder-actions', () => ({
 	useFolderActions: jest.fn()

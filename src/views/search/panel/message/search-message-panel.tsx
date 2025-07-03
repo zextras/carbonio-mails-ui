@@ -8,10 +8,10 @@ import React from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
-import MailPreview from '../../../app/detail-panel/preview/mail-preview';
-import { SearchPanelHeader } from '../../extra-window/search-panel-header';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import MailPreview from 'views/app/detail-panel/preview/mail-preview';
+import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);

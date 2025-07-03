@@ -6,12 +6,12 @@
 
 import React, { useCallback, useMemo } from 'react';
 
+import { getTags } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 
-import { ShowTag } from './show-tag';
-import { getTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { FilterTag, MailFilterTag } from '../../../../../types';
-import { ActionComponentProps } from '../../types';
+import { FilterTag, MailFilterTag } from 'types/index.d';
+import { ShowTag } from 'views/settings/filters/parts/filter-actions/show-tag';
+import { ActionComponentProps } from 'views/settings/filters/types';
 
 export const ActionTagComponent = ({
 	value,

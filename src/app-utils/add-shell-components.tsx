@@ -15,19 +15,18 @@ import {
 	upsertApp
 } from '@zextras/carbonio-shell-ui';
 
-import { advancedAccountApi } from '../api/advanced-account-api';
-import { checkIsSmimeEnabled } from '../api/check-is-smime-enable-api';
-import { Spinner } from '../assets/spinner';
+import { advancedAccountApi } from 'api/advanced-account-api';
+import { checkIsSmimeEnabled } from 'api/check-is-smime-enable-api';
+import { Spinner } from 'assets/spinner';
 import {
 	CERTIFICATES_ROUTE,
 	MAILS_ROUTE,
 	MAIL_APP_ID,
 	MAILS_BOARD_VIEW_ID,
 	FOCUS_MODE_MAIL_VIEW_ROUTE
-} from '../constants';
-import { useSmimeFeatureStore } from '../store/certificates/store';
-import FocusModeMailView from '../views/app/detail-panel/focus-mode-mail-view';
-import { getSettingsSubSections } from '../views/settings/subsections';
+} from 'constants/index';
+import { useSmimeFeatureStore } from 'store/certificates/store';
+import { getSettingsSubSections } from 'views/settings/subsections';
 
 const LazyAppView = lazy(
 	() => import(/* webpackChunkName: "mails-folder-panel-view" */ '../views/app-view')
@@ -53,6 +52,13 @@ const LazyCertificatsView = lazy(
 
 const LazySidebarView = lazy(
 	() => import(/* webpackChunkName: "mail-sidebar-view" */ '../views/sidebar/sidebar')
+);
+
+const LazyFocusModeMailView = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mail-sidebar-view" */ '../views/app/detail-panel/focus-mode-mail-view'
+		)
 );
 
 const AppView = (): React.JSX.Element => (
@@ -91,6 +97,14 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<ModalManager>
 			<LazySidebarView {...props} />
+		</ModalManager>
+	</Suspense>
+);
+
+const FocusModeMailView = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<ModalManager>
+			<LazyFocusModeMailView />
 		</ModalManager>
 	</Suspense>
 );

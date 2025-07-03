@@ -8,12 +8,12 @@ import { useCallback, useMemo } from 'react';
 import { forEach } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getMsgsForPrintSoapApi } from '../../api';
-import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
-import { ConversationActionsDescriptors } from '../../constants';
-import { isDraft, isTrash } from '../../helpers/folders';
-import { ActionFn, NormalizedConversation, UIActionDescriptor } from '../../types';
-import { errorPage } from '../../ui-actions/error-page';
+import { getMsgsForPrintSoapApi } from 'api/index';
+import { getContentForPrint } from 'commons/print-conversation/print-conversation';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isDraft, isTrash } from 'helpers/folders';
+import { ActionFn, NormalizedConversation, UIActionDescriptor } from 'types/index.d';
+import { errorPage } from 'ui-actions/error-page';
 
 export const useConvPrintFn = (
 	conversations: Array<NormalizedConversation>,

@@ -6,15 +6,14 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { ConversationActionsDescriptors, MAILS_ROUTE } from '../../constants';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import type { ActionFn, UIActionDescriptor } from '../../types';
-import { useInSearchModule } from '../../ui-actions/utils';
+import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import type { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { useInSearchModule } from 'ui-actions/utils';
 
 type ConvRestoreFunctionsParameter = {
 	ids: Array<string>;

@@ -5,18 +5,18 @@
  */
 import React, { act } from 'react';
 
-import { waitFor, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useUserSettings } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { CONVACTIONS } from '../../../../../commons/utilities';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { ConvActionRequest, ConvActionResponse } from '../../../../../types';
-import { SearchConversationListItem } from '../search-conversation-list-item';
+import { setupTest } from '@test-setup';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { CONVACTIONS } from 'commons/utilities';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
+import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
 const conversationId = '-123';
 describe('SearchConversationListItem', () => {

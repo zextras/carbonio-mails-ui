@@ -7,7 +7,7 @@
 import { SoapNotify } from '@zextras/carbonio-shell-ui';
 import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 
-import { SoapIncompleteMessage, SoapConversation } from '../../../types';
+import { SoapIncompleteMessage, SoapConversation } from 'types/index.d';
 
 export function mockSoapRefresh(mailbox: number): void {
 	const result = {

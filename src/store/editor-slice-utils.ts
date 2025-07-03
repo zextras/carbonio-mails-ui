@@ -4,18 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../carbonio-ui-commons/constants/participants';
-import { htmlEncode } from '../commons/get-quoted-text-util';
-import { convertHtmlToPlainText } from '../commons/utilities';
-import { LineType } from '../commons/utils';
-import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
+import { htmlEncode } from 'commons/get-quoted-text-util';
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { LineType } from 'commons/utils';
+import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -25,7 +21,7 @@ import type {
 	Participant,
 	SharedParticipant,
 	SoapDraftMessageObj
-} from '../types';
+} from 'types/index.d';
 
 export const retrieveAttachmentsType = (
 	original: MailMessage,
@@ -238,7 +234,7 @@ export function generateReplyText(
 		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
 		`<br /><br /><hr id="${
 			LineType.HTML_SEP_ID
-		}" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
+		}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
 			labels.from
 		}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`
 	];

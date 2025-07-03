@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { setupEditorStore } from '../../../tests/generators/editor-store';
+import { useEditorsStore } from 'store/editor/store';
+import { setupEditorStore } from 'tests/generators/editor-store';
 import {
 	readyToBeSentEditorTestCase,
 	aSmartLinkAttachment,
 	aSavedAttachment
-} from '../../../tests/generators/editors';
-import { SavedAttachment } from '../../../types';
-import { useEditorsStore } from '../store';
+} from 'tests/generators/editors';
+import { SavedAttachment } from 'types/index.d';
 
 const smartLinkAttachment = (size: number): SavedAttachment => ({
 	...aSmartLinkAttachment(),

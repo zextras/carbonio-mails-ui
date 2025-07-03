@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { MailAttachment, MailsEditorV2 } from '../../../types';
-import { createSoapDraftRequestFromEditor } from '../../editor/editor-transformations';
-import { updateMessages, updateMessageStatus } from '../store';
+import { saveDraftSoapApi } from 'api/save-draft-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { createSoapDraftRequestFromEditor } from 'store/editor/editor-transformations';
+import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { MailAttachment, MailsEditorV2 } from 'types/index.d';
 
 type SaveDraftEmailStoreAction = {
 	editor: MailsEditorV2;

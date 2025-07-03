@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SoapMailMessage } from './soap-mail-message';
-import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+
+import { SoapMailMessage } from 'types/soap/soap-mail-message';
 
 export type MailAttachmentParts = {
 	mid: string;

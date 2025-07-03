@@ -7,20 +7,15 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
-import * as StyledComp from './edit-view-styled-components';
-import { handleEditorPaste } from './editor-paste-handler';
-import type { TextEditorContainerProps } from './text-editor-container';
-import { buildArrayFromFileList } from '../../../../../helpers/files';
-import {
-	useEditorAttachments,
-	useEditorText,
-	useEditorTextProvider
-} from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
-import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
+import { buildArrayFromFileList } from 'helpers/files';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
+import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
+import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {
 	editor: TinyMCE;
@@ -158,13 +153,19 @@ export const RichTextEditorContainer = ({
 
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
-				if (!editor) return noop;
+				if (!editor) return () => {};
 				editor.on('paste', (event) => {
+					const editViewWrapper = document.querySelector(
+						'[data-testid="edit-view-editor"]'
+					)?.parentElement;
+					const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
+					event.preventDefault();
 					handleEditorPaste(editor, editorId, event);
+					// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+					if (editViewWrapper) editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
 				});
 
 				editor.on('input', onTextChange);
-
 				editor.on('remove', onComposerClose);
 
 				const mutationObserver = new MutationObserver(() => {

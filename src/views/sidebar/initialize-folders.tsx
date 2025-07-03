@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { useInitializeFolders } from '../../carbonio-ui-commons/hooks/use-initialize-folders';
+import { FOLDER_VIEW, useInitializeFolders } from '@zextras/carbonio-ui-commons';
 
 export const InitializeFolders = (): null => {
 	useInitializeFolders(FOLDER_VIEW.message);

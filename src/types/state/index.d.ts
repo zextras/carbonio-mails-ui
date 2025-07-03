@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type API_REQUEST_STATUS } from '../../constants';
-import type { SavedAttachment, UnsavedAttachment } from '../attachments';
-import type { Conversation } from '../conversations';
-import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from '../editor';
-import { type MailMessage } from '../messages';
+import { type API_REQUEST_STATUS } from 'constants/index';
+import type { SavedAttachment, UnsavedAttachment } from 'types/attachments/index.d';
+import type { Conversation } from 'types/conversations/index.d';
+import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from 'types/editor/index.d';
+import { type MailMessage } from 'types/messages/index.d';
 
 export type MailsStateType = {
 	conversations: ConversationsStateType;

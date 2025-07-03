@@ -41,3 +41,11 @@ License: AGPL-3.0-only
 Files: src/assets/*
 Copyright: 2021 Zextras <https://www.zextras.com>
 License: CC-BY-NC-SA-4.0
+
+Files: .github/*
+Copyright: 2021 Zextras <https://www.zextras.com>
+License: CC0-1.0
+
+Files: .gitmodules
+Copyright: 2021 Zextras <https://www.zextras.com>
+License: CC0-1.0

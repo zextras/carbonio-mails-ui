@@ -7,16 +7,18 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
+import {
+	ContactInputItem,
+	ModalFooter,
+	ModalHeader,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { redirectMessageSoapApi } from '../api';
-import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
-import { useContactInput } from '../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../carbonio-ui-commons/integrations/types';
-import { TIMEOUTS } from '../constants';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
+import { redirectMessageSoapApi } from 'api/index';
+import { TIMEOUTS } from 'constants/index';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 
 type RedirectActionProps = { onClose: () => void; id: string };
 

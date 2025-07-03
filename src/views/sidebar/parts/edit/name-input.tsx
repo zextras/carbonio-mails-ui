@@ -6,10 +6,10 @@
 import React, { ChangeEvent, FC } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
+import { isValidFolderName } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
-import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
+import ColorPicker from 'integrations/shared-invite-reply/parts/color-select';
 
 type NameInputRowProps = {
 	setInputValue: (value: string) => void;

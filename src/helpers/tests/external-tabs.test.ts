@@ -7,13 +7,13 @@
 import { faker } from '@faker-js/faker';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { FOCUS_MODE_MAIL_VIEW_ROUTE } from '../../constants';
+import { FOCUS_MODE_MAIL_VIEW_ROUTE } from 'constants/index';
 import {
 	isFocusModeMailView,
 	openConversationStandalonePreview,
 	openEmlStandalonePreview,
 	openMessageStandalonePreview
-} from '../external-tabs';
+} from 'helpers/external-tabs';
 
 describe('External tabs', () => {
 	describe('isStandalonePreview', () => {

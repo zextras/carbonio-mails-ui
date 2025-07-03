@@ -4,23 +4,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import { useRootsArray } from '@zextras/carbonio-ui-commons';
 
-import * as folderHooks from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { Filter, type Folder } from '../../../../types';
-import { IncomingFiltersTab } from '../incoming-filters-tab';
-import { makeAllItemsVisible, mockFilter } from './test-utils';
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { Filter, type Folder } from 'types/index.d';
+import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
+import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
 	useSnackbar: jest.fn()
+}));
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useRootsArray: jest.fn()
 }));
 
 describe('Incoming Filters', () => {
@@ -94,7 +98,14 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should add folder chip when a folder is selected', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`
+					})
+				])
+			);
 
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
@@ -117,7 +128,14 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should "apply" filters and show the snackbar related to the process started when confirming folder', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`
+					})
+				])
+			);
 
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
@@ -176,14 +194,4 @@ function rootFolderWith(children: Array<Folder>): Array<Folder> {
 			depth: 0
 		}
 	];
-}
-function mockFoldersToReturnASingleFolder(folderName: string): void {
-	jest.spyOn(folderHooks, 'useRootsArray').mockReturnValue(
-		rootFolderWith([
-			generateFolder({
-				name: folderName,
-				absFolderPath: `/${folderName}`
-			})
-		])
-	);
 }

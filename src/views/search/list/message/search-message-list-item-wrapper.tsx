@@ -6,8 +6,8 @@
 
 import React, { memo } from 'react';
 
-import { SearchMessageListItem } from './search-message-list-item';
-import { useMessageById } from '../../../../store/emails/store';
+import { useMessageById } from 'store/emails/store';
+import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
 type SearchMessageListItemWrapperProps = {
 	messageId: string;

@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { MarkAsOption } from '../../../../../../types';
-import { MarkAs } from '../../filter-actions/mark-as';
+import { setupTest } from '@test-setup';
+import { MarkAsOption } from 'types/index.d';
+import { MarkAs } from 'views/settings/filters/parts/filter-actions/mark-as';
 
 describe('Mark As', () => {
 	it('it should render selected option in the input', async () => {

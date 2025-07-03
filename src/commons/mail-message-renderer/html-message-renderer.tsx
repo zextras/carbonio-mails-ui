@@ -7,24 +7,27 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button, Container, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
-import { BannerMessageTruncated } from './banner-message-truncated';
-import { BannerViewExternalImages } from './banner-view-external-images';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getAttachmentParts } from '../../helpers/attachments';
-import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { BodyPart, MailMessage } from '../../types';
-import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
+import {
+	getOriginalHtmlContent,
+	getQuotedTextFromOriginalContent
+} from 'commons/get-quoted-text-util';
+import { BannerMessageTruncated } from 'commons/mail-message-renderer/banner-message-truncated';
+import { BannerViewExternalImages } from 'commons/mail-message-renderer/banner-view-external-images';
+import { ShadowDomWrapper } from 'commons/mail-message-renderer/shadow-dom-wrapper';
 import {
 	buildImageMap,
 	decodeSurrogatePairs,
 	isAvailableInTrusteeList,
 	updateImageSrc
-} from '../utils';
-import { ShadowDomWrapper } from './shadow-dom-wrapper';
-import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
+} from 'commons/utils';
+import { getAttachmentParts } from 'helpers/attachments';
+import { getNoIdentityPlaceholder } from 'helpers/identities';
+import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { BodyPart, MailMessage } from 'types/index.d';
 
 type HtmlMessageRendererType = {
 	message: MailMessage;
@@ -37,6 +40,9 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 		truncated: false
 	};
 	const bodyContent = body.content;
+	// Step needed to remove extra color prop set when sending a message from richtexteditor it's apply to all the message sent
+	const cleanBodyContent = bodyContent.replace(/color:\s*#000000;?/i, '');
+
 	const participants = message?.participants ?? [];
 
 	const parts = useMemo(() => {
@@ -53,12 +59,12 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	const originalContent = getOriginalHtmlContent(bodyContent);
-	const quoted = getQuotedTextFromOriginalContent(bodyContent, originalContent);
+	const originalContent = getOriginalHtmlContent(cleanBodyContent);
+	const quoted = getQuotedTextFromOriginalContent(cleanBodyContent, originalContent);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? bodyContent : originalContent),
-		[showQuotedText, bodyContent, originalContent]
+		() => (showQuotedText ? cleanBodyContent : originalContent),
+		[showQuotedText, cleanBodyContent, originalContent]
 	);
 
 	const parser = new DOMParser();

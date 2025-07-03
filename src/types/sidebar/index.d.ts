@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Folder, Folders } from '../../carbonio-ui-commons/types/folder';
+import type { Folder, Folders } from '@zextras/carbonio-ui-commons';
 
 type RegisterActionType = {
 	id: string;

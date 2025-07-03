@@ -7,13 +7,12 @@ import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import styled from 'styled-components';
 
-import { TooltipWrapper } from './tooltip-wrapper';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { getFolderIdParts } from '../../../../helpers/folders';
-import type { ItemAvatarType, Participant } from '../../../../types';
+import { getFolderIdParts } from 'helpers/folders';
+import type { ItemAvatarType, Participant } from 'types/index.d';
+import { TooltipWrapper } from 'views/app/folder-panel/parts/tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;

@@ -6,13 +6,12 @@
 import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { MailGeneralInfoSubsection } from './subsections/mail-general-info-subsection';
-import { SmimeSubsection } from './subsections/smime-subsection';
-import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
-import { IncompleteMessage, MessageSignature } from '../../../../../../types';
+import { IncompleteMessage, MessageSignature } from 'types/index.d';
+import { MailGeneralInfoSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/mail-general-info-subsection';
+import { SmimeSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/smime-subsection';
 
 type MailInfoDetailModalProps = {
 	onClose: () => void;

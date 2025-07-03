@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import {
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus
-} from '../../store/editor/editor-utils';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 
 const alignState = (editor: MailsEditorV2): void => {
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);

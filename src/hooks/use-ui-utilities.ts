@@ -13,7 +13,7 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 
-import { useGlobalModal } from '../views/global-modal-manager';
+import { useGlobalModal } from 'views/global-modal-manager';
 
 export type UiUtilities = {
 	createModal: CreateModalFn;

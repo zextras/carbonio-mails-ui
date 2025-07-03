@@ -7,24 +7,27 @@ import React, { SyntheticEvent, useMemo } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import {
+	Folder,
+	FOLDERS,
+	FolderActionsType,
+	allowedActionOnSharedAccount
+} from '@zextras/carbonio-ui-commons';
 import { noop, startsWith } from 'lodash';
 
-import { DeleteModal } from './delete-modal';
-import { EditModal } from './edit-modal';
-import { EmptyModal } from './empty-modal';
-import { NewModal } from './new-modal';
-import { SharesInfoModal } from './shares-info-modal';
-import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
-import { getFolderIdParts } from '../../helpers/folders';
-import { useSelection } from '../../hooks/use-selection';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { useMessagesByFolder } from '../../store/emails/store';
-import { AppContext } from '../../types';
-import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import { MoveMessage } from '../../ui-actions/move-msg';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { getFolderIdParts } from 'helpers/folders';
+import { useSelection } from 'hooks/use-selection';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { useMessagesByFolder } from 'store/emails/store';
+import { AppContext } from 'types/index.d';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
+import { MoveMessage } from 'ui-actions/move-msg';
+import { DeleteModal } from 'views/sidebar/delete-modal';
+import { EditModal } from 'views/sidebar/edit-modal';
+import { EmptyModal } from 'views/sidebar/empty-modal';
+import { NewModal } from 'views/sidebar/new-modal';
+import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 
 type FolderActionsProps = {
 	id: string;

@@ -3,21 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
+import { Folder, FOLDERS, FolderView, getFolder } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
-import { FOLDER_ACTIONS } from '../../../commons/utilities';
-import { getFolders } from '../../../hooks/use-folders';
-import { SoapFolderAction } from '../../../types';
-import { DeleteModal } from '../delete-modal';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDER_ACTIONS } from 'commons/utilities';
+import { getFolders } from 'hooks/use-folders';
+import { SoapFolderAction } from 'types/index.d';
+import { DeleteModal } from 'views/sidebar/delete-modal';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {

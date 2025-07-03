@@ -6,7 +6,7 @@
 
 import { noop } from 'lodash';
 
-import * as advancedAccount from '../api/advanced-account-api';
+import * as advancedAccount from 'api/advanced-account-api';
 
 export function mockAdvancedAccountAPI(store: { backupSelfUndeleteAllowed: boolean }): void {
 	jest

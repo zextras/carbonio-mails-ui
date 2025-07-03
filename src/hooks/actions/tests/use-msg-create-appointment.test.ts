@@ -5,18 +5,19 @@
  */
 import { act } from 'react';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useIntegratedFunction } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { GetMsgRequest } from '../../../types';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
+import { setupHook } from '@test-setup';
+import { useIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgCreateAppointmentDescriptor,
 	useMsgCreateAppointmentFn
-} from '../use-msg-create-appointment';
+} from 'hooks/actions/use-msg-create-appointment';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { GetMsgRequest } from 'types/index.d';
 
 describe('useMsgCreateAppointment', () => {
 	describe('Descriptor', () => {

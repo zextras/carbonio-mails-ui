@@ -4,16 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
-import { getCompleteMessageId } from '../utils';
-import {
-	filterSavedInlineAttachment,
-	filterSavedStandardAttachment,
-	filterUnsavedInlineAttachment,
-	filterUnsavedStandardAttachment
-} from './editor-utils';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
@@ -22,12 +15,15 @@ import {
 	isCidUrl,
 	isContentIdEqual,
 	isDownloadServicedUrl
-} from '../../helpers/attachments';
+} from 'helpers/attachments';
+import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
 import {
-	getDefaultIdentity,
-	getIdentityDescriptor,
-	IdentityDescriptor
-} from '../../helpers/identities';
+	filterSavedInlineAttachment,
+	filterSavedStandardAttachment,
+	filterUnsavedInlineAttachment,
+	filterUnsavedStandardAttachment
+} from 'store/editor/editor-utils';
+import { getCompleteMessageId } from 'store/utils';
 import {
 	MailAttachment,
 	MailAttachmentParts,
@@ -40,7 +36,7 @@ import {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
 	const contentIdInnerPart = extractContentIdInnerPart(contentId);
@@ -158,7 +154,8 @@ const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
 ): string =>
-	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize};">${content}</div></body></html>`;
+// TODO: This style applier was setting a color: black props which breaks the darkmode visualization. Is all this style actually needed?
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();

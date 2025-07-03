@@ -22,12 +22,12 @@ import { reject, concat, map } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
-import SelectIdentitySignature from './components/select-identity-signature';
-import { ListOld } from './list-old';
-import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
-import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
-import type { SignatureSettingsPropsType, SignItemType } from '../../types';
-import { getFonts, getFontSizesOptions } from './components/utils';
+import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
+import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
+import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
+import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
+import { ListOld } from 'views/settings/list-old';
+import { signaturesSubSection, setDefaultSignaturesSubSection } from 'views/settings/subsections';
 
 const DeleteButton = styled(Button)`
 	display: none;

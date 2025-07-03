@@ -9,20 +9,20 @@ import { DropdownItem } from '@zextras/carbonio-design-system';
 import { intersection, map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { useConvApplyTagDescriptor } from '../../../../hooks/actions/use-conv-apply-tag';
-import { useConvDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-conv-delete-permanently';
-import { useConvMoveToFolderDescriptor } from '../../../../hooks/actions/use-conv-move-to-folder';
-import { useConvMoveToTrashDescriptor } from '../../../../hooks/actions/use-conv-move-to-trash';
-import { useConvSetFlagDescriptor } from '../../../../hooks/actions/use-conv-set-flag';
-import { useConvSetNotSpamDescriptor } from '../../../../hooks/actions/use-conv-set-not-spam';
-import { useConvSetReadDescriptor } from '../../../../hooks/actions/use-conv-set-read';
-import { useConvSetSpamDescriptor } from '../../../../hooks/actions/use-conv-set-spam';
-import { useConvSetUnflagDescriptor } from '../../../../hooks/actions/use-conv-set-unflag';
-import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
-import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { useConversationsByIds } from '../../../../store/emails/store';
-import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
+import { normalizeDropdownActionItem } from 'helpers/actions';
+import { useConvApplyTagDescriptor } from 'hooks/actions/use-conv-apply-tag';
+import { useConvDeletePermanentlyDescriptor } from 'hooks/actions/use-conv-delete-permanently';
+import { useConvMoveToFolderDescriptor } from 'hooks/actions/use-conv-move-to-folder';
+import { useConvMoveToTrashDescriptor } from 'hooks/actions/use-conv-move-to-trash';
+import { useConvSetFlagDescriptor } from 'hooks/actions/use-conv-set-flag';
+import { useConvSetNotSpamDescriptor } from 'hooks/actions/use-conv-set-not-spam';
+import { useConvSetReadDescriptor } from 'hooks/actions/use-conv-set-read';
+import { useConvSetSpamDescriptor } from 'hooks/actions/use-conv-set-spam';
+import { useConvSetUnflagDescriptor } from 'hooks/actions/use-conv-set-unflag';
+import { useConvSetUnreadDescriptor } from 'hooks/actions/use-conv-set-unread';
+import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
+import { useConversationsByIds } from 'store/emails/store';
+import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/multiple-selection-actions-component';
 
 export const ConversationsMultipleSelectionActions = ({
 	selectedConversationsIds,

@@ -3,51 +3,32 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, FC, ReactElement } from 'react';
+import React from 'react';
 
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import type { ToggleFiltersProps } from '../../../types';
+import { AdvancedFilterModalFormValues } from 'views/search/types/types';
 
-const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
-	const {
-		isUnread,
-		isFlagged,
-		hasAttachment,
-		setIsUnread,
-		setIsFlagged,
-		setHasAttachment,
-		isSharedFolderIncludedTobe,
-		setIsSharedFolderIncludedTobe
-	} = compProps;
-
-	const toggleUnread = useCallback(() => {
-		setIsUnread(!isUnread);
-	}, [isUnread, setIsUnread]);
-
-	const toggleFlagged = useCallback(() => {
-		setIsFlagged(!isFlagged);
-	}, [isFlagged, setIsFlagged]);
-
-	const toggleAttachment = useCallback(() => {
-		setHasAttachment(!hasAttachment);
-	}, [hasAttachment, setHasAttachment]);
-
-	const toggleSharedFolder = useCallback(() => {
-		setIsSharedFolderIncludedTobe(!isSharedFolderIncludedTobe);
-	}, [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe]);
-
+export const ToggleFilters = (): React.JSX.Element => {
+	const { control } = useFormContext<AdvancedFilterModalFormValues>();
 	return (
 		<>
 			<Container orientation="horizontal" mainAlignment="center" crossAlignment="center">
 				<Container padding={{ all: 'extrasmall' }}>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch
-								data-testid="hasAttachmentToggle"
-								onClick={toggleAttachment}
-								value={hasAttachment}
+							<Controller
+								control={control}
+								name={'hasAttachment'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
+									<Switch
+										data-testid="hasAttachmentToggle"
+										onClick={(): void => onChange(!value)}
+										value={value}
+									/>
+								)}
 							/>
 						</Padding>
 						<Text size="large" weight="bold">
@@ -66,7 +47,17 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch data-testid="isFlaggedToggle" onClick={toggleFlagged} value={isFlagged} />
+							<Controller
+								control={control}
+								name={'isFlagged'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
+									<Switch
+										data-testid="isFlaggedToggle"
+										onClick={(): void => onChange(!value)}
+										value={value}
+									/>
+								)}
+							/>
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('label.flagged', 'Flagged')}
@@ -88,7 +79,17 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch data-testid="isUnreadToggle" onClick={toggleUnread} value={isUnread} />
+							<Controller
+								control={control}
+								name={'isUnread'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
+									<Switch
+										data-testid="isUnreadToggle"
+										onClick={(): void => onChange(!value)}
+										value={value}
+									/>
+								)}
+							/>
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('search.unread', 'Unread')}
@@ -107,10 +108,16 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch
-								data-testid="isSharedFolderIncludedToggle"
-								onClick={toggleSharedFolder}
-								value={isSharedFolderIncludedTobe}
+							<Controller
+								control={control}
+								name={'isSharedFolderIncluded'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
+									<Switch
+										data-testid="isSharedFolderIncludedToggle"
+										onClick={(): void => onChange(!value)}
+										value={value}
+									/>
+								)}
 							/>
 						</Padding>
 						<Text size="large" weight="bold">
@@ -127,5 +134,3 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 		</>
 	);
 };
-
-export default ToggleFilters;

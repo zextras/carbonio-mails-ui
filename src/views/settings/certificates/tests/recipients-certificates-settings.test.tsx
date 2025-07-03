@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import RecipientsCertificateSettings from '../recipients-certificates-settings';
-import { createAPIInterceptorToGetRecipientsCertificates } from './utils/utils';
+import { setupTest } from '@test-setup';
+import RecipientsCertificateSettings from 'views/settings/certificates/recipients-certificates-settings';
+import { createAPIInterceptorToGetRecipientsCertificates } from 'views/settings/certificates/tests/utils/utils';
 
 describe('RecipientsCertificateSettings', () => {
 	it('should render the modal with the correct title', async () => {

@@ -3,32 +3,34 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { act } from '@testing-library/react';
 import * as shellUi from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import App from './app';
-import * as addComponentsToShell from './app-utils/add-shell-components';
-import * as registerShellActions from './app-utils/register-shell-actions';
-import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import * as useSearchRegisterer from './app-utils/use-search-registerer';
-import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
-} from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from './carbonio-ui-commons/test/test-setup';
-import { BACKUP_SEARCH_ROUTE } from './constants';
-import { useBackupSearchStore } from './store/backup-search/store';
-import { DeletedMessageFromAPI } from './types';
+} from '@test-utils/network/msw/create-api-interceptor';
+import App from 'app';
+import * as addComponentsToShell from 'app-utils/add-shell-components';
+import * as registerShellActions from 'app-utils/register-shell-actions';
+import * as registerShellIntegrations from 'app-utils/register-shell-integrations';
+import * as useSearchRegisterer from 'app-utils/use-search-registerer';
+import { BACKUP_SEARCH_ROUTE } from 'constants/index';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { DeletedMessageFromAPI } from 'types/index.d';
 
 // Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
 // It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
 // I think we should consider removing that mock or redefine it or make it configurable
-jest.mock('./carbonio-ui-commons/worker', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
 		postMessage: jest.fn()
 	},

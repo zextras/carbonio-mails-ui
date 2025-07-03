@@ -16,9 +16,14 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
-import { CreateFilterContext } from '../create-filter-context';
-import CustomSelect from '../custom-select';
-import { getFromOptions, getInOptions, getFolderOptions, findDefaultValue } from '../utils';
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import {
+	getFromOptions,
+	getInOptions,
+	getFolderOptions,
+	findDefaultValue
+} from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	t: TFunction;
