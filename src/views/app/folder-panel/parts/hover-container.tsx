@@ -7,7 +7,7 @@
 import { Container } from '@zextras/carbonio-design-system';
 import styled, { DefaultTheme } from 'styled-components';
 
-import { HoverBarContainer } from './hover-bar-container';
+import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 
 export const HoverContainer = styled(Container).attrs(() => ({
 	background: 'transparent'

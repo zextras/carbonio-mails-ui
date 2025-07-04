@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { MailVerificationHeader } from './soap';
-import { SoapConversation } from './soap-conversation';
-import { ZimbraRequest } from './zimbra-request';
+import { MailVerificationHeader } from 'types/soap/soap';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { ZimbraRequest } from 'types/soap/zimbra-request';
 
 export type GetConvRequest = ZimbraRequest & {
 	c: {

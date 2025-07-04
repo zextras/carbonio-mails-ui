@@ -13,7 +13,7 @@ import '@testing-library/jest-dom';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import * as darkReader from 'darkreader';
 
-import { ShadowDomWrapper } from '../shadow-dom-wrapper';
+import { ShadowDomWrapper } from 'commons/mail-message-renderer/shadow-dom-wrapper';
 
 jest.mock('darkreader', () => ({
 	...jest.requireActual('darkreader'),

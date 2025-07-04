@@ -6,22 +6,21 @@
 import { useMemo } from 'react';
 
 import { CreateSnackbarFn, CreateSnackbarFnArgs } from '@zextras/carbonio-design-system';
+import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../carbonio-ui-commons/types/tags';
-import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
-import { isSpam } from '../../helpers/folders';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
+import { ConversationActionsDescriptors, TIMEOUTS } from 'constants/index';
+import { isSpam } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import {
 	ConvActionParameters,
 	ConvActionResponse,
 	UIActionAggregator,
 	UIActionDescriptor
-} from '../../types';
-import { useUiUtilities } from '../use-ui-utilities';
+} from 'types/index.d';
 
 const createSnackbarMessage = (
 	createSnackbar: CreateSnackbarFn,

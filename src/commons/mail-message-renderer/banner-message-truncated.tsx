@@ -9,8 +9,8 @@ import { Button } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import { WarningBanner } from './warning-banner';
-import { AnimatedLoaderWarning } from '../../assets/animated-loader';
+import { AnimatedLoaderWarning } from 'assets/animated-loader';
+import { WarningBanner } from 'commons/mail-message-renderer/warning-banner';
 
 type BannerMessageTruncatedProps = {
 	loadMessage: () => void;

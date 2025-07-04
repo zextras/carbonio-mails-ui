@@ -6,8 +6,8 @@
 import { faker } from '@faker-js/faker';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { restoreMessagesApi } from '../restore-messages-api';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { restoreMessagesApi } from 'api/restore-messages-api';
 
 describe('restoreMessagesAPI', () => {
 	describe('when backend is available', () => {

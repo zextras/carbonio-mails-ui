@@ -10,8 +10,8 @@ import { Container, Icon, IconButton, Padding, Row, Text } from '@zextras/carbon
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { TIMEOUTS } from '../../../../constants';
-import { AttachmentUploadProcessStatus } from '../../../../types';
+import { TIMEOUTS } from 'constants/index';
+import { AttachmentUploadProcessStatus } from 'types/index.d';
 
 export const UploadingRow = styled(Row)`
 	display: flex;

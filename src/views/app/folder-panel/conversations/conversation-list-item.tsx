@@ -12,16 +12,16 @@ import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ConversationListItemCore } from './conversation-list-item-core';
-import { ConversationListItemActionWrapper } from './conversation-list-item-wrapper';
-import { ConversationMessagesList } from './conversation-messages-list';
-import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
-import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
-import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
-import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
-import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
-import { NormalizedConversation } from '../../../../types/conversations';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
+import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import { useConversationMessages, useConversationStatus } from 'store/emails/store';
+import { NormalizedConversation } from 'types/conversations/index.d';
+import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
+import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
+import { ConversationMessagesList } from 'views/app/folder-panel/conversations/conversation-messages-list';
 
 export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
@@ -125,7 +125,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			debouncedPushHistory.cancel();
+			debouncedPushHistory();
 			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 

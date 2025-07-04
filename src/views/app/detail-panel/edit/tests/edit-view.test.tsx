@@ -9,44 +9,17 @@ import React, { useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
-import {
-	GetSignaturesRequest,
-	GetSignaturesResponse
-} from '../../../../../api/get-signatures-soap-api';
-import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
-import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor
-} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
+import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
-import {
-	generateEditAsNewEditor,
-	generateNewMessageEditor,
-	generateReplyAllMsgEditor,
-	generateReplyMsgEditor
-} from '../../../../../store/editor/editor-generators';
-import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -58,7 +31,35 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
+import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
+import { defaultBeforeAllTests } from '@jest-setup';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import {
+	useBoard as mockedUseBoard,
+	useBoard
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	createSoapAPIInterceptor,
+	createAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get-share-info';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
+import * as saveDraftAction from 'api/save-draft-soap-api';
+import {
+	generateEditAsNewEditor,
+	generateNewMessageEditor,
+	generateReplyAllMsgEditor,
+	generateReplyMsgEditor
+} from 'store/editor/editor-generators';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -142,6 +143,7 @@ const createCheckSmimeEnabledAPIInterceptor = (): void => {
 		HttpResponse.json({ enabled: true })
 	);
 };
+
 const clearAndInsertText =
 	(user: UserEvent, target: Element, text: string) => async (): Promise<void> => {
 		await user.click(target);
@@ -163,13 +165,156 @@ jest.mock('../../../../../store/editor', () => ({
 	deleteEditor: jest.fn()
 }));
 
+function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
+	return {
+		recipients: { to: [], cc: [], bcc: [] },
+		id: '',
+		isRichText: false,
+		isUrgent: false,
+		sendAllowedStatus: {
+			allowed: true
+		},
+		requestReadReceipt: false,
+		savedAttachments: [],
+		size: 0,
+		subject: '',
+		text: {
+			plainText: 'Hello',
+			richText: '<p>Hello</p>'
+		},
+		unsavedAttachments: [],
+		action: EditViewActions.NEW,
+		identityId: getDefaultIdentity().id,
+		did: '123',
+		...customData
+	};
+}
+
 describe('Edit view', () => {
+	describe('Send button is disabled', () => {
+		const invalidEmailAddress = 'invalidmailaddress.com';
+		beforeEach(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.TO
+						}
+					],
+					cc: [],
+					bcc: []
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await user.hover(
+				screen.getByRole('button', {
+					name: /label\.send/i
+				})
+			);
+
+			makeAllItemsVisible();
+			await act(async () => {
+				const tooltip = await screen.findByTestId('tooltip');
+				expect(tooltip).toBeInTheDocument();
+				expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
+			});
+		});
+		test('when there`s an invalid TO recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.TO
+						}
+					],
+					cc: [],
+					bcc: []
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			// TODO: act is used to ensure entire render lifecycle is completed.
+			//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
+			//  act is a gimmick and not really required.
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
+		});
+		test('when there`s an invalid CC recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [],
+					cc: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.CARBON_COPY
+						}
+					],
+					bcc: []
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
+		});
+		test('when there`s an invalid BCC recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [],
+					cc: [],
+					bcc: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.BLIND_CARBON_COPY
+						}
+					]
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
+		});
+	});
+
 	describe('Mail creation', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
 			createSoapAPIInterceptor('GetShareInfo');
 			createCheckSmimeEnabledAPIInterceptor();
 		});
+
 		// warning
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
@@ -527,7 +672,6 @@ describe('Edit view', () => {
 			);
 			createCheckSmimeEnabledAPIInterceptor();
 		});
-
 		it('is not autosaved on initialization if draft id is present', async () => {
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 
@@ -965,7 +1109,7 @@ describe('Edit view', () => {
 					});
 
 					// Mock the board context
-					mockedUseBoard.mockImplementation(() => ({
+					useBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
 						context: { editorId: msg.id, folderId: FOLDERS.INBOX },
 						title: ''

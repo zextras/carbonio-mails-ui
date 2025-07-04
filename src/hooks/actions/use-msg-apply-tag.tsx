@@ -5,21 +5,20 @@
  */
 import { useCallback, useMemo } from 'react';
 
+import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../carbonio-ui-commons/types/tags';
-import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
-import { isSpam } from '../../helpers/folders';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
+import { MessageActionsDescriptors, TIMEOUTS } from 'constants/index';
+import { isSpam } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import {
 	MsgActionOperation,
 	MsgActionResponse,
 	UIActionAggregator,
 	UIActionDescriptor
-} from '../../types';
-import { useUiUtilities } from '../use-ui-utilities';
+} from 'types/index.d';
 
 export const useMsgApplyTagSubDescriptors = ({
 	ids,

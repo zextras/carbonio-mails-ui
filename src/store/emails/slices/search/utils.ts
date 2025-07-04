@@ -8,16 +8,16 @@
 import produce from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
-import { SEARCH_INDEX_SLICE_INITIAL_STATE } from './search-slice';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { deleteMessagesFromConversation } from 'store/emails/slices/populated-items/utils';
+import { SEARCH_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/search/search-slice';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
 	SearchRequestStatus
-} from '../../../../types';
-import { deleteMessagesFromConversation } from '../populated-items/utils';
+} from 'types/index.d';
 
 function resetSearchAndPopulatedItems(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>

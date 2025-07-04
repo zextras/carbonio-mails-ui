@@ -9,7 +9,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { SignItemType } from '../../../types';
+import { SignItemType } from 'types/index.d';
 
 export type UseSignatureSettingsResult = {
 	validate: (signatures: Array<SignItemType>) => Array<string>;

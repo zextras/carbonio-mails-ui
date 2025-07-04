@@ -7,7 +7,7 @@ import React, { ReactElement, useCallback } from 'react';
 
 import { Button, Tooltip } from '@zextras/carbonio-design-system';
 
-import { UIActionDescriptor } from '../../../../types';
+import { UIActionDescriptor } from 'types/index.d';
 
 const ListItemHoverAction = ({ action }: { action: UIActionDescriptor }): ReactElement => {
 	const onClick = useCallback(

@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ChipProps } from '@zextras/carbonio-design-system';
-
-import { ACTION_OPTION_KEYS } from '../../views/settings/filters/constants';
+import { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
 
 const TEST_CONDITIONS = [
 	'bodyTest',
@@ -62,20 +60,6 @@ export type MailFilterTag = {
 	label: string;
 	color?: number;
 };
-
-export type KeywordState = Array<{
-	id: string;
-	label: string;
-	hasAvatar?: boolean;
-	value?: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarIcon?: string;
-	avatarBackground?: ChipProps['background'];
-	hasError?: boolean;
-	error?: boolean;
-	fullName?: string;
-}>;
 
 export type SearchEmailValue = {
 	email: string;

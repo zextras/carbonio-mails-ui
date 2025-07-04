@@ -9,10 +9,10 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from '../../constants';
-import { isSpam } from '../../helpers/folders';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { isSpam } from 'helpers/folders';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetNotSpamFunctionsParameter = {
 	ids: Array<string>;

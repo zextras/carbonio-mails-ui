@@ -7,13 +7,13 @@ import React, { useCallback } from 'react';
 
 import { Avatar, Chip, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { getUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { BACKUP_SEARCH_ROUTE } from '../../../constants';
-import { BackupSearchMessage } from '../../../types';
-import { HoverContainer } from '../../app/folder-panel/parts/hover-container';
+import { BACKUP_SEARCH_ROUTE } from 'constants/index';
+import { BackupSearchMessage } from 'types/index.d';
+import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 
 type BackupSearchMessageListmessageProps = {
 	message: BackupSearchMessage;

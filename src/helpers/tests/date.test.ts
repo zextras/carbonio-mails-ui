@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { replaceTimeZone } from '../date';
+import { replaceTimeZone } from 'helpers/date';
 
 describe('replaceTimeZone', () => {
 	test('with UTC', () => {

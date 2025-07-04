@@ -6,14 +6,14 @@
 import type { Theme } from '@zextras/carbonio-design-system';
 import { includes, uniqBy } from 'lodash';
 
-import { calcColor, getFileExtension } from '../../../../../commons/utilities';
-import { getUserLocale } from '../../../../../commons/utils';
+import { calcColor, getFileExtension } from 'commons/utilities';
+import { getUserLocale } from 'commons/utils';
 import {
 	AttachmentPart,
 	EditorAttachmentFiles,
 	GetAttachmentsDownloadLinkProps,
 	IconColors
-} from '../../../../../types';
+} from 'types/index.d';
 
 export const getLocationOrigin = (): string => window.location.origin;
 

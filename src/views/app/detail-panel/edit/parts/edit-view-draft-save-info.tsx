@@ -9,9 +9,9 @@ import { Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 
-import * as StyledComp from './edit-view-styled-components';
-import { TIMEOUTS } from '../../../../../constants';
-import { DraftSaveProcessStatus } from '../../../../../types';
+import { TIMEOUTS } from 'constants/index';
+import { DraftSaveProcessStatus } from 'types/index.d';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus }> = ({
 	processStatus

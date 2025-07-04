@@ -7,7 +7,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { omitBy, isNil } from 'lodash';
 
-import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from '../types';
+import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 export const msgActionSoapApi = async ({
 	ids,

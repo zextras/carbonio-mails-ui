@@ -4,25 +4,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendConversationsToConversationIndexSlice,
+	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
+	setMessagesInEmailStore,
+	updateConversations,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useConversationsIdsByFolder,
-	updateConversations,
-	getUseEmailStoreAndHooksForTesting,
-	setMessagesInEmailStore
-} from '../../../store';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations-index-slice';
+	useConversationsIdsByFolder
+} from 'store/emails/store';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('conversation-index-slice', () => {
 	describe('useConversationIndexSlice', () => {

@@ -6,10 +6,10 @@
 import React, { useCallback, useState } from 'react';
 
 import { Button, CustomModal, Input, Row } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { Folder } from '../../../../../carbonio-ui-commons/types/folder';
-import { SelectFolderModal } from '../../../../../ui-actions/modals/select-folder-modal';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 
 type MoveToFolderProps = {
 	destination?: { name?: string };

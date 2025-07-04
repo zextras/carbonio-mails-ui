@@ -29,19 +29,11 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import DeleteAttachmentModal from './delete-attachment-modal';
-import { humanFileSize, isDocument, previewType } from './file-preview';
-import {
-	getAttachmentIconColors,
-	getAttachmentsDownloadLink,
-	getAttachmentsLink,
-	getLocationOrigin
-} from './utils';
-import { getFileExtension } from '../../../../commons/utilities';
-import { useAttachmentIconColor } from '../../../../helpers/attachments';
-import { openEmlStandalonePreview } from '../../../../helpers/external-tabs';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
+import { getFileExtension } from 'commons/utilities';
+import { useAttachmentIconColor } from 'helpers/attachments';
+import { openEmlStandalonePreview } from 'helpers/external-tabs';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import type {
 	AppContext,
 	AttachmentPart,
@@ -49,12 +41,24 @@ import type {
 	CopyToFileRequest,
 	CopyToFileResponse,
 	MailMessage
-} from '../../../../types';
+} from 'types/index.d';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
 	SelectNodesFunctionArgs
-} from '../../../../types/integrations/carbonio-files-ui';
+} from 'types/integrations/carbonio-files-ui';
+import DeleteAttachmentModal from 'views/app/detail-panel/preview/delete-attachment-modal';
+import {
+	humanFileSize,
+	isDocument,
+	previewType
+} from 'views/app/detail-panel/preview/file-preview';
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from 'views/app/detail-panel/preview/utils/index';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments

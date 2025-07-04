@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
+
 import { Shimmer, Container } from '@zextras/carbonio-design-system';
 import { times } from 'lodash';
 import styled, { keyframes } from 'styled-components';

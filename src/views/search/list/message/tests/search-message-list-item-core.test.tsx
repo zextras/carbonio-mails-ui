@@ -3,18 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { SearchMessageListItemCore } from '../search-message-list-item-core';
+import { setupTest } from '@test-setup';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 

@@ -8,11 +8,11 @@ import React, { useCallback, useMemo } from 'react';
 import { useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { isSpam, isTrash } from '../../helpers/folders';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { PermanentlyDeleteModal } from '../../ui-actions/permanently-delete-modal';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isSpam, isTrash } from 'helpers/folders';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
 type ConvDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;

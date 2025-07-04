@@ -6,8 +6,8 @@
 
 import React from 'react';
 
-import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
-import { MailAuthenticationHeaderIcon } from '../mail-authentication-header-icon';
+import { setupTest, screen } from '@test-setup';
+import { MailAuthenticationHeaderIcon } from 'views/app/detail-panel/preview/parts/info-block/mail-authentication-header-icon';
 
 const authenticationHeaders = {
 	spf: { value: 'spf-value', pass: true },

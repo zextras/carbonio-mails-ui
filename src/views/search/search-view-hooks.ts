@@ -4,40 +4,40 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getTags, Tags, useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 
-import { generateQueryString, updateQueryChips } from './utils';
-import { searchSoapApi } from '../../api/search-soap-api';
-import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tags } from '../../carbonio-ui-commons/types/tags';
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
-import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { mapToNormalizedConversation } from 'normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	appendConversations,
 	appendMessagesToSearch,
-	updateSearchResultsLoadingStatus,
-	useSearchResults,
-	setSearchResultsByMessage,
-	setSearchResultsByConversation,
 	resetSearchAndPopulatedItems,
-	setMessagesInEmailStore
-} from '../../store/emails/store';
-import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
-import { extractConvMessage } from '../sidebar/commons/use-sync-data-handler';
+	setMessagesInEmailStore,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	updateSearchResultsLoadingStatus,
+	useSearchResults
+} from 'store/emails/store';
+import {
+	IncompleteMessage,
+	MailMessage,
+	SearchIndexSliceState,
+	SearchResponse
+} from 'types/index.d';
+import { generateQueryString, updateQueryChips } from 'views/search/utils';
+import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 type UseRunSearchProps = {
 	query: QueryChip[];
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	updateQuery: Function;
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	useDisableSearch: () => [boolean, Function];
-	invalidQueryTooltip: string;
 	isSharedFolderIncluded: boolean;
 };
 
@@ -127,7 +127,6 @@ export function useIsMessageView(): boolean {
 }
 
 type UseRunSearchReturnType = {
-	searchDisabled: boolean;
 	queryToString: string;
 	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
@@ -137,11 +136,8 @@ type UseRunSearchReturnType = {
 export function useRunSearch({
 	query,
 	updateQuery,
-	useDisableSearch,
-	invalidQueryTooltip,
 	isSharedFolderIncluded
 }: UseRunSearchProps): UseRunSearchReturnType {
-	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
@@ -176,18 +172,16 @@ export function useRunSearch({
 				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
 				setIsInvalidQuery(true);
-				setSearchDisabled(true, invalidQueryTooltip);
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
 				setIsInvalidQuery(false);
 				handleSearchResults({ searchResponse });
 			}
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, queryToString, setSearchDisabled]
+		[isMessageView, prefLocale, queryToString]
 	);
 
 	return {
-		searchDisabled,
 		searchResults,
 		isInvalidQuery,
 		queryToString,

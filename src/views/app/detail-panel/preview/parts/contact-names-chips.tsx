@@ -10,12 +10,9 @@ import { Row, Text, Chip, Container, Padding } from '@zextras/carbonio-design-sy
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
-import type { Participant } from '../../../../../types';
-import {
-	copyEmailToClipboard,
-	sendMsg
-} from '../../../../../ui-actions/participant-displayer-actions';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { Participant } from 'types/index.d';
+import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
 
 export function generateChipName(contact: Participant): string {
 	const chipName = contact.fullName ?? contact.name ?? '';

@@ -9,12 +9,9 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import {
-	makeListItemsVisible,
-	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
-import CreateFilterModal from '../create-filter-modal';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import CreateFilterModal from 'views/settings/filters/parts/create-filter-modal';
 
 const addAction = async (user: UserEvent): Promise<void> => {
 	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));
