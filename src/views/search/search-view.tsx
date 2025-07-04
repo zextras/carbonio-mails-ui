@@ -40,10 +40,9 @@ const SearchView = ({
 		[]
 	);
 
-	const [count, setCount] = useState(0);
 	useEffect(() => {
-		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
+		setAppContext({ isMessageView });
+	}, [isMessageView]);
 
 	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
 		useRunSearch({
