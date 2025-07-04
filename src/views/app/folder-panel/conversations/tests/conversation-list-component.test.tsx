@@ -7,16 +7,16 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest, triggerLoadMore } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
+import { setupTest, triggerLoadMore } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
-} from '../conversation-list-component';
-import { ConversationListItemComponent } from '../conversation-list-item-component';
+} from 'views/app/folder-panel/conversations/conversation-list-component';
+import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
 
 function setUpConversationList({
 	folderId,

@@ -7,14 +7,17 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop, times } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { setMessagesInEmailStore } from '../../../../../store/emails/store';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
-import { MessageListItemComponent } from '../message-list-item-component';
+import { setupTest } from '@test-setup';
+import { setMessagesInEmailStore } from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
+import {
+	MessageListComponent,
+	MessageListComponentProps
+} from 'views/app/folder-panel/messages/message-list-component';
+import { MessageListItemComponent } from 'views/app/folder-panel/messages/message-list-item-component';
 
 describe.each`
 	type                     | isSearchModule

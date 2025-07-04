@@ -15,14 +15,14 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
-import { EditView, EditViewHandle } from './edit-view';
-import { EditViewBoardContext } from './edit-view-board';
-import { EditViewActions } from '../../../../constants';
-import { addEditor, useEditorSubject } from '../../../../store/editor';
-import { generateEditor } from '../../../../store/editor/editor-generators';
-import { getFullMessageEmailStoreAction } from '../../../../store/emails/actions/get-message';
-import { useMessageById } from '../../../../store/emails/store';
-import type { EditViewActionsType, MailMessage } from '../../../../types';
+import { EditViewActions } from 'constants/index';
+import { generateEditor } from 'store/editor/editor-generators';
+import { addEditor, useEditorSubject } from 'store/editor/index';
+import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { useMessageById } from 'store/emails/store';
+import type { EditViewActionsType, MailMessage } from 'types/index.d';
+import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
+import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 
 const parseAndValidateParams = (
 	action?: string,

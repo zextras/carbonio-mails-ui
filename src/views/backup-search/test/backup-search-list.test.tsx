@@ -11,10 +11,10 @@ import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { HttpResponse } from 'msw';
 import { useParams } from 'react-router-dom';
 
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
-import { BackupSearchList } from '../parts/backup-search-list';
+import { setupTest } from '@test-setup';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchList } from 'views/backup-search/parts/backup-search-list';
 
 const message1 = {
 	messageId: '1',

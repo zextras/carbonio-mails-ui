@@ -5,7 +5,7 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../types';
+import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
 
 export const saveDraftSoapApi = ({
 	soapDraftMessageObj,

@@ -9,9 +9,9 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { ConversationMessagePreviewWrapper } from './conversation-message-preview-wrapper';
-import { Spinner } from '../../../assets/spinner';
-import { NormalizedConversation } from '../../../types';
+import { Spinner } from 'assets/spinner';
+import { NormalizedConversation } from 'types/index.d';
+import { ConversationMessagePreviewWrapper } from 'views/app/detail-panel/conversation-message-preview-wrapper';
 
 export const ConversationPreviewPanel = ({
 	conversation

@@ -3,22 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { forEach, reduce, times } from 'lodash';
 
+import { setupTest, screen } from '@test-setup';
 import {
 	getIntegratedFunction,
 	useIntegratedFunction
-} from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { getEditor } from '../../../../../../store/editor';
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { TESTID_SELECTORS } from '../../../../../../tests/constants';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
-import { AddAttachmentsDropdown } from '../add-attachments-dropdown';
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { getEditor } from 'store/editor/index';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 
 type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };

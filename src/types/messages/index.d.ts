@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SENSITIVITY_VALUES } from '../../constants';
-import type { MailsEditorV2 } from '../editor';
-import { Participant } from '../participant';
-import { SaveDraftResponse, MessageSignature } from '../soap';
+import { SENSITIVITY_VALUES } from 'constants/index';
+import type { MailsEditorV2 } from 'types/editor/index.d';
+import { Participant } from 'types/participant/index.d';
+import { SaveDraftResponse, MessageSignature } from 'types/soap/index.d';
 
 type MailAuthenticationHeader = { value: string; pass: boolean };
 

@@ -8,8 +8,8 @@ import React, { useCallback, useMemo } from 'react';
 import { DropdownItem, MultiButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../constants';
-import { useViewLayout } from '../../../../hooks/use-view-layout';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
+import { useViewLayout } from 'hooks/use-view-layout';
 
 export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();

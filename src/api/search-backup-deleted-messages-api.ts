@@ -7,7 +7,7 @@
 import type {
 	SearchBackupDeletedMessagesResponse,
 	SearchBackupDeletedMessagesAPIProps
-} from '../types';
+} from 'types/index.d';
 
 export async function searchBackupDeletedMessagesApi({
 	startDate,

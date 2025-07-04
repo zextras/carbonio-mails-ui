@@ -10,8 +10,9 @@
  - a draft message is created, associated to the new conversation id
  - the original message changes to the new conversation id
 */
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { mockShellSoapNotify } from '../../../sidebar/tests/test-helpers';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
+import { mockShellSoapNotify } from 'views/sidebar/tests/test-helpers';
 
 export function simulateReplyToSingleMessageConversation({
 	deletedConversationId,

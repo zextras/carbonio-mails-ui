@@ -22,16 +22,16 @@ import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { RecoverMessagesModal } from './components/recover-messages-modal';
-import { recoverMessagesSubSection } from './subsections';
-import { searchBackupDeletedMessagesApi } from '../../api/search-backup-deleted-messages-api';
+import { searchBackupDeletedMessagesApi } from 'api/search-backup-deleted-messages-api';
 import {
 	BACKUP_SEARCH_ROUTE,
 	BACKUP_SEARCH_STATUS,
 	RECOVER_MESSAGES_INTERVAL
-} from '../../constants';
-import { useAdvancedAccountStore } from '../../store/advanced-account/store';
-import { useBackupSearchStore } from '../../store/backup-search/store';
+} from 'constants/index';
+import { useAdvancedAccountStore } from 'store/advanced-account/store';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { RecoverMessagesModal } from 'views/settings/components/recover-messages-modal';
+import { recoverMessagesSubSection } from 'views/settings/subsections';
 
 function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDate?: Date } {
 	if (!recoverDate) return {};

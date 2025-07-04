@@ -17,14 +17,16 @@ import {
 } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
+import type { TagsAccordionItems } from '@zextras/carbonio-ui-commons';
+import {
+	useRunSearchIntegration,
+	useSortedTagsArray,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import { reduce } from 'lodash';
 
-import { ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants/utils';
-import { useRunSearchIntegration } from '../carbonio-ui-commons/integrations/search/use-run-search';
-import { useSortedTagsArray } from '../carbonio-ui-commons/store/zustand/tags/hooks';
-import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
-import type { ItemType } from '../types';
-import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
+import type { ItemType } from 'types/index.d';
+import { createTag, useGetTagsActions } from 'ui-actions/tag-actions';
 
 type ItemProps = {
 	item: ItemType;

@@ -6,10 +6,13 @@
 
 import { type Editor } from 'tinymce';
 
-import { uploadFileApi } from '../../../../../../api/upload-file-api';
-import { getEditor, useEditorsStore } from '../../../../../../store/editor';
-import { saveDraftEmailStoreAction } from '../../../../../../store/emails/actions/save-draft-action';
-import { testingPurposeOnly, handleEditorPaste } from '../editor-paste-handler';
+import { uploadFileApi } from 'api/upload-file-api';
+import { getEditor, useEditorsStore } from 'store/editor/index';
+import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
+import {
+	testingPurposeOnly,
+	handleEditorPaste
+} from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
 jest.mock('../../../../../../api/upload-file-api');
 jest.mock('../../../../../../store/emails/actions/save-draft-action');

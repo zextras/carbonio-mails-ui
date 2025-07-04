@@ -9,7 +9,7 @@ import produce from 'immer';
 import { omit, reduce } from 'lodash';
 import { create } from 'zustand';
 
-import type { BackupSearchStore, DeletedMessageFromAPI } from '../../types';
+import type { BackupSearchStore, DeletedMessageFromAPI } from 'types/index.d';
 
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 	messages: {},

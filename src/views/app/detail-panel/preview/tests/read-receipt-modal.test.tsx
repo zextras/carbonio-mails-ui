@@ -10,9 +10,9 @@ import { act, screen } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as sendDeliveryReportSoapApiMock from '../../../../../api/send-delivery-request-soap-api';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import ReadReceiptModal from '../read-receipt-modal';
+import { setupTest } from '@test-setup';
 
 const baseMessageWithReadReadReceiptRequested = generateMessage({
 	id: '12345',

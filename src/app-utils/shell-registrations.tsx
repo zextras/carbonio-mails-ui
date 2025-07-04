@@ -7,9 +7,9 @@ import React, { FC, PropsWithChildren, useEffect } from 'react';
 
 import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 
-import { addComponentsToShell } from './add-shell-components';
-import { registerShellActions } from './register-shell-actions';
-import { registerShellIntegrations } from './register-shell-integrations';
+import { addComponentsToShell } from 'app-utils/add-shell-components';
+import { registerShellActions } from 'app-utils/register-shell-actions';
+import { registerShellIntegrations } from 'app-utils/register-shell-integrations';
 
 export const ShellRegistrations: FC<PropsWithChildren> = ({ children }) => {
 	const isCarbonioCE = useIsCarbonioCE();

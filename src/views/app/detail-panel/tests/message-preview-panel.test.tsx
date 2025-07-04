@@ -8,12 +8,12 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
-import { updateMessageStatus } from '../../../../store/emails/store';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { MessagePreviewPanel } from '../message-preview-panel';
+import { setupTest } from '@test-setup';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import { updateMessageStatus } from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 jest.mock('../../../../store/emails/hooks/hooks');
 

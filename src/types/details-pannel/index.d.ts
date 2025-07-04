@@ -6,7 +6,7 @@
 
 import { NameSpace } from '@zextras/carbonio-shell-ui';
 
-import { MailMessage } from '../messages';
+import { MailMessage } from 'types/messages/index.d';
 
 type OpenEmlPreviewType = (
 	parentMessageId: string,

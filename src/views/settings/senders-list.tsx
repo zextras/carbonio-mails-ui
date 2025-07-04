@@ -20,10 +20,10 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import { SendersListItem } from './components/senders-list-item';
-import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
-import type { InputProps } from '../../types';
-import { isValidEmail } from '../search/parts/utils';
+import type { InputProps } from 'types/index.d';
+import { isValidEmail } from 'views/search/parts/utils';
+import { SendersListItem } from 'views/settings/components/senders-list-item';
+import { allowedSendersSubSection, blockedSendersSubSection } from 'views/settings/subsections';
 
 export type ListType = 'Allowed' | 'Blocked';
 

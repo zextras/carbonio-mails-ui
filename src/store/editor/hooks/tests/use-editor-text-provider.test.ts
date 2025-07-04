@@ -6,11 +6,11 @@
 
 import { act } from '@testing-library/react';
 
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
-import { setupEditorStore } from '../../../../tests/generators/editor-store';
-import { generateNewMessageEditor } from '../../editor-generators';
-import { useEditorsStore } from '../../store';
-import { useEditorTextProvider } from '../editor';
+import { setupHook } from '@test-setup';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { useEditorTextProvider } from 'store/editor/hooks/editor';
+import { useEditorsStore } from 'store/editor/store';
+import { setupEditorStore } from 'tests/generators/editor-store';
 
 describe('useEditorTextProvider', () => {
 	it('should return an object with the current textProvider and its setter', () => {

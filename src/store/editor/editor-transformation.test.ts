@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { buildSavedAttachments, composeAttachMpField } from './editor-transformations';
-import { generateMessage } from '../../tests/generators/generateMessage';
+import { buildSavedAttachments, composeAttachMpField } from 'store/editor/editor-transformations';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('composeAttachMpField', () => {
 	it('should correctly transform an array of SavedAttachment to an array of MailAttachmentParts', async () => {

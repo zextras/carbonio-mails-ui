@@ -5,8 +5,8 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { normalizeFilterRulesFromSoap } from '../normalizations/normalize-filter-rules';
-import { FilterRules } from '../types';
+import { normalizeFilterRulesFromSoap } from 'normalizations/normalize-filter-rules';
+import { FilterRules } from 'types/index.d';
 
 type GetFilterRulesResponse = {
 	filterRules: FilterRules;

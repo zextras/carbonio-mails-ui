@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AddEditorParams, MailsEditorV2 } from '../../../types';
-import { useEditorsStore } from '../store';
+import { useEditorsStore } from 'store/editor/store';
+import { AddEditorParams, MailsEditorV2 } from 'types/index.d';
 
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
 	useEditorsStore.getState()?.editors?.[id] ?? null;

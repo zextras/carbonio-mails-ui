@@ -6,7 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 
-import { createFakeIdentity } from '../../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 
 const identity1 = createFakeIdentity();
 const identity2 = createFakeIdentity();

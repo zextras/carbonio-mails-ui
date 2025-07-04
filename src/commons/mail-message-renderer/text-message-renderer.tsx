@@ -8,8 +8,11 @@ import React, { FC, useMemo, useState } from 'react';
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { getOriginalTextContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
-import { plainTextToHTML, replaceLinkToAnchor } from '../utils';
+import {
+	getOriginalTextContent,
+	getQuotedTextFromOriginalContent
+} from 'commons/get-quoted-text-util';
+import { plainTextToHTML, replaceLinkToAnchor } from 'commons/utils';
 
 export const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({
 	body

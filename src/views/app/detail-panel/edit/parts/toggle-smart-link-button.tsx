@@ -9,9 +9,9 @@ import React, { ReactElement, useCallback } from 'react';
 import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 
-import { getEditor, useEditorAttachments, useEditorDraftSave } from '../../../../../store/editor';
-import { isSavedAttachment } from '../../../../../store/editor/editor-utils';
-import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../../types';
+import { isSavedAttachment } from 'store/editor/editor-utils';
+import { getEditor, useEditorAttachments, useEditorDraftSave } from 'store/editor/index';
+import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 
 export const ToggleSmartLinkButton = ({
 	editorId,

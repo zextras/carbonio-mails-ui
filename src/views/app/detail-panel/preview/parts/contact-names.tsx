@@ -11,8 +11,8 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import styled from 'styled-components';
 
-import { participantToString } from '../../../../../commons/utils';
-import type { Participant } from '../../../../../types';
+import { participantToString } from 'commons/utils';
+import type { Participant } from 'types/index.d';
 
 const ContactSubText = styled(Text)`
 	padding: 0 0.125rem;

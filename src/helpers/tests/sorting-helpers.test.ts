@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { parseMessageSortingOptions } from '../sorting';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
+import { parseMessageSortingOptions } from 'helpers/sorting';
 
 const defaultSortingSettings = {
 	sortType: 'date',

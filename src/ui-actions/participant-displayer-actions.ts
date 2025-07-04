@@ -6,8 +6,8 @@
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { mailToSharedFunction } from '../integrations/shared-functions';
-import { Participant } from '../types';
+import { mailToSharedFunction } from 'integrations/shared-functions';
+import { Participant } from 'types/index.d';
 
 export const copyEmailToClipboard = (email: string, createSnackbar: CreateSnackbarFn): void => {
 	navigator.clipboard.writeText(email).then(() => {

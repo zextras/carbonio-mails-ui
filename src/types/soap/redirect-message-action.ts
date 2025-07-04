@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ZimbraRequest } from './zimbra-request';
+import { ZimbraRequest } from 'types/soap/zimbra-request';
 
 export type EmailAddresses = {
 	a: string;

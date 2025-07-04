@@ -3,13 +3,13 @@ import React, { ReactNode, useMemo } from 'react';
 import { ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
-import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { NormalizedConversation } from '../../../../types';
-import { HoverBarContainer } from '../parts/hover-bar-container';
-import { HoverContainer } from '../parts/hover-container';
-import { ListItemHoverActions } from '../parts/list-item-hover-actions';
+import { normalizeDropdownActionItem } from 'helpers/actions';
+import { useConvActions } from 'hooks/actions/use-conv-actions';
+import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
+import { NormalizedConversation } from 'types/index.d';
+import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
+import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
+import { ListItemHoverActions } from 'views/app/folder-panel/parts/list-item-hover-actions';
 
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>

@@ -10,8 +10,8 @@ import type * as Search from '@zextras/carbonio-search-ui';
 import { useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { Spinner } from '../assets/spinner';
-import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
+import { Spinner } from 'assets/spinner';
+import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 
 const LazySearchView = lazy(
 	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')

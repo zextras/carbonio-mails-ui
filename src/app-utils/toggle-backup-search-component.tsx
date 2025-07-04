@@ -10,7 +10,7 @@ import { ModalManager } from '@zextras/carbonio-design-system';
 import { addRoute, removeRoute, t } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import { BACKUP_SEARCH_ROUTE } from '../constants';
+import { BACKUP_SEARCH_ROUTE } from 'constants/index';
 
 const LazyBackupSearchView = React.lazy(
 	() =>

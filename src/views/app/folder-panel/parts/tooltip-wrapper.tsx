@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Tooltip } from '@zextras/carbonio-design-system';
 import React, { ReactElement } from 'react';
+
+import { Tooltip } from '@zextras/carbonio-design-system';
 
 type TooltipWrapperProps = {
 	children: ReactElement;

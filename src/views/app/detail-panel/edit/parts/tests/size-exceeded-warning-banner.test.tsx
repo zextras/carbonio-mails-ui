@@ -9,13 +9,16 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
-import { generateSettings } from '../../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor, useEditorsStore } from '../../../../../../store/editor';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
-import { MailsEditorV2, SavedAttachment } from '../../../../../../types';
-import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
+import { setupTest } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { addEditor, useEditorsStore } from 'store/editor/index';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { generateEditorV2Case } from 'tests/generators/editors';
+import { MailsEditorV2, SavedAttachment } from 'types/index.d';
+import {
+	calculateMailSize,
+	SizeExceededWarningBanner
+} from 'views/app/detail-panel/edit/parts/size-exceeded-waring-banner';
 
 describe('sizeExceededWarningBanner', () => {
 	beforeEach(() => {

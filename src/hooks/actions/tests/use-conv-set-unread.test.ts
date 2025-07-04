@@ -6,14 +6,14 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { ConvActionRequest } from '../../../types';
-import { useConvSetUnreadDescriptor, useConvSetUnreadFn } from '../use-conv-set-unread';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useConvSetUnreadDescriptor, useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
+import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvSetUnread', () => {
 	describe('Descriptor', () => {

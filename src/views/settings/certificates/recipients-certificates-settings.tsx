@@ -19,12 +19,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import CertificateDeleteModal from './certificate-delete-modal';
-import { RecipientsCertificateUploadModal } from './recipients-certificate-upload-modal';
-import { deleteRecipientCertificate } from '../../../api/delete-recipient-certificate-api';
-import { getRecipientsCertificates } from '../../../api/get-recipient-certificates-api';
-import { uploadRecipientCertificate } from '../../../api/upload-recipients-certificate-api';
-import { Certificate } from '../../../types/certificates/certificates';
+import { deleteRecipientCertificate } from 'api/delete-recipient-certificate-api';
+import { getRecipientsCertificates } from 'api/get-recipient-certificates-api';
+import { uploadRecipientCertificate } from 'api/upload-recipients-certificate-api';
+import { Certificate } from 'types/certificates/certificates';
+import CertificateDeleteModal from 'views/settings/certificates/certificate-delete-modal';
+import { RecipientsCertificateUploadModal } from 'views/settings/certificates/recipients-certificate-upload-modal';
 
 const RecipientsCertificateSettings: FC = (): ReactElement => {
 	const { createModal, closeModal } = useModal();
