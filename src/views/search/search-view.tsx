@@ -7,7 +7,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
-import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { Route, Routes } from 'react-router-dom';
 
@@ -91,12 +91,6 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
 		includeSharedItemsInSearchDefaultPref
 	);
-
-	const [count, setCount] = useState(0);
-
-	useEffect(() => {
-		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
 
 	const { searchResults, isInvalidQuery, queryToString, executeSearch } = useRunSearch({
 		query,
