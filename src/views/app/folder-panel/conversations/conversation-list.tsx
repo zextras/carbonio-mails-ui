@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -47,6 +47,10 @@ export const ConversationList = (): React.JSX.Element => {
 		count,
 		items: conversationsIds
 	});
+
+	useEffect(() => {
+		Object.keys(selected).length === 0 && setCount?.(0);
+	}, [selected, setCount]);
 
 	const displayerTitle = useMemo(() => {
 		if (conversationsIds?.length === 0) {

@@ -50,6 +50,10 @@ export const MessageList = (): React.JSX.Element => {
 		items: messageListIndex
 	});
 
+	useEffect(() => {
+		Object.keys(selected).length === 0 && setCount?.(0);
+	}, [selected, setCount]);
+
 	const hasMore = messageIndexSlice.more;
 
 	const loadMoreCallback = useLoadMoreForMessageList({
