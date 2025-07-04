@@ -43,8 +43,12 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 
 	useEffect(() => {
 		if (containerRef.current) {
-			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
-			setShadowRootInitialized(true);
+			if (!containerRef.current.shadowRoot) {
+				shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
+				setShadowRootInitialized(true);
+			} else {
+				shadowRootRef.current = containerRef.current.shadowRoot;
+			}
 			if (darkModeEnabled()) {
 				enableDarkReader({});
 			}
@@ -52,6 +56,12 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 				styleSheetSet(shadowRootRef.current);
 			}
 		}
+
+		return () => {
+			if (shadowRootRef.current) {
+				shadowRootRef.current = null;
+			}
+		};
 	}, [darkModeEnabled, styleSheetSet]);
 
 	return (
