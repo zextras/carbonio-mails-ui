@@ -60,12 +60,13 @@ const prefixes = [
 	'in'
 ];
 
-export const containsSpecialCharacters = (value: string): boolean => {
-	const prefix = prefixes.find((pr) => value.startsWith(`${pr}:`));
+export const containsSpecialCharacters = (value: string | boolean): boolean => {
+	const stringValue = typeof value === 'string' ? value : '';
+	const prefix = prefixes.find((pr) => stringValue.startsWith(`${pr}:`));
 	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
 		return false;
 	}
-	const text = prefix ? value.substring(prefix.length + 1) : value;
+	const text = prefix ? stringValue.substring(prefix.length + 1) : stringValue;
 	return specialChars.some((specialChar) => text.includes(specialChar));
 };
 
