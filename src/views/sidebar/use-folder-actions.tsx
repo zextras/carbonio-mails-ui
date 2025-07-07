@@ -17,7 +17,7 @@ import { noop, startsWith } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { getFolderIdParts } from 'helpers/folders';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useMessagesByFolder } from 'store/emails/store';
 import { AppContext } from 'types/index.d';
@@ -47,7 +47,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 		.map((message) => message.id);
 	const { setCount } = useAppContext<AppContext>();
 
-	const { deselectAll } = useSelection({ setCount, count: 0 });
+	const { deselectAll } = useMultipleSelection({ setCount, count: 0 });
 
 	const { createSnackbar } = useUiUtilities();
 

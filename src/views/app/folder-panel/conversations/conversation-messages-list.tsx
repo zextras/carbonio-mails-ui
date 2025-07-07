@@ -12,7 +12,7 @@ import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
 import { API_REQUEST_STATUS } from 'constants/index';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import type { AppContext, IncompleteMessage, SearchRequestStatus } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
@@ -40,7 +40,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 }: ConversationMessagesListProps): React.JSX.Element {
 	const { setCount, count } = useAppContext<AppContext>();
 
-	const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
+	const { selected, toggle, deselectAll, isSelectModeOn } = useMultipleSelection({
 		setCount,
 		count,
 		items: messages.map((message) => message.id)

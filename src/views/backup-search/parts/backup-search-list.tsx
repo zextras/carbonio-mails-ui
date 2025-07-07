@@ -21,7 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { restoreMessagesApi } from 'api/restore-messages-api';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from 'constants/index';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
@@ -38,7 +38,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 		deselectAll,
 		selectAll,
 		isAllSelected
-	} = useSelection({
+	} = useMultipleSelection({
 		setCount,
 		count,
 		items: [...Object.keys(messages ?? {})]

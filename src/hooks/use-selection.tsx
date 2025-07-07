@@ -24,7 +24,7 @@ type UseSelectionReturnType = {
 	selectAllModeOff: () => void;
 };
 
-export const useSelection = ({
+export const useMultipleSelection = ({
 	setCount,
 	count,
 	items = []

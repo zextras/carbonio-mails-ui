@@ -23,7 +23,7 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
+const mockedUseSelection: ReturnType<typeof useSelection.useMultipleSelection> = {
 	selectAll: jest.fn(),
 	selected: {},
 	toggle: jest.fn(),

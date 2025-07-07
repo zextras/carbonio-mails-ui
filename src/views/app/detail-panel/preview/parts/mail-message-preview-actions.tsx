@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
 import { AppContext, MailMessage } from 'types/index.d';
 
@@ -25,7 +25,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 	const [t] = useTranslation();
 
 	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection({ setCount, count: 0 });
+	const { deselectAll } = useMultipleSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 

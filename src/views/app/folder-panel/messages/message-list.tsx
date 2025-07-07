@@ -15,7 +15,7 @@ import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import type { AppContext } from 'types/index.d';
 import { MessageListComponent } from 'views/app/folder-panel/messages/message-list-component';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
@@ -43,7 +43,7 @@ export const MessageList = (): React.JSX.Element => {
 		toggle,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({
+	} = useMultipleSelection({
 		setCount,
 		count,
 		items: messageListIndex
