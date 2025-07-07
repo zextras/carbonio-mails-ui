@@ -87,7 +87,7 @@ export const Breadcrumbs: FC<{
 		[]
 	);
 
-	function buildQuery(filter: string): string {
+	function getFilterQuery(filter: string): string {
 		switch (filter) {
 			case 'read':
 				return 'is:unread';
@@ -108,7 +108,7 @@ export const Breadcrumbs: FC<{
 				// folderId,
 				limit: 100,
 				sortBy,
-				query: filter ? `inId:"${folderId}" ${buildQuery(filter)}` : `inId:"${folderId}"`,
+				query: filter ? `inId:"${folderId}" ${getFilterQuery(filter)}` : `inId:"${folderId}"`,
 				types: isMessageView ? 'message' : 'conversation'
 			});
 		},
