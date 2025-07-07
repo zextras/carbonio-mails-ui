@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { map, omit } from 'lodash';
+import { map } from 'lodash';
 
 type UseSelectionProps = {
 	items?: Array<string>;
 };
 
 type UseSelectionReturnType = {
-	selected: Record<string, boolean>;
+	selectedIds: Set<string>;
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
 	toggle: (id: string) => void;
@@ -22,45 +22,52 @@ type UseSelectionReturnType = {
 };
 
 export const useMultipleSelection = ({ items = [] }: UseSelectionProps): UseSelectionReturnType => {
-	const selected = useRef<Record<string, boolean>>({});
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 
-	const toggleItemSelection = useCallback((id: string) => {
-		if (selected.current[id]) {
-			selected.current = omit(selected.current, [id]);
-			if (Object.keys(selected.current).length === 1) {
-				setIsSelectModeOn(false);
-			} else if (Object.keys(selected.current).length === 0) {
+	const toggleItemSelection = useCallback(
+		(id: string) => {
+			if (selectedIds.has(id)) {
+				setSelectedIds((prev) => {
+					prev.delete(id);
+					return new Set(prev);
+				});
+				if (selectedIds.size === 1) {
+					setIsSelectModeOn(false);
+				} else if (selectedIds.size === 0) {
+					setIsSelectModeOn(true);
+				}
+			} else {
+				setSelectedIds((prev) => {
+					prev.add(id);
+					return new Set(prev);
+				});
 				setIsSelectModeOn(true);
 			}
-		} else {
-			selected.current = { ...selected.current, [id]: true };
-			setIsSelectModeOn(true);
-		}
-	}, []);
+		},
+		[selectedIds]
+	);
 
 	const deselectAll = useCallback(() => {
-		selected.current = {};
+		setSelectedIds(new Set());
 		setIsSelectModeOn(false);
 	}, [setIsSelectModeOn]);
 
 	const selectAll = useCallback(() => {
 		map(items, (id) => {
-			if (!selected.current[id]) {
+			if (!selectedIds.has(id)) {
 				toggleItemSelection(id);
 			}
 		});
-	}, [items, toggleItemSelection, selected]);
+	}, [items, selectedIds, toggleItemSelection]);
 
 	const selectAllModeOff = useCallback(() => {
-		selected.current = {};
-		setTimeout(() => {
-			setIsSelectModeOn(true);
-		});
+		setSelectedIds(new Set());
+		setIsSelectModeOn(true);
 	}, []);
 
 	return {
-		selected: selected.current,
+		selectedIds,
 		toggle: toggleItemSelection,
 		deselectAll,
 		isSelectModeOn,
