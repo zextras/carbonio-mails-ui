@@ -87,32 +87,34 @@ export const Breadcrumbs: FC<{
 		[]
 	);
 
-	function getFilterQuery(filter: string): string {
-		switch (filter) {
-			case 'read':
-				return 'is:unread';
-			case 'priority':
-				return 'priority:high';
-			case 'flag':
-				return 'is:flagged';
-			case 'attach':
-				return 'has:attachment';
-			default:
-				return '';
-		}
-	}
+	const getFilterQuery = useCallback(
+		(filter: string): string => {
+			switch (filter) {
+				case 'read':
+					return `inId:"${folderId}" is:unread`;
+				case 'priority':
+					return `inId:"${folderId}" priority:high`;
+				case 'flag':
+					return `inId:"${folderId}" flag:flagged`;
+				case 'attach':
+					return `inId:"${folderId}" has:attachment`;
+				default:
+					return '';
+			}
+		},
+		[folderId]
+	);
 
 	const performSearch = useCallback(
 		(sortBy: string, filter?: string | null) => {
 			searchEmailStoreAction({
-				// folderId,
 				limit: 100,
 				sortBy,
-				query: filter ? `inId:"${folderId}" ${getFilterQuery(filter)}` : `inId:"${folderId}"`,
+				query: filter ? `${getFilterQuery(filter)}` : `inId:"${folderId}"`,
 				types: isMessageView ? 'message' : 'conversation'
 			});
 		},
-		[folderId, isMessageView]
+		[folderId, getFilterQuery, isMessageView]
 	);
 
 	const applySort = useCallback(
