@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import { ApiManager } from '@zextras/carbonio-ui-soap-lib';
+import { Identity, updateAccount, updateSettings } from '@zextras/carbonio-shell-ui';
+import { ApiManager, legacyXmlSoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from 'constants/index';
@@ -100,7 +100,7 @@ export const saveSettings = (
 		identity: [Identity];
 	}[];
 }> =>
-	xmlSoapFetch<string, SaveSettingsResponse>(
+	legacyXmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
 				${getRequestForProps(mods.props, appId)}

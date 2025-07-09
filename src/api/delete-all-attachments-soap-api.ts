@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { SoapMailMessage } from 'types/index.d';
 
@@ -20,7 +21,7 @@ export const deleteAttachmentsSoapApi = async ({
 	id,
 	attachments
 }: RemoveAttachmentsProps): Promise<RemoveAttachmentsResponse | ErrorSoapBodyResponse> =>
-	soapFetch('RemoveAttachments', {
+	legacySoapFetch('RemoveAttachments', {
 		_jsns: 'urn:zimbraMail',
 		m: {
 			id,
