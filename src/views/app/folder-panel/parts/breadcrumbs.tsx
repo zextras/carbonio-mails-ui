@@ -82,8 +82,8 @@ export const Breadcrumbs: FC<{
 		};
 	}, [folderId, prefSortOrder]);
 
-	const [currentSortType, setSortingTypeState] = useState(defaultSortState.type);
-	const [currentSortDirection, setSortDirectionState] = useState(defaultSortState.direction);
+	const [currentSortType, setCurrentSortType] = useState(defaultSortState.type);
+	const [currentSortDirection, setCurrentSortDirection] = useState(defaultSortState.direction);
 	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	const sortingOptions: SortingOption[] = [
@@ -135,8 +135,8 @@ export const Breadcrumbs: FC<{
 	const handleSortChange = useCallback(
 		(type: string, direction: SortDirection) => {
 			const sortBy = `${type}${direction}`;
-			setSortingTypeState(type);
-			setSortDirectionState(direction);
+			setCurrentSortType(type);
+			setCurrentSortDirection(direction);
 			performSearch(sortBy, activeFilter);
 			updateSortingSettings({
 				prefSortOrder,
@@ -164,8 +164,8 @@ export const Breadcrumbs: FC<{
 
 	const resetSearch = useCallback(() => {
 		setActiveFilter(null);
-		setSortingTypeState(defaultSortState.type);
-		setSortDirectionState(defaultSortState.direction);
+		setCurrentSortType(defaultSortState.type);
+		setCurrentSortDirection(defaultSortState.direction);
 
 		performSearch(`${defaultSortState.type}${defaultSortState.direction}`, null);
 
