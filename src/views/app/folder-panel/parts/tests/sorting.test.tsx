@@ -142,43 +142,6 @@ describe('Sorting component', () => {
 		expect(descendingOption).toBeInTheDocument();
 	});
 
-	// it('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
-	// 	const folderId = FOLDERS.INBOX;
-	// 	const props = {
-	// 		...defaultProps,
-	// 		folderId: FOLDERS.SENT
-	// 	};
-	// 	const customSettings: Partial<AccountSettings> = {
-	// 		prefs: {
-	// 			zimbraPrefSortOrder: `${folderId}:${SORTING_OPTIONS.subject.value}${SORTING_DIRECTION.DESCENDING},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
-	// 			zimbraPrefGroupMailBy: 'message'
-	// 		}
-	// 	};
-	// 	const settings = generateSettings(customSettings);
-
-	// 	jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
-	// 	const { user } = setupTest(<Breadcrumbs {...props} />);
-	// 	const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-	// 	if (sortIcon) await user.click(sortIcon);
-	// 	const orderParameters = within(screen.getByTestId(dropdownRegex)).queryAllByTestId(
-	// 		/RadioButton/
-	// 	);
-
-	// 	const orderParametersArray = findStringsContainingRadiobutton(
-	// 		orderParameters.map((element) => element.outerHTML)
-	// 	);
-	// 	const buttonOnPosition = indexOf(orderParametersArray, 'RadioButtonOn');
-	// 	const msgSortingOptionsArray = Object.values(SORTING_OPTIONS).map((option) => option.value);
-	// 	const finalSortingOptionsArray =
-	// 		props.folderId === FOLDERS.SENT
-	// 			? without(msgSortingOptionsArray, SORTING_OPTIONS.from.value)
-	// 			: without(msgSortingOptionsArray, SORTING_OPTIONS.to.value);
-	// 	const orderParameter = SORTING_OPTIONS.date.value;
-	// 	const orderParameterPosition = finalSortingOptionsArray.indexOf(orderParameter);
-	// 	expect(buttonOnPosition).toBe(orderParameterPosition);
-	// });
-
 	it('clicking on the sorting direction icon reverses the messages order', async () => {
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;

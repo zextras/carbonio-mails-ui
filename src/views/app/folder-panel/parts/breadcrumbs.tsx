@@ -19,6 +19,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { TFunction } from 'i18next';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +31,6 @@ import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorti
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
-import { TFunction } from 'i18next';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
 	svg {
@@ -55,6 +55,10 @@ const getTranslatedLabelFromValue = (
 	return t(`sorting_dropdown.${option.label}`, option.label);
 };
 
+function getRadioIcon(activeFilter: string | null, value: string): string {
+	return activeFilter === value ? 'RadioButtonOn' : 'RadioButtonOff';
+}
+
 export const Breadcrumbs: FC<{
 	itemsCount: number;
 	isSelectModeOn: boolean;
@@ -77,6 +81,7 @@ export const Breadcrumbs: FC<{
 	const defaultSortState = useMemo(() => {
 		const { sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
 		return {
+			// Default
 			type: SORTING_OPTIONS.date.value as string,
 			direction: sortDirection
 		};
@@ -92,15 +97,12 @@ export const Breadcrumbs: FC<{
 		folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
 	];
 
-	const filteringOptions: SortingOption[] = useMemo(
-		() => [
-			SORTING_OPTIONS.unread,
-			SORTING_OPTIONS.important,
-			SORTING_OPTIONS.flagged,
-			SORTING_OPTIONS.attachment
-		],
-		[]
-	);
+	const filteringOptions: SortingOption[] = [
+		SORTING_OPTIONS.unread,
+		SORTING_OPTIONS.important,
+		SORTING_OPTIONS.flagged,
+		SORTING_OPTIONS.attachment
+	];
 
 	const getFilterQuery = useCallback(
 		(filter: string): string => {
@@ -190,46 +192,73 @@ export const Breadcrumbs: FC<{
 			? SORT_ICONS.ASCENDING
 			: SORT_ICONS.DESCENDING;
 
+	const isAscending = currentSortDirection === SORTING_DIRECTION.ASCENDING;
+	const toggleLabel = isAscending
+		? t('sorting_dropdown.descendingOrder', 'Descending order')
+		: t('sorting_dropdown.ascendingOrder', 'Ascending order');
+
+	const toggleIcon =
+		currentSortDirection === SORTING_DIRECTION.DESCENDING
+			? SORT_ICONS.ASCENDING
+			: SORT_ICONS.DESCENDING;
+
+	const toggleDirectionItem: DropdownItem = {
+		id: 'toggle-direction',
+		label: toggleLabel,
+		onClick: toggleDirection,
+		icon: toggleIcon
+	};
+
+	const filterLabelItem: DropdownItem = {
+		id: 'filter-label',
+		disabled: true,
+		customComponent: <Text size="medium">{t('sorting_dropdown.show', 'Show:')}</Text>
+	};
+
+	const filterItems: DropdownItem[] = filteringOptions.map(({ value, label }) => ({
+		id: `filter-${value}`,
+		label: t(`sorting_dropdown.${value}`, label),
+		selected: activeFilter === value,
+		onClick: () => handleFilterChange(value),
+		icon: getRadioIcon(activeFilter, value)
+	}));
+
+	const sortLabelItem: DropdownItem = {
+		id: 'sort-label',
+		disabled: true,
+		customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
+	};
+
+	const sortItems: DropdownItem[] = sortingOptions.map(({ value, label }) => ({
+		id: `sort-${value}`,
+		label: t(`sorting_dropdown.${value}`, label),
+		selected: currentSortType === value,
+		onClick: () => handleSortChange(value, currentSortDirection),
+		icon: getRadioIcon(currentSortType, value)
+	}));
+
 	const dropdownItems: DropdownItem[] = [
-		{
-			id: 'toggle-direction',
-			label:
-				currentSortDirection === SORTING_DIRECTION.ASCENDING
-					? t('sorting_dropdown.descendingOrder', 'Descending order')
-					: t('sorting_dropdown.ascendingOrder', 'Ascending order'),
-			onClick: toggleDirection,
-			icon:
-				currentSortDirection === SORTING_DIRECTION.DESCENDING
-					? SORT_ICONS.ASCENDING
-					: SORT_ICONS.DESCENDING
-		},
+		toggleDirectionItem,
 		{ id: 'divider-1', type: 'divider' },
-		{
-			id: 'filter-label',
-			disabled: true,
-			customComponent: <Text size="medium">{t('sorting_dropdown.show', 'Show:')}</Text>
-		},
-		...filteringOptions.map(({ value, label }) => ({
-			id: `filter-${value}`,
-			label: t(`sorting_dropdown.${value}`, label),
-			selected: activeFilter === value,
-			onClick: () => handleFilterChange(value),
-			icon: activeFilter === value ? 'RadioButtonOn' : 'RadioButtonOff'
-		})),
+		filterLabelItem,
+		...filterItems,
 		{ id: 'divider-2', type: 'divider' },
-		{
-			id: 'sort-label',
-			disabled: true,
-			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
-		},
-		...sortingOptions.map(({ value, label }) => ({
-			id: `sort-${value}`,
-			label: t(`sorting_dropdown.${value}`, label),
-			selected: currentSortType === value,
-			onClick: () => handleSortChange(value, currentSortDirection),
-			icon: currentSortType === value ? 'RadioButtonOn' : 'RadioButtonOff'
-		}))
+		sortLabelItem,
+		...sortItems
 	];
+
+	const activeShowFilter = useMemo(
+		() =>
+			activeFilter
+				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(activeFilter, t)} - `
+				: '',
+		[activeFilter, t]
+	);
+
+	const currentSortFilter = useMemo(
+		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)} - `,
+		[currentSortType, t]
+	);
 
 	return (
 		<>
@@ -330,9 +359,7 @@ export const Breadcrumbs: FC<{
 					<Divider />
 					<Row padding={{ all: 'small' }}>
 						<Text size="medium" color="gray1">
-							{activeFilter &&
-								`${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(activeFilter, t)} - `}
-							{t('label.sort_by', 'Sort by')}: {getTranslatedLabelFromValue(currentSortType, t)}
+							{`${activeShowFilter}${currentSortFilter}`}
 						</Text>
 						<Padding right="medium" />
 						<Tooltip placement="top" label={t('label.reset_to_default', 'Reset to default')}>
