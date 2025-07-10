@@ -18,12 +18,12 @@ export const TextMessageRenderer: FC<{ body: { content: string; contentType: str
 	body
 }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
-	const orignalText = getOriginalTextContent(body.content);
-	const quoted = getQuotedTextFromOriginalContent(body.content, orignalText);
+	const originalText = getOriginalTextContent(body.content);
+	const quoted = getQuotedTextFromOriginalContent(body.content, originalText);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : orignalText),
-		[showQuotedText, body.content, orignalText]
+		() => (showQuotedText ? body.content : originalText),
+		[showQuotedText, body.content, originalText]
 	);
 
 	const convertedHTML = useMemo(

@@ -6,7 +6,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { enable as enableDarkReader, exportGeneratedCSS } from 'darkreader';
+import { enable as enableDarkReader } from 'darkreader';
 import { createPortal } from 'react-dom';
 
 type ShadowDomWrapperProps = {
@@ -17,23 +17,15 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	const shadowRootRef = useRef<ShadowRoot | null>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [shadowRootInitialized, setShadowRootInitialized] = useState(false);
-	const darkReaderAppliedRef = useRef(false);
 
-	const applyDarkReaderStyles = useCallback(async () => {
-		if (!darkReaderAppliedRef.current) {
-			try {
-				const generatedCSS = await exportGeneratedCSS();
-				const styleSheet = new CSSStyleSheet();
-				styleSheet.replaceSync(generatedCSS);
-
-				if (shadowRootRef.current) {
-					shadowRootRef.current.adoptedStyleSheets = [styleSheet];
-					darkReaderAppliedRef.current = true;
-				}
-			} catch (error) {
-				/* empty */
-			}
-		}
+	const styleSheetSet = useCallback(async (shadowRoot: ShadowRoot) => {
+		const stylesToCopy = document.querySelectorAll('head style.darkreader');
+		stylesToCopy.forEach((st) => {
+			const style = document.createElement('style');
+			style.className = 'darkreader darkreader--inline';
+			style.textContent = st?.textContent;
+			shadowRoot.appendChild(style);
+		});
 	}, []);
 
 	const {
@@ -50,24 +42,27 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	);
 
 	useEffect(() => {
-		if (containerRef.current && !shadowRootRef.current) {
-			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
-
+		if (containerRef.current) {
+			if (!containerRef.current.shadowRoot) {
+				shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
+				setShadowRootInitialized(true);
+			} else {
+				shadowRootRef.current = containerRef.current.shadowRoot;
+			}
 			if (darkModeEnabled()) {
 				enableDarkReader({});
-				applyDarkReaderStyles();
 			}
-
-			setShadowRootInitialized(true);
+			if (shadowRootRef.current && darkModeEnabled()) {
+				styleSheetSet(shadowRootRef.current);
+			}
 		}
 
 		return () => {
 			if (shadowRootRef.current) {
-				shadowRootRef.current.innerHTML = '';
-				darkReaderAppliedRef.current = false;
+				shadowRootRef.current = null;
 			}
 		};
-	}, [applyDarkReaderStyles, darkModeEnabled]);
+	}, [darkModeEnabled, styleSheetSet]);
 
 	return (
 		<div ref={containerRef} data-testid="shadow-dom-wrapper">

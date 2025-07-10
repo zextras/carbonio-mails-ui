@@ -40,6 +40,9 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 		truncated: false
 	};
 	const bodyContent = body.content;
+	// Step needed to remove extra color prop set when sending a message from richtexteditor it's apply to all the message sent
+	const cleanBodyContent = bodyContent.replace(/color:\s*#000000;?/i, '');
+
 	const participants = message?.participants ?? [];
 
 	const parts = useMemo(() => {
@@ -56,12 +59,12 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	const originalContent = getOriginalHtmlContent(bodyContent);
-	const quoted = getQuotedTextFromOriginalContent(bodyContent, originalContent);
+	const originalContent = getOriginalHtmlContent(cleanBodyContent);
+	const quoted = getQuotedTextFromOriginalContent(cleanBodyContent, originalContent);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? bodyContent : originalContent),
-		[showQuotedText, bodyContent, originalContent]
+		() => (showQuotedText ? cleanBodyContent : originalContent),
+		[showQuotedText, cleanBodyContent, originalContent]
 	);
 
 	const parser = new DOMParser();
