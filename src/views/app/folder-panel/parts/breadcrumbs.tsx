@@ -30,6 +30,7 @@ import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorti
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
+import { TFunction } from 'i18next';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
 	svg {
@@ -43,6 +44,16 @@ type SortingOption = {
 };
 
 type SortDirection = 'Asc' | 'Desc';
+
+const getTranslatedLabelFromValue = (
+	value: string | null | undefined,
+	t: TFunction<'translation', undefined, 'translation'>
+): string => {
+	if (!value) return '';
+	const option = Object.values(SORTING_OPTIONS).find((opt) => opt.value === value);
+	if (!option) return value;
+	return t(`sorting_dropdown.${option.label}`, option.label);
+};
 
 export const Breadcrumbs: FC<{
 	itemsCount: number;
@@ -70,11 +81,6 @@ export const Breadcrumbs: FC<{
 			direction: sortDirection
 		};
 	}, [folderId, prefSortOrder]);
-
-	const { sortType } = useMemo(
-		() => parseMessageSortingOptions(folderId, prefSortOrder),
-		[folderId, prefSortOrder]
-	);
 
 	const [currentSortType, setSortingTypeState] = useState(defaultSortState.type);
 	const [currentSortDirection, setSortDirectionState] = useState(defaultSortState.direction);
@@ -319,12 +325,14 @@ export const Breadcrumbs: FC<{
 					mainAlignment="flex-center"
 					crossAlignment="flex-end"
 					height="3rem"
+					data-testid="sorting-options-container"
 				>
 					<Divider />
 					<Row padding={{ all: 'small' }}>
-						<Text size="medium" color="gray1" data-testid="BreadcrumbFolderId">
-							{activeFilter && `${t('label.show', 'Show')}: ${activeFilter} - `}
-							{t('label.sort_by', 'Sort by')}: {t(`sorting_dropdown.${sortType}`, sortType)}
+						<Text size="medium" color="gray1">
+							{activeFilter &&
+								`${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(activeFilter, t)} - `}
+							{t('label.sort_by', 'Sort by')}: {getTranslatedLabelFromValue(currentSortType, t)}
 						</Text>
 						<Padding right="medium" />
 						<Tooltip placement="top" label={t('label.reset_to_default', 'Reset to default')}>
