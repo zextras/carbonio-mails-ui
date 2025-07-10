@@ -190,13 +190,13 @@ function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditor
 	};
 }
 
-describe.skip('Edit view', () => {
+describe('Edit view', () => {
 	describe('Send button is disabled', () => {
-		const invalidEmailAddress = 'invalidmailaddress.com';
-		beforeEach(() => {
+		beforeAll(() => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
+		const invalidEmailAddress = 'invalidmailaddress.com';
 		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
@@ -311,8 +311,11 @@ describe.skip('Edit view', () => {
 	describe('Mail creation', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
-			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		beforeAll(() => {
 			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
 		});
 
 		// warning
@@ -572,10 +575,6 @@ describe.skip('Edit view', () => {
 	});
 
 	describe('send email', () => {
-		beforeAll(() => {
-			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
-		});
-
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
@@ -1025,7 +1024,7 @@ describe.skip('Edit view', () => {
 		});
 	});
 
-	describe('Identities selection', () => {
+	describe.skip('Identities selection', () => {
 		test.skip('identity selector must be visible when multiple identities are present', async () => {
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {

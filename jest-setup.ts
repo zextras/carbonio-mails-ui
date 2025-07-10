@@ -69,7 +69,7 @@ beforeAll(() => {
 	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
 	registerRestHandler(j);
-	defaultBeforeAllTests();
+	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
 });
 
