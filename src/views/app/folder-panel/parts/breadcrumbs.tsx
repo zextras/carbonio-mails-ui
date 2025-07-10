@@ -256,7 +256,7 @@ export const Breadcrumbs: FC<{
 	);
 
 	const currentSortFilter = useMemo(
-		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)} - `,
+		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)}`,
 		[currentSortType, t]
 	);
 
