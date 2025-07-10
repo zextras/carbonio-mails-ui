@@ -20,9 +20,12 @@ const baseMessageWithReadReadReceiptRequested = generateMessage({
 });
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	soapFetch: jest.fn(),
 	t: jest.fn((key, defaultValue) => defaultValue),
 	useUserSettings: jest.fn()
+}));
+
+jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	legacySoapFetch: jest.fn()
 }));
 
 describe('ReadReceiptModal', () => {

@@ -110,9 +110,7 @@ describe('MoveConversation', () => {
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
+
 			await act(async () => {
 				await user.click(inboxFolderListItem);
 			});
@@ -162,12 +160,8 @@ describe('MoveConversation', () => {
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
 			`folder-accordion-item-${destinationFolder}`,
-			{},
-			{ timeout: 10000 }
+			{}
 		);
-		act(() => {
-			jest.advanceTimersByTime(1000);
-		});
 		await act(async () => {
 			await user.click(inboxFolderListItem);
 		});
@@ -199,12 +193,8 @@ describe('MoveConversation', () => {
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
 			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{},
-			{ timeout: 10000 }
+			{}
 		);
-		act(() => {
-			jest.advanceTimersByTime(1000);
-		});
 		await act(async () => {
 			await user.click(inboxFolderListItem);
 		});

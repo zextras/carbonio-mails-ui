@@ -15,6 +15,8 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { NewModal } from 'views/sidebar/new-modal';
 
+// TODO IMPROVE BECAUSE TAKES TOO LONG
+
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
 		const closeFn = jest.fn();
@@ -70,8 +72,10 @@ describe('new-modal', () => {
 			name: /label.cancel/i
 		});
 		expect(cancelButton).toBeEnabled();
-	});
+	}, 10000);
+});
 
+describe('new-modal 2', () => {
 	test('create button should be disabled on blank folder name', async () => {
 		const closeFn = jest.fn();
 
@@ -122,8 +126,10 @@ describe('new-modal', () => {
 			name: /label.cancel/i
 		});
 		expect(cancelButton).toBeEnabled();
-	});
+	}, 10000);
+});
 
+describe('new-modal 3', () => {
 	test('API is called with the proper parameters to create new folder', async () => {
 		const closeFn = jest.fn();
 		populateFoldersStore();
@@ -182,5 +188,5 @@ describe('new-modal', () => {
 		expect(newFolder.view).toBe('message');
 		expect(newFolder.l).toBe(folder.id);
 		expect(newFolder.name).toBe(folderName);
-	});
+	}, 10000);
 });

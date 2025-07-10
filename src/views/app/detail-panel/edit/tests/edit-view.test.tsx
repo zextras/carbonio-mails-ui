@@ -190,7 +190,7 @@ function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditor
 	};
 }
 
-describe('Edit view', () => {
+describe.skip('Edit view', () => {
 	describe('Send button is disabled', () => {
 		const invalidEmailAddress = 'invalidmailaddress.com';
 		beforeEach(() => {

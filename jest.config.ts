@@ -22,7 +22,7 @@ const config: Config = {
 	coverageDirectory: 'coverage',
 	coverageProvider: 'babel',
 	coverageReporters: ['lcov', 'html'],
-	testTimeout: 20000,
+	testTimeout: 5000,
 	fakeTimers: {
 		enableGlobally: true
 	},

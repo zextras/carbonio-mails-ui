@@ -59,8 +59,6 @@ export const defaultBeforeAllTests = (
 		})
 	});
 
-	server?.close();
-
 	server = setupServer(...getRestHandlers());
 	server.listen({ onUnhandledRequest });
 };
@@ -74,8 +72,6 @@ beforeAll(() => {
 	defaultBeforeAllTests();
 	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
 });
-
-beforeEach(noop);
 
 afterEach(() => {
 	jest.clearAllTimers();

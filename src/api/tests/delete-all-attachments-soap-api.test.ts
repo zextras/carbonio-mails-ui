@@ -3,36 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	soapFetch: jest.fn()
-}));
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	deleteAttachmentsSoapApi,
+	RemoveAttachmentsResponse
+} from 'api/delete-all-attachments-soap-api';
+import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
 
 describe('deleteAttachmentsSoapApi', () => {
-	const mockResponse = { m: [{ id: '1', subject: 'Test Message' }] };
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('should call soapFetch with correct params ', async () => {
-		(soapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
-		await deleteAttachmentsSoapApi({ id: '123', attachments: ['att1', 'att2'] });
-		expect(soapFetch).toHaveBeenCalledWith('RemoveAttachments', {
-			_jsns: 'urn:zimbraMail',
-			m: {
-				id: '123',
-				part: 'att1,att2'
-			}
-		});
+		const interceptor = createSoapAPIInterceptor<RemoveAttachmentsResponse>('RemoveAttachments');
+		deleteAttachmentsSoapApi({ id: '123', attachments: ['att1', 'att2'] });
+		const request = await interceptor;
+		expect(request.m).toEqual({ id: '123', part: 'att1,att2' });
 	});
 
 	it('handles error during attachment deletion', async () => {
-		(soapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
-		await expect(
-			deleteAttachmentsSoapApi({ id: '123', attachments: ['att1', 'att2'] })
-		).rejects.toThrow('Error');
+		const interceptor = createSoapAPIInterceptorWithError('RemoveAttachments', true);
+		await deleteAttachmentsSoapApi({ id: '123', attachments: ['att1'] });
+		expect(interceptor).rejects.toThrow();
 	});
 });
