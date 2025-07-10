@@ -302,4 +302,91 @@ describe('Sorting component', () => {
 		expect(req.types).toBe(expectedRequest.types);
 		expect(req.query).toBe(expectedRequest.query);
 	});
+
+	it('uses correct query string from getFilterQuery when a filter is selected', async () => {
+		const folderId = FOLDERS.INBOX;
+		const expectedQuery = `inId:"${folderId}" is:unread`;
+
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:dateDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
+
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		await user.click(unreadOption);
+
+		const req = await interceptor;
+		expect(req.query).toBe(expectedQuery);
+	});
+
+	it('reset button clears filters and resets sorting state', async () => {
+		const folderId = FOLDERS.INBOX;
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:subjectDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		await user.click(unreadOption);
+
+		const resetButton = await screen.findByRole('button', { name: /reset/i });
+		await user.click(resetButton);
+
+		const req = await interceptor;
+		expect(req.sortBy).toBe(`dateDesc`);
+	});
+
+	it('selecting a filter triggers performSearch with correct query', async () => {
+		const folderId = FOLDERS.INBOX;
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:dateDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		await user.click(unreadOption);
+
+		const req = await interceptor;
+		expect(req.query).toBe(`inId:"${folderId}" is:unread`);
+		expect(req.sortBy).toBe('dateDesc');
+	});
 });
