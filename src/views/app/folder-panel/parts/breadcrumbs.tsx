@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -18,14 +18,14 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getTooltipLabel } from './utils/utils';
 import { SORTING_DIRECTION, MAILS_ROUTE, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
-import { getFolderPathForBreadcrumb, isSent } from 'helpers/folders';
+import { getFolderPathForBreadcrumb } from 'helpers/folders';
 import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types';
@@ -59,23 +59,32 @@ export const Breadcrumbs: FC<{
 	const { prefs } = useUserSettings();
 
 	const prefSortOrder = useMemo(
-		() => (prefs?.zimbraPrefSortOrder as string) ?? 'DateDesc',
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
 		[prefs?.zimbraPrefSortOrder]
 	);
-	const { sortType, sortDirection } = useMemo(
+
+	const defaultSortState = useMemo(() => {
+		const { sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+		return {
+			type: SORTING_OPTIONS.date.value as string,
+			direction: sortDirection
+		};
+	}, [folderId, prefSortOrder]);
+
+	const { sortType } = useMemo(
 		() => parseMessageSortingOptions(folderId, prefSortOrder),
 		[folderId, prefSortOrder]
 	);
 
-	const [sortingTypeState, setSortingTypeState] = useState(sortType);
-	const [sortDirectionState, setSortDirectionState] = useState(sortDirection);
+	const [currentSortType, setSortingTypeState] = useState(defaultSortState.type);
+	const [currentSortDirection, setSortDirectionState] = useState(defaultSortState.direction);
 	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-	const sortingOptions = useMemo(() => {
-		const options: SortingOption[] = [SORTING_OPTIONS.date, SORTING_OPTIONS.subject];
-		options.push(isSent(folderId) ? SORTING_OPTIONS.to : SORTING_OPTIONS.from);
-		return options;
-	}, [folderId]);
+	const sortingOptions: SortingOption[] = [
+		SORTING_OPTIONS.date,
+		SORTING_OPTIONS.subject,
+		folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
+	];
 
 	const filteringOptions: SortingOption[] = useMemo(
 		() => [
@@ -117,7 +126,7 @@ export const Breadcrumbs: FC<{
 		[folderId, getFilterQuery, isMessageView]
 	);
 
-	const applySort = useCallback(
+	const handleSortChange = useCallback(
 		(type: string, direction: SortDirection) => {
 			const sortBy = `${type}${direction}`;
 			setSortingTypeState(type);
@@ -136,44 +145,42 @@ export const Breadcrumbs: FC<{
 
 	const handleFilterChange = (filter: string): void => {
 		setActiveFilter(filter);
-		performSearch(`${sortingTypeState}${sortDirectionState}`, filter);
+		performSearch(`${currentSortType}${currentSortDirection}`, filter);
 	};
 
 	const toggleDirection = useCallback(() => {
 		const newDirection =
-			sortDirectionState === SORTING_DIRECTION.ASCENDING
+			currentSortDirection === SORTING_DIRECTION.ASCENDING
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
-		applySort(sortingTypeState, newDirection);
-	}, [sortDirectionState, sortingTypeState, applySort]);
+		handleSortChange(currentSortType, newDirection);
+	}, [currentSortDirection, currentSortType, handleSortChange]);
 
 	const resetSearch = useCallback(() => {
 		setActiveFilter(null);
-		setSortingTypeState(sortType);
-		setSortDirectionState(sortDirection);
-		performSearch(`${sortType}${sortDirection}`, null);
-	}, [sortType, sortDirection, performSearch]);
+		setSortingTypeState(defaultSortState.type);
+		setSortDirectionState(defaultSortState.direction);
+
+		performSearch(`${defaultSortState.type}${defaultSortState.direction}`, null);
+
+		updateSortingSettings({
+			prefSortOrder,
+			sortingTypeValue: defaultSortState.type,
+			sortingDirection: defaultSortState.direction,
+			folderId
+		});
+	}, [folderId, defaultSortState, performSearch, prefSortOrder]);
 
 	const hasModifiedState = useMemo(
 		() =>
-			sortingTypeState !== sortType ||
-			sortDirectionState !== sortDirection ||
+			currentSortType !== defaultSortState.type ||
+			currentSortDirection !== defaultSortState.direction ||
 			activeFilter !== null,
-		[sortingTypeState, sortType, sortDirectionState, sortDirection, activeFilter]
-	);
-
-	useEffect(() => {
-		setSortDirectionState(sortDirection);
-		setSortingTypeState(sortType);
-	}, [sortDirection, sortType]);
-
-	const tooltipLabel = useMemo(
-		() => getTooltipLabel(sortingTypeState, sortDirectionState),
-		[sortingTypeState, sortDirectionState]
+		[currentSortType, currentSortDirection, activeFilter, defaultSortState]
 	);
 
 	const iconButtonIcon =
-		sortDirectionState === SORTING_DIRECTION.ASCENDING
+		currentSortDirection === SORTING_DIRECTION.ASCENDING
 			? SORT_ICONS.ASCENDING
 			: SORT_ICONS.DESCENDING;
 
@@ -181,12 +188,12 @@ export const Breadcrumbs: FC<{
 		{
 			id: 'toggle-direction',
 			label:
-				sortDirectionState === SORTING_DIRECTION.ASCENDING
+				currentSortDirection === SORTING_DIRECTION.ASCENDING
 					? t('sorting_dropdown.descendingOrder', 'Descending order')
 					: t('sorting_dropdown.ascendingOrder', 'Ascending order'),
 			onClick: toggleDirection,
 			icon:
-				sortDirectionState === SORTING_DIRECTION.DESCENDING
+				currentSortDirection === SORTING_DIRECTION.DESCENDING
 					? SORT_ICONS.ASCENDING
 					: SORT_ICONS.DESCENDING
 		},
@@ -212,9 +219,9 @@ export const Breadcrumbs: FC<{
 		...sortingOptions.map(({ value, label }) => ({
 			id: `sort-${value}`,
 			label: t(`sorting_dropdown.${value}`, label),
-			selected: sortingTypeState === value,
-			onClick: () => applySort(value, sortDirectionState),
-			icon: sortingTypeState === value ? 'RadioButtonOn' : 'RadioButtonOff'
+			selected: currentSortType === value,
+			onClick: () => handleSortChange(value, currentSortDirection),
+			icon: currentSortType === value ? 'RadioButtonOn' : 'RadioButtonOff'
 		}))
 	];
 
@@ -276,7 +283,13 @@ export const Breadcrumbs: FC<{
 						{!isSearchModule && (
 							<>
 								<LayoutComponent />
-								<Tooltip label={tooltipLabel} placement="top">
+								<Tooltip
+									label={t(
+										'label.change_filtering_sorting_options',
+										'Change filtering and sorting options'
+									)}
+									placement="top"
+								>
 									<Dropdown
 										items={dropdownItems}
 										multiple
@@ -310,15 +323,18 @@ export const Breadcrumbs: FC<{
 					<Divider />
 					<Row padding={{ all: 'small' }}>
 						<Text size="medium" color="gray1" data-testid="BreadcrumbFolderId">
-							{t('label.show', 'Show')}: {sortType} {activeFilter}
+							{activeFilter && `${t('label.show', 'Show')}: ${activeFilter} - `}
+							{t('label.sort_by', 'Sort by')}: {t(`sorting_dropdown.${sortType}`, sortType)}
 						</Text>
 						<Padding right="medium" />
-						<Button
-							type="ghost"
-							size="medium"
-							label={t('label.reset', 'Reset')}
-							onClick={resetSearch}
-						/>
+						<Tooltip placement="top" label={t('label.reset_to_default', 'Reset to default')}>
+							<Button
+								type="ghost"
+								size="medium"
+								label={t('label.reset', 'Reset')}
+								onClick={resetSearch}
+							/>
+						</Tooltip>
 					</Row>
 				</Container>
 			)}

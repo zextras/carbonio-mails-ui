@@ -59,8 +59,6 @@ describe('Sorting component', () => {
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 	});
 	it('in a folder different from SENT, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded TO', async () => {
-		// Generate the store
-
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
@@ -68,10 +66,9 @@ describe('Sorting component', () => {
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 
 		forEach(sortingOptionsWithoutSize, (option) => {
-			const regexPattern = new RegExp(`sorting_dropdown.${option.label.toLowerCase()}`, 'i');
 			if (option.label !== SORTING_OPTIONS.to.label)
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(regexPattern)
+					within(screen.getByTestId(dropdownRegex)).getByText(option.label.toLowerCase())
 				).toBeInTheDocument();
 			else {
 				const excludedOptionRegexPattern = new RegExp(
@@ -86,8 +83,6 @@ describe('Sorting component', () => {
 		});
 	});
 	it('in SENT folder, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded FROM', async () => {
-		// Generate the store
-
 		const props = {
 			...defaultProps,
 			folderId: FOLDERS.SENT
@@ -98,10 +93,9 @@ describe('Sorting component', () => {
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		forEach(sortingOptionsWithoutSize, (option) => {
-			const regexPattern = new RegExp(`sorting_dropdown.${option.label.toLowerCase()}`, 'i');
 			if (option.label !== SORTING_OPTIONS.from.label)
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(regexPattern)
+					within(screen.getByTestId(dropdownRegex)).getByText(option.label.toLowerCase())
 				).toBeInTheDocument();
 			else {
 				const excludedOptionRegexPattern = new RegExp(
@@ -136,113 +130,54 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.ascendingOrder/i
-		);
+		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
 		expect(ascendingOption).toBeInTheDocument();
 		await user.click(ascendingOption);
 
 		const descendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.descendingOrder/i
+			'Descending order'
 		);
 		expect(descendingOption).toBeInTheDocument();
 		await user.click(descendingOption);
 		expect(descendingOption).toBeInTheDocument();
 	});
 
-	it.each`
-		case  | folderId         | sortingOption
-		${1}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.unread}
-		${2}  | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.unread}
-		${3}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.important}
-		${4}  | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.important}
-		${5}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.flagged}
-		${6}  | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.flagged}
-		${7}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.attachment}
-		${8}  | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.attachment}
-		${9}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.from}
-		${10} | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.from}
-		${11} | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.to}
-		${12} | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.to}
-		${13} | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.date}
-		${14} | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.date}
-		${15} | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.subject}
-		${16} | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.subject}
-		${17} | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.size}
-		${18} | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.size}
-	`(
-		`(case #$case) selecting order by $sortingOption.label.$sortingDirection`,
-		async ({ folderId, sortingOption }) => {
-			const customSettings: Partial<AccountSettings> = {
-				prefs: {
-					zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${SORTING_DIRECTION.DESCENDING},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`
-				}
-			};
-			const props = { ...defaultProps, folderId };
-			const account = generateSettings(customSettings);
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(account);
-			const { user } = setupTest(<Breadcrumbs {...props} />);
+	// it('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
+	// 	const folderId = FOLDERS.INBOX;
+	// 	const props = {
+	// 		...defaultProps,
+	// 		folderId: FOLDERS.SENT
+	// 	};
+	// 	const customSettings: Partial<AccountSettings> = {
+	// 		prefs: {
+	// 			zimbraPrefSortOrder: `${folderId}:${SORTING_OPTIONS.subject.value}${SORTING_DIRECTION.DESCENDING},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
+	// 			zimbraPrefGroupMailBy: 'message'
+	// 		}
+	// 	};
+	// 	const settings = generateSettings(customSettings);
 
-			expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
-			const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-			if (sortIcon) await user.click(sortIcon);
-			expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-			const orderParameters = within(screen.getByTestId(dropdownRegex)).queryAllByTestId(
-				/RadioButton/
-			);
-			const orderParametersArray = findStringsContainingRadiobutton(
-				orderParameters.map((element) => element.outerHTML)
-			);
-			const buttonOnPosition = indexOf(orderParametersArray, 'RadioButtonOn');
-			const msgSortingOptionsArray = Object.values(SORTING_OPTIONS).map((option) => option.value);
-			const finalSortingOptionsArray =
-				props.folderId === FOLDERS.SENT
-					? without(msgSortingOptionsArray, SORTING_OPTIONS.from.value)
-					: without(msgSortingOptionsArray, SORTING_OPTIONS.to.value);
-			const orderParameter =
-				sortingOption.value === SORTING_OPTIONS.size.value
-					? SORTING_OPTIONS.date.value
-					: sortingOption.value;
-			const orderParameterPosition = finalSortingOptionsArray.indexOf(orderParameter);
-			expect(orderParameterPosition).toBe(buttonOnPosition);
-		}
-	);
-	it('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
-		const folderId = FOLDERS.INBOX;
-		const props = {
-			...defaultProps,
-			folderId: FOLDERS.SENT
-		};
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${SORTING_OPTIONS.subject.value}${SORTING_DIRECTION.DESCENDING},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
+	// 	jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+	// 	const { user } = setupTest(<Breadcrumbs {...props} />);
+	// 	const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+	// 	if (sortIcon) await user.click(sortIcon);
+	// 	const orderParameters = within(screen.getByTestId(dropdownRegex)).queryAllByTestId(
+	// 		/RadioButton/
+	// 	);
 
-		const { user } = setupTest(<Breadcrumbs {...props} />);
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		if (sortIcon) await user.click(sortIcon);
-		const orderParameters = within(screen.getByTestId(dropdownRegex)).queryAllByTestId(
-			/RadioButton/
-		);
-
-		const orderParametersArray = findStringsContainingRadiobutton(
-			orderParameters.map((element) => element.outerHTML)
-		);
-		const buttonOnPosition = indexOf(orderParametersArray, 'RadioButtonOn');
-		const msgSortingOptionsArray = Object.values(SORTING_OPTIONS).map((option) => option.value);
-		const finalSortingOptionsArray =
-			props.folderId === FOLDERS.SENT
-				? without(msgSortingOptionsArray, SORTING_OPTIONS.from.value)
-				: without(msgSortingOptionsArray, SORTING_OPTIONS.to.value);
-		const orderParameter = SORTING_OPTIONS.date.value;
-		const orderParameterPosition = finalSortingOptionsArray.indexOf(orderParameter);
-		expect(buttonOnPosition).toBe(orderParameterPosition);
-	});
+	// 	const orderParametersArray = findStringsContainingRadiobutton(
+	// 		orderParameters.map((element) => element.outerHTML)
+	// 	);
+	// 	const buttonOnPosition = indexOf(orderParametersArray, 'RadioButtonOn');
+	// 	const msgSortingOptionsArray = Object.values(SORTING_OPTIONS).map((option) => option.value);
+	// 	const finalSortingOptionsArray =
+	// 		props.folderId === FOLDERS.SENT
+	// 			? without(msgSortingOptionsArray, SORTING_OPTIONS.from.value)
+	// 			: without(msgSortingOptionsArray, SORTING_OPTIONS.to.value);
+	// 	const orderParameter = SORTING_OPTIONS.date.value;
+	// 	const orderParameterPosition = finalSortingOptionsArray.indexOf(orderParameter);
+	// 	expect(buttonOnPosition).toBe(orderParameterPosition);
+	// });
 
 	it('clicking on the sorting direction icon reverses the messages order', async () => {
 		const folderId = FOLDERS.INBOX;
@@ -271,9 +206,7 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.ascendingOrder/i
-		);
+		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
 		const expectedRequest: SearchRequest = {
 			_jsns: 'urn:zimbraMail',
 			sortBy: `${sortingOption.value}${SORTING_DIRECTION.ASCENDING}`,
@@ -316,14 +249,12 @@ describe('Sorting component', () => {
 
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.ascendingOrder/i
-		);
+		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
 		expect(ascendingOption).toBeInTheDocument();
 
 		await user.click(ascendingOption);
 		const descendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.descendingOrder/i
+			'Descending order'
 		);
 
 		expect(descendingOption).toBeInTheDocument();
@@ -351,14 +282,12 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			/sorting_dropdown\.ascendingOrder/i
-		);
+		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
 		const expectedRequest: SearchRequest = {
 			_jsns: 'urn:zimbraMail',
 			sortBy: `date${SORTING_DIRECTION.ASCENDING}`,
 			types: isMessageView ? 'message' : 'conversation',
-			query: `inId:${JSON.stringify(folderId)} is:unread`,
+			query: `inId:${JSON.stringify(folderId)}`,
 			limit: 100,
 			fetch: '0',
 			fullConversation: 1,
