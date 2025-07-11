@@ -25,9 +25,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { SORTING_DIRECTION, MAILS_ROUTE, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
+import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
-import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
+import { parseMessageSortingOptions } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
@@ -81,7 +81,6 @@ export const Breadcrumbs: FC<{
 	const defaultSortState = useMemo(() => {
 		const { sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
 		return {
-			// Default
 			type: SORTING_OPTIONS.date.value as string,
 			direction: sortDirection
 		};
@@ -140,21 +139,19 @@ export const Breadcrumbs: FC<{
 			setCurrentSortType(type);
 			setCurrentSortDirection(direction);
 			performSearch(sortBy, filter);
-			updateSortingSettings({
-				prefSortOrder,
-				sortingTypeValue: type,
-				sortingDirection: direction,
-				folderId
-			});
 			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[activeFilter, folderId, navigate, performSearch, prefSortOrder]
+		[activeFilter, folderId, navigate, performSearch]
 	);
 
-	const handleFilterChange = (filter: string): void => {
-		setActiveFilter(filter);
-		performSearch(`${currentSortType}${currentSortDirection}`, filter);
-	};
+	const handleFilterChange = useCallback(
+		(filter: string): void => {
+			setActiveFilter(filter);
+			performSearch(`${currentSortType}${currentSortDirection}`, filter);
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+		},
+		[currentSortDirection, currentSortType, folderId, navigate, performSearch]
+	);
 
 	const toggleDirection = useCallback(() => {
 		const newDirection =
@@ -168,16 +165,8 @@ export const Breadcrumbs: FC<{
 		setActiveFilter(null);
 		setCurrentSortType(defaultSortState.type);
 		setCurrentSortDirection(defaultSortState.direction);
-
 		performSearch(`${defaultSortState.type}${defaultSortState.direction}`, null);
-
-		updateSortingSettings({
-			prefSortOrder,
-			sortingTypeValue: defaultSortState.type,
-			sortingDirection: defaultSortState.direction,
-			folderId
-		});
-	}, [folderId, defaultSortState, performSearch, prefSortOrder]);
+	}, [defaultSortState, performSearch]);
 
 	const hasModifiedState = useMemo(
 		() =>
