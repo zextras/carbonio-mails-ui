@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -35,8 +37,6 @@ const listIconRegex = /icon: AzListOutline/i;
 const sortingOptionsWithoutSize = without(Object.values(SORTING_OPTIONS), SORTING_OPTIONS.size);
 describe('Sorting component', () => {
 	it('the sorting component appears on the breadcrumbs component', async () => {
-		// Generate the store
-
 		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 	});
@@ -92,8 +92,6 @@ describe('Sorting component', () => {
 		});
 	});
 	it('clicking on the sorting component icon when open will close the dropdown', async () => {
-		// Generate the store
-
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
@@ -333,5 +331,106 @@ describe('Sorting component', () => {
 		const req = await interceptor;
 		expect(req.query).toBe(`inId:"${folderId}" is:unread`);
 		expect(req.sortBy).toBe('dateDesc');
+	});
+
+	it('generates correct query string for all supported filters using getFilterQuery', async () => {
+		const folderId = FOLDERS.INBOX;
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:dateDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		const dropdown = await screen.findByTestId(dropdownRegex);
+
+		const expectations = {
+			Unread: `inId:"${folderId}" is:unread`,
+			Important: `inId:"${folderId}" priority:high`,
+			Flagged: `inId:"${folderId}" is:flagged`,
+			Attachment: `inId:"${folderId}" has:attachment`
+		};
+
+		for (const [label, expectedQuery] of Object.entries(expectations)) {
+			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+			const item = within(dropdown).getByText(label);
+			await user.click(item);
+			const req = await interceptor;
+			expect(req.query).toBe(expectedQuery);
+		}
+	});
+
+	it('handleFilterChange sets filter, calls search with correct sort+filter, and navigates', async () => {
+		const folderId = FOLDERS.INBOX;
+		const currentSortType = 'date';
+		const currentSortDirection = 'Desc';
+
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:${currentSortType}${currentSortDirection}`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
+		await user.click(unreadOption);
+
+		const req = await interceptor;
+
+		expect(req.sortBy).toBe(`${currentSortType}${currentSortDirection}`);
+		expect(req.query).toBe(`inId:"${folderId}" is:unread`);
+		expect(req.types).toBe('message');
+
+		expect(await screen.findByTestId('sorting-options-container')).toBeInTheDocument();
+	});
+
+	it('reset button clears filters and resets sorting state', async () => {
+		const folderId = FOLDERS.INBOX;
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:subjectDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
+
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		await user.click(sortIcon);
+
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
+		await user.click(unreadOption);
+
+		const resetButton = await screen.findByRole('button', { name: /reset/i });
+		await user.click(resetButton);
+
+		const req = await interceptor;
+		expect(req.sortBy).toBe(`dateDesc`);
+
+		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
 });

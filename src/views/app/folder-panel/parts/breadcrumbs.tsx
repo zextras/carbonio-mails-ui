@@ -104,7 +104,8 @@ export const Breadcrumbs: FC<{
 	];
 
 	const getFilterQuery = useCallback(
-		(filter: string): string => {
+		(filter: string | null): string => {
+			if (!filter) return `inId:"${folderId}"`;
 			switch (filter) {
 				case 'read':
 					return `inId:"${folderId}" is:unread`;
@@ -115,7 +116,7 @@ export const Breadcrumbs: FC<{
 				case 'attach':
 					return `inId:"${folderId}" has:attachment`;
 				default:
-					return '';
+					return `inId:"${folderId}"`;
 			}
 		},
 		[folderId]
@@ -152,12 +153,12 @@ export const Breadcrumbs: FC<{
 		},
 		[currentSortDirection, currentSortType, folderId, navigate, performSearch]
 	);
-
 	const toggleDirection = useCallback(() => {
 		const newDirection =
 			currentSortDirection === SORTING_DIRECTION.ASCENDING
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
+
 		handleSortChange(currentSortType, newDirection, activeFilter);
 	}, [currentSortDirection, currentSortType, handleSortChange, activeFilter]);
 
