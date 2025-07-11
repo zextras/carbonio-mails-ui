@@ -20,7 +20,7 @@ import {
 import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
-import { noop } from 'lodash';
+import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -112,7 +112,7 @@ export const Breadcrumbs: FC<{
 				case 'priority':
 					return `inId:"${folderId}" priority:high`;
 				case 'flag':
-					return `inId:"${folderId}" flag:flagged`;
+					return `inId:"${folderId}" is:flagged`;
 				case 'attach':
 					return `inId:"${folderId}" has:attachment`;
 				default:
@@ -135,11 +135,11 @@ export const Breadcrumbs: FC<{
 	);
 
 	const handleSortChange = useCallback(
-		(type: string, direction: SortDirection) => {
+		(type: string, direction: SortDirection, filter: string | null = activeFilter) => {
 			const sortBy = `${type}${direction}`;
 			setCurrentSortType(type);
 			setCurrentSortDirection(direction);
-			performSearch(sortBy, activeFilter);
+			performSearch(sortBy, filter);
 			updateSortingSettings({
 				prefSortOrder,
 				sortingTypeValue: type,
@@ -161,8 +161,8 @@ export const Breadcrumbs: FC<{
 			currentSortDirection === SORTING_DIRECTION.ASCENDING
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
-		handleSortChange(currentSortType, newDirection);
-	}, [currentSortDirection, currentSortType, handleSortChange]);
+		handleSortChange(currentSortType, newDirection, activeFilter);
+	}, [currentSortDirection, currentSortType, handleSortChange, activeFilter]);
 
 	const resetSearch = useCallback(() => {
 		setActiveFilter(null);
@@ -204,9 +204,19 @@ export const Breadcrumbs: FC<{
 
 	const toggleDirectionItem: DropdownItem = {
 		id: 'toggle-direction',
-		label: toggleLabel,
 		onClick: toggleDirection,
-		icon: toggleIcon
+		customComponent: (
+			<Container
+				style={{ minWidth: '160px' }}
+				crossAlignment="center"
+				mainAlignment="space-between"
+				width="fill"
+				orientation="horizontal"
+			>
+				<Button color="gray0" onClick={noop} type="ghost" size="large" icon={toggleIcon} />
+				<Text>{toggleLabel}</Text>
+			</Container>
+		)
 	};
 
 	const filterLabelItem: DropdownItem = {
@@ -217,7 +227,7 @@ export const Breadcrumbs: FC<{
 
 	const filterItems: DropdownItem[] = filteringOptions.map(({ value, label }) => ({
 		id: `filter-${value}`,
-		label: t(`sorting_dropdown.${value}`, label),
+		label: capitalize(t(`sorting_dropdown.${value}`, label)),
 		selected: activeFilter === value,
 		onClick: () => handleFilterChange(value),
 		icon: getRadioIcon(activeFilter, value)
@@ -231,7 +241,7 @@ export const Breadcrumbs: FC<{
 
 	const sortItems: DropdownItem[] = sortingOptions.map(({ value, label }) => ({
 		id: `sort-${value}`,
-		label: t(`sorting_dropdown.${value}`, label),
+		label: capitalize(t(`sorting_dropdown.${value}`, label)),
 		selected: currentSortType === value,
 		onClick: () => handleSortChange(value, currentSortDirection),
 		icon: getRadioIcon(currentSortType, value)
@@ -362,7 +372,10 @@ export const Breadcrumbs: FC<{
 							{`${activeShowFilter}${currentSortFilter}`}
 						</Text>
 						<Padding right="medium" />
-						<Tooltip placement="top" label={t('label.reset_to_default', 'Reset to default')}>
+						<Tooltip
+							placement="top"
+							label={t('label.reset_to_sort_by_date', 'Reset to “Sort by: Date”')}
+						>
 							<Button
 								type="ghost"
 								size="medium"
