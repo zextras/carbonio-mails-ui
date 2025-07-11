@@ -10,7 +10,7 @@ import { act, renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { forEach, indexOf, noop, without } from 'lodash';
+import { capitalize, forEach, noop, without } from 'lodash';
 
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -21,24 +21,6 @@ import { generateMessage } from 'tests/generators/generateMessage';
 import { SearchRequest } from 'types/index.d';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 
-function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
-	const resultArray = [] as Array<string>;
-
-	strings.forEach((string) => {
-		// Extract the content inside the data-testid attribute
-		const match = string.match(/data-testid="([^"]+)"/);
-
-		// Check if the match exists and contains "radiobuttonon" or "radiobuttonoff"
-		if (match && match[1].includes('RadioButtonOff')) {
-			resultArray.push('RadioButtonOff');
-		}
-		if (match && match[1].includes('RadioButtonOn')) {
-			resultArray.push('RadioButtonOn');
-		}
-	});
-
-	return resultArray;
-}
 const sortingDropdown = 'sorting-dropdown';
 const defaultProps = {
 	folderId: FOLDERS.INBOX,
@@ -68,7 +50,7 @@ describe('Sorting component', () => {
 		forEach(sortingOptionsWithoutSize, (option) => {
 			if (option.label !== SORTING_OPTIONS.to.label)
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(option.label.toLowerCase())
+					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
 				).toBeInTheDocument();
 			else {
 				const excludedOptionRegexPattern = new RegExp(
@@ -95,7 +77,7 @@ describe('Sorting component', () => {
 		forEach(sortingOptionsWithoutSize, (option) => {
 			if (option.label !== SORTING_OPTIONS.from.label)
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(option.label.toLowerCase())
+					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
 				).toBeInTheDocument();
 			else {
 				const excludedOptionRegexPattern = new RegExp(
@@ -291,7 +273,7 @@ describe('Sorting component', () => {
 
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
 		await user.click(unreadOption);
 
 		const req = await interceptor;
@@ -316,7 +298,7 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		await user.click(sortIcon);
 
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
 		await user.click(unreadOption);
 
 		const resetButton = await screen.findByRole('button', { name: /reset/i });
@@ -345,7 +327,7 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		await user.click(sortIcon);
 
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('unread');
+		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
 		await user.click(unreadOption);
 
 		const req = await interceptor;
