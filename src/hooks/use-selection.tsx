@@ -6,14 +6,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppContext } from '@zextras/carbonio-shell-ui';
-import { map, omit } from 'lodash';
+import { map } from 'lodash';
 
 import { AppContext } from 'types';
 
 type UseSelectionProps = {
 	allAvailableItems?: Array<string>;
-	selectedItems: Record<string, boolean>;
-	setSelectedItems: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+	selectedItems: Set<string>;
+	setSelectedItems: React.Dispatch<React.SetStateAction<Set<string>>>;
 	isSearchModule?: boolean;
 };
 
@@ -29,55 +29,62 @@ type UseSelectionReturnType = {
 
 export const useSelection = ({
 	allAvailableItems = [],
-	selectedItems,
+	selectedItems = new Set<string>(),
 	setSelectedItems
 }: UseSelectionProps): UseSelectionReturnType => {
 	const { setCount } = useAppContext<AppContext>();
-	const selectedItemsNumber = Object.keys(selectedItems).length;
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 	const isAllSelected = useMemo(
-		() => selectedItemsNumber === allAvailableItems.length,
-		[selectedItemsNumber, allAvailableItems.length]
+		() => selectedItems.size === allAvailableItems.length,
+		[selectedItems.size, allAvailableItems.length]
 	);
 
 	useEffect(() => {
-		setCount?.(Object.keys(selectedItems).length);
+		setCount?.(selectedItems.size);
 	}, [selectedItems, setCount]);
 
 	const selectItem = useCallback(
 		(id: string) => {
-			if (selectedItems[id]) {
-				setSelectedItems((prev) => omit(prev, [id]));
+			if (selectedItems.has(id)) {
+				setSelectedItems((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(id);
+					return newSet;
+				});
 
-				if (selectedItemsNumber === 1) {
+				if (selectedItems.size === 1) {
 					setIsSelectModeOn(false);
-				} else if (selectedItemsNumber === 0) {
+				} else if (selectedItems.size === 0) {
 					setIsSelectModeOn(true);
 				}
 			} else {
-				setSelectedItems((prev) => ({ ...prev, [id]: true }));
+				setSelectedItems((prev) => {
+					const newSet = new Set(prev);
+					newSet.add(id);
+					return newSet;
+				});
 				setIsSelectModeOn(true);
 			}
 		},
-		[selectedItems, selectedItemsNumber, setSelectedItems]
+		[selectedItems, setSelectedItems]
 	);
 
 	const deselectAll = useCallback(() => {
-		setSelectedItems({});
+		setSelectedItems(new Set());
 		setCount?.(0);
 		setIsSelectModeOn(false);
 	}, [setCount, setSelectedItems]);
 
 	const selectAll = useCallback(() => {
 		map(allAvailableItems, (id) => {
-			if (!selectedItems[id]) {
+			if (!selectedItems.has(id)) {
 				selectItem(id);
 			}
 		});
 	}, [allAvailableItems, selectItem, selectedItems]);
 
 	const selectAllModeOff = useCallback(() => {
-		setSelectedItems({});
+		setSelectedItems(new Set());
 		setCount?.(0);
 		setIsSelectModeOn(true);
 	}, [setCount, setSelectedItems]);
