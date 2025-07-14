@@ -3,18 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, omit } from 'lodash';
 
+import { AppContext } from 'types';
+
 type UseSelectionProps = {
-	count: number;
-	items?: Array<string>;
-	setCount: (value: number | ((prevState: number) => number)) => void;
+	allAvailableItems?: Array<string>;
+	selectedItems: Record<string, boolean>;
+	setSelectedItems: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+	isSearchModule?: boolean;
 };
 
 type UseSelectionReturnType = {
-	selected: Record<string, boolean>;
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
 	toggle: (id: string) => void;
@@ -25,57 +28,61 @@ type UseSelectionReturnType = {
 };
 
 export const useSelection = ({
-	setCount,
-	count,
-	items = []
+	allAvailableItems = [],
+	selectedItems,
+	setSelectedItems
 }: UseSelectionProps): UseSelectionReturnType => {
-	const selected = useRef<Record<string, boolean>>({});
+	const { setCount } = useAppContext<AppContext>();
+	const selectedItemsNumber = Object.keys(selectedItems).length;
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
-	const isAllSelected = useMemo(() => count === items.length, [count, items.length]);
+	const isAllSelected = useMemo(
+		() => selectedItemsNumber === allAvailableItems.length,
+		[selectedItemsNumber, allAvailableItems.length]
+	);
+
+	useEffect(() => {
+		setCount?.(Object.keys(selectedItems).length);
+	}, [selectedItems, setCount]);
 
 	const selectItem = useCallback(
 		(id: string) => {
-			if (selected.current[id]) {
-				selected.current = omit(selected.current, [id]);
-				setCount?.((prev: number) => prev - 1);
-				if (count - 1 === 0) {
+			if (selectedItems[id]) {
+				setSelectedItems((prev) => omit(prev, [id]));
+
+				if (selectedItemsNumber === 1) {
 					setIsSelectModeOn(false);
-				} else if (count === 0) {
+				} else if (selectedItemsNumber === 0) {
 					setIsSelectModeOn(true);
 				}
 			} else {
-				selected.current = { ...selected.current, [id]: true };
-				setCount?.((prev: number) => prev + 1);
+				setSelectedItems((prev) => ({ ...prev, [id]: true }));
 				setIsSelectModeOn(true);
 			}
 		},
-		[count, setCount]
+		[selectedItems, selectedItemsNumber, setSelectedItems]
 	);
 
 	const deselectAll = useCallback(() => {
-		selected.current = {};
+		setSelectedItems({});
 		setCount?.(0);
 		setIsSelectModeOn(false);
-	}, [setCount, setIsSelectModeOn]);
+	}, [setCount, setSelectedItems]);
 
 	const selectAll = useCallback(() => {
-		map(items, (id) => {
-			if (!selected.current[id]) {
+		map(allAvailableItems, (id) => {
+			if (!selectedItems[id]) {
 				selectItem(id);
 			}
 		});
-	}, [items, selectItem, selected]);
+	}, [allAvailableItems, selectItem, selectedItems]);
 
 	const selectAllModeOff = useCallback(() => {
-		selected.current = {};
+		setSelectedItems({});
 		setCount?.(0);
-		setTimeout(() => {
-			setIsSelectModeOn(true);
-		});
-	}, [setCount]);
+		setIsSelectModeOn(true);
+	}, [setCount, setSelectedItems]);
 
 	return {
-		selected: selected.current,
 		toggle: selectItem,
 		deselectAll,
 		isSelectModeOn,
