@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import {
 	Button,
@@ -27,24 +27,18 @@ import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-se
 import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
 
 export const BackupSearchList = (): React.JSX.Element => {
-	const [count, setCount] = useState(0);
+	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
-	const {
-		selected: selectedMessage,
-		toggle,
-		deselectAll,
-		selectAll,
-		isAllSelected
-	} = useSelection({
-		setCount,
-		count,
-		items: [...Object.keys(messages ?? {})]
+	const { toggle, deselectAll, selectAll, isAllSelected } = useSelection({
+		allAvailableItems: [...Object.keys(messages ?? {})],
+		selectedItems,
+		setSelectedItems
 	});
 
-	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);
+	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
 	const createSnackbar = useSnackbar();
 
 	const recoverEmailsCallback = useCallback(
@@ -102,7 +96,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 		() =>
 			map(messages, (message) => {
 				const active = itemId === message.id;
-				const isSelected = selectedMessage[message.id];
+				const isSelected = selectedItems[message.id];
 				return (
 					<CustomListItem
 						key={message.id}
@@ -124,7 +118,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 					</CustomListItem>
 				);
 			}),
-		[itemId, messages, selectedMessage, toggle]
+		[itemId, messages, selectedItems, toggle]
 	);
 
 	const selectAllOnClick = useCallback(() => {

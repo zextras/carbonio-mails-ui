@@ -7,14 +7,13 @@
 import React, { memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useSelection } from 'hooks/use-selection';
-import { AppContext, IncompleteMessage, SearchRequestStatus } from 'types/index.d';
+import { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 type SearchConversationMessagesListProps = {
@@ -30,20 +29,21 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 	messages,
 	length
 }: SearchConversationMessagesListProps): React.JSX.Element {
-	const { setCount, count } = useAppContext<AppContext>();
 	const navigate = useNavigate();
 
-	const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
-		setCount,
-		count,
-		items: messages.map((message) => message.id)
+	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+
+	const { toggle, deselectAll, isSelectModeOn } = useSelection({
+		allAvailableItems: messages.map((message) => message.id),
+		selectedItems,
+		setSelectedItems
 	});
 
 	const listItems = useMemo(
 		() =>
 			map(messages, (message) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
-				const isSelected = selected[message.id];
+				const isSelected = selectedItems[message.id];
 				const handleSearchReplaceHistory = (): void => {
 					navigate(`../message/${message.id}`, { replace: true });
 				};
@@ -77,7 +77,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[activeItemId, deselectAll, isSelectModeOn, messages, navigate, selected, toggle]
+		[activeItemId, deselectAll, isSelectModeOn, messages, navigate, selectedItems, toggle]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
