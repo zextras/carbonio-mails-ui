@@ -33,7 +33,7 @@ export const SearchConversationList = ({
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
 	const {
 		toggle,
@@ -72,7 +72,7 @@ export const SearchConversationList = ({
 			map(conversationIds, (conversationId) => {
 				const active = itemId === conversationId;
 
-				const isSelected = selectedItems[conversationId];
+				const isSelected = selectedItems.has(conversationId);
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
 					<CustomListItem
@@ -114,7 +114,7 @@ export const SearchConversationList = ({
 				<>
 					<SearchListHeader
 						itemIds={conversationIds}
-						selected={selectedItems}
+						selectedItems={selectedItems}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
 						setIsSelectModeOn={setIsSelectModeOn}

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -27,7 +27,7 @@ import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-se
 import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
 
 export const BackupSearchList = (): React.JSX.Element => {
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
@@ -38,12 +38,11 @@ export const BackupSearchList = (): React.JSX.Element => {
 		setSelectedItems
 	});
 
-	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
 	const createSnackbar = useSnackbar();
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			const response = await restoreMessagesApi(selectedIds);
+			const response = await restoreMessagesApi(Array.from(selectedItems));
 			closeModal();
 			if ('error' in response) {
 				createSnackbar({
@@ -69,7 +68,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 				hideButton: true
 			});
 		},
-		[createSnackbar, navigate, selectedIds]
+		[createSnackbar, navigate, selectedItems]
 	);
 
 	const { createModal, closeModal } = useModal();
@@ -96,7 +95,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 		() =>
 			map(messages, (message) => {
 				const active = itemId === message.id;
-				const isSelected = selectedItems[message.id];
+				const isSelected = selectedItems?.has(message.id);
 				return (
 					<CustomListItem
 						key={message.id}
@@ -170,7 +169,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 							size="medium"
 							type="outlined"
 							width="fill"
-							disabled={!selectedIds.length}
+							disabled={selectedItems.size === 0}
 						/>
 					</Row>
 				</Row>

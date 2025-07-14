@@ -33,7 +33,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
 	const {
 		toggle,
@@ -71,7 +71,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		() =>
 			map(messageIds, (messageId) => {
 				const active = itemId === messageId;
-				const isSelected = selectedItems[messageId];
+				const isSelected = selectedItems.has(messageId);
 				return (
 					<CustomListItem
 						key={messageId}
@@ -107,7 +107,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !loading && (
 				<SearchListHeader
 					itemIds={messageIds}
-					selected={selectedItems}
+					selectedItems={selectedItems}
 					deselectAll={deselectAll}
 					isSelectModeOn={isSelectModeOn}
 					setIsSelectModeOn={setIsSelectModeOn}

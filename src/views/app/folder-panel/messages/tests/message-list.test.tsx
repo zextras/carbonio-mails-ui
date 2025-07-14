@@ -28,7 +28,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
-	selected: {},
 	isSelectModeOn: false,
 	setIsSelectModeOn: jest.fn(),
 	toggle: jest.fn(),
@@ -377,8 +376,7 @@ describe('message-list', () => {
 			const messageId = '10';
 			jest.spyOn(useSelection, 'useSelection').mockReturnValue({
 				...mockedUseSelection,
-				isSelectModeOn: true,
-				selected: { '10': true }
+				isSelectModeOn: true
 			});
 			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
@@ -411,8 +409,7 @@ describe('message-list', () => {
 			const messageId = '11';
 			jest.spyOn(useSelection, 'useSelection').mockReturnValue({
 				...mockedUseSelection,
-				isSelectModeOn: true,
-				selected: { '11': true }
+				isSelectModeOn: true
 			});
 			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });

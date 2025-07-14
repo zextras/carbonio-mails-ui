@@ -50,7 +50,7 @@ export type MessageListComponentProps = {
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
 	// the selected messages
-	selected: Record<string, boolean>;
+	selectedItems: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
 	// the function to call when the user selects all messages
@@ -79,7 +79,7 @@ export const MessageListComponent = memo(function MessageListComponent({
 	setDraggedIds,
 	isSearchModule,
 	isSelectModeOn,
-	selected,
+	selectedItems,
 	deselectAll,
 	selectAll,
 	isAllSelected,
@@ -89,8 +89,8 @@ export const MessageListComponent = memo(function MessageListComponent({
 	listRef
 }: MessageListComponentProps): React.JSX.Element {
 	useEffect(() => {
-		setDraggedIds?.(selected);
-	}, [selected, setDraggedIds]);
+		setDraggedIds?.(selectedItems);
+	}, [selectedItems, setDraggedIds]);
 
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');

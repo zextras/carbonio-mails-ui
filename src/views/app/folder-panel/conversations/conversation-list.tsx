@@ -27,7 +27,7 @@ export const ConversationList = (): React.JSX.Element => {
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
 
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
 
@@ -68,7 +68,7 @@ export const ConversationList = (): React.JSX.Element => {
 		() =>
 			map(conversationsIds, (id) => {
 				const active = itemId === id;
-				const isSelected = selectedItems[id];
+				const isSelected = selectedItems.has(id);
 				return (
 					<ListItem
 						data-testid={`conversation-list-item-${id}`}
@@ -86,7 +86,6 @@ export const ConversationList = (): React.JSX.Element => {
 									activeItemId={itemId}
 									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
-									selectedItems={selectedItems}
 									dragImageRef={dragImageRef}
 									selecting={isSelectModeOn}
 									active={active}
@@ -134,6 +133,9 @@ export const ConversationList = (): React.JSX.Element => {
 		loadingMore,
 		folderId
 	});
+	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
+		Array.from(selectedItems, (item) => [item, true])
+	);
 
 	return (
 		<>
@@ -158,7 +160,7 @@ export const ConversationList = (): React.JSX.Element => {
 				draggedIds={draggedIds}
 				folderId={folderId}
 				conversationsIds={conversationsIds}
-				selected={selectedItems}
+				selected={selectedItemsMap}
 				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}

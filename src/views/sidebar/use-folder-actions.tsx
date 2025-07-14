@@ -6,7 +6,7 @@
 import React, { SyntheticEvent, useMemo } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import {
 	Folder,
 	FOLDERS,
@@ -20,7 +20,6 @@ import { getFolderIdParts } from 'helpers/folders';
 import { useSelection } from 'hooks/use-selection';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useMessagesByFolder } from 'store/emails/store';
-import { AppContext } from 'types/index.d';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 import { MoveMessage } from 'ui-actions/move-msg';
 import { DeleteModal } from 'views/sidebar/delete-modal';
@@ -45,9 +44,8 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const trashMessages = messagesInFolder
 		.filter(() => getFolderIdParts(folder.id).id === FOLDERS.TRASH)
 		.map((message) => message.id);
-	const { setCount } = useAppContext<AppContext>();
 
-	const { deselectAll } = useSelection({ setCount, count: 0 });
+	const { deselectAll } = useSelection({});
 
 	const { createSnackbar } = useUiUtilities();
 

@@ -31,7 +31,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 }: SearchConversationMessagesListProps): React.JSX.Element {
 	const navigate = useNavigate();
 
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
 	const { toggle, deselectAll, isSelectModeOn } = useSelection({
 		allAvailableItems: messages.map((message) => message.id),
@@ -43,7 +43,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 		() =>
 			map(messages, (message) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
-				const isSelected = selectedItems[message.id];
+				const isSelected = selectedItems.has(message.id);
 				const handleSearchReplaceHistory = (): void => {
 					navigate(`../message/${message.id}`, { replace: true });
 				};

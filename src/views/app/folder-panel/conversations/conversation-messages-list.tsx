@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
@@ -37,7 +37,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	dragImageRef,
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 	const { toggle, deselectAll, isSelectModeOn } = useSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
@@ -48,7 +48,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 		() =>
 			map(messages, (message) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
-				const isSelected = selectedItems[message.id];
+				const isSelected = selectedItems.has(message.id);
 
 				return (
 					<CustomListItem

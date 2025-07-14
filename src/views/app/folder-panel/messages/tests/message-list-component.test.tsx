@@ -36,7 +36,7 @@ describe.each`
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
 				messageId={message.id}
-				selected={{}}
+				selectedItems={{}}
 				isSelected={false}
 				active
 				toggle={noop}
@@ -59,7 +59,7 @@ describe.each`
 			messagesLoadingCompleted: true,
 			selectAll: noop,
 			selectAllModeOff: noop,
-			selected: {},
+			selectedItems: {},
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,

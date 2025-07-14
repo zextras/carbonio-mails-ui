@@ -13,7 +13,7 @@ import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper'
 
 export type ListItemComponentProps = {
 	messageId: string;
-	selected: Record<string, boolean>;
+	selectedItems: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
 	toggle: (id: string) => void;
@@ -29,7 +29,7 @@ export type ListItemComponentProps = {
 
 export const MessageListItemComponent = memo(function MessageListItemComponent({
 	messageId,
-	selected,
+	selectedItems,
 	isSelected,
 	active,
 	toggle,
@@ -47,7 +47,7 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 		<DragItemWrapper
 			item={message}
 			selectedIds={[]}
-			selectedItems={selected}
+			selectedItems={selectedItems}
 			setDraggedIds={setDraggedIds}
 			dragImageRef={dragImageRef}
 			dragAndDropIsDisabled={!!isSearchModule}

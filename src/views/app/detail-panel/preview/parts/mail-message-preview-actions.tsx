@@ -23,8 +23,7 @@ type MailMsgPreviewActionsType = {
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 
-	const [selectedItems, setSelectedItems] = React.useState<Record<string, boolean>>({});
-	const { deselectAll } = useSelection({ selectedItems, setSelectedItems });
+	const { deselectAll } = useSelection({});
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 

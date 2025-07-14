@@ -26,7 +26,7 @@ export const MessageList = (): React.JSX.Element => {
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
-	const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
 	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
 	const { messageListIndex, status } = messageIndexSlice;
@@ -76,12 +76,16 @@ export const MessageList = (): React.JSX.Element => {
 		}
 		return null;
 	}, [messageListIndex?.length, folderId, t]);
+	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
+		Array.from(selectedItems, (item) => [item, true])
+	);
 
 	const listItems = useMemo(
 		() =>
 			map(messageListIndex, (id) => {
-				const isSelected = selectedItems[id];
+				const isSelected = selectedItems.has(id);
 				const active = itemId === id;
+
 				return (
 					<CustomListItem
 						data-testid={`message-item-${id}`}
@@ -94,7 +98,7 @@ export const MessageList = (): React.JSX.Element => {
 							visible ? (
 								<MessageListItemComponent
 									messageId={id}
-									selected={selectedItems}
+									selectedItems={selectedItemsMap}
 									isSelected={isSelected}
 									active={active}
 									toggle={toggle}
@@ -122,6 +126,7 @@ export const MessageList = (): React.JSX.Element => {
 			itemId,
 			messageListIndex,
 			selectedItems,
+			selectedItemsMap,
 			toggle
 		]
 	);
@@ -136,8 +141,8 @@ export const MessageList = (): React.JSX.Element => {
 	);
 
 	useEffect(() => {
-		setDraggedIds(selectedItems);
-	}, [selectedItems]);
+		setDraggedIds(selectedItemsMap);
+	}, [selectedItems, selectedItemsMap]);
 
 	return (
 		<MessageListComponent
@@ -156,7 +161,7 @@ export const MessageList = (): React.JSX.Element => {
 			isAllSelected={isAllSelected}
 			selectAll={selectAll}
 			deselectAll={deselectAll}
-			selected={selectedItems}
+			selectedItems={selectedItemsMap}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
 		/>

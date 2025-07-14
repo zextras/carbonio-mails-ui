@@ -18,7 +18,7 @@ type ConversationListItemComponentProps = {
 	active?: boolean;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean>;
-	selectedItems?: Record<string, boolean>;
+	selectedItems?: Set<string>;
 	dragImageRef?: RefObject<HTMLInputElement>;
 	isSearchModule?: boolean;
 	selectedIds?: string[];
@@ -35,7 +35,7 @@ export const ConversationListItemComponent = ({
 	toggleMultipleSelection,
 	active,
 	setDraggedIds,
-	selectedItems = {},
+	selectedItems = new Set(),
 	dragImageRef,
 	isSearchModule,
 	selectedIds = [],
@@ -43,12 +43,16 @@ export const ConversationListItemComponent = ({
 	folderId
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
+	const selectedDragItems: Record<string, boolean> = Object.fromEntries(
+		Array.from(selectedItems, (item) => [item, true])
+	);
+
 	return (
 		conversation && (
 			<DragItemWrapper
 				item={conversation}
 				selectedIds={selectedIds}
-				selectedItems={selectedItems}
+				selectedItems={selectedDragItems}
 				setDraggedIds={setDraggedIds}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
