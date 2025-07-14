@@ -9,7 +9,7 @@ import React, { ReactElement } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
@@ -17,7 +17,6 @@ import * as reactRouterDom from 'react-router-dom';
 import { within, makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import * as searchSoapApi from 'api/search-soap-api';
 import * as useSelection from 'hooks/use-selection';
 import { TESTID_SELECTORS } from 'tests/constants';
@@ -77,7 +76,6 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 };
 const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	selectAll: jest.fn(),
-	selected: { '10': true },
 	toggle: jest.fn(),
 	isSelectModeOn: false,
 	setIsSelectModeOn: jest.fn(),
@@ -674,7 +672,9 @@ describe('SearchView', () => {
 			const updatedSearchSettings = setupSearchViewTest({ viewBy: 'message', query: 'subject' });
 			const { queryChip: updatedQueryChip } = updatedSearchSettings;
 
-			rerender(<SearchView {...searchViewProps} useQuery={() => [[updatedQueryChip], noop]} />);
+			rerender(
+				<SearchView {...searchViewProps} useQuery={(): any => [[updatedQueryChip], noop]} />
+			);
 
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
