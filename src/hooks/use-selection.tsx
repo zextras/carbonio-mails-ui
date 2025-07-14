@@ -12,8 +12,8 @@ import { AppContext } from 'types';
 
 type UseSelectionProps = {
 	allAvailableItems?: Array<string>;
-	selectedItems: Set<string>;
-	setSelectedItems: React.Dispatch<React.SetStateAction<Set<string>>>;
+	selectedItems?: Set<string>;
+	setSelectedItems?: React.Dispatch<React.SetStateAction<Set<string>>>;
 	isSearchModule?: boolean;
 };
 
@@ -46,7 +46,7 @@ export const useSelection = ({
 	const selectItem = useCallback(
 		(id: string) => {
 			if (selectedItems.has(id)) {
-				setSelectedItems((prev) => {
+				setSelectedItems?.((prev) => {
 					const newSet = new Set(prev);
 					newSet.delete(id);
 					return newSet;
@@ -58,7 +58,7 @@ export const useSelection = ({
 					setIsSelectModeOn(true);
 				}
 			} else {
-				setSelectedItems((prev) => {
+				setSelectedItems?.((prev) => {
 					const newSet = new Set(prev);
 					newSet.add(id);
 					return newSet;
@@ -70,7 +70,7 @@ export const useSelection = ({
 	);
 
 	const deselectAll = useCallback(() => {
-		setSelectedItems(new Set());
+		setSelectedItems?.(new Set());
 		setCount?.(0);
 		setIsSelectModeOn(false);
 	}, [setCount, setSelectedItems]);
@@ -84,7 +84,7 @@ export const useSelection = ({
 	}, [allAvailableItems, selectItem, selectedItems]);
 
 	const selectAllModeOff = useCallback(() => {
-		setSelectedItems(new Set());
+		setSelectedItems?.(new Set());
 		setCount?.(0);
 		setIsSelectModeOn(true);
 	}, [setCount, setSelectedItems]);
