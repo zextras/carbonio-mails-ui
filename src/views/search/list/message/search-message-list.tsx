@@ -12,7 +12,7 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { useMultipleSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';

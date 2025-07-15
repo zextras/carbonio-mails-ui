@@ -11,7 +11,7 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { useMultipleSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';

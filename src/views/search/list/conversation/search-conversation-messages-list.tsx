@@ -12,7 +12,7 @@ import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from 'constants/index';
-import { useMultipleSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 

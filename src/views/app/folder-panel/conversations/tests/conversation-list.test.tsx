@@ -15,7 +15,7 @@ import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import * as useSelection from 'hooks/use-selection';
+import * as useMultipleSelection from 'hooks/use-multiple-selection';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
@@ -23,7 +23,7 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-const mockedUseSelection: ReturnType<typeof useSelection.useMultipleSelection> = {
+const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
 	selectAll: jest.fn(),
 	toggle: jest.fn(),
 	isSelectModeOn: false,
@@ -175,7 +175,7 @@ describe('ConversationList Component', () => {
 	});
 
 	it('should move a conversation to trash when the trash action button is clicked', async () => {
-		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
+		jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 		await act(async () => {
 			populateFoldersStore();
@@ -209,7 +209,7 @@ describe('ConversationList Component', () => {
 	});
 
 	it('should delete a conversation when the permanently delete action button is clicked', async () => {
-		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
+		jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 		await act(async () => {
 			populateFoldersStore();
@@ -254,7 +254,7 @@ describe('ConversationList Component', () => {
 	describe('when in multiple selection mode', () => {
 		it('should move a conversation to trash when the trash action button is clicked', async () => {
 			jest
-				.spyOn(useSelection, 'useSelection')
+				.spyOn(useMultipleSelection, 'useMultipleSelection')
 				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true });
 			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			await act(async () => {
@@ -294,7 +294,7 @@ describe('ConversationList Component', () => {
 				folderId: FOLDERS.TRASH
 			});
 			jest
-				.spyOn(useSelection, 'useSelection')
+				.spyOn(useMultipleSelection, 'useMultipleSelection')
 				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true });
 			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 

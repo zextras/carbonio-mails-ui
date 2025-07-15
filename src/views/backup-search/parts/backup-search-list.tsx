@@ -21,7 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { restoreMessagesApi } from 'api/restore-messages-api';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from 'constants/index';
-import { useMultipleSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
