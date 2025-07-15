@@ -3,22 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
+import { AppContext } from 'app-utils/app-context-initializer';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from 'views/app/detail-panel/selection-interactive';
-import { AppContext } from 'views/sidebar/initialize-services-catalog';
 
 const DetailPanel: FC = () => {
 	const { multipleSelectionCount } = useAppContext<AppContext>();
-	useEffect(() => {
-		console.log({ multipleSelectionCount });
-	}, [multipleSelectionCount]);
 	return (
 		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
 			<Routes>

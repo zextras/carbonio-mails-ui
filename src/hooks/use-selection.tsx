@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { AppContext } from 'views/sidebar/initialize-services-catalog';
+import { AppContext } from 'app-utils/app-context-initializer';
 
 type UseSelectionProps = {
 	allAvailableItems?: Array<string>;

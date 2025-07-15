@@ -29,13 +29,13 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { AppContext } from 'app-utils/app-context-initializer';
 import { getFileExtension } from 'commons/utilities';
 import { useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import type {
-	AppContext,
 	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
