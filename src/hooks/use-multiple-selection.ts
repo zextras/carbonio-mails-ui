@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useAppContext } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
 
 import { AppContext } from 'app-utils/app-context-initializer';
 
@@ -20,7 +19,7 @@ type UseSelectionProps = {
 type UseSelectionReturnType = {
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
-	toggle: (id: string) => void;
+	toggleItemSelection: (id: string) => void;
 	deselectAll: () => void;
 	selectAll: () => void;
 	isAllSelected: boolean;
@@ -34,39 +33,35 @@ export const useMultipleSelection = ({
 }: UseSelectionProps): UseSelectionReturnType => {
 	const { setMultipleSelectionCount } = useAppContext<AppContext>();
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
-	const isAllSelected = useMemo(
-		() => selectedItems.size === allAvailableItems.length,
-		[selectedItems.size, allAvailableItems.length]
-	);
 
 	useEffect(() => {
 		setMultipleSelectionCount?.(selectedItems.size);
-	}, [selectedItems, setMultipleSelectionCount]);
+	}, [selectedItems.size, setMultipleSelectionCount]);
 
-	const selectItem = useCallback(
+	const [isAllSelected, setIsAllSelected] = useState(false);
+	useEffect(() => {
+		setIsAllSelected(selectedItems.size === allAvailableItems.length);
+	}, [selectedItems, allAvailableItems]);
+
+	const toggleItemSelection = useCallback(
 		(id: string) => {
-			if (selectedItems.has(id)) {
-				setSelectedItems?.((prev) => {
-					const newSet = new Set(prev);
-					newSet.delete(id);
-					return newSet;
-				});
+			setSelectedItems?.((prev) => {
+				const newSet = new Set(prev);
+				const itemWasAlreadySelected = newSet.has(id);
 
-				if (selectedItems.size === 1) {
-					setIsSelectModeOn(false);
-				} else if (selectedItems.size === 0) {
-					setIsSelectModeOn(true);
-				}
-			} else {
-				setSelectedItems?.((prev) => {
-					const newSet = new Set(prev);
+				if (itemWasAlreadySelected) {
+					newSet.delete(id);
+				} else {
 					newSet.add(id);
-					return newSet;
-				});
-				setIsSelectModeOn(true);
-			}
+				}
+
+				const newSize = newSet.size;
+				setIsSelectModeOn(!itemWasAlreadySelected || newSize > 0);
+
+				return newSet;
+			});
 		},
-		[selectedItems, setSelectedItems]
+		[setSelectedItems]
 	);
 
 	const deselectAll = useCallback(() => {
@@ -75,20 +70,17 @@ export const useMultipleSelection = ({
 	}, [setSelectedItems]);
 
 	const selectAll = useCallback(() => {
-		map(allAvailableItems, (id) => {
-			if (!selectedItems.has(id)) {
-				selectItem(id);
-			}
-		});
-	}, [allAvailableItems, selectItem, selectedItems]);
+		setIsSelectModeOn(true);
+		setSelectedItems?.(new Set(allAvailableItems));
+	}, [allAvailableItems, setSelectedItems]);
 
 	const selectAllModeOff = useCallback(() => {
+		setIsSelectModeOn(false);
 		setSelectedItems?.(new Set());
-		setIsSelectModeOn(true);
 	}, [setSelectedItems]);
 
 	return {
-		toggle: selectItem,
+		toggleItemSelection,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,

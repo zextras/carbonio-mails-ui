@@ -25,7 +25,7 @@ import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
 	selectAll: jest.fn(),
-	toggle: jest.fn(),
+	toggleItemSelection: jest.fn(),
 	isSelectModeOn: false,
 	setIsSelectModeOn: jest.fn(),
 	deselectAll: jest.fn(),

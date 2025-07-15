@@ -33,7 +33,11 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
-	const { toggle, deselectAll, isSelectModeOn } = useMultipleSelection({
+	const {
+		toggleItemSelection: toggle,
+		deselectAll,
+		isSelectModeOn
+	} = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems

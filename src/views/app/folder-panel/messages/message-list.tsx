@@ -38,7 +38,7 @@ export const MessageList = (): React.JSX.Element => {
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
-		toggle,
+		toggleItemSelection: toggle,
 		isAllSelected,
 		selectAllModeOff
 	} = useMultipleSelection({

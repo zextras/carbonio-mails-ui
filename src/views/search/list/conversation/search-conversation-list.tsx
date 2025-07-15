@@ -36,7 +36,7 @@ export const SearchConversationList = ({
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
 	const {
-		toggle,
+		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,

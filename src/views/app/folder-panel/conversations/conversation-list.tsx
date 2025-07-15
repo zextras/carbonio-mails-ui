@@ -32,7 +32,7 @@ export const ConversationList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 
 	const {
-		toggle: toggleMultipleSelection,
+		toggleItemSelection: toggleMultipleSelection,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,

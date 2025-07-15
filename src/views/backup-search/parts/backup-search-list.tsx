@@ -32,7 +32,12 @@ export const BackupSearchList = (): React.JSX.Element => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
-	const { toggle, deselectAll, selectAll, isAllSelected } = useMultipleSelection({
+	const {
+		toggleItemSelection: toggle,
+		deselectAll,
+		selectAll,
+		isAllSelected
+	} = useMultipleSelection({
 		allAvailableItems: [...Object.keys(messages ?? {})],
 		selectedItems,
 		setSelectedItems

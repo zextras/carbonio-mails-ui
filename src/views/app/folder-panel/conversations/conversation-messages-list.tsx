@@ -38,7 +38,11 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const { toggle, deselectAll, isSelectModeOn } = useMultipleSelection({
+	const {
+		toggleItemSelection: toggle,
+		deselectAll,
+		isSelectModeOn
+	} = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems

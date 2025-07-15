@@ -76,7 +76,7 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 };
 const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
 	selectAll: jest.fn(),
-	toggle: jest.fn(),
+	toggleItemSelection: jest.fn(),
 	isSelectModeOn: false,
 	setIsSelectModeOn: jest.fn(),
 	deselectAll: jest.fn(),
