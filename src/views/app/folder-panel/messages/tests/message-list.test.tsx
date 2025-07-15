@@ -27,7 +27,7 @@ jest.mock('react-router-dom', () => ({
 	useParams: jest.fn()
 }));
 
-const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
+const mockedUseSelection: ReturnType<typeof useSelection.useMultipleSelection> = {
 	isSelectModeOn: false,
 	setIsSelectModeOn: jest.fn(),
 	toggle: jest.fn(),

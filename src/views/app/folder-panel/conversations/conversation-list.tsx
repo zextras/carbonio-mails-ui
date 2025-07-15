@@ -15,7 +15,7 @@ import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
-import { useSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-selection';
 import { ConversationListComponent } from 'views/app/folder-panel/conversations/conversation-list-component';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
@@ -39,7 +39,7 @@ export const ConversationList = (): React.JSX.Element => {
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({
+	} = useMultipleSelection({
 		allAvailableItems: conversationsIds,
 		setSelectedItems,
 		selectedItems
