@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { AppContext } from 'types';
+import { AppContext } from 'views/sidebar/initialize-services-catalog';
 
 type UseSelectionProps = {
 	allAvailableItems?: Array<string>;
@@ -32,7 +32,7 @@ export const useSelection = ({
 	selectedItems = new Set<string>(),
 	setSelectedItems
 }: UseSelectionProps): UseSelectionReturnType => {
-	const { setCount } = useAppContext<AppContext>();
+	const { setMultipleSelectionCount } = useAppContext<AppContext>();
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 	const isAllSelected = useMemo(
 		() => selectedItems.size === allAvailableItems.length,
@@ -40,8 +40,8 @@ export const useSelection = ({
 	);
 
 	useEffect(() => {
-		setCount?.(selectedItems.size);
-	}, [selectedItems, setCount]);
+		setMultipleSelectionCount?.(selectedItems.size);
+	}, [selectedItems, setMultipleSelectionCount]);
 
 	const selectItem = useCallback(
 		(id: string) => {
@@ -71,9 +71,8 @@ export const useSelection = ({
 
 	const deselectAll = useCallback(() => {
 		setSelectedItems?.(new Set());
-		setCount?.(0);
 		setIsSelectModeOn(false);
-	}, [setCount, setSelectedItems]);
+	}, [setSelectedItems]);
 
 	const selectAll = useCallback(() => {
 		map(allAvailableItems, (id) => {
@@ -85,9 +84,8 @@ export const useSelection = ({
 
 	const selectAllModeOff = useCallback(() => {
 		setSelectedItems?.(new Set());
-		setCount?.(0);
 		setIsSelectModeOn(true);
-	}, [setCount, setSelectedItems]);
+	}, [setSelectedItems]);
 
 	return {
 		toggle: selectItem,
