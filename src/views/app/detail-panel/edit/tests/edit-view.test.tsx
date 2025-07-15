@@ -222,11 +222,9 @@ describe('Edit view', () => {
 			);
 
 			makeAllItemsVisible();
-			await act(async () => {
-				const tooltip = await screen.findByTestId('tooltip');
-				expect(tooltip).toBeInTheDocument();
-				expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
-			});
+			const tooltip = await screen.findByTestId('tooltip');
+			expect(tooltip).toBeInTheDocument();
+			expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
 		});
 		test('when there`s an invalid TO recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -249,12 +247,10 @@ describe('Edit view', () => {
 			// TODO: act is used to ensure entire render lifecycle is completed.
 			//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
 			//  act is a gimmick and not really required.
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 		test('when there`s an invalid CC recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -274,12 +270,10 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 		test('when there`s an invalid BCC recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -299,12 +293,10 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 	});
 
@@ -365,32 +357,31 @@ describe('Edit view', () => {
 
 			expect(btnSend).toBeVisible();
 
-			await act(() => user.click(toInputElement));
-			await act(() => user.clear(toInputElement));
-			await act(() => user.type(toInputElement, address));
+			await user.click(toInputElement);
+			await user.clear(toInputElement);
+			await user.type(toInputElement, address);
 
 			await user.tab();
-			await act(() => user.click(btnCc));
+			await user.click(btnCc);
 
 			// Click on the "CC" button to show CC Recipient field
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			await act(() => user.click(ccInputElement));
-			await act(() => user.clear(ccInputElement));
-			await act(() => user.type(ccInputElement, ccAddress));
+			await user.click(ccInputElement);
+			await user.clear(ccInputElement);
+			await user.type(ccInputElement, ccAddress);
 
 			// Insert a subject
-			await act(() => user.click(subjectInputElement));
-			await act(() => user.clear(subjectInputElement));
-			await act(() => user.type(subjectInputElement, subject));
+			await user.click(subjectInputElement);
+			await user.clear(subjectInputElement);
+			await user.type(subjectInputElement, subject);
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
 
-			await act(async () => {
-				await user.click(optionIcon);
-			});
+			await user.click(optionIcon);
+
 			const markAsImportantOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 				/label\.mark_as_important/i
 			);
@@ -400,18 +391,16 @@ describe('Edit view', () => {
 				await awaitDebouncedSaveDraft();
 			});
 
-			await act(async () => {
-				await user.click(editorTextareaElement);
-				await user.clear(editorTextareaElement);
-				await user.type(editorTextareaElement, body);
-			});
+			await user.click(editorTextareaElement);
+			await user.clear(editorTextareaElement);
+			await user.type(editorTextareaElement, body);
 
 			await act(async () => {
 				await awaitDebouncedSaveDraft();
 			});
 
 			// // Check for the status of the "send" button to be enabled
-			await waitFor(() => expect(btnSend).toBeEnabled());
+			expect(btnSend).toBeEnabled();
 
 			const response = {
 				m: [
@@ -426,9 +415,7 @@ describe('Edit view', () => {
 				SoapSendMsgResponse
 			>('SendMsg', response);
 
-			await act(async () => {
-				await user.click(btnSend);
-			});
+			await user.click(btnSend);
 
 			const { m: msg } = await sendMsgPromise;
 
@@ -442,9 +429,7 @@ describe('Edit view', () => {
 					expect(participant.p).toBe(fullName);
 				}
 			});
-			act(() => {
-				expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
-			});
+			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		});
 
 		it('should add the logged in account id to the originId field when replying to an email from the primary account', async () => {
@@ -680,9 +665,7 @@ describe('Edit view', () => {
 			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
 
-			act(() => {
-				setupTest(<EditView editorId={editor.id} closeController={noop} />);
-			});
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
 			});

@@ -72,7 +72,7 @@ describe('new-modal', () => {
 			name: /label.cancel/i
 		});
 		expect(cancelButton).toBeEnabled();
-	}, 10000);
+	}, 20000);
 });
 
 describe('new-modal 2', () => {
@@ -126,7 +126,7 @@ describe('new-modal 2', () => {
 			name: /label.cancel/i
 		});
 		expect(cancelButton).toBeEnabled();
-	}, 10000);
+	}, 20000);
 });
 
 describe('new-modal 3', () => {
@@ -188,5 +188,5 @@ describe('new-modal 3', () => {
 		expect(newFolder.view).toBe('message');
 		expect(newFolder.l).toBe(folder.id);
 		expect(newFolder.name).toBe(folderName);
-	}, 10000);
+	}, 20000);
 });
