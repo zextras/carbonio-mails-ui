@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.25.12 (2025-07-04)
+
+### 1.25.11 (2025-07-04)
+
+
+### Bug Fixes
+
+* force the shadow root re-instantiate ([3f6ae1b](https://github.com/zextras/carbonio-mails-ui/commit/3f6ae1b210152c6eee0e7133d70f9c1bea1275d9))
+
+### 1.25.10 (2025-07-03)
+
+### 1.25.9 (2025-07-02)
+
+
+### Bug Fixes
+
+* refactor how shadow root style is applied ([daa7fb7](https://github.com/zextras/carbonio-mails-ui/commit/daa7fb7a3be2da39a3c0b1112a7c74b492b98e4d))
+
 ### 1.25.8 (2025-07-02)
 
 ### 1.25.7 (2025-07-01)
