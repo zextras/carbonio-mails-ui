@@ -278,7 +278,7 @@ describe('ConversationList Component', () => {
 			expect(request.action.op).toBe('trash');
 			expect(request.action.id).toBe('1');
 		});
-		it('should delete a conversation when the permanently delete action button is clicked', async () => {
+		it('should move multiple conversations to trash when the trash action button is clicked', async () => {
 			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			await act(async () => {
 				populateFoldersStore();
@@ -286,38 +286,41 @@ describe('ConversationList Component', () => {
 
 			const conversation1 = generateConversationFromAPI({
 				id: '1',
-				m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
+				m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
+				su: conversation1Subject
+			});
+			const conversation2 = generateConversationFromAPI({
+				id: '2',
+				m: [generateConvMessageFromAPI({ id: '2', l: FOLDERS.INBOX, cid: '2' })],
 				su: conversation1Subject
 			});
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1],
+				c: [conversation1, conversation2],
 				more: true
 			});
 			(useParams as jest.Mock).mockReturnValue({
-				folderId: FOLDERS.TRASH
+				folderId: FOLDERS.INBOX
 			});
 			const { user } = await act(async () => setupTest(<ConversationList />));
 
 			makeAllItemsVisible();
 
-			expect(screen.getByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
+			expect(await screen.findByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
 			await user.click(await screen.findByTestId('select-icon-checkbox'));
 			await user.click(screen.getByRole('button', { name: /label\.select_all/i }));
+
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
 				{
-					icon: TESTID_SELECTORS.icons.deletePermanently
+					icon: TESTID_SELECTORS.icons.trash
 				}
 			);
 			await user.click(multipleSelectionTrashButton);
-			const confirmButton = await screen.findByText('Delete permanently');
-
-			await user.click(confirmButton);
 			const request = await waitFor(() => convActionInterceptor);
-			expect(request.action.op).toBe('delete');
-			expect(request.action.id).toBe('1');
+			expect(request.action.op).toBe('trash');
+			expect(request.action.id).toBe('1,2');
 		});
 	});
 });
