@@ -131,14 +131,11 @@ export const MessageList = (): React.JSX.Element => {
 		]
 	);
 
-	const [totalMessages, selectedIds, messagesLoadingCompleted] = useMemo(
-		() => [
-			messageListIndex.length,
-			Object.keys(selectedItems),
-			status === API_REQUEST_STATUS.fulfilled
-		],
-		[messageListIndex.length, selectedItems, status]
-	);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
+
+	const totalMessages = useMemo(() => messageListIndex.length, [messageListIndex.length]);
+
+	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
 
 	useEffect(() => {
 		setDraggedIds(selectedItemsMap);
