@@ -218,7 +218,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			actions: [],
 			value: item.value.email,
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		})),
 		sentTo.map((item) => ({
 			...item,
@@ -227,7 +228,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			value: item.value.email,
 			actions: [],
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		}))
 	);
 }
