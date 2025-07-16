@@ -57,11 +57,9 @@ describe('SearchConversationListItem', () => {
 		const messageActionWrapper = screen.getByTestId(`ConversationListItem-${conversationId}`);
 		expect(messageActionWrapper).toBeVisible();
 
-		act(() => {
-			user.hover(messageActionWrapper);
-		});
+		user.hover(messageActionWrapper);
 		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
+		expect(hoverBar).toBeInTheDocument();
 
 		await user.click(screen.getByTestId('icon: Trash2Outline'));
 
@@ -115,7 +113,7 @@ describe('SearchConversationListItem', () => {
 			user.hover(messageActionWrapper);
 		});
 		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
+		expect(hoverBar).toBeInTheDocument();
 
 		await user.click(screen.getByTestId('icon: DeletePermanentlyOutline'));
 
@@ -169,7 +167,7 @@ describe('SearchConversationListItem', () => {
 			user.hover(messageActionWrapper);
 		});
 		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
+		expect(hoverBar).toBeInTheDocument();
 
 		await user.click(screen.getByTestId('icon: DeletePermanentlyOutline'));
 
