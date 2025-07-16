@@ -105,7 +105,6 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 				(ch) =>
 					ch.value !== undefined &&
 					containsSpecialCharacters(ch.value) &&
-					// Exclude advanced filter chips from files-ui
 					!('queryChipsToAdvancedFiltersValue' in ch)
 			),
 		[query]
