@@ -7,7 +7,6 @@
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
@@ -15,7 +14,6 @@ import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import * as useMultipleSelection from 'hooks/use-multiple-selection';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
@@ -23,15 +21,6 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
-	selectAll: jest.fn(),
-	toggleItemSelection: jest.fn(),
-	isSelectModeOn: false,
-	setIsSelectModeOn: jest.fn(),
-	deselectAll: jest.fn(),
-	isAllSelected: false,
-	selectAllModeOff: jest.fn()
-};
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
@@ -175,7 +164,6 @@ describe('ConversationList Component', () => {
 	});
 
 	it('should move a conversation to trash when the trash action button is clicked', async () => {
-		jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 		await act(async () => {
 			populateFoldersStore();
@@ -209,7 +197,6 @@ describe('ConversationList Component', () => {
 	});
 
 	it('should delete a conversation when the permanently delete action button is clicked', async () => {
-		jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 		await act(async () => {
 			populateFoldersStore();
@@ -253,18 +240,14 @@ describe('ConversationList Component', () => {
 
 	describe('when in multiple selection mode', () => {
 		it('should move a conversation to trash when the trash action button is clicked', async () => {
-			jest
-				.spyOn(useMultipleSelection, 'useMultipleSelection')
-				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true });
 			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			await act(async () => {
 				populateFoldersStore();
 			});
 
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const conversation1 = generateConversationFromAPI({
-				id: '10',
-				m: [generateConvMessageFromAPI({ id: '1', l: '2', cid: '1' })],
+				id: '1',
+				m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
 				su: conversation1Subject
 			});
 
@@ -272,10 +255,16 @@ describe('ConversationList Component', () => {
 				c: [conversation1],
 				more: true
 			});
-
-			const { user } = setupTest(<ConversationList />);
+			(useParams as jest.Mock).mockReturnValue({
+				folderId: FOLDERS.INBOX
+			});
+			const { user } = await act(async () => setupTest(<ConversationList />));
 
 			makeAllItemsVisible();
+
+			expect(screen.getByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
+			await user.click(await screen.findByTestId('select-icon-checkbox'));
+			await user.click(screen.getByRole('button', { name: /label\.select_all/i }));
 
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
@@ -287,20 +276,16 @@ describe('ConversationList Component', () => {
 			await user.click(multipleSelectionTrashButton);
 			const request = await waitFor(() => convActionInterceptor);
 			expect(request.action.op).toBe('trash');
-			expect(request.action.id).toBe('10');
+			expect(request.action.id).toBe('1');
 		});
 		it('should delete a conversation when the permanently delete action button is clicked', async () => {
-			(useParams as jest.Mock).mockReturnValue({
-				folderId: FOLDERS.TRASH
-			});
-			jest
-				.spyOn(useMultipleSelection, 'useMultipleSelection')
-				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true });
 			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			await act(async () => {
+				populateFoldersStore();
+			});
 
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const conversation1 = generateConversationFromAPI({
-				id: '10',
+				id: '1',
 				m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
 				su: conversation1Subject
 			});
@@ -309,11 +294,16 @@ describe('ConversationList Component', () => {
 				c: [conversation1],
 				more: true
 			});
-
-			const { user } = setupTest(<ConversationList />);
+			(useParams as jest.Mock).mockReturnValue({
+				folderId: FOLDERS.TRASH
+			});
+			const { user } = await act(async () => setupTest(<ConversationList />));
 
 			makeAllItemsVisible();
 
+			expect(screen.getByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
+			await user.click(await screen.findByTestId('select-icon-checkbox'));
+			await user.click(screen.getByRole('button', { name: /label\.select_all/i }));
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
@@ -327,7 +317,7 @@ describe('ConversationList Component', () => {
 			await user.click(confirmButton);
 			const request = await waitFor(() => convActionInterceptor);
 			expect(request.action.op).toBe('delete');
-			expect(request.action.id).toBe('10');
+			expect(request.action.id).toBe('1');
 		});
 	});
 });
