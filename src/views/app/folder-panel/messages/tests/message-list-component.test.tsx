@@ -43,7 +43,6 @@ describe.each`
 				isSelectModeOn={false}
 				key={message.id}
 				isSearchModule={isSearchModule}
-				deselectAll={noop}
 				visible
 			/>
 		));

@@ -40,7 +40,6 @@ describe('MessageListItem Component', () => {
 		visible: true,
 		active: false,
 		isSearchModule: false,
-		deselectAll: jest.fn(),
 		handleReplaceHistory: jest.fn()
 	};
 

@@ -35,12 +35,6 @@ function setUpConversationList({
 		});
 	});
 
-	const toggle = jest.fn();
-	const selectAll = jest.fn();
-	const deselectAll = jest.fn();
-	const selectAllModeOff = jest.fn();
-	const setIsSelectModeOn = jest.fn();
-
 	const listItems = conversationsIds.map((conversationId, index) => (
 		<ConversationListItemComponent
 			key={index}
@@ -48,8 +42,7 @@ function setUpConversationList({
 			activeItemId=""
 			selected={false}
 			selecting={false}
-			toggleMultipleSelection={toggle}
-			deselectAll={deselectAll}
+			toggleMultipleSelection={jest.fn()}
 			folderId={FOLDERS.INBOX}
 			setDraggedIds={jest.fn()}
 		/>
@@ -67,12 +60,12 @@ function setUpConversationList({
 		conversationsIds,
 		isSelectModeOn: false,
 		selected: {},
-		deselectAll,
-		selectAll,
+		deselectAll: jest.fn(),
+		selectAll: jest.fn(),
 		isAllSelected: false,
-		selectAllModeOff,
+		selectAllModeOff: jest.fn(),
 		isSearchModule,
-		setIsSelectModeOn,
+		setIsSelectModeOn: jest.fn(),
 		dragImageRef,
 		loadMoreCallback
 	};

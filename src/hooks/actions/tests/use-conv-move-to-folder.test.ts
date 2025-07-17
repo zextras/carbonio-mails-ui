@@ -28,7 +28,7 @@ describe('useConvMoveToFolder', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvMoveToFolderDescriptor, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -46,7 +46,7 @@ describe('useConvMoveToFolder', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvMoveToFolderFn, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -68,7 +68,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: conversationsId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -80,7 +80,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
@@ -98,7 +98,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {

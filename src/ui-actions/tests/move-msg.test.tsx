@@ -39,7 +39,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -50,13 +49,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage
-					folderId={sourceFolder}
-					selectedIDs={msgIds}
-					onClose={jest.fn()}
-					isRestore
-					deselectAll={jest.fn()}
-				/>
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -73,7 +66,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -96,7 +88,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -145,7 +136,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -200,7 +190,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 

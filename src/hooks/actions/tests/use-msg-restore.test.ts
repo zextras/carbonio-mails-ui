@@ -23,7 +23,7 @@ describe('useMsgRestore', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgRestoreDescriptor, {
-				initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ messageId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -41,7 +41,7 @@ describe('useMsgRestore', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgRestoreFn, {
-				initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ messageId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -63,7 +63,7 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ messageId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -75,7 +75,7 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ messageId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -93,7 +93,7 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ messageId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {

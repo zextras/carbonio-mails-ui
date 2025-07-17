@@ -73,7 +73,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -109,7 +108,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -149,7 +147,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -190,7 +187,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -230,7 +226,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -269,7 +264,6 @@ describe.each`
 					visible: true,
 					active: true,
 					toggle: noop,
-					deselectAll: noop,
 					isSearchModule,
 					currentFolderId: folder.id
 				};
@@ -339,7 +333,6 @@ describe.each`
 				visible: true,
 				active: true,
 				toggle: noop,
-				deselectAll: noop,
 				isSearchModule,
 				currentFolderId: folderId
 			};
@@ -377,7 +370,6 @@ describe('in the drafts folder', () => {
 			visible: true,
 			active: true,
 			toggle: noop,
-			deselectAll: noop,
 			isSearchModule: false,
 			currentFolderId: folderId
 		};
@@ -400,7 +392,6 @@ describe('in the drafts folder', () => {
 			visible: true,
 			active: true,
 			toggle: noop,
-			deselectAll: noop,
 			isSearchModule: true,
 			currentFolderId: folderId
 		};
@@ -432,7 +423,6 @@ describe('in the drafts folder', () => {
 				visible: true,
 				active: true,
 				toggle: noop,
-				deselectAll: noop,
 				isSearchModule,
 				currentFolderId: folderId
 			};
@@ -467,7 +457,6 @@ describe('in the drafts folder', () => {
 				visible: true,
 				active: true,
 				toggle: noop,
-				deselectAll: noop,
 				isSearchModule,
 				currentFolderId: folderId
 			};
@@ -498,7 +487,6 @@ describe('in the trash folder', () => {
 			visible: true,
 			active: true,
 			toggle: noop,
-			deselectAll: noop,
 			currentFolderId: folderId
 		};
 		useTagStore.setState({ tags: mockTags });
@@ -527,7 +515,6 @@ describe('in the trash folder', () => {
 				visible: true,
 				active: true,
 				toggle: noop,
-				deselectAll: noop,
 				isSearchModule,
 				currentFolderId: folderId
 			};

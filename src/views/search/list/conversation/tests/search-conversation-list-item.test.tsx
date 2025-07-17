@@ -50,7 +50,6 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
@@ -102,7 +101,6 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
@@ -156,7 +154,6 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
