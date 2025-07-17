@@ -51,7 +51,6 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		showOriginalDescriptor,
 		downloadEmlDescriptor
 	} = useMsgActions({
-		deselectAll,
 		message,
 		shouldReplaceHistory
 	});

@@ -43,7 +43,6 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 					selecting={false}
 					toggleMultipleSelection={noop}
 					selectedIds={[]}
-					deselectAll={noop}
 					folderId=""
 					setDraggedIds={noop}
 				/>
@@ -151,7 +150,6 @@ export const ConversationListComponent = memo(function ConversationListComponent
 				>
 					<ConversationsMultipleSelectionActions
 						selectedConversationsIds={selectedIds}
-						deselectAll={deselectAll}
 						folderId={folderId}
 					/>
 				</MultipleSelectionActionsPanel>

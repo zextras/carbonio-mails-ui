@@ -38,11 +38,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const {
-		toggleItemSelection: toggle,
-		deselectAll,
-		isSelectModeOn
-	} = useMultipleSelection({
+	const { toggleItemSelection: toggle, isSelectModeOn } = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
@@ -71,7 +67,6 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 									setDraggedIds={setDraggedIds}
 									dragImageRef={dragImageRef}
 									dragAndDropIsDisabled={!!isSearchModule}
-									deselectAll={deselectAll}
 								>
 									<MessageListItem
 										message={message}
@@ -81,7 +76,6 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 										toggle={toggle}
 										active={isActive}
 										isConvChildren
-										deselectAll={deselectAll}
 										currentFolderId={folderId}
 										isSearchModule={isSearchModule}
 									/>
@@ -95,7 +89,6 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 			}),
 		[
 			activeItemId,
-			deselectAll,
 			dragImageRef,
 			folderId,
 			isSearchModule,

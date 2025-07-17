@@ -69,8 +69,7 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	setDraggedIds,
 	dragImageRef,
 	children,
-	dragAndDropIsDisabled,
-	deselectAll
+	dragAndDropIsDisabled
 }) => {
 	const folderId = item.parent;
 	const { isMessageView } = useAppContext<AppContext>();
@@ -82,7 +81,7 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	) : (
 		<Drag
 			type="message"
-			data={{ ...item, parentFolderId: folderId, selectedIDs: ids, deselectAll }}
+			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void =>
 				dragCheck({ e, id: item.id, selectedItems, setDraggedIds, dragImageRef })

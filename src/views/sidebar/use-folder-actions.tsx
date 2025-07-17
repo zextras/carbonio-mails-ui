@@ -99,7 +99,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										selectedIDs={trashMessages}
 										onClose={(): void => closeModal(modalId)}
 										isRestore
-										deselectAll={deselectAll}
 									/>
 								)
 							},
@@ -310,7 +309,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[closeModal, createModal, createSnackbar, deselectAll, folder, folderIsTrash, trashMessages]
+		[closeModal, createModal, createSnackbar, folder, folderIsTrash, trashMessages]
 	);
 
 	const defaultFolderActions = useMemo(

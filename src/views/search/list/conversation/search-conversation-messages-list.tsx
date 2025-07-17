@@ -33,11 +33,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
-	const {
-		toggleItemSelection: toggle,
-		deselectAll,
-		isSelectModeOn
-	} = useMultipleSelection({
+	const { toggleItemSelection: toggle, isSelectModeOn } = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
@@ -69,7 +65,6 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 									toggle={toggle}
 									active={isActive}
 									isConvChildren
-									deselectAll={deselectAll}
 									currentFolderId={message.parent}
 									handleReplaceHistory={handleSearchReplaceHistory}
 									isSearchModule
@@ -81,7 +76,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[activeItemId, deselectAll, isSelectModeOn, messages, navigate, selectedItems, toggle]
+		[activeItemId, isSelectModeOn, messages, navigate, selectedItems, toggle]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {

@@ -21,7 +21,6 @@ export type ListItemComponentProps = {
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
 	isSearchModule?: boolean;
-	deselectAll: () => void;
 	visible: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	currentFolderId?: string;
@@ -36,7 +35,6 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 	isSelectModeOn,
 	dragImageRef,
 	isSearchModule,
-	deselectAll,
 	visible,
 	setDraggedIds = noop,
 	currentFolderId
@@ -51,7 +49,6 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 			setDraggedIds={setDraggedIds}
 			dragImageRef={dragImageRef}
 			dragAndDropIsDisabled={!!isSearchModule}
-			deselectAll={deselectAll}
 		>
 			<MessageListItem
 				message={message}
@@ -62,7 +59,6 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 				active={active}
 				visible={visible}
 				isSearchModule={isSearchModule}
-				deselectAll={deselectAll}
 				currentFolderId={currentFolderId}
 			/>
 		</DragItemWrapper>

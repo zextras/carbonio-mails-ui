@@ -120,11 +120,7 @@ export const MessageListComponent = memo(function MessageListComponent({
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
 				>
-					<MessagesMultipleSelectionActions
-						ids={selectedIds}
-						deselectAll={deselectAll}
-						folderId={folderId}
-					/>
+					<MessagesMultipleSelectionActions ids={selectedIds} folderId={folderId} />
 				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (

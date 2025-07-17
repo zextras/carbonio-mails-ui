@@ -91,7 +91,6 @@ export const SearchConversationList = ({
 									activeItemId={itemId}
 									toggle={toggle}
 									selected={isSelected}
-									deselectAll={deselectAll}
 								/>
 							) : (
 								<div
@@ -103,7 +102,7 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, deselectAll, isSelectModeOn, itemId, selectedItems, toggle]
+		[conversationIds, isSelectModeOn, itemId, selectedItems, toggle]
 	);
 
 	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
@@ -124,7 +123,6 @@ export const SearchConversationList = ({
 					>
 						<ConversationsMultipleSelectionActions
 							selectedConversationsIds={selectedIds}
-							deselectAll={deselectAll}
 							folderId={''}
 						/>
 					</SearchListHeader>

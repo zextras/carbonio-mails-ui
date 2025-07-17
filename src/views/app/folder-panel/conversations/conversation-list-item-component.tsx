@@ -22,7 +22,6 @@ type ConversationListItemComponentProps = {
 	dragImageRef?: RefObject<HTMLInputElement>;
 	isSearchModule?: boolean;
 	selectedIds?: string[];
-	deselectAll: () => void;
 	folderId: string;
 	visible?: boolean;
 };
@@ -39,7 +38,6 @@ export const ConversationListItemComponent = ({
 	dragImageRef,
 	isSearchModule,
 	selectedIds = [],
-	deselectAll,
 	folderId
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
@@ -56,7 +54,6 @@ export const ConversationListItemComponent = ({
 				setDraggedIds={setDraggedIds}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
-				deselectAll={deselectAll}
 			>
 				<ConversationListItem
 					activeItemId={activeItemId}
@@ -68,7 +65,6 @@ export const ConversationListItemComponent = ({
 					setDraggedIds={setDraggedIds}
 					dragImageRef={dragImageRef}
 					isSearchModule={isSearchModule}
-					deselectAll={deselectAll}
 					folderId={folderId}
 				/>
 			</DragItemWrapper>

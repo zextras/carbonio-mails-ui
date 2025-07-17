@@ -16,7 +16,7 @@ type UseSelectionProps = {
 	isSearchModule?: boolean;
 };
 
-type UseSelectionReturnType = {
+type UseMultypleSelectionReturnType = {
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
 	toggleItemSelection: (id: string) => void;
@@ -30,7 +30,7 @@ export const useMultipleSelection = ({
 	allAvailableItems = [],
 	selectedItems = new Set<string>(),
 	setSelectedItems
-}: UseSelectionProps): UseSelectionReturnType => {
+}: UseSelectionProps): UseMultypleSelectionReturnType => {
 	const { setMultipleSelectionCount } = useAppContext<AppContext>();
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 

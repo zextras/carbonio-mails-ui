@@ -53,7 +53,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		ids: [itemId],
 		shouldReplaceHistory,
 		isMessageRead: completeMessage.read,
-		deselectAll,
 		folderId
 	});
 
@@ -99,7 +98,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					active={active}
 					onClick={onClick}
 					onDoubleClick={onDoubleClick}
-					deselectAll={deselectAll}
 					shouldReplaceHistory={shouldReplaceHistory}
 				>
 					<SearchMessageListItemCore

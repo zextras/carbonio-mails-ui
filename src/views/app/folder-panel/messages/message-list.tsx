@@ -106,7 +106,6 @@ export const MessageList = (): React.JSX.Element => {
 									dragImageRef={dragImageRef}
 									draggedIds={draggedIds}
 									key={id}
-									deselectAll={deselectAll}
 									visible={visible}
 									setDraggedIds={setDraggedIds}
 									currentFolderId={folderId}
@@ -119,7 +118,6 @@ export const MessageList = (): React.JSX.Element => {
 				);
 			}),
 		[
-			deselectAll,
 			draggedIds,
 			folderId,
 			isSelectModeOn,

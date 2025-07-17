@@ -90,7 +90,6 @@ export const ConversationList = (): React.JSX.Element => {
 									selecting={isSelectModeOn}
 									active={active}
 									selectedIds={Object.keys(selectedItems)}
-									deselectAll={deselectAll}
 									folderId={folderId}
 								/>
 							) : (
@@ -100,15 +99,7 @@ export const ConversationList = (): React.JSX.Element => {
 					</ListItem>
 				);
 			}),
-		[
-			conversationsIds,
-			deselectAll,
-			folderId,
-			isSelectModeOn,
-			itemId,
-			selectedItems,
-			toggleMultipleSelection
-		]
+		[conversationsIds, folderId, isSelectModeOn, itemId, selectedItems, toggleMultipleSelection]
 	);
 
 	const totalConversations = useMemo(
@@ -139,13 +130,7 @@ export const ConversationList = (): React.JSX.Element => {
 
 	return (
 		<>
-			{itemId && (
-				<ConversationShortcutsRegister
-					conversationId={itemId}
-					folderId={folderId}
-					deselectAll={deselectAll}
-				/>
-			)}
+			{itemId && <ConversationShortcutsRegister conversationId={itemId} folderId={folderId} />}
 			<ConversationListComponent
 				listItems={listItems}
 				displayerTitle={displayerTitle}
