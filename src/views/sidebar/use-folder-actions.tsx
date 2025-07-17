@@ -17,7 +17,6 @@ import { noop, startsWith } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { getFolderIdParts } from 'helpers/folders';
-import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useMessagesByFolder } from 'store/emails/store';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
@@ -44,8 +43,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const trashMessages = messagesInFolder
 		.filter(() => getFolderIdParts(folder.id).id === FOLDERS.TRASH)
 		.map((message) => message.id);
-
-	const { deselectAll } = useMultipleSelection({});
 
 	const { createSnackbar } = useUiUtilities();
 

@@ -12,7 +12,6 @@ import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
-import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
 import { MailMessage } from 'types/index.d';
 
@@ -23,7 +22,6 @@ type MailMsgPreviewActionsType = {
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 
-	const { deselectAll } = useMultipleSelection({});
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
