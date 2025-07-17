@@ -278,4 +278,14 @@ describe('containsSpecialCharacters', () => {
 			expect(containsSpecialCharacters('tag:test!')).toBe(true);
 		});
 	});
+
+	describe('should handle boolean values', () => {
+		it('should return false for a boolean true input', () => {
+			expect(containsSpecialCharacters(true)).toBe(false);
+		});
+
+		it('should return false for a boolean false input', () => {
+			expect(containsSpecialCharacters(false)).toBe(false);
+		});
+	});
 });

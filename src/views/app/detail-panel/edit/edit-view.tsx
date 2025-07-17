@@ -339,7 +339,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			if (draftSmartLinks.length > 0) {
 				try {
 					await createSmartLinksAction();
@@ -348,6 +347,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					return;
 				}
 			}
+			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
