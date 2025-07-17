@@ -114,6 +114,44 @@ describe('updateQueryChips', () => {
 
 		expect(updateQuery).not.toHaveBeenCalled();
 	});
+
+	it('should handle from: prefix in updateQueryChips', () => {
+		const query = [{ label: 'from:test@example.com' }];
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).toHaveBeenCalledWith([
+			{
+				avatarBackground: 'gray1',
+				avatarIcon: 'PersonOutline',
+				hasAvatar: true,
+				isQueryFilter: true,
+				label: 'from:test@example.com',
+				value: 'from:test@example.com'
+			}
+		]);
+	});
+
+	it('should handle to: prefix in updateQueryChips', () => {
+		const query = [{ label: 'to:recipient@example.com' }];
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).toHaveBeenCalledWith([
+			{
+				avatarBackground: 'gray1',
+				avatarIcon: 'PersonOutline',
+				hasAvatar: true,
+				isQueryFilter: true,
+				label: 'to:recipient@example.com',
+				value: 'to:recipient@example.com'
+			}
+		]);
+	});
 });
 
 describe('getAdvancedFiltersDefaultValues', () => {

@@ -59,7 +59,9 @@ export function updateQueryChips(
 			q.label?.startsWith('before') ||
 			q.label?.startsWith('after') ||
 			q.label?.startsWith('tag') ||
-			q.label?.startsWith('date')) &&
+			q.label?.startsWith('date') ||
+			q.label?.startsWith('from') ||
+			q.label?.startsWith('to')) &&
 		!('isGeneric' in q) &&
 		!('isQueryFilter' in q);
 
