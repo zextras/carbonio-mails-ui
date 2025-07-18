@@ -110,7 +110,8 @@ export function generateQueryString(
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
-	const queryString = query.map((c) => convertSearchChipToString(c)).join(' ');
+	const filteredQuery = query.filter((c) => !('queryChipsToAdvancedFiltersValue' in c));
+	const queryString = filteredQuery.map((c) => convertSearchChipToString(c)).join(' ');
 
 	return isSharedFolderIncluded && foldersArray?.length > 0
 		? `(${queryString}) ${foldersToSearchInQuery}`
@@ -246,7 +247,8 @@ function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 			const isExcluded =
 				excludeLabels.includes(queryItem.label) ||
 				excludePrefixes.some((prefix) => queryItem.label.startsWith(prefix)) ||
-				queryItem.isQueryFilter;
+				queryItem.isQueryFilter ||
+				'queryChipsToAdvancedFiltersValue' in queryItem;
 
 			return !isExcluded;
 		}),
