@@ -105,7 +105,7 @@ export const SearchConversationList = ({
 		[conversationIds, isSelectModeOn, itemId, selectedItems, toggle]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
 		<>
