@@ -100,7 +100,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		[deselectAll, isSelectModeOn, itemId, messageIds, selectedItems, toggle]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
 		<>
