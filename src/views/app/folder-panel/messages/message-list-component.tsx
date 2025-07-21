@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { memo, useEffect, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
@@ -76,10 +76,8 @@ export const MessageListComponent = memo(function MessageListComponent({
 	folderId,
 	messageIds,
 	draggedIds,
-	setDraggedIds,
 	isSearchModule,
 	isSelectModeOn,
-	selectedItems,
 	deselectAll,
 	selectAll,
 	isAllSelected,
@@ -88,10 +86,6 @@ export const MessageListComponent = memo(function MessageListComponent({
 	dragImageRef,
 	listRef
 }: MessageListComponentProps): React.JSX.Element {
-	useEffect(() => {
-		setDraggedIds?.(selectedItems);
-	}, [selectedItems, setDraggedIds]);
-
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
 	const showBreadcrumbs = useMemo(

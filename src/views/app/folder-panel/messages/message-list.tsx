@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useMemo, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { CustomListItem, FOLDERS } from '@zextras/carbonio-ui-commons';
@@ -134,10 +134,6 @@ export const MessageList = (): React.JSX.Element => {
 	const totalMessages = useMemo(() => messageListIndex.length, [messageListIndex.length]);
 
 	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
-
-	useEffect(() => {
-		setDraggedIds(selectedItemsMap);
-	}, [selectedItems, selectedItemsMap]);
 
 	return (
 		<MessageListComponent
