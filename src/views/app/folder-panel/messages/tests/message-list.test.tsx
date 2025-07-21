@@ -15,7 +15,6 @@ import { within, setupTest, triggerLoadMore, makeListItemsVisible } from '@test-
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import * as useMultipleSelection from 'hooks/use-multiple-selection';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateCompleteMessageFromAPI } from 'tests/generators/api';
 import { FolderState, MsgActionRequest } from 'types/index.d';
@@ -26,16 +25,6 @@ jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
 }));
-
-const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
-	isSelectModeOn: false,
-	setIsSelectModeOn: jest.fn(),
-	toggleItemSelection: jest.fn(),
-	deselectAll: jest.fn(),
-	selectAll: jest.fn(),
-	isAllSelected: false,
-	selectAllModeOff: jest.fn()
-};
 
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
@@ -289,7 +278,6 @@ describe('message-list', () => {
 
 	describe('msgAction', () => {
 		it('should execute MsgAction with op trash when message is in inbox', async () => {
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 
 			await act(async () => {
@@ -326,7 +314,6 @@ describe('message-list', () => {
 		});
 
 		it('should execute MsgAction with op delete when message is in trash', async () => {
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 			await act(async () => {
 				populateFoldersStore();
 			});
@@ -374,24 +361,29 @@ describe('message-list', () => {
 	describe('msgAction from multiple selection mode', () => {
 		it('should move a message to trash when the trash action button is clicked', async () => {
 			const messageId = '10';
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue({
-				...mockedUseSelection,
-				isSelectModeOn: true
-			});
+
 			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			populateFoldersStore();
 
-			const searchInterceptor = createSoapAPIInterceptor('Search', {
+			createSoapAPIInterceptor('Search', {
 				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
 				more: false
 			});
 
 			const { user } = setupTest(<MessageList />);
-			await waitFor(() => searchInterceptor);
+			await screen.findByTestId('invisible-item');
 			makeListItemsVisible();
+			const actionWrapper = await screen.findByTestId(`message-item-10`);
+			await user.hover(actionWrapper);
 
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			await within(itemAvatar).findByTestId('icon: Checkmark');
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
@@ -407,23 +399,30 @@ describe('message-list', () => {
 
 		it('should delete a message when the permanently delete action button is clicked', async () => {
 			const messageId = '11';
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue({
-				...mockedUseSelection,
-				isSelectModeOn: true
-			});
+
 			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
 			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			populateFoldersStore();
 
-			const searchInterceptor = createSoapAPIInterceptor('Search', {
+			createSoapAPIInterceptor('Search', {
 				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
 				more: false
 			});
 
 			const { user } = setupTest(<MessageList />);
-			await waitFor(() => searchInterceptor);
+
+			await screen.findByTestId('invisible-item');
 			makeListItemsVisible();
+			const actionWrapper = await screen.findByTestId(`message-item-11`);
+			await user.hover(actionWrapper);
+
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-11');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			await within(itemAvatar).findByTestId('icon: Checkmark');
 
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionDeletePermanentlyButton = await within(
