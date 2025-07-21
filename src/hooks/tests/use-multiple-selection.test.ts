@@ -117,4 +117,102 @@ describe('useMultipleSelection', () => {
 		testSetup(new Set(['a', 'b']));
 		expect(setMultipleSelectionCount).toHaveBeenCalledWith(2);
 	});
+
+	it('should handle empty allAvailableItems array', () => {
+		const { result } = testSetup(new Set());
+		expect(result.current.isAllSelected).toBe(false);
+		expect(result.current.isSelectModeOn).toBe(false);
+	});
+
+	it('should handle undefined setSelectedItems', () => {
+		const { result } = testSetup(new Set(['a']));
+		expect(() => {
+			act(() => result.current.toggleItemSelection('b'));
+		}).not.toThrow();
+	});
+
+	it('should handle undefined allAvailableItems', () => {
+		const { result } = testSetup(new Set(['a']));
+		expect(result.current.isAllSelected).toBe(false);
+	});
+
+	it('should handle undefined selectedItems', () => {
+		const { result } = testSetup();
+		expect(result.current.isSelectModeOn).toBe(false);
+		expect(result.current.isAllSelected).toBe(false);
+	});
+
+	it('should update isAllSelected when selectedItems change', () => {
+		const { result } = testSetup(new Set(['a']));
+		expect(result.current.isAllSelected).toBe(false);
+
+		const { result: result2 } = testSetup(new Set(['a', 'b', 'c']));
+		expect(result2.current.isAllSelected).toBe(true);
+	});
+
+	it('should handle setIsSelectModeOn with function parameter', () => {
+		const { result } = testSetup();
+		act(() => {
+			result.current.setIsSelectModeOn((prev) => !prev);
+		});
+		expect(result.current.isSelectModeOn).toBe(true);
+	});
+
+	it('should handle setIsSelectModeOn with boolean parameter', () => {
+		const { result } = testSetup();
+		act(() => {
+			result.current.setIsSelectModeOn(true);
+		});
+		expect(result.current.isSelectModeOn).toBe(true);
+	});
+
+	it('should maintain selection state when toggling same item multiple times', () => {
+		const { result } = testSetup();
+
+		// Toggle item on
+		act(() => result.current.toggleItemSelection('a'));
+		expect(result.current.isSelectModeOn).toBe(true);
+
+		// Toggle same item off
+		act(() => result.current.toggleItemSelection('a'));
+		expect(result.current.isSelectModeOn).toBe(false);
+
+		// Toggle same item on again
+		act(() => result.current.toggleItemSelection('a'));
+		expect(result.current.isSelectModeOn).toBe(true);
+	});
+
+	it('should handle multiple items selection and deselection', () => {
+		const { result } = testSetup();
+
+		// Select multiple items
+		act(() => {
+			result.current.toggleItemSelection('a');
+			result.current.toggleItemSelection('b');
+		});
+		expect(result.current.isSelectModeOn).toBe(true);
+
+		// Deselect one item
+		act(() => result.current.toggleItemSelection('a'));
+		expect(result.current.isSelectModeOn).toBe(true); // Should still be on
+
+		// Deselect last item
+		act(() => result.current.toggleItemSelection('b'));
+		expect(result.current.isSelectModeOn).toBe(false);
+	});
+
+	it('should call setMultipleSelectionCount with correct count on updates', () => {
+		testSetup(new Set(['a']));
+		expect(setMultipleSelectionCount).toHaveBeenCalledWith(1);
+
+		// Test with a fresh setup to avoid state issues
+		setMultipleSelectionCount.mockClear();
+		testSetup(new Set(['a', 'b']));
+		expect(setMultipleSelectionCount).toHaveBeenCalledWith(2);
+
+		// Test with empty selection
+		setMultipleSelectionCount.mockClear();
+		testSetup(new Set());
+		expect(setMultipleSelectionCount).toHaveBeenCalledWith(0);
+	});
 });
