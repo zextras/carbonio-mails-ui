@@ -7,13 +7,14 @@
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
 import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
@@ -269,8 +270,12 @@ describe('ConversationList Component', () => {
 				});
 				await user.click(multipleSelectionTrashButton);
 				const request = await waitFor(() => convActionInterceptor);
-				expect(request.action.op).toBe('trash');
-				expect(request.action.id).toBe('1');
+				await act(async () => {
+					expect(request.action.op).toBe('trash');
+				});
+				await act(async () => {
+					expect(request.action.id).toBe('1');
+				});
 			});
 			it('should move multiple conversations to trash when the trash action button is clicked', async () => {
 				const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -312,9 +317,90 @@ describe('ConversationList Component', () => {
 				});
 				await user.click(multipleSelectionTrashButton);
 				const request = await waitFor(() => convActionInterceptor);
-				expect(request.action.op).toBe('trash');
-				expect(request.action.id).toBe('1,2');
+				await act(async () => {
+					expect(request.action.op).toBe('trash');
+				});
+
+				await act(async () => {
+					expect(request.action.id).toBe('1,2');
+				});
 			});
+		});
+	});
+
+	describe('multiple selection interactions', () => {
+		const conversation1 = generateConversationFromAPI({
+			id: '1',
+			m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
+			su: conversation1Subject
+		});
+		const conversation2 = generateConversationFromAPI({
+			id: '2',
+			m: [generateConvMessageFromAPI({ id: '2', l: FOLDERS.INBOX, cid: '2' })],
+			su: conversation1Subject
+		});
+		it('items should still be selected after a multiple selection action', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation1, conversation2],
+				more: true
+			});
+			populateFoldersStore();
+
+			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			useTagStore.setState({ tags });
+			const { user } = await act(async () => setupTest(<ConversationList />));
+
+			makeAllItemsVisible();
+
+			// select all conversations
+			const enterMultipleSelectionMode = await screen.findByTestId('icon: CheckmarkSquare');
+			await user.click(enterMultipleSelectionMode);
+			const selectAllButton = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			await user.click(selectAllButton);
+			const deselectAllButton = screen.getByRole('button', {
+				name: /label\.deselect_all/i
+			});
+			expect(deselectAllButton).toBeInTheDocument();
+
+			// perform a multiple selection action
+			// using the tag action as an example in order to be able to intercept the confirmation snackbar
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionMarkUnread = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: 'icon: MoreVertical'
+				}
+			);
+			await user.click(multipleSelectionMarkUnread);
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(within(actionsDropdown).getByText(/tag/i)).toBeVisible();
+			await user.hover(within(actionsDropdown).getByText(/tag/i));
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
+			const request = await waitFor(() => convActionInterceptor);
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success message to appear
+			const successMessage = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
+
+			// verify that all messages are still selected
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.deselect_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that all 2 messages are selected
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(2);
 		});
 	});
 });
