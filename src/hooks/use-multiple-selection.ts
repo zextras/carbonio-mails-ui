@@ -45,7 +45,6 @@ export const useMultipleSelection = ({
 
 	const toggleItemSelection = useCallback(
 		(id: string) => {
-			console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', { id });
 			setSelectedItems?.((prev) => {
 				const newSet = new Set(prev);
 				const itemWasAlreadySelected = newSet.has(id);
