@@ -537,7 +537,6 @@ describe('SearchView', () => {
 				initialEntries: [`/message/${messageId}`]
 			});
 
-			// await waitFor(() => searchInterceptor);
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 

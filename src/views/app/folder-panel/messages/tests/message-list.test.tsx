@@ -310,7 +310,14 @@ describe('message-list', () => {
 			await user.click(deleteMenuItem);
 
 			const msgActionRequest = await waitFor(() => msgActionInterceptor);
-			expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+
+			await act(async () => {
+				expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+			});
+			const successMessage = await screen.findByText('It looks like there are no e-mails yet');
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
 		});
 
 		it('should execute MsgAction with op delete when message is in trash', async () => {
@@ -354,7 +361,13 @@ describe('message-list', () => {
 			);
 
 			const msgActionRequest = await waitFor(() => msgActionInterceptor);
-			expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
+			await act(async () => {
+				expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
+			});
+			const successMessage = await screen.findByText('E-mail permanently deleted');
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
 		});
 	});
 
@@ -394,7 +407,13 @@ describe('message-list', () => {
 			await user.click(multipleSelectionTrashButton);
 
 			const msgActionRequest = await waitFor(() => msgActionRequestInterceptor);
-			expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+			await act(async () => {
+				expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+			});
+			const successMessage = await screen.findByText('E-mail moved to Trash');
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
 		});
 
 		it('should delete a message when the permanently delete action button is clicked', async () => {
@@ -436,8 +455,16 @@ describe('message-list', () => {
 			await user.click(confirmButton);
 
 			const request = await waitFor(() => msgActionRequestInterceptor);
-			expect(request.action.op).toBe('delete');
-			expect(request.action.id).toBe(messageId);
+			await act(async () => {
+				expect(request.action.op).toBe('delete');
+			});
+			await act(async () => {
+				expect(request.action.id).toBe(messageId);
+			});
+			const successMessage = await screen.findByText('E-mail permanently deleted');
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
 		});
 	});
 });
