@@ -18,7 +18,6 @@ import { within, makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import * as searchSoapApi from 'api/search-soap-api';
-import * as useMultipleSelection from 'hooks/use-multiple-selection';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
@@ -73,15 +72,6 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 		settings,
 		queryChip
 	};
-};
-const mockedUseSelection: ReturnType<typeof useMultipleSelection.useMultipleSelection> = {
-	selectAll: jest.fn(),
-	toggleItemSelection: jest.fn(),
-	isSelectModeOn: false,
-	setIsSelectModeOn: jest.fn(),
-	deselectAll: jest.fn(),
-	isAllSelected: false,
-	selectAllModeOff: jest.fn()
 };
 
 async function waitAndMakeConversationVisible(conversationId: string): Promise<void> {
@@ -561,7 +551,6 @@ describe('SearchView', () => {
 				],
 				more: false
 			});
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 
 			const mockUseQuery = jest.fn();
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
@@ -622,7 +611,6 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop]
 			};
 
-			jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(async () => searchInterceptor);
 
@@ -734,7 +722,6 @@ describe('SearchView', () => {
 			useDisableSearch: () => [false, noop]
 		};
 
-		jest.spyOn(useMultipleSelection, 'useMultipleSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const { user } = setupTest(<SearchView {...searchViewProps} />);
 
