@@ -35,6 +35,7 @@ describe.each`
 		setMessagesInEmailStore(messages, false);
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
+				deselectAll={noop}
 				messageId={message.id}
 				selectedItems={{}}
 				isSelected={false}

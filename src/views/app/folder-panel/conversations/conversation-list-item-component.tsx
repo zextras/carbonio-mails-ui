@@ -20,6 +20,7 @@ type ConversationListItemComponentProps = {
 	draggedIds?: Record<string, boolean>;
 	selectedItems: Record<string, boolean>;
 	dragImageRef?: RefObject<HTMLInputElement>;
+	deselectAll: () => void;
 	isSearchModule?: boolean;
 	selectedIds?: string[];
 	folderId: string;
@@ -36,6 +37,7 @@ export const ConversationListItemComponent = ({
 	setDraggedIds,
 	selectedItems,
 	dragImageRef,
+	deselectAll,
 	isSearchModule,
 	selectedIds = [],
 	folderId
@@ -49,6 +51,7 @@ export const ConversationListItemComponent = ({
 				selectedIds={selectedIds}
 				selectedItems={selectedItems}
 				setDraggedIds={setDraggedIds}
+				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
 			>

@@ -79,6 +79,7 @@ export type DragItemWrapperProps = {
 	item: MailMessage | Conversation;
 	selectedIds: Array<string>;
 	selectedItems: Record<string, boolean>;
+	deselectAll: () => void;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	dragImageRef: React.RefObject<HTMLElement> | undefined;
 	dragAndDropIsDisabled: boolean;

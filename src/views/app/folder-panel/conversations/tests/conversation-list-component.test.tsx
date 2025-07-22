@@ -37,6 +37,7 @@ function setUpConversationList({
 
 	const listItems = conversationsIds.map((conversationId, index) => (
 		<ConversationListItemComponent
+			deselectAll={jest.fn()}
 			key={index}
 			conversationId={conversationId}
 			selectedItems={{}}

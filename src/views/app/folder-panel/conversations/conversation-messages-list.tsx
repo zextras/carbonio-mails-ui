@@ -61,6 +61,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 						{(visible: boolean): React.JSX.Element =>
 							visible && message ? (
 								<DragItemWrapper
+									deselectAll={noop}
 									item={message}
 									selectedIds={[]}
 									selectedItems={{}}

@@ -81,6 +81,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { createSnackbar } = useUiUtilities();
 
 	const onDropAction = (data: OnDropActionProps): void => {
+		console.log({ data });
 		const dragEnterResponse = handleDragEnter(data, folder);
 		if (dragEnterResponse && dragEnterResponse?.success === false) return;
 		let convMsgsIds = [data.data.id];
@@ -124,7 +125,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					navigate(`../folder/${folderId}`, { replace: true });
-					data.data.deselectAll && data.data.deselectAll();
+					data.data.deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -154,7 +155,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 				parent: folder.id
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					data.data.deselectAll && data.data.deselectAll();
+					data.data.deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,

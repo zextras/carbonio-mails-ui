@@ -12,6 +12,7 @@ import { MessageListItem } from 'views/app/folder-panel/messages/message-list-it
 import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 export type ListItemComponentProps = {
+	deselectAll: () => void;
 	messageId: string;
 	selectedItems: Record<string, boolean>;
 	isSelected: boolean;
@@ -28,6 +29,7 @@ export type ListItemComponentProps = {
 
 export const MessageListItemComponent = memo(function MessageListItemComponent({
 	messageId,
+	deselectAll,
 	selectedItems,
 	isSelected,
 	active,
@@ -44,6 +46,7 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 	return (
 		<DragItemWrapper
 			item={message}
+			deselectAll={deselectAll}
 			selectedIds={[]}
 			selectedItems={selectedItems}
 			setDraggedIds={setDraggedIds}

@@ -98,6 +98,7 @@ export const MessageList = (): React.JSX.Element => {
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<MessageListItemComponent
+									deselectAll={deselectAll}
 									messageId={id}
 									selectedItems={selectedItemsMap}
 									isSelected={isSelected}
@@ -119,6 +120,7 @@ export const MessageList = (): React.JSX.Element => {
 				);
 			}),
 		[
+			deselectAll,
 			draggedIds,
 			folderId,
 			isSelectModeOn,

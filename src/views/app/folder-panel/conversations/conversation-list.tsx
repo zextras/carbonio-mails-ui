@@ -84,6 +84,7 @@ export const ConversationList = (): React.JSX.Element => {
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
+									deselectAll={deselectAll}
 									conversationId={id}
 									visible={visible}
 									selected={isSelected}
@@ -106,6 +107,7 @@ export const ConversationList = (): React.JSX.Element => {
 			}),
 		[
 			conversationsIds,
+			deselectAll,
 			folderId,
 			isSelectModeOn,
 			itemId,

@@ -27,7 +27,13 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
+const DragItems = ({
+	draggedIds,
+	deselectAll
+}: {
+	draggedIds: Record<string, boolean>;
+	deselectAll: () => void;
+}): React.JSX.Element => (
 	<>
 		{map(
 			Object.keys(draggedIds)
@@ -35,6 +41,7 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 				.filter(Boolean),
 			(conversation) => (
 				<ConversationListItemComponent
+					deselectAll={deselectAll}
 					selectedItems={{}}
 					conversationId={conversation.id}
 					key={conversation.id}
@@ -185,7 +192,7 @@ export const ConversationListComponent = memo(function ConversationListComponent
 						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
-						<DragItems draggedIds={draggedIds ?? {}} />
+						<DragItems draggedIds={draggedIds ?? {}} deselectAll={deselectAll} />
 					</DragImageContainer>
 				</>
 			) : (

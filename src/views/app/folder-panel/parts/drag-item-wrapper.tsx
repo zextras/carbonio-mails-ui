@@ -69,6 +69,7 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	setDraggedIds,
 	dragImageRef,
 	children,
+	deselectAll,
 	dragAndDropIsDisabled
 }) => {
 	const folderId = item.parent;
@@ -81,7 +82,7 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	) : (
 		<Drag
 			type="message"
-			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
+			data={{ ...item, parentFolderId: folderId, selectedIDs: ids, deselectAll }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void =>
 				dragCheck({ e, id: item.id, selectedItems, setDraggedIds, dragImageRef })
