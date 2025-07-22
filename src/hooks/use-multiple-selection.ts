@@ -9,7 +9,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 
 import { AppContext } from 'app-utils/app-context-initializer';
 
-type UseSelectionProps = {
+type UseMultipleSelectionProps = {
 	allAvailableItems?: Array<string>;
 	selectedItems?: Set<string>;
 	setSelectedItems?: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -30,7 +30,7 @@ export const useMultipleSelection = ({
 	allAvailableItems = [],
 	selectedItems = new Set<string>(),
 	setSelectedItems
-}: UseSelectionProps): UseMultypleSelectionReturnType => {
+}: UseMultipleSelectionProps): UseMultypleSelectionReturnType => {
 	const { setMultipleSelectionCount } = useAppContext<AppContext>();
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 
