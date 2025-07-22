@@ -468,7 +468,7 @@ describe('message-list', () => {
 		const message2 = generateCompleteMessageFromAPI({ id: '2', l: FOLDERS.INBOX, t: '' });
 		const message3 = generateCompleteMessageFromAPI({ id: '3', l: FOLDERS.INBOX, t: '' });
 
-		it('should select all messages when the select all button is clicked', async () => {
+		it('items should still be selected after a multiple selection action', async () => {
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			const msgActionRequestInterceptor = createSoapAPIInterceptor<
 				MsgActionRequest,
