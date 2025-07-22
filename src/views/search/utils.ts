@@ -59,7 +59,9 @@ export function updateQueryChips(
 			q.label?.startsWith('before') ||
 			q.label?.startsWith('after') ||
 			q.label?.startsWith('tag') ||
-			q.label?.startsWith('date')) &&
+			q.label?.startsWith('date') ||
+			q.label?.startsWith('from') ||
+			q.label?.startsWith('to')) &&
 		!('isGeneric' in q) &&
 		!('isQueryFilter' in q);
 
@@ -219,7 +221,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			actions: [],
 			value: item.value.email,
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		})),
 		sentTo.map((item) => ({
 			...item,
@@ -228,7 +231,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			value: item.value.email,
 			actions: [],
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		}))
 	);
 }

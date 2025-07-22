@@ -14,8 +14,10 @@ import { Query } from 'views/search/types/types';
 import {
 	generateQueryString,
 	getAdvancedFiltersDefaultValues,
-	updateQueryChips
+	updateQueryChips,
+	getQueryToBe
 } from 'views/search/utils';
+import { CONTACT_TYPES } from '@zextras/carbonio-ui-commons';
 
 describe('generateQueryString', () => {
 	const query = [
@@ -148,6 +150,44 @@ describe('updateQueryChips', () => {
 
 		expect(updateQuery).not.toHaveBeenCalled();
 	});
+
+	it('should handle from: prefix in updateQueryChips', () => {
+		const query = [{ label: 'from:test@example.com' }];
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).toHaveBeenCalledWith([
+			{
+				avatarBackground: 'gray1',
+				avatarIcon: 'PersonOutline',
+				hasAvatar: true,
+				isQueryFilter: true,
+				label: 'from:test@example.com',
+				value: 'from:test@example.com'
+			}
+		]);
+	});
+
+	it('should handle to: prefix in updateQueryChips', () => {
+		const query = [{ label: 'to:recipient@example.com' }];
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).toHaveBeenCalledWith([
+			{
+				avatarBackground: 'gray1',
+				avatarIcon: 'PersonOutline',
+				hasAvatar: true,
+				isQueryFilter: true,
+				label: 'to:recipient@example.com',
+				value: 'to:recipient@example.com'
+			}
+		]);
+	});
 });
 
 describe('getAdvancedFiltersDefaultValues', () => {
@@ -255,6 +295,46 @@ describe('getAdvancedFiltersDefaultValues', () => {
 		const result = getAdvancedFiltersDefaultValues(query, false);
 		expect(result.tagInput).toHaveLength(1);
 		expect(result.tagInput[0].label).toBe('tag:Work');
+	});
+
+	it('should add isQueryFilter property to from and to fields', () => {
+		const query = [
+			{ label: 'from:test@example.com', value: 'test@example.com' },
+			{ label: 'to:recipient@example.com', value: 'recipient@example.com' }
+		] as Query;
+
+		const formValues = getAdvancedFiltersDefaultValues(query, false);
+
+		formValues.receivedFrom = [
+			{
+				id: 'test@example.com',
+				label: 'test@example.com',
+				value: { id: 'test@example.com', email: 'test@example.com', type: CONTACT_TYPES.CONTACT },
+				background: 'gray1'
+			}
+		];
+		formValues.sentTo = [
+			{
+				id: 'recipient@example.com',
+				label: 'recipient@example.com',
+				value: {
+					id: 'recipient@example.com',
+					email: 'recipient@example.com',
+					type: CONTACT_TYPES.CONTACT
+				},
+				background: 'gray1'
+			}
+		];
+
+		const result = getQueryToBe(formValues);
+
+		const fromField = result.find((item) => item.label?.startsWith('from:'));
+		expect(fromField).toBeDefined();
+		expect(fromField?.isQueryFilter).toBe(true);
+
+		const toField = result.find((item) => item.label?.startsWith('to:'));
+		expect(toField).toBeDefined();
+		expect(toField?.isQueryFilter).toBe(true);
 	});
 
 	it('should extract folderInput', () => {
