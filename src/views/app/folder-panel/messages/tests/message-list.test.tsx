@@ -542,5 +542,74 @@ describe('message-list', () => {
 			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelected).toHaveLength(3);
 		});
+
+		it('items should still be selected after a single message action', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			const msgActionRequestInterceptor = createSoapAPIInterceptor<
+				MsgActionRequest,
+				MsgActionResponse
+			>('MsgAction', {
+				action: {
+					id: '2',
+					op: 'tag'
+				}
+			});
+
+			populateFoldersStore();
+
+			useTagStore.setState({ tags });
+			createSoapAPIInterceptor('Search', {
+				m: [message1, message2, message3],
+				more: false
+			});
+
+			const { user } = setupTest(<MessageList />);
+
+			await screen.findAllByTestId('invisible-item');
+			makeListItemsVisible();
+
+			// select the first message
+			const actionWrapper = await screen.findByTestId(`message-item-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// perform a single message action on another message
+			const messageListItem = screen.getByTestId('MessageListItem-2');
+			await user.hover(messageListItem);
+			fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
+			const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+				(item) => item.textContent === 'Tag'
+			) as Element;
+			await user.hover(tagMenuItem);
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
+			const request = await waitFor(() => msgActionRequestInterceptor);
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success message to appear
+			const successMessage = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successMessage).toBeInTheDocument();
+			});
+
+			// verify that selection mode is still on
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that 1 messages is still selected
+			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelectedAfterAction).toHaveLength(1);
+		});
 	});
 });
