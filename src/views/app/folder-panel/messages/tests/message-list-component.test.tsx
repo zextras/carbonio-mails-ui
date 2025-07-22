@@ -61,8 +61,7 @@ describe.each`
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,
-			totalMessages: messages.length,
-			setDraggedIds: noop
+			totalMessages: messages.length
 		};
 
 		setupTest(<MessageListComponent {...props} />);

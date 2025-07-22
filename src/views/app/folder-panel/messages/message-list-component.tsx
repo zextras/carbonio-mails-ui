@@ -43,8 +43,6 @@ export type MessageListComponentProps = {
 	messageIds: Array<string>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a message
-	setDraggedIds: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode

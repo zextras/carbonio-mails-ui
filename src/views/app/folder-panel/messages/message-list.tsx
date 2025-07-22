@@ -76,6 +76,7 @@ export const MessageList = (): React.JSX.Element => {
 		}
 		return null;
 	}, [messageListIndex?.length, folderId, t]);
+
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
 		Array.from(selectedItems, (item) => [item, true])
 	);
@@ -146,7 +147,6 @@ export const MessageList = (): React.JSX.Element => {
 			folderId={folderId}
 			messageIds={messageListIndex}
 			draggedIds={draggedIds}
-			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}
 			setIsSelectModeOn={setIsSelectModeOn}
 			isAllSelected={isAllSelected}

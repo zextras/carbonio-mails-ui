@@ -64,6 +64,10 @@ export const ConversationList = (): React.JSX.Element => {
 		return null;
 	}, [conversationsIds?.length, folderId]);
 
+	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
+		Array.from(selectedItems, (item) => [item, true])
+	);
+
 	const listItems = useMemo(
 		() =>
 			map(conversationsIds, (id) => {
@@ -83,6 +87,7 @@ export const ConversationList = (): React.JSX.Element => {
 									conversationId={id}
 									visible={visible}
 									selected={isSelected}
+									selectedItems={selectedItemsMap}
 									activeItemId={itemId}
 									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
@@ -99,7 +104,15 @@ export const ConversationList = (): React.JSX.Element => {
 					</ListItem>
 				);
 			}),
-		[conversationsIds, folderId, isSelectModeOn, itemId, selectedItems, toggleMultipleSelection]
+		[
+			conversationsIds,
+			folderId,
+			isSelectModeOn,
+			itemId,
+			selectedItems,
+			selectedItemsMap,
+			toggleMultipleSelection
+		]
 	);
 
 	const totalConversations = useMemo(
@@ -124,10 +137,6 @@ export const ConversationList = (): React.JSX.Element => {
 		loadingMore,
 		folderId
 	});
-	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
-		Array.from(selectedItems, (item) => [item, true])
-	);
-
 	return (
 		<>
 			{itemId && <ConversationShortcutsRegister conversationId={itemId} folderId={folderId} />}

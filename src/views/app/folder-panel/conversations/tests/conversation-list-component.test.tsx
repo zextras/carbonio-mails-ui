@@ -39,6 +39,7 @@ function setUpConversationList({
 		<ConversationListItemComponent
 			key={index}
 			conversationId={conversationId}
+			selectedItems={{}}
 			activeItemId=""
 			selected={false}
 			selecting={false}
