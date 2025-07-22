@@ -386,19 +386,19 @@ describe('ConversationList Component', () => {
 				expect(request.action.op).toBe('tag');
 			});
 
-			// await for the success message to appear
-			const successMessage = await screen.findByText(/tag applied/);
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
 			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
+				expect(successSnackbar).toBeInTheDocument();
 			});
 
-			// verify that all messages are still selected
+			// verify that all conversations are still selected
 			const deselectAllButtonAfterAction = screen.getByRole('button', {
 				name: /label\.deselect_all/i
 			});
 			expect(deselectAllButtonAfterAction).toBeInTheDocument();
 
-			// double check that all 2 messages are selected
+			// double check that all 2 conversations are selected
 			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelected).toHaveLength(2);
 		});
@@ -418,7 +418,7 @@ describe('ConversationList Component', () => {
 
 			makeAllItemsVisible();
 
-			// select the first message
+			// select the first conversation
 			const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
 			await user.hover(actionWrapper);
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
@@ -429,7 +429,7 @@ describe('ConversationList Component', () => {
 			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelected).toHaveLength(1);
 
-			// perform a single message action on another message
+			// perform a single conversation action on another conversation
 			const convListItem = screen.getByTestId('ConversationListItem-2');
 			await user.hover(convListItem);
 			fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
@@ -445,10 +445,10 @@ describe('ConversationList Component', () => {
 				expect(request.action.op).toBe('tag');
 			});
 
-			// await for the success message to appear
-			const successMessage = await screen.findByText(/tag applied/);
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
 			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
+				expect(successSnackbar).toBeInTheDocument();
 			});
 
 			// verify that selection mode is still on
@@ -457,7 +457,66 @@ describe('ConversationList Component', () => {
 			});
 			expect(deselectAllButtonAfterAction).toBeInTheDocument();
 
-			// double check that 1 messages is still selected
+			// double check that 1 conversation is still selected
+			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelectedAfterAction).toHaveLength(1);
+		});
+		it('items should still be selected after a single conversation action on a selected item', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation1, conversation2],
+				more: true
+			});
+
+			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+			populateFoldersStore();
+
+			useTagStore.setState({ tags });
+			const { user } = await act(async () => setupTest(<ConversationList />));
+
+			makeAllItemsVisible();
+
+			// select the first conversation
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// select the first conversation action on the selected conversation
+			const convListItem = screen.getByTestId('ConversationListItem-1');
+			await user.hover(convListItem);
+			fireEvent.contextMenu(await screen.findByTestId(/hover-container-1/));
+			const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+				(item) => item.textContent === 'Tag'
+			) as Element;
+			await user.hover(tagMenuItem);
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
+			const request = await waitFor(() => convActionInterceptor);
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successSnackbar).toBeInTheDocument();
+			});
+
+			// verify that selection mode is still on
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that 1 conversation is still selected
 			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelectedAfterAction).toHaveLength(1);
 		});
