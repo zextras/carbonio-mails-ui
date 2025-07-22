@@ -81,7 +81,6 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { createSnackbar } = useUiUtilities();
 
 	const onDropAction = (data: OnDropActionProps): void => {
-		console.log({ data });
 		const dragEnterResponse = handleDragEnter(data, folder);
 		if (dragEnterResponse && dragEnterResponse?.success === false) return;
 		let convMsgsIds = [data.data.id];
