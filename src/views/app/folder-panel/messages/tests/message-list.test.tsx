@@ -276,194 +276,195 @@ describe('message-list', () => {
 		);
 	});
 
-	describe('msgAction', () => {
-		it('should execute MsgAction with op trash when message is in inbox', async () => {
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+	describe('message actions', () => {
+		describe('single message actions', () => {
+			it('should execute MsgAction with op trash when message is in inbox', async () => {
+				(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 
-			await act(async () => {
-				populateFoldersStore();
-			});
+				await act(async () => {
+					populateFoldersStore();
+				});
 
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			const messageId = '1';
+				const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const messageId = '1';
 
-			const soapAPIInterceptor = createSoapAPIInterceptor('Search', {
-				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
-				more: false
-			});
+				const soapAPIInterceptor = createSoapAPIInterceptor('Search', {
+					m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
+					more: false
+				});
 
-			const { user } = await act(async () => setupTest(<MessageList />));
+				const { user } = await act(async () => setupTest(<MessageList />));
 
-			await waitFor(() => soapAPIInterceptor);
-			makeAllItemsVisible();
+				await waitFor(() => soapAPIInterceptor);
+				makeAllItemsVisible();
 
-			const messageListItem = screen.getByTestId(`MessageListItem-${messageId}`);
+				const messageListItem = screen.getByTestId(`MessageListItem-${messageId}`);
 
-			await user.hover(messageListItem);
-
-			fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
-
-			const deleteMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
-				(item) => item.textContent === 'Delete'
-			) as Element;
-
-			await user.click(deleteMenuItem);
-
-			const msgActionRequest = await waitFor(() => msgActionInterceptor);
-
-			await act(async () => {
-				expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
-			});
-			const successMessage = await screen.findByText('It looks like there are no e-mails yet');
-			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
-			});
-		});
-
-		it('should execute MsgAction with op delete when message is in trash', async () => {
-			await act(async () => {
-				populateFoldersStore();
-			});
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
-
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			const messageId = '100';
-
-			const soapAPIInterceptor = createSoapAPIInterceptor('Search', {
-				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
-				more: false
-			});
-
-			const { user } = await act(async () => setupTest(<MessageList />));
-
-			await waitFor(() => soapAPIInterceptor);
-
-			makeAllItemsVisible();
-
-			const messageListItem = await screen.findByTestId(`MessageListItem-${messageId}`);
-			expect(messageListItem).toBeInTheDocument();
-
-			await act(async () => {
 				await user.hover(messageListItem);
+
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
+
+				const deleteMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Delete'
+				) as Element;
+
+				await user.click(deleteMenuItem);
+
+				const msgActionRequest = await waitFor(() => msgActionInterceptor);
+
+				await act(async () => {
+					expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+				});
+				const successMessage = await screen.findByText('It looks like there are no e-mails yet');
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
 			});
 
-			fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
+			it('should execute MsgAction with op delete when message is in trash', async () => {
+				await act(async () => {
+					populateFoldersStore();
+				});
+				(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
 
-			const deletePermanentlyMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
-				(item) => item.textContent === 'Delete Permanently'
-			) as Element;
+				const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const messageId = '100';
 
-			await user.click(deletePermanentlyMenuItem);
-			await user.click(
-				within(await screen.findByTestId('modal')).getByRole('button', {
-					name: /delete permanently/i
-				})
-			);
+				const soapAPIInterceptor = createSoapAPIInterceptor('Search', {
+					m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
+					more: false
+				});
 
-			const msgActionRequest = await waitFor(() => msgActionInterceptor);
-			await act(async () => {
-				expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
-			});
-			const successMessage = await screen.findByText('E-mail permanently deleted');
-			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
+				const { user } = await act(async () => setupTest(<MessageList />));
+
+				await waitFor(() => soapAPIInterceptor);
+
+				makeAllItemsVisible();
+
+				const messageListItem = await screen.findByTestId(`MessageListItem-${messageId}`);
+				expect(messageListItem).toBeInTheDocument();
+
+				await act(async () => {
+					await user.hover(messageListItem);
+				});
+
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
+
+				const deletePermanentlyMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Delete Permanently'
+				) as Element;
+
+				await user.click(deletePermanentlyMenuItem);
+				await user.click(
+					within(await screen.findByTestId('modal')).getByRole('button', {
+						name: /delete permanently/i
+					})
+				);
+
+				const msgActionRequest = await waitFor(() => msgActionInterceptor);
+				await act(async () => {
+					expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
+				});
+				const successMessage = await screen.findByText('E-mail permanently deleted');
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
 			});
 		});
-	});
 
-	describe('msgAction from multiple selection mode', () => {
-		it('should move a message to trash when the trash action button is clicked', async () => {
-			const messageId = '10';
+		describe('multiple selection mode', () => {
+			it('should move a message to trash when the trash action button is clicked', async () => {
+				const messageId = '10';
 
-			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
-			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			populateFoldersStore();
+				jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
+				(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+				const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				populateFoldersStore();
 
-			createSoapAPIInterceptor('Search', {
-				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
-				more: false
-			});
+				createSoapAPIInterceptor('Search', {
+					m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
+					more: false
+				});
 
-			const { user } = setupTest(<MessageList />);
-			await screen.findByTestId('invisible-item');
-			makeListItemsVisible();
-			const actionWrapper = await screen.findByTestId(`message-item-10`);
-			await user.hover(actionWrapper);
+				const { user } = setupTest(<MessageList />);
+				await screen.findByTestId('invisible-item');
+				makeListItemsVisible();
+				const actionWrapper = await screen.findByTestId(`message-item-10`);
+				await user.hover(actionWrapper);
 
-			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
-			const avatar = within(itemAvatar).getByTestId('avatar');
-			await act(async () => {
-				await user.click(avatar);
-			});
-			await within(itemAvatar).findByTestId('icon: Checkmark');
-			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
-				'button',
-				{
+				const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				await within(itemAvatar).findByTestId('icon: Checkmark');
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionTrashButton = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
 					icon: TESTID_SELECTORS.icons.trash
-				}
-			);
-			await user.click(multipleSelectionTrashButton);
+				});
+				await user.click(multipleSelectionTrashButton);
 
-			const msgActionRequest = await waitFor(() => msgActionRequestInterceptor);
-			await act(async () => {
-				expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
-			});
-			const successMessage = await screen.findByText('E-mail moved to Trash');
-			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
-			});
-		});
-
-		it('should delete a message when the permanently delete action button is clicked', async () => {
-			const messageId = '11';
-
-			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
-			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			populateFoldersStore();
-
-			createSoapAPIInterceptor('Search', {
-				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
-				more: false
+				const msgActionRequest = await waitFor(() => msgActionRequestInterceptor);
+				await act(async () => {
+					expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+				});
+				const successMessage = await screen.findByText('E-mail moved to Trash');
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
 			});
 
-			const { user } = setupTest(<MessageList />);
+			it('should delete a message when the permanently delete action button is clicked', async () => {
+				const messageId = '11';
 
-			await screen.findByTestId('invisible-item');
-			makeListItemsVisible();
-			const actionWrapper = await screen.findByTestId(`message-item-11`);
-			await user.hover(actionWrapper);
+				jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
+				(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
+				const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				populateFoldersStore();
 
-			const itemAvatar = await screen.findByTestId('message-list-item-avatar-11');
-			const avatar = within(itemAvatar).getByTestId('avatar');
-			await act(async () => {
-				await user.click(avatar);
-			});
-			await within(itemAvatar).findByTestId('icon: Checkmark');
+				createSoapAPIInterceptor('Search', {
+					m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
+					more: false
+				});
 
-			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionDeletePermanentlyButton = await within(
-				multipleSelectionPanel
-			).findByRoleWithIcon('button', {
-				icon: TESTID_SELECTORS.icons.deletePermanently
-			});
-			await user.click(multipleSelectionDeletePermanentlyButton);
-			const confirmButton = await screen.findByText('Delete permanently');
+				const { user } = setupTest(<MessageList />);
 
-			await user.click(confirmButton);
+				await screen.findByTestId('invisible-item');
+				makeListItemsVisible();
+				const actionWrapper = await screen.findByTestId(`message-item-11`);
+				await user.hover(actionWrapper);
 
-			const request = await waitFor(() => msgActionRequestInterceptor);
-			await act(async () => {
-				expect(request.action.op).toBe('delete');
-			});
-			await act(async () => {
-				expect(request.action.id).toBe(messageId);
-			});
-			const successMessage = await screen.findByText('E-mail permanently deleted');
-			await act(async () => {
-				expect(successMessage).toBeInTheDocument();
+				const itemAvatar = await screen.findByTestId('message-list-item-avatar-11');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				await within(itemAvatar).findByTestId('icon: Checkmark');
+
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionDeletePermanentlyButton = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
+					icon: TESTID_SELECTORS.icons.deletePermanently
+				});
+				await user.click(multipleSelectionDeletePermanentlyButton);
+				const confirmButton = await screen.findByText('Delete permanently');
+
+				await user.click(confirmButton);
+
+				const request = await waitFor(() => msgActionRequestInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('delete');
+				});
+				await act(async () => {
+					expect(request.action.id).toBe(messageId);
+				});
+				const successMessage = await screen.findByText('E-mail permanently deleted');
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
 			});
 		});
 	});
