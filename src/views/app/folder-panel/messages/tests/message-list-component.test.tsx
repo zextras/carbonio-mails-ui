@@ -58,7 +58,6 @@ describe.each`
 			messagesLoadingCompleted: true,
 			selectAll: noop,
 			selectAllModeOff: noop,
-			selectedItems: {},
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,

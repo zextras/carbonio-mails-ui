@@ -152,7 +152,6 @@ export const MessageList = (): React.JSX.Element => {
 			isAllSelected={isAllSelected}
 			selectAll={selectAll}
 			deselectAll={deselectAll}
-			selectedItems={selectedItemsMap}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
 		/>
