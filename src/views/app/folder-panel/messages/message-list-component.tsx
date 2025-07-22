@@ -49,8 +49,6 @@ export type MessageListComponentProps = {
 	isSearchModule?: boolean;
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
-	// the selected messages
-	selectedItems: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
 	// the function to call when the user selects all messages
