@@ -32,7 +32,7 @@ describe('useConvDeletePermanently', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvDeletePermanentlyDescriptor, {
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -53,7 +53,7 @@ describe('useConvDeletePermanently', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvDeletePermanentlyFn, {
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -75,7 +75,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -87,7 +87,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -107,7 +107,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
@@ -128,7 +128,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
