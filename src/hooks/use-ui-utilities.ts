@@ -24,7 +24,6 @@ export type UiUtilities = {
 export const useUiUtilities = (): UiUtilities => {
 	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
-	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 	const { createModal: createGlobalModal, closeModal: closeGlobalModal } = useGlobalModal();
 
 	return useMemo(
