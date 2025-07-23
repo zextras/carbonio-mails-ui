@@ -15,15 +15,13 @@ type SearchMessageListItemWrapperProps = {
 	selecting: boolean;
 	toggle: (id: string) => void;
 	active?: boolean;
-	deselectAll: () => void;
 };
 export const SearchMessageListItemWrapper = memo(function MessageListItem({
 	messageId,
 	selected,
 	selecting,
 	toggle,
-	active,
-	deselectAll
+	active
 }: SearchMessageListItemWrapperProps): React.JSX.Element {
 	const completeMessage = useMessageById(messageId);
 
@@ -39,7 +37,6 @@ export const SearchMessageListItemWrapper = memo(function MessageListItem({
 			selecting={selecting}
 			toggle={toggle}
 			active={active}
-			deselectAll={deselectAll}
 		/>
 	);
 });

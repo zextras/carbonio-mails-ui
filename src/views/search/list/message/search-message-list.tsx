@@ -88,7 +88,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 									selecting={isSelectModeOn}
 									toggle={toggle}
 									active={active}
-									deselectAll={deselectAll}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid={`invisible-message-${messageId}`} />
@@ -97,7 +96,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, isSelectModeOn, itemId, messageIds, selectedItems, toggle]
+		[isSelectModeOn, itemId, messageIds, selectedItems, toggle]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
