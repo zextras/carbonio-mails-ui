@@ -426,6 +426,245 @@ describe('SearchView', () => {
 				expect(receivedRequest.action.op).toBe('trash');
 			});
 		});
+
+		describe('multiple selection interactions', () => {
+			const conversation1 = getSoapConversation('1', { t: '' });
+			const conversation2 = getSoapConversation('2', { t: '' });
+			const conversation3 = getSoapConversation('3', { t: '' });
+
+			it('items should still be selected after a multiple selection action', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '1,2,3',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select all conversations
+				const enterMultipleSelectionMode = await screen.findByTestId('icon: CheckmarkSquare');
+				await user.click(enterMultipleSelectionMode);
+				const selectAllButton = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				await user.click(selectAllButton);
+				const deselectAllButton = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButton).toBeInTheDocument();
+
+				// perform a multiple selection action
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionMoreVertical = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
+					icon: 'icon: MoreVertical'
+				});
+				await user.click(multipleSelectionMoreVertical);
+				const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+				expect(within(actionsDropdown).getByText(/tag/i)).toBeVisible();
+				await user.hover(within(actionsDropdown).getByText(/tag/i));
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// verify that all conversations are still selected
+				const deselectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that all 3 conversations are still selected
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(3);
+			});
+
+			it('items should still be selected after a single conversation action on a unselected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '2',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select the first conversation
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single conversation action on the second conversation
+				const listItem = screen.getByTestId('ConversationListItem-2');
+				await user.hover(listItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success snackbar to appear
+				const successSnackbar = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successSnackbar).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 conversation is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
+
+			it('items should still be selected after a single conversation action on a selected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '2',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select the first conversation
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single conversation action on the selected conversation
+				const listItem = screen.getByTestId('ConversationListItem-1');
+				await user.hover(listItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-1/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success snackbar to appear
+				const successSnackbar = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successSnackbar).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 conversation is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
+		});
 	});
 
 	describe('view by messages', () => {
