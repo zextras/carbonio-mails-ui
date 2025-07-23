@@ -27,7 +27,7 @@ import styled from 'styled-components';
 
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
-import { parseMessageSortingOptions } from 'helpers/sorting';
+import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { AppContext } from 'types';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
@@ -77,17 +77,18 @@ export const Breadcrumbs: FC<{
 		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
 		[prefs?.zimbraPrefSortOrder]
 	);
+	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
 
-	const defaultSortState = useMemo(() => {
-		const { sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
-		return {
-			type: SORTING_OPTIONS.date.value as string,
-			direction: sortDirection
-		};
-	}, [folderId, prefSortOrder]);
+	const defaultSortState = useMemo(
+		() => ({
+			type: SORTING_OPTIONS.date.value,
+			direction: SORTING_DIRECTION.DESCENDING
+		}),
+		[]
+	);
 
-	const [currentSortType, setCurrentSortType] = useState(defaultSortState.type);
-	const [currentSortDirection, setCurrentSortDirection] = useState(defaultSortState.direction);
+	const [currentSortType, setCurrentSortType] = useState(sortType);
+	const [currentSortDirection, setCurrentSortDirection] = useState(sortDirection);
 	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	const sortingOptions: SortingOption[] = [
@@ -135,14 +136,19 @@ export const Breadcrumbs: FC<{
 	);
 
 	const handleSortChange = useCallback(
-		(type: string, direction: SortDirection, filter: string | null = activeFilter) => {
-			const sortBy = `${type}${direction}`;
+		(type: string, direction: SortDirection) => {
 			setCurrentSortType(type);
 			setCurrentSortDirection(direction);
-			performSearch(sortBy, filter);
+			updateSortingSettings({
+				prefSortOrder,
+				sortingTypeValue: type,
+				sortingDirection: direction,
+				folderId
+			});
+			performSearch(`${type}${direction}`, activeFilter);
 			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[activeFilter, folderId, navigate, performSearch]
+		[activeFilter, folderId, navigate, performSearch, prefSortOrder]
 	);
 
 	const handleFilterChange = useCallback(
@@ -159,8 +165,8 @@ export const Breadcrumbs: FC<{
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
 
-		handleSortChange(currentSortType, newDirection, activeFilter);
-	}, [currentSortDirection, currentSortType, handleSortChange, activeFilter]);
+		handleSortChange(currentSortType, newDirection);
+	}, [currentSortDirection, currentSortType, handleSortChange]);
 
 	const resetSearch = useCallback(() => {
 		setActiveFilter(null);
