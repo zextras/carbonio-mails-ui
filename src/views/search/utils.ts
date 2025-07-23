@@ -59,7 +59,9 @@ export function updateQueryChips(
 			q.label?.startsWith('before') ||
 			q.label?.startsWith('after') ||
 			q.label?.startsWith('tag') ||
-			q.label?.startsWith('date')) &&
+			q.label?.startsWith('date') ||
+			q.label?.startsWith('from') ||
+			q.label?.startsWith('to')) &&
 		!('isGeneric' in q) &&
 		!('isQueryFilter' in q);
 
@@ -110,7 +112,8 @@ export function generateQueryString(
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
-	const queryString = query.map((c) => convertSearchChipToString(c)).join(' ');
+	const filteredQuery = query.filter((c) => !('queryChipsToAdvancedFiltersValue' in c));
+	const queryString = filteredQuery.map((c) => convertSearchChipToString(c)).join(' ');
 
 	return isSharedFolderIncluded && foldersArray?.length > 0
 		? `(${queryString}) ${foldersToSearchInQuery}`
@@ -218,7 +221,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			actions: [],
 			value: item.value.email,
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		})),
 		sentTo.map((item) => ({
 			...item,
@@ -227,7 +231,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 			value: item.value.email,
 			actions: [],
 			avatarBackground: item.background,
-			error: false
+			error: false,
+			isQueryFilter: true
 		}))
 	);
 }
@@ -246,7 +251,8 @@ function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 			const isExcluded =
 				excludeLabels.includes(queryItem.label) ||
 				excludePrefixes.some((prefix) => queryItem.label.startsWith(prefix)) ||
-				queryItem.isQueryFilter;
+				queryItem.isQueryFilter ||
+				'queryChipsToAdvancedFiltersValue' in queryItem;
 
 			return !isExcluded;
 		}),

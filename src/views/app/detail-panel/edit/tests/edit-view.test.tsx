@@ -582,6 +582,7 @@ describe('Edit view', () => {
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createSoapAPIInterceptor('NoOp');
 			createCheckSmimeEnabledAPIInterceptor();
 			setupEditorStore({ editors: [] });
 			const editor = await readyToBeSentEditorTestCase({
