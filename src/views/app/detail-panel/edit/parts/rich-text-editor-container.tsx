@@ -150,6 +150,29 @@ export const RichTextEditorContainer = ({
             font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
             font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
             }`,
+			plugins: [
+				'advlist',
+				'autolink',
+				'lists',
+				'link',
+				'image',
+				'charmap',
+				'preview',
+				'anchor',
+				'searchreplace',
+				'code',
+				'fullscreen',
+				'insertdatetime',
+				'media',
+				'table',
+				'code',
+				'help',
+				'quickbars',
+				'directionality',
+				'autoresize',
+				'visualblocks',
+				'emoticons'
+			],
 			toolbar: [
 				'fontfamily fontsize styles visualblocks',
 				'bold italic underline strikethrough',
@@ -160,7 +183,8 @@ export const RichTextEditorContainer = ({
 				'ltr rtl',
 				'link table',
 				'insertfile image',
-				'imageSelector'
+				'imageSelector',
+				'emoticons'
 			].join(' | '),
 
 			paste_data_images: false,
