@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { RefObject, memo, useEffect, useMemo } from 'react';
+import React, { RefObject, memo, useMemo } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
@@ -27,7 +27,13 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
+const DragItems = ({
+	draggedIds,
+	deselectAll
+}: {
+	draggedIds: Record<string, boolean>;
+	deselectAll: () => void;
+}): React.JSX.Element => (
 	<>
 		{map(
 			Object.keys(draggedIds)
@@ -35,6 +41,8 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 				.filter(Boolean),
 			(conversation) => (
 				<ConversationListItemComponent
+					deselectAll={deselectAll}
+					selectedItems={{}}
 					conversationId={conversation.id}
 					key={conversation.id}
 					draggedIds={draggedIds}
@@ -43,7 +51,6 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 					selecting={false}
 					toggleMultipleSelection={noop}
 					selectedIds={[]}
-					deselectAll={noop}
 					folderId=""
 					setDraggedIds={noop}
 				/>
@@ -69,8 +76,6 @@ export type ConversationListComponentProps = {
 	conversationsIds: Array<string>;
 	// the ids of the conversations being dragged
 	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a conversation
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
@@ -107,17 +112,12 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	setIsSelectModeOn,
 	conversationsLoadingCompleted,
 	draggedIds,
-	setDraggedIds,
 	listItems,
 	totalConversations,
 	dragImageRef,
 	listRef,
 	loadMoreCallback
 }: ConversationListComponentProps): React.JSX.Element {
-	useEffect(() => {
-		setDraggedIds?.(selected);
-	}, [selected, setDraggedIds]);
-
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
 
@@ -151,7 +151,6 @@ export const ConversationListComponent = memo(function ConversationListComponent
 				>
 					<ConversationsMultipleSelectionActions
 						selectedConversationsIds={selectedIds}
-						deselectAll={deselectAll}
 						folderId={folderId}
 					/>
 				</MultipleSelectionActionsPanel>
@@ -193,7 +192,7 @@ export const ConversationListComponent = memo(function ConversationListComponent
 						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
-						<DragItems draggedIds={draggedIds ?? {}} />
+						<DragItems draggedIds={draggedIds ?? {}} deselectAll={deselectAll} />
 					</DragImageContainer>
 				</>
 			) : (

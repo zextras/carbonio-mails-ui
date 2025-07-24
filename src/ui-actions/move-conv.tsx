@@ -21,7 +21,6 @@ import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 type MoveMessageProps = {
 	selectedIDs: string[];
 	isRestore?: boolean;
-	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
 };
@@ -29,7 +28,6 @@ type MoveMessageProps = {
 export const MoveConversation = ({
 	selectedIDs,
 	isRestore,
-	deselectAll,
 	onClose,
 	folderId
 }: MoveMessageProps): ReactElement => {
@@ -55,7 +53,6 @@ export const MoveConversation = ({
 				parent: id
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -83,7 +80,7 @@ export const MoveConversation = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t, navigate]
+		[selectedIDs, onCloseModal, createSnackbar, isRestore, t, navigate]
 	);
 
 	const hasSameName = useMemo(

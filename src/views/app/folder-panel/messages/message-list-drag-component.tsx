@@ -30,7 +30,6 @@ export const DragItems = ({
 					selected={false}
 					selecting={false}
 					visible={false}
-					deselectAll={noop}
 				/>
 			))}
 		</>

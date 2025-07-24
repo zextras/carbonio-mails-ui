@@ -24,15 +24,13 @@ type SearchMessageListItemProps = {
 	selecting: boolean;
 	toggle: (id: string) => void;
 	active?: boolean;
-	deselectAll: () => void;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
 	completeMessage,
 	selected,
 	selecting,
 	toggle,
-	active,
-	deselectAll
+	active
 }) {
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const itemId = completeMessage.id;
@@ -53,7 +51,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		ids: [itemId],
 		shouldReplaceHistory,
 		isMessageRead: completeMessage.read,
-		deselectAll,
 		folderId
 	});
 
@@ -99,7 +96,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					active={active}
 					onClick={onClick}
 					onDoubleClick={onDoubleClick}
-					deselectAll={deselectAll}
 					shouldReplaceHistory={shouldReplaceHistory}
 				>
 					<SearchMessageListItemCore

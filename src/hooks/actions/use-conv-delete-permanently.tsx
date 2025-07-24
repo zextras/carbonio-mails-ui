@@ -16,13 +16,11 @@ import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
 type ConvDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
-	deselectAll?: () => void;
 	folderId: string;
 };
 
 export const useConvDeletePermanentlyFn = ({
 	ids,
-	deselectAll,
 	folderId
 }: ConvDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useModal();
@@ -39,7 +37,6 @@ export const useConvDeletePermanentlyFn = ({
 				ids
 			});
 			if (!('Fault' in response)) {
-				deselectAll?.();
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
@@ -59,7 +56,7 @@ export const useConvDeletePermanentlyFn = ({
 			}
 			onClose();
 		},
-		[ids, deselectAll, createSnackbar, t]
+		[ids, createSnackbar, t]
 	);
 
 	const execute = useCallback((): void => {
@@ -72,7 +69,7 @@ export const useConvDeletePermanentlyFn = ({
 					children: (
 						<PermanentlyDeleteModal
 							onClose={closeModalFn}
-							onDeleteConfirm={() => deleteConversation(closeModalFn)}
+							onDeleteConfirm={(): Promise<void> => deleteConversation(closeModalFn)}
 						/>
 					)
 				},
@@ -86,13 +83,11 @@ export const useConvDeletePermanentlyFn = ({
 
 export const useConvDeletePermanentlyDescriptor = ({
 	ids,
-	folderId,
-	deselectAll
+	folderId
 }: ConvDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvDeletePermanentlyFn({
 		ids,
-		folderId,
-		deselectAll
+		folderId
 	});
 
 	const [t] = useTranslation();

@@ -28,7 +28,6 @@ describe('SearchMessageListItemWrapper', () => {
 				selected={false}
 				selecting={false}
 				toggle={jest.fn()}
-				deselectAll={jest.fn()}
 			/>
 		);
 
@@ -50,7 +49,6 @@ describe('SearchMessageListItemWrapper', () => {
 				selected={false}
 				selecting={false}
 				toggle={jest.fn()}
-				deselectAll={jest.fn()}
 				active
 			/>
 		);

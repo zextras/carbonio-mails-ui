@@ -25,11 +25,11 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { AppContext } from 'app-utils/app-context-initializer';
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
 import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
-import { AppContext } from 'types';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
 const SelectIconCheckbox = styled(IconCheckbox)`

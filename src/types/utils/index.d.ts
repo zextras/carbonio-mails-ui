@@ -22,14 +22,6 @@ export type TextReadValuesProps = {
 	badge: 'unread' | 'read';
 };
 
-export type ServicesCatalog = Array<string>;
-export type AppContext = {
-	isMessageView: boolean;
-	count: number;
-	setCount: (arg: number | ((prevState: number) => number)) => void;
-	servicesCatalog: ServicesCatalog;
-};
-
 export type ThemeObj = {
 	windowObj: Window;
 	breakpoints: {
@@ -87,9 +79,9 @@ export type DragItemWrapperProps = {
 	item: MailMessage | Conversation;
 	selectedIds: Array<string>;
 	selectedItems: Record<string, boolean>;
+	deselectAll: () => void;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	dragImageRef: React.RefObject<HTMLElement> | undefined;
 	dragAndDropIsDisabled: boolean;
-	deselectAll: () => void;
 	children: React.ReactNode;
 };

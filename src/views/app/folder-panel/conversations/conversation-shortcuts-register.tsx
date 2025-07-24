@@ -10,17 +10,14 @@ import { useConversationKeyboardShortcuts } from 'hooks/use-conversation-keyboar
 type ConversationShortcutsRegisterProps = {
 	conversationId: string;
 	folderId: string;
-	deselectAll: () => void;
 };
 
 export const ConversationShortcutsRegister = ({
 	conversationId,
-	deselectAll,
 	folderId
 }: ConversationShortcutsRegisterProps): null => {
 	const keyboardActions = useConversationKeyboardShortcuts({
 		conversationId,
-		deselectAll,
 		folderId
 	});
 

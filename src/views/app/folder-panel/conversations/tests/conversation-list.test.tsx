@@ -7,15 +7,14 @@
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
 import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import * as useSelection from 'hooks/use-selection';
+import { tags } from '@test-utils/tags/tags';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
@@ -23,28 +22,10 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
-	selectAll: jest.fn(),
-	selected: {},
-	toggle: jest.fn(),
-	isSelectModeOn: false,
-	setIsSelectModeOn: jest.fn(),
-	deselectAll: jest.fn(),
-	isAllSelected: false,
-	selectAllModeOff: jest.fn()
-};
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
 }));
-
-function fakeCounter(): { count: number; setCount: (value: number) => void } {
-	let count = 0;
-	const setCount = (value: number): void => {
-		count = value;
-	};
-	return { count, setCount };
-}
 
 describe('ConversationList Component', () => {
 	beforeEach(() => {
@@ -175,160 +156,369 @@ describe('ConversationList Component', () => {
 		expect(screen.getByTestId('list-bottom-element')).toBeInTheDocument();
 	});
 
-	it('should move a conversation to trash when the trash action button is clicked', async () => {
-		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
-		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-		await act(async () => {
-			populateFoldersStore();
-		});
+	describe('conversation actions', () => {
+		describe('single actions', () => {
+			it('should move a conversation to trash when the trash action button is clicked', async () => {
+				const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				await act(async () => {
+					populateFoldersStore();
+				});
 
-		const conversation1 = generateConversationFromAPI({
-			id: '1',
-			m: [generateConvMessageFromAPI({ id: '1', l: '2', cid: '1' })],
-			su: conversation1Subject
-		});
+				const conversation1 = generateConversationFromAPI({
+					id: '1',
+					m: [generateConvMessageFromAPI({ id: '1', l: '2', cid: '1' })],
+					su: conversation1Subject
+				});
 
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1],
-			more: true
-		});
+				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+					c: [conversation1],
+					more: true
+				});
 
-		const { user } = await act(async () => setupTest(<ConversationList />));
+				const { user } = await act(async () => setupTest(<ConversationList />));
 
-		makeAllItemsVisible();
+				makeAllItemsVisible();
 
-		const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
-		await act(async () => {
-			user.hover(actionWrapper);
-		});
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await act(async () => {
+					user.hover(actionWrapper);
+				});
 
-		const deleteButton = await screen.findByTestId('icon: Trash2Outline');
-		await user.click(deleteButton);
-		const convActionRequest = await waitFor(async () => convActionInterceptor);
-		expect(convActionRequest.action.op).toBe('trash');
-		expect(convActionRequest.action.id).toBe('1');
-	});
-
-	it('should delete a conversation when the permanently delete action button is clicked', async () => {
-		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
-		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-		await act(async () => {
-			populateFoldersStore();
-		});
-
-		const conversation1 = generateConversationFromAPI({
-			id: '1',
-			m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
-			su: conversation1Subject
-		});
-
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1],
-			more: true
-		});
-		(useParams as jest.Mock).mockReturnValue({
-			folderId: FOLDERS.TRASH
-		});
-		const { user } = await act(async () => setupTest(<ConversationList />));
-
-		makeAllItemsVisible();
-
-		const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
-		await act(async () => {
-			user.hover(actionWrapper);
-		});
-
-		const deleteButton = await screen.findByTestId('icon: DeletePermanentlyOutline');
-		await user.click(deleteButton);
-		const confirmButton = await screen.findByText('Delete permanently');
-
-		// eslint-disable-next-line testing-library/no-unnecessary-act
-		await act(async () => {
-			fireEvent.click(confirmButton);
-		});
-
-		const convActionRequest = await convActionInterceptor;
-		expect(convActionRequest.action.op).toBe('delete');
-		expect(convActionRequest.action.id).toBe('1');
-	});
-
-	describe('when in multiple selection mode', () => {
-		it('should move a conversation to trash when the trash action button is clicked', async () => {
-			jest
-				.spyOn(useSelection, 'useSelection')
-				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true, selected: { '10': true } });
-			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-			await act(async () => {
-				populateFoldersStore();
+				const deleteButton = await screen.findByTestId('icon: Trash2Outline');
+				await user.click(deleteButton);
+				const convActionRequest = await waitFor(async () => convActionInterceptor);
+				expect(convActionRequest.action.op).toBe('trash');
+				expect(convActionRequest.action.id).toBe('1');
 			});
 
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const conversation1 = generateConversationFromAPI({
-				id: '10',
-				m: [generateConvMessageFromAPI({ id: '1', l: '2', cid: '1' })],
-				su: conversation1Subject
+			it('should delete a conversation when the permanently delete action button is clicked', async () => {
+				const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				await act(async () => {
+					populateFoldersStore();
+				});
+
+				const conversation1 = generateConversationFromAPI({
+					id: '1',
+					m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
+					su: conversation1Subject
+				});
+
+				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+					c: [conversation1],
+					more: true
+				});
+				(useParams as jest.Mock).mockReturnValue({
+					folderId: FOLDERS.TRASH
+				});
+				const { user } = await act(async () => setupTest(<ConversationList />));
+
+				makeAllItemsVisible();
+
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await act(async () => {
+					user.hover(actionWrapper);
+				});
+
+				const deleteButton = await screen.findByTestId('icon: DeletePermanentlyOutline');
+				await user.click(deleteButton);
+				const confirmButton = await screen.findByText('Delete permanently');
+
+				// eslint-disable-next-line testing-library/no-unnecessary-act
+				await act(async () => {
+					fireEvent.click(confirmButton);
+				});
+
+				const convActionRequest = await convActionInterceptor;
+				expect(convActionRequest.action.op).toBe('delete');
+				expect(convActionRequest.action.id).toBe('1');
 			});
+		});
 
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1],
-				more: true
-			});
+		describe('multiple selection actions', () => {
+			it('should move a conversation to trash when the trash action button is clicked', async () => {
+				const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				await act(async () => {
+					populateFoldersStore();
+				});
 
-			const { user } = setupTest(<ConversationList />);
+				const conversation1 = generateConversationFromAPI({
+					id: '1',
+					m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
+					su: conversation1Subject
+				});
 
-			makeAllItemsVisible();
+				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+					c: [conversation1],
+					more: true
+				});
+				(useParams as jest.Mock).mockReturnValue({
+					folderId: FOLDERS.INBOX
+				});
+				const { user } = await act(async () => setupTest(<ConversationList />));
 
-			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
-				'button',
-				{
+				makeAllItemsVisible();
+
+				expect(screen.getByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
+				await user.click(await screen.findByTestId('select-icon-checkbox'));
+				await user.click(screen.getByRole('button', { name: /label\.select_all/i }));
+
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionTrashButton = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
 					icon: TESTID_SELECTORS.icons.trash
-				}
-			);
-			await user.click(multipleSelectionTrashButton);
-			const request = await waitFor(() => convActionInterceptor);
-			expect(request.action.op).toBe('trash');
-			expect(request.action.id).toBe('10');
+				});
+				await user.click(multipleSelectionTrashButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('trash');
+				});
+				await act(async () => {
+					expect(request.action.id).toBe('1');
+				});
+			});
+			it('should move multiple conversations to trash when the trash action button is clicked', async () => {
+				const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				await act(async () => {
+					populateFoldersStore();
+				});
+
+				const conversation1 = generateConversationFromAPI({
+					id: '1',
+					m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
+					su: conversation1Subject
+				});
+				const conversation2 = generateConversationFromAPI({
+					id: '2',
+					m: [generateConvMessageFromAPI({ id: '2', l: FOLDERS.INBOX, cid: '2' })],
+					su: conversation1Subject
+				});
+
+				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+					c: [conversation1, conversation2],
+					more: true
+				});
+				(useParams as jest.Mock).mockReturnValue({
+					folderId: FOLDERS.INBOX
+				});
+				const { user } = await act(async () => setupTest(<ConversationList />));
+
+				makeAllItemsVisible();
+
+				expect(await screen.findByTestId('conversation-list-item-avatar-1')).toBeInTheDocument();
+				await user.click(await screen.findByTestId('select-icon-checkbox'));
+				await user.click(screen.getByRole('button', { name: /label\.select_all/i }));
+
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionTrashButton = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
+					icon: TESTID_SELECTORS.icons.trash
+				});
+				await user.click(multipleSelectionTrashButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('trash');
+				});
+
+				await act(async () => {
+					expect(request.action.id).toBe('1,2');
+				});
+			});
 		});
-		it('should delete a conversation when the permanently delete action button is clicked', async () => {
-			(useParams as jest.Mock).mockReturnValue({
-				folderId: FOLDERS.TRASH
-			});
-			jest
-				.spyOn(useSelection, 'useSelection')
-				.mockReturnValue({ ...mockedUseSelection, isSelectModeOn: true, selected: { '10': true } });
-			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+	});
 
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const conversation1 = generateConversationFromAPI({
-				id: '10',
-				m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
-				su: conversation1Subject
-			});
-
+	describe('multiple selection interactions', () => {
+		const conversation1 = generateConversationFromAPI({
+			id: '1',
+			m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.INBOX, cid: '1' })],
+			su: conversation1Subject
+		});
+		const conversation2 = generateConversationFromAPI({
+			id: '2',
+			m: [generateConvMessageFromAPI({ id: '2', l: FOLDERS.INBOX, cid: '2' })],
+			su: conversation1Subject
+		});
+		it('items should still be selected after a multiple selection action', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1],
+				c: [conversation1, conversation2],
 				more: true
 			});
+			populateFoldersStore();
 
-			const { user } = setupTest(<ConversationList />);
+			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			useTagStore.setState({ tags });
+			const { user } = await act(async () => setupTest(<ConversationList />));
 
 			makeAllItemsVisible();
 
+			// select all conversations
+			const enterMultipleSelectionMode = await screen.findByTestId('icon: CheckmarkSquare');
+			await user.click(enterMultipleSelectionMode);
+			const selectAllButton = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			await user.click(selectAllButton);
+			const deselectAllButton = screen.getByRole('button', {
+				name: /label\.deselect_all/i
+			});
+			expect(deselectAllButton).toBeInTheDocument();
+
+			// perform a multiple selection action
+			// using the tag action as an example in order to be able to intercept the confirmation snackbar
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+			const multipleSelectionMarkUnread = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
 				{
-					icon: TESTID_SELECTORS.icons.deletePermanently
+					icon: 'icon: MoreVertical'
 				}
 			);
-			await user.click(multipleSelectionTrashButton);
-			const confirmButton = await screen.findByText('Delete permanently');
-
-			await user.click(confirmButton);
+			await user.click(multipleSelectionMarkUnread);
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(within(actionsDropdown).getByText(/tag/i)).toBeVisible();
+			await user.hover(within(actionsDropdown).getByText(/tag/i));
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
 			const request = await waitFor(() => convActionInterceptor);
-			expect(request.action.op).toBe('delete');
-			expect(request.action.id).toBe('10');
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successSnackbar).toBeInTheDocument();
+			});
+
+			// verify that all conversations are still selected
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.deselect_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that all 2 conversations are selected
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(2);
+		});
+		it('items should still be selected after a single conversation action on a unselected item', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation1, conversation2],
+				more: true
+			});
+
+			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+			populateFoldersStore();
+
+			useTagStore.setState({ tags });
+			const { user } = await act(async () => setupTest(<ConversationList />));
+
+			makeAllItemsVisible();
+
+			// select the first conversation
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// perform a single conversation action on another conversation
+			const convListItem = screen.getByTestId('ConversationListItem-2');
+			await user.hover(convListItem);
+			fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
+			const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+				(item) => item.textContent === 'Tag'
+			) as Element;
+			await user.hover(tagMenuItem);
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
+			const request = await waitFor(() => convActionInterceptor);
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successSnackbar).toBeInTheDocument();
+			});
+
+			// verify that selection mode is still on
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that 1 conversation is still selected
+			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelectedAfterAction).toHaveLength(1);
+		});
+		it('items should still be selected after a single conversation action on a selected item', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation1, conversation2],
+				more: true
+			});
+
+			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+			populateFoldersStore();
+
+			useTagStore.setState({ tags });
+			const { user } = await act(async () => setupTest(<ConversationList />));
+
+			makeAllItemsVisible();
+
+			// select the first conversation
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// select the first conversation action on the selected conversation
+			const convListItem = screen.getByTestId('ConversationListItem-1');
+			await user.hover(convListItem);
+			fireEvent.contextMenu(await screen.findByTestId(/hover-container-1/));
+			const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+				(item) => item.textContent === 'Tag'
+			) as Element;
+			await user.hover(tagMenuItem);
+			const tagActionIcon = screen.getByTestId('tag-item-2291');
+			const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+			await user.click(tagActionButton);
+			const request = await waitFor(() => convActionInterceptor);
+			await act(async () => {
+				expect(request.action.op).toBe('tag');
+			});
+
+			// await for the success snackbar to appear
+			const successSnackbar = await screen.findByText(/tag applied/);
+			await act(async () => {
+				expect(successSnackbar).toBeInTheDocument();
+			});
+
+			// verify that selection mode is still on
+			const deselectAllButtonAfterAction = screen.getByRole('button', {
+				name: /label\.select_all/i
+			});
+			expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+			// double check that 1 conversation is still selected
+			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelectedAfterAction).toHaveLength(1);
 		});
 	});
 });

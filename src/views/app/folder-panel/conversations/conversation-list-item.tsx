@@ -33,7 +33,6 @@ export type ConversationListItemProps = {
 	activeItemId?: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	deselectAll: () => void;
 	folderId?: string;
 };
 const CollapseElement = styled(Container)<{ $open: boolean }>`
@@ -49,7 +48,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	isSearchModule,
 	activeItemId,
 	dragImageRef,
-	deselectAll,
 	folderId,
 	setDraggedIds
 }: ConversationListItemProps): React.JSX.Element {
@@ -64,7 +62,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
 		isConversationRead: conversation.read,
-		deselectAll,
 		folderId: folderId ?? ''
 	});
 
@@ -147,7 +144,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					shouldReplaceHistory={shouldReplaceHistory}
-					deselectAll={deselectAll}
 				>
 					<ConversationListItemCore
 						conversation={conversation}

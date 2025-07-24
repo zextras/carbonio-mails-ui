@@ -32,7 +32,6 @@ export const MessageListItem = memo(function MessageListItem({
 	isConvChildren,
 	active,
 	isSearchModule,
-	deselectAll,
 	handleReplaceHistory
 }: MessageListItemProps): React.JSX.Element {
 	const { folderId, itemId } = useParams<RouteParams>();
@@ -50,7 +49,6 @@ export const MessageListItem = memo(function MessageListItem({
 		ids: [message.id],
 		shouldReplaceHistory,
 		isMessageRead: message.read,
-		deselectAll,
 		folderId: firstChildFolderId
 	});
 
@@ -113,7 +111,6 @@ export const MessageListItem = memo(function MessageListItem({
 					onClick={onClickCallback}
 					onDoubleClick={onDoubleClickCallback}
 					shouldReplaceHistory={shouldReplaceHistory}
-					deselectAll={deselectAll}
 				>
 					<MessageListItemCore
 						message={message}
