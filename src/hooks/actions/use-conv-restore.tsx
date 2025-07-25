@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
@@ -16,12 +15,10 @@ import { MoveConversation } from 'ui-actions/move-conv';
 
 export const useConvRestoreFn = ({
 	folderId,
-	conversationId,
-	deselectAll
+	conversationId
 }: {
 	folderId: string;
 	conversationId: string;
-	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
@@ -40,31 +37,27 @@ export const useConvRestoreFn = ({
 							selectedIDs={[conversationId]}
 							onClose={(): void => closeModal(modalId)}
 							isRestore
-							deselectAll={deselectAll ?? noop}
 						/>
 					)
 				},
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, conversationId, deselectAll, closeModal]);
+	}, [canExecute, createModal, folderId, conversationId, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvRestoreDescriptor = ({
 	folderId,
-	conversationId,
-	deselectAll
+	conversationId
 }: {
 	folderId: string;
 	conversationId: string;
-	deselectAll: () => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useConvRestoreFn({
 		folderId,
-		conversationId,
-		deselectAll
+		conversationId
 	});
 	const [t] = useTranslation();
 	return {

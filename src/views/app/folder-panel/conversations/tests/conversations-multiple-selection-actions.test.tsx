@@ -29,7 +29,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -48,7 +47,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -68,7 +66,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -88,7 +85,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -107,7 +103,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -126,7 +121,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -147,7 +141,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={FOLDERS.TRASH}
 				/>
 			);
@@ -163,7 +156,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={'folder-1'}
 				/>
 			);
@@ -182,7 +174,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={FOLDERS.SPAM}
 				/>
 			);
@@ -203,7 +194,6 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
-					deselectAll={jest.fn()}
 					folderId={FOLDERS.INBOX}
 				/>
 			);

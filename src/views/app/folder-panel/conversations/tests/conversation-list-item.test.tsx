@@ -59,7 +59,6 @@ describe('conversation-list-item component', () => {
 					selecting: false,
 					toggleMultipleSelection: noop,
 					activeItemId: '',
-					deselectAll: noop,
 					isSearchModule,
 					folderId
 				};
@@ -98,7 +97,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -139,7 +137,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -187,7 +184,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -238,7 +234,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -285,7 +280,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -329,7 +323,6 @@ describe('conversation-list-item component', () => {
 						selecting: false,
 						toggleMultipleSelection: noop,
 						activeItemId: '',
-						deselectAll: noop,
 						isSearchModule,
 						folderId: folder.id
 					};
@@ -370,7 +363,6 @@ describe('conversation-list-item component', () => {
 					selecting: false,
 					toggleMultipleSelection: noop,
 					activeItemId: '',
-					deselectAll: noop,
 					isSearchModule,
 					folderId: FOLDERS.INBOX
 				};
@@ -403,7 +395,6 @@ describe('conversation-list-item component', () => {
 					selecting: false,
 					toggleMultipleSelection: noop,
 					activeItemId: '',
-					deselectAll: noop,
 					isSearchModule,
 					folderId
 				};
@@ -426,7 +417,6 @@ describe('conversation-list-item component', () => {
 					selecting: false,
 					toggleMultipleSelection: noop,
 					activeItemId: '',
-					deselectAll: noop,
 					isSearchModule,
 					folderId
 				};
@@ -451,7 +441,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule,
 				folderId
 			};
@@ -486,7 +475,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: false,
 				folderId: FOLDERS.INBOX
 			};
@@ -527,7 +515,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: false,
 				folderId: FOLDERS.INBOX
 			};
@@ -569,7 +556,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX
 			};
@@ -610,7 +596,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX
 			};
@@ -650,7 +635,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX
 			};
@@ -676,7 +660,6 @@ describe('conversation-list-item component', () => {
 				selecting: false,
 				toggleMultipleSelection: noop,
 				activeItemId: '',
-				deselectAll: noop,
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX
 			};

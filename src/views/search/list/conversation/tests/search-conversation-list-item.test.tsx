@@ -50,16 +50,13 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
 		const messageActionWrapper = screen.getByTestId(`ConversationListItem-${conversationId}`);
 		expect(messageActionWrapper).toBeVisible();
 
-		act(() => {
-			user.hover(messageActionWrapper);
-		});
+		user.hover(messageActionWrapper);
 		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
 		expect(hoverBar).toBeVisible();
 
@@ -104,7 +101,6 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
@@ -158,7 +154,6 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				toggle={jest.fn()}
 				selected={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 
