@@ -14,7 +14,7 @@ import { filtersSubSection } from 'views/settings/subsections';
 const FilterModule: FC = (): ReactElement => {
 	const sectionTitle = useMemo(() => filtersSubSection(), []);
 	return (
-		<FormSection label={sectionTitle.label}>
+		<FormSection label={sectionTitle.label} id={sectionTitle.id}>
 			<FormSubSection>
 				<Text>
 					{t('filters.filter_note', 'Note: changes to filter rules are saved immediately')}
