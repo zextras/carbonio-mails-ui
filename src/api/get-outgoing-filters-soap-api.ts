@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { JSNS, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { JSNS } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import type { FilterRules } from 'types/index.d';
 
