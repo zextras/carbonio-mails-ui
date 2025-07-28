@@ -57,9 +57,39 @@ describe('generateEditor', () => {
 		expect(result?.text.richText).toContain(message.fragment);
 		expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
 		expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
-		expect(result?.originalId).toEqual('test-orig-id');
+		expect(result?.originalId).toEqual('test-orig-id'); // Use originalId from message and not id
 		expect(result?.recipients.bcc).toEqual([]);
 		expect(result?.isRichText).toBe(true);
+	});
+
+	it('should generate an editor with action EDIT_AS_NEW', () => {
+		const result = generateEditor({
+			action: EditViewActions.EDIT_AS_NEW,
+			id: 'test-id',
+			message
+		});
+
+		expect(result).toBeTruthy();
+		expect(result?.id).toBe('test-editor-id');
+		expect(result?.identityId).toBe('test-identity-id');
+		expect(result?.text.plainText).toContain(message.fragment);
+		expect(result?.text.richText).toContain(message.fragment);
+		expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
+		expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
+		expect(result?.originalId).toEqual(message.id); // Uses id from message as originalId
+		expect(result?.recipients.bcc).toEqual([]);
+		expect(result?.isRichText).toBe(true);
+	});
+
+	test('editor generated with EDIT_AS_NEW action should not have originalId', () => {
+		const result = generateEditor({
+			action: EditViewActions.EDIT_AS_NEW,
+			id: 'test-id',
+			message
+		});
+
+		expect(result).toBeTruthy();
+		expect(result?.originalId).toBeUndefined();
 	});
 
 	it('should throw an error if id is missing for EDIT_AS_DRAFT', () => {
