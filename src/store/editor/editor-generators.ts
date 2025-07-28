@@ -501,7 +501,6 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		subject: originalMessage.subject,
 		text,
 		requestReadReceipt: isRequestReadReceipt,
-		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size
 	};
