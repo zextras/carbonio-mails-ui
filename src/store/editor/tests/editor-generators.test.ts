@@ -140,6 +140,52 @@ describe('generateEditor', () => {
 		test('should not have originalId', () => {
 			expect(editor?.originalId).toBeUndefined();
 		});
+
+		describe('subject handling', () => {
+			const baseMessage = {
+				...message,
+				subject: 'RE: Test Subject'
+			};
+
+			it('removes RE: prefix from subject', () => {
+				const editor2 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: baseMessage
+				});
+				expect(editor2?.subject).toBe('Test Subject');
+			});
+
+			it('removes multiple RE: prefixes', () => {
+				const message2 = { ...baseMessage, subject: 'RE: RE: Test Subject' };
+				const editor3 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message2
+				});
+				expect(editor3?.subject).toBe('Test Subject');
+			});
+
+			it('does not change subject if no RE: prefix', () => {
+				const message3 = { ...baseMessage, subject: 'Test Subject' };
+				const editor4 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message3
+				});
+				expect(editor4?.subject).toBe('Test Subject');
+			});
+
+			it('sets subject to empty string if originalMessage.subject is undefined', () => {
+				const message4 = { ...baseMessage, subject: undefined as unknown } as MailMessage;
+				const editor5 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message4
+				});
+				expect(editor5?.subject).toBe('');
+			});
+		});
 	});
 
 	describe('Urgent flag handling', () => {
