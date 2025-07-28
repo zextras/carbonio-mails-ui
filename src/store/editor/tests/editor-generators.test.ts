@@ -10,7 +10,7 @@ import { EditViewActions } from 'constants/index';
 import { generateEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/hooks/editors';
 import { generateMessage } from 'tests/generators/generateMessage';
-import { MailMessage } from 'types/index.d';
+import { EditViewActionsType, MailMessage } from 'types/index.d';
 
 jest.mock('store/editor/hooks/editors', () => ({
 	...jest.requireActual('store/editor/hooks/editors'),
@@ -35,7 +35,6 @@ jest.mock('../../../helpers/identities', () => ({
 	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
 }));
 
-// Test cases
 describe('generateEditor', () => {
 	const message = {
 		...generateMessage(),
@@ -43,89 +42,111 @@ describe('generateEditor', () => {
 		replyType: 'r'
 	} as MailMessage;
 
-	it('should generate an editor with action EDIT_AS_DRAFT', () => {
-		const result = generateEditor({
-			action: EditViewActions.EDIT_AS_DRAFT,
-			id: 'test-id',
-			message
-		});
-
-		expect(result).toBeTruthy();
-		expect(result?.id).toBe('test-editor-id');
-		expect(result?.identityId).toBe('test-identity-id');
-		expect(result?.text.plainText).toContain(message.fragment);
-		expect(result?.text.richText).toContain(message.fragment);
-		expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
-		expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
-		expect(result?.originalId).toEqual('test-orig-id'); // Use originalId from message and not id
-		expect(result?.recipients.bcc).toEqual([]);
-		expect(result?.isRichText).toBe(true);
-	});
-
-	it('should generate an editor with action EDIT_AS_NEW', () => {
-		const result = generateEditor({
-			action: EditViewActions.EDIT_AS_NEW,
-			id: 'test-id',
-			message
-		});
-
-		expect(result).toBeTruthy();
-		expect(result?.id).toBe('test-editor-id');
-		expect(result?.identityId).toBe('test-identity-id');
-		expect(result?.text.plainText).toContain(message.fragment);
-		expect(result?.text.richText).toContain(message.fragment);
-		expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
-		expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
-		expect(result?.originalId).toEqual(message.id); // Uses id from message as originalId
-		expect(result?.recipients.bcc).toEqual([]);
-		expect(result?.isRichText).toBe(true);
-	});
-
-	test('editor generated with EDIT_AS_NEW action should not have originalId', () => {
-		const result = generateEditor({
-			action: EditViewActions.EDIT_AS_NEW,
-			id: 'test-id',
-			message
-		});
-
-		expect(result).toBeTruthy();
-		expect(result?.originalId).toBeUndefined();
-	});
-
-	it('should throw an error if id is missing for EDIT_AS_DRAFT', () => {
-		expect(() =>
-			generateEditor({
-				action: EditViewActions.EDIT_AS_DRAFT,
-				id: undefined,
+	describe('Basic functionality', () => {
+		it('should return null for unsupported actions', () => {
+			const result = generateEditor({
+				action: 'UNSUPPORTED_ACTION' as EditViewActionsType,
+				id: 'test-id',
 				message
-			})
-		).toThrow('Cannot generate a draft editor without a message id');
+			});
+			expect(result).toBeNull();
+		});
 	});
 
-	it('should return null for unsupported actions', () => {
+	describe('EDIT_AS_DRAFT action', () => {
 		const result = generateEditor({
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			action: 'UNSUPPORTED_ACTION',
+			action: EditViewActions.EDIT_AS_DRAFT,
 			id: 'test-id',
 			message
 		});
 
-		expect(result).toBeNull();
-	});
-
-	it('should return null if no message is provided for EDIT_AS_DRAFT', () => {
-		const result = generateEditor({
-			action: EditViewActions.EDIT_AS_DRAFT,
-			id: 'test-id',
-			message: null
+		it('should throw an error if id is missing', () => {
+			expect(() =>
+				generateEditor({
+					action: EditViewActions.EDIT_AS_DRAFT,
+					id: undefined,
+					message
+				})
+			).toThrow('Cannot generate a draft editor without a message id');
 		});
 
-		expect(result).toBeNull();
+		it('should return null if no message is provided', () => {
+			const editorWithNullMessage = generateEditor({
+				action: EditViewActions.EDIT_AS_DRAFT,
+				id: 'test-id',
+				message: null
+			});
+			expect(editorWithNullMessage).toBeNull();
+		});
+
+		test('should generate editor with correct properties', () => {
+			expect(result).toBeTruthy();
+			expect(result?.id).toBe('test-editor-id');
+			expect(result?.identityId).toBe('test-identity-id');
+			expect(result?.isRichText).toBe(true);
+		});
+
+		test('should include message content', () => {
+			expect(result?.text.plainText).toContain(message.fragment);
+			expect(result?.text.richText).toContain(message.fragment);
+		});
+
+		test('should set correct recipients', () => {
+			expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
+			expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
+			expect(result?.recipients.bcc).toEqual([]);
+		});
+
+		test('should use message.originalId', () => {
+			expect(result?.originalId).toEqual('test-orig-id');
+		});
 	});
-	describe('urgent flag', () => {
-		it.each`
-			action                                   | assertion
+
+	describe('EDIT_AS_NEW action', () => {
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_NEW,
+			id: 'test-id',
+			message
+		});
+
+		it('should throw an error if id is missing', () => {
+			expect(() =>
+				generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: undefined,
+					message
+				})
+			).toThrow('Cannot generate an edit as new editor without a message id');
+		});
+
+		test('should generate editor with correct properties', () => {
+			expect(editor).toBeTruthy();
+			expect(editor?.id).toBe('test-editor-id');
+			expect(editor?.identityId).toBe('test-identity-id');
+			expect(editor?.isRichText).toBe(true);
+		});
+
+		test('should include message content', () => {
+			expect(editor?.text.plainText).toContain(message.fragment);
+			expect(editor?.text.richText).toContain(message.fragment);
+		});
+
+		test('should set correct recipients', () => {
+			expect(editor?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
+			expect(editor?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
+			expect(editor?.recipients.bcc).toEqual([]);
+		});
+
+		test('should not have originalId', () => {
+			expect(editor?.originalId).toBeUndefined();
+		});
+	});
+
+	describe('Urgent flag handling', () => {
+		const urgentMessage = { ...message, urgent: true };
+
+		describe.each`
+			action                                   | expected
 			${EditViewActions.REPLY}                 | ${false}
 			${EditViewActions.NEW}                   | ${false}
 			${EditViewActions.REPLY_ALL}             | ${false}
@@ -136,33 +157,34 @@ describe('generateEditor', () => {
 			${EditViewActions.FORWARD_AS_ATTACHMENT} | ${false}
 			${EditViewActions.EDIT_AS_NEW}           | ${false}
 			${EditViewActions.MAIL_TO}               | ${false}
-		`(`should set urgent in editor to $assertion if action is $action`, ({ action, assertion }) => {
-			const urgentMessage = { ...message, urgent: true };
-			const replyEditor = generateEditor({
-				action,
-				id: 'test-id',
-				message: urgentMessage
+		`('Action: $action', ({ action, expected }) => {
+			it(`should set isUrgent to ${expected}`, () => {
+				const editor = generateEditor({
+					action,
+					id: 'test-id',
+					message: urgentMessage
+				});
+				expect(editor?.isUrgent).toBe(expected);
 			});
-
-			expect(replyEditor?.isUrgent).toBe(assertion);
 		});
 
-		it('should return true if action is RESUME and message is urgent', () => {
-			const urgentMessage = { ...message, urgent: true };
-			const replyEditor = generateEditor({
-				action: EditViewActions.EDIT_AS_DRAFT,
-				id: 'test-id',
-				message: urgentMessage
+		describe('RESUME action', () => {
+			it('should preserve urgent flag from original editor', () => {
+				const draftEditor = generateEditor({
+					action: EditViewActions.EDIT_AS_DRAFT,
+					id: 'test-id',
+					message: urgentMessage
+				});
+
+				(getEditor as jest.Mock).mockReturnValueOnce(draftEditor);
+
+				const resumedEditor = generateEditor({
+					action: EditViewActions.RESUME,
+					id: draftEditor?.id
+				});
+
+				expect(resumedEditor?.isUrgent).toBe(true);
 			});
-
-			(getEditor as jest.Mock).mockReturnValueOnce(replyEditor);
-
-			const resumedEditor = generateEditor({
-				action: EditViewActions.RESUME,
-				id: replyEditor?.id
-			});
-
-			expect(resumedEditor?.isUrgent).toBe(true);
 		});
 	});
 });
