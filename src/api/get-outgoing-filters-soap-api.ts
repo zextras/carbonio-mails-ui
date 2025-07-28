@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { JSNS, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import type { FilterRules } from 'types/index.d';
 
@@ -16,7 +16,7 @@ export async function getOutgoingFiltersSoapApi(): Promise<GetFilterRulesRespons
 	const response = await legacySoapFetch<unknown, GetFilterRulesResponse>(
 		'GetOutgoingFilterRules',
 		{
-			_jsns: 'urn:zimbraMail'
+			_jsns: JSNS.mail
 		}
 	).catch(() => {
 		console.warn('Failed to fetch filter rules');

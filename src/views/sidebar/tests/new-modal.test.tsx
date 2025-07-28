@@ -73,9 +73,7 @@ describe('new-modal', () => {
 		});
 		expect(cancelButton).toBeEnabled();
 	}, 20000);
-});
 
-describe('new-modal 2', () => {
 	test('create button should be disabled on blank folder name', async () => {
 		const closeFn = jest.fn();
 
@@ -127,9 +125,7 @@ describe('new-modal 2', () => {
 		});
 		expect(cancelButton).toBeEnabled();
 	}, 20000);
-});
 
-describe('new-modal 3', () => {
 	test('API is called with the proper parameters to create new folder', async () => {
 		const closeFn = jest.fn();
 		populateFoldersStore();

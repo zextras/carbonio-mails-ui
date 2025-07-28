@@ -97,7 +97,6 @@ describe('saveSettings', () => {
 	});
 
 	it('should call the ApiManager to set the polling interval if its value is not undefined', async () => {
-		// mods.prefs?.zimbraPrefMailPollingInterval
 		jest.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
 
 		const pollingSetting = '60s';
