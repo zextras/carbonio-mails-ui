@@ -84,10 +84,9 @@ type HandlerRequest<T> = DefaultBodyType & {
 };
 
 export const createSoapAPIInterceptorWithError = <RequestParamsType>(
-	apiAction: string,
-	forceFail = false
+	apiAction: string
 ): Promise<RequestParamsType> =>
-	new Promise<RequestParamsType>((resolve, reject) => {
+	new Promise<RequestParamsType>((resolve) => {
 		getSetupServer().use(
 			http.post<never, HandlerRequest<RequestParamsType>>(
 				`/service/soap/${apiAction}Request`,
@@ -95,11 +94,7 @@ export const createSoapAPIInterceptorWithError = <RequestParamsType>(
 					const reqActionParamWrapper = `${apiAction}Request`;
 					const requestContent = await request.json();
 					const params = requestContent?.Body?.[reqActionParamWrapper];
-					if (!forceFail) {
-						resolve(params);
-					} else {
-						reject(new Error(` Reject ${apiAction}Request`));
-					}
+					resolve(params);
 					return HttpResponse.error();
 				}
 			)
