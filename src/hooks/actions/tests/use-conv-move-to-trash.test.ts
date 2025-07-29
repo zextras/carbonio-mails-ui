@@ -32,7 +32,7 @@ describe('useConMoveToTrash', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvMoveToTrashDescriptor, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -50,7 +50,7 @@ describe('useConMoveToTrash', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvMoveToTrashFn, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -72,7 +72,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: conversationsId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -95,7 +95,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				await act(async () => {
@@ -125,7 +125,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				await act(async () => {
@@ -154,7 +154,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.TRASH }]
 				});
 
 				await act(async () => {

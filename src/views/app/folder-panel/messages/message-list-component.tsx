@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { memo, useEffect, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
@@ -43,14 +43,10 @@ export type MessageListComponentProps = {
 	messageIds: Array<string>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a message
-	setDraggedIds: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
-	// the selected messages
-	selected: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
 	// the function to call when the user selects all messages
@@ -76,10 +72,8 @@ export const MessageListComponent = memo(function MessageListComponent({
 	folderId,
 	messageIds,
 	draggedIds,
-	setDraggedIds,
 	isSearchModule,
 	isSelectModeOn,
-	selected,
 	deselectAll,
 	selectAll,
 	isAllSelected,
@@ -88,10 +82,6 @@ export const MessageListComponent = memo(function MessageListComponent({
 	dragImageRef,
 	listRef
 }: MessageListComponentProps): React.JSX.Element {
-	useEffect(() => {
-		setDraggedIds?.(selected);
-	}, [selected, setDraggedIds]);
-
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
 	const showBreadcrumbs = useMemo(
@@ -120,11 +110,7 @@ export const MessageListComponent = memo(function MessageListComponent({
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
 				>
-					<MessagesMultipleSelectionActions
-						ids={selectedIds}
-						deselectAll={deselectAll}
-						folderId={folderId}
-					/>
+					<MessagesMultipleSelectionActions ids={selectedIds} folderId={folderId} />
 				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (

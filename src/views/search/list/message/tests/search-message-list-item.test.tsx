@@ -38,7 +38,6 @@ it('should delete the item when clicking on Delete action when in message mode',
 			active={false}
 			toggle={jest.fn()}
 			selected={false}
-			deselectAll={jest.fn()}
 		/>
 	);
 

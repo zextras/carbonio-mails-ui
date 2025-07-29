@@ -27,7 +27,7 @@ describe('useMsgDeletePermanently', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgDeletePermanentlyDescriptor, {
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -45,7 +45,7 @@ describe('useMsgDeletePermanently', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgDeletePermanentlyFn, {
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -67,7 +67,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: messagesId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -79,7 +79,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -99,7 +99,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {

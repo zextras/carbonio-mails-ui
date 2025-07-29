@@ -28,11 +28,9 @@ import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/
 
 export const MessagesMultipleSelectionActions = ({
 	ids,
-	deselectAll,
 	folderId
 }: {
 	ids: Array<string>;
-	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -45,18 +43,16 @@ export const MessagesMultipleSelectionActions = ({
 	const tagsInCommon = intersection(...messagesTags);
 	const setAsRead = useMsgSetReadDescriptor({
 		ids,
-		deselectAll,
 		folderId,
 		isMessageRead: !atLeastOneMsgIsUnread
 	});
 	const setAsUnread = useMsgSetUnreadDescriptor({
 		ids,
-		deselectAll,
 		folderId,
 		isMessageRead: !atLeastOneMsgIsUnread
 	});
-	const moveToTrash = useMsgMoveToTrashDescriptor({ ids, deselectAll, folderId });
-	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, deselectAll, folderId });
+	const moveToTrash = useMsgMoveToTrashDescriptor({ ids, folderId });
+	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, folderId });
 	const applyTagDescriptor = useMsgApplyTagDescriptor({
 		ids,
 		messageTags: tagsInCommon,
@@ -66,7 +62,7 @@ export const MessagesMultipleSelectionActions = ({
 
 	const flagDescriptor = useMsgSetFlagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
-	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, deselectAll, ids });
+	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, ids });
 	const setAsSpam = useMsgSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
 	const forwardAsAttachment = useMsgForwardAsAttachmentDescriptor(ids, folderId);
 	const setAsNotSpam = useMsgSetNotSpamDescriptor({

@@ -6,7 +6,6 @@
 import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil, map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -15,7 +14,7 @@ import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
 import { useMultipleSelection } from 'hooks/use-selection';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
-import { AppContext, MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/index.d';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
@@ -24,8 +23,6 @@ type MailMsgPreviewActionsType = {
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 
-	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useMultipleSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
@@ -53,7 +50,6 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		showOriginalDescriptor,
 		downloadEmlDescriptor
 	} = useMsgActions({
-		deselectAll,
 		message,
 		shouldReplaceHistory
 	});

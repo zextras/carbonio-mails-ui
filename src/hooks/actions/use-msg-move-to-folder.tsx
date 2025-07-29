@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
@@ -16,12 +15,10 @@ import { MoveMessage } from 'ui-actions/move-msg';
 
 export const useMsgMoveToFolderFn = ({
 	folderId,
-	ids,
-	deselectAll
+	ids
 }: {
 	folderId: string;
 	ids: Array<string>;
-	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
@@ -40,31 +37,27 @@ export const useMsgMoveToFolderFn = ({
 							selectedIDs={ids}
 							onClose={(): void => closeModal(modalId)}
 							isRestore={false}
-							deselectAll={deselectAll ?? noop}
 						/>
 					)
 				},
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, ids, deselectAll, closeModal]);
+	}, [canExecute, createModal, folderId, ids, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgMoveToFolderDescriptor = ({
 	folderId,
-	ids,
-	deselectAll
+	ids
 }: {
 	folderId: string;
 	ids: Array<string>;
-	deselectAll: () => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToFolderFn({
 		folderId,
-		ids,
-		deselectAll
+		ids
 	});
 	const [t] = useTranslation();
 	return {

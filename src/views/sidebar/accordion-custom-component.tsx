@@ -124,7 +124,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					navigate(`../folder/${folderId}`, { replace: true });
-					data.data.deselectAll && data.data.deselectAll();
+					data.data.deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -154,7 +154,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 				parent: folder.id
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					data.data.deselectAll && data.data.deselectAll();
+					data.data.deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,

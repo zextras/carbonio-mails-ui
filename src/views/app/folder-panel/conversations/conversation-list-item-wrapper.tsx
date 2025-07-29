@@ -21,7 +21,6 @@ export const ConversationListItemActionWrapper = ({
 	active,
 	onClick,
 	onDoubleClick,
-	deselectAll,
 	shouldReplaceHistory,
 	children
 }: {
@@ -31,7 +30,6 @@ export const ConversationListItemActionWrapper = ({
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	conversation: NormalizedConversation;
-	deselectAll: () => void;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const {
@@ -55,7 +53,6 @@ export const ConversationListItemActionWrapper = ({
 		showOriginalDescriptor
 	} = useConvActions({
 		conversation,
-		deselectAll,
 		shouldReplaceHistory
 	});
 	const hoverActions = useMemo(

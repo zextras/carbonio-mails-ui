@@ -9,17 +9,20 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import type { AppContext } from 'types/index.d';
+import { AppContext } from 'app-utils/app-context-initializer';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from 'views/app/detail-panel/selection-interactive';
 
 const DetailPanel: FC = () => {
-	const { count } = useAppContext<AppContext>();
+	const { multipleSelectionCount } = useAppContext<AppContext>();
 	return (
 		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
 			<Routes>
-				<Route path={`folder/:folderId`} element={<SelectionInteractive count={count} />} />
+				<Route
+					path={`folder/:folderId`}
+					element={<SelectionInteractive count={multipleSelectionCount} />}
+				/>
 				<Route
 					path={`folder/:folderId/conversation/:conversationId`}
 					element={<ConversationPreviewPanelContainer />}

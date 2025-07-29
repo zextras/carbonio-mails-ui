@@ -35,15 +35,15 @@ describe.each`
 		setMessagesInEmailStore(messages, false);
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
+				deselectAll={noop}
 				messageId={message.id}
-				selected={{}}
+				selectedItems={{}}
 				isSelected={false}
 				active
 				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
 				isSearchModule={isSearchModule}
-				deselectAll={noop}
 				visible
 			/>
 		));
@@ -59,12 +59,10 @@ describe.each`
 			messagesLoadingCompleted: true,
 			selectAll: noop,
 			selectAllModeOff: noop,
-			selected: {},
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,
-			totalMessages: messages.length,
-			setDraggedIds: noop
+			totalMessages: messages.length
 		};
 
 		setupTest(<MessageListComponent {...props} />);

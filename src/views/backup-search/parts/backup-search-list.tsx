@@ -21,35 +21,33 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { restoreMessagesApi } from 'api/restore-messages-api';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from 'constants/index';
-import { useMultipleSelection } from 'hooks/use-selection';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
 
 export const BackupSearchList = (): React.JSX.Element => {
-	const [count, setCount] = useState(0);
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
 	const {
-		selected: selectedMessage,
-		toggle,
+		toggleItemSelection: toggle,
 		deselectAll,
 		selectAll,
 		isAllSelected
 	} = useMultipleSelection({
-		setCount,
-		count,
-		items: [...Object.keys(messages ?? {})]
+		allAvailableItems: [...Object.keys(messages ?? {})],
+		selectedItems,
+		setSelectedItems
 	});
 
-	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);
 	const createSnackbar = useSnackbar();
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			const response = await restoreMessagesApi(selectedIds);
+			const response = await restoreMessagesApi(Array.from(selectedItems));
 			closeModal();
 			if ('error' in response) {
 				createSnackbar({
@@ -75,7 +73,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 				hideButton: true
 			});
 		},
-		[createSnackbar, navigate, selectedIds]
+		[createSnackbar, navigate, selectedItems]
 	);
 
 	const { createModal, closeModal } = useModal();
@@ -102,7 +100,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 		() =>
 			map(messages, (message) => {
 				const active = itemId === message.id;
-				const isSelected = selectedMessage[message.id];
+				const isSelected = selectedItems?.has(message.id);
 				return (
 					<CustomListItem
 						key={message.id}
@@ -124,7 +122,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 					</CustomListItem>
 				);
 			}),
-		[itemId, messages, selectedMessage, toggle]
+		[itemId, messages, selectedItems, toggle]
 	);
 
 	const selectAllOnClick = useCallback(() => {
@@ -176,7 +174,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 							size="medium"
 							type="outlined"
 							width="fill"
-							disabled={!selectedIds.length}
+							disabled={selectedItems.size === 0}
 						/>
 					</Row>
 				</Row>

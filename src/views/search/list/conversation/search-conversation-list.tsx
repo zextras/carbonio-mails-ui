@@ -6,13 +6,13 @@
 import React, { useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
-import { isEmpty, map } from 'lodash';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { useMultipleSelection } from 'hooks/use-selection';
-import type { AppContext, SearchListProps } from 'types/index.d';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
@@ -30,13 +30,13 @@ export const SearchConversationList = ({
 }: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams() as { itemId?: string };
 	const loadingMore = useRef<boolean>(false);
-	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+
 	const {
-		selected,
-		toggle,
+		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
@@ -44,9 +44,9 @@ export const SearchConversationList = ({
 		isAllSelected,
 		selectAllModeOff
 	} = useMultipleSelection({
-		setCount,
-		count,
-		items: conversationIds
+		allAvailableItems: conversationIds,
+		selectedItems,
+		setSelectedItems
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -72,7 +72,7 @@ export const SearchConversationList = ({
 			map(conversationIds, (conversationId) => {
 				const active = itemId === conversationId;
 
-				const isSelected = selected[conversationId];
+				const isSelected = selectedItems.has(conversationId);
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
 					<CustomListItem
@@ -91,7 +91,6 @@ export const SearchConversationList = ({
 									activeItemId={itemId}
 									toggle={toggle}
 									selected={isSelected}
-									deselectAll={deselectAll}
 								/>
 							) : (
 								<div
@@ -103,10 +102,10 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversationIds, isSelectModeOn, itemId, selectedItems, toggle]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
 		<>
@@ -114,7 +113,7 @@ export const SearchConversationList = ({
 				<>
 					<SearchListHeader
 						itemIds={conversationIds}
-						selected={selected}
+						selectedItems={selectedItems}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
 						setIsSelectModeOn={setIsSelectModeOn}
@@ -124,7 +123,6 @@ export const SearchConversationList = ({
 					>
 						<ConversationsMultipleSelectionActions
 							selectedConversationsIds={selectedIds}
-							deselectAll={deselectAll}
 							folderId={''}
 						/>
 					</SearchListHeader>

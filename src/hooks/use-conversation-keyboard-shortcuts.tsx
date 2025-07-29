@@ -16,7 +16,6 @@ import { useConversationById } from 'store/emails/store';
 import { NormalizedConversation } from 'types/index.d';
 
 type HandleKeyboardShortcutsArguments = {
-	deselectAll: () => void;
 	conversationId: NormalizedConversation['id'];
 	folderId: string;
 };
@@ -28,7 +27,6 @@ let keySequence = '';
 
 export const useConversationKeyboardShortcuts = ({
 	conversationId,
-	deselectAll,
 	folderId
 }: HandleKeyboardShortcutsArguments): ((event: KeyboardEvent) => void) => {
 	const conversation = useConversationById(conversationId);
@@ -47,20 +45,17 @@ export const useConversationKeyboardShortcuts = ({
 
 	const moveToTrash = useConvMoveToTrashFn({
 		ids: [conversationId],
-		folderId,
-		deselectAll
+		folderId
 	});
 
 	const setAsRead = useConvSetReadFn({
 		ids: [conversationId],
 		folderId,
-		deselectAll,
 		isConversationRead: conversation?.read
 	});
 	const setAsUnread = useConvSetUnreadFn({
 		ids: [conversationId],
 		folderId,
-		deselectAll,
 		isConversationRead: conversation?.read
 	});
 

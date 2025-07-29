@@ -33,7 +33,6 @@ type SearchConversationListItemProps = {
 	activeItemId?: string;
 	toggle: (id: string) => void;
 	selected: boolean;
-	deselectAll: () => void;
 };
 
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
@@ -42,15 +41,14 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	active,
 	activeItemId,
 	toggle,
-	selected,
-	deselectAll
+	selected
 }) => {
 	const conversation = useConversationById(conversationId);
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
-	const { id, isDraft, parent } = messages[0];
+	const { parent } = messages[0];
 	const navigate = useNavigate();
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -63,7 +61,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
 		isConversationRead: conversation.read,
-		deselectAll,
 		folderId: parent ?? ''
 	});
 
@@ -103,7 +100,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
-					deselectAll={deselectAll}
 				>
 					<SearchConversationListItemCore
 						conversation={conversation}

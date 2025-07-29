@@ -58,13 +58,11 @@ const useRestoreMessage = (): ((
 type MoveToTrashExecute = {
 	ids: Array<string>;
 	folderId?: string;
-	deselectAll?: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgMoveToTrashFn = ({
 	ids,
-	deselectAll,
 	folderId = FOLDERS.INBOX,
 	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
@@ -85,7 +83,6 @@ export const useMsgMoveToTrashFn = ({
 				ids
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					deselectAll?.();
 					if (!inSearchModule) {
 						shouldReplaceHistory &&
 							navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
@@ -115,7 +112,6 @@ export const useMsgMoveToTrashFn = ({
 	}, [
 		canExecute,
 		ids,
-		deselectAll,
 		inSearchModule,
 		createSnackbar,
 		t,
@@ -130,13 +126,11 @@ export const useMsgMoveToTrashFn = ({
 
 export const useMsgMoveToTrashDescriptor = ({
 	ids,
-	deselectAll,
 	folderId,
 	shouldReplaceHistory
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
 		ids,
-		deselectAll,
 		folderId,
 		shouldReplaceHistory
 	});

@@ -100,7 +100,13 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 	});
 
 	const containsSpecialCharacter = useMemo(
-		() => query.some((ch) => ch.value !== undefined && containsSpecialCharacters(ch.value)),
+		() =>
+			query.some(
+				(ch) =>
+					ch.value !== undefined &&
+					containsSpecialCharacters(ch.value) &&
+					!('queryChipsToAdvancedFiltersValue' in ch)
+			),
 		[query]
 	);
 

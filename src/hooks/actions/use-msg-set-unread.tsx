@@ -18,12 +18,10 @@ type MsgSetUnreadFunctionsParameter = {
 	folderId: string;
 	isMessageRead: boolean;
 	shouldReplaceHistory?: boolean;
-	deselectAll?: () => void;
 };
 
 export const useMsgSetUnreadFn = ({
 	ids,
-	deselectAll,
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
@@ -40,27 +38,24 @@ export const useMsgSetUnreadFn = ({
 				operation: '!read',
 				ids
 			}).then((res) => {
-				deselectAll?.();
 				if (!('Fault' in res) && shouldReplaceHistory) {
 					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
 			});
 		}
-	}, [canExecute, deselectAll, folderId, ids, navigate, shouldReplaceHistory]);
+	}, [canExecute, folderId, ids, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgSetUnreadDescriptor = ({
 	ids,
-	deselectAll,
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
 }: MsgSetUnreadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetUnreadFn({
 		ids,
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead

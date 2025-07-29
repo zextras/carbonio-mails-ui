@@ -25,14 +25,12 @@ type MessageListItemActionWrapperProps = {
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	item: MailMessage;
-	deselectAll: () => void;
 };
 export const MessageListItemActionWrapper = ({
 	item,
 	active,
 	onClick,
 	onDoubleClick,
-	deselectAll,
 	shouldReplaceHistory,
 	children
 }: MessageListItemActionWrapperProps): React.JSX.Element => {
@@ -60,7 +58,7 @@ export const MessageListItemActionWrapper = ({
 		editAsNewDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory });
+	} = useMsgActions({ message: item, shouldReplaceHistory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const draftItem = isDraft(item.parent);
