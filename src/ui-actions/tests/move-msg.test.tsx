@@ -95,17 +95,10 @@ describe('MoveMsg', () => {
 			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
 
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			await act(async () => {
-				await user.click(inboxFolderListItem);
-			});
+			await user.click(inboxFolderListItem);
 
 			const button = screen.getByRole('button', {
 				name: /Move/
@@ -144,13 +137,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);
@@ -198,13 +186,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);

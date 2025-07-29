@@ -14,14 +14,26 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
+import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
+import {
+	mockShellSoapNotify,
+	mockSoapCreateConversation,
+	mockSoapCreateMessage,
+	mockSoapCreateMessageAndConversation,
+	mockSoapDelete,
+	mockSoapMessageActionAndConversationModified,
+	mockSoapModifyConversationAction,
+	mockSoapModifyMessageAction,
+	mockSoapModifyMessageFolder,
+	mockSoapRefresh,
+	mockSoapSync
+} from '../../tests/test-helpers';
 import { getSetupServer } from '@jest-setup';
 import { setupHook } from '@test-setup';
-import { useNotify } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { normalizeConversations } from 'normalizations/normalize-conversation';
 import {
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
@@ -38,18 +50,6 @@ import { generateConversation } from 'tests/generators/generateConversation';
 import { generateMessage } from 'tests/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
-import {
-	mockShellSoapNotify,
-	mockSoapCreateConversation,
-	mockSoapCreateMessage,
-	mockSoapCreateMessageAndConversation,
-	mockSoapDelete,
-	mockSoapMessageActionAndConversationModified,
-	mockSoapModifyConversationAction,
-	mockSoapModifyMessageAction,
-	mockSoapModifyMessageFolder,
-	mockSoapRefresh
-} from 'views/sidebar/tests/test-helpers';
 
 const UNREAD = 'u';
 const READ = '';
@@ -64,14 +64,6 @@ jest.mock('@zextras/carbonio-ui-commons', () => ({
 	folderWorker: {
 		postMessage: jest.fn()
 	}
-}));
-
-jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
-	triggerNotification: jest.fn()
-}));
-
-jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
-	triggerNotification: jest.fn()
 }));
 
 jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
@@ -525,7 +517,7 @@ describe('sync data handler', () => {
 				http.post('/service/soap/GetShareInfoRequest', handleGetShareInfoRequest)
 			);
 
-			useNotify.mockReturnValueOnce([notify]);
+			mockSoapSync([notify]);
 			setupHook(() => useSyncDataHandler());
 
 			expect(workerSpy).toHaveBeenCalledTimes(1);

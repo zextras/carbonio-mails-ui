@@ -9,7 +9,6 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { useAdvancedAccountStore } from 'store/advanced-account/store';
@@ -25,10 +24,6 @@ function getParams(url: string): Record<string, string> {
 }
 
 describe('Recover messages', () => {
-	beforeAll(() => {
-		defaultBeforeAllTests({ onUnhandledRequest: 'error' });
-	});
-
 	it('should render view if backupSelfUndelete is allowed', () => {
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		setupTest(<RecoverMessages />);

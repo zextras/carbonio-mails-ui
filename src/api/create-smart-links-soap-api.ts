@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import {
 	CreateSmartLinksRequest,
@@ -15,7 +15,7 @@ import {
 export async function createSmartLinksSoapApi(
 	attachmentsToConvert: Array<SmartLinkAttachment>
 ): Promise<CreateSmartLinksResponse> {
-	return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse | ErrorSoapBodyResponse>(
+	return legacySoapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse | ErrorSoapBodyResponse>(
 		'CreateSmartLinks',
 		{
 			_jsns: 'urn:zimbraMail',

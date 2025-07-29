@@ -6,6 +6,7 @@
 import React, { act } from 'react';
 
 import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import FilterModule from 'views/settings/filters';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -14,9 +15,10 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 
 describe('FilterModule', () => {
 	it('renders FormSection with id="filters" for anchor navigation', async () => {
+		createSoapAPIInterceptor('GetFilterRules');
 		const { container } = await act(async () => setupTest(<FilterModule />));
-		// eslint-disable-next-line testing-library/no-container,testing-library/no-node-access
 		const el = container.querySelector('#filters');
+
 		expect(el).toBeInTheDocument();
 	});
 });

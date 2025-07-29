@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 export const sendDeliveryReportSoapApi = async (messageId: string): Promise<any> =>
-	soapFetch('SendDeliveryReport', {
+	legacySoapFetch('SendDeliveryReport', {
 		mid: messageId,
 		_jsns: 'urn:zimbraMail'
 	});

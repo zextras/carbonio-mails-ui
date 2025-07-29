@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { generateRequest } from 'store/editor-slice-utils';
 import type { MailsEditor, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
@@ -15,7 +15,7 @@ export const acceptSharedFolderReply = async (
 	data: Pick<MailsEditor, 'attach' | 'subject' | 'participants' | 'text'>
 ): Promise<SaveDraftResponse> => {
 	const toSend = generateRequest(data);
-	const resp = await soapFetch<SaveDraftRequest, SaveDraftResponse | ErrorSoapBodyResponse>(
+	const resp = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse | ErrorSoapBodyResponse>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',
@@ -23,7 +23,7 @@ export const acceptSharedFolderReply = async (
 		}
 	);
 
-	if (resp.Fault) {
+	if ('Fault' in resp) {
 		throw new GenericSoapApiError(resp.Fault);
 	}
 
