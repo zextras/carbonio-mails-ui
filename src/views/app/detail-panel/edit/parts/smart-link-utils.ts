@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 export async function sortFilesByLastModified(): Promise<any> {
 	return axios
@@ -46,14 +46,44 @@ export async function sortFilesByLastModified(): Promise<any> {
 			console.error('No modified file found:', error.response?.data || error.message);
 		});
 }
+export async function getUploadedFileNodeId(nodeId: string): Promise<string> {
+	const url = '/services/files/graphql';
+	const data = {
+		operationName: 'getChild',
+		variables: {
+			shares_limit: 6,
+			node_id: nodeId
+		},
+		query: `query getChild($node_id: ID!, $shares_limit: Int = 1) {
+      getNode(node_id: $node_id) {
+        ...ChildWithParent
+        __typename
+      }
+    }`
+	};
 
-export async function uploadToFiles(file: File): Promise<void> {
-	await axios
+	const headers = {
+		Referer: '/carbonio/files/root/LOCAL_ROOT',
+		'Content-Type': 'application/json'
+	};
+
+	const response = await axios({
+		method: 'post',
+		url,
+		headers,
+		data
+	}).catch((error) => {
+		console.error('Error during Axios call:', error.response ? error.response.data : error.message);
+		throw error; // Re-throw the error so it can be caught by the caller
+	});
+
+	return response.data;
+}
+
+export async function uploadToFiles(file: File): Promise<AxiosResponse<any, any>> {
+	return axios
 		.post('/services/files/upload', file, {
 			headers: {
-				Accept: '*/*',
-				'Cache-Control': 'no-cache',
-				Connection: 'keep-alive',
 				'Content-Type': 'image/jpeg',
 				'Content-Length': file.size,
 				Filename: btoa(file.name),

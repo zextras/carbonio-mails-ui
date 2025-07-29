@@ -9,7 +9,8 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { uploadToFiles, sortFilesByLastModified, getPublicUrl } from './smart-link-utils';
+import { getPublicUrl } from './smart-link-utils';
+import { uploadToFiles } from 'api/upload-file-to-files';
 import { useEditorText } from 'store/editor/hooks';
 import { addSmartLinksToText } from 'ui-actions/utils';
 
@@ -26,10 +27,8 @@ export const ConvertToSmartlinkModal = ({
 
 	const { getText, setText } = useEditorText(editorId);
 	const onConfirm = useCallback(async () => {
-		await uploadToFiles(files[0]);
-		const lastModifiedFileResponse = await sortFilesByLastModified();
-		const nodeId = lastModifiedFileResponse.data.data.getNode.children.nodes[0].id;
-		const publicUrlResponse = await getPublicUrl(nodeId);
+		const uploadToFilesResponse = await uploadToFiles(files[0]);
+		const publicUrlResponse = await getPublicUrl(uploadToFilesResponse.data.nodeId);
 		const textWithLinks = addSmartLinksToText({
 			publicLinkUrl: publicUrlResponse.data.data.createLink.url,
 			text: getText(),
