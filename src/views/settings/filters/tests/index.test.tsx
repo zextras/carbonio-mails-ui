@@ -18,7 +18,7 @@ describe('FilterModule', () => {
 		createSoapAPIInterceptor('GetFilterRules');
 		const { container } = await act(async () => setupTest(<FilterModule />));
 		const el = container.querySelector('#filters');
-		
+
 		expect(el).toBeInTheDocument();
 	});
 });
