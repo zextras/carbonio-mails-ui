@@ -498,7 +498,9 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 			cc: retrieveCCForEditNew(originalMessage),
 			bcc: retrieveBCC(originalMessage)
 		},
-		subject: originalMessage.subject ? originalMessage.subject.replace(REPLY_REGEX, '') : '',
+		subject: originalMessage.subject
+			? originalMessage.subject.replace(REPLY_REGEX, '').replace(FORWARD_REGEX, '')
+			: '',
 		text,
 		requestReadReceipt: isRequestReadReceipt,
 		originalMessage,
