@@ -141,7 +141,7 @@ describe('generateEditor', () => {
 			expect(editor?.originalId).toBeUndefined();
 		});
 
-		describe('subject handling', () => {
+		describe('subject sanitizing and handling', () => {
 			const baseMessage = {
 				...message,
 				subject: 'RE: Test Subject'
@@ -154,6 +154,36 @@ describe('generateEditor', () => {
 					message: baseMessage
 				});
 				expect(editor2?.subject).toBe('Test Subject');
+			});
+
+			it('should not removes RE: string literal if it is not prefix from subject', () => {
+				const message2 = { ...baseMessage, subject: 'TEST RE: Test Subject' };
+				const editor2 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message2
+				});
+				expect(editor2?.subject).toBe('TEST RE: Test Subject');
+			});
+
+			it('removes FWD: prefix from subject', () => {
+				const message2 = { ...baseMessage, subject: 'FWD: Test Subject' };
+				const editor2 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message2
+				});
+				expect(editor2?.subject).toBe('Test Subject');
+			});
+
+			it('should not removes FWD: string literal if it is not prefix from subject', () => {
+				const message2 = { ...baseMessage, subject: 'TEST FWD: Test Subject' };
+				const editor2 = generateEditor({
+					action: EditViewActions.EDIT_AS_NEW,
+					id: 'test-id',
+					message: message2
+				});
+				expect(editor2?.subject).toBe('TEST FWD: Test Subject');
 			});
 
 			it('removes multiple RE: prefixes', () => {
