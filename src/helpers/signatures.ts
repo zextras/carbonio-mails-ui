@@ -109,6 +109,28 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	// Get the element which wraps the signature
 	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
 
+	// If no signature wrapper is found and the new signature is not empty, create a new wrapper
+	if (signatureWrappers.length === 0 && newSignature !== '') {
+		const newSignatureWrapper = doc.createElement('div');
+		newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
+		newSignatureWrapper.innerHTML = newSignature;
+
+		// TODO: consider where to insert the new signature wrapper,
+		//  example before the first quoted text separator
+		doc.body.appendChild(newSignatureWrapper);
+
+		return doc.documentElement.innerHTML;
+	}
+
+	if (newSignature === '' && signatureWrappers.length > 0) {
+		// If the new signature is empty, remove the signature wrapper and return the body
+		const signatureWrapper = signatureWrappers.item(0);
+		if (signatureWrapper) {
+			signatureWrapper.remove();
+		}
+		return doc.documentElement.innerHTML;
+	}
+
 	let signatureWrapper = null;
 
 	// Locate the separator
