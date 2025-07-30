@@ -6,9 +6,12 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
+import type { EditorText, Signature } from '../../types';
+import { generateAccount } from '@test-utils/accounts/account-generator';
 import { LineType } from 'commons/utils';
 import {
 	composeMailBodyWithSignature,
+	getMailBodyWithSignature,
 	getSignatures,
 	getSignatureValue,
 	NO_SIGNATURE_ID,
@@ -112,6 +115,30 @@ describe('Signatures', () => {
 			expect(getSignatureValue(account, NO_SIGNATURE_ID)).toEqual('');
 			expect(getSignatureValue(account, 'invalid-id')).toEqual('');
 			expect(getSignatureValue(account, signature.id)).toEqual(signature.content[0]._content);
+		});
+	});
+
+	describe('getMailBodyWithSignature', () => {
+		it('should add HTML signature if not in empty and is not the body', () => {
+			const account = generateAccount();
+			const signature: Signature = {
+				content: [{ _content: 'This is my Signature', type: 'text/html' }],
+				id: '123',
+				name: 'MySig'
+			};
+			(getUserAccount as jest.Mock).mockReturnValue({
+				...account,
+				signatures: { signature: [signature] }
+			});
+
+			const editorText: EditorText = {
+				plainText: '',
+				richText: '<p>hello</p><div class="signature-div"></div>'
+			};
+			const mailBodyWithSignature = getMailBodyWithSignature(editorText, signature.id);
+			expect(mailBodyWithSignature.richText).toBe(
+				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature</div></body>'
+			);
 		});
 	});
 });
