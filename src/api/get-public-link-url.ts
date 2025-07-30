@@ -58,7 +58,7 @@ export async function getPublicLinkUrl(nodeId: string): Promise<string | undefin
 			return response.data.data.createLink.url;
 		}
 		throw new Error('createLink successful but no url returned');
-	} catch {
-		throw new Error('createLink failed');
+	} catch (error) {
+		throw new Error(`createLink failed: ${error instanceof Error ? error.message : String(error)}`);
 	}
 }
