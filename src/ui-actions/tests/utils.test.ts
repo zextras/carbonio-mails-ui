@@ -5,8 +5,6 @@
  */
 
 import { parseTextToHTMLDocument } from 'helpers/text';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { generateEditorV2Case } from 'tests/generators/editors';
 import { MessageAction } from 'types/index.d';
 import {
 	findMessageActionById,
@@ -107,17 +105,13 @@ describe('findMessageActionById', () => {
 
 describe('generateSmartLinkHtml', () => {
 	it('generates correct HTML for smart link with attachment filename', async () => {
-		const editor = await generateEditorV2Case(1);
-		setupEditorStore({ editors: [editor] });
-
 		const publicLinkUrl = { publicUrl: 'https://example.com/file' };
-		const index = 0;
 		const result = generateSmartLinkHtml({
 			publicLinkUrl: publicLinkUrl.publicUrl,
-			filename: editor.savedAttachments[index].filename
+			filename: 'document.txt'
 		});
 		const htmlDoc = parseTextToHTMLDocument(result);
-		const expectedFileName = editor.savedAttachments[index].filename;
+		const expectedFileName = 'document.txt';
 		const linkElement = htmlDoc.getElementsByTagName('a')[0];
 		const hrefValue = linkElement.getAttribute('href');
 		expect(hrefValue).toBe(publicLinkUrl.publicUrl);
@@ -125,13 +119,11 @@ describe('generateSmartLinkHtml', () => {
 	});
 
 	it('falls back to publicUrl when filename is undefined', async () => {
-		const editor = await generateEditorV2Case(1);
-
 		const smartLink = { publicUrl: 'https://example.com/file' };
 		const index = 0;
-		const attachmentsWithoutFileName = [{ ...editor.savedAttachments[index], filename: undefined }];
+		const attachmentsWithoutFileName = [{ publicLinkUrl: smartLink, filename: undefined }];
 		const result = generateSmartLinkHtml({
-			smartLink,
+			publicLinkUrl: smartLink.publicUrl,
 			// disable typescript to check the fallback
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
