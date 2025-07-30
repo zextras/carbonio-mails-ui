@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 type FilesCreateLinkResponse = {
 	data: { createLink: { id: string; url: string } };
@@ -14,14 +14,15 @@ export async function getPublicLinkUrl(nodeId: string): Promise<string | undefin
 		'Content-Type': 'application/json',
 		Pragma: 'no-cache'
 	};
-	const response = await axios.post<AxiosResponse<FilesCreateLinkResponse>>(
-		'/services/files/graphql',
-		{
-			operationName: 'createLink',
-			variables: {
-				node_id: nodeId
-			},
-			query: `
+	try {
+		const response = await axios.post<FilesCreateLinkResponse>(
+			'/services/files/graphql',
+			{
+				operationName: 'createLink',
+				variables: {
+					node_id: nodeId
+				},
+				query: `
 				mutation createLink($node_id: ID!, $description: String, $expires_at: DateTime, $access_code: String) {
 					createLink(
 						node_id: $node_id,
@@ -48,13 +49,16 @@ export async function getPublicLinkUrl(nodeId: string): Promise<string | undefin
 					__typename
 				}
 			`
-		},
-		{
-			headers
+			},
+			{
+				headers
+			}
+		);
+		if (response.data.data) {
+			return response.data.data.createLink.url;
 		}
-	);
-	if ('data' in response) {
-		return response.data.data.data.createLink.url;
+		throw new Error('createLink successful but no url returned');
+	} catch {
+		throw new Error('createLink failed');
 	}
-	return undefined;
 }
