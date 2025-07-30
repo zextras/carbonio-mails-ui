@@ -48,16 +48,16 @@ export const ConvertToSmartlinkModal = ({
 					const uploadToFilesResponse = await uploadToFiles(file);
 					const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse);
 					if (!publicLinkUrl) throw new Error('Link creation failed');
-					return publicLinkUrl;
+					return addSmartLinksToText({
+						publicLinkUrl,
+						text,
+						filename: file.name
+					});
 				})
 			);
-			const textResult = results.map((result) => result).join('\n');
-			const newText = addSmartLinksToText({
-				publicLinkUrl: textResult,
-				text,
-				filename: 'pippo'
-			});
-			setText(newText);
+			const richTextResult = results.map((result) => result.richText.trim()).join('\n');
+			const plainTextResult = results.map((result) => result.plainText.trim()).join('\n');
+			setText({ plainText: plainTextResult, richText: richTextResult });
 			onClose();
 		} catch {
 			errorSnackbar();
