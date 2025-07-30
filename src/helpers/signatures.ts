@@ -107,16 +107,39 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	const doc = new DOMParser().parseFromString(body, 'text/html');
 
 	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
+	const signatureWrapper = signatureWrappers.item(0);
+	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
 
-	const separator = doc.getElementById(LineType.HTML_SEP_ID);
+	const newValidSignature = newSignature !== '';
+	const existingSignature = !!signatureWrapper;
+	const noExistingSignature = !existingSignature;
 
-	if (signatureWrappers.length === 0 && newSignature !== '') {
+	if (existingSignature && newValidSignature) {
+		if (quotedBlockSeparator) {
+			if (
+				signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
+				Node.DOCUMENT_POSITION_FOLLOWING
+			) {
+				const newSignatureWrapper = doc.createElement('div');
+				newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
+				newSignatureWrapper.innerHTML = newSignature;
+				quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
+			} else {
+				signatureWrapper.innerHTML = newSignature;
+			}
+		} else {
+			signatureWrapper.innerHTML = newSignature;
+		}
+		return doc.documentElement.innerHTML;
+	}
+
+	if (noExistingSignature && newValidSignature) {
 		const newSignatureWrapper = doc.createElement('div');
 		newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
 		newSignatureWrapper.innerHTML = newSignature;
 
-		if (separator) {
-			separator.parentNode?.insertBefore(newSignatureWrapper, separator);
+		if (quotedBlockSeparator) {
+			quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
 		} else {
 			doc.body.appendChild(newSignatureWrapper);
 		}
@@ -125,21 +148,12 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	}
 
 	if (newSignature === '' && signatureWrappers.length > 0) {
-		const signatureWrapper = signatureWrappers.item(0);
 		if (signatureWrapper) {
 			signatureWrapper.remove();
 		}
 		return doc.documentElement.innerHTML;
 	}
 
-	let signatureWrapper = null;
-
-	signatureWrapper = signatureWrappers.item(0);
-	if (signatureWrapper == null) {
-		return doc.documentElement.innerHTML;
-	}
-
-	signatureWrapper.innerHTML = newSignature;
 	return doc.documentElement.innerHTML;
 };
 

@@ -159,8 +159,9 @@ describe('Signatures', () => {
 				richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
 			};
 			const result = getMailBodyWithSignature(editorText, signature2.id);
-			expect(result.richText).toContain(signature2.content[0]._content);
-			expect(result.richText).not.toContain(signature1.content[0]._content);
+			expect(result.richText).toBe(
+				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
+			);
 		});
 
 		it.each([NO_SIGNATURE_ID, '123'])(
@@ -180,6 +181,30 @@ describe('Signatures', () => {
 			const result = getMailBodyWithSignature(editorText, signature1.id);
 			expect(result.richText).toBe(
 				'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p></body>'
+			);
+		});
+
+		it('should replace signature if it exists in the body before quoted text', () => {
+			const editorText = {
+				plainText: '',
+				richText:
+					'<p>Hello</p><div class="signature-div">This is my Signature 1</div><hr id="zwchr" /><p>Quoted text</p>'
+			};
+			const result = getMailBodyWithSignature(editorText, signature2.id);
+			expect(result.richText).toBe(
+				'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2</div><hr id="zwchr"><p>Quoted text</p></body>'
+			);
+		});
+
+		it('should not replace signature if it exists after quoted text', () => {
+			const editorText = {
+				plainText: '',
+				richText:
+					'<p>Hello</p><hr id="zwchr" /><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
+			};
+			const result = getMailBodyWithSignature(editorText, signature2.id);
+			expect(result.richText).toBe(
+				'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2</div><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>'
 			);
 		});
 	});
