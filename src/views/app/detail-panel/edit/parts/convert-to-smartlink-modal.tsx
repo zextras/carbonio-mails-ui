@@ -61,9 +61,9 @@ export const ConvertToSmartlinkModal = ({
 				text.richText,
 				smartLinksArray.map((link) => link.richTextLinks).join('<br>\n')
 			);
-			const newPlainText = text.plainText.concat(
-				smartLinksArray.map((link) => link.plainTextLinks).join('\n')
-			);
+			const newPlainText = text.plainText.endsWith('\n')
+				? text.plainText.concat(smartLinksArray.map((link) => link.plainTextLinks).join('\n'))
+				: text.plainText.concat('\n', smartLinksArray.map((link) => link.plainTextLinks).join('\n'));
 			setText({ plainText: newPlainText, richText: newRichText });
 			onClose();
 		} catch {
