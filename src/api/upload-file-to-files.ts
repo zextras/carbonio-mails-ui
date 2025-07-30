@@ -10,7 +10,7 @@ type FileUploadSuccessResponse = {
 };
 
 // this encode function is currently being used by carbonio-files-ui
-function encodeBase64(str: string): string {
+export function encodeBase64(str: string): string {
 	// taken from https://stackoverflow.com/a/30106551/17280436
 	// btoa is not enough for cyrillic
 	// see also https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
@@ -33,12 +33,11 @@ export async function uploadToFiles(file: File): Promise<string> {
 			headers
 		});
 
-		if (response.data?.nodeId) {
-			return response.data.nodeId;
+		if (!response.data?.nodeId) {
+			throw new Error('Upload successful but no nodeId returned');
 		}
-
-		throw new Error('Upload successful but no nodeId returned');
+		return response.data.nodeId;
 	} catch (error) {
-		throw new Error('File upload failed');
+		throw new Error(`File upload failed: ${error}`);
 	}
 }
