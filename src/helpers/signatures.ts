@@ -97,6 +97,11 @@ const composeMailBodyWithSignature = (
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
+function signatureInQuotedText(signatureWrapper: Element, quotedBlockSeparator: HTMLElement) {
+	return signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
+			Node.DOCUMENT_POSITION_FOLLOWING;
+}
+
 /**
  * Replaces the signature in a HTML message body.
  *
@@ -117,8 +122,7 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	if (existingSignature && newValidSignature) {
 		if (quotedBlockSeparator) {
 			if (
-				signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
-				Node.DOCUMENT_POSITION_FOLLOWING
+				signatureInQuotedText(signatureWrapper, quotedBlockSeparator)
 			) {
 				const newSignatureWrapper = doc.createElement('div');
 				newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
@@ -147,11 +151,16 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 		return doc.documentElement.innerHTML;
 	}
 
-	if (newSignature === '' && signatureWrappers.length > 0) {
-		if (signatureWrapper) {
-			signatureWrapper.remove();
+	if (!newValidSignature && existingSignature) {
+		if (quotedBlockSeparator) {
+			if (signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
+				// skip it
+			} else {
+				signatureWrapper.remove()
+			}
+		} else {
+			signatureWrapper.remove()
 		}
-		return doc.documentElement.innerHTML;
 	}
 
 	return doc.documentElement.innerHTML;

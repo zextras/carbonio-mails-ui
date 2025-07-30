@@ -137,7 +137,7 @@ describe('Signatures', () => {
 			});
 		});
 
-		it('should add HTML signature when not present', () => {
+		it('should add HTML signature when no signature is present', () => {
 			const editorText = { plainText: '', richText: '<p>hello</p>' };
 			const result = getMailBodyWithSignature(editorText, signature1.id);
 			expect(result.richText).toContain('<p>hello</p>');
@@ -151,6 +151,24 @@ describe('Signatures', () => {
 			};
 			const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
 			expect(result.richText).toBe('<head></head><body><p>hello</p></body>');
+		});
+
+		it('should remove signature before quoted text when none selected', () => {
+			const editorText = {
+				plainText: '',
+				richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
+			};
+			const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+			expect(result.richText).toBe('<head></head><body><p>hello</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>');
+		});
+
+		it('should not remove signature after quoted text', () => {
+			const editorText = {
+				plainText: '',
+				richText: '<p>hello</p><hr id="zwchr" /><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
+			};
+			const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+			expect(result.richText).toBe('<head></head><body><p>hello</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>');
 		});
 
 		it('should replace existing signature with new one', () => {
