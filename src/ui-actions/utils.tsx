@@ -25,6 +25,37 @@ export const findMessageActionById = (
 	return find(actions, ['id', id]);
 };
 
+export function insertAboveSignature(htmlContent: string, contentToInsert: string): string {
+	// Parse the HTML string into a DOM document
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(htmlContent, 'text/html');
+
+	// Find the signature div
+	const signatureDiv = Array.from(doc.querySelectorAll('div')).find((div) =>
+		div.classList.contains('signature-div')
+	);
+
+	// Parse the content to insert
+	const contentDoc = parser.parseFromString(contentToInsert, 'text/html');
+	const contentNodes = Array.from(contentDoc.body.childNodes);
+
+	if (signatureDiv) {
+		// Insert each node before the signature div
+		contentNodes.forEach((node) => {
+			const clonedNode = node.cloneNode(true);
+			signatureDiv.parentNode?.insertBefore(clonedNode, signatureDiv);
+		});
+	} else {
+		// Append at the end of the body if no signature div found
+		contentNodes.forEach((node) => {
+			const clonedNode = node.cloneNode(true);
+			doc.body.appendChild(clonedNode);
+		});
+	}
+
+	return doc.body.innerHTML;
+}
+
 /**
  * Generate the html for the smart link
  */
@@ -46,30 +77,6 @@ border-radius: 5px;'
 		length: 76,
 		omission: '...'
  })}</a>`;
-
-/**
- * Add smart links to the text of the editor
- * both in plain text and rich text
- */
-export function addSmartLinksToText({
-	publicLinkUrl,
-	text,
-	filename
-}: {
-	publicLinkUrl: string;
-	text: MailsEditorV2['text'];
-	filename: string;
-}): MailsEditorV2['text'] {
-	return {
-		plainText: text.plainText.concat(publicLinkUrl),
-		richText: text.richText.concat(
-			` ${generateSmartLinkHtml({
-				publicLinkUrl,
-				filename
-			})}`
-		)
-	};
-}
 
 // returns if in search module or not based on path
 export function useInSearchModule(): boolean {
