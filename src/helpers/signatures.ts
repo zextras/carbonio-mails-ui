@@ -97,13 +97,36 @@ const composeMailBodyWithSignature = (
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
-const signatureInQuotedText = (
-	signatureWrapper: Element,
-	quotedBlockSeparator: HTMLElement
-): boolean =>
-	signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
-	Node.DOCUMENT_POSITION_FOLLOWING;
+const isElementInQuotedText = (signatureWrapper: Element, doc: Document): boolean => {
+	const quotedTextSeparator = doc.getElementById(LineType.HTML_SEP_ID);
+	if (!quotedTextSeparator) {
+		return false;
+	}
+	return (
+		signatureWrapper.compareDocumentPosition(quotedTextSeparator) !==
+		Node.DOCUMENT_POSITION_FOLLOWING
+	);
+};
 
+const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
+	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
+	const firstSignatureInBody = signatureWrappers.item(0);
+	if (!firstSignatureInBody || isElementInQuotedText(firstSignatureInBody, doc)) {
+		return null;
+	}
+	return firstSignatureInBody;
+};
+
+const addSignatureToDoc = (doc: Document, signature: string): string => {
+	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
+	const newSignatureWrapper = doc.createElement('div');
+	newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
+	newSignatureWrapper.innerHTML = signature;
+	quotedBlockSeparator
+		? quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator)
+		: doc.body.appendChild(newSignatureWrapper);
+	return doc.documentElement.innerHTML;
+};
 /**
  * Replaces the signature in a HTML message body.
  *
@@ -112,53 +135,17 @@ const signatureInQuotedText = (
  */
 const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
 	const doc = new DOMParser().parseFromString(body, 'text/html');
+	const signatureBeforeQuotedText = getSignatureBeforeQuotedText(doc);
+	const newSignatureIsEmpty = newSignature === '';
 
-	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
-	const signatureWrapper = signatureWrappers.item(0);
-	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
-
-	const newValidSignature = newSignature !== '';
-	const existingSignature = !!signatureWrapper;
-
-	if (newValidSignature) {
-		if (existingSignature) {
-			if (quotedBlockSeparator) {
-				if (signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
-					const newSignatureWrapper = doc.createElement('div');
-					newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
-					newSignatureWrapper.innerHTML = newSignature;
-					quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
-				} else {
-					signatureWrapper.innerHTML = newSignature;
-				}
-			} else {
-				signatureWrapper.innerHTML = newSignature;
-			}
-			return doc.documentElement.innerHTML;
-		}
-
-		const newSignatureWrapper = doc.createElement('div');
-		newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
-		newSignatureWrapper.innerHTML = newSignature;
-		if (quotedBlockSeparator) {
-			quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
-		} else {
-			doc.body.appendChild(newSignatureWrapper);
-		}
-
+	if (signatureBeforeQuotedText) {
+		newSignatureIsEmpty
+			? signatureBeforeQuotedText.remove()
+			: (signatureBeforeQuotedText.innerHTML = newSignature);
 		return doc.documentElement.innerHTML;
 	}
-	if (existingSignature) {
-		if (quotedBlockSeparator) {
-			if (!signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
-				signatureWrapper.remove();
-			}
-		} else {
-			signatureWrapper.remove();
-		}
-	}
-
-	return doc.documentElement.innerHTML;
+	if (newSignatureIsEmpty) return doc.documentElement.innerHTML;
+	return addSignatureToDoc(doc, newSignature);
 };
 
 /**
