@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
 import { addSmartLinksToText } from 'ui-actions/utils';
 
@@ -25,18 +26,44 @@ export const ConvertToSmartlinkModal = ({
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 
-	const { getText, setText } = useEditorText(editorId);
-	const onConfirm = useCallback(async () => {
-		const uploadToFilesResponse = await uploadToFiles(files[0]);
-		const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse.data.nodeId);
-		const textWithLinks = addSmartLinksToText({
-			publicLinkUrl: publicLinkUrl.data.data.createLink.url,
-			text: getText(),
-			filename: files[0].name
+	const { createSnackbar } = useUiUtilities();
+	const errorSnackbar = useCallback(() => {
+		createSnackbar({
+			key: `create-public-link-error`,
+			replace: true,
+			severity: 'error',
+			hideButton: true,
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
 		});
-		setText(textWithLinks);
-		onClose();
-	}, [files, getText, onClose, setText]);
+	}, [createSnackbar, t]);
+
+	const { getText, setText } = useEditorText(editorId);
+
+	const onConfirm = useCallback(async () => {
+		try {
+			const text = getText();
+			const results = await Promise.all(
+				files.map(async (file) => {
+					const uploadToFilesResponse = await uploadToFiles(file);
+					const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse);
+					if (!publicLinkUrl) throw new Error('Link creation failed');
+					return publicLinkUrl;
+				})
+			);
+			const textResult = results.map((result) => result).join('\n');
+			const newText = addSmartLinksToText({
+				publicLinkUrl: textResult,
+				text,
+				filename: 'pippo'
+			});
+			setText(newText);
+			onClose();
+		} catch {
+			errorSnackbar();
+			onClose();
+		}
+	}, [errorSnackbar, files, getText, onClose, setText]);
 
 	return (
 		<Container
