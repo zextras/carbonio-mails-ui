@@ -150,9 +150,7 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	}
 	if (existingSignature) {
 		if (quotedBlockSeparator) {
-			if (signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
-				// skip it
-			} else {
+			if (!signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
 				signatureWrapper.remove();
 			}
 		} else {
