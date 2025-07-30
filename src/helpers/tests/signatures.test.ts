@@ -171,5 +171,16 @@ describe('Signatures', () => {
 				expect(result.richText).toMatch(/^<head><\/head><body>.*<\/body>$/);
 			}
 		);
+
+		it('should add signature before quoted text separator', () => {
+			const editorText = {
+				plainText: '',
+				richText: '<p>Hello</p><hr id="zwchr" /><p>Quoted text</p>'
+			};
+			const result = getMailBodyWithSignature(editorText, signature1.id);
+			expect(result.richText).toBe(
+				'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p></body>'
+			);
+		});
 	});
 });

@@ -106,24 +106,25 @@ const composeMailBodyWithSignature = (
 const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
 	const doc = new DOMParser().parseFromString(body, 'text/html');
 
-	// Get the element which wraps the signature
 	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
 
-	// If no signature wrapper is found and the new signature is not empty, create a new wrapper
+	const separator = doc.getElementById(LineType.HTML_SEP_ID);
+
 	if (signatureWrappers.length === 0 && newSignature !== '') {
 		const newSignatureWrapper = doc.createElement('div');
 		newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
 		newSignatureWrapper.innerHTML = newSignature;
 
-		// TODO: consider where to insert the new signature wrapper,
-		//  example before the first quoted text separator
-		doc.body.appendChild(newSignatureWrapper);
+		if (separator) {
+			separator.parentNode?.insertBefore(newSignatureWrapper, separator);
+		} else {
+			doc.body.appendChild(newSignatureWrapper);
+		}
 
 		return doc.documentElement.innerHTML;
 	}
 
 	if (newSignature === '' && signatureWrappers.length > 0) {
-		// If the new signature is empty, remove the signature wrapper and return the body
 		const signatureWrapper = signatureWrappers.item(0);
 		if (signatureWrapper) {
 			signatureWrapper.remove();
@@ -133,25 +134,9 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 
 	let signatureWrapper = null;
 
-	// Locate the separator
-	const separator = doc.getElementById(LineType.HTML_SEP_ID);
-
-	// Locate the first signature. If no wrapper is found then the unchanged mail body is returned
 	signatureWrapper = signatureWrappers.item(0);
 	if (signatureWrapper == null) {
 		return doc.documentElement.innerHTML;
-	}
-
-	/*
-	 * If a separator is present it should be located after the signature
-	 * (the content after the separator is quoted text which shouldn't be altered).
-	 * Otherwise the original body content is returned
-	 */
-	if (
-		separator &&
-		signatureWrapper.compareDocumentPosition(separator) !== Node.DOCUMENT_POSITION_FOLLOWING
-	) {
-		return body;
 	}
 
 	signatureWrapper.innerHTML = newSignature;
