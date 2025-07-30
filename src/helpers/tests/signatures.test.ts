@@ -162,5 +162,32 @@ describe('Signatures', () => {
 				'<head></head><body><p>hello</p><div class="signature-div"></div></body>'
 			);
 		});
+
+		it('should replace HTML signature with new one', () => {
+			const account = generateAccount();
+			const signature1: Signature = {
+				content: [{ _content: 'This is my Signature 1', type: 'text/html' }],
+				id: '123',
+				name: 'MySig1'
+			};
+			const signature2: Signature = {
+				content: [{ _content: 'This is my Signature 2', type: 'text/html' }],
+				id: '456',
+				name: 'MySig2'
+			};
+			(getUserAccount as jest.Mock).mockReturnValue({
+				...account,
+				signatures: { signature: [signature1, signature2] }
+			});
+
+			const editorText: EditorText = {
+				plainText: '',
+				richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
+			};
+			const mailBodyWithSignature = getMailBodyWithSignature(editorText, signature2.id);
+			expect(mailBodyWithSignature.richText).toBe(
+				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
+			);
+		});
 	});
 });
