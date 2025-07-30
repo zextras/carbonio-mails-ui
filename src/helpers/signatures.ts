@@ -139,7 +139,7 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 	// Locate the first signature. If no wrapper is found then the unchanged mail body is returned
 	signatureWrapper = signatureWrappers.item(0);
 	if (signatureWrapper == null) {
-		return body;
+		return doc.documentElement.innerHTML;
 	}
 
 	/*

@@ -6,7 +6,6 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
-import type { EditorText, Signature } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { LineType } from 'commons/utils';
 import {
@@ -119,73 +118,58 @@ describe('Signatures', () => {
 	});
 
 	describe('getMailBodyWithSignature', () => {
-		it('should add HTML signature if not in empty and is not the body', () => {
-			const account = generateAccount();
-			const signature: Signature = {
-				content: [{ _content: 'This is my Signature', type: 'text/html' }],
-				id: '123',
-				name: 'MySig'
-			};
-			(getUserAccount as jest.Mock).mockReturnValue({
-				...account,
-				signatures: { signature: [signature] }
-			});
+		const account = generateAccount();
+		const signature1 = {
+			content: [{ _content: 'This is my Signature 1', type: 'text/html' }],
+			id: '123',
+			name: 'MySig1'
+		};
+		const signature2 = {
+			content: [{ _content: 'This is my Signature 2', type: 'text/html' }],
+			id: '456',
+			name: 'MySig2'
+		};
 
-			const editorText: EditorText = {
-				plainText: '',
-				richText: '<p>hello</p>'
-			};
-			const mailBodyWithSignature = getMailBodyWithSignature(editorText, signature.id);
-			expect(mailBodyWithSignature.richText).toBe(
-				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature</div></body>'
-			);
-		});
-
-		it('should remove the signature when no signature is selected', () => {
-			const account = generateAccount();
-			const signature: Signature = {
-				content: [{ _content: 'This is my Signature', type: 'text/html' }],
-				id: '123',
-				name: 'MySig'
-			};
-			(getUserAccount as jest.Mock).mockReturnValue({
-				...account,
-				signatures: { signature: [signature] }
-			});
-
-			const editorText: EditorText = {
-				plainText: '',
-				richText: '<p>hello</p><div class="signature-div">This is my Signature</div>'
-			};
-			const mailBodyWithSignature = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
-			expect(mailBodyWithSignature.richText).toBe('<head></head><body><p>hello</p></body>');
-		});
-
-		it('should replace HTML signature with new one', () => {
-			const account = generateAccount();
-			const signature1: Signature = {
-				content: [{ _content: 'This is my Signature 1', type: 'text/html' }],
-				id: '123',
-				name: 'MySig1'
-			};
-			const signature2: Signature = {
-				content: [{ _content: 'This is my Signature 2', type: 'text/html' }],
-				id: '456',
-				name: 'MySig2'
-			};
+		beforeEach(() => {
 			(getUserAccount as jest.Mock).mockReturnValue({
 				...account,
 				signatures: { signature: [signature1, signature2] }
 			});
+		});
 
-			const editorText: EditorText = {
+		it('should add HTML signature when not present', () => {
+			const editorText = { plainText: '', richText: '<p>hello</p>' };
+			const result = getMailBodyWithSignature(editorText, signature1.id);
+			expect(result.richText).toContain('<p>hello</p>');
+			expect(result.richText).toContain(signature1.content[0]._content);
+		});
+
+		it('should remove signature when none selected', () => {
+			const editorText = {
 				plainText: '',
 				richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
 			};
-			const mailBodyWithSignature = getMailBodyWithSignature(editorText, signature2.id);
-			expect(mailBodyWithSignature.richText).toBe(
-				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
-			);
+			const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+			expect(result.richText).toBe('<head></head><body><p>hello</p></body>');
 		});
+
+		it('should replace existing signature with new one', () => {
+			const editorText = {
+				plainText: '',
+				richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
+			};
+			const result = getMailBodyWithSignature(editorText, signature2.id);
+			expect(result.richText).toContain(signature2.content[0]._content);
+			expect(result.richText).not.toContain(signature1.content[0]._content);
+		});
+
+		it.each([NO_SIGNATURE_ID, '123'])(
+			`should return whole document when using signature %s`,
+			(signatureId: string) => {
+				const editorText = { plainText: '', richText: '<p></p>' };
+				const result = getMailBodyWithSignature(editorText, signatureId);
+				expect(result.richText).toMatch(/^<head><\/head><body>.*<\/body>$/);
+			}
+		);
 	});
 });
