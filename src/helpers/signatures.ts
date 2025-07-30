@@ -97,10 +97,12 @@ const composeMailBodyWithSignature = (
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
-function signatureInQuotedText(signatureWrapper: Element, quotedBlockSeparator: HTMLElement) {
-	return signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
-			Node.DOCUMENT_POSITION_FOLLOWING;
-}
+const signatureInQuotedText = (
+	signatureWrapper: Element,
+	quotedBlockSeparator: HTMLElement
+): boolean =>
+	signatureWrapper.compareDocumentPosition(quotedBlockSeparator) !==
+	Node.DOCUMENT_POSITION_FOLLOWING;
 
 /**
  * Replaces the signature in a HTML message body.
@@ -117,31 +119,27 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 
 	const newValidSignature = newSignature !== '';
 	const existingSignature = !!signatureWrapper;
-	const noExistingSignature = !existingSignature;
 
-	if (existingSignature && newValidSignature) {
-		if (quotedBlockSeparator) {
-			if (
-				signatureInQuotedText(signatureWrapper, quotedBlockSeparator)
-			) {
-				const newSignatureWrapper = doc.createElement('div');
-				newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
-				newSignatureWrapper.innerHTML = newSignature;
-				quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
+	if (newValidSignature) {
+		if (existingSignature) {
+			if (quotedBlockSeparator) {
+				if (signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
+					const newSignatureWrapper = doc.createElement('div');
+					newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
+					newSignatureWrapper.innerHTML = newSignature;
+					quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
+				} else {
+					signatureWrapper.innerHTML = newSignature;
+				}
 			} else {
 				signatureWrapper.innerHTML = newSignature;
 			}
-		} else {
-			signatureWrapper.innerHTML = newSignature;
+			return doc.documentElement.innerHTML;
 		}
-		return doc.documentElement.innerHTML;
-	}
 
-	if (noExistingSignature && newValidSignature) {
 		const newSignatureWrapper = doc.createElement('div');
 		newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
 		newSignatureWrapper.innerHTML = newSignature;
-
 		if (quotedBlockSeparator) {
 			quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator);
 		} else {
@@ -150,16 +148,15 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
 
 		return doc.documentElement.innerHTML;
 	}
-
-	if (!newValidSignature && existingSignature) {
+	if (existingSignature) {
 		if (quotedBlockSeparator) {
 			if (signatureInQuotedText(signatureWrapper, quotedBlockSeparator)) {
 				// skip it
 			} else {
-				signatureWrapper.remove()
+				signatureWrapper.remove();
 			}
 		} else {
-			signatureWrapper.remove()
+			signatureWrapper.remove();
 		}
 	}
 
