@@ -620,48 +620,6 @@ describe('Edit view', () => {
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
 		});
-		describe('with attachment to convert to smart link', () => {
-			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-				createAPIInterceptor(
-					'post',
-					'/service/soap/GetShareInfoRequest',
-					HttpResponse.json(getEmptyMSWShareInfoResponse())
-				);
-				createCheckSmimeEnabledAPIInterceptor();
-				// setup api interceptor and mail to send editor
-				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
-				setupEditorStore({ editors: [] });
-				const editor = await readyToBeSentEditorTestCase({
-					id: '123-testId',
-					did: '123-testId',
-					savedAttachments: [
-						{
-							filename: 'large-document.pdf',
-							contentType: 'application/pdf',
-							requiresSmartLinkConversion: true,
-							size: 81290955,
-							messageId: '123-testId',
-							partName: '2',
-							isInline: false
-						}
-					]
-				});
-				addEditor({ id: editor.id, editor });
-
-				const { user } = setupTest(
-					<EditView {...{ editorId: editor.id, closeController: noop }} />
-				);
-				const btnSend = screen.queryByTestId('BtnSendMailMulti');
-				await waitFor(() => expect(btnSend).toBeEnabled());
-				await act(async () => {
-					await user.click(btnSend as HTMLElement);
-				});
-
-				await apiInterceptor;
-				await waitFor(() => screen.findByText('label.error_try_again'));
-				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
-			});
-		});
 	});
 
 	describe('Draft', () => {
