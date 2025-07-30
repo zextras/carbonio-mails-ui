@@ -4,20 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { faker } from '@faker-js/faker';
-import { ErrorSoapBodyResponse, SoapFault } from '@zextras/carbonio-shell-ui';
-
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from 'helpers/text';
-import { useEditorsStore } from 'store/editor/store';
 import { setupEditorStore } from 'tests/generators/editor-store';
 import { generateEditorV2Case } from 'tests/generators/editors';
-import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from 'types/index.d';
+import { MessageAction } from 'types/index.d';
 import {
-	addSmartLinksToText,
 	findMessageActionById,
 	generateSmartLinkHtml,
-	updateEditorWithSmartLinks
+	insertAboveSignature
 } from 'ui-actions/utils';
 
 describe('findMessageActionById', () => {
@@ -116,17 +110,17 @@ describe('generateSmartLinkHtml', () => {
 		const editor = await generateEditorV2Case(1);
 		setupEditorStore({ editors: [editor] });
 
-		const smartLink = { publicUrl: 'https://example.com/file' };
+		const publicLinkUrl = { publicUrl: 'https://example.com/file' };
 		const index = 0;
 		const result = generateSmartLinkHtml({
-			smartLink,
+			publicLinkUrl: publicLinkUrl.publicUrl,
 			filename: editor.savedAttachments[index].filename
 		});
 		const htmlDoc = parseTextToHTMLDocument(result);
 		const expectedFileName = editor.savedAttachments[index].filename;
 		const linkElement = htmlDoc.getElementsByTagName('a')[0];
 		const hrefValue = linkElement.getAttribute('href');
-		expect(hrefValue).toBe(smartLink.publicUrl);
+		expect(hrefValue).toBe(publicLinkUrl.publicUrl);
 		expect(linkElement.text).toBe(expectedFileName);
 	});
 
@@ -150,114 +144,125 @@ describe('generateSmartLinkHtml', () => {
 	});
 });
 
-test('addSmartLinksToText add smartlinks to both plain and rich text correctly', async () => {
-	const editor = await generateEditorV2Case(1);
-	const createSmartLinkResponse = {
-		smartLinks: [
-			{ publicUrl: 'https://example.com/file1' },
-			{ publicUrl: 'https://example.com/file2' }
-		]
-	};
-	const result = addSmartLinksToText({
-		response: createSmartLinkResponse,
-		text: editor.text,
-		attachments: editor.savedAttachments
-	});
-	const plainTextResponse = editor.text.plainText.concat(
-		createSmartLinkResponse.smartLinks.map((smartLink) => smartLink.publicUrl).join('\n')
-	);
+describe('insertAboveSignature', () => {
+	it('should insert content above signature div when signature div exists', () => {
+		const htmlContent = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '<p>Inserted content</p>';
+		const expected =
+			'<p>this is a message</p><p>Inserted content</p><div class="signature-div">&nbsp;</div>';
 
-	const expectedUrl1 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;
-	const expectedUrl2 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;
+		const result = insertAboveSignature(htmlContent, contentToInsert);
 
-	expect(result.plainText).toContain(plainTextResponse);
-	expect(result.richText).toContain(expectedUrl1);
-	expect(result.richText).toContain(expectedUrl2);
-});
-
-// createSmartLink
-
-describe('createSmartLink', () => {
-	it('request should contain the correct array of smart link attachments', async () => {
-		const editor = await generateEditorV2Case(1);
-		const attachmentToConvert = editor.savedAttachments[0];
-		attachmentToConvert.requiresSmartLinkConversion = true;
-		setupEditorStore({ editors: [editor] });
-
-		const interceptor = createSoapAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
-			'CreateSmartLinks',
-			{
-				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
-			}
-		);
-		updateEditorWithSmartLinks({
-			createSnackbar: jest.fn(),
-			t: jest.fn(),
-			editorId: editor.id
-		});
-		const request = await interceptor;
-		const smartLink = {
-			draftId: attachmentToConvert.messageId,
-			partName: attachmentToConvert.partName
-		};
-		expect(request.attachments[0]).toMatchObject(smartLink);
-		expect(request.attachments).toHaveLength(1);
+		expect(result).toBe(expected);
 	});
 
-	it('should remove the attachment that has been converted to smartLink', async () => {
-		const editor = await generateEditorV2Case(1);
-		const oldSavedAttachments = editor.savedAttachments;
-		const oldSavedAttachmentsLength = oldSavedAttachments.length;
-		const attachmentToConvert = oldSavedAttachments[0];
-		attachmentToConvert.requiresSmartLinkConversion = true;
-		setupEditorStore({ editors: [editor] });
+	it('should append content at the end when no signature div exists', () => {
+		const htmlContent = '<p>this is a message</p><p>another paragraph</p>';
+		const contentToInsert = '<p>Appended content</p>';
+		const expected = '<p>this is a message</p><p>another paragraph</p><p>Appended content</p>';
 
-		const interceptor = createSoapAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
-			'CreateSmartLinks',
-			{
-				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
-			}
-		);
-		await updateEditorWithSmartLinks({
-			createSnackbar: jest.fn(),
-			t: jest.fn(),
-			editorId: editor.id
-		});
-		await interceptor;
+		const result = insertAboveSignature(htmlContent, contentToInsert);
 
-		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
-		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
+		expect(result).toBe(expected);
 	});
 
-	it('should throw an error when the API call fails', async () => {
-		const editor = await generateEditorV2Case(1);
-		const oldSavedAttachments = editor.savedAttachments;
-		const oldSavedAttachmentsLength = oldSavedAttachments.length;
-		const attachmentToConvert = oldSavedAttachments[0];
-		attachmentToConvert.requiresSmartLinkConversion = true;
-		setupEditorStore({ editors: [editor] });
-		const expectedRejectReason: SoapFault = {
-			Reason: { Text: 'Failed due to connection timeout' },
-			Detail: {
-				Error: { Code: 'Failed upload to Files', Trace: faker.string.uuid() }
-			},
-			Code: {
-				Value: '123'
-			}
-		};
+	it('should handle signature div with additional attributes', () => {
+		const htmlContent =
+			'<p>message</p><div id="sig1" class="signature-div extra-class" data-test="value">&nbsp;</div>';
+		const contentToInsert = '<p>Inserted content</p>';
+		const expected =
+			'<p>message</p><p>Inserted content</p><div id="sig1" class="signature-div extra-class" data-test="value">&nbsp;</div>';
 
-		createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
-			Fault: expectedRejectReason
-		});
+		const result = insertAboveSignature(htmlContent, contentToInsert);
 
-		expect(
-			updateEditorWithSmartLinks({
-				createSnackbar: jest.fn(),
-				t: jest.fn(),
-				editorId: editor.id
-			})
-		).rejects.toEqual(expectedRejectReason);
-		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
-		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength);
+		expect(result).toBe(expected);
+	});
+
+	it('should handle multiple signature divs and use the first one', () => {
+		const htmlContent =
+			'<p>message</p><div class="signature-div">first</div><div class="signature-div">second</div>';
+		const contentToInsert = '<p>Inserted content</p>';
+		const expected =
+			'<p>message</p><p>Inserted content</p><div class="signature-div">first</div><div class="signature-div">second</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle empty html content', () => {
+		const htmlContent = '';
+		const contentToInsert = '<p>Inserted content</p>';
+		const expected = '<p>Inserted content</p>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle empty content to insert', () => {
+		const htmlContent = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '';
+		const expected = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle complex HTML content to insert', () => {
+		const htmlContent = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '<div><p>Nested content</p><span>More content</span></div>';
+		const expected =
+			'<p>this is a message</p><div><p>Nested content</p><span>More content</span></div><div class="signature-div">&nbsp;</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle multiple elements to insert', () => {
+		const htmlContent = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '<p>First element</p><p>Second element</p>';
+		const expected =
+			'<p>this is a message</p><p>First element</p><p>Second element</p><div class="signature-div">&nbsp;</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should preserve whitespace and formatting', () => {
+		const htmlContent = '<p>this is a message</p>\n<div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '<p>Inserted content</p>\n';
+		const expected =
+			'<p>this is a message</p>\n<p>Inserted content</p>\n<div class="signature-div">&nbsp;</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle signature div with class as substring', () => {
+		const htmlContent =
+			'<p>message</p><div class="my-signature-div-class">wrong div</div><div class="signature-div">correct div</div>';
+		const contentToInsert = '<p>Inserted content</p>';
+		const expected =
+			'<p>message</p><div class="my-signature-div-class">wrong div</div><p>Inserted content</p><div class="signature-div">correct div</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
+	});
+
+	it('should handle self-closing tags in content to insert', () => {
+		const htmlContent = '<p>this is a message</p><div class="signature-div">&nbsp;</div>';
+		const contentToInsert = '<img src="test.jpg" alt="test"><br>';
+		const expected =
+			'<p>this is a message</p><img src="test.jpg" alt="test"><br><div class="signature-div">&nbsp;</div>';
+
+		const result = insertAboveSignature(htmlContent, contentToInsert);
+
+		expect(result).toBe(expected);
 	});
 });
