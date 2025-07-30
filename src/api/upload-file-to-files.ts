@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 type FileUploadSuccessResponse = {
 	nodeId: string;
@@ -21,13 +21,24 @@ function encodeBase64(str: string): string {
 	);
 }
 
-export async function uploadToFiles(file: File): Promise<AxiosResponse<FileUploadSuccessResponse>> {
+export async function uploadToFiles(file: File): Promise<string> {
 	const headers = {
 		'Content-Type': file.type || 'application/octet-stream',
-		'Content-Length': file.size,
 		Filename: encodeBase64(file.name),
 		ParentId: 'LOCAL_ROOT'
 	};
 
-	return axios.post('/services/files/upload', file, { headers });
+	try {
+		const response = await axios.post<FileUploadSuccessResponse>('/services/files/upload', file, {
+			headers
+		});
+
+		if (response.data?.nodeId) {
+			return response.data.nodeId;
+		}
+
+		throw new Error('Upload successful but no nodeId returned');
+	} catch (error) {
+		throw new Error('File upload failed');
+	}
 }
