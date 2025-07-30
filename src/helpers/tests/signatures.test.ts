@@ -140,5 +140,27 @@ describe('Signatures', () => {
 				'<head></head><body><p>hello</p><div class="signature-div">This is my Signature</div></body>'
 			);
 		});
+
+		it('should remove the signature when no signature is selected', () => {
+			const account = generateAccount();
+			const signature: Signature = {
+				content: [{ _content: 'This is my Signature', type: 'text/html' }],
+				id: '123',
+				name: 'MySig'
+			};
+			(getUserAccount as jest.Mock).mockReturnValue({
+				...account,
+				signatures: { signature: [signature] }
+			});
+
+			const editorText: EditorText = {
+				plainText: '',
+				richText: '<p>hello</p><div class="signature-div">This is my Signature</div>'
+			};
+			const mailBodyWithSignature = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+			expect(mailBodyWithSignature.richText).toBe(
+				'<head></head><body><p>hello</p><div class="signature-div"></div></body>'
+			);
+		});
 	});
 });
