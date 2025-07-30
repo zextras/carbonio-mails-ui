@@ -133,7 +133,7 @@ describe('Signatures', () => {
 
 			const editorText: EditorText = {
 				plainText: '',
-				richText: '<p>hello</p><div class="signature-div"></div>'
+				richText: '<p>hello</p>'
 			};
 			const mailBodyWithSignature = getMailBodyWithSignature(editorText, signature.id);
 			expect(mailBodyWithSignature.richText).toBe(
@@ -158,9 +158,7 @@ describe('Signatures', () => {
 				richText: '<p>hello</p><div class="signature-div">This is my Signature</div>'
 			};
 			const mailBodyWithSignature = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
-			expect(mailBodyWithSignature.richText).toBe(
-				'<head></head><body><p>hello</p><div class="signature-div"></div></body>'
-			);
+			expect(mailBodyWithSignature.richText).toBe('<head></head><body><p>hello</p></body>');
 		});
 
 		it('should replace HTML signature with new one', () => {
