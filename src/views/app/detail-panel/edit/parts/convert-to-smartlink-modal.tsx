@@ -13,7 +13,7 @@ import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
-import { addSmartLinksToText } from 'ui-actions/utils';
+import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
 
 export const ConvertToSmartlinkModal = ({
 	onClose,
@@ -43,21 +43,19 @@ export const ConvertToSmartlinkModal = ({
 	const onConfirm = useCallback(async () => {
 		try {
 			const text = getText();
-			const results = await Promise.all(
+			const smartLinksArray = await Promise.all(
 				files.map(async (file) => {
 					const uploadToFilesResponse = await uploadToFiles(file);
 					const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse);
 					if (!publicLinkUrl) throw new Error('Link creation failed');
-					return addSmartLinksToText({
+					return generateSmartLinkHtml({
 						publicLinkUrl,
-						text,
 						filename: file.name
 					});
 				})
 			);
-			const richTextResult = results.map((result) => result.richText.trim()).join('\n');
-			const plainTextResult = results.map((result) => result.plainText.trim()).join('\n');
-			setText({ plainText: plainTextResult, richText: richTextResult });
+			const newRichText = insertAboveSignature(text.richText, smartLinksArray.join('<br>\n'));
+			setText({ plainText: text.plainText, richText: newRichText });
 			onClose();
 		} catch {
 			errorSnackbar();
