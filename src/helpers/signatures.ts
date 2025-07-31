@@ -178,17 +178,14 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
 	const plainSignatureValue =
 		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
-	let previousRichText = text.richText;
-	if (previousRichText === '') {
-		previousRichText = '<p></p>';
-	}
+	const previousRichText = text.richText.trim() || '<p></p>';
 
 	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
 
-	const hr = doc.getElementById('zwchr');
-	const hrParentNode = hr?.parentNode;
-	if (hrParentNode?.firstChild?.nodeName === 'HR') {
-		hrParentNode.insertBefore(doc.createElement('p'), hr);
+	const quotedTextSepElement = doc.getElementById(LineType.HTML_SEP_ID);
+	const quotedTextSepElementParentNode = quotedTextSepElement?.parentNode;
+	if (quotedTextSepElementParentNode?.firstChild?.nodeName === 'HR') {
+		quotedTextSepElementParentNode.insertBefore(doc.createElement('p'), quotedTextSepElement);
 	}
 
 	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
