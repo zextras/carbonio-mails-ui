@@ -103,6 +103,17 @@ describe('Signatures', () => {
 					'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2</div><hr id="zwchr"><p>Quoted text</p></body>'
 				);
 			});
+			it('should remove previous signature before quoted text and add the new to the bottom when new signature not empty', () => {
+				const editorText = {
+					plainText: '',
+					richText:
+						'<p>Hello</p><div class="signature-div">This is my Signature 1</div><p>Text after signature</p><hr id="zwchr" /><p>Quoted text</p>'
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.richText).toBe(
+					'<head></head><body><p>Hello</p><p>Text after signature</p><div class="signature-div">This is my Signature 2</div><hr id="zwchr"><p>Quoted text</p></body>'
+				);
+			});
 			it('should remove signature before quoted text when NO_SIGNATURE selected', () => {
 				const editorText = {
 					plainText: '',
@@ -221,6 +232,17 @@ describe('Signatures', () => {
 				const result = getMailBodyWithSignature(editorText, signature2.id);
 				expect(result.richText).toBe(
 					'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
+				);
+			});
+			it('should remove previous signature and add the new one to the bottom when not empty', () => {
+				const editorText = {
+					plainText: '',
+					richText:
+						'<p>hello</p><div class="signature-div">This is my Signature 1</div><p>Text after</p>'
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.richText).toBe(
+					'<head></head><body><p>hello</p><p>Text after</p><div class="signature-div">This is my Signature 2</div></body>'
 				);
 			});
 			it('should remove signature when NO_SIGNATURE selected', () => {

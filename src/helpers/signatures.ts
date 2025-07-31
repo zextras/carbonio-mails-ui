@@ -118,14 +118,12 @@ const addSignatureToDoc = (doc: Document, signature: string): string => {
  */
 const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string => {
 	const signatureBeforeQuotedText = getSignatureBeforeQuotedText(doc);
-	const newSignatureIsEmpty = newSignature === '';
+	if (signatureBeforeQuotedText) {
+		signatureBeforeQuotedText.remove();
+	}
 
-	if (newSignatureIsEmpty) {
-		if (signatureBeforeQuotedText) signatureBeforeQuotedText.remove();
-	} else {
-		signatureBeforeQuotedText
-			? (signatureBeforeQuotedText.innerHTML = newSignature)
-			: addSignatureToDoc(doc, newSignature);
+	if (newSignature !== '') {
+		addSignatureToDoc(doc, newSignature);
 	}
 	return doc.documentElement.innerHTML;
 };
