@@ -9,7 +9,7 @@ type FilesCreateLinkResponse = {
 	data: { createLink: { id: string; url: string } };
 };
 
-export async function getPublicLinkUrl(nodeId: string): Promise<string | undefined> {
+export async function getPublicLinkUrl(nodeId: string): Promise<string> {
 	const headers = {
 		'Content-Type': 'application/json',
 		Pragma: 'no-cache'
