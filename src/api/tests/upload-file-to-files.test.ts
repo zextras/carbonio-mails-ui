@@ -56,102 +56,124 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('uploadToFiles', () => {
-	let file: File;
+	const file = new File(['content'], 'myfile.txt', { type: 'text/plain' });
+	describe('happy path', () => {
+		it('uploads file successfully and returns nodeId', async () => {
+			mockedAxios.post.mockResolvedValueOnce({
+				data: { nodeId: '12345' }
+			});
 
-	beforeEach(() => {
-		file = new File(['content'], 'myfile.txt', { type: 'text/plain' });
-		jest.clearAllMocks();
+			const result = await uploadToFiles(file);
+
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'/services/files/upload',
+				file,
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'Content-Type': 'text/plain',
+						Filename: encodeBase64('myfile.txt'),
+						ParentId: 'LOCAL_ROOT'
+					})
+				})
+			);
+
+			expect(result).toBe('12345');
+		});
+		it('encodes filename using encodeBase64', async () => {
+			mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: 'abc123' } });
+
+			await uploadToFiles(file);
+
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.any(File),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						Filename: encodeBase64(file.name)
+					})
+				})
+			);
+		});
+		it('works with binary files', async () => {
+			const binFile = new File([new ArrayBuffer(4)], 'image.png', {
+				type: 'image/png'
+			});
+
+			mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: 'img321' } });
+
+			const nodeId = await uploadToFiles(binFile);
+
+			expect(nodeId).toBe('img321');
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'/services/files/upload',
+				binFile,
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'Content-Type': 'image/png'
+					})
+				})
+			);
+		});
+		it('falls back to application/octet-stream when file.type is empty', async () => {
+			const customFile = new File(['abc'], 'noTypeFile.bin');
+			mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: '98765' } });
+
+			await uploadToFiles(customFile);
+
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'/services/files/upload',
+				customFile,
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'Content-Type': 'application/octet-stream'
+					})
+				})
+			);
+		});
 	});
+	describe('error handling', () => {
+		it('throws error if upload succeeds but no nodeId is returned', async () => {
+			mockedAxios.post.mockResolvedValueOnce({
+				data: {}
+			});
 
-	it('uploads file successfully and returns nodeId', async () => {
-		mockedAxios.post.mockResolvedValueOnce({
-			data: { nodeId: '12345' }
+			await expect(uploadToFiles(file)).rejects.toThrow(
+				'File upload failed: Upload successful but no valid nodeId returned'
+			);
 		});
 
-		const result = await uploadToFiles(file);
+		it('throws error if axios.post rejects', async () => {
+			mockedAxios.post.mockRejectedValueOnce(new Error('Network error'));
 
-		expect(mockedAxios.post).toHaveBeenCalledWith(
-			'/services/files/upload',
-			file,
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					'Content-Type': 'text/plain',
-					Filename: encodeBase64('myfile.txt'),
-					ParentId: 'LOCAL_ROOT'
-				})
-			})
-		);
-
-		expect(result).toBe('12345');
-	});
-
-	it('falls back to application/octet-stream when file.type is empty', async () => {
-		const customFile = new File(['abc'], 'noTypeFile.bin');
-		mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: '98765' } });
-
-		await uploadToFiles(customFile);
-
-		expect(mockedAxios.post).toHaveBeenCalledWith(
-			'/services/files/upload',
-			customFile,
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					'Content-Type': 'application/octet-stream'
-				})
-			})
-		);
-	});
-
-	it('throws error if upload succeeds but no nodeId is returned', async () => {
-		mockedAxios.post.mockResolvedValueOnce({
-			data: {}
+			await expect(uploadToFiles(file)).rejects.toThrow('File upload failed');
+		});
+		it('throws if the server answers with HTTP 2xx but data is null', async () => {
+			mockedAxios.post.mockResolvedValueOnce({ data: null });
+			await expect(uploadToFiles(file)).rejects.toThrow(
+				'File upload failed: Upload successful but no valid nodeId returned'
+			);
 		});
 
-		await expect(uploadToFiles(file)).rejects.toThrow(
-			'File upload failed: Error: Upload successful but no nodeId returned'
-		);
-	});
+		it('throws if the server returns HTTP 4xx/5xx without response payload (network failure)', async () => {
+			const networkError = new Error('ECONNREFUSED');
+			(networkError as any).code = 'ECONNREFUSED';
+			mockedAxios.post.mockRejectedValueOnce(networkError);
 
-	it('throws error if axios.post rejects', async () => {
-		mockedAxios.post.mockRejectedValueOnce(new Error('Network error'));
-
-		await expect(uploadToFiles(file)).rejects.toThrow('File upload failed');
-	});
-
-	it('encodes filename using encodeBase64', async () => {
-		mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: 'abc123' } });
-
-		await uploadToFiles(file);
-
-		expect(mockedAxios.post).toHaveBeenCalledWith(
-			expect.any(String),
-			expect.any(File),
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					Filename: encodeBase64(file.name)
-				})
-			})
-		);
-	});
-
-	it('works with binary files', async () => {
-		const binFile = new File([new ArrayBuffer(4)], 'image.png', {
-			type: 'image/png'
+			await expect(uploadToFiles(file)).rejects.toThrow('File upload failed: ECONNREFUSED');
 		});
 
-		mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: 'img321' } });
+		it('throws if nodeId is an empty string (falsy but not undefined)', async () => {
+			mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: '' } });
+			await expect(uploadToFiles(file)).rejects.toThrow(
+				'File upload failed: Upload successful but no valid nodeId returned'
+			);
+		});
 
-		const nodeId = await uploadToFiles(binFile);
-
-		expect(nodeId).toBe('img321');
-		expect(mockedAxios.post).toHaveBeenCalledWith(
-			'/services/files/upload',
-			binFile,
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					'Content-Type': 'image/png'
-				})
-			})
-		);
+		it('throws if nodeId is not a string', async () => {
+			mockedAxios.post.mockResolvedValueOnce({ data: { nodeId: 123 } });
+			await expect(uploadToFiles(file)).rejects.toThrow(
+				'File upload failed: Upload successful but no valid nodeId returned'
+			);
+		});
 	});
 });
