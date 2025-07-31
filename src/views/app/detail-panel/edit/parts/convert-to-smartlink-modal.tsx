@@ -63,7 +63,10 @@ export const ConvertToSmartlinkModal = ({
 			);
 			const newPlainText = text.plainText.endsWith('\n')
 				? text.plainText.concat(smartLinksArray.map((link) => link.plainTextLinks).join('\n'))
-				: text.plainText.concat('\n', smartLinksArray.map((link) => link.plainTextLinks).join('\n'));
+				: text.plainText.concat(
+						'\n',
+						smartLinksArray.map((link) => link.plainTextLinks).join('\n')
+					);
 			setText({ plainText: newPlainText, richText: newRichText });
 			onClose();
 		} catch {
@@ -74,6 +77,7 @@ export const ConvertToSmartlinkModal = ({
 
 	return (
 		<Container
+			data-testid="convert-to-smartlink-modal"
 			padding={{ all: 'large' }}
 			mainAlignment="center"
 			crossAlignment="flex-start"
