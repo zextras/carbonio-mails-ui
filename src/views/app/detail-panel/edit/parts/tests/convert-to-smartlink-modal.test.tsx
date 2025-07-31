@@ -27,7 +27,6 @@ jest.mock('api/get-public-link-url', () => ({
 
 describe('ConvertToSmartlinkModal', () => {
 	const mockOnClose = jest.fn();
-	const mockCreateSnackbar = jest.fn();
 
 	const sampleFiles = [
 		new File(['file1 content'], 'file1.txt'),
@@ -58,7 +57,7 @@ describe('ConvertToSmartlinkModal', () => {
 		expect(mockOnClose).toHaveBeenCalledTimes(1);
 	});
 	describe('in richText mode', () => {
-		it('correctly adds the smartlink url at before the signature in richText', async () => {
+		it('correctly adds the smartlink url before the signature', async () => {
 			(uploadToFiles as jest.Mock).mockResolvedValueOnce('uploadResult1');
 			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1');
 			createSoapAPIInterceptor('SaveDraft');
@@ -107,7 +106,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
 			expect(errorSnackbar).toBeInTheDocument();
 		});
-		it('correctly adds more than one smartlink url at the end of the editor richText when no signature is present', async () => {
+		it('correctly adds multiple smartlink urls before the signature', async () => {
 			(uploadToFiles as jest.Mock)
 				.mockResolvedValueOnce('uploadResult1')
 				.mockResolvedValueOnce('uploadResult2');
@@ -169,53 +168,55 @@ describe('ConvertToSmartlinkModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 
-		it('shows error snackbar and closes on API failure', async () => {
-			(uploadToFiles as jest.Mock).mockRejectedValueOnce(new Error('Upload failed'));
-			createSoapAPIInterceptor('SaveDraft');
+		describe('on api failure', () => {
+			it('shows error snackbar and closes on API failure', async () => {
+				(uploadToFiles as jest.Mock).mockRejectedValueOnce(new Error('Upload failed'));
+				createSoapAPIInterceptor('SaveDraft');
 
-			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
-			useEditorsStore.setState({ editors: { [editor.id]: editor } });
-			const { user } = setupTest(
-				<ConvertToSmartlinkModal
-					onClose={mockOnClose}
-					editorId={editor.id}
-					files={[
-						new File(['file1 content'], 'file1.txt'),
-						new File(['file2 content'], 'file2.txt')
-					]}
-				/>
-			);
+				const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+				useEditorsStore.setState({ editors: { [editor.id]: editor } });
+				const { user } = setupTest(
+					<ConvertToSmartlinkModal
+						onClose={mockOnClose}
+						editorId={editor.id}
+						files={[
+							new File(['file1 content'], 'file1.txt'),
+							new File(['file2 content'], 'file2.txt')
+						]}
+					/>
+				);
 
-			await user.click(screen.getByText('Create'));
+				await user.click(screen.getByText('Create'));
 
-			expect(mockOnClose).toHaveBeenCalled();
-			const errorSnackbar = screen.getByText('Something went wrong, please try again');
-			expect(errorSnackbar).toBeInTheDocument();
-		});
+				expect(mockOnClose).toHaveBeenCalled();
+				const errorSnackbar = screen.getByText('Something went wrong, please try again');
+				expect(errorSnackbar).toBeInTheDocument();
+			});
 
-		it('handles missing public link URL', async () => {
-			(uploadToFiles as jest.Mock).mockResolvedValue('uploadResult');
-			(getPublicLinkUrl as jest.Mock).mockResolvedValue(null); // no URL
+			it('handles missing public link URL', async () => {
+				(uploadToFiles as jest.Mock).mockResolvedValue('uploadResult');
+				(getPublicLinkUrl as jest.Mock).mockResolvedValue(null); // no URL
 
-			createSoapAPIInterceptor('SaveDraft');
+				createSoapAPIInterceptor('SaveDraft');
 
-			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
-			useEditorsStore.setState({ editors: { [editor.id]: editor } });
-			const { user } = setupTest(
-				<ConvertToSmartlinkModal
-					onClose={mockOnClose}
-					editorId={editor.id}
-					files={[
-						new File(['file1 content'], 'file1.txt'),
-						new File(['file2 content'], 'file2.txt')
-					]}
-				/>
-			);
+				const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+				useEditorsStore.setState({ editors: { [editor.id]: editor } });
+				const { user } = setupTest(
+					<ConvertToSmartlinkModal
+						onClose={mockOnClose}
+						editorId={editor.id}
+						files={[
+							new File(['file1 content'], 'file1.txt'),
+							new File(['file2 content'], 'file2.txt')
+						]}
+					/>
+				);
 
-			await user.click(screen.getByText('Create'));
-			expect(mockOnClose).toHaveBeenCalled();
-			const errorSnackbar = screen.getByText('Something went wrong, please try again');
-			expect(errorSnackbar).toBeInTheDocument();
+				await user.click(screen.getByText('Create'));
+				expect(mockOnClose).toHaveBeenCalled();
+				const errorSnackbar = screen.getByText('Something went wrong, please try again');
+				expect(errorSnackbar).toBeInTheDocument();
+			});
 		});
 	});
 });
