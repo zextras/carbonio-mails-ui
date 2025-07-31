@@ -82,7 +82,7 @@ export const ConvertToSmartlinkModal = ({
 	}, [errorSnackbar, files, getText, onClose, setText]);
 
 	const modalHeaderTitle = awaitingConfirmation
-		? t('smart_link_modal.header.title', 'Upload atttachment as Smart Link')
+		? t('smart_link_modal.header.title', 'Upload attachment as Smart Link')
 		: t('smart_link_modal.progress.title', 'Uploading attachment as Smart Link');
 
 	const modalBodyText1 = awaitingConfirmation
