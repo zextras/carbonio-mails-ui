@@ -90,8 +90,9 @@ const isElementInQuotedText = (signatureWrapper: Element, doc: Document): boolea
 	);
 };
 
+const SIGNATURE_CLASS = 'signature-div';
 const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
-	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
+	const signatureWrappers = doc.getElementsByClassName(SIGNATURE_CLASS);
 	const firstSignatureInBody = signatureWrappers.item(0);
 	if (!firstSignatureInBody || isElementInQuotedText(firstSignatureInBody, doc)) {
 		return null;
@@ -102,7 +103,7 @@ const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
 const addSignatureToDoc = (doc: Document, signature: string): string => {
 	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
 	const newSignatureWrapper = doc.createElement('div');
-	newSignatureWrapper.className = LineType.SIGNATURE_CLASS;
+	newSignatureWrapper.className = SIGNATURE_CLASS;
 	newSignatureWrapper.innerHTML = signature;
 	quotedBlockSeparator
 		? quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator)
