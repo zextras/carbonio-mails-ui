@@ -105,6 +105,10 @@ const addSignatureToDoc = (doc: Document, signature: string): string => {
 	const newSignatureWrapper = doc.createElement('div');
 	newSignatureWrapper.className = SIGNATURE_CLASS;
 	newSignatureWrapper.innerHTML = signature;
+	if (quotedBlockSeparator) {
+		newSignatureWrapper.appendChild(doc.createElement('br'));
+		newSignatureWrapper.appendChild(doc.createElement('br'));
+	}
 	quotedBlockSeparator
 		? quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator)
 		: doc.body.appendChild(newSignatureWrapper);
