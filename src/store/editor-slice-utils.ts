@@ -209,10 +209,14 @@ export const extractBody = (msg: MailMessage): Array<string> => {
 	return [text ?? html ?? '', html ?? text ?? ''];
 };
 
-export function generateReplyText(
-	mail: MailMessage,
-	labels: { [k: string]: string }
-): Array<string> {
+type Labels = {
+	to: string;
+	from: string;
+	cc: string;
+	sent: string;
+	subject: string;
+};
+export function generateReplyText(mail: MailMessage, labels: Labels): Array<string> {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
 		(c) => `"${c.fullName}" <${c.address}>`

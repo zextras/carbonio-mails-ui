@@ -7,9 +7,15 @@
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
+import { MailMessage } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
-import { retrieveALL, retrieveCC, retrieveReplyTo } from 'store/editor-slice-utils';
+import {
+	generateReplyText,
+	retrieveALL,
+	retrieveCC,
+	retrieveReplyTo
+} from 'store/editor-slice-utils';
 import { generateMessage } from 'tests/generators/generateMessage';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
@@ -377,5 +383,64 @@ describe('retrieveReplyTo', () => {
 		const result = retrieveReplyTo(receivedMessage);
 
 		expect(result).toEqual([{ address: meAddress, type: 't' }]);
+	});
+
+	describe('generateReplyText', () => {
+		const mailMessage: MailMessage = {
+			attachments: undefined,
+			autoSendTime: 0,
+			body: {
+				contentType: '',
+				content: '<p>Hello from me!</p>',
+				truncated: false
+			},
+			conversation: '',
+			creationDateFromMailHeaders: '',
+			date: 0,
+			did: '',
+			flagged: false,
+			fragment: '',
+			hasAttachment: false,
+			id: '',
+			invite: undefined,
+			isComplete: false,
+			isDeleted: false,
+			isDraft: false,
+			isEncrypted: false,
+			isForwarded: false,
+			isInvite: false,
+			isReadReceiptRequested: false,
+			isReplied: false,
+			isScheduled: false,
+			isSentByMe: false,
+			messageIdFromMailHeaders: '',
+			messageIsFromDistributionList: false,
+			messageIsFromExternalDomain: false,
+			originalId: '',
+			parent: '',
+			participants: undefined,
+			parts: [],
+			read: false,
+			replyType: undefined,
+			sensitivity: undefined,
+			shr: undefined,
+			signature: undefined,
+			size: 0,
+			subject: 'This is the subject',
+			tags: [],
+			urgent: false
+		};
+		const labels = {
+			cc: 'CC_LABEL:',
+			from: 'FROM_LABEL:',
+			sent: 'SENT_LABEL:',
+			subject: 'SUBJECT_LABEL:',
+			to: 'TO_LABEL:'
+		};
+		it('should return subject with given label in bold and original message subject', () => {
+			const result = generateReplyText(mailMessage, labels);
+			const richText = result[1];
+			expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
+		});
 	});
 });
