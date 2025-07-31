@@ -252,6 +252,7 @@ export function generateReplyText(
 		extractBody(mail)[0]
 	}`;
 
+	// TODO: why are we converting plain text to plain text??? textToRetArray[0] is plainText
 	return [convertHtmlToPlainText(textToRetArray[0]), textToRetArray[1]];
 }
 
