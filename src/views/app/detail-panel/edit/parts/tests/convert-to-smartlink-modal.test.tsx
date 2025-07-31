@@ -168,6 +168,47 @@ describe('ConvertToSmartlinkModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 	});
+	describe('in plainText mode', () => {
+		it('correctly adds multiple smartlink urls at the end of the document', async () => {
+			(uploadToFiles as jest.Mock)
+				.mockResolvedValueOnce('uploadResult1')
+				.mockResolvedValueOnce('uploadResult2');
+			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			createSoapAPIInterceptor('SaveDraft');
+
+			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+			useEditorsStore.setState({ editors: { [editor.id]: editor } });
+			const { user } = setupTest(
+				<ConvertToSmartlinkModal
+					onClose={mockOnClose}
+					editorId={editor.id}
+					files={[
+						new File(['file1 content'], 'file1.txt'),
+						new File(['file2 content'], 'file2.txt')
+					]}
+				/>
+			);
+
+			const confirmButton = screen.getByRole('button', {
+				name: /create/i
+			});
+			await user.click(confirmButton);
+
+			expect(uploadToFiles).toHaveBeenCalledTimes(2);
+			expect(getPublicLinkUrl).toHaveBeenCalledTimes(2);
+
+			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
+
+			const newText = newEditor.text.plainText;
+
+			expect(newText).toBe(editor.text.plainText.concat(`url1\n`).concat('url2'));
+			// intercepting the save draft snackbar to reach the lifecycle of the component
+			// not interested in the outcome of the save draft, an error is acceptable for our purpose
+			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
+			expect(errorSnackbar).toBeInTheDocument();
+		});
+	});
+
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
 			(uploadToFiles as jest.Mock).mockRejectedValueOnce(new Error('Upload failed'));
