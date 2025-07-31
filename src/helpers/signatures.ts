@@ -100,14 +100,6 @@ const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
 	return firstSignatureInBody;
 };
 
-const getBodyBeforeQuotedText = (doc: Document): Element | null => {
-	const quotedTextSeparator = doc.getElementById(LineType.HTML_SEP_ID);
-	if (!quotedTextSeparator) {
-		return null;
-	}
-	return quotedTextSeparator.parentNode as Element;
-};
-
 const addSignatureToDoc = (doc: Document, signature: string): string => {
 	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
 	const newSignatureWrapper = doc.createElement('div');
