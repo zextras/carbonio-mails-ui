@@ -74,6 +74,12 @@ export const ConvertToSmartlinkModal = ({
 			onClose();
 		}
 	}, [errorSnackbar, files, getText, onClose, setText]);
+	const modalHeaderTitle = t('smart_link_modal.header.title', 'Upload atttachment as Smart Link');
+	const modalBodyText1 = t('smart_link_modal.body.text1', 'The attachment exceeds the size limit');
+	const modalBodyText2 = t(
+		'smart_link_modal.body.text2',
+		'Would you like to convert it into a Smart Link?'
+	);
 
 	return (
 		<Container
@@ -86,7 +92,7 @@ export const ConvertToSmartlinkModal = ({
 				overflowY: 'auto'
 			}}
 		>
-			<ModalHeader title={'Attachments too large'} onClose={onClose} />
+			<ModalHeader title={modalHeaderTitle} onClose={onClose} />
 			<Container
 				mainAlignment="center"
 				crossAlignment="flex-start"
@@ -95,11 +101,12 @@ export const ConvertToSmartlinkModal = ({
 					overflowY: 'auto'
 				}}
 			>
-				<Text>convert attachments to smart links?</Text>
+				<Text>{modalBodyText1}</Text>
+				<Text>{modalBodyText2}</Text>
 				<ModalFooter
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
-					label={t('label.create', 'Create')}
+					label={t('label.confirm', 'Confirm')}
 					secondaryLabel={t('label.cancel', 'Cancel')}
 				/>
 			</Container>
