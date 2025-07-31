@@ -418,7 +418,12 @@ describe('retrieveReplyTo', () => {
 			messageIsFromExternalDomain: false,
 			originalId: '',
 			parent: '',
-			participants: undefined,
+			participants: [
+				{
+					type: 'f',
+					address: 'sender@test.com'
+				}
+			],
 			parts: [],
 			read: false,
 			replyType: undefined,
@@ -441,6 +446,12 @@ describe('retrieveReplyTo', () => {
 			const result = generateReplyText(mailMessage, labels);
 			const richText = result[1];
 			expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
+		});
+
+		it('should return sent with given label in bold and original message sender full name and address', () => {
+			const result = generateReplyText(mailMessage, labels);
+			const richText = result[1];
+			expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
 		});
 	});
 });
