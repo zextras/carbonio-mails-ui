@@ -42,7 +42,7 @@ export async function uploadToFiles(file: File): Promise<string> {
 		}
 		return response.data.nodeId;
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error ?? 'Unknown error');
+		const message = error instanceof Error ? error.message : error?.toString() || 'Unknown error';
 		throw new Error(`File upload failed: ${message}`);
 	}
 }
