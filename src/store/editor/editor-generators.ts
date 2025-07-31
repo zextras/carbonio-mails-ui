@@ -70,7 +70,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -180,8 +180,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const editorId = uuid();
 
 	const plainText = compositionData?.text?.[0] ?? `\n\n${LineType.SIGNATURE_PRE_SEP}\n`;
-	const richText =
-		compositionData?.text?.[1] ?? `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`;
+	const richText = compositionData?.text?.[1] ?? `<p></p>`;
 
 	const recipients = getMsgRecipients(compositionData);
 
@@ -242,7 +241,7 @@ const generateReplyAndReplyAllMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p>`
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
@@ -315,7 +314,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const folderRoots = getRootsMap();
@@ -374,7 +373,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const folderRoots = getRootsMap();

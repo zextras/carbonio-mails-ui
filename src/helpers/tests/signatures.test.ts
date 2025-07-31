@@ -7,9 +7,7 @@ import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
-import { LineType } from 'commons/utils';
 import {
-	composeMailBodyWithSignature,
 	getMailBodyWithSignature,
 	getSignatures,
 	getSignatureValue,
@@ -18,50 +16,6 @@ import {
 } from 'helpers/signatures';
 
 describe('Signatures', () => {
-	describe('composeMailBodyWithSignature', () => {
-		test('composeMailBodyWithSignature with plain text', () => {
-			expect(composeMailBodyWithSignature('', false)).toBe('');
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe(
-				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum`
-			);
-			expect(composeMailBodyWithSignature('lorem ipsum\nlorem ipsum', false)).toBe(
-				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum\nlorem ipsum`
-			);
-		});
-
-		test('composeMailBodyWithSignature in plain text with html signature', () => {
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe(
-				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum`
-			);
-			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', false)).toBe(
-				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum\nlore ipsum`
-			);
-			expect(
-				composeMailBodyWithSignature(
-					'lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum',
-					false
-				)
-			).toBe(`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum lorem ipsum`);
-		});
-
-		test('composeMailBodyWithSignature in rich text with html signature', () => {
-			expect(composeMailBodyWithSignature('lorem ipsum', true)).toBe(
-				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum</div>`
-			);
-			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', true)).toBe(
-				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<br/>lore ipsum</div>`
-			);
-			expect(
-				composeMailBodyWithSignature(
-					'lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum',
-					true
-				)
-			).toBe(
-				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>`
-			);
-		});
-	});
-
 	describe('getSignatures', () => {
 		test('getSignatures from empty account', () => {
 			expect(getSignatures({} as Account)).toEqual([
@@ -210,8 +164,17 @@ describe('Signatures', () => {
 			it('should add signature when no signature is present', () => {
 				const editorText = { plainText: '', richText: '<p>hello</p>' };
 				const result = getMailBodyWithSignature(editorText, signature1.id);
-				expect(result.richText).toContain('<p>hello</p>');
-				expect(result.richText).toContain(signature1.content[0]._content);
+				expect(result.richText).toBe(
+					`<head></head><body><p>hello</p><div class="signature-div">This is my Signature 1</div></body>`
+				);
+			});
+			it('should add empty paragraph if text is empty', () => {
+				const editorText = { plainText: '', richText: '' };
+				const result = getMailBodyWithSignature(editorText, signature1.id);
+				const emptyParagraph = `<p></p>`;
+				expect(result.richText).toBe(
+					`<head></head><body>${emptyParagraph}<div class="signature-div">This is my Signature 1</div></body>`
+				);
 			});
 			it('should replace existing signature with new one', () => {
 				const editorText = {

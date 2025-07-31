@@ -79,24 +79,6 @@ const getSignature = (
 const getSignatureValue = (account: Account | undefined, signatureId: string): string =>
 	getSignature(account, signatureId)?.value.description ?? '';
 
-/**
- * Composes the body of an email with the given signature
- * @param signatureValue
- * @param isRichText
- */
-const composeMailBodyWithSignature = (
-	signatureValue: string | undefined,
-	isRichText: boolean
-): string => {
-	if (!signatureValue) {
-		return '';
-	}
-
-	return isRichText
-		? `<p></p><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
-		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
-};
-
 const isElementInQuotedText = (signatureWrapper: Element, doc: Document): boolean => {
 	const quotedTextSeparator = doc.getElementById(LineType.HTML_SEP_ID);
 	if (!quotedTextSeparator) {
@@ -188,7 +170,11 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
 	const plainSignatureValue =
 		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
-	const richText = replaceSignatureOnHtmlBody(text.richText, signatureValue);
+	let previousRichText = text.richText;
+	if (previousRichText === '') {
+		previousRichText = '<p></p>';
+	}
+	const richText = replaceSignatureOnHtmlBody(previousRichText, signatureValue);
 	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
 	return { plainText, richText };
 };
@@ -199,7 +185,6 @@ export {
 	getSignatures,
 	getSignature,
 	getSignatureValue,
-	composeMailBodyWithSignature,
 	replaceSignatureOnPlainTextBody,
 	getMailBodyWithSignature
 };
