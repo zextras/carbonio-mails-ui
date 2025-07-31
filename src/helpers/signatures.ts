@@ -100,6 +100,14 @@ const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
 	return firstSignatureInBody;
 };
 
+const getBodyBeforeQuotedText = (doc: Document): Element | null => {
+	const quotedTextSeparator = doc.getElementById(LineType.HTML_SEP_ID);
+	if (!quotedTextSeparator) {
+		return null;
+	}
+	return quotedTextSeparator.parentNode as Element;
+};
+
 const addSignatureToDoc = (doc: Document, signature: string): string => {
 	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
 	const newSignatureWrapper = doc.createElement('div');
@@ -113,11 +121,10 @@ const addSignatureToDoc = (doc: Document, signature: string): string => {
 /**
  * Replaces the signature in a HTML message body.
  *
- * @param body - HTML message body
+ * @param doc
  * @param newSignature - content of the new signature
  */
-const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
-	const doc = new DOMParser().parseFromString(body, 'text/html');
+const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string => {
 	const signatureBeforeQuotedText = getSignatureBeforeQuotedText(doc);
 	const newSignatureIsEmpty = newSignature === '';
 
@@ -175,7 +182,16 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	if (previousRichText === '') {
 		previousRichText = '<p></p>';
 	}
-	const richText = replaceSignatureOnHtmlBody(previousRichText, signatureValue);
+
+	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
+
+	const hr = doc.getElementById('zwchr');
+	const hrParentNode = hr?.parentNode;
+	if (hrParentNode?.firstChild?.nodeName === 'HR') {
+		hrParentNode.insertBefore(doc.createElement('p'), hr);
+	}
+
+	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
 	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
 	return { plainText, richText };
 };
