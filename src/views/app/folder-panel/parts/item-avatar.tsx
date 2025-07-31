@@ -24,7 +24,25 @@ const AvatarElement = styled(Avatar)`
 	}
 `;
 
-export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, toggle, folderId }) => {
+export type ItemAvatarTypeProps = {
+	item: any;
+	selected: boolean;
+	selecting: boolean;
+	folderId: string;
+	index: number;
+	id: string;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+};
+
+export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
+	item,
+	selected,
+	selecting,
+	folderId,
+	index,
+	id,
+	onSelect
+}) => {
 	const targetParticipants =
 		getFolderIdParts(folderId).id === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [avatarLabel, avatarEmail] = useMemo(() => {
@@ -33,15 +51,15 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 		return [sender?.fullName || sender?.name || sender?.address || '.', sender?.address];
 	}, [item.participants, targetParticipants]);
 
-	const conversationSelect = useCallback(
-		(id: string) => (ev: SyntheticEvent) => {
-			ev.preventDefault();
-			toggle && toggle(id);
-		},
-		[toggle]
-	);
-
 	const activateSelectionMode = t('label.activate_selection_mode', 'Activate selection mode');
+
+	const handleClick = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			onSelect(index, id, e);
+		},
+		[onSelect, index, id]
+	);
 
 	return (
 		<Container
@@ -56,7 +74,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 					selected={selected}
 					label={avatarLabel}
 					colorLabel={avatarEmail}
-					onClick={conversationSelect(item.id)}
+					onClick={handleClick}
 					size="large"
 				/>
 			</TooltipWrapper>

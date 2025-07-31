@@ -22,6 +22,7 @@ type UseSelectionReturnType = {
 	selectAll: () => void;
 	isAllSelected: boolean;
 	selectAllModeOff: () => void;
+	selectRange: (ids: string[]) => void;
 };
 
 export const useSelection = ({
@@ -38,10 +39,8 @@ export const useSelection = ({
 			if (selected.current[id]) {
 				selected.current = omit(selected.current, [id]);
 				setCount?.((prev: number) => prev - 1);
-				if (count - 1 === 0) {
+				if (Object.keys(selected.current).length === 0) {
 					setIsSelectModeOn(false);
-				} else if (count === 0) {
-					setIsSelectModeOn(true);
 				}
 			} else {
 				selected.current = { ...selected.current, [id]: true };
@@ -49,7 +48,7 @@ export const useSelection = ({
 				setIsSelectModeOn(true);
 			}
 		},
-		[count, setCount]
+		[setCount]
 	);
 
 	const deselectAll = useCallback(() => {
@@ -74,6 +73,19 @@ export const useSelection = ({
 		});
 	}, [setCount]);
 
+	const selectRange = useCallback(
+		(ids: string[]) => {
+			ids.forEach((id) => {
+				if (!selected.current[id]) {
+					selected.current = { ...selected.current, [id]: true };
+					setCount?.((prev: number) => prev + 1);
+				}
+			});
+			setIsSelectModeOn(true);
+		},
+		[setCount]
+	);
+
 	return {
 		selected: selected.current,
 		toggle: selectItem,
@@ -82,6 +94,7 @@ export const useSelection = ({
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	};
 };

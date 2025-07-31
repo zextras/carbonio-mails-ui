@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -30,6 +30,7 @@ export const ConversationList = (): React.JSX.Element => {
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const dragImageRef = useRef(null);
 
 	const {
@@ -40,7 +41,8 @@ export const ConversationList = (): React.JSX.Element => {
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useSelection({
 		setCount,
 		count,
@@ -66,9 +68,40 @@ export const ConversationList = (): React.JSX.Element => {
 		return null;
 	}, [conversationsIds?.length, folderId]);
 
+	const handleItemClick = useCallback(
+		(index: number, id: string, event: React.MouseEvent) => {
+			if (!isSelectModeOn) {
+				// First click: turn on selection mode and select the item
+				setIsSelectModeOn(true);
+				toggleMultipleSelection(id);
+				setLastSelectedIndex(index);
+				return;
+			}
+
+			// Selection mode is on
+			if (event.shiftKey && lastSelectedIndex !== null) {
+				const start = Math.min(lastSelectedIndex, index);
+				const end = Math.max(lastSelectedIndex, index);
+				const idsToSelect = conversationsIds.slice(start, end + 1);
+				selectRange(idsToSelect);
+			} else {
+				toggleMultipleSelection(id);
+				setLastSelectedIndex(index);
+			}
+		},
+		[
+			isSelectModeOn,
+			lastSelectedIndex,
+			conversationsIds,
+			selectRange,
+			toggleMultipleSelection,
+			setIsSelectModeOn
+		]
+	);
+
 	const listItems = useMemo(
 		() =>
-			map(conversationsIds, (id) => {
+			map(conversationsIds, (id, index) => {
 				const active = itemId === id;
 				const isSelected = selected[id];
 				return (
@@ -86,7 +119,6 @@ export const ConversationList = (): React.JSX.Element => {
 									visible={visible}
 									selected={isSelected}
 									activeItemId={itemId}
-									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									selectedItems={selected}
 									dragImageRef={dragImageRef}
@@ -95,6 +127,8 @@ export const ConversationList = (): React.JSX.Element => {
 									selectedIds={Object.keys(selected)}
 									deselectAll={deselectAll}
 									folderId={folderId}
+									index={index}
+									onSelect={handleItemClick}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="conversation-invisible-item" />
@@ -103,15 +137,7 @@ export const ConversationList = (): React.JSX.Element => {
 					</ListItem>
 				);
 			}),
-		[
-			conversationsIds,
-			deselectAll,
-			folderId,
-			isSelectModeOn,
-			itemId,
-			selected,
-			toggleMultipleSelection
-		]
+		[conversationsIds, deselectAll, folderId, handleItemClick, isSelectModeOn, itemId, selected]
 	);
 
 	const totalConversations = useMemo(
