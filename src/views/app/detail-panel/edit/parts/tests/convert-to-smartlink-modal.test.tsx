@@ -40,9 +40,10 @@ describe('ConvertToSmartlinkModal', () => {
 			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 
-		expect(screen.getByText('Attachments too large')).toBeInTheDocument();
-		expect(screen.getByText('convert attachments to smart links?')).toBeInTheDocument();
-		expect(screen.getByText('Create')).toBeInTheDocument();
+		expect(screen.getByText('Upload atttachment as Smart Link')).toBeInTheDocument();
+		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
+		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
+		expect(screen.getByText('Confirm')).toBeInTheDocument();
 		expect(screen.getByText('Cancel')).toBeInTheDocument();
 	});
 
@@ -73,7 +74,7 @@ describe('ConvertToSmartlinkModal', () => {
 			);
 
 			const confirmButton = screen.getByRole('button', {
-				name: /create/i
+				name: /confirm/i
 			});
 			await user.click(confirmButton);
 
@@ -127,7 +128,7 @@ describe('ConvertToSmartlinkModal', () => {
 			);
 
 			const confirmButton = screen.getByRole('button', {
-				name: /create/i
+				name: /confirm/i
 			});
 			await user.click(confirmButton);
 
@@ -190,7 +191,7 @@ describe('ConvertToSmartlinkModal', () => {
 			);
 
 			const confirmButton = screen.getByRole('button', {
-				name: /create/i
+				name: /confirm/i
 			});
 			await user.click(confirmButton);
 
@@ -226,8 +227,11 @@ describe('ConvertToSmartlinkModal', () => {
 					]}
 				/>
 			);
+			const confirmButton = screen.getByRole('button', {
+				name: /confirm/i
+			});
 
-			await user.click(screen.getByText('Create'));
+			await user.click(confirmButton);
 
 			expect(mockOnClose).toHaveBeenCalled();
 			const errorSnackbar = screen.getByText('Something went wrong, please try again');
@@ -253,7 +257,10 @@ describe('ConvertToSmartlinkModal', () => {
 				/>
 			);
 
-			await user.click(screen.getByText('Create'));
+			const confirmButton = screen.getByRole('button', {
+				name: /confirm/i
+			});
+			await user.click(confirmButton);
 			expect(mockOnClose).toHaveBeenCalled();
 			const errorSnackbar = screen.getByText('Something went wrong, please try again');
 			expect(errorSnackbar).toBeInTheDocument();
