@@ -25,9 +25,6 @@ type FileUploadSuccessResponse = {
  * @returns {string} The Base64-encoded string.
  */
 export function encodeBase64(str: string): string {
-	// taken from https://stackoverflow.com/a/30106551/17280436
-	// btoa is not enough for cyrillic
-	// see also https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
 	return btoa(
 		encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_match, p1) =>
 			String.fromCharCode(parseInt(p1, 16))
