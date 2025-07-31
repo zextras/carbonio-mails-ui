@@ -33,11 +33,16 @@ export async function uploadToFiles(file: File): Promise<string> {
 			headers
 		});
 
-		if (!response.data?.nodeId) {
-			throw new Error('Upload successful but no nodeId returned');
+		if (
+			!response.data?.nodeId ||
+			response.data.nodeId === '' ||
+			typeof response.data.nodeId !== 'string'
+		) {
+			throw new Error('Upload successful but no valid nodeId returned');
 		}
 		return response.data.nodeId;
 	} catch (error) {
-		throw new Error(`File upload failed: ${error}`);
+		const message = error instanceof Error ? error.message : String(error ?? 'Unknown error');
+		throw new Error(`File upload failed: ${message}`);
 	}
 }
