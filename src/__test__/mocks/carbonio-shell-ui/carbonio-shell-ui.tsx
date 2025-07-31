@@ -10,7 +10,6 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { useActions as realUseActions } from '@zextras/carbonio-shell-ui';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
-import { getSoapFetch } from '@test-utils/network/fetch';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 
 export const mockedAccount = generateAccount();
@@ -54,15 +53,11 @@ export const useIsCarbonioCE: jest.Mock<ReturnType<typeof shell.useIsCarbonioCE>
 	() => false
 );
 
-export * from '../network/fetch';
-export const soapFetch = getSoapFetch('test-environment');
-export const useNotify: jest.Mock<ReturnType<typeof shell.useNotify>> = jest.fn(() => []);
 export const useLocalStorage = jest.fn();
 export const AppLink: FC<{ children: ReactNode }> = ({ children }) => <>{children}</>;
 export const editSettings = jest.fn(() => Promise.resolve({ data: {} }));
 export const registerComponents: typeof shell.registerComponents = jest.fn();
 export const registerActions: typeof shell.registerActions = jest.fn();
-export const useRefresh: typeof shell.useRefresh = jest.fn();
 export const addRoute: typeof shell.addRoute = jest.fn();
 export const removeRoute: typeof shell.removeRoute = jest.fn();
 export const addSettingsView: typeof shell.addSettingsView = jest.fn();

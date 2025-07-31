@@ -5,14 +5,13 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { Account, IS_FOCUS_MODE } from '@zextras/carbonio-shell-ui';
 import {
-	Account,
 	ErrorSoapBodyResponse,
 	ErrorSoapResponse,
-	IS_FOCUS_MODE,
 	SoapContext,
 	SoapResponse
-} from '@zextras/carbonio-shell-ui';
+} from '@zextras/carbonio-ui-soap-lib';
 import { find, map, maxBy } from 'lodash';
 
 import { getMocksContext } from '@test-utils/utils/mocks-context';
@@ -193,6 +192,7 @@ const handleResponse = <R>(api: string, res: SoapResponse<R>): R | ErrorSoapBody
 			// @ts-ignore
 			(res?.Body?.[`${api}Response`] as R);
 };
+
 export const getSoapFetch =
 	(app: string) =>
 	<Request, Response>(api: string, body: Request, otherAccount?: string): Promise<Response> => {

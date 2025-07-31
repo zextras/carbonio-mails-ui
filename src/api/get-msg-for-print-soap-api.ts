@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isNull, map, omitBy } from 'lodash';
 
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
@@ -18,7 +18,7 @@ export const getMsgsForPrintSoapApi = async ({
 	ids,
 	part
 }: GetMsgForPrintParameter): Promise<Array<MailMessage>> => {
-	const { GetMsgResponse } = (await soapFetch('Batch', {
+	const { GetMsgResponse } = (await legacySoapFetch('Batch', {
 		GetMsgRequest: map(ids, (id) => ({
 			m: omitBy(
 				{
