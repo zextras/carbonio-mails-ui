@@ -170,26 +170,36 @@ const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): st
 };
 
 /**
- * Composes the body of an email with signature of given signature id
+ * Inserts a paragraph before the quoted text separator if the first child is an HR element.
+ * @param doc - The HTML document to modify.
+ */
+function insertParagraphBeforeQuotedSeparator(doc: Document): void {
+	const quotedTextSepElement = doc.getElementById(LineType.HTML_SEP_ID);
+	const parentNode = quotedTextSepElement?.parentNode;
+	if (parentNode?.firstChild === quotedTextSepElement) {
+		parentNode.insertBefore(doc.createElement('p'), quotedTextSepElement);
+	}
+}
+
+/**
+ * Returns the mail body with the signature applied.
  * @param text
  * @param signatureId
  */
 const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
-	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
-	const plainSignatureValue =
-		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
+	const signatureValue = signatureId ? getSignatureValue(getUserAccount(), signatureId) : '';
+	const plainSignatureValue = signatureValue
+		? `\n${convertHtmlToPlainText(signatureValue)}\n\n`
+		: '';
 	const previousRichText = text.richText.trim() || '<p></p>';
 
 	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
 
-	const quotedTextSepElement = doc.getElementById(LineType.HTML_SEP_ID);
-	const quotedTextSepElementParentNode = quotedTextSepElement?.parentNode;
-	if (quotedTextSepElementParentNode?.firstChild?.nodeName === 'HR') {
-		quotedTextSepElementParentNode.insertBefore(doc.createElement('p'), quotedTextSepElement);
-	}
+	insertParagraphBeforeQuotedSeparator(doc);
 
 	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
 	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
+
 	return { plainText, richText };
 };
 

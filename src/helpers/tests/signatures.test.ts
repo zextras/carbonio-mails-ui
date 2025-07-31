@@ -168,6 +168,23 @@ describe('Signatures', () => {
 				);
 			});
 
+			it('should not add empty paragraph if there is HR tag before quoted text', () => {
+				const editorText = { plainText: '', richText: '<hr><hr id="zwchr"><p>Quoted text</p>' };
+				const result = getMailBodyWithSignature(editorText, signature1.id);
+				expect(result.richText).toBe(
+					`<head></head><body><hr><div class="signature-div">This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p></body>`
+				);
+			});
+
+			it('should add empty paragraph if there is quoted text with empty body and NO_SIGNATURE', () => {
+				const editorText = { plainText: '', richText: '<hr id="zwchr"><p>Quoted text</p>' };
+				const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+				const emptyParagraph = `<p></p>`;
+				expect(result.richText).toBe(
+					`<head></head><body>${emptyParagraph}<hr id="zwchr"><p>Quoted text</p></body>`
+				);
+			});
+
 			it('should not add empty paragraph if there is quoted text with non empty body', () => {
 				const editorText = {
 					plainText: '',
