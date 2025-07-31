@@ -239,12 +239,12 @@ describe('Signatures', () => {
 					`<head></head><body><p>hello</p><div class="signature-div">This is my Signature 1</div></body>`
 				);
 			});
-			it('should add empty paragraph if text is empty', () => {
+			it('should add two empty paragraphs if text is empty', () => {
 				const editorText = { plainText: '', richText: '' };
 				const result = getMailBodyWithSignature(editorText, signature1.id);
 				const emptyParagraph = `<p></p>`;
 				expect(result.richText).toBe(
-					`<head></head><body>${emptyParagraph}<div class="signature-div">This is my Signature 1</div></body>`
+					`<head></head><body>${emptyParagraph}${emptyParagraph}<div class="signature-div">This is my Signature 1</div></body>`
 				);
 			});
 			it('should replace existing signature with new one', () => {

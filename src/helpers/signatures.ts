@@ -185,7 +185,7 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	const plainSignatureValue = signatureValue
 		? `\n${convertHtmlToPlainText(signatureValue)}\n\n`
 		: '';
-	const previousRichText = text.richText.trim() || '<p></p>';
+	const previousRichText = text.richText.trim() || '<p></p><p></p>';
 
 	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
 
