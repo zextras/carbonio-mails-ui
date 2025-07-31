@@ -8,6 +8,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { noop } from 'lodash';
 
 import { ConvertToSmartlinkModal } from '../convert-to-smartlink-modal';
 import { setupTest } from '@test-setup';
@@ -42,9 +43,18 @@ describe('ConvertToSmartlinkModal', () => {
 
 		expect(screen.getByText('Upload atttachment as Smart Link')).toBeInTheDocument();
 		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
-		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
-		expect(screen.getByText('Confirm')).toBeInTheDocument();
-		expect(screen.getByText('Cancel')).toBeInTheDocument();
+		expect(screen.getByText('Would you like to convert it into a Smart Link?')).toBeInTheDocument();
+		expect(screen.getByTestId('icon: CloseOutline')).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', {
+				name: /confirm/i
+			})
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', {
+				name: /cancel/i
+			})
+		).toBeInTheDocument();
 	});
 
 	it('calls onClose when Cancel is clicked', async () => {
@@ -57,6 +67,38 @@ describe('ConvertToSmartlinkModal', () => {
 		await user.click(screen.getByText('Cancel'));
 		expect(mockOnClose).toHaveBeenCalledTimes(1);
 	});
+
+	it('shows uploading animation when files are being processed', async () => {
+		(uploadToFiles as jest.Mock).mockImplementation(() => new Promise(noop));
+		createSoapAPIInterceptor('SaveDraft');
+		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+		useEditorsStore.setState({ editors: { [editor.id]: editor } });
+		const { user } = setupTest(
+			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+		);
+		const confirmButton = screen.getByRole('button', {
+			name: /confirm/i
+		});
+		await user.click(confirmButton);
+
+		expect(screen.getByText('Uploading attachment as Smart Link')).toBeInTheDocument();
+		expect(
+			screen.getByText('You are uploading a large attachment. This may take a moment, please wait')
+		).toBeInTheDocument();
+		expect(screen.getByText('Uploading')).toBeInTheDocument();
+		expect(screen.queryByTestId('icon: CloseOutline')).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole('button', {
+				name: /confirm/i
+			})
+		).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole('button', {
+				name: /cancel/i
+			})
+		).not.toBeInTheDocument();
+	});
+
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
 			(uploadToFiles as jest.Mock).mockResolvedValueOnce('uploadResult1');
