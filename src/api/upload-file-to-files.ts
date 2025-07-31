@@ -11,16 +11,16 @@ type FileUploadSuccessResponse = {
 
 /**
  * Encodes a string into Base64 format, handling Unicode characters correctly.
- * 
+ *
  * This function is necessary because the native `btoa` function does not handle
  * Unicode characters properly. It first encodes the string into a URI component
  * to escape special characters, then converts the escaped characters back to their
  * original form before applying `btoa`.
- * 
+ *
  * References:
  * - https://stackoverflow.com/a/30106551/17280436
  * - https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
- * 
+ *
  * @param {string} str - The input string to encode.
  * @returns {string} The Base64-encoded string.
  */
