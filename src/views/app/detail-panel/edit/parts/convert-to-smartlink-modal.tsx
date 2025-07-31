@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
+import { AnimatedLoaderUploading } from 'assets/animated-loader';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
@@ -25,6 +26,7 @@ export const ConvertToSmartlinkModal = ({
 	editorId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
+	const [uploading, setUploading] = useState(false);
 
 	const { createSnackbar } = useUiUtilities();
 	const errorSnackbar = useCallback(() => {
@@ -41,6 +43,7 @@ export const ConvertToSmartlinkModal = ({
 	const { getText, setText } = useEditorText(editorId);
 
 	const onConfirm = useCallback(async () => {
+		setUploading(true);
 		try {
 			const text = getText();
 			const smartLinksArray = await Promise.all(
@@ -68,18 +71,37 @@ export const ConvertToSmartlinkModal = ({
 						smartLinksArray.map((link) => link.plainTextLinks).join('\n')
 					);
 			setText({ plainText: newPlainText, richText: newRichText });
+			setUploading(false);
 			onClose();
 		} catch {
 			errorSnackbar();
 			onClose();
+			setUploading(false);
 		}
 	}, [errorSnackbar, files, getText, onClose, setText]);
-	const modalHeaderTitle = t('smart_link_modal.header.title', 'Upload atttachment as Smart Link');
-	const modalBodyText1 = t('smart_link_modal.body.text1', 'The attachment exceeds the size limit');
-	const modalBodyText2 = t(
-		'smart_link_modal.body.text2',
-		'Would you like to convert it into a Smart Link?'
+
+	const modalHeaderTitle = !uploading
+		? t('smart_link_modal.header.title', 'Upload atttachment as Smart Link')
+		: t('smart_link_modal.progress.title', 'Uploading attachment as Smart Link');
+
+	const modalBodyText1 = !uploading
+		? t('smart_link_modal.body.text1', 'The attachment exceeds the size limit')
+		: t(
+				'smart_link_modal.progress.text',
+				'You are uploading a large attachment. This may take a moment, please wait'
+			);
+
+	const modalBodyText2 = !uploading ? (
+		t('smart_link_modal.body.text2', 'Would you like to convert it into a Smart Link?')
+	) : (
+		<br />
 	);
+
+	const modalFooterLabel = !uploading
+		? t('label.confirm', 'Confirm')
+		: t('label.uploading', 'Uploading');
+
+	const modalFooterSecondaryLabel = !uploading ? t('label.cancel', 'Cancel') : undefined;
 
 	return (
 		<Container
@@ -92,7 +114,7 @@ export const ConvertToSmartlinkModal = ({
 				overflowY: 'auto'
 			}}
 		>
-			<ModalHeader title={modalHeaderTitle} onClose={onClose} />
+			<ModalHeader title={modalHeaderTitle} onClose={onClose} showCloseIcon={!uploading} />
 			<Container
 				mainAlignment="center"
 				crossAlignment="flex-start"
@@ -106,8 +128,9 @@ export const ConvertToSmartlinkModal = ({
 				<ModalFooter
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
-					label={t('label.confirm', 'Confirm')}
-					secondaryLabel={t('label.cancel', 'Cancel')}
+					label={modalFooterLabel}
+					secondaryLabel={modalFooterSecondaryLabel}
+					primaryButtonIcon={uploading ? AnimatedLoaderUploading : undefined}
 				/>
 			</Container>
 		</Container>
