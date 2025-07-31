@@ -41,7 +41,7 @@ describe('ConvertToSmartlinkModal', () => {
 			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 
-		expect(screen.getByText('Upload atttachment as Smart Link')).toBeInTheDocument();
+		expect(screen.getByText('Upload attachment as Smart Link')).toBeInTheDocument();
 		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
 		expect(screen.getByText('Would you like to convert it into a Smart Link?')).toBeInTheDocument();
 		expect(screen.getByTestId('icon: CloseOutline')).toBeInTheDocument();
