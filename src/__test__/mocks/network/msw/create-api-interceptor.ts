@@ -51,6 +51,7 @@ export type APIInterceptor = {
 	getLastRequest: () => StrictRequest<DefaultBodyType>;
 	getCalledTimes: () => number;
 };
+
 export const createAPIInterceptor = (
 	method: 'get' | 'post',
 	url: string,

@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse, JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
+import { JSNS } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map, escape } from 'lodash';
 
 import { Signature } from 'types/index.d';
@@ -18,7 +19,7 @@ export type GetSignaturesResponse = {
 };
 
 export async function GetSignaturesSoapApi(): Promise<GetSignaturesResponse> {
-	return soapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
+	return legacySoapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
 		'GetSignatures',
 		{
 			_jsns: 'urn:zimbraAccount'

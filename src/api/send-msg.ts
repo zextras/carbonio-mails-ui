@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { getParticipantsFromMessage } from 'helpers/messages';
@@ -26,7 +26,7 @@ export const sendMsg = async ({
 	const from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
 	// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
 	const account = getAddressOwnerAccount(from);
-	const response = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+	const response = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',
@@ -52,7 +52,7 @@ export async function sendMsgFromEditor({
 
 	const identity = getIdentityDescriptor(editor.identityId);
 
-	const response = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+	const response = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',

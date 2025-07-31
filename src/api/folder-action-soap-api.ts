@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { DataProps } from '@zextras/carbonio-ui-commons';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isEmpty, isNil, omitBy } from 'lodash';
 
 import { FolderActionResponse } from 'types/index.d';
@@ -34,7 +34,7 @@ export async function folderActionSoapApi({
 	type
 }: FolderActionProps): Promise<FolderActionResponse> {
 	const result = !isEmpty(retentionPolicy)
-		? await soapFetch('Batch', {
+		? await legacySoapFetch('Batch', {
 				FolderActionRequest: [
 					{
 						action: {
@@ -58,7 +58,7 @@ export async function folderActionSoapApi({
 				],
 				_jsns: 'urn:zimbra'
 			})
-		: await soapFetch('FolderAction', {
+		: await legacySoapFetch('FolderAction', {
 				action: omitBy(
 					{
 						id: folder.id,

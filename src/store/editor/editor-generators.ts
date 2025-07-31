@@ -498,10 +498,11 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 			cc: retrieveCCForEditNew(originalMessage),
 			bcc: retrieveBCC(originalMessage)
 		},
-		subject: originalMessage.subject,
+		subject: originalMessage.subject
+			? originalMessage.subject.replace(REPLY_REGEX, '').replace(FORWARD_REGEX, '')
+			: '',
 		text,
 		requestReadReceipt: isRequestReadReceipt,
-		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size
 	};

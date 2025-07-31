@@ -95,12 +95,12 @@ export const createSoapAPIInterceptorWithError = <RequestParamsType>(
 					const requestContent = await request.json();
 					const params = requestContent?.Body?.[reqActionParamWrapper];
 					resolve(params);
-
 					return HttpResponse.error();
 				}
 			)
 		);
 	});
+
 export function generateConversationFromAPI(
 	params: Partial<SoapConversation> = {}
 ): SoapConversation {

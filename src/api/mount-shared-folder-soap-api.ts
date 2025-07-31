@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
 import { ISoapFolderObj } from 'types/index.d';
@@ -60,7 +60,7 @@ export const mountSharedFolderSoapApi = async (
 		}
 	};
 
-	const response = await soapFetch<
+	const response = await legacySoapFetch<
 		CreateMountPointRequest,
 		CreateMountpointResponse & ErrorSoapBodyResponse
 	>('CreateMountpoint', request, params.accounts[0].name);
