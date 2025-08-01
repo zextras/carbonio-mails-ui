@@ -422,6 +422,14 @@ describe('retrieveReplyTo', () => {
 				{
 					type: 'f',
 					address: 'sender@test.com'
+				},
+				{
+					type: 't',
+					address: 'toAddress1@test.com'
+				},
+				{
+					type: 't',
+					address: 'toAddress2@test.com'
 				}
 			],
 			parts: [],
@@ -452,6 +460,14 @@ describe('retrieveReplyTo', () => {
 			const result = generateReplyText(mailMessage, labels);
 			const richText = result[1];
 			expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
+		});
+
+		it('should return to with given label in bold and original message to addresses', () => {
+			const result = generateReplyText(mailMessage, labels);
+			const richText = result[1];
+			expect(richText).toContain(
+				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "undefined" &lt;toAddress2@test.com&gt;`
+			);
 		});
 	});
 });
