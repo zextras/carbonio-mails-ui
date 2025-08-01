@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useState } from 'react';
 
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-modal';
@@ -27,6 +26,7 @@ export const SmartlinkModal = ({
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const [awaitingConfirmation, setAwaitingConfirmation] = useState(true);
+	const [uploadController, setUploadController] = useState<AbortController | null>(null);
 
 	const { createSnackbar } = useUiUtilities();
 	const errorSnackbar = useCallback(() => {
@@ -42,17 +42,23 @@ export const SmartlinkModal = ({
 
 	const { getText, setText } = useEditorText(editorId);
 
+	const onCloseCallback = useCallback(() => {
+		uploadController?.abort?.();
+		onClose();
+	}, [uploadController, onClose]);
+
 	const onConfirm = useCallback(async () => {
 		setAwaitingConfirmation(false);
 		try {
 			const text = getText();
 			const smartLinksArray = await Promise.all(
 				files.map(async (file) => {
-					const uploadToFilesResponse = await uploadToFiles({
-						file,
-						onUploadProgressCallback: noop
+					const { upload, abortController } = uploadToFiles({
+						file
 					});
-					const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse);
+					setUploadController(abortController);
+					const nodeId = await upload;
+					const publicLinkUrl = await getPublicLinkUrl(nodeId);
 					if (!publicLinkUrl) throw new Error('Link creation failed');
 					return {
 						richTextLinks: generateSmartLinkHtml({
@@ -84,6 +90,6 @@ export const SmartlinkModal = ({
 	return awaitingConfirmation ? (
 		<SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />
 	) : (
-		<SmartlinkUploadingModal onClose={onClose} />
+		<SmartlinkUploadingModal onClose={onCloseCallback} />
 	);
 };

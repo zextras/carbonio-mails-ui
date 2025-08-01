@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import axios from 'axios';
 
 type FileUploadSuccessResponse = {
@@ -31,29 +32,47 @@ export function encodeBase64(str: string): string {
 		)
 	);
 }
+type UploadResult = {
+	upload: Promise<string>;
+	abortController: AbortController;
+};
 
-export async function uploadToFiles(file: File): Promise<string> {
-	const headers = {
-		'Content-Type': file.type || 'application/octet-stream',
-		Filename: encodeBase64(file.name),
-		ParentId: 'LOCAL_ROOT'
+export function uploadToFiles({ file }: { file: File }): UploadResult {
+	const abortController = new AbortController();
+
+	const upload = async (): UploadResult['upload'] => {
+		const headers = {
+			'Content-Type': file.type || 'application/octet-stream',
+			Filename: encodeBase64(file.name),
+			ParentId: 'LOCAL_ROOT'
+		};
+
+		try {
+			const response = await axios.post<FileUploadSuccessResponse>('/services/files/upload', file, {
+				headers,
+				signal: abortController.signal
+			});
+
+			if (
+				!response.data?.nodeId ||
+				response.data.nodeId === '' ||
+				typeof response.data.nodeId !== 'string'
+			) {
+				throw new Error('Upload successful but no valid nodeId returned');
+			}
+
+			return response.data.nodeId;
+		} catch (error) {
+			if (axios.isCancel(error)) {
+				throw new Error('Upload cancelled');
+			}
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			throw new Error(`File upload failed: ${message}`);
+		}
 	};
 
-	try {
-		const response = await axios.post<FileUploadSuccessResponse>('/services/files/upload', file, {
-			headers
-		});
-
-		if (
-			!response.data?.nodeId ||
-			response.data.nodeId === '' ||
-			typeof response.data.nodeId !== 'string'
-		) {
-			throw new Error('Upload successful but no valid nodeId returned');
-		}
-		return response.data.nodeId;
-	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		throw new Error(`File upload failed: ${message}`);
-	}
+	return {
+		upload: upload(),
+		abortController
+	};
 }
