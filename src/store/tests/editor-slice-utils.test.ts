@@ -593,6 +593,24 @@ describe('retrieveReplyTo', () => {
 				const plain = extractedBody.plainText;
 				expect(plain).toEqual(htmlBody);
 			});
+			it('should replace \n with <br> in plain text', () => {
+				const plainText = 'Plain \n boring \n text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual('Plain <br/> boring <br/> text');
+			});
 		});
 
 		it('should return empty string if no plain text', () => {
