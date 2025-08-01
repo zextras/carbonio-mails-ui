@@ -7,7 +7,7 @@
 
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import { SmartlinkModal } from '../smartlink-modal/smartlink-modal';
 import { setupTest } from '@test-setup';
@@ -18,6 +18,21 @@ import { useEditorsStore } from 'store/editor';
 import { generateEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 
+function createDeferredPromise<T>(): {
+	promise: Promise<T>;
+	resolve: (value: T) => void;
+	reject: (error: any) => void;
+} {
+	let resolve: (value: T) => void;
+	let reject: (error: any) => void;
+
+	const promise = new Promise<T>((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+
+	return { promise, resolve: resolve!, reject: reject! };
+}
 jest.mock('api/upload-file-to-files');
 jest.mock('api/get-public-link-url', () => ({
 	getPublicLinkUrl: jest.fn()
@@ -64,24 +79,29 @@ describe('ConvertToSmartlinkModal', () => {
 	});
 
 	it('shows uploading animation when files are being processed', async () => {
-		jest.useFakeTimers();
-		const mockUploadPromise = new Promise<{ result: string }>((resolve) => {
-			setTimeout(() => resolve({ result: 'uploadResult' }), 2_000);
-		});
-		(uploadToFiles as jest.Mock).mockReturnValueOnce({
-			upload: mockUploadPromise,
+		const uploadDeferred = createDeferredPromise<string>();
+		const publicLinkDeferred = createDeferredPromise<string>();
+
+		// Mock uploadToFiles
+		(uploadToFiles as jest.Mock).mockReturnValue({
+			upload: uploadDeferred.promise,
 			abortController: new AbortController()
 		});
+
+		// Mock getPublicLinkUrl
+		(getPublicLinkUrl as jest.Mock).mockReturnValue(publicLinkDeferred.promise);
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
+
 		const { user } = setupTest(
 			<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
-		const confirmButton = screen.getByRole('button', {
-			name: /confirm/i
-		});
+
+		const confirmButton = screen.getByRole('button', { name: /confirm/i });
+
 		await user.click(confirmButton);
-		jest.advanceTimersByTime(1_000); // Simulate time passing for upload to start
+
+		// Now verify the loading state appears
 		expect(await screen.findByText('Uploading attachment as Smart Link')).toBeInTheDocument();
 		expect(
 			screen.getByText('You are uploading a large attachment. This may take a moment, please wait')
@@ -98,14 +118,6 @@ describe('ConvertToSmartlinkModal', () => {
 				name: /cancel/i
 			})
 		).toBeInTheDocument();
-		await act(async () => {
-			jest.advanceTimersByTime(2_000); // Simulate time passing for upload to complete
-		});
-		await act(async () => {
-			jest.runOnlyPendingTimers();
-		});
-		// not interested in the outcome of the save draft, an error is acceptable for our purpose
-		await screen.findByText(/Something went wrong, please try again/); // intercepting the save draft snackbar to reach the lifecycle of the component
 	});
 
 	describe('in richText mode', () => {
