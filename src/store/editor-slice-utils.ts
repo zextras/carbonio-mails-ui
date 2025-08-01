@@ -9,7 +9,6 @@ import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodas
 import moment from 'moment';
 
 import { htmlEncode } from 'commons/get-quoted-text-util';
-import { convertHtmlToPlainText } from 'commons/utilities';
 import { LineType } from 'commons/utils';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import type {
@@ -217,7 +216,6 @@ type Labels = {
 	subject: string;
 };
 type ReplyText = {
-	plainText: string;
 	richText: string;
 };
 export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
@@ -262,7 +260,6 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 	// TODO: why are we converting plain text to plain text??? textToRetArray[0] is plainText
 	return {
-		plainText: convertHtmlToPlainText(textToRetArray[0]),
 		richText: textToRetArray[1]
 	};
 }
