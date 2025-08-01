@@ -500,80 +500,81 @@ describe('retrieveReplyTo', () => {
 	});
 
 	describe('extractBody', () => {
-		it('should return html message as second element', () => {
-			const htmlContent = '<div><p>Hello there </p></div>';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/html',
-						size: 0,
-						content: htmlContent,
-						name: 'HTML body',
-						requiresSmartLinkConversion: false
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const html = extractedBody.richText;
-			expect(html).toEqual(htmlContent);
+		describe('HTML', () => {
+			it('html should return html message', () => {
+				const htmlContent = '<div><p>Hello there </p></div>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlContent,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(htmlContent);
+			});
+			it('html should return plain text if no html', () => {
+				const plainText = 'Plain boring text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(plainText);
+			});
 		});
-
-		it('should return html message as first element', () => {
-			const plainText = 'Plain boring text';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/plain',
-						size: 0,
-						content: plainText,
-						name: 'Plain body',
-						requiresSmartLinkConversion: false
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			expect(plain).toEqual(plainText);
-		});
-
-		it('html should return plain text if no html', () => {
-			const plainText = 'Plain boring text';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/plain',
-						size: 0,
-						content: plainText,
-						name: 'Plain body',
-						requiresSmartLinkConversion: false
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const html = extractedBody.richText;
-			expect(html).toEqual(plainText);
-		});
-
-		it('plain text should return html if no plain text', () => {
-			const htmlBody = '<p>Hello</p>';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/html',
-						size: 0,
-						content: htmlBody,
-						name: 'HTML body',
-						requiresSmartLinkConversion: false
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			expect(plain).toEqual(htmlBody);
+		describe('Plain text', () => {
+			it('plain should return plain message', () => {
+				const plainText = 'Plain boring text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual(plainText);
+			});
+			it('plain should return html if no plain text', () => {
+				const htmlBody = '<p>Hello</p>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlBody,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual(htmlBody);
+			});
 		});
 
 		it('should return empty string if no plain text', () => {
