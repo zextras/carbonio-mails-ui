@@ -33,7 +33,7 @@ export const SmartlinkUploadingModal = ({
 
 	return (
 		<Container
-			data-testid="convert-to-smartlink-modal"
+			data-testid="smart-link-uploading-modal"
 			padding={{ all: 'large' }}
 			mainAlignment="center"
 			crossAlignment="flex-start"
@@ -57,6 +57,8 @@ export const SmartlinkUploadingModal = ({
 					onConfirm={noop}
 					label={modalFooterLabel}
 					primaryButtonIcon={AnimatedLoaderUploading}
+					secondaryAction={onClose}
+					secondaryLabel={t('label.cancel', 'Cancel')}
 				/>
 			</Container>
 		</Container>
