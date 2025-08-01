@@ -452,28 +452,24 @@ describe('retrieveReplyTo', () => {
 			to: 'TO_LABEL:'
 		};
 		it('should return subject with given label in bold and original message subject', () => {
-			const result = generateReplyText(mailMessage, labels);
-			const richText = result[1];
+			const { richText } = generateReplyText(mailMessage, labels);
 			expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
 		});
 
 		it('should return sent with given label in bold and original message sender full name and address', () => {
-			const result = generateReplyText(mailMessage, labels);
-			const richText = result[1];
+			const { richText } = generateReplyText(mailMessage, labels);
 			expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
 		});
 
 		it('should return to with given label in bold and original message to addresses', () => {
-			const result = generateReplyText(mailMessage, labels);
-			const richText = result[1];
+			const { richText } = generateReplyText(mailMessage, labels);
 			expect(richText).toContain(
 				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
 			);
 		});
 
 		it('should return address with fullname when present (no undefined)', () => {
-			const result = generateReplyText(mailMessage, labels);
-			const richText = result[1];
+			const { richText } = generateReplyText(mailMessage, labels);
 			expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
 		});
 	});

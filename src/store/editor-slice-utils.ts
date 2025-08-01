@@ -216,7 +216,11 @@ type Labels = {
 	sent: string;
 	subject: string;
 };
-export function generateReplyText(mail: MailMessage, labels: Labels): Array<string> {
+type ReplyText = {
+	plainText: string;
+	richText: string;
+};
+export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
 		(c) => `"${c.fullName}" <${c.address}>`
@@ -257,7 +261,10 @@ export function generateReplyText(mail: MailMessage, labels: Labels): Array<stri
 	}`;
 
 	// TODO: why are we converting plain text to plain text??? textToRetArray[0] is plainText
-	return [convertHtmlToPlainText(textToRetArray[0]), textToRetArray[1]];
+	return {
+		plainText: convertHtmlToPlainText(textToRetArray[0]),
+		richText: textToRetArray[1]
+	};
 }
 
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {

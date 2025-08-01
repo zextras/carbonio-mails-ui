@@ -251,12 +251,12 @@ const generateReplyAndReplyAllMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const richText = replaceCidUrlWithServiceUrl(
-		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
 		savedInlineAttachments
 	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
@@ -324,9 +324,9 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
 		richText: replaceCidUrlWithServiceUrl(
-			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
 			savedAttachments
 		)
 	};
