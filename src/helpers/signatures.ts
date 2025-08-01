@@ -139,10 +139,12 @@ const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string
  * @param newSignature - signature content
  */
 const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
-	// If no eligible signature is found the original body is returned
 	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
 		if (newSignature.trim() !== '') {
-			return `${body}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+			if (body.trim() === '') {
+				return `${body}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+			}
+			return `${body}\n${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
 		}
 		return body;
 	}

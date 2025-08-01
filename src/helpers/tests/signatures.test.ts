@@ -305,6 +305,15 @@ describe('Signatures', () => {
 				const result = getMailBodyWithSignature(editorText, signature2.id);
 				expect(result.plainText).toBe('\n\n---\nThis is my Signature 2');
 			});
+
+			it('should add signature below text without line breaks', () => {
+				const editorText = {
+					plainText: 'Hello there!',
+					richText: ''
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+			});
 		});
 
 		it.each([NO_SIGNATURE_ID, '123'])(
