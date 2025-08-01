@@ -425,7 +425,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 	const richText = replaceCidUrlWithServiceUrl(
-		`${extractBody(originalMessage)[1]}`,
+		`${extractBody(originalMessage).richText}`,
 		savedAttachments
 	);
 	const text: EditorText = {
@@ -471,7 +471,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const richText = replaceCidUrlWithServiceUrl(
-		`${extractBody(originalMessage)[1]}`,
+		`${extractBody(originalMessage).richText}`,
 		savedAttachments
 	);
 	const text = {
