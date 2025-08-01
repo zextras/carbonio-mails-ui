@@ -6,6 +6,7 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
 
+import { Signature } from '../types';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { LineType } from 'commons/utils';
 import type { EditorText } from 'types/editor/index.d';
@@ -196,6 +197,26 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	return { plainText, richText };
 };
 
+const replaceSignatureInMailBody = ({
+	editorText,
+	oldSignature,
+	newSignature
+}: {
+	editorText: EditorText;
+	oldSignature: Signature;
+	newSignature?: Signature;
+}): EditorText => {
+	const oldSignatureContent = oldSignature.content?.[0]._content ?? '';
+	const newSignatureContent = newSignature?.content?.[0]._content ?? '';
+
+	let newRichText = editorText.richText.replace(oldSignatureContent, '');
+	newRichText += newSignatureContent;
+
+	const newPlainText = editorText.plainText.replace(oldSignatureContent, newSignatureContent);
+
+	return { plainText: newPlainText, richText: newRichText };
+};
+
 export {
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL,
@@ -203,5 +224,6 @@ export {
 	getSignature,
 	getSignatureValue,
 	replaceSignatureOnPlainTextBody,
+	replaceSignatureInMailBody,
 	getMailBodyWithSignature
 };

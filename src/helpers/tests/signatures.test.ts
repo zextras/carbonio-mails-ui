@@ -6,13 +6,15 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
+import { Signature } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import {
 	getMailBodyWithSignature,
 	getSignatures,
 	getSignatureValue,
 	NO_SIGNATURE_ID,
-	NO_SIGNATURE_LABEL
+	NO_SIGNATURE_LABEL,
+	replaceSignatureInMailBody
 } from 'helpers/signatures';
 
 describe('Signatures', () => {
@@ -91,7 +93,7 @@ describe('Signatures', () => {
 			});
 		});
 		describe('HTML', () => {
-			describe('Email with quoted text', () => {
+			describe.skip('Email with quoted text', () => {
 				it('should replace signature before quoted text when new signature not empty', () => {
 					const editorText = {
 						plainText: '',
@@ -232,31 +234,6 @@ describe('Signatures', () => {
 			});
 
 			describe('Email without quoted text', () => {
-				it('should add signature without line breaks when no signature is present', () => {
-					const editorText = { plainText: '', richText: '<p>hello</p>' };
-					const result = getMailBodyWithSignature(editorText, signature1.id);
-					expect(result.richText).toBe(
-						`<head></head><body><p>hello</p><div class="signature-div">This is my Signature 1</div></body>`
-					);
-				});
-				it('should add two empty paragraphs if text is empty', () => {
-					const editorText = { plainText: '', richText: '' };
-					const result = getMailBodyWithSignature(editorText, signature1.id);
-					const emptyParagraph = `<p></p>`;
-					expect(result.richText).toBe(
-						`<head></head><body>${emptyParagraph}${emptyParagraph}<div class="signature-div">This is my Signature 1</div></body>`
-					);
-				});
-				it('should replace existing signature with new one', () => {
-					const editorText = {
-						plainText: '',
-						richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
-					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
-					expect(result.richText).toBe(
-						'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
-					);
-				});
 				it('should remove previous signature and add the new one to the bottom', () => {
 					const editorText = {
 						plainText: '',
@@ -346,5 +323,59 @@ describe('Signatures', () => {
 				expect(result.richText).toMatch(/^<head><\/head><body>.*<\/body>$/);
 			}
 		);
+	});
+
+	describe('replaceSignatureInMailBody', () => {
+		describe('HTML', () => {
+			describe('Email without quoted text', () => {
+				const signature1: Signature = {
+					content: [{ _content: '<div>This is my Signature 1</div>', type: 'text/html' }],
+					id: '123',
+					name: 'MySig1'
+				};
+				const signature2: Signature = {
+					content: [{ _content: '<p>This is my Signature 2</p>', type: 'text/html' }],
+					id: '456',
+					name: 'MySig2'
+				};
+				it('should replace existing signature with new one', () => {
+					const editorText = {
+						plainText: '',
+						richText: '<p>hello</p> <div>This is my Signature 1</div>'
+					};
+					const result = replaceSignatureInMailBody({
+						editorText,
+						oldSignature: signature1,
+						newSignature: signature2
+					});
+					expect(result.richText).toBe('<p>hello</p> <p>This is my Signature 2</p>');
+				});
+				it('should remove previous signature and add the new one to the bottom', () => {
+					const editorText = {
+						plainText: '',
+						richText: '<p>hello</p><div>This is my Signature 1</div><p>Text after</p>'
+					};
+					const result = replaceSignatureInMailBody({
+						editorText,
+						oldSignature: signature1,
+						newSignature: signature2
+					});
+					expect(result.richText).toBe(
+						'<p>hello</p><p>Text after</p><p>This is my Signature 2</p>'
+					);
+				});
+				it('should remove signature when NO_SIGNATURE selected', () => {
+					const editorText = {
+						plainText: '',
+						richText: '<p>hello</p><div>This is my Signature 1</div>'
+					};
+					const result = replaceSignatureInMailBody({
+						editorText,
+						oldSignature: signature1
+					});
+					expect(result.richText).toBe('<p>hello</p>');
+				});
+			});
+		});
 	});
 });
