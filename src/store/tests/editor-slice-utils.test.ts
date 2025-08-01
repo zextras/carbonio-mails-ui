@@ -537,6 +537,24 @@ describe('retrieveReplyTo', () => {
 				const html = extractedBody.richText;
 				expect(html).toEqual(plainText);
 			});
+			it('should replace dfsrc with src in html message', () => {
+				const htmlContent = '<div>dfsrc<p>Hello there </p></div>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlContent,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(`<div>src<p>Hello there </p></div>`);
+			});
 		});
 		describe('Plain text', () => {
 			it('plain should return plain message', () => {
