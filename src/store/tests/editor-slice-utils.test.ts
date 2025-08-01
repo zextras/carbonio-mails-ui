@@ -515,7 +515,7 @@ describe('retrieveReplyTo', () => {
 				]
 			};
 			const extractedBody = extractBody(message);
-			const html = extractedBody[1];
+			const html = extractedBody.richText;
 			expect(html).toEqual(htmlContent);
 		});
 
@@ -534,7 +534,7 @@ describe('retrieveReplyTo', () => {
 				]
 			};
 			const extractedBody = extractBody(message);
-			const plain = extractedBody[0];
+			const plain = extractedBody.plainText;
 			expect(plain).toEqual(plainText);
 		});
 
@@ -553,8 +553,8 @@ describe('retrieveReplyTo', () => {
 				]
 			};
 			const extractedBody = extractBody(message);
-			const html = extractedBody[1];
-			expect(html).toEqual('');
+			const html = extractedBody.richText;
+			expect(html).toEqual(plainText);
 		});
 
 		it('plain text should return html if no plain text', () => {
@@ -572,7 +572,7 @@ describe('retrieveReplyTo', () => {
 				]
 			};
 			const extractedBody = extractBody(message);
-			const plain = extractedBody[0];
+			const plain = extractedBody.plainText;
 			expect(plain).toEqual(htmlBody);
 		});
 
@@ -582,8 +582,8 @@ describe('retrieveReplyTo', () => {
 				parts: []
 			};
 			const extractedBody = extractBody(message);
-			const plain = extractedBody[0];
-			const html = extractedBody[1];
+			const plain = extractedBody.plainText;
+			const html = extractedBody.richText;
 			expect(plain).toEqual('');
 			expect(html).toEqual('');
 		});
