@@ -63,7 +63,7 @@ describe('uploadToFiles', () => {
 				data: { nodeId: '12345' }
 			});
 
-			const result = await uploadToFiles(file);
+			const result = await uploadToFiles({ file });
 
 			expect(mockedAxios.post).toHaveBeenCalledWith(
 				'/services/files/upload',

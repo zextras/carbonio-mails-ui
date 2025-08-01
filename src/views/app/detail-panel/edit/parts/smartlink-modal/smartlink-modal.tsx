@@ -31,11 +31,22 @@ export const SmartlinkModal = ({
 	const { createSnackbar } = useUiUtilities();
 	const errorSnackbar = useCallback(() => {
 		createSnackbar({
-			key: `create-public-link-error`,
+			key: 'create-public-link-error',
 			replace: true,
 			severity: 'error',
 			hideButton: true,
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
+		});
+	}, [createSnackbar, t]);
+
+	const uploadCancelledSnackbar = useCallback(() => {
+		createSnackbar({
+			key: 'upload-cancelled',
+			replace: true,
+			severity: 'info',
+			hideButton: true,
+			label: t('label.upload_cancelled', 'Upload cancelled'),
 			autoHideTimeout: 3000
 		});
 	}, [createSnackbar, t]);
@@ -80,12 +91,16 @@ export const SmartlinkModal = ({
 			setText({ plainText: newPlainText, richText: newRichText });
 			setAwaitingConfirmation(true);
 			onClose();
-		} catch {
-			errorSnackbar();
+		} catch (error) {
+			if (error instanceof Error && error.name === 'CanceledError') {
+				uploadCancelledSnackbar();
+			} else {
+				errorSnackbar();
+			}
 			onClose();
 			setAwaitingConfirmation(true);
 		}
-	}, [errorSnackbar, files, getText, onClose, setText]);
+	}, [errorSnackbar, files, getText, onClose, setText, uploadCancelledSnackbar]);
 
 	return awaitingConfirmation ? (
 		<SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />
