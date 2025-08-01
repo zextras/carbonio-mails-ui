@@ -429,7 +429,8 @@ describe('retrieveReplyTo', () => {
 				},
 				{
 					type: 't',
-					address: 'toAddress2@test.com'
+					address: 'toAddress2@test.com',
+					fullName: 'To Address 2'
 				}
 			],
 			parts: [],
@@ -466,8 +467,14 @@ describe('retrieveReplyTo', () => {
 			const result = generateReplyText(mailMessage, labels);
 			const richText = result[1];
 			expect(richText).toContain(
-				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "undefined" &lt;toAddress2@test.com&gt;`
+				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
 			);
+		});
+
+		it('should return address with fullname when present (no undefined)', () => {
+			const result = generateReplyText(mailMessage, labels);
+			const richText = result[1];
+			expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
 		});
 	});
 });
