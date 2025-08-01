@@ -199,13 +199,18 @@ export function findBodyPart(
 	);
 }
 
-export const extractBody = (msg: MailMessage): Array<string> => {
+type ExtractedBody = {
+	richText: string;
+	plainText: string;
+};
+
+export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
 	const html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
-	return [text ?? html ?? '', html ?? text ?? ''];
+	return { richText: html ?? text ?? '', plainText: text ?? html ?? '' };
 };
 
 type Labels = {
@@ -247,7 +252,7 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 	richText += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
 		mail.subject
-	)} <br /><br />${extractBody(mail)[1]}</div>`;
+	)} <br /><br />${extractBody(mail).richText}</div>`;
 
 	return {
 		richText
@@ -255,7 +260,7 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 }
 
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
-	const richText = extractBody(msg);
+	const extractedBody = extractBody(msg);
 	const body = isHtml(msg.parts);
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
@@ -277,18 +282,18 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 							{
 								ct: 'text/html',
 								body: true,
-								content: { _content: richText[1] ?? '' }
+								content: { _content: extractedBody.richText ?? '' }
 							},
 							{
 								ct: 'text/plain',
-								content: { _content: richText[0] ?? '' }
+								content: { _content: extractedBody.plainText ?? '' }
 							}
 						]
 					}
 				: {
 						ct: 'text/plain',
 						body: true,
-						content: { _content: richText[0] ?? '' }
+						content: { _content: extractedBody.plainText ?? '' }
 					}
 		]
 	};
