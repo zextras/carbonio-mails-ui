@@ -7,10 +7,9 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
-import { noop } from 'lodash';
+import { act, screen, waitFor } from '@testing-library/react';
 
-import { ConvertToSmartlinkModal } from '../smartlink-modal';
+import { SmartlinkModal } from '../smartlink-modal/smartlink-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getPublicLinkUrl } from 'api/get-public-link-url';
@@ -19,9 +18,7 @@ import { useEditorsStore } from 'store/editor';
 import { generateEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 
-jest.mock('api/upload-file-to-files', () => ({
-	uploadToFiles: jest.fn()
-}));
+jest.mock('api/upload-file-to-files');
 jest.mock('api/get-public-link-url', () => ({
 	getPublicLinkUrl: jest.fn()
 }));
@@ -37,9 +34,7 @@ describe('ConvertToSmartlinkModal', () => {
 	it('renders modal with header, text, and footer buttons', () => {
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
-		setupTest(
-			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
-		);
+		setupTest(<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />);
 
 		expect(screen.getByText('Upload attachment as Smart Link')).toBeInTheDocument();
 		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
@@ -61,7 +56,7 @@ describe('ConvertToSmartlinkModal', () => {
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 		const { user } = setupTest(
-			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+			<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 
 		await user.click(screen.getByText('Cancel'));
@@ -69,46 +64,63 @@ describe('ConvertToSmartlinkModal', () => {
 	});
 
 	it('shows uploading animation when files are being processed', async () => {
-		(uploadToFiles as jest.Mock).mockImplementation(() => new Promise(noop));
-		createSoapAPIInterceptor('SaveDraft');
+		jest.useFakeTimers();
+		const mockUploadPromise = new Promise<{ result: string }>((resolve) => {
+			setTimeout(() => resolve({ result: 'uploadResult' }), 2_000);
+		});
+		(uploadToFiles as jest.Mock).mockReturnValueOnce({
+			upload: mockUploadPromise,
+			abortController: new AbortController()
+		});
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 		const { user } = setupTest(
-			<ConvertToSmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+			<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 		const confirmButton = screen.getByRole('button', {
 			name: /confirm/i
 		});
 		await user.click(confirmButton);
-
-		expect(screen.getByText('Uploading attachment as Smart Link')).toBeInTheDocument();
+		jest.advanceTimersByTime(1_000); // Simulate time passing for upload to start
+		expect(await screen.findByText('Uploading attachment as Smart Link')).toBeInTheDocument();
 		expect(
 			screen.getByText('You are uploading a large attachment. This may take a moment, please wait')
 		).toBeInTheDocument();
 		expect(screen.getByText('Uploading')).toBeInTheDocument();
-		expect(screen.queryByTestId('icon: CloseOutline')).not.toBeInTheDocument();
+		expect(screen.getByTestId('icon: CloseOutline')).toBeInTheDocument();
 		expect(
 			screen.queryByRole('button', {
 				name: /confirm/i
 			})
 		).not.toBeInTheDocument();
 		expect(
-			screen.queryByRole('button', {
+			screen.getByRole('button', {
 				name: /cancel/i
 			})
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		await act(async () => {
+			jest.advanceTimersByTime(2_000); // Simulate time passing for upload to complete
+		});
+		await act(async () => {
+			jest.runOnlyPendingTimers();
+		});
+		// not interested in the outcome of the save draft, an error is acceptable for our purpose
+		await screen.findByText(/Something went wrong, please try again/); // intercepting the save draft snackbar to reach the lifecycle of the component
 	});
 
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
-			(uploadToFiles as jest.Mock).mockResolvedValueOnce('uploadResult1');
+			(uploadToFiles as jest.Mock).mockReturnValueOnce({
+				upload: Promise.resolve('uploadResult1'),
+				abortController: new AbortController()
+			});
 			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1');
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<ConvertToSmartlinkModal
+				<SmartlinkModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[new File(['file1 content'], 'file1.txt')]}
@@ -151,15 +163,21 @@ describe('ConvertToSmartlinkModal', () => {
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
 			(uploadToFiles as jest.Mock)
-				.mockResolvedValueOnce('uploadResult1')
-				.mockResolvedValueOnce('uploadResult2');
+				.mockReturnValueOnce({
+					upload: Promise.resolve('uploadResult1'),
+					abortController: new AbortController()
+				})
+				.mockReturnValueOnce({
+					upload: Promise.resolve('uploadResult2'),
+					abortController: new AbortController()
+				});
 			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<ConvertToSmartlinkModal
+				<SmartlinkModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -214,15 +232,22 @@ describe('ConvertToSmartlinkModal', () => {
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
 			(uploadToFiles as jest.Mock)
-				.mockResolvedValueOnce('uploadResult1')
-				.mockResolvedValueOnce('uploadResult2');
+				.mockReturnValueOnce({
+					upload: Promise.resolve('uploadResult1'),
+					abortController: new AbortController()
+				})
+				.mockReturnValueOnce({
+					upload: Promise.resolve('uploadResult2'),
+					abortController: new AbortController()
+				});
+
 			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<ConvertToSmartlinkModal
+				<SmartlinkModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -243,8 +268,9 @@ describe('ConvertToSmartlinkModal', () => {
 			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 
 			const newText = newEditor.text.plainText;
-
-			expect(newText).toBe(editor.text.plainText.concat(`url1\n`).concat('url2'));
+			await waitFor(() => {
+				expect(newText).toBe(editor.text.plainText.concat('\nurl1\n').concat('url2'));
+			});
 			// intercepting the save draft snackbar to reach the lifecycle of the component
 			// not interested in the outcome of the save draft, an error is acceptable for our purpose
 			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
@@ -254,13 +280,16 @@ describe('ConvertToSmartlinkModal', () => {
 
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
-			(uploadToFiles as jest.Mock).mockRejectedValueOnce(new Error('Upload failed'));
+			(uploadToFiles as jest.Mock).mockImplementation(() => ({
+				upload: Promise.reject(new Error('Upload failed')),
+				abortController: new AbortController()
+			}));
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<ConvertToSmartlinkModal
+				<SmartlinkModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -281,7 +310,10 @@ describe('ConvertToSmartlinkModal', () => {
 		});
 
 		it('handles missing public link URL', async () => {
-			(uploadToFiles as jest.Mock).mockResolvedValue('uploadResult');
+			(uploadToFiles as jest.Mock).mockImplementation(() => ({
+				upload: Promise.resolve('uploadResult'),
+				abortController: new AbortController()
+			}));
 			(getPublicLinkUrl as jest.Mock).mockResolvedValue(null); // no URL
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -289,7 +321,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<ConvertToSmartlinkModal
+				<SmartlinkModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
