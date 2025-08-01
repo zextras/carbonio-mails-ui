@@ -209,7 +209,7 @@ const replaceSignatureInMailBody = ({
 	const oldSignatureContent = oldSignature.content?.[0]._content ?? '';
 	const newSignatureContent = newSignature?.content?.[0]._content ?? '';
 
-	let newRichText = editorText.richText.replace(oldSignatureContent, '');
+	let newRichText = editorText.richText.replaceAll(oldSignatureContent, '');
 	newRichText += newSignatureContent;
 
 	const newPlainText = editorText.plainText.replace(oldSignatureContent, newSignatureContent);

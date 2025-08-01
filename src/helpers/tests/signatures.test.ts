@@ -364,6 +364,34 @@ describe('Signatures', () => {
 						'<p>hello</p><p>Text after</p><p>This is my Signature 2</p>'
 					);
 				});
+				it('should remove all previous signatures', () => {
+					const editorText = {
+						plainText: '',
+						richText:
+							'<p>hello</p><div>This is my Signature 1</div><p>Bye</p>' +
+							'<div>This is my Signature 1</div><p>See you</p><div>This is my Signature 1</div>'
+					};
+					const result = replaceSignatureInMailBody({
+						editorText,
+						oldSignature: signature1
+					});
+					expect(result.richText).toBe('<p>hello</p><p>Bye</p><p>See you</p>');
+				});
+				it('should remove all previous signatures and add just one instance of the new at the bottom', () => {
+					const editorText = {
+						plainText: '',
+						richText:
+							'<p>hello</p><div>This is my Signature 1</div><p>Bye</p><div>This is my Signature 1</div><p>See you</p><div>This is my Signature 1</div>'
+					};
+					const result = replaceSignatureInMailBody({
+						editorText,
+						oldSignature: signature1,
+						newSignature: signature2
+					});
+					expect(result.richText).toBe(
+						'<p>hello</p><p>Bye</p><p>See you</p><p>This is my Signature 2</p>'
+					);
+				});
 				it('should remove signature when NO_SIGNATURE selected', () => {
 					const editorText = {
 						plainText: '',
