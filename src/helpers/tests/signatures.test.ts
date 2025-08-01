@@ -257,7 +257,7 @@ describe('Signatures', () => {
 						'<head></head><body><p>hello</p><div class="signature-div">This is my Signature 2</div></body>'
 					);
 				});
-				it('should remove previous signature and add the new one to the bottom when not empty', () => {
+				it('should remove previous signature and add the new one to the bottom', () => {
 					const editorText = {
 						plainText: '',
 						richText:
@@ -309,6 +309,24 @@ describe('Signatures', () => {
 			it('should add signature below text without line breaks', () => {
 				const editorText = {
 					plainText: 'Hello there!',
+					richText: ''
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+			});
+
+			it('should replace existing signature with new one', () => {
+				const editorText = {
+					plainText: 'Hello there!\n---\nThis is my Signature 1',
+					richText: ''
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+			});
+
+			it('should remove previous signature + text after it and add the new one to the bottom', () => {
+				const editorText = {
+					plainText: 'Hello there!\n---\nThis is my Signature 1\nText after signature',
 					richText: ''
 				};
 				const result = getMailBodyWithSignature(editorText, signature2.id);
