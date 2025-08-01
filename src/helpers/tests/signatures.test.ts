@@ -93,7 +93,7 @@ describe('Signatures', () => {
 			});
 		});
 		describe('HTML', () => {
-			describe.skip('Email with quoted text', () => {
+			describe('Email with quoted text', () => {
 				it('should replace signature before quoted text when new signature not empty', () => {
 					const editorText = {
 						plainText: '',
@@ -326,18 +326,18 @@ describe('Signatures', () => {
 	});
 
 	describe('replaceSignatureInMailBody', () => {
+		const signature1: Signature = {
+			content: [{ _content: '<div>This is my Signature 1</div>', type: 'text/html' }],
+			id: '123',
+			name: 'MySig1'
+		};
+		const signature2: Signature = {
+			content: [{ _content: '<p>This is my Signature 2</p>', type: 'text/html' }],
+			id: '456',
+			name: 'MySig2'
+		};
 		describe('HTML', () => {
 			describe('Email without quoted text', () => {
-				const signature1: Signature = {
-					content: [{ _content: '<div>This is my Signature 1</div>', type: 'text/html' }],
-					id: '123',
-					name: 'MySig1'
-				};
-				const signature2: Signature = {
-					content: [{ _content: '<p>This is my Signature 2</p>', type: 'text/html' }],
-					id: '456',
-					name: 'MySig2'
-				};
 				it('should replace existing signature with new one', () => {
 					const editorText = {
 						plainText: '',
@@ -403,6 +403,23 @@ describe('Signatures', () => {
 					});
 					expect(result.richText).toBe('<p>hello</p>');
 				});
+			});
+		});
+		describe('Email with quoted text', () => {
+			it('should only replace signature before quoted text', () => {
+				const editorText = {
+					plainText: '',
+					richText:
+						'<p>Hello</p><div>This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p><div>This is my Signature 1</div>'
+				};
+				const result = replaceSignatureInMailBody({
+					editorText,
+					oldSignature: signature1,
+					newSignature: signature2
+				});
+				expect(result.richText).toBe(
+					'<p>Hello</p><p>This is my Signature 2</p><hr id="zwchr"><p>Quoted text</p><div>This is my Signature 1</div>'
+				);
 			});
 		});
 	});

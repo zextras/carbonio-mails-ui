@@ -209,8 +209,20 @@ const replaceSignatureInMailBody = ({
 	const oldSignatureContent = oldSignature.content?.[0]._content ?? '';
 	const newSignatureContent = newSignature?.content?.[0]._content ?? '';
 
-	let newRichText = editorText.richText.replaceAll(oldSignatureContent, '');
-	newRichText += newSignatureContent;
+	// richText
+	let newRichText = editorText.richText;
+
+	const thereIsQuotedText = newRichText.includes('<hr id="zwchr">');
+	if (thereIsQuotedText) {
+		const bodyAndQuotedText = newRichText.split('<hr id="zwchr">');
+		let bodyPart = bodyAndQuotedText[0].replaceAll(oldSignatureContent, '');
+		bodyPart += newSignatureContent;
+		bodyAndQuotedText[0] = bodyPart;
+		newRichText = bodyAndQuotedText.join('<hr id="zwchr">');
+	} else {
+		newRichText = newRichText.replaceAll(oldSignatureContent, '');
+		newRichText += newSignatureContent;
+	}
 
 	const newPlainText = editorText.plainText.replace(oldSignatureContent, newSignatureContent);
 
