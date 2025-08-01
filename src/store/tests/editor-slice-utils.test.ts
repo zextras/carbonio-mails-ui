@@ -12,12 +12,85 @@ import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/a
 import { AvailableAddress } from '../../carbonio-ui-commons/types/identities';
 import { getAvailableAddresses } from '../../helpers/get-available-addresses';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { retrieveALL, retrieveCC, retrieveReplyTo } from '../editor-slice-utils';
+import { extractBody, generateReplyText, retrieveALL, retrieveCC, retrieveReplyTo } from '../editor-slice-utils';
+import { MailMessage } from '../../types/messages';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()
 }));
-
+const mailMessage: MailMessage = {
+	attachments: undefined,
+	autoSendTime: 0,
+	body: {
+		contentType: 'text/html',
+		content: '<p>Hello from me!</p>',
+		truncated: false
+	},
+	conversation: '',
+	creationDateFromMailHeaders: '',
+	date: 0,
+	did: '',
+	flagged: false,
+	fragment: '',
+	hasAttachment: false,
+	id: '',
+	invite: undefined,
+	isComplete: false,
+	isDeleted: false,
+	isDraft: false,
+	isEncrypted: false,
+	isForwarded: false,
+	isInvite: false,
+	isReadReceiptRequested: false,
+	isReplied: false,
+	isScheduled: false,
+	isSentByMe: false,
+	messageIdFromMailHeaders: '',
+	messageIsFromDistributionList: false,
+	messageIsFromExternalDomain: false,
+	originalId: '',
+	parent: '',
+	participants: [
+		{
+			type: 'f',
+			address: 'sender@test.com'
+		},
+		{
+			type: 't',
+			address: 'toAddress1@test.com'
+		},
+		{
+			type: 't',
+			address: 'toAddress2@test.com',
+			fullName: 'To Address 2'
+		}
+	],
+	parts: [
+		{
+			contentType: 'text/html',
+			size: 0,
+			name: 'asdsa',
+			requiresSmartLinkConversion: false,
+			content: '<p>Hello</p>'
+		},
+		{
+			contentType: 'text/plain',
+			size: 0,
+			name: 'asdsa',
+			requiresSmartLinkConversion: false,
+			content: 'Hello plain text'
+		}
+	],
+	read: false,
+	replyType: undefined,
+	sensitivity: undefined,
+	shr: undefined,
+	signature: undefined,
+	size: 0,
+	subject: 'This is the subject',
+	tags: [],
+	urgent: false
+};
 describe('retrieveCC', () => {
 	beforeEach(() => {
 		(getAvailableAddresses as jest.Mock).mockReturnValue([]);
@@ -379,5 +452,173 @@ describe('retrieveReplyTo', () => {
 		const result = retrieveReplyTo(receivedMessage);
 
 		expect(result).toEqual([{ address: meAddress, type: 't' }]);
+	});
+
+	describe('generateReplyText', () => {
+		const labels = {
+			cc: 'CC_LABEL:',
+			from: 'FROM_LABEL:',
+			sent: 'SENT_LABEL:',
+			subject: 'SUBJECT_LABEL:',
+			to: 'TO_LABEL:'
+		};
+		it('should return SUBJECT in bold and original message subject', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
+		});
+
+		it('should return FROM label in bold and original message sender full name and address', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
+		});
+
+		it('should return SENT label in bold and original message date', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText).toContain(`<b>${labels.sent}</b>`);
+		});
+
+		it('should return TO label in bold and original message to addresses', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText).toContain(
+				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
+			);
+		});
+
+		it('should display TO address with fullname when present (no undefined)', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
+		});
+
+		it('should generate reply without extra line breaks before quoted text', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText.startsWith('<hr id="zwchr" >')).toBeTruthy();
+		});
+	});
+
+	describe('extractBody', () => {
+		describe('HTML', () => {
+			it('html should return html message', () => {
+				const htmlContent = '<div><p>Hello there </p></div>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlContent,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(htmlContent);
+			});
+			it('html should return plain text if no html', () => {
+				const plainText = 'Plain boring text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(plainText);
+			});
+			it('should replace dfsrc with src in html message', () => {
+				const htmlContent = '<div>dfsrc<p>Hello there </p></div>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlContent,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual(`<div>src<p>Hello there </p></div>`);
+			});
+		});
+		describe('Plain text', () => {
+			it('plain should return plain message', () => {
+				const plainText = 'Plain boring text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual(plainText);
+			});
+			it('plain should return html if no plain text', () => {
+				const htmlBody = '<p>Hello</p>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlBody,
+							name: 'HTML body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual(htmlBody);
+			});
+			it('should replace \n with <br> in plain text', () => {
+				const plainText = 'Plain \n boring \n text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body',
+							requiresSmartLinkConversion: false
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual('Plain <br/> boring <br/> text');
+			});
+		});
+
+		it('should return empty string if no plain text', () => {
+			const message: MailMessage = {
+				...mailMessage,
+				parts: []
+			};
+			const extractedBody = extractBody(message);
+			const plain = extractedBody.plainText;
+			const html = extractedBody.richText;
+			expect(plain).toEqual('');
+			expect(html).toEqual('');
+		});
 	});
 });

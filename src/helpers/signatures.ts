@@ -79,60 +79,56 @@ const getSignature = (
 const getSignatureValue = (account: Account | undefined, signatureId: string): string =>
 	getSignature(account, signatureId)?.value.description ?? '';
 
-/**
- * Composes the body of an email with the given signature
- * @param signatureValue
- * @param isRichText
- */
-const composeMailBodyWithSignature = (
-	signatureValue: string | undefined,
-	isRichText: boolean
-): string => {
-	if (!signatureValue) {
-		return '';
+const isElementInQuotedText = (signatureWrapper: Element, doc: Document): boolean => {
+	const quotedTextSeparator = doc.getElementById(LineType.HTML_SEP_ID);
+	if (!quotedTextSeparator) {
+		return false;
 	}
-
-	return isRichText
-		? `<p></p><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
-		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
+	return (
+		signatureWrapper.compareDocumentPosition(quotedTextSeparator) !==
+		Node.DOCUMENT_POSITION_FOLLOWING
+	);
 };
 
+const SIGNATURE_CLASS = 'signature-div';
+const getSignatureBeforeQuotedText = (doc: Document): Element | null => {
+	const signatureWrappers = doc.getElementsByClassName(SIGNATURE_CLASS);
+	const firstSignatureInBody = signatureWrappers.item(0);
+	if (!firstSignatureInBody || isElementInQuotedText(firstSignatureInBody, doc)) {
+		return null;
+	}
+	return firstSignatureInBody;
+};
+
+const addSignatureToDoc = (doc: Document, signature: string): string => {
+	const quotedBlockSeparator = doc.getElementById(LineType.HTML_SEP_ID);
+	const newSignatureWrapper = doc.createElement('div');
+	newSignatureWrapper.className = SIGNATURE_CLASS;
+	newSignatureWrapper.innerHTML = signature;
+	if (quotedBlockSeparator) {
+		newSignatureWrapper.appendChild(doc.createElement('br'));
+		newSignatureWrapper.appendChild(doc.createElement('br'));
+	}
+	quotedBlockSeparator
+		? quotedBlockSeparator.parentNode?.insertBefore(newSignatureWrapper, quotedBlockSeparator)
+		: doc.body.appendChild(newSignatureWrapper);
+	return doc.documentElement.innerHTML;
+};
 /**
  * Replaces the signature in a HTML message body.
  *
- * @param body - HTML message body
+ * @param doc
  * @param newSignature - content of the new signature
  */
-const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
-	const doc = new DOMParser().parseFromString(body, 'text/html');
-
-	// Get the element which wraps the signature
-	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
-
-	let signatureWrapper = null;
-
-	// Locate the separator
-	const separator = doc.getElementById(LineType.HTML_SEP_ID);
-
-	// Locate the first signature. If no wrapper is found then the unchanged mail body is returned
-	signatureWrapper = signatureWrappers.item(0);
-	if (signatureWrapper == null) {
-		return body;
+const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string => {
+	const signatureBeforeQuotedText = getSignatureBeforeQuotedText(doc);
+	if (signatureBeforeQuotedText) {
+		signatureBeforeQuotedText.remove();
 	}
 
-	/*
-	 * If a separator is present it should be located after the signature
-	 * (the content after the separator is quoted text which shouldn't be altered).
-	 * Otherwise the original body content is returned
-	 */
-	if (
-		separator &&
-		signatureWrapper.compareDocumentPosition(separator) !== Node.DOCUMENT_POSITION_FOLLOWING
-	) {
-		return body;
+	if (newSignature !== '') {
+		addSignatureToDoc(doc, newSignature);
 	}
-
-	signatureWrapper.innerHTML = newSignature;
 	return doc.documentElement.innerHTML;
 };
 
@@ -168,16 +164,35 @@ const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): st
 };
 
 /**
- * Composes the body of an email with signature of given signature id
+ * Inserts a paragraph before the quoted text separator if the first child is an HR element.
+ * @param doc - The HTML document to modify.
+ */
+function insertParagraphBeforeQuotedSeparator(doc: Document): void {
+	const quotedTextSepElement = doc.getElementById(LineType.HTML_SEP_ID);
+	const parentNode = quotedTextSepElement?.parentNode;
+	if (parentNode?.firstChild === quotedTextSepElement) {
+		parentNode.insertBefore(doc.createElement('p'), quotedTextSepElement);
+	}
+}
+
+/**
+ * Returns the mail body with the signature applied.
  * @param text
  * @param signatureId
  */
 const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
-	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
-	const plainSignatureValue =
-		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
-	const richText = replaceSignatureOnHtmlBody(text.richText, signatureValue);
-	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
+	const signatureValue = signatureId ? getSignatureValue(getUserAccount(), signatureId) : '';
+	const previousPlainText = text.plainText.trim() || '\n\n';
+	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
+	const previousRichText = text.richText.trim() || '<p></p><p></p>';
+
+	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
+
+	insertParagraphBeforeQuotedSeparator(doc);
+
+	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
+	const plainText = replaceSignatureOnPlainTextBody(previousPlainText, plainSignatureValue);
+
 	return { plainText, richText };
 };
 
@@ -187,7 +202,6 @@ export {
 	getSignatures,
 	getSignature,
 	getSignatureValue,
-	composeMailBodyWithSignature,
 	replaceSignatureOnPlainTextBody,
 	getMailBodyWithSignature
 };

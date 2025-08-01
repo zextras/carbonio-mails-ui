@@ -102,7 +102,6 @@ export const LineType = {
 	HTML_SEP_ID: 'zwchr',
 	PLAINTEXT_SEP: '---------------------------',
 	NOTES_SEPARATOR: '*~*~*~*~*~*~*~*~*~*',
-	SIGNATURE_CLASS: 'signature-div',
 	SIGNATURE_PRE_SEP: '---'
 } as const;
 
