@@ -236,31 +236,21 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 	const date = moment(mail.date).format('LLLL');
 
-	const textToRetArray = [
-		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="${
-			LineType.HTML_SEP_ID
-		}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
-			labels.from
-		}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`
-	];
-
+	let richText = `<br /><br /><hr id="${
+		LineType.HTML_SEP_ID
+	}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
+		labels.from
+	}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`;
 	if (headingCc.length > 0) {
-		textToRetArray[1] += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
-		textToRetArray[0] += `${labels.cc} ${headingCc}\n`;
+		richText += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
 	}
 
-	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
+	richText += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
 		mail.subject
 	)} <br /><br />${extractBody(mail)[1]}</div>`;
 
-	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
-		extractBody(mail)[0]
-	}`;
-
-	// TODO: why are we converting plain text to plain text??? textToRetArray[0] is plainText
 	return {
-		richText: textToRetArray[1]
+		richText
 	};
 }
 
