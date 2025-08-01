@@ -477,5 +477,10 @@ describe('retrieveReplyTo', () => {
 			const { richText } = generateReplyText(mailMessage, labels);
 			expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
 		});
+
+		it('should generate reply without extra line breaks before quoted text', () => {
+			const { richText } = generateReplyText(mailMessage, labels);
+			expect(richText.startsWith('<hr id="zwchr" >')).toBeTruthy();
+		});
 	});
 });

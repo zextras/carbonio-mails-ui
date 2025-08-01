@@ -236,7 +236,7 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 	const date = moment(mail.date).format('LLLL');
 
-	let richText = `<br /><br /><hr id="${
+	let richText = `<hr id="${
 		LineType.HTML_SEP_ID
 	}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
 		labels.from
