@@ -141,6 +141,9 @@ const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string
 const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
 	// If no eligible signature is found the original body is returned
 	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
+		if (newSignature.trim() !== '') {
+			return `${body}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+		}
 		return body;
 	}
 
@@ -182,9 +185,8 @@ function insertParagraphBeforeQuotedSeparator(doc: Document): void {
  */
 const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
 	const signatureValue = signatureId ? getSignatureValue(getUserAccount(), signatureId) : '';
-	const plainSignatureValue = signatureValue
-		? `\n${convertHtmlToPlainText(signatureValue)}\n\n`
-		: '';
+	const previousPlainText = text.plainText.trim() || '\n\n';
+	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
 	const previousRichText = text.richText.trim() || '<p></p><p></p>';
 
 	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
@@ -192,7 +194,7 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	insertParagraphBeforeQuotedSeparator(doc);
 
 	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
-	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
+	const plainText = replaceSignatureOnPlainTextBody(previousPlainText, plainSignatureValue);
 
 	return { plainText, richText };
 };

@@ -287,6 +287,26 @@ describe('Signatures', () => {
 			});
 		});
 
+		describe('Plain Text', () => {
+			it('should not add signature if NO_SIGNATURE selected', () => {
+				const editorText = {
+					plainText: '',
+					richText: ''
+				};
+				const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+				expect(result.plainText).toBe('\n\n');
+			});
+
+			it('should add signature if not present in the body', () => {
+				const editorText = {
+					plainText: '',
+					richText: ''
+				};
+				const result = getMailBodyWithSignature(editorText, signature2.id);
+				expect(result.plainText).toBe('\n\n---\nThis is my Signature 2');
+			});
+		});
+
 		it.each([NO_SIGNATURE_ID, '123'])(
 			`should wrap original body in a document when using signature %s`,
 			(signatureId: string) => {
