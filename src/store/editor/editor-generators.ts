@@ -70,7 +70,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -180,8 +180,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const editorId = uuid();
 
 	const plainText = compositionData?.text?.[0] ?? `\n\n${LineType.SIGNATURE_PRE_SEP}\n`;
-	const richText =
-		compositionData?.text?.[1] ?? `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`;
+	const richText = compositionData?.text?.[1] ?? ``;
 
 	const recipients = getMsgRecipients(compositionData);
 
@@ -242,7 +241,7 @@ const generateReplyAndReplyAllMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: ``
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
@@ -252,12 +251,12 @@ const generateReplyAndReplyAllMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const richText = replaceCidUrlWithServiceUrl(
-		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
 		savedInlineAttachments
 	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
@@ -315,7 +314,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const folderRoots = getRootsMap();
@@ -325,9 +324,9 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
 		richText: replaceCidUrlWithServiceUrl(
-			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
 			savedAttachments
 		)
 	};
@@ -374,7 +373,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const folderRoots = getRootsMap();
@@ -426,7 +425,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 	const richText = replaceCidUrlWithServiceUrl(
-		`${extractBody(originalMessage)[1]}`,
+		`${extractBody(originalMessage).richText}`,
 		savedAttachments
 	);
 	const text: EditorText = {
@@ -472,7 +471,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const richText = replaceCidUrlWithServiceUrl(
-		`${extractBody(originalMessage)[1]}`,
+		`${extractBody(originalMessage).richText}`,
 		savedAttachments
 	);
 	const text = {
