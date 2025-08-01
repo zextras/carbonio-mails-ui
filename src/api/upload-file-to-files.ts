@@ -64,7 +64,7 @@ export function uploadToFiles({ file }: { file: File }): UploadResult {
 			return response.data.nodeId;
 		} catch (error) {
 			if (axios.isCancel(error)) {
-				throw new Error('Upload cancelled');
+				throw error;
 			}
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			throw new Error(`File upload failed: ${message}`);
