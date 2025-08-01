@@ -10,7 +10,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 
-import { ConvertToSmartlinkModal } from '../convert-to-smartlink-modal';
+import { ConvertToSmartlinkModal } from '../smartlink-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getPublicLinkUrl } from 'api/get-public-link-url';

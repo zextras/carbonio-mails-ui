@@ -5,19 +5,18 @@
  */
 import React, { useCallback, useState } from 'react';
 
-import { Container, Text } from '@zextras/carbonio-design-system';
-import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-modal';
+import { SmartlinkUploadingModal } from './smartlink-uploading-modal';
 import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
-import { AnimatedLoaderUploading } from 'assets/animated-loader';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
 
-export const ConvertToSmartlinkModal = ({
+export const SmartlinkModal = ({
 	onClose,
 	editorId,
 	files
@@ -49,7 +48,10 @@ export const ConvertToSmartlinkModal = ({
 			const text = getText();
 			const smartLinksArray = await Promise.all(
 				files.map(async (file) => {
-					const uploadToFilesResponse = await uploadToFiles(file);
+					const uploadToFilesResponse = await uploadToFiles({
+						file,
+						onUploadProgressCallback: noop
+					});
 					const publicLinkUrl = await getPublicLinkUrl(uploadToFilesResponse);
 					if (!publicLinkUrl) throw new Error('Link creation failed');
 					return {
@@ -79,63 +81,9 @@ export const ConvertToSmartlinkModal = ({
 		}
 	}, [errorSnackbar, files, getText, onClose, setText]);
 
-	const modalHeaderTitle = awaitingConfirmation
-		? t('smart_link_modal.header.title', 'Upload attachment as Smart Link')
-		: t('smart_link_modal.progress.title', 'Uploading attachment as Smart Link');
-
-	const modalBodyText1 = awaitingConfirmation
-		? t('smart_link_modal.body.text1', 'The attachment exceeds the size limit')
-		: t(
-				'smart_link_modal.progress.text',
-				'You are uploading a large attachment. This may take a moment, please wait'
-			);
-
-	const modalBodyText2 = awaitingConfirmation ? (
-		t('smart_link_modal.body.text2', 'Would you like to convert it into a Smart Link?')
+	return awaitingConfirmation ? (
+		<SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />
 	) : (
-		<br />
-	);
-
-	const modalFooterLabel = awaitingConfirmation
-		? t('label.confirm', 'Confirm')
-		: t('label.uploading', 'Uploading');
-
-	const modalFooterSecondaryLabel = awaitingConfirmation ? t('label.cancel', 'Cancel') : undefined;
-
-	return (
-		<Container
-			data-testid="convert-to-smartlink-modal"
-			padding={{ all: 'large' }}
-			mainAlignment="center"
-			crossAlignment="flex-start"
-			height="fit"
-			style={{
-				overflowY: 'auto'
-			}}
-		>
-			<ModalHeader
-				title={modalHeaderTitle}
-				onClose={onClose}
-				showCloseIcon={awaitingConfirmation}
-			/>
-			<Container
-				mainAlignment="center"
-				crossAlignment="flex-start"
-				height="fit"
-				style={{
-					overflowY: 'auto'
-				}}
-			>
-				<Text>{modalBodyText1}</Text>
-				<Text>{modalBodyText2}</Text>
-				<ModalFooter
-					onConfirm={awaitingConfirmation ? onConfirm : noop}
-					secondaryAction={awaitingConfirmation ? onClose : undefined}
-					label={modalFooterLabel}
-					secondaryLabel={modalFooterSecondaryLabel}
-					primaryButtonIcon={awaitingConfirmation ? undefined : AnimatedLoaderUploading}
-				/>
-			</Container>
-		</Container>
+		<SmartlinkUploadingModal onClose={onClose} />
 	);
 };

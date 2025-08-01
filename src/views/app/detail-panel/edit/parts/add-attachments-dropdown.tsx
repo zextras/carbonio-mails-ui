@@ -20,7 +20,7 @@ import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import { ConvertToSmartlinkModal } from './convert-to-smartlink-modal';
+import { SmartlinkModal } from './smartlink-modal/smartlink-modal';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorsStore, useEditorText } from 'store/editor/index';
@@ -77,7 +77,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						maxHeight: '90vh',
 						size: 'medium',
 						children: (
-							<ConvertToSmartlinkModal
+							<SmartlinkModal
 								onClose={(): void => closeModal(modalId)}
 								files={files}
 								editorId={editorId}
