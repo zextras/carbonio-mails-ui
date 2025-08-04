@@ -6,6 +6,7 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
 
+import { LineType } from '../../commons/utils';
 import { Signature } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import {
@@ -344,6 +345,18 @@ describe('Signatures', () => {
 					});
 					expect(result.plainText).toBe(
 						'Hello there!\nText after signature\n---\nThis is my Signature 2'
+					);
+				});
+			});
+			describe('Email with quoted text', () => {
+				it('should add signature when body contain quoted text', () => {
+					const editorText = {
+						plainText: `Hello\n${LineType.PLAINTEXT_SEP}\nQuoted text`,
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
+					expect(result.plainText).toBe(
+						`Hello\n---\nThis is my Signature 1\n\n${LineType.PLAINTEXT_SEP}\nQuoted text`
 					);
 				});
 			});

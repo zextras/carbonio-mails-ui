@@ -137,6 +137,7 @@ const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string
  * Replaces the signature in a plain text message body
  *
  * @param body - plain text message body
+ * @param oldSignature
  * @param newSignature - signature content
  */
 const replaceSignatureOnPlainTextBody = (
@@ -144,40 +145,25 @@ const replaceSignatureOnPlainTextBody = (
 	oldSignature: string,
 	newSignature: string
 ): string => {
-	const newLineAfterBody = body.endsWith('\n') ? '' : '\n';
-	// If no eligible signature is found the original body is returned
+	const bodyAndQuotedText = body.split(LineType.PLAINTEXT_SEP);
+	const newBodyWithoutQuotedText = bodyAndQuotedText[0];
+
+	const newLineAfterBody = newBodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
 	if (isEmpty(oldSignature)) {
 		if (isEmpty(newSignature)) {
 			return body;
 		}
-		return `${body}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+		bodyAndQuotedText[0] = `${newBodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+		return bodyAndQuotedText.join(`\n\n${LineType.PLAINTEXT_SEP}`);
 	}
-	const newBody = body.replace(`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}`, '');
+
+	const newBody = newBodyWithoutQuotedText.replace(
+		`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}`,
+		''
+	);
 	const lineAfterBody = newBody.endsWith('\n') ? '' : '\n';
-	return `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
-	// if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
-	// 	if (newSignature !== '') {
-	// 		return `${body}\n${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
-	// 	}
-	// }
-
-	// Locate the first quoted text separator
-	const quotedTextSeparatorPos = body.indexOf(LineType.PLAINTEXT_SEP);
-
-	const match = body.match(PLAINTEXT_SIGNATURE_REGEX);
-
-	/*
-	 * If the body content doesn't match the regex or if it matches it
-	 * but after a quoted-text separator (= the target signature is
-	 * located inside the quoted text. This could happen when the user
-	 * will manually remove the preset signature inside the UNquoted text.
-	 */
-	if (!match || (quotedTextSeparatorPos >= 0 && quotedTextSeparatorPos < (match.index ?? 0))) {
-		return body;
-	}
-
-	// Replace the target signature
-	return body.replace(PLAINTEXT_SIGNATURE_REGEX, `$1${newSignature}`);
+	bodyAndQuotedText[0] = `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+	return bodyAndQuotedText.join(LineType.PLAINTEXT_SEP);
 };
 
 /**
