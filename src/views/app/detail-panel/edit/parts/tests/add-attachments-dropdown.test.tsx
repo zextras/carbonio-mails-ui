@@ -7,6 +7,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
+import { fireEvent } from '@testing-library/react';
 import { forEach, reduce, times } from 'lodash';
 
 import { setupTest, screen } from '@test-setup';
@@ -163,6 +164,31 @@ describe('AddAttachmentsDropdown', () => {
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 		await user.click(dropdownIcon);
 		expect(screen.getByText('composer.attachment.url')).toBeVisible();
+	});
+
+	it('should open convert to smartlink modal when files exceed size limit', async () => {
+		const editor = generateNewMessageEditor();
+		setupEditorStore({ editors: [editor] });
+		setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+		const fileInput = screen.getByTestId('file-input');
+
+		// Create large mock files that exceed limit
+		const largeFile = new File(['large content'], 'large-file.txt', { type: 'text/plain' });
+		Object.defineProperty(largeFile, 'size', { value: 50000000 }); // 50MB
+
+		const fileList = {
+			0: largeFile,
+			length: 1,
+			item: (): File => largeFile
+		};
+
+		Object.defineProperty(fileInput, 'files', { value: fileList });
+
+		// Trigger file change
+		// eslint-disable-next-line testing-library/prefer-user-event
+		fireEvent.change(fileInput);
+		await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
 	});
 
 	describe('Actions', () => {
