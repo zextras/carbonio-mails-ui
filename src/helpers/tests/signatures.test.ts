@@ -9,12 +9,11 @@ import { cloneDeep } from 'lodash';
 import { Signature } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import {
-	getMailBodyWithSignature,
+	getMailBodyWithSignatureV2,
 	getSignatures,
 	getSignatureValue,
 	NO_SIGNATURE_ID,
-	NO_SIGNATURE_LABEL,
-	replaceSignatureInMailBody
+	NO_SIGNATURE_LABEL
 } from 'helpers/signatures';
 
 describe('Signatures', () => {
@@ -73,14 +72,14 @@ describe('Signatures', () => {
 		});
 	});
 
-	describe('getMailBodyWithSignature', () => {
+	describe('getMailBodyWithSignatureV2', () => {
 		const account = generateAccount();
 		const signature1 = {
 			content: [{ _content: 'This is my Signature 1', type: 'text/html' }],
 			id: '123',
 			name: 'MySig1'
 		};
-		const signature2 = {
+		const signature2: Signature = {
 			content: [{ _content: 'This is my Signature 2', type: 'text/html' }],
 			id: '456',
 			name: 'MySig2'
@@ -100,7 +99,7 @@ describe('Signatures', () => {
 						richText:
 							'<p>Hello</p><div class="signature-div">This is my Signature 1</div><hr id="zwchr" /><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2<br><br></div><hr id="zwchr"><p>Quoted text</p></body>'
 					);
@@ -110,7 +109,7 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>Hello</p><hr id="zwchr" /><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2<br><br></div><hr id="zwchr"><p>Quoted text</p></body>'
 					);
@@ -121,7 +120,7 @@ describe('Signatures', () => {
 						richText:
 							'<p>Hello</p><div class="signature-div">This is my Signature 1</div><p>Text after signature</p><hr id="zwchr" /><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><p>Text after signature</p><div class="signature-div">This is my Signature 2<br><br></div><hr id="zwchr"><p>Quoted text</p></body>'
 					);
@@ -133,7 +132,10 @@ describe('Signatures', () => {
 						richText:
 							'<p>hello</p><div class="signature-div">This is my Signature 1<br><br></div><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe(
 						'<head></head><body><p>hello</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>'
 					);
@@ -145,7 +147,10 @@ describe('Signatures', () => {
 						richText:
 							'<p>hello</p><div class="signature-div">This is my Signature 1</div><p>P.S.: must not be removed</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe(
 						'<head></head><body><p>hello</p><p>P.S.: must not be removed</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>'
 					);
@@ -157,7 +162,10 @@ describe('Signatures', () => {
 						richText:
 							'<p>Hello</p><hr id="zwchr" /><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: signature2.id
+					});
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 2<br><br></div><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>'
 					);
@@ -168,7 +176,10 @@ describe('Signatures', () => {
 						richText:
 							'<p>hello</p><hr id="zwchr" /><p>Quoted text</p><div class="signature-div">This is my Signature 1</div>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe(
 						'<head></head><body><p>hello</p><hr id="zwchr"><p>Quoted text</p><div class="signature-div">This is my Signature 1</div></body>'
 					);
@@ -179,7 +190,7 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>Hello</p><hr id="zwchr" /><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature1.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><div class="signature-div">This is my Signature 1<br><br></div><hr id="zwchr"><p>Quoted text</p></body>'
 					);
@@ -189,7 +200,10 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>Hello</p><hr id="zwchr"><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe(
 						'<head></head><body><p>Hello</p><hr id="zwchr"><p>Quoted text</p></body>'
 					);
@@ -197,7 +211,7 @@ describe('Signatures', () => {
 
 				it('should add empty paragraph if there is quoted text but the body is empty', () => {
 					const editorText = { plainText: '', richText: '<hr id="zwchr"><p>Quoted text</p>' };
-					const result = getMailBodyWithSignature(editorText, signature1.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
 					const emptyParagraph = `<p></p>`;
 					expect(result.richText).toBe(
 						`<head></head><body>${emptyParagraph}<div class="signature-div">This is my Signature 1<br><br></div><hr id="zwchr"><p>Quoted text</p></body>`
@@ -206,7 +220,7 @@ describe('Signatures', () => {
 
 				it('should not add empty paragraph if there is HR tag before quoted text', () => {
 					const editorText = { plainText: '', richText: '<hr><hr id="zwchr"><p>Quoted text</p>' };
-					const result = getMailBodyWithSignature(editorText, signature1.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
 					expect(result.richText).toBe(
 						`<head></head><body><hr><div class="signature-div">This is my Signature 1<br><br></div><hr id="zwchr"><p>Quoted text</p></body>`
 					);
@@ -214,7 +228,10 @@ describe('Signatures', () => {
 
 				it('should add empty paragraph if there is quoted text with empty body and NO_SIGNATURE', () => {
 					const editorText = { plainText: '', richText: '<hr id="zwchr"><p>Quoted text</p>' };
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					const emptyParagraph = `<p></p>`;
 					expect(result.richText).toBe(
 						`<head></head><body>${emptyParagraph}<hr id="zwchr"><p>Quoted text</p></body>`
@@ -226,7 +243,7 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>hello</p><hr id="zwchr"><p>Quoted text</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature1.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
 					expect(result.richText).toBe(
 						`<head></head><body><p>hello</p><div class="signature-div">This is my Signature 1<br><br></div><hr id="zwchr"><p>Quoted text</p></body>`
 					);
@@ -240,7 +257,7 @@ describe('Signatures', () => {
 						richText:
 							'<p>hello</p><div class="signature-div">This is my Signature 1</div><p>Text after</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.richText).toBe(
 						'<head></head><body><p>hello</p><p>Text after</p><div class="signature-div">This is my Signature 2</div></body>'
 					);
@@ -250,7 +267,10 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>hello</p><div class="signature-div">This is my Signature 1</div>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe('<head></head><body><p>hello</p></body>');
 				});
 				it('should not add any signature when no signature is present and NO_SIGNATURE selected', () => {
@@ -258,7 +278,10 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: '<p>Hello</p>'
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.richText).toBe('<head></head><body><p>Hello</p></body>');
 				});
 			});
@@ -271,7 +294,10 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: ''
 					};
-					const result = getMailBodyWithSignature(editorText, NO_SIGNATURE_ID);
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: NO_SIGNATURE_ID
+					});
 					expect(result.plainText).toBe('\n\n');
 				});
 
@@ -281,7 +307,7 @@ describe('Signatures', () => {
 						plainText: '',
 						richText: ''
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.plainText).toBe('\n\n---\nThis is my Signature 2');
 				});
 
@@ -291,7 +317,7 @@ describe('Signatures', () => {
 						plainText: 'Hello there!',
 						richText: ''
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
 				});
 
@@ -300,7 +326,7 @@ describe('Signatures', () => {
 						plainText: 'Hello there!\n---\nThis is my Signature 1',
 						richText: ''
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
 				});
 
@@ -309,7 +335,7 @@ describe('Signatures', () => {
 						plainText: 'Hello there!\n---\nThis is my Signature 1\nText after signature',
 						richText: ''
 					};
-					const result = getMailBodyWithSignature(editorText, signature2.id);
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
 					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
 				});
 			});
@@ -319,108 +345,9 @@ describe('Signatures', () => {
 			`should wrap original body in a document when using signature %s`,
 			(signatureId: string) => {
 				const editorText = { plainText: '', richText: '<p></p>' };
-				const result = getMailBodyWithSignature(editorText, signatureId);
+				const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signatureId });
 				expect(result.richText).toMatch(/^<head><\/head><body>.*<\/body>$/);
 			}
 		);
-	});
-
-	describe('replaceSignatureInMailBody', () => {
-		const signature1: Signature = {
-			content: [{ _content: '<div>This is my Signature 1</div>', type: 'text/html' }],
-			id: '123',
-			name: 'MySig1'
-		};
-		const signature2: Signature = {
-			content: [{ _content: '<p>This is my Signature 2</p>', type: 'text/html' }],
-			id: '456',
-			name: 'MySig2'
-		};
-		describe('HTML', () => {
-			describe('Email without quoted text', () => {
-				it('should replace existing signature with new one', () => {
-					const editorText = {
-						plainText: '',
-						richText: '<p>hello</p> <div>This is my Signature 1</div>'
-					};
-					const result = replaceSignatureInMailBody({
-						editorText,
-						oldSignature: signature1,
-						newSignature: signature2
-					});
-					expect(result.richText).toBe('<p>hello</p> <p>This is my Signature 2</p>');
-				});
-				it('should remove previous signature and add the new one to the bottom', () => {
-					const editorText = {
-						plainText: '',
-						richText: '<p>hello</p><div>This is my Signature 1</div><p>Text after</p>'
-					};
-					const result = replaceSignatureInMailBody({
-						editorText,
-						oldSignature: signature1,
-						newSignature: signature2
-					});
-					expect(result.richText).toBe(
-						'<p>hello</p><p>Text after</p><p>This is my Signature 2</p>'
-					);
-				});
-				it('should remove all previous signatures', () => {
-					const editorText = {
-						plainText: '',
-						richText:
-							'<p>hello</p><div>This is my Signature 1</div><p>Bye</p>' +
-							'<div>This is my Signature 1</div><p>See you</p><div>This is my Signature 1</div>'
-					};
-					const result = replaceSignatureInMailBody({
-						editorText,
-						oldSignature: signature1
-					});
-					expect(result.richText).toBe('<p>hello</p><p>Bye</p><p>See you</p>');
-				});
-				it('should remove all previous signatures and add just one instance of the new at the bottom', () => {
-					const editorText = {
-						plainText: '',
-						richText:
-							'<p>hello</p><div>This is my Signature 1</div><p>Bye</p><div>This is my Signature 1</div><p>See you</p><div>This is my Signature 1</div>'
-					};
-					const result = replaceSignatureInMailBody({
-						editorText,
-						oldSignature: signature1,
-						newSignature: signature2
-					});
-					expect(result.richText).toBe(
-						'<p>hello</p><p>Bye</p><p>See you</p><p>This is my Signature 2</p>'
-					);
-				});
-				it('should remove signature when NO_SIGNATURE selected', () => {
-					const editorText = {
-						plainText: '',
-						richText: '<p>hello</p><div>This is my Signature 1</div>'
-					};
-					const result = replaceSignatureInMailBody({
-						editorText,
-						oldSignature: signature1
-					});
-					expect(result.richText).toBe('<p>hello</p>');
-				});
-			});
-		});
-		describe('Email with quoted text', () => {
-			it('should only replace signature before quoted text', () => {
-				const editorText = {
-					plainText: '',
-					richText:
-						'<p>Hello</p><div>This is my Signature 1</div><hr id="zwchr"><p>Quoted text</p><div>This is my Signature 1</div>'
-				};
-				const result = replaceSignatureInMailBody({
-					editorText,
-					oldSignature: signature1,
-					newSignature: signature2
-				});
-				expect(result.richText).toBe(
-					'<p>Hello</p><p>This is my Signature 2</p><hr id="zwchr"><p>Quoted text</p><div>This is my Signature 1</div>'
-				);
-			});
-		});
 	});
 });

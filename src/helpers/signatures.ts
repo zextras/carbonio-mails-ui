@@ -197,7 +197,30 @@ const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorTex
 	return { plainText, richText };
 };
 
-const replaceSignatureInMailBody = ({
+const getMailBodyWithSignatureV2 = ({
+	editorText,
+	oldSignatureId,
+	newSignatureId
+}: {
+	editorText: EditorText;
+	oldSignatureId?: string;
+	newSignatureId?: string;
+}): EditorText => {
+	const signatureValue = newSignatureId ? getSignatureValue(getUserAccount(), newSignatureId) : '';
+	const previousPlainText = editorText.plainText.trim() || '\n\n';
+	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
+	const previousRichText = editorText.richText.trim() || '<p></p><p></p>';
+
+	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
+
+	insertParagraphBeforeQuotedSeparator(doc);
+
+	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
+	const plainText = replaceSignatureOnPlainTextBody(previousPlainText, plainSignatureValue);
+
+	return { plainText, richText };
+};
+const replaceSignatureInPlainTextBody = ({
 	editorText,
 	oldSignature,
 	newSignature
@@ -236,6 +259,7 @@ export {
 	getSignature,
 	getSignatureValue,
 	replaceSignatureOnPlainTextBody,
-	replaceSignatureInMailBody,
-	getMailBodyWithSignature
+	replaceSignatureInPlainTextBody,
+	getMailBodyWithSignature,
+	getMailBodyWithSignatureV2
 };
