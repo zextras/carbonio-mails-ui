@@ -251,12 +251,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const onSendError = useCallback(
 		(error?: unknown): void => {
+			let timeout = TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT;
 			let message = t('label.error_try_again', 'Something went wrong, please try again');
 			if (isErrorAboutInvalidRecipient(error)) {
 				const errorStr = typeof error === 'string' ? error : JSON.stringify(error);
 				const match = /(\S+@\S+)/.exec(errorStr);
 				const invalidAddress = match?.[0] ?? 'unknown';
-
+				timeout = 5000;
 				message = t(
 					'error.invalid_recipient',
 					`The recipient address "${invalidAddress}" does not exist or is invalid`
@@ -267,7 +268,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				replace: true,
 				severity: 'error',
 				label: message,
-				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+				autoHideTimeout: timeout,
 				hideButton: true
 			});
 			createEditBoard({
