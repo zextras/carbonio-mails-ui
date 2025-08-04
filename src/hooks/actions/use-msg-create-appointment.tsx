@@ -35,7 +35,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 			const rooFolder = getRoot(item.parent);
 			let calendar: CalendarType | null = null;
 			let sender: SenderType | null = null;
-			const htmlBody = extractBody(item)[1];
+			const htmlBody = extractBody(item).richText;
 			if (rooFolder && rooFolder?.isLink) {
 				const calendarId = `${rooFolder.id.split(':')[0]}:${FOLDERS.CALENDAR}`;
 				calendar = {
@@ -48,7 +48,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 				getMessageEmailStoreAction(item.id)
 					.then((message) => {
 						if (!message) return;
-						const mailHtmlBody = extractBody(message)[1];
+						const mailHtmlBody = extractBody(message).richText;
 						isAvailable &&
 							openAppointmentComposer({
 								title: message.subject,
