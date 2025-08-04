@@ -15,16 +15,6 @@ const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
 const NO_SIGNATURE_LABEL = 'No signature';
 
 /**
- * Match the first string which is between a
- * signature separator and either a quoted text
- * delimiter or the end of the content
- */
-const PLAINTEXT_SIGNATURE_REGEX = new RegExp(
-	`^(${LineType.SIGNATURE_PRE_SEP}\\n)(((?!\\s${LineType.PLAINTEXT_SEP}$).)*)`,
-	'ms'
-);
-
-/**
  * Returns signatures descriptors for the given account
  * @param account
  */
@@ -152,16 +142,16 @@ const replaceSignatureOnPlainTextBody = (
 		if (isEmpty(newSignature)) {
 			return body;
 		}
-		bodyAndQuotedText[0] = `${bodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+		bodyAndQuotedText[0] = `${bodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}\n`;
 		return bodyAndQuotedText.join(`\n\n${LineType.PLAINTEXT_SEP}`);
 	}
 
 	const newBody = bodyWithoutQuotedText.replace(
-		`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}`,
+		`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}\n`,
 		''
 	);
 	const lineAfterBody = newBody.endsWith('\n') ? '' : '\n';
-	bodyAndQuotedText[0] = `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+	bodyAndQuotedText[0] = `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}\n`;
 	return bodyAndQuotedText.join(LineType.PLAINTEXT_SEP);
 };
 

@@ -302,13 +302,22 @@ describe('Signatures', () => {
 					expect(result.plainText).toBe('\n\n');
 				});
 
-				it('should add signature with two line breaks if original body empty', () => {
+				it('should add signature with two leading line breaks if original body empty', () => {
 					const editorText = {
 						plainText: '',
 						richText: ''
 					};
 					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
-					expect(result.plainText).toBe('\n\n---\nThis is my Signature 2');
+					expect(result.plainText).toBe('\n\n---\nThis is my Signature 2\n');
+				});
+
+				it('should add signature with one trailing line break', () => {
+					const editorText = {
+						plainText: '',
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
+					expect(result.plainText).toBe('\n\n---\nThis is my Signature 1\n');
 				});
 
 				it('should add signature right below text if original body not empty', () => {
@@ -317,12 +326,12 @@ describe('Signatures', () => {
 						richText: ''
 					};
 					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
-					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2\n');
 				});
 
 				it('should replace existing signature with new one', () => {
 					const editorText = {
-						plainText: 'Hello there!\n---\nThis is my Signature 1',
+						plainText: 'Hello there!\n---\nThis is my Signature 1\n',
 						richText: ''
 					};
 					const result = getMailBodyWithSignatureV2({
@@ -330,12 +339,12 @@ describe('Signatures', () => {
 						oldSignatureId: signature1.id,
 						newSignatureId: signature2.id
 					});
-					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2\n');
 				});
 
 				it('should remove previous signature and add the new one to the bottom, preserving text after signature', () => {
 					const editorText = {
-						plainText: 'Hello there!\n---\nThis is my Signature 1\nText after signature',
+						plainText: 'Hello there!\n---\nThis is my Signature 1\n\nText after signature',
 						richText: ''
 					};
 					const result = getMailBodyWithSignatureV2({
@@ -344,7 +353,7 @@ describe('Signatures', () => {
 						newSignatureId: signature2.id
 					});
 					expect(result.plainText).toBe(
-						'Hello there!\nText after signature\n---\nThis is my Signature 2'
+						'Hello there!\nText after signature\n---\nThis is my Signature 2\n'
 					);
 				});
 			});
@@ -356,7 +365,24 @@ describe('Signatures', () => {
 					};
 					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
 					expect(result.plainText).toBe(
-						`Hello\n---\nThis is my Signature 1\n\n${LineType.PLAINTEXT_SEP}\nQuoted text`
+						`Hello\n---\nThis is my Signature 1\n\n\n${LineType.PLAINTEXT_SEP}\nQuoted text`
+					);
+				});
+
+				it('should add signature with one trailing line break', () => {
+					const editorText = {
+						plainText: `Hello\n${LineType.PLAINTEXT_SEP}\nQuoted text`,
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature1.id });
+					expect(result.plainText).toBe(
+						'Hello\n' +
+							'---\n' +
+							'This is my Signature 1\n' +
+							'\n' +
+							'\n' +
+							'---------------------------\n' +
+							'Quoted text'
 					);
 				});
 			});
