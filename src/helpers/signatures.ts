@@ -6,7 +6,6 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, isEmpty, map } from 'lodash';
 
-import { Signature } from '../types';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { LineType } from 'commons/utils';
 import type { EditorText } from 'types/editor/index.d';
@@ -137,7 +136,7 @@ const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string
  * Replaces the signature in a plain text message body
  *
  * @param body - plain text message body
- * @param oldSignature
+ * @param oldSignature - signature content to be replaced
  * @param newSignature - signature content
  */
 const replaceSignatureOnPlainTextBody = (
@@ -146,18 +145,18 @@ const replaceSignatureOnPlainTextBody = (
 	newSignature: string
 ): string => {
 	const bodyAndQuotedText = body.split(LineType.PLAINTEXT_SEP);
-	const newBodyWithoutQuotedText = bodyAndQuotedText[0];
+	const bodyWithoutQuotedText = bodyAndQuotedText[0];
 
-	const newLineAfterBody = newBodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
+	const newLineAfterBody = bodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
 	if (isEmpty(oldSignature)) {
 		if (isEmpty(newSignature)) {
 			return body;
 		}
-		bodyAndQuotedText[0] = `${newBodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+		bodyAndQuotedText[0] = `${bodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
 		return bodyAndQuotedText.join(`\n\n${LineType.PLAINTEXT_SEP}`);
 	}
 
-	const newBody = newBodyWithoutQuotedText.replace(
+	const newBody = bodyWithoutQuotedText.replace(
 		`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}`,
 		''
 	);
@@ -177,27 +176,6 @@ function insertParagraphBeforeQuotedSeparator(doc: Document): void {
 		parentNode.insertBefore(doc.createElement('p'), quotedTextSepElement);
 	}
 }
-
-/**
- * Returns the mail body with the signature applied.
- * @param text
- * @param signatureId
- */
-const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
-	const signatureValue = signatureId ? getSignatureValue(getUserAccount(), signatureId) : '';
-	const previousPlainText = text.plainText || '\n\n';
-	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
-	const previousRichText = text.richText.trim() || '<p></p><p></p>';
-
-	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
-
-	insertParagraphBeforeQuotedSeparator(doc);
-
-	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
-	const plainText = replaceSignatureOnPlainTextBody(previousPlainText, plainSignatureValue);
-
-	return { plainText, richText };
-};
 
 const getMailBodyWithSignatureV2 = ({
 	editorText,
@@ -236,38 +214,6 @@ const getMailBodyWithSignatureV2 = ({
 
 	return { plainText, richText };
 };
-const replaceSignatureInPlainTextBody = ({
-	editorText,
-	oldSignature,
-	newSignature
-}: {
-	editorText: EditorText;
-	oldSignature: Signature;
-	newSignature?: Signature;
-}): EditorText => {
-	const oldSignatureContent = oldSignature.content?.[0]._content ?? '';
-	const newSignatureContent = newSignature?.content?.[0]._content ?? '';
-
-	// richText
-	let newRichText = editorText.richText;
-
-	const thereIsQuotedText = newRichText.includes('<hr id="zwchr">');
-	if (thereIsQuotedText) {
-		const bodyAndQuotedText = newRichText.split('<hr id="zwchr">');
-		let bodyPart = bodyAndQuotedText[0].replaceAll(oldSignatureContent, '');
-		bodyPart += newSignatureContent;
-		bodyAndQuotedText[0] = bodyPart;
-		newRichText = bodyAndQuotedText.join('<hr id="zwchr">');
-	} else {
-		newRichText = newRichText.replaceAll(oldSignatureContent, '');
-		newRichText += newSignatureContent;
-	}
-
-	const newPlainText = editorText.plainText.replace(oldSignatureContent, newSignatureContent);
-
-	return { plainText: newPlainText, richText: newRichText };
-};
-
 export {
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL,
@@ -275,7 +221,5 @@ export {
 	getSignature,
 	getSignatureValue,
 	replaceSignatureOnPlainTextBody,
-	replaceSignatureInPlainTextBody,
-	getMailBodyWithSignature,
 	getMailBodyWithSignatureV2
 };

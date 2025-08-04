@@ -9,7 +9,7 @@ import { Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-sys
 import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
 
-import { getMailBodyWithSignature } from 'helpers/signatures';
+import { getMailBodyWithSignatureV2 } from 'helpers/signatures';
 import { useEditorSignatureId, useEditorText } from 'store/editor/index';
 import { MailsEditorV2, SignItemType } from 'types/index.d';
 
@@ -44,8 +44,13 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
+			const oldSignatureId = signatureId;
 			setSignatureId(signature.id);
-			const textWithSignature = getMailBodyWithSignature(getText(), signature.id);
+			const textWithSignature = getMailBodyWithSignatureV2({
+				editorText: getText(),
+				newSignatureId: signature.id,
+				oldSignatureId
+			});
 			setText(textWithSignature);
 		},
 		[setSignatureId, setText, getText]
