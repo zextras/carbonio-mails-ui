@@ -9,7 +9,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 
-import { SmartlinkModal } from '../smartlink-modal/smartlink-modal';
+import { SmartlinkModal } from '../smartlink-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getPublicLinkUrl } from 'api/get-public-link-url';
