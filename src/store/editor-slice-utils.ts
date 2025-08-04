@@ -223,6 +223,7 @@ type Labels = {
 type ReplyText = {
 	richText: string;
 };
+// TODO: not a good idea to convert html to plain text, it adds to many spaces
 export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),

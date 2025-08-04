@@ -258,13 +258,15 @@ const generateReplyAndReplyAllMsgEditor = (
 		editorText: text,
 		newSignatureId: signatureId
 	});
+	const htmlQuotedReply = `${generateReplyText(originalMessage, labels).richText}`;
 	const richText = replaceCidUrlWithServiceUrl(
-		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
+		`${textWithSignature.richText} ${htmlQuotedReply}`,
 		savedInlineAttachments
 	);
 
+	const plainTextQuotedReply = convertHtmlToPlainText(htmlQuotedReply);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
+		plainText: `${textWithSignature.plainText} ${plainTextQuotedReply}`,
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;

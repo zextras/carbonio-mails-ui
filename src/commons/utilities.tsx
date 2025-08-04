@@ -6,6 +6,7 @@
 import type { Theme } from '@zextras/carbonio-design-system';
 import { isNil } from 'lodash';
 
+import { LineType } from './utils';
 import type { EditorAttachmentFiles } from 'types/editor/index.d';
 import type { AttachmentPart } from 'types/messages/index.d';
 
@@ -272,10 +273,15 @@ export const convertToDecimal = (source: string): string => {
 
 const P_TAG = /<p[^>]*>/g;
 const BR_TAG = /<br[^>]*>/g;
+// matches <hr id="zwchr"> with 0 or more spaces at end line (e.g.: <hr id="zwchr"  >, also <hr id="zwchr"/>)
+const QUOTED_TEXT_SEPARATOR_TAG = /<hr(\s)+(id="zwchr")(\s)?[^>]*>/g;
 const DIV_TAG = /<div[^>]*>/g;
 const SCRIPT_TAG = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 const STYLE_TAG = /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi;
 
+// TODO: this code doesn't work too well,
+//  because it does not take in consideration that the signature div must be converted to separator and other cases
+//  Also there are cases where we don't want too many spaces and this code adds too many (check real example)
 export const convertHtmlToPlainText = (html: string): string => {
 	if (!html) {
 		return '';
@@ -290,6 +296,8 @@ export const convertHtmlToPlainText = (html: string): string => {
 		.replace(P_TAG, '\n\n<p>')
 		// Convert br tags to new lines
 		.replace(BR_TAG, '\n')
+		// Replace html quoted text separator with text
+		.replace(QUOTED_TEXT_SEPARATOR_TAG, `\n${LineType.PLAINTEXT_SEP}\n`)
 		// Add a newline before every p tag
 		.replace(DIV_TAG, '\n<div>');
 	const doc = new DOMParser().parseFromString(result, 'text/html');
