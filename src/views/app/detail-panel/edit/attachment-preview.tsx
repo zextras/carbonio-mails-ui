@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 
 import {
 	Container,
@@ -103,31 +103,10 @@ const AttachmentExtension = styled(Text)<{
 type AttachmentCardProps = {
 	editorId: MailsEditorV2['id'];
 	attachment: UnsavedAttachment | SavedAttachment;
-	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
 };
 
-export const AttachmentPreview: FC<AttachmentCardProps> = ({
-	editorId,
-	attachment,
-	setLargeFileUploadInfoBannerVisible
-}) => {
+export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
-
-	const attachmentHasBeenSaved = isSavedAttachment(attachment);
-
-	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			setLargeFileUploadInfoBannerVisible(true);
-		}, 5_000);
-		if (attachmentHasBeenSaved) {
-			setLargeFileUploadInfoBannerVisible(false);
-			clearTimeout(timeoutId);
-		}
-		return () => {
-			setLargeFileUploadInfoBannerVisible(false);
-			clearTimeout(timeoutId);
-		};
-	}, [attachmentHasBeenSaved, setLargeFileUploadInfoBannerVisible]);
 
 	const requiresSmartLinkConversion =
 		isSavedAttachment(attachment) && attachment?.requiresSmartLinkConversion;

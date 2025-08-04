@@ -27,10 +27,8 @@ import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
-import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
@@ -49,7 +47,6 @@ import {
 	useEditorRecipients
 } from '../../../../store/editor';
 import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
-import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -78,14 +75,11 @@ export type EditViewHandle = {
 // TODO: sendAllowedStatus is completely flawed and full of logical errors
 function evaluateSendDisabledReason(
 	invalidRecipientsPresent: boolean,
-	isMailSizeWarning: boolean,
 	sendAllowedStatus: EditorOperationAllowedStatus | undefined
 ): string | undefined {
 	let sendDisabledReason;
 	if (invalidRecipientsPresent) {
 		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
-	} else if (isMailSizeWarning) {
-		sendDisabledReason = t('label.message_size_exceeded', 'The message size exceeds the limit.');
 	} else {
 		sendDisabledReason = sendAllowedStatus?.reason;
 	}
@@ -144,8 +138,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 ) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
-	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
-	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
@@ -343,24 +335,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
 
-	const createSmartLinksAction = useCallback((): Promise<void> => {
-		setIsConvertingToSmartLink(true);
-
-		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() =>
-			setIsConvertingToSmartLink(false)
-		);
-	}, [editorId, createSnackbar]);
-
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			if (draftSmartLinks.length > 0) {
-				try {
-					await createSmartLinksAction();
-				} catch (err) {
-					onSendError?.();
-					return;
-				}
-			}
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
@@ -381,12 +357,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		close,
 		createModal,
 		closeModal,
-		draftSmartLinks.length,
 		sendMessage,
 		onSendCountdownTick,
 		onSendComplete,
-		onSendError,
-		createSmartLinksAction
+		onSendError
 	]);
 
 	const handleCertificateResponse = useCallback(
@@ -532,14 +506,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
-				if (draftSmartLinks.length > 0) {
-					try {
-						await createSmartLinksAction();
-					} catch (err) {
-						onSendError?.();
-						return;
-					}
-				}
 				setAutoSendTime(scheduledTime);
 				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
@@ -552,29 +518,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				hasAttachments: savedStandardAttachments.length > 0
 			});
 		},
-		[
-			editorId,
-			createModal,
-			closeModal,
-			savedStandardAttachments,
-			draftSmartLinks.length,
-			setAutoSendTime,
-			saveDraft,
-			close,
-			createSmartLinksAction,
-			onSendError
-		]
+		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
 	const sendDisabled =
-		isMailSizeWarning ||
-		!sendAllowedStatus?.allowed ||
-		isConvertingToSmartLink ||
-		!draftId ||
-		invalidRecipientsPresent;
+		!sendAllowedStatus?.allowed || isConvertingToSmartLink || !draftId || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
-		isMailSizeWarning,
 		sendAllowedStatus
 	);
 
@@ -644,12 +594,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				{/* Header end */}
 
 				<SendToYourselfWarningBanner editorId={editorId} />
-				{largeFileUploadInfoBannerVisible && <LargeFileUploadInfoBanner />}
-				<SizeExceededWarningBanner
-					editorId={editorId}
-					isMailSizeWarning={isMailSizeWarning}
-					setIsMailSizeWarning={setIsMailSizeWarning}
-				/>
 				<GapContainer
 					mainAlignment={flexStart}
 					crossAlignment={flexStart}
@@ -663,12 +607,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
-
-					<EditAttachmentsBlock
-						editorId={editorId}
-						setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
-					/>
-
+					<EditAttachmentsBlock editorId={editorId} />
 					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
