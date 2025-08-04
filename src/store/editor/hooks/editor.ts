@@ -5,7 +5,6 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { NO_SIGNATURE_ID } from '../../../helpers/signatures';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorsStore } from 'store/editor/store';
@@ -402,7 +401,7 @@ export const useEditorSignatureId = (
 
 	return useMemo(
 		() => ({
-			signatureId: value ?? NO_SIGNATURE_ID,
+			signatureId: value,
 			setSignatureId: (val: MailsEditorV2['signatureId']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
