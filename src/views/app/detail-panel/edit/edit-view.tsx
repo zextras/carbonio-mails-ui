@@ -253,20 +253,34 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	const onSendError = useCallback((): void => {
-		createSnackbar({
-			key: `mail-${editorId}`,
-			replace: true,
-			severity: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
-		});
-		createEditBoard({
-			action: EditViewActions.RESUME,
-			actionTargetId: editorId
-		});
-	}, [createSnackbar, editorId]);
+	function isErrorAboutInvalidRecipient(error?: unknown): boolean {
+		return typeof error === 'string' && error.includes('5.1.1');
+	}
+
+	const onSendError = useCallback(
+		(error?: unknown): void => {
+			let message = t('label.error_try_again', 'Something went wrong, please try again');
+			if (isErrorAboutInvalidRecipient(error)) {
+				message = t(
+					'error.invalid_recipient',
+					'The recipient address does not exist or is invalid'
+				);
+			}
+			createSnackbar({
+				key: `mail-${editorId}`,
+				replace: true,
+				severity: 'error',
+				label: message,
+				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+				hideButton: true
+			});
+			createEditBoard({
+				action: EditViewActions.RESUME,
+				actionTargetId: editorId
+			});
+		},
+		[createSnackbar, editorId]
+	);
 
 	const onSendComplete = useCallback((): void => {
 		createSnackbar({

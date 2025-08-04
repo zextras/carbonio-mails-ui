@@ -33,7 +33,6 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
-import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import {
@@ -197,6 +196,7 @@ describe('Edit view', () => {
 			createSoapAPIInterceptor('GetShareInfo');
 		});
 		const invalidEmailAddress = 'invalidmailaddress.com';
+
 		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
@@ -560,6 +560,43 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
+		// it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
+		// 	createAPIInterceptor(
+		// 		'post',
+		// 		'/service/soap/GetShareInfoRequest',
+		// 		HttpResponse.json(getEmptyMSWShareInfoResponse())
+		// 	);
+		// 	createCheckSmimeEnabledAPIInterceptor();
+
+		// 	const editor = await readyToBeSentEditorTestCase({
+		// 		id: '123-testId',
+		// 		did: '123-testId'
+		// 	});
+		// 	setupEditorStore({ editors: [editor] });
+		// 	addEditor({ id: editor.id, editor });
+
+		// 	const invalidRecipientInterceptor = createSoapAPIInterceptor(
+		// 		'SendMsg',
+		// 		buildSoapErrorResponseBody({
+		// 			reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
+		// 			code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
+		// 		})
+		// 	);
+
+		// 	const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+		// 	const btnSend = await screen.findByTestId(/BtnSendMail/i);
+		// 	await waitFor(() => expect(btnSend).toBeEnabled());
+
+		// 	await act(async () => {
+		// 		await user.click(btnSend);
+		// 	});
+
+		// 	await invalidRecipientInterceptor;
+
+		// 	expect(await screen.findByText(/error\.invalid_recipient/)).toBeInTheDocument();
+		// });
+
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
