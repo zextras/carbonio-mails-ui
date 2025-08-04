@@ -80,7 +80,6 @@ type EditorAttachmentHook = {
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
-	toggleSmartLink: (partName: string) => void;
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
@@ -100,7 +99,6 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	);
 	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
 	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
-	const toggleSmartLinkInvoker = useEditorsStore((state) => state.toggleSmartLink);
 
 	const addGenericUnsavedAttachments = (
 		files: Array<File>,
@@ -324,9 +322,6 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		},
 		addStandardAttachments,
 		addInlineAttachments,
-		addUploadedAttachment,
-		toggleSmartLink: (partName: string): void => {
-			toggleSmartLinkInvoker(editorId, partName);
-		}
+		addUploadedAttachment
 	};
 };

@@ -312,15 +312,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
-	const draftSmartLinks = useMemo(
-		() =>
-			savedStandardAttachments
-				.filter((attachment) => attachment.requiresSmartLinkConversion)
-				.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName })),
-		[savedStandardAttachments]
-	);
-	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
-
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
@@ -506,8 +497,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
-	const sendDisabled =
-		!sendAllowedStatus?.allowed || isConvertingToSmartLink || !draftId || invalidRecipientsPresent;
+	const sendDisabled = !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
@@ -572,7 +562,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							onSendNow={onSendClick}
 							disabled={sendDisabled}
 							tooltip={sendDisabledReason ?? ''}
-							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>
 				</GapRow>

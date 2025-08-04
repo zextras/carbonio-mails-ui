@@ -21,7 +21,6 @@ import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
 import type {
-	CreateSmartLinksRequest,
 	MailsEditorV2,
 	SaveDraftRequest,
 	SaveDraftResponse,
@@ -33,7 +32,6 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
-import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import {
@@ -48,7 +46,6 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import {
@@ -125,16 +122,6 @@ const getSoapMailBodyContent = (
 
 	return '';
 };
-
-const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-		'CreateSmartLinks',
-		buildSoapErrorResponseBody({
-			detailCode: 'Failed upload to Files',
-			code: '123',
-			reason: 'Failed due to connection timeout'
-		})
-	);
 
 const createCheckSmimeEnabledAPIInterceptor = (): void => {
 	createAPIInterceptor(

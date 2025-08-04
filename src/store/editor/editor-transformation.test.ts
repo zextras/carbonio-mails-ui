@@ -16,15 +16,13 @@ describe('composeAttachMpField', () => {
 				isInline: false,
 				filename: 'Conquista del mondo senza meeting room.eml',
 				partName: '2',
-				messageId: '11215',
-				requiresSmartLinkConversion: false
+				messageId: '11215'
 			}
 		];
 		const result = composeAttachMpField(savedAttachments);
 
 		const expectedOutput = [
 			{
-				requiresSmartLinkConversion: false,
 				mid: '11215',
 				part: '2'
 			}
@@ -49,8 +47,7 @@ describe('buildSavedAttachments', () => {
 				filename: 'img.png',
 				name: '2.2',
 				size: 1234,
-				ci: '<abc123@zimbra>',
-				requiresSmartLinkConversion: false
+				ci: '<abc123@zimbra>'
 			}
 		];
 
@@ -74,8 +71,7 @@ describe('buildSavedAttachments', () => {
 				disposition: 'inline',
 				filename: 'doc.pdf',
 				name: '2.3',
-				size: 2048,
-				requiresSmartLinkConversion: false
+				size: 2048
 			}
 		];
 
@@ -90,8 +86,7 @@ describe('buildSavedAttachments', () => {
 				contentType: 'application/pdf',
 				filename: 'doc.pdf',
 				name: '2.4',
-				size: 512,
-				requiresSmartLinkConversion: false
+				size: 512
 			}
 		];
 
@@ -106,8 +101,7 @@ describe('buildSavedAttachments', () => {
 				contentType: 'image/jpeg',
 				ci: '<image123@crb>',
 				name: '2.5',
-				size: 200,
-				requiresSmartLinkConversion: false
+				size: 200
 			}
 		];
 
@@ -121,28 +115,12 @@ describe('buildSavedAttachments', () => {
 			{
 				contentType: 'image/jpeg',
 				name: '2.6',
-				size: 300,
-				requiresSmartLinkConversion: false
+				size: 300
 			}
 		];
 
 		const result = buildSavedAttachments(message);
 		expect(result[0].contentId).toBeUndefined();
-	});
-
-	it('should set requiresSmartLinkConversion correctly', () => {
-		const message = generateMessage({ folderId: '2' });
-		message.parts = [
-			{
-				contentType: 'image/jpeg',
-				name: '2.7',
-				size: 300,
-				requiresSmartLinkConversion: true
-			}
-		];
-
-		const result = buildSavedAttachments(message);
-		expect(result[0].requiresSmartLinkConversion).toBe(true);
 	});
 
 	it('should correctly build a SavedAttachment for a part with inline CID and text/html content', () => {
@@ -157,8 +135,7 @@ describe('buildSavedAttachments', () => {
 			</body></html>`,
 				size: 999,
 				name: '2.2',
-				ci: '<65766eee-4439-438c-a375-1ac111ed1a07@zimbra>',
-				requiresSmartLinkConversion: false
+				ci: '<65766eee-4439-438c-a375-1ac111ed1a07@zimbra>'
 			}
 		];
 
@@ -172,8 +149,7 @@ describe('buildSavedAttachments', () => {
 				filename: '', // no filename provided
 				partName: '2.2',
 				contentType: 'text/html',
-				size: 999,
-				requiresSmartLinkConversion: false
+				size: 999
 			}
 		]);
 	});
