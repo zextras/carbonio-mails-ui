@@ -7,6 +7,7 @@
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
+import { LineType } from '../../commons/utils';
 import { MailMessage } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
@@ -67,6 +68,16 @@ const mailMessage: MailMessage = {
 			type: 't',
 			address: 'toAddress2@test.com',
 			fullName: 'To Address 2'
+		},
+		{
+			type: 'c',
+			address: 'ccAddress1@test.com',
+			fullName: 'CC Address 1'
+		},
+		{
+			type: 'c',
+			address: 'ccAddress2@test.com',
+			fullName: 'CC Address 2'
 		}
 	],
 	parts: [
@@ -466,36 +477,84 @@ describe('retrieveReplyTo', () => {
 			subject: 'SUBJECT_LABEL:',
 			to: 'TO_LABEL:'
 		};
-		it('should return SUBJECT in bold and original message subject', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
+		describe('richText handling', () => {
+			it('should return SUBJECT in bold and original message subject', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
+			});
+
+			it('should return FROM label in bold and original message sender full name and address', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
+			});
+
+			it('should return SENT label in bold and original message date', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText).toContain(`<b>${labels.sent}</b>`);
+			});
+
+			it('should return TO label in bold and original message to addresses', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText).toContain(
+					`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
+				);
+			});
+
+			it('should display TO address with fullname when present (no undefined)', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
+			});
+
+			it('should generate reply without extra line breaks before quoted text', () => {
+				const { richText } = generateReplyText(mailMessage, labels);
+				expect(richText.startsWith('<hr id="zwchr" >')).toBeTruthy();
+			});
 		});
 
-		it('should return FROM label in bold and original message sender full name and address', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
-		});
+		describe('plainText handling', () => {
+			it('should return SUBJECT and original message subject', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(`${labels.subject} ${mailMessage.subject}`);
+			});
 
-		it('should return SENT label in bold and original message date', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText).toContain(`<b>${labels.sent}</b>`);
-		});
+			it('should return FROM label and original message sender full name and address', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(`${labels.from} "undefined" <sender@test.com>`);
+			});
 
-		it('should return TO label in bold and original message to addresses', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText).toContain(
-				`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
-			);
-		});
+			it('should return SENT label and original message date', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(`${labels.sent}`);
+			});
 
-		it('should display TO address with fullname when present (no undefined)', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText).toContain(`"To Address 2" &lt;toAddress2@test.com&gt;`);
-		});
+			it('should return TO label and original message to addresses', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(
+					`${labels.to} "undefined" <toAddress1@test.com>, "To Address 2" <toAddress2@test.com>`
+				);
+			});
 
-		it('should generate reply without extra line breaks before quoted text', () => {
-			const { richText } = generateReplyText(mailMessage, labels);
-			expect(richText.startsWith('<hr id="zwchr" >')).toBeTruthy();
+			it('should return CC label and original message cc addresses', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(
+					`${labels.cc} "CC Address 1" <ccAddress1@test.com>, "CC Address 2" <ccAddress2@test.com>`
+				);
+			});
+
+			it('should display TO address with fullname when present (no undefined)', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText).toContain(`"To Address 2" <toAddress2@test.com>`);
+			});
+
+			it('should generate reply without extra line breaks before quoted text', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText.startsWith(`${LineType.PLAINTEXT_SEP}`)).toBeTruthy();
+			});
+
+			it('should add two line breaks after the quoted text separator(PLAINTEXT_SEP)', () => {
+				const { plainText } = generateReplyText(mailMessage, labels);
+				expect(plainText.startsWith(`${LineType.PLAINTEXT_SEP}\n\n${labels.from}`)).toBeTruthy();
+			});
 		});
 	});
 

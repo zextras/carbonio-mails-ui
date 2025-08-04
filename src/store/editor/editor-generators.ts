@@ -258,13 +258,16 @@ const generateReplyAndReplyAllMsgEditor = (
 		editorText: text,
 		newSignatureId: signatureId
 	});
-	const htmlQuotedReply = `${generateReplyText(originalMessage, labels).richText}`;
+	const { richText: htmlQuotedReply, plainText: plainTextQuotedReply } = generateReplyText(
+		originalMessage,
+		labels
+	);
+
 	const richText = replaceCidUrlWithServiceUrl(
 		`${textWithSignature.richText} ${htmlQuotedReply}`,
 		savedInlineAttachments
 	);
 
-	const plainTextQuotedReply = convertHtmlToPlainText(htmlQuotedReply);
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${plainTextQuotedReply}`,
 		richText
