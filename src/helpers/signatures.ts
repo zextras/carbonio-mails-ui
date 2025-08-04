@@ -141,10 +141,12 @@ const replaceSignatureOnPlainTextBody = (
 	const optionalNewLine = bodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
 	bodyWithoutQuotedText += optionalNewLine;
 
-	const signatureTemplate: (signatureContent: string) => string = (signatureContent: string) =>
-		isEmpty(signatureContent)
-			? ''
-			: `${LineType.SIGNATURE_PRE_SEP}\n${signatureContent}\n${hasQuotedText ? '\n\n' : ''}`;
+	const signatureTemplate: (signatureContent: string) => string = (signatureContent: string) => {
+		if (isEmpty(signatureContent)) {
+			return '';
+		}
+		return `${LineType.SIGNATURE_PRE_SEP}\n${signatureContent}\n${hasQuotedText ? '\n\n' : ''}`;
+	};
 
 	if (isEmpty(oldSignature)) {
 		if (isEmpty(newSignature)) {
