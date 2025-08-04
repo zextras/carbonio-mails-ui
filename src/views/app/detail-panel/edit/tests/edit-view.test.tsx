@@ -57,6 +57,7 @@ import {
 import { setupEditorStore } from 'tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
 import { generateMessage } from 'tests/generators/generateMessage';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
