@@ -45,6 +45,8 @@
 		"@babel/preset-typescript": "^7.21.0",
 		"@commitlint/cli": "^19.1.0",
 		"@commitlint/config-conventional": "^19.1.0",
+		"@emotion/babel-plugin": "^11.13.5",
+		"@emotion/jest": "^11.13.0",
 		"@faker-js/faker": "^8.4.1",
 		"@reduxjs/toolkit": "^1.9.3",
 		"@testing-library/dom": "^10.4.0",
@@ -78,8 +80,8 @@
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
-		"@emotion/react": "^11.11.4",
-		"@emotion/styled": "^11.10.5",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1",
 		"@mui/icons-material": "^5.15.12",
 		"@mui/material": "^5.15.12",
 		"@types/webpack": "^5.28.2",
