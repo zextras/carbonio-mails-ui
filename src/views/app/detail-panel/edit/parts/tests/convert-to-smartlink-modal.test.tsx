@@ -33,6 +33,7 @@ function createDeferredPromise<T>(): {
 
 	return { promise, resolve: resolve!, reject: reject! };
 }
+
 jest.mock('api/upload-file-to-files');
 jest.mock('api/get-public-link-url', () => ({
 	getPublicLinkUrl: jest.fn()
@@ -350,6 +351,57 @@ describe('ConvertToSmartlinkModal', () => {
 			expect(mockOnClose).toHaveBeenCalled();
 			const errorSnackbar = screen.getByText('Something went wrong, please try again');
 			expect(errorSnackbar).toBeInTheDocument();
+		});
+
+		it('abort', async () => {
+			const uploadDeferred = createDeferredPromise<string>();
+
+			const abortController = new AbortController();
+
+			(uploadToFiles as jest.Mock).mockReturnValue({
+				upload: uploadDeferred.promise,
+				abortController
+			});
+
+			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+			useEditorsStore.setState({ editors: { [editor.id]: editor } });
+
+			const { user } = setupTest(
+				<SmartlinkModal
+					onClose={mockOnClose}
+					editorId={editor.id}
+					files={[
+						new File(['file1 content'], 'file1.txt'),
+						new File(['file2 content'], 'file2.txt')
+					]}
+				/>
+			);
+
+			const confirmButton = screen.getByRole('button', {
+				name: /confirm/i
+			});
+			await user.click(confirmButton);
+
+			await waitFor(() => {
+				expect(uploadToFiles).toHaveBeenCalled();
+			});
+
+			const cancelButton = screen.getByRole('button', {
+				name: /cancel/i
+			});
+			await user.click(cancelButton);
+
+			expect(abortController.signal.aborted).toBe(true);
+			const canceledError = new Error('Request aborted');
+			canceledError.name = 'CanceledError';
+			uploadDeferred.reject(canceledError);
+
+			expect(mockOnClose).toHaveBeenCalled();
+
+			await waitFor(() => {
+				const errorSnackbar = screen.getByText(/upload cancelled/i);
+				expect(errorSnackbar).toBeInTheDocument();
+			});
 		});
 	});
 });
