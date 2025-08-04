@@ -329,6 +329,19 @@ describe('Signatures', () => {
 					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2\n');
 				});
 
+				it('should remove old signature if new one is NO_SIGNATURE', () => {
+					const editorText = {
+						plainText: 'Hello there!\n---\nThis is my Signature 1\n',
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						oldSignatureId: signature1.id,
+						newSignatureId: NO_SIGNATURE_ID
+					});
+					expect(result.plainText).toBe('Hello there!\n');
+				});
+
 				it('should replace existing signature with new one', () => {
 					const editorText = {
 						plainText: 'Hello there!\n---\nThis is my Signature 1\n',
@@ -353,7 +366,7 @@ describe('Signatures', () => {
 						newSignatureId: signature2.id
 					});
 					expect(result.plainText).toBe(
-						'Hello there!\nText after signature\n---\nThis is my Signature 2\n'
+						'Hello there!\n\nText after signature\n---\nThis is my Signature 2\n'
 					);
 				});
 			});
@@ -383,6 +396,36 @@ describe('Signatures', () => {
 							'\n' +
 							'---------------------------\n' +
 							'Quoted text'
+					);
+				});
+
+				it('should replace signature', () => {
+					const editorText = {
+						plainText: `Hello\n${LineType.SIGNATURE_PRE_SEP}\nThis is my Signature 1\n\n\n${LineType.PLAINTEXT_SEP}\nQuoted text`,
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						oldSignatureId: signature1.id,
+						newSignatureId: signature2.id
+					});
+					expect(result.plainText).toBe(
+						`Hello\n---\nThis is my Signature 2\n\n\n${LineType.PLAINTEXT_SEP}\nQuoted text`
+					);
+				});
+
+				it('should not remove/replace signature after quoted text', () => {
+					const editorText = {
+						plainText: `Hello\n---\nThis is my Signature 1\n\n\n${LineType.PLAINTEXT_SEP}\nQuoted text\n---\nThis is my Signature 1\n`,
+						richText: ''
+					};
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						newSignatureId: signature2.id,
+						oldSignatureId: signature1.id
+					});
+					expect(result.plainText).toBe(
+						`Hello\n---\nThis is my Signature 2\n\n\n${LineType.PLAINTEXT_SEP}\nQuoted text\n---\nThis is my Signature 1\n`
 					);
 				});
 			});

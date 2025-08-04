@@ -135,24 +135,29 @@ const replaceSignatureOnPlainTextBody = (
 	newSignature: string
 ): string => {
 	const bodyAndQuotedText = body.split(LineType.PLAINTEXT_SEP);
-	const bodyWithoutQuotedText = bodyAndQuotedText[0];
+	let bodyWithoutQuotedText = bodyAndQuotedText[0];
+	const hasQuotedText = bodyAndQuotedText.length > 1;
 
-	const newLineAfterBody = bodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
+	const optionalNewLine = bodyWithoutQuotedText.endsWith('\n') ? '' : '\n';
+	bodyWithoutQuotedText += optionalNewLine;
+
+	const signatureTemplate: (signatureContent: string) => string = (signatureContent: string) =>
+		isEmpty(signatureContent)
+			? ''
+			: `${LineType.SIGNATURE_PRE_SEP}\n${signatureContent}\n${hasQuotedText ? '\n\n' : ''}`;
+
 	if (isEmpty(oldSignature)) {
 		if (isEmpty(newSignature)) {
 			return body;
 		}
-		bodyAndQuotedText[0] = `${bodyWithoutQuotedText}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}\n`;
-		return bodyAndQuotedText.join(`\n\n${LineType.PLAINTEXT_SEP}`);
+		bodyAndQuotedText[0] = `${bodyWithoutQuotedText}${signatureTemplate(newSignature)}`;
+		return bodyAndQuotedText.join(`${LineType.PLAINTEXT_SEP}`);
 	}
 
-	const newBody = bodyWithoutQuotedText.replace(
-		`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}\n`,
-		''
-	);
-	const lineAfterBody = newBody.endsWith('\n') ? '' : '\n';
-	bodyAndQuotedText[0] = `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}\n`;
-	return bodyAndQuotedText.join(LineType.PLAINTEXT_SEP);
+	const newBody = bodyWithoutQuotedText.replace(signatureTemplate(oldSignature), '');
+
+	bodyAndQuotedText[0] = `${newBody}${signatureTemplate(newSignature)}`;
+	return bodyAndQuotedText.join(`${LineType.PLAINTEXT_SEP}`);
 };
 
 /**
