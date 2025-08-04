@@ -27,8 +27,3 @@ export type SavedAttachment = AbstractAttachment & {
 	messageId: string;
 	partName: string;
 };
-
-export type SmartLinkAttachment = {
-	partName: string;
-	draftId: string;
-};
