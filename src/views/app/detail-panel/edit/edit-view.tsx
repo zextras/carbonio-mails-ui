@@ -497,8 +497,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
-	const sendDisabled =
-		isMailSizeWarning || !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
+	const sendDisabled = !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
