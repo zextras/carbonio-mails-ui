@@ -73,6 +73,48 @@ describe('convertHtmlToPlainText', () => {
 		);
 	});
 
+	test('convertHtmlToPlainText quoted text', () => {
+		expect(
+			convertHtmlToPlainText(
+				"'<head></head>" +
+					'<body>' +
+					'<p></p><p></p>' + // \n\n
+					'<div class="signature-div">' + // ---
+					'<p><span style="font-size:18pt">' +
+					'<strong><span style="color:rgb( 224 , 62 , 45 )">My signature</span></strong>' +
+					'</span></p>' +
+					'</div>' +
+					'<hr id="zwchr" >\n' +
+					'<div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;">\n' +
+					'<b>From:</b> "DEFAULT" &lt;zextras@demo.zextras.io&gt; <br /> <b>To:</b> "undefined" &lt;zextras@demo.zextras.io&gt; <br /><b>Sent:</b> Thursday, July 31, 2025 10:55 AM <br /> <b>Subject:</b> Test <br /><br /><html></html><style></style><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt"><p>Test to myself</p>\\r\\n<p> </p>\\r\\n<p> </p>\\r\\n<div class="signature-div">\\r\\n<p><span style="font-size:18pt"><strong><span style="color:rgb( 224 , 62 , 45 )">Davide Frison Developer</span></strong></span></p>\\r\\n</div></div></body></div>\''
+			)
+		).toBe(
+			'\n\n' +
+				'\n---' +
+				'\nMy signature' +
+				'\n---------------------------\n' +
+				'\n' +
+				'\n' +
+				'\n' +
+				'From: "DEFAULT" <zextras@demo.zextras.io> \n' +
+				' To: "undefined" <zextras@demo.zextras.io> \n' +
+				'Sent: Thursday, July 31, 2025 10:55 AM \n' +
+				' Subject: Test \n' +
+				'\n' +
+				'\n' +
+				'\n' +
+				'\n' +
+				'Test to myself\\r\\n\n' +
+				'\n' +
+				' \\r\\n\n' +
+				'\n' +
+				' \\r\\n\n' +
+				'\\r\\n\n' +
+				'\n' +
+				"Davide Frison Developer\\r\\n'"
+		);
+	});
+
 	test('removes CDATA tag from html', () => {
 		expect(
 			convertHtmlToPlainText(`
