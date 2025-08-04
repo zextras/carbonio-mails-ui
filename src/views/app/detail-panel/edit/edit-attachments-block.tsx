@@ -16,8 +16,7 @@ import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
-	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
-}> = ({ editorId, setLargeFileUploadInfoBannerVisible }): ReactElement => {
+}> = ({ editorId }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
@@ -54,7 +53,6 @@ export const EditAttachmentsBlock: FC<{
 									key={`att-${attachment.filename}-${index}`}
 									editorId={editorId}
 									attachment={attachment}
-									setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
 								/>
 							) : (
 								<></>
