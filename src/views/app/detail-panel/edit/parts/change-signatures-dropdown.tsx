@@ -53,7 +53,7 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 			});
 			setText(textWithSignature);
 		},
-		[setSignatureId, setText, getText]
+		[signatureId, setSignatureId, getText, setText]
 	);
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(

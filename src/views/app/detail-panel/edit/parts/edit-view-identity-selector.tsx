@@ -100,7 +100,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 			setText(textWithSignature);
 			setSignatureId(identity.defaultSignatureId);
 		},
-		[setIdentityId, setSignatureId, setText, getText]
+		[signatureId, setIdentityId, getText, setText, setSignatureId]
 	);
 
 	const toggleOpen = useCallback(() => {
