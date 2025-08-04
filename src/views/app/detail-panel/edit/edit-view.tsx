@@ -27,6 +27,7 @@ import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
@@ -75,11 +76,14 @@ export type EditViewHandle = {
 // TODO: sendAllowedStatus is completely flawed and full of logical errors
 function evaluateSendDisabledReason(
 	invalidRecipientsPresent: boolean,
+	isMailSizeWarning: boolean,
 	sendAllowedStatus: EditorOperationAllowedStatus | undefined
 ): string | undefined {
 	let sendDisabledReason;
 	if (invalidRecipientsPresent) {
 		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else if (isMailSizeWarning) {
+		sendDisabledReason = t('label.message_size_exceeded', 'The message size exceeds the limit.');
 	} else {
 		sendDisabledReason = sendAllowedStatus?.reason;
 	}
@@ -138,6 +142,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 ) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
+	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
+	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
@@ -311,15 +317,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const flexStart = 'flex-start';
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
-
-	const draftSmartLinks = useMemo(
-		() =>
-			savedStandardAttachments
-				.filter((attachment) => attachment.requiresSmartLinkConversion)
-				.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName })),
-		[savedStandardAttachments]
-	);
-	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
@@ -507,10 +504,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
 	const sendDisabled =
-		!sendAllowedStatus?.allowed || isConvertingToSmartLink || !draftId || invalidRecipientsPresent;
+		isMailSizeWarning || !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
+		isMailSizeWarning,
 		sendAllowedStatus
 	);
 
@@ -572,7 +570,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							onSendNow={onSendClick}
 							disabled={sendDisabled}
 							tooltip={sendDisabledReason ?? ''}
-							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>
 				</GapRow>
@@ -580,6 +577,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				{/* Header end */}
 
 				<SendToYourselfWarningBanner editorId={editorId} />
+				{largeFileUploadInfoBannerVisible && <LargeFileUploadInfoBanner />}
 				<GapContainer
 					mainAlignment={flexStart}
 					crossAlignment={flexStart}
@@ -593,7 +591,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
+
 					<EditAttachmentsBlock editorId={editorId} />
+
 					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
