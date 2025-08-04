@@ -560,42 +560,51 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
-		// it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
-		// 	createAPIInterceptor(
-		// 		'post',
-		// 		'/service/soap/GetShareInfoRequest',
-		// 		HttpResponse.json(getEmptyMSWShareInfoResponse())
-		// 	);
-		// 	createCheckSmimeEnabledAPIInterceptor();
+		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createCheckSmimeEnabledAPIInterceptor();
 
-		// 	const editor = await readyToBeSentEditorTestCase({
-		// 		id: '123-testId',
-		// 		did: '123-testId'
-		// 	});
-		// 	setupEditorStore({ editors: [editor] });
-		// 	addEditor({ id: editor.id, editor });
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId'
+			});
+			setupEditorStore({ editors: [editor] });
+			addEditor({ id: editor.id, editor });
 
-		// 	const invalidRecipientInterceptor = createSoapAPIInterceptor(
-		// 		'SendMsg',
-		// 		buildSoapErrorResponseBody({
-		// 			reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
-		// 			code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
-		// 		})
-		// 	);
+			createSoapAPIInterceptor(
+				'SendMsg',
+				buildSoapErrorResponseBody({
+					reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
+					code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
+				})
+			);
 
-		// 	const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-		// 	const btnSend = await screen.findByTestId(/BtnSendMail/i);
-		// 	await waitFor(() => expect(btnSend).toBeEnabled());
+			const btnSend = await screen.findByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
 
-		// 	await act(async () => {
-		// 		await user.click(btnSend);
-		// 	});
+			await act(async () => {
+				await user.click(btnSend);
+			});
 
-		// 	await invalidRecipientInterceptor;
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
 
-		// 	expect(await screen.findByText(/error\.invalid_recipient/)).toBeInTheDocument();
-		// });
+			await waitFor(
+				() => {
+					expect(
+						screen.getByText((content) => content.includes('invalid_recipient'))
+					).toBeInTheDocument();
+				},
+				{ timeout: 2000 }
+			);
+		});
 
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
