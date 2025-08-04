@@ -74,14 +74,12 @@ const mailMessage: MailMessage = {
 			contentType: 'text/html',
 			size: 0,
 			name: 'asdsa',
-			requiresSmartLinkConversion: false,
 			content: '<p>Hello</p>'
 		},
 		{
 			contentType: 'text/plain',
 			size: 0,
 			name: 'asdsa',
-			requiresSmartLinkConversion: false,
 			content: 'Hello plain text'
 		}
 	],
@@ -510,8 +508,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/html',
 							size: 0,
 							content: htmlContent,
-							name: 'HTML body',
-							requiresSmartLinkConversion: false
+							name: 'HTML body'
 						}
 					]
 				};
@@ -528,8 +525,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/plain',
 							size: 0,
 							content: plainText,
-							name: 'Plain body',
-							requiresSmartLinkConversion: false
+							name: 'Plain body'
 						}
 					]
 				};
@@ -546,8 +542,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/html',
 							size: 0,
 							content: htmlContent,
-							name: 'HTML body',
-							requiresSmartLinkConversion: false
+							name: 'HTML body'
 						}
 					]
 				};
@@ -566,8 +561,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/plain',
 							size: 0,
 							content: plainText,
-							name: 'Plain body',
-							requiresSmartLinkConversion: false
+							name: 'Plain body'
 						}
 					]
 				};
@@ -584,8 +578,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/html',
 							size: 0,
 							content: htmlBody,
-							name: 'HTML body',
-							requiresSmartLinkConversion: false
+							name: 'HTML body'
 						}
 					]
 				};
@@ -602,8 +595,7 @@ describe('retrieveReplyTo', () => {
 							contentType: 'text/plain',
 							size: 0,
 							content: plainText,
-							name: 'Plain body',
-							requiresSmartLinkConversion: false
+							name: 'Plain body'
 						}
 					]
 				};

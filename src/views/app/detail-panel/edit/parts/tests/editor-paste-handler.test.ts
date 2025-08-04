@@ -101,7 +101,6 @@ describe('handleEditorPaste', () => {
 								part: '2.1',
 								ct: 'text/html',
 								s: 632,
-								requiresSmartLinkConversion: false,
 								body: true,
 								content: '<html xmlns="http://www.w3.org/1999/html"></body></body></html>'
 							},
@@ -111,8 +110,7 @@ describe('handleEditorPaste', () => {
 								s: 81571,
 								cd: 'inline',
 								filename: mockFile.name,
-								ci: mockContentId,
-								requiresSmartLinkConversion: false
+								ci: mockContentId
 							}
 						]
 					}
@@ -129,8 +127,7 @@ describe('handleEditorPaste', () => {
 						filename: mockFile.name,
 						partName: '2.2',
 						contentType: 'image/jpeg',
-						size: 190,
-						requiresSmartLinkConversion: false
+						size: 190
 					}
 				]
 			});
