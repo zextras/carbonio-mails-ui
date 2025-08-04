@@ -301,8 +301,7 @@ describe('Signatures', () => {
 					expect(result.plainText).toBe('\n\n');
 				});
 
-				// TODO: fix me, plain text signature handling is not working as expected
-				it.skip('should add signature if not present in the body', () => {
+				it('should add signature with two line breaks if original body empty', () => {
 					const editorText = {
 						plainText: '',
 						richText: ''
@@ -311,8 +310,7 @@ describe('Signatures', () => {
 					expect(result.plainText).toBe('\n\n---\nThis is my Signature 2');
 				});
 
-				// TODO: fix me, plain text signature handling is not working as expected
-				it.skip('should add signature below text without line breaks', () => {
+				it('should add signature right below text if original body not empty', () => {
 					const editorText = {
 						plainText: 'Hello there!',
 						richText: ''
@@ -326,17 +324,27 @@ describe('Signatures', () => {
 						plainText: 'Hello there!\n---\nThis is my Signature 1',
 						richText: ''
 					};
-					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						oldSignatureId: signature1.id,
+						newSignatureId: signature2.id
+					});
 					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
 				});
 
-				it('should remove previous signature + text after it and add the new one to the bottom', () => {
+				it('should remove previous signature and add the new one to the bottom, preserving text after signature', () => {
 					const editorText = {
 						plainText: 'Hello there!\n---\nThis is my Signature 1\nText after signature',
 						richText: ''
 					};
-					const result = getMailBodyWithSignatureV2({ editorText, newSignatureId: signature2.id });
-					expect(result.plainText).toBe('Hello there!\n---\nThis is my Signature 2');
+					const result = getMailBodyWithSignatureV2({
+						editorText,
+						oldSignatureId: signature1.id,
+						newSignatureId: signature2.id
+					});
+					expect(result.plainText).toBe(
+						'Hello there!\nText after signature\n---\nThis is my Signature 2'
+					);
 				});
 			});
 		});

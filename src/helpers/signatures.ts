@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
-import { find, map } from 'lodash';
+import { find, isEmpty, map } from 'lodash';
 
 import { Signature } from '../types';
 import { convertHtmlToPlainText } from 'commons/utilities';
@@ -139,11 +139,27 @@ const replaceSignatureOnHtmlBody = (doc: Document, newSignature: string): string
  * @param body - plain text message body
  * @param newSignature - signature content
  */
-const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
+const replaceSignatureOnPlainTextBody = (
+	body: string,
+	oldSignature: string,
+	newSignature: string
+): string => {
+	const newLineAfterBody = body.endsWith('\n') ? '' : '\n';
 	// If no eligible signature is found the original body is returned
-	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
-		return body;
+	if (isEmpty(oldSignature)) {
+		if (isEmpty(newSignature)) {
+			return body;
+		}
+		return `${body}${newLineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
 	}
+	const newBody = body.replace(`\n${LineType.SIGNATURE_PRE_SEP}\n${oldSignature}`, '');
+	const lineAfterBody = newBody.endsWith('\n') ? '' : '\n';
+	return `${newBody}${lineAfterBody}${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+	// if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
+	// 	if (newSignature !== '') {
+	// 		return `${body}\n${LineType.SIGNATURE_PRE_SEP}\n${newSignature}`;
+	// 	}
+	// }
 
 	// Locate the first quoted text separator
 	const quotedTextSeparatorPos = body.indexOf(LineType.PLAINTEXT_SEP);
@@ -183,7 +199,7 @@ function insertParagraphBeforeQuotedSeparator(doc: Document): void {
  */
 const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
 	const signatureValue = signatureId ? getSignatureValue(getUserAccount(), signatureId) : '';
-	const previousPlainText = text.plainText.trim() || '\n\n';
+	const previousPlainText = text.plainText || '\n\n';
 	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
 	const previousRichText = text.richText.trim() || '<p></p><p></p>';
 
@@ -206,17 +222,31 @@ const getMailBodyWithSignatureV2 = ({
 	oldSignatureId?: string;
 	newSignatureId?: string;
 }): EditorText => {
-	const signatureValue = newSignatureId ? getSignatureValue(getUserAccount(), newSignatureId) : '';
-	const previousPlainText = editorText.plainText.trim() || '\n\n';
-	const plainSignatureValue = signatureValue ? `${convertHtmlToPlainText(signatureValue)}` : '';
+	const newSignatureValue = newSignatureId
+		? getSignatureValue(getUserAccount(), newSignatureId)
+		: '';
+	const oldSignatureValue = oldSignatureId
+		? getSignatureValue(getUserAccount(), oldSignatureId)
+		: '';
+	const previousPlainText = editorText.plainText || '\n\n';
+	const newPlainSignatureValue = newSignatureValue
+		? `${convertHtmlToPlainText(newSignatureValue)}`
+		: '';
+	const oldPlainSignatureValue = oldSignatureValue
+		? `${convertHtmlToPlainText(oldSignatureValue)}`
+		: '';
 	const previousRichText = editorText.richText.trim() || '<p></p><p></p>';
 
 	const doc = new DOMParser().parseFromString(previousRichText, 'text/html');
 
 	insertParagraphBeforeQuotedSeparator(doc);
 
-	const richText = replaceSignatureOnHtmlBody(doc, signatureValue);
-	const plainText = replaceSignatureOnPlainTextBody(previousPlainText, plainSignatureValue);
+	const richText = replaceSignatureOnHtmlBody(doc, newSignatureValue);
+	const plainText = replaceSignatureOnPlainTextBody(
+		previousPlainText,
+		oldPlainSignatureValue,
+		newPlainSignatureValue
+	);
 
 	return { plainText, richText };
 };
