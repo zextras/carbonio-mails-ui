@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import { encodeBase64, uploadToFiles } from 'api/upload-file-to-files';
 
@@ -180,6 +180,35 @@ describe('uploadToFiles', () => {
 			await expect(uploadToFiles({ file }).upload).rejects.toThrow(
 				'File upload failed: Upload successful but no valid nodeId returned'
 			);
+		});
+		it('should abort the request when abortController.abort() is called', async () => {
+			let deferredResolve: (value: AxiosResponse<unknown, unknown>) => void;
+			let deferredReject: (reason?: unknown) => void;
+
+			const mockPromise = new Promise<AxiosResponse<any, any>>((resolve, reject) => {
+				deferredResolve = resolve;
+				deferredReject = reject;
+			});
+
+			mockedAxios.post.mockReturnValue(mockPromise);
+			const { upload, abortController } = uploadToFiles({ file });
+
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'/services/files/upload',
+				file,
+				expect.objectContaining({
+					signal: abortController.signal
+				})
+			);
+
+			abortController.abort();
+
+			const abortError = new Error('Request aborted');
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			deferredReject!(abortError);
+
+			await expect(upload).rejects.toThrow();
+			expect(abortController.signal.aborted).toBe(true);
 		});
 	});
 });
