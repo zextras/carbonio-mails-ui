@@ -46,7 +46,11 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients
 } from '../../../../store/editor';
-import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
+import {
+	EditorOperationAllowedStatus,
+	EditViewClosingReasons,
+	SoapApiError
+} from '../../../../types';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -253,9 +257,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		(error?: unknown): void => {
 			let message = t('label.error_try_again', 'Something went wrong, please try again');
 			if (isErrorAboutInvalidRecipient(error)) {
+				const errorStr = typeof error === 'string' ? error : JSON.stringify(error);
+				const emailMatch = errorStr.match(/(\S+@\S+)/);
+				const invalidAddress = emailMatch ? emailMatch[0] : 'unknown';
+
 				message = t(
 					'error.invalid_recipient',
-					'The recipient address does not exist or is invalid'
+					`The recipient address "${invalidAddress}" does not exist or is invalid`
 				);
 			}
 			createSnackbar({
