@@ -172,7 +172,7 @@ function insertParagraphBeforeQuotedSeparator(doc: Document): void {
 	}
 }
 
-const getMailBodyWithSignatureV2 = ({
+const getMailBodyWithSignature = ({
 	editorText,
 	oldSignatureId,
 	newSignatureId
@@ -216,5 +216,5 @@ export {
 	getSignature,
 	getSignatureValue,
 	replaceSignatureOnPlainTextBody,
-	getMailBodyWithSignatureV2
+	getMailBodyWithSignature
 };

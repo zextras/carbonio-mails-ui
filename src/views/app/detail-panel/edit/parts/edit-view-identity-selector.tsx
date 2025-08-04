@@ -26,7 +26,7 @@ import {
 	getNoIdentityPlaceholder,
 	IdentityDescriptor
 } from 'helpers/identities';
-import { getMailBodyWithSignatureV2 } from 'helpers/signatures';
+import { getMailBodyWithSignature } from 'helpers/signatures';
 import { useEditorIdentityId, useEditorSignatureId, useEditorText } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -92,7 +92,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 		(identity: IdentityDescriptor): void => {
 			const oldIdentitySignatureId = signatureId;
 			setIdentityId(identity.id);
-			const textWithSignature = getMailBodyWithSignatureV2({
+			const textWithSignature = getMailBodyWithSignature({
 				editorText: getText(),
 				newSignatureId: identity.defaultSignatureId,
 				oldSignatureId: oldIdentitySignatureId

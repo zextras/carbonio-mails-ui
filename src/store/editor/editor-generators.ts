@@ -16,7 +16,7 @@ import {
 	getRecipientReplyIdentity
 } from 'helpers/identities';
 import { getFromParticipantFromMessage } from 'helpers/messages';
-import { getMailBodyWithSignatureV2 } from 'helpers/signatures';
+import { getMailBodyWithSignature } from 'helpers/signatures';
 import {
 	buildSavedAttachments,
 	replaceCidUrlWithServiceUrl
@@ -72,7 +72,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignatureV2({
+	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
 		newSignatureId: defaultIdentity.defaultSignatureId
 	});
@@ -195,7 +195,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignatureV2({
+	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
 		newSignatureId: defaultIdentity.defaultSignatureId
 	});
@@ -254,7 +254,7 @@ const generateReplyAndReplyAllMsgEditor = (
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignatureV2({
+	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
 		newSignatureId: signatureId
 	});
@@ -335,7 +335,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignatureV2({
+	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
 		newSignatureId: signatureId
 	});
@@ -397,7 +397,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignatureV2({
+	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
 		newSignatureId: signatureId
 	});
