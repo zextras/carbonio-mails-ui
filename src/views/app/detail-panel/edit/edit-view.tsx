@@ -46,11 +46,7 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients
 } from '../../../../store/editor';
-import {
-	EditorOperationAllowedStatus,
-	EditViewClosingReasons,
-	SoapApiError
-} from '../../../../types';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -258,8 +254,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			let message = t('label.error_try_again', 'Something went wrong, please try again');
 			if (isErrorAboutInvalidRecipient(error)) {
 				const errorStr = typeof error === 'string' ? error : JSON.stringify(error);
-				const emailMatch = errorStr.match(/(\S+@\S+)/);
-				const invalidAddress = emailMatch ? emailMatch[0] : 'unknown';
+				const match = /(\S+@\S+)/.exec(errorStr);
+				const invalidAddress = match?.[0] ?? 'unknown';
 
 				message = t(
 					'error.invalid_recipient',
