@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -28,7 +28,7 @@ import styled from 'styled-components';
 import { AppContext } from 'app-utils/app-context-initializer';
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
-import { parseMessageSortingOptions } from 'helpers/sorting';
+import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
@@ -135,14 +135,20 @@ export const Breadcrumbs: FC<{
 	);
 
 	const handleSortChange = useCallback(
-		(type: string, direction: SortDirection, filter: string | null = activeFilter) => {
-			const sortBy = `${type}${direction}`;
+		(type: string, direction: SortDirection) => {
+			updateSortingSettings({
+				prefSortOrder,
+				sortingTypeValue: type,
+				sortingDirection: direction,
+				folderId
+			});
 			setCurrentSortType(type);
 			setCurrentSortDirection(direction);
-			performSearch(sortBy, filter);
+
+			performSearch(`${type}${direction}`, activeFilter);
 			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[activeFilter, folderId, navigate, performSearch]
+		[activeFilter, folderId, navigate, performSearch, prefSortOrder]
 	);
 
 	const handleFilterChange = useCallback(
@@ -159,8 +165,8 @@ export const Breadcrumbs: FC<{
 				? SORTING_DIRECTION.DESCENDING
 				: SORTING_DIRECTION.ASCENDING;
 
-		handleSortChange(currentSortType, newDirection, activeFilter);
-	}, [currentSortDirection, currentSortType, handleSortChange, activeFilter]);
+		handleSortChange(currentSortType, newDirection);
+	}, [currentSortDirection, currentSortType, handleSortChange]);
 
 	const resetSearch = useCallback(() => {
 		setActiveFilter(null);
@@ -259,6 +265,11 @@ export const Breadcrumbs: FC<{
 		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)}`,
 		[currentSortType, t]
 	);
+
+	useEffect(() => {
+		setActiveFilter(null);
+		setCurrentSortType(SORTING_OPTIONS.date.value);
+	}, [folderId]);
 
 	return (
 		<>
