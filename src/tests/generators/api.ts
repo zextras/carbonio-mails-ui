@@ -22,7 +22,6 @@ export function generateMessagePartFromAPI(
 	return {
 		part: 'part',
 		ct: 'ct',
-		requiresSmartLinkConversion: false,
 		...params
 	};
 }

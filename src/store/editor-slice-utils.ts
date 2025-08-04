@@ -34,8 +34,7 @@ export const retrieveAttachmentsType = (
 						...acc,
 						{
 							part: part.name,
-							mid: original.id,
-							requiresSmartLinkConversion: !!part.requiresSmartLinkConversion
+							mid: original.id
 						}
 					]
 				: acc,

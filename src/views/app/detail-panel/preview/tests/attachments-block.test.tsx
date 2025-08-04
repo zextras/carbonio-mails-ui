@@ -23,8 +23,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'large-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -48,8 +47,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'random.txt',
 				size: 123,
-				contentType: 'text/plain',
-				requiresSmartLinkConversion: false
+				contentType: 'text/plain'
 			} as const
 		];
 		const { user } = setupTest(
@@ -73,8 +71,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -98,8 +95,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -123,8 +119,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -148,8 +143,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -173,8 +167,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -198,8 +191,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'large-document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -323,8 +315,7 @@ describe('Attachment link validation', () => {
 				name: 'test',
 				filename: 'image.tiff',
 				size: 12345,
-				contentType: 'image/tiff',
-				requiresSmartLinkConversion: false
+				contentType: 'image/tiff'
 			} as const
 		];
 		const { user } = setupTest(

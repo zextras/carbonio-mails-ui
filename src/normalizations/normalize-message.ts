@@ -201,8 +201,7 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 		contentType: v.ct,
 		size: v.s || 0,
 		name: v.part,
-		disposition: v.cd,
-		requiresSmartLinkConversion: v?.requiresSmartLinkConversion ?? false
+		disposition: v.cd
 	};
 	if (v.mp) {
 		ret.parts = map(v.mp || [], normalizeMailPartMapFn);

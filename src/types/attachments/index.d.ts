@@ -26,10 +26,4 @@ export type UnsavedAttachment = AbstractAttachment & {
 export type SavedAttachment = AbstractAttachment & {
 	messageId: string;
 	partName: string;
-	requiresSmartLinkConversion: boolean;
-};
-
-export type SmartLinkAttachment = {
-	partName: string;
-	draftId: string;
 };
