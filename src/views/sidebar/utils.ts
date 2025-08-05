@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useMemo } from 'react';
+
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import {
@@ -86,14 +88,17 @@ export const getFolderIconName = (
 
 export const useTranslatedSystemFolders = (): Array<string> => {
 	const [translate] = useTranslation();
-	return [
-		translate('folders.inbox', 'Inbox'),
-		translate('folders.sent', 'Sent'),
-		translate('folders.drafts', 'Drafts'),
-		translate('folders.trash', 'Trash'),
-		translate('folders.spam', 'Spam'),
-		translate('folders.junk', 'Junk')
-	];
+	return useMemo(
+		() => [
+			translate('folders.inbox', 'Inbox'),
+			translate('folders.sent', 'Sent'),
+			translate('folders.drafts', 'Drafts'),
+			translate('folders.trash', 'Trash'),
+			translate('folders.spam', 'Spam'),
+			translate('folders.junk', 'Junk')
+		],
+		[translate]
+	);
 };
 
 type GetSystemFolderProps = {
