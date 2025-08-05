@@ -16,8 +16,7 @@ describe('attachments', () => {
 					contentType: 'text/html',
 					content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"> <img src="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a&#64;carbonio" /> <img src="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb&#64;carbonio" alt="pic1" data-testId="picture1"/> <img src="cid:65766eee-4439-438c-a375-1ac111ed1a07&#64;carbonio" /><br /><br />\r\n<div><br />Kind Regards <br /><br />something</div>\r\n</div>\r\n</div>\r\n</div></div></body></html>`,
 					size: 999,
-					name: 'filename.jpg',
-					requiresSmartLinkConversion: true
+					name: 'filename.jpg'
 				}
 			];
 			expect(getReferredContentIds(parts)).toStrictEqual([
@@ -33,8 +32,7 @@ describe('attachments', () => {
 					contentType: 'wrong/content/type',
 					content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"> <img src="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a&#64;carbonio" /> <img src="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb&#64;carbonio" alt="pic1" data-testId="picture1"/> <img src="cid:65766eee-4439-438c-a375-1ac111ed1a07&#64;carbonio" /><br /><br />\r\n<div><br />Kind Regards <br /><br />something</div>\r\n</div>\r\n</div>\r\n</div></div></body></html>`,
 					size: 999,
-					name: 'filename.jpg',
-					requiresSmartLinkConversion: true
+					name: 'filename.jpg'
 				}
 			];
 			expect(getReferredContentIds(parts).length).toBe(0);
@@ -50,8 +48,7 @@ describe('attachments', () => {
 					ci: 'img123',
 					disposition: 'inline',
 					contentType: 'image/png',
-					size: 200,
-					requiresSmartLinkConversion: false
+					size: 200
 				}
 			];
 
@@ -69,8 +66,7 @@ describe('attachments', () => {
 					disposition: 'inline',
 					contentType: 'image/png',
 					size: 200,
-					name: '3',
-					requiresSmartLinkConversion: false
+					name: '3'
 				}
 			];
 
@@ -88,8 +84,7 @@ describe('attachments', () => {
 					disposition: 'inline',
 					contentType: 'image/jpeg',
 					filename: 'logo.jpg',
-					size: 200,
-					requiresSmartLinkConversion: false
+					size: 200
 				}
 			];
 

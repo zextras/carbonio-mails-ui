@@ -17,4 +17,3 @@ export * from './sync';
 export * from './zimbra-request';
 export * from './save-draft';
 export * from './redirect-message-action';
-export * from './create-smart-links';
