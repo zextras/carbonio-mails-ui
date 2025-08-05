@@ -7,9 +7,10 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, noop } from 'lodash';
+import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+<<<<<<< HEAD
 import * as StyledComp from './edit-view-styled-components';
 import { handleEditorPaste } from './editor-paste-handler';
 import type { TextEditorContainerProps } from './text-editor-container';
@@ -22,6 +23,15 @@ import {
 } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
+=======
+import { buildArrayFromFileList } from 'helpers/files';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
+import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
+import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
+>>>>>>> 79ebd9d7 (remove debounce from text sync (#967))
 
 type FileSelectProps = {
 	editor: TinyMCE;
@@ -81,22 +91,14 @@ export const RichTextEditorContainer = ({
 		if (!composerRef.current) {
 			return;
 		}
-
-		const { plainText, richText } = useEditorsStore.getState().editors[editorId].text;
+		const plainText = composerRef.current.getContent({ format: 'text' });
+		const richText = composerRef.current.getContent({ format: 'html' });
 		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [editorId, setText]);
-	const debouncedSetText = useMemo(
-		() =>
-			debounce(() => {
-				useEditorsStore.getState().setText(editorId, getCurrentText() as MailsEditorV2['text']);
-			}, 150),
-		[editorId, getCurrentText]
-	);
+	}, [setText]);
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
-		debouncedSetText();
 		timeoutId.current = setTimeout(() => {
 			if (!composerRef.current) {
 				return;
@@ -107,7 +109,7 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [debouncedSetText, saveEditor]);
+	}, [saveEditor]);
 
 	const onComposerClose = useCallback(() => {
 		saveEditor();
