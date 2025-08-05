@@ -226,7 +226,9 @@ type Labels = {
 };
 type ReplyText = {
 	richText: string;
+	plainText: string;
 };
+
 export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
@@ -245,6 +247,8 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 	const date = moment(mail.date).format('LLLL');
 
+	let plainText = `${LineType.PLAINTEXT_SEP}\n\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`;
+
 	let richText = `<hr id="${
 		LineType.HTML_SEP_ID
 	}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
@@ -252,14 +256,18 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 	}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`;
 	if (headingCc.length > 0) {
 		richText += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
+		plainText += `${labels.cc} ${headingCc}\n`;
 	}
 
 	richText += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
 		mail.subject
 	)} <br /><br />${extractBody(mail).richText}</div>`;
 
+	plainText += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${extractBody(mail).plainText}`;
+
 	return {
-		richText
+		richText,
+		plainText
 	};
 }
 

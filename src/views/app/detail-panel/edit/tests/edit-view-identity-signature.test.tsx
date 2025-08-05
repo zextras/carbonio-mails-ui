@@ -70,7 +70,8 @@ describe('New and Replay email view', () => {
 				signatureContent !== '' ? `\n${convertHtmlToPlainText(signatureContent)}\n\n` : '';
 			const plainContent = replaceSignatureOnPlainTextBody(
 				editorTextareaElement.innerHTML,
-				plainSignatureValue
+				plainSignatureValue,
+				''
 			);
 			expect(editorTextareaElement).toHaveValue(plainContent);
 		});
@@ -135,7 +136,8 @@ describe('New and Replay email view', () => {
 				signatureContent !== '' ? `\n${convertHtmlToPlainText(signatureContent)}\n\n` : '';
 			const plainContent = replaceSignatureOnPlainTextBody(
 				editorTextareaElement.innerHTML,
-				plainSignatureValue
+				plainSignatureValue,
+				''
 			);
 			expect(editorTextareaElement).toHaveValue(plainContent);
 		});

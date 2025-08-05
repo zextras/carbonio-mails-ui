@@ -16,7 +16,6 @@ import { getEditor } from './hooks';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import { convertHtmlToPlainText } from '../../commons/utilities';
-import { LineType } from '../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../constants';
 import {
 	getAddressOwnerAccount,
@@ -67,11 +66,14 @@ const labels = {
 export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
-		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		plainText: ``,
 		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
+	const textWithSignature = getMailBodyWithSignature({
+		editorText: text,
+		newSignatureId: defaultIdentity.defaultSignatureId
+	});
 	const userSettings = getUserSettings();
 	const prefs = userSettings?.prefs ?? {};
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
@@ -177,7 +179,7 @@ function getMsgRecipients(compositionData?: EditorPrefillData): EditorRecipients
 export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData): MailsEditorV2 => {
 	const editorId = uuid();
 
-	const plainText = compositionData?.text?.[0] ?? `\n\n${LineType.SIGNATURE_PRE_SEP}\n`;
+	const plainText = compositionData?.text?.[0] ?? ``;
 	const richText = compositionData?.text?.[1] ?? ``;
 
 	const recipients = getMsgRecipients(compositionData);
@@ -191,7 +193,10 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
+	const textWithSignature = getMailBodyWithSignature({
+		editorText: text,
+		newSignatureId: defaultIdentity.defaultSignatureId
+	});
 	const unsavedAttachments: Array<UnsavedAttachment> = !compositionData?.aid
 		? []
 		: compositionData.aid.map(
@@ -238,7 +243,7 @@ const generateReplyAndReplyAllMsgEditor = (
 	);
 
 	const text = {
-		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		plainText: ``,
 		richText: ``
 	};
 	const folderRoots = getRootsMap();
@@ -247,14 +252,22 @@ const generateReplyAndReplyAllMsgEditor = (
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const textWithSignature = getMailBodyWithSignature({
+		editorText: text,
+		newSignatureId: signatureId
+	});
+	const { richText: htmlQuotedReply, plainText: plainTextQuotedReply } = generateReplyText(
+		originalMessage,
+		labels
+	);
+
 	const richText = replaceCidUrlWithServiceUrl(
-		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels).richText}`,
+		`${textWithSignature.richText} ${htmlQuotedReply}`,
 		savedInlineAttachments
 	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
+		plainText: `${textWithSignature.plainText} ${plainTextQuotedReply}`,
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
@@ -311,7 +324,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const text = {
-		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		plainText: ``,
 		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
@@ -320,7 +333,10 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const textWithSignature = getMailBodyWithSignature({
+		editorText: text,
+		newSignatureId: signatureId
+	});
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels).richText)}`,
 		richText: replaceCidUrlWithServiceUrl(
@@ -370,7 +386,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const editorId = uuid();
 
 	const text = {
-		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		plainText: ``,
 		richText: ``
 	};
 	const defaultIdentity = getDefaultIdentity();
@@ -379,7 +395,10 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const signatureId = from.identityId
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
-	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const textWithSignature = getMailBodyWithSignature({
+		editorText: text,
+		newSignatureId: signatureId
+	});
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText}`,
 		richText: `${textWithSignature.richText}`

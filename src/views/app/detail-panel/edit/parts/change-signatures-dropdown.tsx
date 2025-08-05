@@ -44,11 +44,16 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
+			const oldSignatureId = signatureId;
 			setSignatureId(signature.id);
-			const textWithSignature = getMailBodyWithSignature(getText(), signature.id);
+			const textWithSignature = getMailBodyWithSignature({
+				editorText: getText(),
+				newSignatureId: signature.id,
+				oldSignatureId
+			});
 			setText(textWithSignature);
 		},
-		[setSignatureId, setText, getText]
+		[signatureId, setSignatureId, getText, setText]
 	);
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(

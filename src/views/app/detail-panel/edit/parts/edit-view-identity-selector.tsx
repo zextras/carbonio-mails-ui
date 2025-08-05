@@ -80,7 +80,7 @@ export type EditViewIdentitySelectorProps = {
 export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ editorId }) => {
 	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { getText, setText } = useEditorText(editorId);
-	const { setSignatureId } = useEditorSignatureId(editorId);
+	const { setSignatureId, signatureId } = useEditorSignatureId(editorId);
 
 	const [open, setOpen] = useState(false);
 
@@ -94,12 +94,17 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 
 	const onIdentitySelected = useCallback(
 		(identity: IdentityDescriptor): void => {
+			const oldIdentitySignatureId = signatureId;
 			setIdentityId(identity.id);
-			const textWithSignature = getMailBodyWithSignature(getText(), identity.defaultSignatureId);
+			const textWithSignature = getMailBodyWithSignature({
+				editorText: getText(),
+				newSignatureId: identity.defaultSignatureId,
+				oldSignatureId: oldIdentitySignatureId
+			});
 			setText(textWithSignature);
 			setSignatureId(identity.defaultSignatureId);
 		},
-		[setIdentityId, setSignatureId, setText, getText]
+		[signatureId, setIdentityId, getText, setText, setSignatureId]
 	);
 
 	const toggleOpen = useCallback(() => {
