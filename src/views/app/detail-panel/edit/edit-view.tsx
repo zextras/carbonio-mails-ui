@@ -255,7 +255,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			let message = t('label.error_try_again', 'Something went wrong, please try again');
 			if (isErrorAboutInvalidRecipient(error)) {
 				const errorStr = typeof error === 'string' ? error : JSON.stringify(error);
-				const match = /(\S+@\S+)/.exec(errorStr);
+				const match = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/.exec(errorStr);
 				const invalidAddress = match?.[0] ?? 'unknown';
 				timeout = 5000;
 				message = t(
