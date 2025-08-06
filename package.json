@@ -112,10 +112,6 @@
 		"uuid": "^9.0.0",
 		"zustand": "^4.5.2"
 	},
-	"peerDependencies": {
-		"@emotion/react": "^11.14.0",
-		"@emotion/styled": "^11.14.0"
-	},
 	"browserslist": [
 		">1%",
 		"last 1 version",
