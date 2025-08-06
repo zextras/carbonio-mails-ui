@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Container, IconCheckbox, Row } from '@zextras/carbonio-design-system';
-import styled, { DefaultTheme } from 'styled-components';
+import styled from '@emotion/styled';
+import { Container, IconCheckbox, PaletteColor, Row } from '@zextras/carbonio-design-system';
 
 export const FileInput = styled.input`
 	display: none;
@@ -82,7 +82,7 @@ export const EditorWrapper = styled.div`
 `;
 
 export const BannerContainer = styled(Container)<{
-	$bottomBorderColor: keyof DefaultTheme['palette'];
+	$bottomBorderColor: PaletteColor;
 }>`
 	border-bottom: 0.0625rem solid
 		${({ theme, $bottomBorderColor }): string => theme.palette[$bottomBorderColor].regular};
