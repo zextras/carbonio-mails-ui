@@ -27,12 +27,12 @@ export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
+	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	isSearchModule?: boolean;
 	activeItemId?: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	deselectAll: () => void;
 	folderId?: string;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
@@ -45,11 +45,11 @@ export const ConversationListItem = memo(function ConversationListItem({
 	conversation,
 	selected,
 	selecting,
+	toggleMultipleSelection,
 	active,
 	isSearchModule,
 	activeItemId,
 	dragImageRef,
-	deselectAll,
 	folderId,
 	setDraggedIds,
 	index,
@@ -66,7 +66,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
 		isConversationRead: conversation.read,
-		deselectAll,
 		folderId: folderId ?? ''
 	});
 
@@ -149,12 +148,12 @@ export const ConversationListItem = memo(function ConversationListItem({
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					shouldReplaceHistory={shouldReplaceHistory}
-					deselectAll={deselectAll}
 				>
 					<ConversationListItemCore
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
+						toggleMultipleSelection={toggleMultipleSelection}
 						folderParent={folderParent}
 						open={open}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
@@ -167,6 +166,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
+					toggleMultipleSelection={toggleMultipleSelection}
 					folderParent={folderParent}
 					open={open}
 					toggleCollapseElementCallback={toggleCollapseElementCallback}

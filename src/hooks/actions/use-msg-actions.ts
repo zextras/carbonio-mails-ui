@@ -33,7 +33,6 @@ import { MailMessage, UIActionAggregator, UIActionDescriptor } from 'types/index
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
-	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
@@ -64,7 +63,6 @@ type MessageActionsReturnType = {
 };
 
 export const useMsgActions = ({
-	deselectAll,
 	message,
 	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
@@ -76,25 +74,21 @@ export const useMsgActions = ({
 	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor([message.id], folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
-		deselectAll,
 		folderId,
 		shouldReplaceHistory
 	});
 	const deletePermanentlyDescriptor = useMsgDeletePermanentlyDescriptor({
 		ids: [message.id],
-		deselectAll,
 		folderId
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
 	});
 	const messageUnreadDescriptor = useMsgSetUnreadDescriptor({
 		ids: [message.id],
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
@@ -118,13 +112,11 @@ export const useMsgActions = ({
 	});
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
-		ids: [message.id],
-		deselectAll
+		ids: [message.id]
 	});
 	const restoreFolderDescriptor = useMsgRestoreDescriptor({
 		folderId,
-		messageId: message.id,
-		deselectAll
+		messageId: message.id
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message, folderId);
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);

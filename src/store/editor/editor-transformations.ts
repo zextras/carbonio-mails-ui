@@ -313,8 +313,7 @@ export const composeAttachMpField = (
 	attachments.forEach((attachment) => {
 		result.push({
 			mid: attachment.messageId,
-			part: attachment.partName,
-			requiresSmartLinkConversion: attachment.requiresSmartLinkConversion
+			part: attachment.partName
 		});
 	});
 	return result;
@@ -439,7 +438,6 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 		filename: part.filename ?? '',
 		partName: part.name,
 		contentType: part.contentType,
-		size: part.size,
-		requiresSmartLinkConversion: part.requiresSmartLinkConversion
+		size: part.size
 	}));
 };

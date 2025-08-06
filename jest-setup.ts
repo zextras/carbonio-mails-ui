@@ -59,8 +59,6 @@ export const defaultBeforeAllTests = (
 		})
 	});
 
-	server?.close();
-
 	server = setupServer(...getRestHandlers());
 	server.listen({ onUnhandledRequest });
 };
@@ -71,11 +69,9 @@ beforeAll(() => {
 	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
 	registerRestHandler(j);
-	defaultBeforeAllTests();
+	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
 });
-
-beforeEach(noop);
 
 afterEach(() => {
 	jest.clearAllTimers();

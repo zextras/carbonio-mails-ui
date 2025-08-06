@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';

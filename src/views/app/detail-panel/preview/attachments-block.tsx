@@ -29,13 +29,13 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { AppContext } from 'app-utils/app-context-initializer';
 import { getFileExtension } from 'commons/utilities';
 import { useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import type {
-	AppContext,
 	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
@@ -77,10 +77,7 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)<{ $requiresSmartLinkConversion: boolean }>`
-	border-bottom: ${({ $requiresSmartLinkConversion, theme }): string =>
-		$requiresSmartLinkConversion ? `1px solid ${theme.palette.primary.regular}` : 'none'};
-
+const AttachmentContainer = styled(Container)`
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
@@ -360,41 +357,19 @@ const Attachment = ({
 		]
 	);
 
-	const theme = useTheme();
-	const requiresSmartLinkConversion = !!att.requiresSmartLinkConversion;
-
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
-	const backgroundColor = useMemo(() => {
-		if (requiresSmartLinkConversion) {
-			return theme.palette.infoBanner.regular;
-		}
-		return 'gray3';
-	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
-
-	const attachmentExtensionContent = useMemo(
-		() =>
-			requiresSmartLinkConversion ? (
-				<Icon icon="Link2Outline" size="large" color="primary" />
-			) : (
-				extension
-			),
-		[extension, requiresSmartLinkConversion]
-	);
+	const attachmentExtensionContent = useMemo(() => extension, [extension]);
 
 	const attachItemColor = useAttachmentIconColor(att);
-	const attachmentExtensionColor = useMemo(
-		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
-		[attachItemColor, requiresSmartLinkConversion]
-	);
+	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
 			mainAlignment="flex-start"
 			height="fit"
-			background={backgroundColor}
+			background={'gray3'}
 			data-testid={`attachment-container-${filename}`}
-			$requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
 			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
 				<Row
@@ -407,7 +382,6 @@ const Attachment = ({
 						{attachmentExtensionContent}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						{requiresSmartLinkConversion && <Padding top="small" />}
 						<Padding style={{ width: '100%' }} bottom="extrasmall">
 							<Text>
 								{filename ||
@@ -417,13 +391,9 @@ const Attachment = ({
 									})}
 							</Text>
 						</Padding>
-						{!requiresSmartLinkConversion ? (
-							<Text color="gray1" size="small">
-								{sizeLabel}
-							</Text>
-						) : (
-							<Padding top="small" />
-						)}
+						<Text color="gray1" size="small">
+							{sizeLabel}
+						</Text>
 					</Row>
 				</Row>
 			</Tooltip>

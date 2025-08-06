@@ -8,8 +8,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import moment from 'moment/moment';
 
+import { ServicesCatalog } from 'api/request-service-catalog-api';
+
+export type AppContext = {
+	isMessageView: boolean;
+	multipleSelectionCount: number;
+	setMultipleSelectionCount: (arg: number | ((prevState: number) => number)) => void;
+	servicesCatalog: ServicesCatalog;
+};
+
 export const AppContextInitializer = (): null => {
-	const [count, setCount] = useState(0);
+	const [multipleSelectionCount, setMultipleSelectionCount] = useState(0);
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 
 	const isMessageView = useMemo(
@@ -24,10 +33,10 @@ export const AppContextInitializer = (): null => {
 	useEffect(() => {
 		setAppContext({
 			isMessageView,
-			count,
-			setCount
+			multipleSelectionCount,
+			setMultipleSelectionCount
 		});
-	}, [count, isMessageView]);
+	}, [multipleSelectionCount, isMessageView]);
 
 	return null;
 };

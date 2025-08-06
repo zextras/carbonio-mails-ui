@@ -39,7 +39,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -50,13 +49,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage
-					folderId={sourceFolder}
-					selectedIDs={msgIds}
-					onClose={jest.fn()}
-					isRestore
-					deselectAll={jest.fn()}
-				/>
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -73,7 +66,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -96,7 +88,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -104,17 +95,10 @@ describe('MoveMsg', () => {
 			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
 
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			await act(async () => {
-				await user.click(inboxFolderListItem);
-			});
+			await user.click(inboxFolderListItem);
 
 			const button = screen.getByRole('button', {
 				name: /Move/
@@ -145,7 +129,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -154,13 +137,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);
@@ -200,7 +178,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -209,13 +186,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);

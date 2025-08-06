@@ -39,7 +39,6 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={jest.fn()}
 				isRestore
-				deselectAll={jest.fn()}
 			/>
 		);
 		expect(screen.getByText('Restore')).toBeVisible();
@@ -52,7 +51,6 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={jest.fn()}
 				isRestore={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 		expect(screen.getByText('Move Conversation')).toBeVisible();
@@ -66,7 +64,6 @@ describe('MoveConversation', () => {
 					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 			const moveButton = screen.getByRole('button', {
@@ -83,7 +80,6 @@ describe('MoveConversation', () => {
 					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -103,16 +99,13 @@ describe('MoveConversation', () => {
 					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
+
 			await act(async () => {
 				await user.click(inboxFolderListItem);
 			});
@@ -131,7 +124,6 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={onCloseFn}
 				isRestore={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 		await user.click(screen.getByText('Cancel'));
@@ -156,18 +148,13 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={jest.fn()}
 				isRestore={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
 			`folder-accordion-item-${destinationFolder}`,
-			{},
-			{ timeout: 10000 }
+			{}
 		);
-		act(() => {
-			jest.advanceTimersByTime(1000);
-		});
 		await act(async () => {
 			await user.click(inboxFolderListItem);
 		});
@@ -193,18 +180,13 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={jest.fn()}
 				isRestore={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
 			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{},
-			{ timeout: 10000 }
+			{}
 		);
-		act(() => {
-			jest.advanceTimersByTime(1000);
-		});
 		await act(async () => {
 			await user.click(inboxFolderListItem);
 		});
@@ -237,7 +219,6 @@ describe('MoveConversation', () => {
 				selectedIDs={convIds}
 				onClose={jest.fn()}
 				isRestore={false}
-				deselectAll={jest.fn()}
 			/>
 		);
 

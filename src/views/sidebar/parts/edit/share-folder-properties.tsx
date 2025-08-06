@@ -14,7 +14,8 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 import styled from 'styled-components';
 
@@ -165,7 +166,7 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	const [grant, setGrant] = useState<Array<Grant> | undefined>();
 
 	useEffect(() => {
-		soapFetch('GetFolder', {
+		legacySoapFetch('GetFolder', {
 			_jsns: 'urn:zimbraMail',
 			folder: { l: folder.id }
 		}).then((res: any): void => {

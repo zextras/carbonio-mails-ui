@@ -26,11 +26,9 @@ import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/
 
 export const ConversationsMultipleSelectionActions = ({
 	selectedConversationsIds,
-	deselectAll,
 	folderId
 }: {
 	selectedConversationsIds: Array<string>;
-	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -41,24 +39,20 @@ export const ConversationsMultipleSelectionActions = ({
 	const tagsInCommon = intersection(...conversationstags);
 	const setAsRead = useConvSetReadDescriptor({
 		ids: selectedConversationsIds,
-		deselectAll,
 		folderId,
 		isConversationRead: !atLeastOneConvIsUnread
 	});
 	const setAsUnread = useConvSetUnreadDescriptor({
 		ids: selectedConversationsIds,
-		deselectAll,
 		folderId,
 		isConversationRead: !atLeastOneConvIsUnread
 	});
 	const moveToTrash = useConvMoveToTrashDescriptor({
 		ids: selectedConversationsIds,
-		deselectAll,
 		folderId
 	});
 	const deletePermanently = useConvDeletePermanentlyDescriptor({
 		ids: selectedConversationsIds,
-		deselectAll,
 		folderId
 	});
 	const applyTagDescriptor = useConvApplyTagDescriptor({
@@ -78,7 +72,6 @@ export const ConversationsMultipleSelectionActions = ({
 	);
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
-		deselectAll,
 		ids: selectedConversationsIds
 	});
 	const setAsSpam = useConvSetSpamDescriptor({

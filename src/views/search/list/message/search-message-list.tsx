@@ -7,13 +7,13 @@
 import React, { FC, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { useSelection } from 'hooks/use-selection';
-import type { AppContext, SearchListProps } from 'types/index.d';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import type { SearchListProps } from 'types/index.d';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';
@@ -30,23 +30,23 @@ export const SearchMessageList: FC<SearchListProps> = ({
 }) => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
-	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+
 	const {
-		selected,
-		toggle,
+		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({
-		setCount,
-		count,
-		items: messageIds
+	} = useMultipleSelection({
+		allAvailableItems: messageIds,
+		selectedItems,
+		setSelectedItems
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -71,7 +71,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		() =>
 			map(messageIds, (messageId) => {
 				const active = itemId === messageId;
-				const isSelected = selected[messageId];
+				const isSelected = selectedItems.has(messageId);
 				return (
 					<CustomListItem
 						key={messageId}
@@ -88,7 +88,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 									selecting={isSelectModeOn}
 									toggle={toggle}
 									active={active}
-									deselectAll={deselectAll}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid={`invisible-message-${messageId}`} />
@@ -97,17 +96,17 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
+		[isSelectModeOn, itemId, messageIds, selectedItems, toggle]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
 		<>
 			{!isInvalidQuery && !loading && (
 				<SearchListHeader
 					itemIds={messageIds}
-					selected={selected}
+					selectedItems={selectedItems}
 					deselectAll={deselectAll}
 					isSelectModeOn={isSelectModeOn}
 					setIsSelectModeOn={setIsSelectModeOn}
@@ -115,11 +114,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 				>
-					<MessagesMultipleSelectionActions
-						ids={selectedIds}
-						deselectAll={deselectAll}
-						folderId={''}
-					/>
+					<MessagesMultipleSelectionActions ids={selectedIds} folderId={''} />
 				</SearchListHeader>
 			)}
 

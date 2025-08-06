@@ -64,6 +64,26 @@ export const findIconFromChip = (chip: SearchChipItem & { label: string }): Sear
 				avatarBackground: 'gray1'
 			};
 
+		case chip.label.match(/^from:*/)?.input:
+			return {
+				...chip,
+				hasAvatar: true,
+				value: chip.label,
+				avatarIcon: 'PersonOutline',
+				isQueryFilter: true,
+				avatarBackground: 'gray1'
+			};
+
+		case chip.label.match(/^to:*/)?.input:
+			return {
+				...chip,
+				hasAvatar: true,
+				value: chip.label,
+				avatarIcon: 'PersonOutline',
+				isQueryFilter: true,
+				avatarBackground: 'gray1'
+			};
+
 		case chip.label.match(/^after:*/)?.input:
 		case chip.label.match(/^date:*/)?.input:
 		case chip.label.match(/^before:*/)?.input:

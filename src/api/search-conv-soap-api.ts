@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccountSettings, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
+import { AccountSettings, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
@@ -38,5 +39,5 @@ export async function searchConvSoapApi({
 	if (folderId) {
 		request.query = `inId: "${folderId}"`;
 	}
-	return soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
+	return legacySoapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
 }

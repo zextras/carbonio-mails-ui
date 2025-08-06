@@ -58,7 +58,6 @@ const mockMsg: IncompleteMessage = {
 			contentType: 'application/pkcs7-mime',
 			size: 1950,
 			name: '1',
-			requiresSmartLinkConversion: false,
 			filename: 'smime.p7m'
 		}
 	],

@@ -64,7 +64,6 @@ function getFoldersAllowed(
 	};
 }
 
-const deselectAll = jest.fn();
 const selectAll = jest.fn();
 
 const props = {
@@ -74,7 +73,7 @@ const props = {
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
-	deselectAll,
+	deselectAll: jest.fn(),
 	selectAll
 };
 
@@ -104,11 +103,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -133,11 +128,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion === true)
@@ -174,11 +165,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -202,11 +189,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion === true)
@@ -243,11 +226,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -271,11 +250,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion.value === true)

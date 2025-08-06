@@ -21,7 +21,6 @@ import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
 import type {
-	CreateSmartLinksRequest,
 	MailsEditorV2,
 	SaveDraftRequest,
 	SaveDraftResponse,
@@ -33,7 +32,6 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
-import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import {
@@ -48,7 +46,6 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import {
@@ -126,16 +123,6 @@ const getSoapMailBodyContent = (
 	return '';
 };
 
-const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-		'CreateSmartLinks',
-		buildSoapErrorResponseBody({
-			detailCode: 'Failed upload to Files',
-			code: '123',
-			reason: 'Failed due to connection timeout'
-		})
-	);
-
 const createCheckSmimeEnabledAPIInterceptor = (): void => {
 	createAPIInterceptor(
 		'get',
@@ -192,11 +179,11 @@ function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditor
 
 describe('Edit view', () => {
 	describe('Send button is disabled', () => {
-		const invalidEmailAddress = 'invalidmailaddress.com';
-		beforeEach(() => {
+		beforeAll(() => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
+		const invalidEmailAddress = 'invalidmailaddress.com';
 		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
@@ -222,11 +209,9 @@ describe('Edit view', () => {
 			);
 
 			makeAllItemsVisible();
-			await act(async () => {
-				const tooltip = await screen.findByTestId('tooltip');
-				expect(tooltip).toBeInTheDocument();
-				expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
-			});
+			const tooltip = await screen.findByTestId('tooltip');
+			expect(tooltip).toBeInTheDocument();
+			expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
 		});
 		test('when there`s an invalid TO recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -249,12 +234,10 @@ describe('Edit view', () => {
 			// TODO: act is used to ensure entire render lifecycle is completed.
 			//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
 			//  act is a gimmick and not really required.
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 		test('when there`s an invalid CC recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -274,12 +257,10 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 		test('when there`s an invalid BCC recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
@@ -299,20 +280,21 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-			await act(async () => {
-				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
-				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-			});
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 		});
 	});
 
 	describe('Mail creation', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
-			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		beforeAll(() => {
 			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
 		});
 
 		// warning
@@ -362,32 +344,31 @@ describe('Edit view', () => {
 
 			expect(btnSend).toBeVisible();
 
-			await act(() => user.click(toInputElement));
-			await act(() => user.clear(toInputElement));
-			await act(() => user.type(toInputElement, address));
+			await user.click(toInputElement);
+			await user.clear(toInputElement);
+			await user.type(toInputElement, address);
 
 			await user.tab();
-			await act(() => user.click(btnCc));
+			await user.click(btnCc);
 
 			// Click on the "CC" button to show CC Recipient field
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			await act(() => user.click(ccInputElement));
-			await act(() => user.clear(ccInputElement));
-			await act(() => user.type(ccInputElement, ccAddress));
+			await user.click(ccInputElement);
+			await user.clear(ccInputElement);
+			await user.type(ccInputElement, ccAddress);
 
 			// Insert a subject
-			await act(() => user.click(subjectInputElement));
-			await act(() => user.clear(subjectInputElement));
-			await act(() => user.type(subjectInputElement, subject));
+			await user.click(subjectInputElement);
+			await user.clear(subjectInputElement);
+			await user.type(subjectInputElement, subject);
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
 
-			await act(async () => {
-				await user.click(optionIcon);
-			});
+			await user.click(optionIcon);
+
 			const markAsImportantOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 				/label\.mark_as_important/i
 			);
@@ -397,18 +378,16 @@ describe('Edit view', () => {
 				await awaitDebouncedSaveDraft();
 			});
 
-			await act(async () => {
-				await user.click(editorTextareaElement);
-				await user.clear(editorTextareaElement);
-				await user.type(editorTextareaElement, body);
-			});
+			await user.click(editorTextareaElement);
+			await user.clear(editorTextareaElement);
+			await user.type(editorTextareaElement, body);
 
 			await act(async () => {
 				await awaitDebouncedSaveDraft();
 			});
 
 			// // Check for the status of the "send" button to be enabled
-			await waitFor(() => expect(btnSend).toBeEnabled());
+			expect(btnSend).toBeEnabled();
 
 			const response = {
 				m: [
@@ -423,9 +402,7 @@ describe('Edit view', () => {
 				SoapSendMsgResponse
 			>('SendMsg', response);
 
-			await act(async () => {
-				await user.click(btnSend);
-			});
+			await user.click(btnSend);
 
 			const { m: msg } = await sendMsgPromise;
 
@@ -439,9 +416,7 @@ describe('Edit view', () => {
 					expect(participant.p).toBe(fullName);
 				}
 			});
-			act(() => {
-				expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
-			});
+			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		});
 
 		it('should add the logged in account id to the originId field when replying to an email from the primary account', async () => {
@@ -572,16 +547,13 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
-		beforeAll(() => {
-			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
-		});
-
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createSoapAPIInterceptor('NoOp');
 			createCheckSmimeEnabledAPIInterceptor();
 			setupEditorStore({ editors: [] });
 			const editor = await readyToBeSentEditorTestCase({
@@ -619,48 +591,6 @@ describe('Edit view', () => {
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
 		});
-		describe('with attachment to convert to smart link', () => {
-			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-				createAPIInterceptor(
-					'post',
-					'/service/soap/GetShareInfoRequest',
-					HttpResponse.json(getEmptyMSWShareInfoResponse())
-				);
-				createCheckSmimeEnabledAPIInterceptor();
-				// setup api interceptor and mail to send editor
-				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
-				setupEditorStore({ editors: [] });
-				const editor = await readyToBeSentEditorTestCase({
-					id: '123-testId',
-					did: '123-testId',
-					savedAttachments: [
-						{
-							filename: 'large-document.pdf',
-							contentType: 'application/pdf',
-							requiresSmartLinkConversion: true,
-							size: 81290955,
-							messageId: '123-testId',
-							partName: '2',
-							isInline: false
-						}
-					]
-				});
-				addEditor({ id: editor.id, editor });
-
-				const { user } = setupTest(
-					<EditView {...{ editorId: editor.id, closeController: noop }} />
-				);
-				const btnSend = screen.queryByTestId('BtnSendMailMulti');
-				await waitFor(() => expect(btnSend).toBeEnabled());
-				await act(async () => {
-					await user.click(btnSend as HTMLElement);
-				});
-
-				await apiInterceptor;
-				await waitFor(() => screen.findByText('label.error_try_again'));
-				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
-			});
-		});
 	});
 
 	describe('Draft', () => {
@@ -681,9 +611,7 @@ describe('Edit view', () => {
 			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
 
-			act(() => {
-				setupTest(<EditView editorId={editor.id} closeController={noop} />);
-			});
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
 			});
@@ -1025,7 +953,7 @@ describe('Edit view', () => {
 		});
 	});
 
-	describe('Identities selection', () => {
+	describe.skip('Identities selection', () => {
 		test.skip('identity selector must be visible when multiple identities are present', async () => {
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {

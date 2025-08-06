@@ -17,7 +17,6 @@ import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 type MoveMessageProps = {
 	selectedIDs: string[];
 	isRestore?: boolean;
-	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
 };
@@ -25,7 +24,6 @@ type MoveMessageProps = {
 export const MoveMessage = ({
 	selectedIDs,
 	isRestore,
-	deselectAll,
 	onClose,
 	folderId
 }: MoveMessageProps): ReactElement => {
@@ -46,7 +44,6 @@ export const MoveMessage = ({
 				parent: newFolderId
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -70,7 +67,7 @@ export const MoveMessage = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, createSnackbar, isRestore, t]
 	);
 
 	const isDestinationFolderSelectionInvalid = useMemo(

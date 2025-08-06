@@ -16,12 +16,10 @@ type ConvSetUnreadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isConversationRead: boolean;
-	deselectAll?: () => void;
 };
 
 export const useConvSetUnreadFn = ({
 	ids,
-	deselectAll,
 	folderId,
 	isConversationRead
 }: ConvSetUnreadFunctionsParameter): ActionFn => {
@@ -35,24 +33,20 @@ export const useConvSetUnreadFn = ({
 			convActionEmailStoreAction({
 				operation: '!read',
 				ids
-			}).then(() => {
-				deselectAll?.();
 			});
 		}
-	}, [canExecute, deselectAll, ids]);
+	}, [canExecute, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvSetUnreadDescriptor = ({
 	ids,
-	deselectAll,
 	folderId,
 	isConversationRead
 }: ConvSetUnreadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetUnreadFn({
 		ids,
-		deselectAll,
 		folderId,
 		isConversationRead
 	});

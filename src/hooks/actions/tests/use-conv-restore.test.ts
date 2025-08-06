@@ -25,7 +25,7 @@ describe('useConvRestore', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvRestoreDescriptor, {
-				initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ conversationId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -45,7 +45,7 @@ describe('useConvRestore', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvRestoreFn, {
-				initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ conversationId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -67,7 +67,7 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ conversationId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -84,7 +84,7 @@ describe('useConvRestore', () => {
 					result: { current: functions },
 					user
 				} = setupHook(useConvRestoreFn, {
-					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ conversationId, folderId: FOLDERS.TRASH }]
 				});
 
 				await act(async () => {
@@ -121,7 +121,7 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ conversationId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -139,7 +139,7 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ conversationId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {

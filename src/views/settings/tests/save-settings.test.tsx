@@ -5,12 +5,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { updateAccount, updateSettings } from '@zextras/carbonio-shell-ui';
+import { ApiManager, legacyXmlSoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { saveSettings } from 'views/settings/save-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	xmlSoapFetch: jest.fn<ReturnType<typeof xmlSoapFetch>, Parameters<typeof xmlSoapFetch>>(),
 	updateAccount: jest.fn(),
 	updateSettings: jest.fn()
 }));
@@ -45,18 +45,18 @@ const mockSoapResponse = {
 
 describe('saveSettings', () => {
 	it('should generate the correct XML requests and call update functions', async () => {
-		jest.mocked(xmlSoapFetch).mockResolvedValue(mockSoapResponse);
+		jest.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
 
 		await saveSettings(settingsToUpdate, APP_ID);
 
 		// BatchRequest
-		expect(xmlSoapFetch).toHaveBeenCalledWith(
+		expect(legacyXmlSoapFetch).toHaveBeenCalledWith(
 			'Batch',
 			expect.stringContaining('<BatchRequest xmlns="urn:zimbra" onerror="stop">')
 		);
 
 		// ModifyPropertiesRequest
-		expect(xmlSoapFetch).toHaveBeenCalledWith(
+		expect(legacyXmlSoapFetch).toHaveBeenCalledWith(
 			'Batch',
 			expect.stringContaining(
 				'<ModifyPropertiesRequest xmlns="urn:zimbraAccount"><prop name="propKey" zimlet="appId">propValue</prop></ModifyPropertiesRequest>'
@@ -64,7 +64,7 @@ describe('saveSettings', () => {
 		);
 
 		// ModifyPrefsRequest
-		expect(xmlSoapFetch).toHaveBeenCalledWith(
+		expect(legacyXmlSoapFetch).toHaveBeenCalledWith(
 			'Batch',
 			expect.stringContaining(
 				'<ModifyPrefsRequest xmlns="urn:zimbraAccount"><pref name="zimbraPrefHtmlEditorDefaultFontFamily">comic sans ms, sans-serif</pref></ModifyPrefsRequest>'
@@ -72,14 +72,14 @@ describe('saveSettings', () => {
 		);
 
 		// ModifyWhiteBlackListRequest
-		expect(xmlSoapFetch).toHaveBeenCalledWith(
+		expect(legacyXmlSoapFetch).toHaveBeenCalledWith(
 			'Batch',
 			expect.stringContaining(
 				'<ModifyWhiteBlackListRequest xmlns="urn:zimbraAccount"><whiteList><addr>whitelist@example.com</addr></whiteList></ModifyWhiteBlackListRequest>'
 			)
 		);
 		// ModifyIdentityRequest
-		expect(xmlSoapFetch).toHaveBeenCalledWith(
+		expect(legacyXmlSoapFetch).toHaveBeenCalledWith(
 			'Batch',
 			expect.stringContaining(
 				'<ModifyIdentityRequest xmlns="urn:zimbraAccount" requestId="0"><identity id="identityId"><a name="identityKey">newValue</a></identity></ModifyIdentityRequest>'
@@ -94,5 +94,25 @@ describe('saveSettings', () => {
 				newIdentities: mockSoapResponse.CreateIdentityResponse.map((item) => item.identity[0])
 			}
 		});
+	});
+
+	it('should call the ApiManager to set the polling interval if its value is not undefined', async () => {
+		jest.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
+
+		const pollingSetting = '60s';
+		const settings = {
+			...settingsToUpdate,
+			prefs: {
+				...settingsToUpdate.prefs,
+				zimbraPrefMailPollingInterval: pollingSetting
+			}
+		};
+
+		const apiManagerInstance = ApiManager.getApiManager();
+
+		await saveSettings(settings, APP_ID);
+		expect(jest.mocked(apiManagerInstance.setPollingPreference)).toHaveBeenCalledWith(
+			pollingSetting
+		);
 	});
 });

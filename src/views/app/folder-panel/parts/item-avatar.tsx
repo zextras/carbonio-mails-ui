@@ -29,6 +29,7 @@ export type ItemAvatarTypeProps = {
 	selected: boolean;
 	selecting: boolean;
 	folderId: string;
+	toggle: (id: string) => void;
 	index: number;
 	id: string;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
@@ -39,6 +40,7 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 	selected,
 	selecting,
 	folderId,
+	toggle,
 	index,
 	id,
 	onSelect
@@ -61,6 +63,14 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 		[onSelect, index, id]
 	);
 
+	const conversationSelect = useCallback(
+		(id: string) => (ev: SyntheticEvent) => {
+			ev.preventDefault();
+			toggle && toggle(id);
+		},
+		[toggle]
+	);
+
 	return (
 		<Container
 			mainAlignment="center"
@@ -74,7 +84,7 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 					selected={selected}
 					label={avatarLabel}
 					colorLabel={avatarEmail}
-					onClick={handleClick}
+					onClick={conversationSelect(item.id)}
 					size="large"
 				/>
 			</TooltipWrapper>

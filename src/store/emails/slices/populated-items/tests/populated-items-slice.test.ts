@@ -20,10 +20,7 @@ import {
 	generateConversation,
 	populateConversationInEmailStore
 } from 'tests/generators/generateConversation';
-import {
-	generateMessage,
-	populateMessagesInEmailStore
-} from 'tests/generators/generateMessage';
+import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
 import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
@@ -57,7 +54,7 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn(),
+	useTags: jest.fn()
 }));
 
 describe('store-populated-items-slice', () => {
@@ -108,8 +105,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/plain',
 						size: 0,
-						name: 'My Part',
-						requiresSmartLinkConversion: false
+						name: 'My Part'
 					}
 				];
 				populateMessagesInEmailStore({
@@ -139,8 +135,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/plain',
 						size: 0,
-						name: 'My Part',
-						requiresSmartLinkConversion: false
+						name: 'My Part'
 					}
 				];
 				populateMessagesInEmailStore({
@@ -155,8 +150,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/html',
 						size: 100,
-						name: 'My Part updated',
-						requiresSmartLinkConversion: true
+						name: 'My Part updated'
 					}
 				];
 				const messages = [

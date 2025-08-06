@@ -32,7 +32,6 @@ import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
-	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
@@ -59,7 +58,6 @@ type ConversationActionsReturnType = {
 
 export const useConvActions = ({
 	conversation,
-	deselectAll,
 	shouldReplaceHistory = false
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
@@ -94,23 +92,19 @@ export const useConvActions = ({
 	});
 	const moveToTrashDescriptor = useConvMoveToTrashDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId
 	});
 	const deletePermanentlyDescriptor = useConvDeletePermanentlyDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId
 	});
 	const setAsReadDescriptor = useConvSetReadDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId,
 		isConversationRead: conversation.read
 	});
 	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId,
 		isConversationRead: conversation.read
 	});
@@ -134,13 +128,11 @@ export const useConvActions = ({
 	});
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
-		ids: [conversation.id],
-		deselectAll
+		ids: [conversation.id]
 	});
 	const restoreFolderDescriptor = useConvRestoreDescriptor({
 		folderId,
-		conversationId: conversation.id,
-		deselectAll
+		conversationId: conversation.id
 	});
 	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
 
