@@ -27,7 +27,6 @@ export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	isSearchModule?: boolean;
 	activeItemId?: string;
@@ -45,7 +44,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	conversation,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	active,
 	isSearchModule,
 	activeItemId,
@@ -153,7 +151,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						toggleMultipleSelection={toggleMultipleSelection}
 						folderParent={folderParent}
 						open={open}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
@@ -166,7 +163,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggleMultipleSelection={toggleMultipleSelection}
 					folderParent={folderParent}
 					open={open}
 					toggleCollapseElementCallback={toggleCollapseElementCallback}

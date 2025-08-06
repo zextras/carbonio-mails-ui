@@ -28,7 +28,6 @@ type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	folderParent: string;
 	open: boolean;
 	toggleCollapseElementCallback: (
@@ -46,7 +45,6 @@ export const ConversationListItemCore = ({
 	conversation,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	folderParent,
 	toggleCollapseElementCallback,
 	open,
@@ -136,7 +134,6 @@ export const ConversationListItemCore = ({
 					selected={selected}
 					selecting={selecting}
 					folderId={folderParent}
-					toggle={toggleMultipleSelection}
 					index={index}
 					id={conversation.id}
 					onSelect={onSelect}

@@ -34,7 +34,6 @@ export const ConversationListItemComponent = ({
 	conversationId,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	active,
 	setDraggedIds,
 	selectedItems,
@@ -64,7 +63,6 @@ export const ConversationListItemComponent = ({
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggleMultipleSelection={toggleMultipleSelection}
 					active={active}
 					setDraggedIds={setDraggedIds}
 					dragImageRef={dragImageRef}
