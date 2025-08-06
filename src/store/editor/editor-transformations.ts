@@ -10,7 +10,6 @@ import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
-	getAttachmentParts,
 	getCidFromCidUrl,
 	isCidUrl,
 	isContentIdEqual,
@@ -27,8 +26,6 @@ import { getCompleteMessageId } from 'store/utils';
 import {
 	MailAttachment,
 	MailAttachmentParts,
-	MailMessage,
-	MailMessagePart,
 	MailsEditorV2,
 	MsgAttach,
 	Participant,
@@ -425,23 +422,3 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 
 export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
 	createSoapMessageRequestFromEditor(editor, 'sendmsg');
-
-export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message.parts);
-	const isProbablyInline = (part: MailMessagePart): boolean => {
-		if (!part.disposition) {
-			return !!part.ci && part.contentType?.startsWith('image/');
-		}
-		return part.disposition === 'inline';
-	};
-
-	return attachmentsParts.map<SavedAttachment>((part) => ({
-		messageId: message.id,
-		isInline: isProbablyInline(part),
-		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
-		filename: part.filename ?? '',
-		partName: part.name,
-		contentType: part.contentType,
-		size: part.size
-	}));
-};

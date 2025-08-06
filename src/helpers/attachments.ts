@@ -10,8 +10,9 @@ import { useTheme } from '@zextras/carbonio-design-system';
 import { isNil, reduce } from 'lodash';
 
 import { calcColor } from 'commons/utilities';
-import type {
+import {
 	AbstractAttachment,
+	MailMessage,
 	MailMessagePart,
 	SavedAttachment,
 	UnsavedAttachment
@@ -144,7 +145,7 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	return result;
 };
 
-export const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
+const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
 	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
@@ -433,3 +434,23 @@ export const isDownloadServicedUrl = (url: string): boolean =>
 
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+
+export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
+	const attachmentsParts = getAttachmentParts(message.parts);
+	const isPartInline = (part: MailMessagePart): boolean => {
+		if (!part.disposition) {
+			return !!part.ci && part.contentType?.startsWith('image/');
+		}
+		return part.disposition === 'inline';
+	};
+
+	return attachmentsParts.map<SavedAttachment>((part) => ({
+		messageId: message.id,
+		isInline: isPartInline(part),
+		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
+		filename: part.filename ?? '',
+		partName: part.name,
+		contentType: part.contentType,
+		size: part.size
+	}));
+};
