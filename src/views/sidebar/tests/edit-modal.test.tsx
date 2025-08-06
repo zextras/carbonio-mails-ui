@@ -478,6 +478,26 @@ describe('edit-modal', () => {
 			});
 			expect(editButton).toBeDisabled();
 		});
+
+		it('should disable the submit button and show error message when system folder name is used', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
+
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+
+			const newFolder = screen.getByTestId('folder-name');
+			const folderInputElement = within(newFolder).getByRole('textbox');
+			expect(folderInputElement).toHaveValue('Test');
+			await user.clear(folderInputElement);
+			expect(folderInputElement).toHaveValue('');
+
+			await user.type(folderInputElement, 'Inbox');
+			expect(await screen.findByText('You cannot rename a folder as a system one')).toBeVisible();
+
+			const editButton = screen.getByRole('button', {
+				name: /label\.edit/i
+			});
+			expect(editButton).toBeDisabled();
+		});
 	});
 
 	describe('retention lifetime disposal ', () => {
