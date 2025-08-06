@@ -6,11 +6,10 @@
  */
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
-import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import { FOLDERS, getFolder, themeMui } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
 import { useFolders } from 'hooks/use-folders';
 import { FlatFolders } from 'views/sidebar/commons/flatten-folders/flat-folders';
@@ -77,7 +76,7 @@ export const FolderSelector = ({
 						showTrashFolder={showTrashFolder}
 					/>
 				) : (
-					<ThemeProvider theme={themeMui}>
+					<>
 						<Padding vertical="medium" />
 						<FoldersAccordion
 							folders={rootFolders}
@@ -88,7 +87,7 @@ export const FolderSelector = ({
 							showSpamFolder={showSpamFolder}
 							showTrashFolder={showTrashFolder}
 						/>
-					</ThemeProvider>
+					</>
 				)}
 			</Container>
 			{onNewFolderClick && (
