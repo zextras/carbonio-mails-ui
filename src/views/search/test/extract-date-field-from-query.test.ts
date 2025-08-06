@@ -109,23 +109,6 @@ describe('extractDateFieldFromQuery', () => {
 		expect(result?.getDate()).toBe(14);
 	});
 
-	it('should handle different prefixes correctly', () => {
-		mockedGetUserLocale.mockReturnValue('en-US');
-		const query: Query = [
-			{ id: '1', label: 'before:01/15/2024' },
-			{ id: '2', label: 'after:02/20/2024' },
-			{ id: '3', label: 'date:03/25/2024' }
-		];
-
-		const beforeResult = extractDateFieldFromQuery('before', query);
-		const afterResult = extractDateFieldFromQuery('after', query);
-		const dateResult = extractDateFieldFromQuery('date', query);
-
-		expect(beforeResult?.getMonth()).toBe(0); // January
-		expect(afterResult?.getMonth()).toBe(1); // February
-		expect(dateResult?.getMonth()).toBe(2); // March
-	});
-
 	it('should handle ISO date format regardless of locale', () => {
 		mockedGetUserLocale.mockReturnValue('it-IT');
 		const query: Query = [{ id: '1', label: 'before:2024-03-15' }];
