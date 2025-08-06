@@ -14,6 +14,7 @@ import {
 	AbstractAttachment,
 	MailMessage,
 	MailMessagePart,
+	MailMessagePartWithDisposition,
 	SavedAttachment,
 	UnsavedAttachment
 } from 'types/index.d';
@@ -155,14 +156,14 @@ const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
  * @param filtered
  * @param referredCids
  */
-export function filterAttachmentsParts(
+export function getAttachmentsWithDisposition(
 	parts: Array<MailMessagePart>,
-	filtered: Array<MailMessagePart>,
+	filtered: Array<MailMessagePartWithDisposition>,
 	referredCids: Array<string>
-): Array<MailMessagePart> {
+): Array<MailMessagePartWithDisposition> {
 	return reduce(
 		parts,
-		(filtered, part) => {
+		(incoming, part) => {
 			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
 			if (
 				part.disposition === 'attachment' ||
@@ -179,32 +180,35 @@ export function filterAttachmentsParts(
 				// Force the inline disposition if the part is referred by something else in the body
 				if (part.disposition === undefined) {
 					if (isReferredByCid) {
-						filtered.push({
+						incoming.push({
 							...part,
 							disposition: 'inline'
 						});
 					} else {
-						filtered.push({
+						incoming.push({
 							...part,
 							disposition: 'attachment'
 						});
 					}
 				} else {
-					filtered.push(part);
+					const { disposition } = part;
+					incoming.push({ ...part, disposition });
 				}
 			}
 			if (part.parts && !isEml(part)) {
-				filterAttachmentsParts(part.parts, filtered, referredCids);
+				getAttachmentsWithDisposition(part.parts, incoming, referredCids);
 			}
-			return filtered;
+			return incoming;
 		},
 		filtered
 	);
 }
 
-export function getAttachmentParts(parts: Array<MailMessagePart>): Array<MailMessagePart> {
+export function getAttachmentParts(
+	parts: Array<MailMessagePart>
+): Array<MailMessagePartWithDisposition> {
 	const referredCids = getReferredContentIds(parts);
-	return filterAttachmentsParts(parts, [], referredCids);
+	return getAttachmentsWithDisposition(parts, [], referredCids);
 }
 
 export const getAttachmentExtension = (
@@ -437,17 +441,9 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getAttachmentParts(message.parts);
-	const referredCids = getReferredContentIds(message.parts);
-	const isPartInline = (part: MailMessagePart): boolean => {
-		if (part.disposition) {
-			return part.disposition === 'inline';
-		}
-		return part.ci ? isReferredCid(part.ci, referredCids) : false;
-	};
-
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
-		isInline: isPartInline(part),
+		isInline: part.disposition === 'inline',
 		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
 		filename: part.filename ?? '',
 		partName: part.name,
