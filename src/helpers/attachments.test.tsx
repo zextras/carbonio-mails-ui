@@ -180,6 +180,7 @@ describe('attachments', () => {
 
 		it('should mark part with disposition "inline" as inline even if not an image', () => {
 			const message = generateMessage({ folderId: '2' });
+
 			message.parts = [
 				{
 					contentType: 'application/pdf',

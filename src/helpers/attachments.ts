@@ -46,7 +46,7 @@ export function findAttachments(
 	);
 }
 
-export const isEml = (part: MailMessagePart): boolean =>
+const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
 
@@ -437,11 +437,12 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getAttachmentParts(message.parts);
+	const referredCids = getReferredContentIds(message.parts);
 	const isPartInline = (part: MailMessagePart): boolean => {
-		if (!part.disposition) {
-			return !!part.ci && part.contentType?.startsWith('image/');
+		if (part.disposition) {
+			return part.disposition === 'inline';
 		}
-		return part.disposition === 'inline';
+		return part.ci ? isReferredCid(part.ci, referredCids) : false;
 	};
 
 	return attachmentsParts.map<SavedAttachment>((part) => ({
