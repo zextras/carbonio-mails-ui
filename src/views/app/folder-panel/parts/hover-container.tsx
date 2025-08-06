@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 
 import styled from '@emotion/styled';
 import { Container, ContainerProps, PaletteColor } from '@zextras/carbonio-design-system';
@@ -30,8 +30,13 @@ const StyledContainer = styled(Container)<{ $hoverBackground: PaletteColor }>`
 	}
 `;
 
-export const HoverContainer: FC<HoverContainerProps> = (props) => (
-	<StyledContainer background={'transparent'} {...props}>
-		{props.children}
-	</StyledContainer>
-);
+export const HoverContainer = React.forwardRef(function HoverContainerFn(
+	props: HoverContainerProps,
+	ref: React.Ref<HTMLDivElement>
+) {
+	return (
+		<StyledContainer ref={ref} background={'transparent'} {...props}>
+			{props.children}
+		</StyledContainer>
+	);
+});
