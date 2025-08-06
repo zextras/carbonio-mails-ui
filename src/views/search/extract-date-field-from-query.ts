@@ -24,7 +24,8 @@ export function extractDateFieldFromQuery(prefix: string, query: Query): Date | 
 	const dateString = dateQuery[0];
 
 	// Try parsing with locale-specific format first
-	let parsedDate = moment(dateString, 'L', userLocale, true);
+	const localeFormat = moment.localeData(userLocale).longDateFormat('L');
+	let parsedDate = moment(dateString, localeFormat, userLocale, true);
 
 	if (!parsedDate.isValid()) {
 		// Fall back to ISO format and other standard formats
