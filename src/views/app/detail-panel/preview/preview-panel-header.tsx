@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 
 import {
 	Button,
@@ -65,6 +65,18 @@ export const PreviewPanelHeader = ({
 	);
 
 	const { isCurrentLayoutNoSplit } = useViewLayout();
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent): void => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				e.stopPropagation();
+				replaceHistoryCallback();
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [replaceHistoryCallback]);
 
 	return (
 		<>
