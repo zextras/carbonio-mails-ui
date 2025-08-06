@@ -549,52 +549,9 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
-		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
-			createAPIInterceptor(
-				'post',
-				'/service/soap/GetShareInfoRequest',
-				HttpResponse.json(getEmptyMSWShareInfoResponse())
-			);
-			createCheckSmimeEnabledAPIInterceptor();
-
-			const editor = await readyToBeSentEditorTestCase({
-				id: '123-testId',
-				did: '123-testId'
-			});
-			setupEditorStore({ editors: [editor] });
-			addEditor({ id: editor.id, editor });
-
-			createSoapAPIInterceptor(
-				'SendMsg',
-				buildSoapErrorResponseBody({
-					reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
-					code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
-				})
-			);
-
-			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
-
-			const btnSend = await screen.findByTestId('BtnSendMailMulti');
-			await waitFor(() => expect(btnSend).toBeEnabled());
-
-			await act(async () => {
-				await user.click(btnSend);
-			});
-
-			await act(async () => {
-				jest.runOnlyPendingTimers();
-			});
-
-			await waitFor(
-				() => {
-					expect(
-						screen.getByText((content) => content.includes('invalid_recipient'))
-					).toBeInTheDocument();
-				},
-				{ timeout: 2000 }
-			);
+		beforeEach(() => {
+			jest.clearAllTimers();
 		});
-
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
@@ -638,6 +595,45 @@ describe('Edit view', () => {
 			const sendMsgRequest = await sendMsgInterceptor;
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
+		});
+
+		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createCheckSmimeEnabledAPIInterceptor();
+
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId'
+			});
+			setupEditorStore({ editors: [editor] });
+			addEditor({ id: editor.id, editor });
+
+			createSoapAPIInterceptor(
+				'SendMsg',
+				buildSoapErrorResponseBody({
+					reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
+					code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
+				})
+			);
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const btnSend = await screen.findByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			await act(async () => {
+				jest.advanceTimersByTime(4000);
+			});
+
+			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
 		});
 	});
 
