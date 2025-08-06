@@ -90,7 +90,6 @@ describe('HTML message renderer', () => {
 									ct: 'text/html',
 									part: '0',
 									body: true,
-									requiresSmartLinkConversion: false,
 									truncated: false,
 									content: 'Updated content'
 								}
@@ -188,7 +187,6 @@ describe('HTML message renderer', () => {
 								ct: 'text/html',
 								part: '0',
 								body: true,
-								requiresSmartLinkConversion: false,
 								truncated: false,
 								content: 'Updated content'
 							}

@@ -11,7 +11,6 @@ import { SoapMailMessage } from 'types/soap/soap-mail-message';
 export type MailAttachmentParts = {
 	mid: string;
 	part: string;
-	requiresSmartLinkConversion: boolean;
 };
 
 export type MsgAttach = {
@@ -65,18 +64,6 @@ export type SaveDraftRequest = {
 };
 
 export type SaveDraftResponse = {
-	[x: string]: any;
-	m?: Array<SoapMailMessage>;
-	Fault?: any;
-};
-
-export type SendMsgWithSmartLinksRequest = {
-	_jsns: 'urn:zimbraMail';
-	m: SoapDraftMessageObj;
-	smartlinks: Array<{ partName: string; draftId: string }>;
-};
-
-export type SendMsgWithSmartLinksResponse = {
 	[x: string]: any;
 	m?: Array<SoapMailMessage>;
 	Fault?: any;

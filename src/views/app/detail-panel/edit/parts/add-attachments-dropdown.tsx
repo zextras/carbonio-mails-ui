@@ -13,15 +13,17 @@ import {
 	Tooltip,
 	Icon,
 	Padding,
-	DropdownItem
+	DropdownItem,
+	useModal
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
+import { SmartlinkModal } from './smartlink-modal/smartlink-modal';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
-import { useEditorAttachments, useEditorText } from 'store/editor/index';
+import { useEditorAttachments, useEditorsStore, useEditorText } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
 import {
 	useGetPublicUrl,
@@ -52,12 +54,41 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { getText, setText } = useEditorText(editorId);
 	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
 
+	const editor = useEditorsStore((state) => state.editors[editorId]);
+	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
+	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
+	const { createModal, closeModal } = useModal();
 	const addFilesFromLocal = useCallback(
-		(fileList: FileList) => {
+		async (fileList: FileList) => {
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files, {});
+
+			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
+			const base64conversionRate = 1.33;
+			const calculatedEditorSizeWithFiles = editor
+				? editor.size + filesSize * base64conversionRate
+				: 0;
+			const modalId = 'convertToSmartlinkModal';
+			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
+				addStandardAttachments(files, {});
+			} else {
+				createModal(
+					{
+						id: modalId,
+						maxHeight: '90vh',
+						size: 'medium',
+						children: (
+							<SmartlinkModal
+								onClose={(): void => closeModal(modalId)}
+								files={files}
+								editorId={editorId}
+							/>
+						)
+					},
+					true
+				);
+			}
 		},
-		[addStandardAttachments]
+		[addStandardAttachments, closeModal, createModal, editor, editorId, maxAllowedMailSize]
 	);
 
 	const onUploadFromFilesComplete = useCallback(

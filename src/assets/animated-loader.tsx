@@ -122,3 +122,13 @@ export const AnimatedLoaderWarning = (
 		spinnerColor="rgb(255, 247, 222)"
 	/>
 );
+
+export const AnimatedLoaderUploading = (
+	props: React.SVGAttributes<SVGSVGElement>
+): React.JSX.Element => (
+	<AnimatedLoaderComponent
+		{...props}
+		spinnerBackgroundColor="rgb(255, 255, 255)"
+		spinnerColor="rgb(43,115,210)"
+	/>
+);

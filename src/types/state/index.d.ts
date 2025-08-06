@@ -76,7 +76,6 @@ export type EditorsStateTypeV2 = {
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string) => void;
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
-	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']) => void;
 	setIsSmimeSign: (id: MailsEditorV2['id'], isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
 	setIsSmimeEncrypt: (

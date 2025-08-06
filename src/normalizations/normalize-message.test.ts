@@ -15,8 +15,7 @@ describe('Normalize message', () => {
 		const defaultBodyPart = {
 			ct: 'text/html',
 			part: '0',
-			body: true,
-			requiresSmartLinkConversion: false
+			body: true
 		} as SoapMailMessagePart;
 
 		it('should return a message with truncated false if not defined in soap response', () => {
