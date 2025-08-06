@@ -5,6 +5,7 @@
  */
 import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,
@@ -17,7 +18,6 @@ import {
 	useTheme
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import {
 	composeAttachmentDownloadUrl,

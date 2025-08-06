@@ -5,6 +5,7 @@
  */
 import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	FormSubSection,
@@ -19,7 +20,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { reject, concat, map } from 'lodash';
-import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';

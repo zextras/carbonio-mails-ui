@@ -6,10 +6,10 @@
 
 import React, { RefObject, memo, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
-import styled from 'styled-components';
 
 import { getConversationById } from 'store/emails/store';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';

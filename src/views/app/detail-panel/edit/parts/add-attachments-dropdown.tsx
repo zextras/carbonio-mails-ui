@@ -5,6 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Dropdown,
 	Row,
@@ -17,7 +18,6 @@ import {
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
-import styled from 'styled-components';
 
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';

@@ -27,7 +27,7 @@ import {
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import { AppContext } from 'app-utils/app-context-initializer';
 import { getFileExtension } from 'commons/utilities';

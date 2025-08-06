@@ -5,6 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Button,
 	Container,
@@ -23,7 +24,6 @@ import { TFunction } from 'i18next';
 import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { AppContext } from 'app-utils/app-context-initializer';
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';

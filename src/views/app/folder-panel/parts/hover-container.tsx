@@ -4,14 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Container } from '@zextras/carbonio-design-system';
-import styled, { DefaultTheme } from 'styled-components';
+import React, { FC } from 'react';
+
+import styled from '@emotion/styled';
+import { Container, ContainerProps, PaletteColor } from '@zextras/carbonio-design-system';
 
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 
-export const HoverContainer = styled(Container).attrs(() => ({
-	background: 'transparent'
-}))<{ $hoverBackground: keyof DefaultTheme['palette'] }>`
+interface HoverContainerProps extends ContainerProps {
+	$hoverBackground: PaletteColor;
+}
+
+const StyledContainer = styled(Container)<{ $hoverBackground: PaletteColor }>`
 	width: 100%;
 	position: relative;
 	cursor: pointer;
@@ -25,3 +29,9 @@ export const HoverContainer = styled(Container).attrs(() => ({
 		}
 	}
 `;
+
+export const HoverContainer: FC<HoverContainerProps> = (props) => (
+	<StyledContainer background={'transparent'} {...props}>
+		{props.children}
+	</StyledContainer>
+);
