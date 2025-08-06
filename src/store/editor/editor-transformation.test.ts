@@ -38,15 +38,60 @@ describe('buildSavedAttachments', () => {
 		const result = buildSavedAttachments(message);
 		expect(result).toEqual([]);
 	});
-
-	it('should correctly mark image/* type with contentId as inline', () => {
+	it('should set attachment as not inline if disposition is not inline', () => {
 		const message = generateMessage({ folderId: '2' });
 		message.parts = [
 			{
 				contentType: 'image/png',
 				filename: 'img.png',
+				disposition: 'attachment',
 				name: '2.2',
 				size: 1234,
+				ci: '<abc123@zimbra>'
+			}
+		];
+		const result = buildSavedAttachments(message);
+
+		expect(result[0].isInline).toBeFalsy();
+	});
+	it('should mark attachment with contentId and type image/* as NOT inline if NOT referenced in the body ', () => {
+		const message = generateMessage({ folderId: '2' });
+		message.parts = [
+			{
+				contentType: 'text/html',
+				size: 0,
+				name: 'HTML body',
+				content: 'This is my inline image: <a href="wrongCIDReference:<abc123@zimbra>"/>'
+			},
+			{
+				contentType: 'image/png',
+				filename: 'img.png',
+				name: '2.2',
+				size: 1234,
+				disposition: undefined,
+				ci: '<abc123@zimbra>'
+			}
+		];
+
+		const result = buildSavedAttachments(message);
+
+		expect(result[0].isInline).toBeFalsy();
+	});
+	it('should mark attachment with contentId and type image/* as inline if referenced in the body ', () => {
+		const message = generateMessage({ folderId: '2' });
+		message.parts = [
+			{
+				contentType: 'text/html',
+				size: 0,
+				name: 'HTML body',
+				content: 'This is my inline image: <a href="cid:<abc123@zimbra>"/>'
+			},
+			{
+				contentType: 'image/png',
+				filename: 'img.png',
+				name: '2.2',
+				size: 1234,
+				disposition: undefined,
 				ci: '<abc123@zimbra>'
 			}
 		];

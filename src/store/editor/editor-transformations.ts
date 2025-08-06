@@ -428,8 +428,12 @@ export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapD
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getAttachmentParts(message.parts);
-	const isProbablyInline = (part: MailMessagePart): boolean =>
-		part.disposition === 'inline' || (!!part.ci && part.contentType?.startsWith('image/'));
+	const isProbablyInline = (part: MailMessagePart): boolean => {
+		if (!part.disposition) {
+			return !!part.ci && part.contentType?.startsWith('image/');
+		}
+		return part.disposition === 'inline';
+	};
 
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
