@@ -65,12 +65,15 @@ function IsSearchNeeded(
 	currentSortType: string,
 	sortType: string,
 	currentFilter: string | undefined,
-	filterType: string | undefined
+	filterType: string | undefined,
+	currentFolderId: string | undefined,
+	folderId: string
 ): boolean {
 	return (
-		currentSortDirection !== sortDirection ||
-		currentSortType !== sortType ||
-		currentFilter !== filterType
+		(currentSortDirection !== sortDirection ||
+			currentSortType !== sortType ||
+			currentFilter !== filterType) &&
+		currentFolderId === folderId
 	);
 }
 
@@ -84,9 +87,13 @@ export const Breadcrumbs: FC<{
 }> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { folderPathFirstPart, folderPathLastPart } = getFolderPathForBreadcrumb(folderPath);
 	const { isMessageView } = useAppContext<AppContext>();
 	const { prefs } = useUserSettings();
+
+	const { folderPathFirstPart, folderPathLastPart } = useMemo(
+		() => getFolderPathForBreadcrumb(folderPath),
+		[folderPath]
+	);
 
 	const prefSortOrder = useMemo(
 		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
@@ -102,27 +109,43 @@ export const Breadcrumbs: FC<{
 		[]
 	);
 
-	const { sortDirection, sortType, filterType } = parseMessageSortingOptions(
-		folderId,
-		prefSortOrder
+	const resetToDefaultState = useCallback(
+		() => ({
+			type: SORTING_OPTIONS.date.value,
+			direction: SORTING_DIRECTION.DESCENDING,
+			filter: undefined
+		}),
+		[]
 	);
 
+	const { sortDirection, sortType, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
+
+	const [currentFolderId, setCurrentFolderId] = useState<string>(folderId);
 	const [currentSortType, setCurrentSortType] = useState(sortType);
 	const [currentSortDirection, setCurrentSortDirection] = useState(sortDirection);
 	const [currentFilter, setCurrentFilter] = useState<string | undefined>(filterType);
 
-	const sortingOptions: SortingOption[] = [
-		SORTING_OPTIONS.date,
-		SORTING_OPTIONS.subject,
-		folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
-	];
+	const sortingOptions: SortingOption[] = useMemo(
+		() => [
+			SORTING_OPTIONS.date,
+			SORTING_OPTIONS.subject,
+			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
+		],
+		[folderId]
+	);
 
-	const filteringOptions: SortingOption[] = [
-		SORTING_OPTIONS.unread,
-		SORTING_OPTIONS.important,
-		SORTING_OPTIONS.flagged,
-		SORTING_OPTIONS.attachment
-	];
+	const filteringOptions: SortingOption[] = useMemo(
+		() => [
+			SORTING_OPTIONS.unread,
+			SORTING_OPTIONS.important,
+			SORTING_OPTIONS.flagged,
+			SORTING_OPTIONS.attachment
+		],
+		[]
+	);
 
 	const getFilterQuery = useCallback(
 		(filter: string | null): string => {
@@ -144,13 +167,24 @@ export const Breadcrumbs: FC<{
 	);
 
 	useEffect(() => {
+		if (currentFolderId !== folderId) {
+			setCurrentFolderId(folderId);
+			setCurrentSortType(sortType);
+			setCurrentSortDirection(sortDirection);
+			setCurrentFilter(filterType);
+		}
+	}, [currentFolderId, filterType, folderId, resetToDefaultState, sortDirection, sortType]);
+
+	useEffect(() => {
 		IsSearchNeeded(
 			currentSortDirection,
 			sortDirection,
 			currentSortType,
 			sortType,
 			currentFilter,
-			filterType
+			filterType,
+			currentFolderId,
+			folderId
 		) &&
 			undateSortAndFilteringSettings({
 				folderId,
@@ -161,6 +195,7 @@ export const Breadcrumbs: FC<{
 			});
 	}, [
 		currentFilter,
+		currentFolderId,
 		currentSortDirection,
 		currentSortType,
 		filterType,
@@ -177,7 +212,9 @@ export const Breadcrumbs: FC<{
 			currentSortType,
 			sortType,
 			currentFilter,
-			filterType
+			filterType,
+			currentFolderId,
+			folderId
 		) &&
 			searchEmailStoreAction({
 				limit: 100,
@@ -187,6 +224,7 @@ export const Breadcrumbs: FC<{
 			});
 	}, [
 		currentFilter,
+		currentFolderId,
 		currentSortDirection,
 		currentSortType,
 		filterType,
@@ -243,72 +281,92 @@ export const Breadcrumbs: FC<{
 			? SORT_ICONS.ASCENDING
 			: SORT_ICONS.DESCENDING;
 
-	const isAscending = currentSortDirection === SORTING_DIRECTION.ASCENDING;
-	const toggleLabel = isAscending
-		? t('sorting_dropdown.descendingOrder', 'Descending order')
-		: t('sorting_dropdown.ascendingOrder', 'Ascending order');
+	const toggleLabel =
+		currentSortDirection === SORTING_DIRECTION.ASCENDING
+			? t('sorting_dropdown.descendingOrder', 'Descending order')
+			: t('sorting_dropdown.ascendingOrder', 'Ascending order');
 
 	const toggleIcon =
 		currentSortDirection === SORTING_DIRECTION.DESCENDING
 			? SORT_ICONS.ASCENDING
 			: SORT_ICONS.DESCENDING;
 
-	const toggleDirectionItem: DropdownItem = {
-		id: 'toggle-direction',
-		onClick: toggleDirection,
-		customComponent: (
-			<Container
-				style={{ minWidth: '160px' }}
-				crossAlignment="center"
-				mainAlignment="space-between"
-				width="fill"
-				orientation="horizontal"
-			>
-				<Button color="gray0" onClick={noop} type="ghost" size="large" icon={toggleIcon} />
-				<Text>{toggleLabel}</Text>
-			</Container>
-		)
-	};
+	const toggleDirectionItem: DropdownItem = useMemo(
+		() => ({
+			id: 'toggle-direction',
+			onClick: toggleDirection,
+			customComponent: (
+				<Container
+					style={{ minWidth: '160px' }}
+					crossAlignment="center"
+					mainAlignment="space-between"
+					width="fill"
+					orientation="horizontal"
+				>
+					<Button color="gray0" onClick={noop} type="ghost" size="large" icon={toggleIcon} />
+					<Text>{toggleLabel}</Text>
+				</Container>
+			)
+		}),
+		[toggleDirection, toggleIcon, toggleLabel]
+	);
 
-	const filterLabelItem: DropdownItem = {
-		id: 'filter-label',
-		disabled: true,
-		customComponent: <Text size="medium">{t('sorting_dropdown.show', 'Show:')}</Text>
-	};
+	const filterLabelItem: DropdownItem = useMemo(
+		() => ({
+			id: 'filter-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.show', 'Show:')}</Text>
+		}),
+		[t]
+	);
 
-	const filterItems: DropdownItem[] = filteringOptions.map(({ value, label }) => ({
-		id: `filter-${value}`,
-		label: capitalize(t(`sorting_dropdown.${value}`, label)),
-		selected: currentFilter === value,
-		onClick: () => handleFilterChange(value),
-		icon: getRadioIcon(currentFilter, value)
-	}));
+	const filterItems: DropdownItem[] = useMemo(
+		() =>
+			filteringOptions.map(({ value, label }) => ({
+				id: `filter-${value}`,
+				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				selected: currentFilter === value,
+				onClick: () => handleFilterChange(value),
+				icon: getRadioIcon(currentFilter, value)
+			})),
+		[currentFilter, filteringOptions, handleFilterChange, t]
+	);
 
-	const sortLabelItem: DropdownItem = {
-		id: 'sort-label',
-		disabled: true,
-		customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
-	};
+	const sortLabelItem: DropdownItem = useMemo(
+		() => ({
+			id: 'sort-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
+		}),
+		[t]
+	);
 
-	const sortItems: DropdownItem[] = sortingOptions.map(({ value, label }) => ({
-		id: `sort-${value}`,
-		label: capitalize(t(`sorting_dropdown.${value}`, label)),
-		selected: currentSortType === value,
-		onClick: () => handleSortChange(value, currentSortDirection),
-		icon: getRadioIcon(currentSortType, value)
-	}));
+	const sortItems: DropdownItem[] = useMemo(
+		() =>
+			sortingOptions.map(({ value, label }) => ({
+				id: `sort-${value}`,
+				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				selected: currentSortType === value,
+				onClick: () => handleSortChange(value, currentSortDirection),
+				icon: getRadioIcon(currentSortType, value)
+			})),
+		[currentSortDirection, currentSortType, handleSortChange, sortingOptions, t]
+	);
 
-	const dropdownItems: DropdownItem[] = [
-		toggleDirectionItem,
-		{ id: 'divider-1', type: 'divider' },
-		filterLabelItem,
-		...filterItems,
-		{ id: 'divider-2', type: 'divider' },
-		sortLabelItem,
-		...sortItems
-	];
+	const dropdownItems: DropdownItem[] = useMemo(
+		() => [
+			toggleDirectionItem,
+			{ id: 'divider-1', type: 'divider' },
+			filterLabelItem,
+			...filterItems,
+			{ id: 'divider-2', type: 'divider' },
+			sortLabelItem,
+			...sortItems
+		],
+		[filterItems, filterLabelItem, sortItems, sortLabelItem, toggleDirectionItem]
+	);
 
-	const activeShowFilter = useMemo(
+	const activeFilterLabel = useMemo(
 		() =>
 			currentFilter
 				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(currentFilter, t)} - `
@@ -316,7 +374,7 @@ export const Breadcrumbs: FC<{
 		[currentFilter, t]
 	);
 
-	const currentSortFilter = useMemo(
+	const currentSortLabel = useMemo(
 		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)}`,
 		[currentSortType, t]
 	);
@@ -420,7 +478,7 @@ export const Breadcrumbs: FC<{
 					<Divider />
 					<Row padding={{ all: 'small' }}>
 						<Text size="medium" color="gray1">
-							{`${activeShowFilter}${currentSortFilter}`}
+							{`${activeFilterLabel}${currentSortLabel}`}
 						</Text>
 						<Padding right="medium" />
 						<Tooltip

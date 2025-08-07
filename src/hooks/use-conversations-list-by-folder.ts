@@ -33,7 +33,10 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 		() => prefs?.zimbraPrefSortOrder,
 		[prefs?.zimbraPrefSortOrder]
 	) as string;
-	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+	const { sortType, sortDirection } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchConversations = useCallback(

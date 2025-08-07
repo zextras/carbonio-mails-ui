@@ -30,7 +30,10 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 		() => prefs?.zimbraPrefSortOrder,
 		[prefs?.zimbraPrefSortOrder]
 	) as string;
-	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+	const { sortType, sortDirection } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchMessages = useCallback(

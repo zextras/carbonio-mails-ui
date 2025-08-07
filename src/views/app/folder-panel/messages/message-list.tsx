@@ -32,7 +32,13 @@ export const MessageList = (): React.JSX.Element => {
 	const { messageListIndex, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+	const sortOrder = useMemo(() => {
+		const { sortType, sortDirection } = parseMessageSortingOptions(
+			folderId,
+			prefs.zimbraPrefSortOrder as string
+		);
+		return sortType.concat(sortDirection);
+	}, [folderId, prefs.zimbraPrefSortOrder]);
 	const {
 		deselectAll,
 		isSelectModeOn,

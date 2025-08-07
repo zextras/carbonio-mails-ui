@@ -63,9 +63,8 @@ function modifySettingString(
 	const folders = zimbraPrefSortOrder.split(',');
 	const folderToUpdate = folders.find((folder) => folder.startsWith(`${folderId}:`));
 	if (!folderToUpdate) {
-		zimbraPrefSortOrder.replace(',BDLV', '');
-		zimbraPrefSortOrder.concat(`,${prefToUpdate},BDLV`);
-		return zimbraPrefSortOrder;
+		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
+		return replacedString.concat(`,${prefToUpdate},BDLV`);
 	}
 	return folderToUpdate && zimbraPrefSortOrder.replace(folderToUpdate, prefToUpdate);
 }
@@ -94,9 +93,10 @@ export function undateSortAndFilteringSettings({
 		});
 		return;
 	}
+	const newPref = modifySettingString(prefSortOrder, sortingAndFilteringString, folderId);
 	editSettings({
 		prefs: {
-			zimbraPrefSortOrder: modifySettingString(prefSortOrder, sortingAndFilteringString, folderId)
+			zimbraPrefSortOrder: newPref
 		}
 	});
 }

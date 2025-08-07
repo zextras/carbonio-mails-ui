@@ -68,10 +68,13 @@ export const usePreviewHeaderNavigation = ({
 
 	const itemIndex = findIndex(itemIds, (item) => item === currentItemId);
 
-	const { sortOrder } = parseMessageSortingOptions(
-		folderId,
-		settings.prefs.zimbraPrefSortOrder as string
-	);
+	const sortOrder = useMemo(() => {
+		const { sortType, sortDirection } = parseMessageSortingOptions(
+			folderId,
+			settings.prefs.zimbraPrefSortOrder as string
+		);
+		return sortType.concat(sortDirection);
+	}, [folderId, settings.prefs.zimbraPrefSortOrder]);
 
 	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 
