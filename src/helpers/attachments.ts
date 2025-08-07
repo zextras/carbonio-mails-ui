@@ -97,7 +97,7 @@ export const getCidFromCidUrl = (cidUrl: string): string | null => {
 	return cidUrlTokens[1];
 };
 
-export const getCidFromReference = (cidReference: string): string | null => {
+const getCidFromReference = (cidReference: string): string | null => {
 	const cidReferenceTokens = new RegExp(REFERRED_CIDURL_PATTERN, 'gi').exec(cidReference);
 	if (!cidReferenceTokens) {
 		return null;
@@ -190,6 +190,11 @@ function getAttachmentsWithDisposition(
 							disposition: 'attachment'
 						});
 					}
+				} else if (isReferredByCid) {
+					incoming.push({
+						...part,
+						disposition: 'inline'
+					});
 				} else {
 					const { disposition } = part;
 					incoming.push({ ...part, disposition });

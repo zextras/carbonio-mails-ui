@@ -32,7 +32,58 @@ describe('attachments', () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('inline');
 			});
-			test('if has no disposition and referenced by another part', () => {
+
+			test('if has disposition attachment but referenced by Text/Html part', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						ci,
+						name: '2',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						size: 200
+					},
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<a href="cid:${ci}"/>`,
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+
+			// TODO: This test is exposing the fact that the function is not checking if the cid is referenced in an anchor href or src of img/object/embed
+			//  this may lead to false positives, when the cid is referenced in a Text/Html part without an anchor href or img/object/embed
+			test('if has disposition attachment, has ci and referenced in a Text/Html part with double quotes', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `This is plain text body with a link: "cid:${ci}"`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+
+			test('if has no disposition and referenced by Text/Html part', () => {
 				const ci = '123:456';
 				const parts: Array<MailMessagePart> = [
 					{
@@ -56,12 +107,19 @@ describe('attachments', () => {
 			});
 		});
 		describe('should return part with disposition attachment', () => {
-			test('if has disposition attachment', () => {
+			test('if has disposition attachment and is not referenced in Text/Html part', () => {
 				const parts: Array<MailMessagePart> = [
 					{
+						ci: '123:456',
 						name: '2',
 						disposition: 'attachment',
 						contentType: 'image/png',
+						size: 200
+					},
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: 'This is a body part and there is no CID reference here',
 						size: 200
 					}
 				];
@@ -71,7 +129,8 @@ describe('attachments', () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
 			});
-			test('if has no disposition, has ci but not referenced by any another part', () => {
+
+			test('if has no disposition, has ci, but not referenced in Text/Html part', () => {
 				const ci = '123:456';
 				const parts: Array<MailMessagePart> = [
 					{
@@ -93,6 +152,79 @@ describe('attachments', () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
 			});
+
+			test('if has no disposition, has ci and referenced in a Non Text/Html part', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/plain',
+						content: `This is plain text body with a link: <a href="cid:${ci}"/>`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+
+			// TODO: This test is exposing the fact that the function is not checking if the cid is referenced in an anchor href or src of img/object/embed
+			//  this may lead to false positives, when the cid is referenced in a Text/Html part without an anchor href or img/object/embed
+			test('if has no disposition, has ci and referenced in a Text/Html part without a anchor href', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `This is plain text body with a link: cid:${ci}`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+
+			test('if has disposition, has ci and referenced in a Text/Html part without double quotes', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `This is plain text body with a link: cid:${ci}`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+
 			test('if has no disposition, has ci and referenced in a malformed html', () => {
 				const ci = '123:456';
 				const parts: Array<MailMessagePart> = [
@@ -184,6 +316,86 @@ describe('attachments', () => {
 
 				expect(result).toHaveLength(1);
 				expect(result[0].filename).toBe('logo.jpg');
+			});
+
+			it('it should return flattened attachments', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '5',
+						contentType: 'multipart/mixed',
+						size: 500,
+						parts: [
+							{
+								name: '5.1',
+								contentType: 'multipart/related',
+								size: 200,
+								parts: [
+									{
+										name: '5.1.1',
+										contentType: 'text/plain',
+										size: 100
+									},
+									{
+										name: '5.1.2',
+										contentType: 'text/html',
+										size: 100
+									},
+									{
+										name: '5.1.3',
+										disposition: 'attachment',
+										contentType: 'image/png',
+										size: 100
+									}
+								]
+							},
+							{
+								name: '5.2',
+								disposition: 'attachment',
+								contentType: 'application/jpg',
+								size: 300
+							},
+							{
+								name: '5.3',
+								disposition: 'attachment',
+								contentType: 'application/jpeg',
+								size: 300
+							}
+						]
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(3);
+				expect(result[0].name).toBe('5.1.3');
+				expect(result[1].name).toBe('5.2');
+				expect(result[2].name).toBe('5.3');
+			});
+
+			it('should not omit attachments which do not have disposition', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '6',
+						contentType: 'multipart/mixed',
+						size: 500,
+						parts: [
+							{
+								name: '6.2',
+								contentType: 'text/html',
+								size: 100
+							},
+							{
+								name: '6.3',
+								contentType: 'image/png',
+								size: 100
+							}
+						]
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
 			});
 		});
 	});
