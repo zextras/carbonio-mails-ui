@@ -150,13 +150,13 @@ const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
 	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
- * Filters the message parts to collect body content and attachments.
+ * Filters the message parts to collect body content and attachments and adds disposition.
  *
  * @param parts
  * @param filtered
  * @param referredCids
  */
-export function getAttachmentsWithDisposition(
+function getAttachmentsWithDisposition(
 	parts: Array<MailMessagePart>,
 	filtered: Array<MailMessagePartWithDisposition>,
 	referredCids: Array<string>

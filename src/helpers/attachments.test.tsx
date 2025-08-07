@@ -8,7 +8,7 @@
 import { generateMessage } from '../tests/generators/generateMessage';
 import {
 	buildSavedAttachments,
-	getAttachmentsWithDisposition,
+	getAttachmentParts,
 	getReferredContentIds
 } from 'helpers/attachments';
 import type { MailMessagePart } from 'types/index.d';
@@ -44,7 +44,9 @@ describe('attachments', () => {
 		});
 	});
 
-	describe('filterAttachmentsParts', () => {
+	describe('getAttachmentParts', () => {
+		// TODO: these tests are weak (they pass after changing tested function), \
+		//  some titles don't represent the actual test
 		it('should include inline images that are referenced by cid even if they lack a filename', () => {
 			const parts: Array<MailMessagePart> = [
 				{
@@ -57,8 +59,7 @@ describe('attachments', () => {
 				}
 			];
 
-			const referredCids = ['img123'];
-			const result = getAttachmentsWithDisposition(parts, [], referredCids);
+			const result = getAttachmentParts(parts);
 
 			expect(result).toHaveLength(1);
 			expect(result[0].ci).toBe('img123');
@@ -74,9 +75,7 @@ describe('attachments', () => {
 					name: '3'
 				}
 			];
-
-			const referredCids: Array<string> = []; // no reference
-			const result = getAttachmentsWithDisposition(parts, [], referredCids);
+			const result = getAttachmentParts(parts);
 
 			expect(result).toHaveLength(1);
 		});
@@ -93,8 +92,7 @@ describe('attachments', () => {
 				}
 			];
 
-			const referredCids: Array<string> = [];
-			const result = getAttachmentsWithDisposition(parts, [], referredCids);
+			const result = getAttachmentParts(parts);
 
 			expect(result).toHaveLength(1);
 			expect(result[0].filename).toBe('logo.jpg');
