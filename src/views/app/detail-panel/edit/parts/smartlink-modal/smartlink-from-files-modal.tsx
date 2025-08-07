@@ -46,11 +46,13 @@ export const SmartlinkFromFilesModal = ({
 			const text = getText();
 			const smartLinksArray = await Promise.all(
 				fileNodes.map(async (fileNode) => {
-					const publicLinkUrl = await getLink({
-						node: fileNode,
-						type: 'createLink',
-						description: fileNode.id
-					});
+					const publicLinkUrl =
+						getLinkAvailable &&
+						(await getLink({
+							node: fileNode,
+							type: 'createLink',
+							description: fileNode.id
+						}));
 					if (!publicLinkUrl) throw new Error('Link creation failed');
 					return {
 						richTextLinks: generateSmartLinkHtml({
@@ -76,7 +78,7 @@ export const SmartlinkFromFilesModal = ({
 			onClose();
 			throw new Error(error instanceof Error ? error.message : 'Unknown error');
 		}
-	}, [errorSnackbar, fileNodes, getLink, getText, onClose, setText]);
+	}, [errorSnackbar, fileNodes, getLink, getLinkAvailable, getText, onClose, setText]);
 
 	return <SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />;
 };
