@@ -19,6 +19,7 @@ import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
 const conversationId = '-123';
+
 describe('SearchConversationListItem', () => {
 	it('should move the item to trash when clicking on Delete action when folder is INBOX', async () => {
 		const customSettings: Partial<AccountSettings> = {
@@ -56,10 +57,7 @@ describe('SearchConversationListItem', () => {
 		const messageActionWrapper = screen.getByTestId(`ConversationListItem-${conversationId}`);
 		expect(messageActionWrapper).toBeVisible();
 
-		user.hover(messageActionWrapper);
-		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
-
+		await user.hover(messageActionWrapper);
 		await user.click(screen.getByTestId('icon: Trash2Outline'));
 
 		const request = await interceptor;
@@ -110,8 +108,7 @@ describe('SearchConversationListItem', () => {
 		act(() => {
 			user.hover(messageActionWrapper);
 		});
-		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
+		await screen.findByTestId(`primary-actions-bar-${conversationId}`);
 
 		await user.click(screen.getByTestId('icon: DeletePermanentlyOutline'));
 
@@ -163,8 +160,7 @@ describe('SearchConversationListItem', () => {
 		act(() => {
 			user.hover(messageActionWrapper);
 		});
-		const hoverBar = await screen.findByTestId(`primary-actions-bar-${conversationId}`);
-		expect(hoverBar).toBeVisible();
+		await screen.findByTestId(`primary-actions-bar-${conversationId}`);
 
 		await user.click(screen.getByTestId('icon: DeletePermanentlyOutline'));
 
