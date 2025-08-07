@@ -24,10 +24,9 @@ export const SmartlinkFromFilesModal = ({
 	editorId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
-
 	const { createSnackbar } = useUiUtilities();
+
 	const errorSnackbar = useCallback(() => {
 		createSnackbar({
 			key: 'create-public-link-error',
@@ -44,6 +43,7 @@ export const SmartlinkFromFilesModal = ({
 	const onConfirm = useCallback(async () => {
 		try {
 			const text = getText();
+
 			const smartLinksArray = await Promise.all(
 				fileNodes.map(async (fileNode) => {
 					const publicLinkUrl =
@@ -63,20 +63,22 @@ export const SmartlinkFromFilesModal = ({
 					};
 				})
 			);
+
 			const newRichText = insertAboveSignature(
 				text.richText,
 				smartLinksArray.map((link) => link.richTextLinks).join('<br>\n')
 			);
+
 			const newPlainText = text.plainText.concat(
 				'\n',
 				smartLinksArray.map((link) => link.plainTextLinks).join('\n')
 			);
+
 			setText({ plainText: newPlainText, richText: newRichText });
 			onClose();
-		} catch (error) {
+		} catch {
 			errorSnackbar();
 			onClose();
-			throw new Error(error instanceof Error ? error.message : 'Unknown error');
 		}
 	}, [errorSnackbar, fileNodes, getLink, getLinkAvailable, getText, onClose, setText]);
 
