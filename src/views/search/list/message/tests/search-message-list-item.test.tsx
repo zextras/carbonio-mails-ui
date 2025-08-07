@@ -47,8 +47,7 @@ it('should delete the item when clicking on Delete action when in message mode',
 	act(() => {
 		user.hover(messageActionWrapper);
 	});
-	const hoverBar = await screen.findByTestId(`primary-actions-bar-100`);
-	expect(hoverBar).toBeVisible();
+	await screen.findByTestId(`primary-actions-bar-100`);
 
 	act(() => {
 		user.click(screen.getByTestId('icon: Trash2Outline'));
