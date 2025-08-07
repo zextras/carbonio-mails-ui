@@ -16,16 +16,26 @@ import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 
 describe('attachments', () => {
 	describe('getAttachmentParts', () => {
+		const attachmentPart = {
+			name: 'attachmentPart',
+			disposition: 'attachment' as const,
+			contentType: 'image/png',
+			size: 200
+		};
+		const inlinePart = {
+			name: 'inlinePart',
+			disposition: 'inline' as const,
+			contentType: 'image/png',
+			size: 200
+		};
+		const noDispositionPart = {
+			name: 'noDispositionPart',
+			contentType: 'image/png',
+			size: 200
+		};
 		describe('should return part with disposition inline', () => {
 			test('if has disposition inline', () => {
-				const parts: Array<MailMessagePart> = [
-					{
-						name: '2',
-						disposition: 'inline',
-						contentType: 'image/png',
-						size: 200
-					}
-				];
+				const parts: Array<MailMessagePart> = [inlinePart];
 
 				const result = getAttachmentParts(parts);
 
@@ -37,11 +47,8 @@ describe('attachments', () => {
 				const ci = '123:456';
 				const parts: Array<MailMessagePart> = [
 					{
-						ci,
-						name: '2',
-						disposition: 'attachment',
-						contentType: 'image/png',
-						size: 200
+						...attachmentPart,
+						ci
 					},
 					{
 						name: 'body',
@@ -69,11 +76,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						disposition: 'attachment',
-						contentType: 'image/png',
-						size: 200
+						...attachmentPart,
+						ci
 					}
 				];
 
@@ -93,10 +97,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						contentType: 'image/png',
-						size: 200
+						...noDispositionPart,
+						ci
 					}
 				];
 
@@ -111,10 +113,7 @@ describe('attachments', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						ci: '123:456',
-						name: '2',
-						disposition: 'attachment',
-						contentType: 'image/png',
-						size: 200
+						...attachmentPart
 					},
 					{
 						name: 'body',
@@ -140,10 +139,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						contentType: 'image/png',
-						size: 200
+						...noDispositionPart,
+						ci
 					}
 				];
 
@@ -163,10 +160,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						contentType: 'image/png',
-						size: 200
+						...noDispositionPart,
+						ci
 					}
 				];
 
@@ -188,10 +183,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						contentType: 'image/png',
-						size: 200
+						...noDispositionPart,
+						ci
 					}
 				];
 
@@ -211,11 +204,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						disposition: 'attachment',
-						contentType: 'image/png',
-						size: 200
+						...attachmentPart,
+						ci
 					}
 				];
 
@@ -235,10 +225,8 @@ describe('attachments', () => {
 						size: 200
 					},
 					{
-						ci,
-						name: '2',
-						contentType: 'image/png',
-						size: 200
+						...noDispositionPart,
+						ci
 					}
 				];
 
@@ -381,7 +369,7 @@ describe('attachments', () => {
 						parts: [
 							{
 								name: '6.2',
-								contentType: 'text/html',
+								contentType: 'image/jpeg',
 								size: 100
 							},
 							{
@@ -395,7 +383,7 @@ describe('attachments', () => {
 
 				const result = getAttachmentParts(parts);
 
-				expect(result).toHaveLength(1);
+				expect(result).toHaveLength(2);
 			});
 
 			it('should return an html if has disposition', () => {
