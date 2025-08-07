@@ -71,7 +71,7 @@ describe('attachments', () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
 			});
-			test('if has no disposition and not referenced by any another part', () => {
+			test('if has no disposition, has ci but not referenced by any another part', () => {
 				const ci = '123:456';
 				const parts: Array<MailMessagePart> = [
 					{
@@ -127,57 +127,64 @@ describe('attachments', () => {
 			expect(attachmentParts[0].ci).toBe('<image001.jpg@01D9CB62.1AADEDA0>');
 		});
 
-		// TODO: these tests are weak (they pass after changing tested function), \
-		//  some titles don't represent the actual test
-		it('should include inline images that are referenced by cid even if they lack a filename', () => {
-			const parts: Array<MailMessagePart> = [
-				{
-					// filename intentionally missing
-					name: '2',
-					ci: 'img123',
-					disposition: 'inline',
-					contentType: 'image/png',
-					size: 200
-				}
-			];
+		describe('returned result', () => {
+			it('should include inline images that are referenced by cid even if they lack a filename', () => {
+				const ci = 'img123';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<a href="cid:${ci}"/>`,
+						size: 200
+					},
+					{
+						// filename intentionally missing
+						name: '2',
+						ci,
+						disposition: 'inline',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
 
-			const result = getAttachmentParts(parts);
+				const result = getAttachmentParts(parts);
 
-			expect(result).toHaveLength(1);
-			expect(result[0].ci).toBe('img123');
-		});
+				expect(result).toHaveLength(1);
+				expect(result[0].ci).toBe(ci);
+			});
 
-		it('should include inline images without filename or CID reference', () => {
-			const parts: Array<MailMessagePart> = [
-				{
-					ci: 'img456',
-					disposition: 'inline',
-					contentType: 'image/png',
-					size: 200,
-					name: '3'
-				}
-			];
-			const result = getAttachmentParts(parts);
+			it('should include inline images without filename or CID reference', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						ci: 'img456',
+						disposition: 'inline',
+						contentType: 'image/png',
+						size: 200,
+						name: '3'
+					}
+				];
+				const result = getAttachmentParts(parts);
 
-			expect(result).toHaveLength(1);
-		});
+				expect(result).toHaveLength(1);
+			});
 
-		it('should include inline images with filename regardless of CID', () => {
-			const parts: Array<MailMessagePart> = [
-				{
-					name: '4',
-					ci: 'img789',
-					disposition: 'inline',
-					contentType: 'image/jpeg',
-					filename: 'logo.jpg',
-					size: 200
-				}
-			];
+			it('should include inline images with filename regardless of CID', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '4',
+						ci: 'img789',
+						disposition: 'inline',
+						contentType: 'image/jpeg',
+						filename: 'logo.jpg',
+						size: 200
+					}
+				];
 
-			const result = getAttachmentParts(parts);
+				const result = getAttachmentParts(parts);
 
-			expect(result).toHaveLength(1);
-			expect(result[0].filename).toBe('logo.jpg');
+				expect(result).toHaveLength(1);
+				expect(result[0].filename).toBe('logo.jpg');
+			});
 		});
 	});
 
