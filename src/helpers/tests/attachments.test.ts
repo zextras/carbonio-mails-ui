@@ -16,6 +16,84 @@ import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 
 describe('attachments', () => {
 	describe('getAttachmentParts', () => {
+		describe('should return part with disposition inline', () => {
+			test('if has disposition inline', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '2',
+						disposition: 'inline',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+			test('if has no disposition and referenced by another part', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<a href="cid:${ci}"/>`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+		});
+		describe('should return part with disposition attachment', () => {
+			test('if has disposition attachment', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '2',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+			test('if has no disposition and not referenced by any another part', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<a href="no-reference-buddy"/>`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						contentType: 'image/png',
+						size: 200
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+		});
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13' });
 			const msg = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
