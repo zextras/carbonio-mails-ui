@@ -11,8 +11,8 @@ import { screen, waitFor } from '@testing-library/react';
 
 import { SmartlinkModal } from '../smartlink-modal';
 import { setupTest } from '@test-setup';
+import { useIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
 import { useEditorsStore } from 'store/editor';
 import { generateEditor } from 'store/editor/editor-generators';
@@ -35,9 +35,6 @@ function createDeferredPromise<T>(): {
 }
 
 jest.mock('api/upload-file-to-files');
-jest.mock('api/get-public-link-url', () => ({
-	getPublicLinkUrl: jest.fn()
-}));
 
 describe('ConvertToSmartlinkModal', () => {
 	const mockOnClose = jest.fn();
@@ -89,8 +86,15 @@ describe('ConvertToSmartlinkModal', () => {
 			abortController: new AbortController()
 		});
 
-		// Mock getPublicLinkUrl
-		(getPublicLinkUrl as jest.Mock).mockReturnValue(publicLinkDeferred.promise);
+		const getLinkSpy = jest.fn().mockReturnValue(publicLinkDeferred.promise);
+		useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			if (integratedFunctionId === 'get-link') {
+				return [getLinkSpy, true];
+			}
+
+			return [jest.fn(), true];
+		});
+
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 
@@ -127,7 +131,16 @@ describe('ConvertToSmartlinkModal', () => {
 				upload: Promise.resolve('uploadResult1'),
 				abortController: new AbortController()
 			});
-			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1');
+
+			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1');
+			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				if (integratedFunctionId === 'get-link') {
+					return [getLinkSpy, true];
+				}
+
+				return [jest.fn(), true];
+			});
+
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
@@ -146,7 +159,7 @@ describe('ConvertToSmartlinkModal', () => {
 			await user.click(confirmButton);
 
 			expect(uploadToFiles).toHaveBeenCalledTimes(1);
-			expect(getPublicLinkUrl).toHaveBeenCalledTimes(1);
+			expect(getLinkSpy).toHaveBeenCalledTimes(1);
 
 			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 
@@ -184,7 +197,15 @@ describe('ConvertToSmartlinkModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
-			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				if (integratedFunctionId === 'get-link') {
+					return [getLinkSpy, true];
+				}
+
+				return [jest.fn(), true];
+			});
+
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
@@ -206,7 +227,7 @@ describe('ConvertToSmartlinkModal', () => {
 			await user.click(confirmButton);
 
 			expect(uploadToFiles).toHaveBeenCalledTimes(2);
-			expect(getPublicLinkUrl).toHaveBeenCalledTimes(2);
+			expect(getLinkSpy).toHaveBeenCalledTimes(2);
 
 			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 
@@ -253,8 +274,15 @@ describe('ConvertToSmartlinkModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
+			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				if (integratedFunctionId === 'get-link') {
+					return [getLinkSpy, true];
+				}
 
-			(getPublicLinkUrl as jest.Mock).mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+				return [jest.fn(), true];
+			});
+
 			createSoapAPIInterceptor('SaveDraft');
 
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
@@ -276,7 +304,7 @@ describe('ConvertToSmartlinkModal', () => {
 			await user.click(confirmButton);
 
 			expect(uploadToFiles).toHaveBeenCalledTimes(2);
-			expect(getPublicLinkUrl).toHaveBeenCalledTimes(2);
+			expect(getLinkSpy).toHaveBeenCalledTimes(2);
 
 			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 
@@ -327,7 +355,15 @@ describe('ConvertToSmartlinkModal', () => {
 				upload: Promise.resolve('uploadResult'),
 				abortController: new AbortController()
 			}));
-			(getPublicLinkUrl as jest.Mock).mockResolvedValue(null); // no URL
+
+			const getLinkSpy = jest.fn().mockResolvedValue(null);
+			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				if (integratedFunctionId === 'get-link') {
+					return [getLinkSpy, true];
+				}
+
+				return [jest.fn(), true];
+			});
 
 			createSoapAPIInterceptor('SaveDraft');
 
