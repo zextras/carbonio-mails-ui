@@ -28,7 +28,7 @@ import styled from 'styled-components';
 import { AppContext } from 'app-utils/app-context-initializer';
 import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
-import { parseMessageSortingOptions, updateSortingSettings } from 'helpers/sorting';
+import { parseMessageSortingOptions, undateSortAndFilteringSettings } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
@@ -55,8 +55,23 @@ const getTranslatedLabelFromValue = (
 	return t(`sorting_dropdown.${option.label}`, option.label);
 };
 
-function getRadioIcon(activeFilter: string | null, value: string): string {
-	return activeFilter === value ? 'RadioButtonOn' : 'RadioButtonOff';
+function getRadioIcon(option: string | undefined, value: string): string {
+	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';
+}
+
+function IsSearchNeeded(
+	currentSortDirection: string,
+	sortDirection: string,
+	currentSortType: string,
+	sortType: string,
+	currentFilter: string | undefined,
+	filterType: string | undefined
+): boolean {
+	return (
+		currentSortDirection !== sortDirection ||
+		currentSortType !== sortType ||
+		currentFilter !== filterType
+	);
 }
 
 export const Breadcrumbs: FC<{
@@ -78,17 +93,23 @@ export const Breadcrumbs: FC<{
 		[prefs?.zimbraPrefSortOrder]
 	);
 
-	const defaultSortState = useMemo(() => {
-		const { sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
-		return {
-			type: SORTING_OPTIONS.date.value as string,
-			direction: sortDirection
-		};
-	}, [folderId, prefSortOrder]);
+	const resetDefaultState = useMemo(
+		() => ({
+			type: SORTING_OPTIONS.date.value,
+			direction: SORTING_DIRECTION.DESCENDING,
+			filter: undefined
+		}),
+		[]
+	);
 
-	const [currentSortType, setCurrentSortType] = useState(defaultSortState.type);
-	const [currentSortDirection, setCurrentSortDirection] = useState(defaultSortState.direction);
-	const [activeFilter, setActiveFilter] = useState<string | null>(null);
+	const { sortDirection, sortType, filterType } = parseMessageSortingOptions(
+		folderId,
+		prefSortOrder
+	);
+
+	const [currentSortType, setCurrentSortType] = useState(sortType);
+	const [currentSortDirection, setCurrentSortDirection] = useState(sortDirection);
+	const [currentFilter, setCurrentFilter] = useState<string | undefined>(filterType);
 
 	const sortingOptions: SortingOption[] = [
 		SORTING_OPTIONS.date,
@@ -122,43 +143,77 @@ export const Breadcrumbs: FC<{
 		[folderId]
 	);
 
-	const performSearch = useCallback(
-		(sortBy: string, filter?: string | null) => {
+	useEffect(() => {
+		IsSearchNeeded(
+			currentSortDirection,
+			sortDirection,
+			currentSortType,
+			sortType,
+			currentFilter,
+			filterType
+		) &&
+			undateSortAndFilteringSettings({
+				folderId,
+				prefSortOrder,
+				sortType: currentSortType,
+				sortDirection: currentSortDirection,
+				filter: currentFilter
+			});
+	}, [
+		currentFilter,
+		currentSortDirection,
+		currentSortType,
+		filterType,
+		folderId,
+		prefSortOrder,
+		sortDirection,
+		sortType
+	]);
+
+	useEffect(() => {
+		IsSearchNeeded(
+			currentSortDirection,
+			sortDirection,
+			currentSortType,
+			sortType,
+			currentFilter,
+			filterType
+		) &&
 			searchEmailStoreAction({
 				limit: 100,
-				sortBy,
-				query: filter ? `${getFilterQuery(filter)}` : `inId:"${folderId}"`,
+				sortBy: `${currentSortType}${currentSortDirection}`,
+				query: currentFilter ? `${getFilterQuery(currentFilter)}` : `inId:"${folderId}"`,
 				types: isMessageView ? 'message' : 'conversation'
 			});
-		},
-		[folderId, getFilterQuery, isMessageView]
-	);
+	}, [
+		currentFilter,
+		currentSortDirection,
+		currentSortType,
+		filterType,
+		folderId,
+		getFilterQuery,
+		isMessageView,
+		sortDirection,
+		sortType
+	]);
 
 	const handleSortChange = useCallback(
 		(type: string, direction: SortDirection) => {
-			updateSortingSettings({
-				prefSortOrder,
-				sortingTypeValue: type,
-				sortingDirection: direction,
-				folderId
-			});
 			setCurrentSortType(type);
 			setCurrentSortDirection(direction);
-
-			performSearch(`${type}${direction}`, activeFilter);
 			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[activeFilter, folderId, navigate, performSearch, prefSortOrder]
+		[folderId, navigate]
 	);
 
 	const handleFilterChange = useCallback(
 		(filter: string): void => {
-			setActiveFilter(filter);
-			performSearch(`${currentSortType}${currentSortDirection}`, filter);
+			setCurrentFilter(filter);
 			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[currentSortDirection, currentSortType, folderId, navigate, performSearch]
+		[folderId, navigate]
 	);
+
 	const toggleDirection = useCallback(() => {
 		const newDirection =
 			currentSortDirection === SORTING_DIRECTION.ASCENDING
@@ -169,18 +224,18 @@ export const Breadcrumbs: FC<{
 	}, [currentSortDirection, currentSortType, handleSortChange]);
 
 	const resetSearch = useCallback(() => {
-		setActiveFilter(null);
-		setCurrentSortType(defaultSortState.type);
-		setCurrentSortDirection(defaultSortState.direction);
-		performSearch(`${defaultSortState.type}${defaultSortState.direction}`, null);
-	}, [defaultSortState, performSearch]);
+		setCurrentFilter(undefined);
+		setCurrentSortType(resetDefaultState.type);
+		setCurrentSortDirection(resetDefaultState.direction);
+	}, [resetDefaultState]);
 
+	// needs to be updated to the new logic
 	const hasModifiedState = useMemo(
 		() =>
-			currentSortType !== defaultSortState.type ||
-			currentSortDirection !== defaultSortState.direction ||
-			activeFilter !== null,
-		[currentSortType, currentSortDirection, activeFilter, defaultSortState]
+			currentSortType !== resetDefaultState.type ||
+			currentSortDirection !== resetDefaultState.direction ||
+			currentFilter !== null,
+		[currentSortType, currentSortDirection, currentFilter, resetDefaultState]
 	);
 
 	const iconButtonIcon =
@@ -224,9 +279,9 @@ export const Breadcrumbs: FC<{
 	const filterItems: DropdownItem[] = filteringOptions.map(({ value, label }) => ({
 		id: `filter-${value}`,
 		label: capitalize(t(`sorting_dropdown.${value}`, label)),
-		selected: activeFilter === value,
+		selected: currentFilter === value,
 		onClick: () => handleFilterChange(value),
-		icon: getRadioIcon(activeFilter, value)
+		icon: getRadioIcon(currentFilter, value)
 	}));
 
 	const sortLabelItem: DropdownItem = {
@@ -255,21 +310,16 @@ export const Breadcrumbs: FC<{
 
 	const activeShowFilter = useMemo(
 		() =>
-			activeFilter
-				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(activeFilter, t)} - `
+			currentFilter
+				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(currentFilter, t)} - `
 				: '',
-		[activeFilter, t]
+		[currentFilter, t]
 	);
 
 	const currentSortFilter = useMemo(
 		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)}`,
 		[currentSortType, t]
 	);
-
-	useEffect(() => {
-		setActiveFilter(null);
-		setCurrentSortType(SORTING_OPTIONS.date.value);
-	}, [folderId]);
 
 	return (
 		<>
