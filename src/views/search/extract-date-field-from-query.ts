@@ -7,6 +7,7 @@
 import { filter, map } from 'lodash';
 import moment from 'moment/moment';
 
+import { getUserLocale } from 'commons/utils';
 import { Query } from 'views/search/types/types';
 
 export function extractDateFieldFromQuery(prefix: string, query: Query): Date | null {
@@ -18,5 +19,29 @@ export function extractDateFieldFromQuery(prefix: string, query: Query): Date | 
 	if (dateQuery.length === 0) {
 		return null;
 	}
-	return moment(dateQuery[0]).toDate();
+
+	const userLocale = getUserLocale();
+	const dateString = dateQuery[0];
+
+	// Try parsing with locale-specific format first
+	const localeFormat = moment.localeData(userLocale).longDateFormat('L');
+	let parsedDate = moment(dateString, localeFormat, userLocale, true);
+
+	if (!parsedDate.isValid()) {
+		// Fall back to ISO format and other standard formats
+		parsedDate = moment(dateString, [
+			'YYYY-MM-DD',
+			'YYYY/MM/DD',
+			'MM/DD/YYYY',
+			'DD/MM/YYYY',
+			'DD.MM.YYYY'
+		]);
+	}
+
+	if (!parsedDate.isValid()) {
+		// Final fallback to flexible parsing
+		parsedDate = moment(dateString);
+	}
+
+	return parsedDate.toDate();
 }
