@@ -397,6 +397,22 @@ describe('attachments', () => {
 
 				expect(result).toHaveLength(1);
 			});
+
+			it('should return an html if has disposition', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'htmlBody',
+						contentType: 'text/html',
+						disposition: 'attachment',
+						size: 100
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].name).toBe('htmlBody');
+			});
 		});
 	});
 
