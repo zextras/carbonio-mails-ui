@@ -172,6 +172,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Text weight="bold">{item.label}</Text>
 						</Tooltip>
 						<DeleteButton
+							data-testid={'delete-signature-button'}
 							label={t('label.delete', 'Delete')}
 							type="outlined"
 							color="error"
