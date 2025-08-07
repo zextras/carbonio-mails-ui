@@ -413,8 +413,9 @@ describe('attachments', () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].name).toBe('htmlBody');
 			});
-
-			it('should not return eml attachment if it contains parts', () => {
+		});
+		describe('EML part', () => {
+			it('should not return EML attachment if it has no disposition and contains parts', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						name: 'eml',
@@ -434,7 +435,46 @@ describe('attachments', () => {
 
 				expect(result).toHaveLength(0);
 			});
-			it('should return an eml attachment if it has no parts', () => {
+
+			// TODO: the two tests below seem a buggy behavior, just documenting the code.
+			//  Probably the type definition is not tight so its possible to write code for scenarios that cannot exist
+			it('should return EML attachment if it HAS disposition', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'eml',
+						contentType: 'message/rfc822',
+						disposition: 'inline',
+						size: 100
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+			});
+			it('should return EML without its parts if it HAS disposition', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'eml',
+						contentType: 'message/rfc822',
+						disposition: 'inline',
+						size: 100,
+						parts: [
+							{
+								name: '6.3',
+								contentType: 'image/png',
+								size: 100
+							}
+						]
+					}
+				];
+
+				const result = getAttachmentParts(parts);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].name).toBe('eml');
+			});
+			it('should return EML attachment if it has no parts', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						name: 'eml',
