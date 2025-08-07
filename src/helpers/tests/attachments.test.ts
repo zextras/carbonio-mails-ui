@@ -47,7 +47,7 @@ describe('attachments', () => {
 			expect(result[0].ci).toBe('img123');
 		});
 
-		it('should exclude inline images without filename or CID reference', () => {
+		it('should include inline images without filename or CID reference', () => {
 			const parts: Array<MailMessagePart> = [
 				{
 					ci: 'img456',
