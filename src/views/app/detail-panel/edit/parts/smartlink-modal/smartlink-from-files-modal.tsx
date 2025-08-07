@@ -53,7 +53,9 @@ export const SmartlinkFromFilesModal = ({
 							type: 'createLink',
 							description: fileNode.id
 						}));
-					if (!publicLinkUrl) throw new Error('Link creation failed');
+					if (!publicLinkUrl) {
+						errorSnackbar();
+					}
 					return {
 						richTextLinks: generateSmartLinkHtml({
 							publicLinkUrl,
