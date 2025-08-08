@@ -34,22 +34,6 @@ const getTranslatedLabelFromValue = (
 	return t(`sorting_dropdown.${option.label}`, option.label);
 };
 
-export const getFilterQuery = (filter: string | undefined, folderId: string): string => {
-	if (!filter) return `inId:"${folderId}"`;
-	switch (filter) {
-		case 'read':
-			return `inId:"${folderId}" is:unread`;
-		case 'priority':
-			return `inId:"${folderId}" priority:high`;
-		case 'flag':
-			return `inId:"${folderId}" is:flagged`;
-		case 'attach':
-			return `inId:"${folderId}" has:attachment`;
-		default:
-			return `inId:"${folderId}"`;
-	}
-};
-
 export const SortAndFilterHeaderComponent = ({
 	folderId
 }: {

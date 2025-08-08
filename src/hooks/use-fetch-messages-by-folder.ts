@@ -8,9 +8,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { getFilterQuery } from '../views/app/folder-panel/parts/sort-and-filter-header-component';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
+import { getFilterQuery, parseMessageSortingOptions } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
 	updateMessagesResultsLoadingStatus,

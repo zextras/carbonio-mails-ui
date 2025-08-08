@@ -7,7 +7,7 @@
 
 import React, { useCallback } from 'react';
 
-import { getFilterQuery } from '../parts/sort-and-filter-header-component';
+import { getFilterQuery } from '../../../../helpers/sorting';
 import { searchSoapApi } from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';

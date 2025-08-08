@@ -7,9 +7,9 @@
 
 import React, { useCallback } from 'react';
 
-import { getFilterQuery } from '../parts/sort-and-filter-header-component';
 import { searchSoapApi } from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { getFilterQuery } from 'helpers/sorting';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
 import {
 	appendConversationsToConversationIndexSlice,
