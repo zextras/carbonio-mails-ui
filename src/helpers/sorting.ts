@@ -69,7 +69,7 @@ function modifySettingString(
 	return folderToUpdate && zimbraPrefSortOrder.replace(folderToUpdate, prefToUpdate);
 }
 
-export function undateSortAndFilteringSettings({
+export function updateSortAndFilterSettings({
 	folderId,
 	prefSortOrder,
 	sortType,
