@@ -67,14 +67,11 @@ export const usePreviewHeaderNavigation = ({
 	const items = isMessageView ? messages : conversations;
 
 	const itemIndex = findIndex(itemIds, (item) => item === currentItemId);
-
-	const sortOrder = useMemo(() => {
-		const { sortType, sortDirection } = parseMessageSortingOptions(
-			folderId,
-			settings.prefs.zimbraPrefSortOrder as string
-		);
-		return sortType.concat(sortDirection);
-	}, [folderId, settings.prefs.zimbraPrefSortOrder]);
+	const { sortType, sortDirection, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, settings.prefs.zimbraPrefSortOrder as string),
+		[folderId, settings.prefs.zimbraPrefSortOrder]
+	);
+	const sortOrder = useMemo(() => sortType.concat(sortDirection), [sortDirection, sortType]);
 
 	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 
@@ -186,7 +183,8 @@ export const usePreviewHeaderNavigation = ({
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		hasMore,
 		loadingMore,
-		folderId
+		folderId,
+		filterType
 	});
 
 	const loadMoreMessages = useLoadMoreForMessageList({
@@ -195,7 +193,8 @@ export const usePreviewHeaderNavigation = ({
 		offset: items.length,
 		hasMore,
 		loadingMore,
-		folderId
+		folderId,
+		filterType
 	});
 
 	const loadMore = isMessageView ? loadMoreMessages : loadMoreConversations;

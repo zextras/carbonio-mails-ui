@@ -33,7 +33,7 @@ const getTranslatedLabelFromValue = (
 	return t(`sorting_dropdown.${option.label}`, option.label);
 };
 
-const getFilterQuery = (filter: string | undefined, folderId: string): string => {
+export const getFilterQuery = (filter: string | undefined, folderId: string): string => {
 	if (!filter) return `inId:"${folderId}"`;
 	switch (filter) {
 		case 'read':

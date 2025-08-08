@@ -7,6 +7,7 @@
 
 import React, { useCallback } from 'react';
 
+import { getFilterQuery } from '../parts/sort-and-filter-header-component';
 import { searchSoapApi } from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
@@ -42,7 +43,8 @@ export function useLoadMoreForConversationList({
 	limit,
 	hasMore,
 	loadingMore,
-	folderId
+	folderId,
+	filterType
 }: {
 	limit: number;
 	sortBy: string;
@@ -50,12 +52,13 @@ export function useLoadMoreForConversationList({
 	offset: number;
 	hasMore?: boolean;
 	loadingMore: React.MutableRefObject<boolean>;
+	filterType: string | undefined;
 }): () => Promise<void> {
 	return useCallback(async () => {
 		if (hasMore && !loadingMore.current) {
 			loadingMore.current = true;
 			const searchResponse = await searchSoapApi({
-				folderId,
+				query: getFilterQuery(filterType, folderId),
 				limit,
 				sortBy,
 				types: 'conversation',
@@ -74,5 +77,5 @@ export function useLoadMoreForConversationList({
 			}
 			handleLoadMoreResults({ searchResponse, offset });
 		}
-	}, [folderId, hasMore, limit, loadingMore, offset, sortBy]);
+	}, [filterType, folderId, hasMore, limit, loadingMore, offset, sortBy]);
 }
