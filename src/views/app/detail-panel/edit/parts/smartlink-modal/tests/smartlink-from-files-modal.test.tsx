@@ -187,7 +187,7 @@ describe('SmartlinkFromFilesModal', () => {
 	});
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
@@ -219,7 +219,7 @@ describe('SmartlinkFromFilesModal', () => {
 
 			const newText = newEditor.text.plainText;
 			await waitFor(() => {
-				expect(newText).toBe(editor.text.plainText.concat('\nurl2\n').concat('url1'));
+				expect(newText).toBe(editor.text.plainText.concat('\nurl1\n').concat('url2'));
 			});
 			// intercepting the save draft snackbar to reach the lifecycle of the component
 			// not interested in the outcome of the save draft, an error is acceptable for our purpose
