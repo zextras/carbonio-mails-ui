@@ -57,13 +57,23 @@ describe('SmartlinkFromFilesModal', () => {
 		).toBeInTheDocument();
 	});
 
-	it('calls onClose when Cancel is clicked', async () => {
+	it('calls onClose when Cancel button is clicked', async () => {
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 		const { user } = setupTest(
 			<SmartlinkFromFilesModal onClose={mockOnClose} editorId={editor.id} fileNodes={[fileNode1]} />
 		);
 		await user.click(screen.getByText('Cancel'));
+		expect(mockOnClose).toHaveBeenCalledTimes(1);
+	});
+
+	it('calls onClose when the close modal icon is clicked', async () => {
+		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+		useEditorsStore.setState({ editors: { [editor.id]: editor } });
+		const { user } = setupTest(
+			<SmartlinkFromFilesModal onClose={mockOnClose} editorId={editor.id} fileNodes={[fileNode1]} />
+		);
+		await user.click(screen.getByTestId('icon: CloseOutline'));
 		expect(mockOnClose).toHaveBeenCalledTimes(1);
 	});
 
