@@ -14,9 +14,9 @@ import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
 import { saveDraftEmailStoreAction } from '../../emails/actions/save-draft-action';
-import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
+import { buildSavedAttachments } from '../../../helpers/attachments';
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;

@@ -6,7 +6,7 @@
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
+import { replaceCidUrlWithServiceUrl } from './editor-transformations';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus,
@@ -45,6 +45,7 @@ import {
 	retrieveReplyTo,
 	retrieveTO
 } from '../editor-slice-utils';
+import { buildSavedAttachments } from '../../helpers/attachments';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;

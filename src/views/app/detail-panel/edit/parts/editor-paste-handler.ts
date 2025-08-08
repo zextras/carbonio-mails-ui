@@ -8,11 +8,10 @@ import type { Editor } from 'tinymce';
 import { v4 as uuid } from 'uuid';
 
 import { uploadFileApi } from '../../../../../api/upload-file-api';
-import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
+import { buildSavedAttachments, composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 import { getEditor, useEditorsStore } from '../../../../../store/editor';
 import {
-	buildSavedAttachments,
 	composeCidUrlFromContentId
 } from '../../../../../store/editor/editor-transformations';
 import { getSavedInlineAttachmentByContentId } from '../../../../../store/editor/editor-utils';

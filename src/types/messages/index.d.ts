@@ -75,6 +75,10 @@ export type MailMessagePart = {
 	requiresSmartLinkConversion: boolean;
 };
 
+export type MailMessagePartWithDisposition = MailMessagePart & {
+	disposition: 'inline' | 'attachment';
+};
+
 export type AttachmentPart = {
 	part?: string;
 	ct?: string;
