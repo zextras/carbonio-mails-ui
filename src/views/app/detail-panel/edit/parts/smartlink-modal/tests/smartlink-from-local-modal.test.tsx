@@ -9,7 +9,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 
-import { SmartlinkModal } from '../smartlink-modal';
+import { SmartlinkFromLocalModal } from '../smartlink-from-local-modal';
 import { setupTest } from '@test-setup';
 import { useIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -47,7 +47,9 @@ describe('ConvertToSmartlinkModal', () => {
 	it('renders modal with header, text, and footer buttons', () => {
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
-		setupTest(<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />);
+		setupTest(
+			<SmartlinkFromLocalModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+		);
 
 		expect(screen.getByText('Upload attachment as Smart Link')).toBeInTheDocument();
 		expect(screen.getByText('The attachment exceeds the size limit')).toBeInTheDocument();
@@ -69,7 +71,7 @@ describe('ConvertToSmartlinkModal', () => {
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 		const { user } = setupTest(
-			<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+			<SmartlinkFromLocalModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 
 		await user.click(screen.getByText('Cancel'));
@@ -99,7 +101,7 @@ describe('ConvertToSmartlinkModal', () => {
 		useEditorsStore.setState({ editors: { [editor.id]: editor } });
 
 		const { user } = setupTest(
-			<SmartlinkModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
+			<SmartlinkFromLocalModal onClose={mockOnClose} editorId={editor.id} files={sampleFiles} />
 		);
 
 		const confirmButton = screen.getByRole('button', { name: /confirm/i });
@@ -146,7 +148,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[new File(['file1 content'], 'file1.txt')]}
@@ -211,7 +213,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -288,7 +290,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -330,7 +332,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -370,7 +372,7 @@ describe('ConvertToSmartlinkModal', () => {
 			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[
@@ -403,7 +405,7 @@ describe('ConvertToSmartlinkModal', () => {
 			useEditorsStore.setState({ editors: { [editor.id]: editor } });
 
 			const { user } = setupTest(
-				<SmartlinkModal
+				<SmartlinkFromLocalModal
 					onClose={mockOnClose}
 					editorId={editor.id}
 					files={[

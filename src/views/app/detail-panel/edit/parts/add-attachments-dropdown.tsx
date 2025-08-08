@@ -21,7 +21,7 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { SmartlinkFromFilesModal } from './smartlink-modal/smartlink-from-files-modal';
-import { SmartlinkModal } from './smartlink-modal/smartlink-modal';
+import { SmartlinkFromLocalModal } from './smartlink-modal/smartlink-from-local-modal';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorsStore, useEditorText } from 'store/editor/index';
@@ -80,7 +80,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						maxHeight: '90vh',
 						size: 'medium',
 						children: (
-							<SmartlinkModal
+							<SmartlinkFromLocalModal
 								onClose={(): void => closeModal(modalId)}
 								files={files}
 								editorId={editorId}
@@ -139,7 +139,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				: 0;
 			const modalId = 'convertToSmartlinkModal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
-				return uploadFromFiles;
+				return uploadFromFiles(fileNodes);
 			}
 			createModal(
 				{

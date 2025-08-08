@@ -15,7 +15,7 @@ import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
 
-export const SmartlinkModal = ({
+export const SmartlinkFromLocalModal = ({
 	onClose,
 	editorId,
 	files
