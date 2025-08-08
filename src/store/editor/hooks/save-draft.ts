@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { buildSavedAttachments } from 'store/editor/editor-transformations';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
