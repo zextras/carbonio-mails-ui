@@ -176,7 +176,7 @@ function flattenAndAddDisposition(
 							part.contentType !== MIMETYPE_PLAINTEXT &&
 							part.contentType !== MIMETYPE_RICHTEXT &&
 							part.name)));
-			if (partShouldBeIncluded) {
+			if (partShouldBeIncluded && !part.body) {
 				// Force the inline disposition if the part is referred by something else in the body
 				if (part.disposition === undefined) {
 					if (isReferredByCid) {
