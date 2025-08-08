@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import {
 	Button,
@@ -14,14 +14,15 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { AppContext } from '../../../../app-utils/app-context-initializer';
 import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
-import { updateSortAndFilterSettings } from '../../../../helpers/sorting';
-import { searchEmailStoreAction } from '../../../../store/emails/actions/search-action';
+import {
+	parseMessageSortingOptions,
+	updateSortAndFilterSettings
+} from '../../../../helpers/sorting';
 
 const getTranslatedLabelFromValue = (
 	value: string | null | undefined,
@@ -49,53 +50,23 @@ export const getFilterQuery = (filter: string | undefined, folderId: string): st
 	}
 };
 
-function IsSearchNeeded(
-	currentSortDirection: string,
-	sortDirection: string,
-	currentSortType: string,
-	sortType: string,
-	currentFilter: string | undefined,
-	filterType: string | undefined,
-	currentFolderId: string | undefined,
-	folderId: string
-): boolean {
-	return (
-		(currentSortDirection !== sortDirection ||
-			currentSortType !== sortType ||
-			currentFilter !== filterType) &&
-		currentFolderId === folderId
-	);
-}
-
 export const SortAndFilterHeaderComponent = ({
-	folderId,
-	currentSortDirection,
-	setCurrentSortDirection,
-	currentFilter,
-	setCurrentFilter,
-	currentSortType,
-	setCurrentSortType,
-	sortDirection,
-	sortType,
-	filterType
+	folderId
 }: {
 	folderId: string;
-	currentSortDirection: 'Asc' | 'Desc';
-	setCurrentSortDirection: React.Dispatch<React.SetStateAction<'Asc' | 'Desc'>>;
-	currentFilter: string | undefined;
-	setCurrentFilter: React.Dispatch<React.SetStateAction<string | undefined>>;
-	currentSortType: string;
-	setCurrentSortType: React.Dispatch<React.SetStateAction<string>>;
-	sortDirection: 'Asc' | 'Desc';
-	sortType: string;
-	filterType: string | undefined;
 }): React.JSX.Element | null => {
 	const [t] = useTranslation();
-	const [currentFolderId, setCurrentFolderId] = useState<string>(folderId);
-	const { isMessageView } = useAppContext<AppContext>();
+	const { prefs } = useUserSettings();
 
-	const prefSortOrder = useUserSettings()?.prefs?.zimbraPrefSortOrder as string;
+	const prefSortOrder = useMemo(
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
+		[prefs?.zimbraPrefSortOrder]
+	);
 
+	const { sortType, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 	const defaultState = useMemo(
 		() => ({
 			type: SORTING_OPTIONS.date.value,
@@ -106,112 +77,32 @@ export const SortAndFilterHeaderComponent = ({
 	);
 
 	const resetToDefaultState = useCallback(() => {
-		setCurrentFilter(defaultState.filter);
-		setCurrentSortType(defaultState.type);
-		setCurrentSortDirection(defaultState.direction);
-	}, [
-		defaultState.direction,
-		defaultState.filter,
-		defaultState.type,
-		setCurrentFilter,
-		setCurrentSortDirection,
-		setCurrentSortType
-	]);
+		updateSortAndFilterSettings({
+			folderId,
+			prefSortOrder,
+			sortType: defaultState.type,
+			sortDirection: defaultState.direction,
+			filter: defaultState.filter
+		});
+	}, [defaultState.direction, defaultState.filter, defaultState.type, folderId, prefSortOrder]);
 
 	const hasModifiedState = useMemo(
-		() => currentSortType !== defaultState.type || currentFilter !== defaultState.filter,
-		[currentSortType, currentFilter, defaultState]
+		() => sortType !== defaultState.type || filterType !== defaultState.filter,
+		[sortType, filterType, defaultState]
 	);
 
 	const currentFilterLabel = useMemo(
 		() =>
-			currentFilter
-				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(currentFilter, t)} - `
+			filterType
+				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(filterType, t)} - `
 				: '',
-		[currentFilter, t]
+		[filterType, t]
 	);
 
 	const currentSortLabel = useMemo(
-		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(currentSortType, t)}`,
-		[currentSortType, t]
+		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(sortType, t)}`,
+		[sortType, t]
 	);
-
-	useEffect(() => {
-		if (currentFolderId !== folderId) {
-			setCurrentFolderId(folderId);
-			setCurrentSortType(sortType);
-			setCurrentSortDirection(sortDirection);
-			setCurrentFilter(filterType);
-		}
-	}, [
-		currentFolderId,
-		filterType,
-		folderId,
-		setCurrentFilter,
-		setCurrentSortDirection,
-		setCurrentSortType,
-		sortDirection,
-		sortType
-	]);
-
-	useEffect(() => {
-		IsSearchNeeded(
-			currentSortDirection,
-			sortDirection,
-			currentSortType,
-			sortType,
-			currentFilter,
-			filterType,
-			currentFolderId,
-			folderId
-		) &&
-			updateSortAndFilterSettings({
-				folderId,
-				prefSortOrder,
-				sortType: currentSortType,
-				sortDirection: currentSortDirection,
-				filter: currentFilter
-			});
-	}, [
-		currentFilter,
-		currentFolderId,
-		currentSortDirection,
-		currentSortType,
-		filterType,
-		folderId,
-		prefSortOrder,
-		sortDirection,
-		sortType
-	]);
-
-	useEffect(() => {
-		IsSearchNeeded(
-			currentSortDirection,
-			sortDirection,
-			currentSortType,
-			sortType,
-			currentFilter,
-			filterType,
-			currentFolderId,
-			folderId
-		) &&
-			searchEmailStoreAction({
-				limit: 100,
-				sortBy: `${currentSortType}${currentSortDirection}`,
-				query: getFilterQuery(currentFilter, folderId),
-				types: isMessageView ? 'message' : 'conversation'
-			});
-	}, [
-		currentFilter,
-		currentFolderId,
-		currentSortDirection,
-		currentSortType,
-		filterType,
-		folderId,
-		isMessageView,
-		sortDirection,
-		sortType
-	]);
 
 	if (!hasModifiedState) return null;
 	return (
