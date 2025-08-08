@@ -68,7 +68,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 
 			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
 			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
-			const modalId = 'convertToSmartlinkModal';
+			const modalId = 'smartlink-from-local-modal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				addStandardAttachments(files, {});
 			} else {
