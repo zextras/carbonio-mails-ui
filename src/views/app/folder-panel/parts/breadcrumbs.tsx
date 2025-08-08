@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import {
 	Container,
@@ -13,7 +13,6 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -21,7 +20,6 @@ import styled from 'styled-components';
 import { SortAndFilterButtonComponent } from './sort-and-filter-button-component';
 import { SortAndFilterHeaderComponent } from './sort-and-filter-header-component';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
@@ -39,26 +37,18 @@ export const Breadcrumbs: FC<{
 	isSearchModule?: boolean;
 }> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const { t } = useTranslation();
-	const { prefs } = useUserSettings();
+	const [currentFolderId, setCurrentFolderId] = useState<string>(folderId);
 
 	const { folderPathFirstPart, folderPathLastPart } = useMemo(
 		() => getFolderPathForBreadcrumb(folderPath),
 		[folderPath]
 	);
 
-	const prefSortOrder = useMemo(
-		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
-		[prefs?.zimbraPrefSortOrder]
-	);
-
-	const { sortDirection, sortType, filterType } = useMemo(
-		() => parseMessageSortingOptions(folderId, prefSortOrder),
-		[folderId, prefSortOrder]
-	);
-
-	const [currentSortType, setCurrentSortType] = useState(sortType);
-	const [currentSortDirection, setCurrentSortDirection] = useState(sortDirection);
-	const [currentFilter, setCurrentFilter] = useState<string | undefined>(filterType);
+	useEffect(() => {
+		if (currentFolderId !== folderId) {
+			setCurrentFolderId(folderId);
+		}
+	}, [folderId, currentFolderId]);
 
 	return (
 		<>
@@ -118,32 +108,17 @@ export const Breadcrumbs: FC<{
 						{!isSearchModule && (
 							<>
 								<LayoutComponent />
-								<SortAndFilterButtonComponent
-									currentFilter={currentFilter}
-									currentSortDirection={currentSortDirection}
-									currentSortType={currentSortType}
-									folderId={folderId}
-									setCurrentFilter={setCurrentFilter}
-									setCurrentSortDirection={setCurrentSortDirection}
-									setCurrentSortType={setCurrentSortType}
-								/>
+								{/* This condition ensure a new mount of the component refreshing its inner states */}
+								{currentFolderId === folderId && (
+									<SortAndFilterButtonComponent folderId={folderId} />
+								)}
 							</>
 						)}
 					</Row>
 				</Row>
 			</Container>
-			<SortAndFilterHeaderComponent
-				folderId={folderId}
-				currentFilter={currentFilter}
-				currentSortDirection={currentSortDirection}
-				currentSortType={currentSortType}
-				setCurrentFilter={setCurrentFilter}
-				setCurrentSortDirection={setCurrentSortDirection}
-				setCurrentSortType={setCurrentSortType}
-				sortDirection={sortDirection}
-				sortType={sortType}
-				filterType={filterType}
-			/>
+			{/* This condition ensure a new mount of the component refreshing its inner states */}
+			{currentFolderId === folderId && <SortAndFilterHeaderComponent folderId={folderId} />}
 		</>
 	);
 };
