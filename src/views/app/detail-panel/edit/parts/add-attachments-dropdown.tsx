@@ -16,7 +16,7 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { compact, map, noop } from 'lodash';
+import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
@@ -45,6 +45,7 @@ const SelectorContainer = styled(Row)`
 	}
 `;
 
+const BASE_64_CONVERSION_RATE = 1.33;
 export type AddAttachmentsDropdownProps = {
 	editorId: MailsEditorV2['id'];
 };
@@ -66,8 +67,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			const files = buildArrayFromFileList(fileList);
 
 			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
-			const base64conversionRate = 1.33;
-			const calculatedEditorSizeWithFiles = editor.size + filesSize * base64conversionRate;
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
 			const modalId = 'convertToSmartlinkModal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				addStandardAttachments(files, {});
@@ -131,9 +131,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const addFilesFromFiles = useCallback(
 		async (fileNodes: Array<FileNode>) => {
 			const filesSize = fileNodes.reduce((acc, file) => acc + file.size, 0);
-			const base64conversionRate = 1.33;
-			const calculatedEditorSizeWithFiles = editor.size + filesSize * base64conversionRate;
-			const modalId = 'convertToSmartlinkModal';
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const modalId = 'smartlink-from-files-modal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				return uploadFromFiles(fileNodes);
 			}
@@ -152,7 +151,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				},
 				true
 			);
-			return noop;
+			return null;
 		},
 		[closeModal, createModal, editor, editorId, maxAllowedMailSize, uploadFromFiles]
 	);

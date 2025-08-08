@@ -36,7 +36,7 @@ function createDeferredPromise<T>(): {
 
 jest.mock('api/upload-file-to-files');
 
-describe('ConvertToSmartlinkModal', () => {
+describe('SmartlinkFromLocalModal', () => {
 	const mockOnClose = jest.fn();
 
 	const sampleFiles = [
