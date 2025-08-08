@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import {
 	Container,
@@ -37,18 +37,11 @@ export const Breadcrumbs: FC<{
 	isSearchModule?: boolean;
 }> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const { t } = useTranslation();
-	const [currentFolderId, setCurrentFolderId] = useState<string>(folderId);
 
 	const { folderPathFirstPart, folderPathLastPart } = useMemo(
 		() => getFolderPathForBreadcrumb(folderPath),
 		[folderPath]
 	);
-
-	useEffect(() => {
-		if (currentFolderId !== folderId) {
-			setCurrentFolderId(folderId);
-		}
-	}, [folderId, currentFolderId]);
 
 	return (
 		<>
@@ -108,17 +101,13 @@ export const Breadcrumbs: FC<{
 						{!isSearchModule && (
 							<>
 								<LayoutComponent />
-								{/* This condition ensure a new mount of the component refreshing its inner states */}
-								{currentFolderId === folderId && (
-									<SortAndFilterButtonComponent folderId={folderId} />
-								)}
+								<SortAndFilterButtonComponent folderId={folderId} />
 							</>
 						)}
 					</Row>
 				</Row>
 			</Container>
-			{/* This condition ensure a new mount of the component refreshing its inner states */}
-			{currentFolderId === folderId && <SortAndFilterHeaderComponent folderId={folderId} />}
+			<SortAndFilterHeaderComponent folderId={folderId} />
 		</>
 	);
 };
