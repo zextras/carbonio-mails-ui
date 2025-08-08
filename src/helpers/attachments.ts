@@ -10,9 +10,11 @@ import { useTheme } from '@zextras/carbonio-design-system';
 import { isNil, reduce } from 'lodash';
 
 import { calcColor } from 'commons/utilities';
-import type {
+import {
 	AbstractAttachment,
+	MailMessage,
 	MailMessagePart,
+	MailMessagePartWithDisposition,
 	SavedAttachment,
 	UnsavedAttachment
 } from 'types/index.d';
@@ -45,7 +47,7 @@ export function findAttachments(
 	);
 }
 
-export const isEml = (part: MailMessagePart): boolean =>
+const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
 
@@ -95,7 +97,7 @@ export const getCidFromCidUrl = (cidUrl: string): string | null => {
 	return cidUrlTokens[1];
 };
 
-export const getCidFromReference = (cidReference: string): string | null => {
+const getCidFromReference = (cidReference: string): string | null => {
 	const cidReferenceTokens = new RegExp(REFERRED_CIDURL_PATTERN, 'gi').exec(cidReference);
 	if (!cidReferenceTokens) {
 		return null;
@@ -144,26 +146,26 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	return result;
 };
 
-export const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
+const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
 	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
- * Filters the message parts to collect body content and attachments.
+ * Filters the message parts to collect body content and attachments and adds disposition.
  *
  * @param parts
- * @param filtered
  * @param referredCids
+ * @param filtered
  */
-export function filterAttachmentsParts(
+function flattenAndAddDisposition(
 	parts: Array<MailMessagePart>,
-	filtered: Array<MailMessagePart>,
-	referredCids: Array<string>
-): Array<MailMessagePart> {
+	referredCids: Array<string>,
+	filtered: Array<MailMessagePartWithDisposition> = []
+): Array<MailMessagePartWithDisposition> {
 	return reduce(
 		parts,
-		(filtered, part) => {
+		(incoming, part) => {
 			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
-			if (
+			const partShouldBeIncluded =
 				part.disposition === 'attachment' ||
 				(part.disposition === 'inline' && (part.filename || isReferredByCid)) ||
 				(part.disposition === 'inline' && part.name) ||
@@ -173,37 +175,45 @@ export function filterAttachmentsParts(
 							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
 							part.contentType !== MIMETYPE_PLAINTEXT &&
 							part.contentType !== MIMETYPE_RICHTEXT &&
-							part.name)))
-			) {
+							part.name)));
+			if (partShouldBeIncluded) {
 				// Force the inline disposition if the part is referred by something else in the body
 				if (part.disposition === undefined) {
 					if (isReferredByCid) {
-						filtered.push({
+						incoming.push({
 							...part,
 							disposition: 'inline'
 						});
 					} else {
-						filtered.push({
+						incoming.push({
 							...part,
 							disposition: 'attachment'
 						});
 					}
+				} else if (isReferredByCid) {
+					incoming.push({
+						...part,
+						disposition: 'inline'
+					});
 				} else {
-					filtered.push(part);
+					const { disposition } = part;
+					incoming.push({ ...part, disposition });
 				}
 			}
 			if (part.parts && !isEml(part)) {
-				filterAttachmentsParts(part.parts, filtered, referredCids);
+				flattenAndAddDisposition(part.parts, referredCids, incoming);
 			}
-			return filtered;
+			return incoming;
 		},
 		filtered
 	);
 }
 
-export function getAttachmentParts(parts: Array<MailMessagePart>): Array<MailMessagePart> {
-	const referredCids = getReferredContentIds(parts);
-	return filterAttachmentsParts(parts, [], referredCids);
+export function getFlattenedAttachmentParts(
+	parts: Array<MailMessagePart>
+): Array<MailMessagePartWithDisposition> {
+	const referredCIDS = getReferredContentIds(parts);
+	return flattenAndAddDisposition(parts, referredCIDS);
 }
 
 export const getAttachmentExtension = (
@@ -433,3 +443,16 @@ export const isDownloadServicedUrl = (url: string): boolean =>
 
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+
+export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
+	const attachmentsParts = getFlattenedAttachmentParts(message.parts);
+	return attachmentsParts.map<SavedAttachment>((part) => ({
+		messageId: message.id,
+		isInline: part.disposition === 'inline',
+		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
+		filename: part.filename ?? '',
+		partName: part.name,
+		contentType: part.contentType,
+		size: part.size
+	}));
+};

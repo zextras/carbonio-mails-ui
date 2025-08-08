@@ -11,6 +11,7 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
+import { getFlattenedAttachmentParts } from '../../helpers/attachments';
 import {
 	getOriginalHtmlContent,
 	getQuotedTextFromOriginalContent
@@ -24,7 +25,6 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from 'commons/utils';
-import { getAttachmentParts } from 'helpers/attachments';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
 import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { BodyPart, MailMessage } from 'types/index.d';
@@ -47,7 +47,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 	const parts = useMemo(() => {
 		const originalParts = message?.parts ?? [];
-		return originalParts ? getAttachmentParts(originalParts) : [];
+		return originalParts ? getFlattenedAttachmentParts(originalParts) : [];
 	}, [message]);
 
 	const divRef = useRef<HTMLDivElement>(null);

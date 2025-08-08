@@ -7,6 +7,7 @@ import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { v4 as uuid } from 'uuid';
 
+import { buildSavedAttachments } from '../../helpers/attachments';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { EditViewActions, NO_ACCOUNT_NAME } from 'constants/index';
 import {
@@ -17,10 +18,7 @@ import {
 } from 'helpers/identities';
 import { getFromParticipantFromMessage } from 'helpers/messages';
 import { getMailBodyWithSignature } from 'helpers/signatures';
-import {
-	buildSavedAttachments,
-	replaceCidUrlWithServiceUrl
-} from 'store/editor/editor-transformations';
+import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus,
