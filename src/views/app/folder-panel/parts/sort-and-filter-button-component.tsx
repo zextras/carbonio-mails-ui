@@ -13,12 +13,16 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, SORT_ICONS, SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
+import { SORT_ICONS, SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
+import {
+	parseMessageSortingOptions,
+	updateSortAndFilterSettings
+} from '../../../../helpers/sorting';
 
 type SortingOption = {
 	value: string;
@@ -29,25 +33,19 @@ function getRadioIcon(option: string | undefined, value: string): string {
 	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';
 }
 
-const useListHeaderDropdownItems = ({
-	folderId,
-	currentSortDirection,
-	setCurrentSortDirection,
-	currentFilter,
-	setCurrentFilter,
-	currentSortType,
-	setCurrentSortType
-}: {
-	folderId: string;
-	currentSortDirection: 'Asc' | 'Desc';
-	setCurrentSortDirection: React.Dispatch<React.SetStateAction<'Asc' | 'Desc'>>;
-	currentFilter: string | undefined;
-	setCurrentFilter: React.Dispatch<React.SetStateAction<string | undefined>>;
-	currentSortType: string;
-	setCurrentSortType: React.Dispatch<React.SetStateAction<string>>;
-}): DropdownItem[] => {
-	const navigate = useNavigate();
+const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): DropdownItem[] => {
 	const [t] = useTranslation();
+	const { prefs } = useUserSettings();
+
+	const prefSortOrder = useMemo(
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
+		[prefs?.zimbraPrefSortOrder]
+	);
+
+	const { sortDirection, sortType, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 
 	const sortingOptions: SortingOption[] = useMemo(
 		() => [
@@ -73,12 +71,17 @@ const useListHeaderDropdownItems = ({
 			id: 'toggle-direction',
 			onClick: (): void => {
 				const newDirection =
-					currentSortDirection === SORTING_DIRECTION.ASCENDING
+					sortDirection === SORTING_DIRECTION.ASCENDING
 						? SORTING_DIRECTION.DESCENDING
 						: SORTING_DIRECTION.ASCENDING;
 
-				setCurrentSortDirection(newDirection);
-				navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+				updateSortAndFilterSettings({
+					folderId,
+					prefSortOrder,
+					sortType,
+					sortDirection: newDirection,
+					filter: filterType
+				});
 			},
 			customComponent: (
 				<Container
@@ -94,20 +97,20 @@ const useListHeaderDropdownItems = ({
 						type="ghost"
 						size="large"
 						icon={
-							currentSortDirection === SORTING_DIRECTION.DESCENDING
+							sortDirection === SORTING_DIRECTION.DESCENDING
 								? SORT_ICONS.ASCENDING
 								: SORT_ICONS.DESCENDING
 						}
 					/>
 					<Text>
-						{currentSortDirection === SORTING_DIRECTION.ASCENDING
+						{sortDirection === SORTING_DIRECTION.ASCENDING
 							? t('sorting_dropdown.descendingOrder', 'Descending order')
 							: t('sorting_dropdown.ascendingOrder', 'Ascending order')}
 					</Text>
 				</Container>
 			)
 		}),
-		[currentSortDirection, folderId, navigate, setCurrentSortDirection, t]
+		[filterType, sortDirection, sortType, folderId, prefSortOrder, t]
 	);
 
 	const filterLabelItem: DropdownItem = useMemo(
@@ -124,14 +127,19 @@ const useListHeaderDropdownItems = ({
 			filteringOptions.map(({ value, label }) => ({
 				id: `filter-${value}`,
 				label: capitalize(t(`sorting_dropdown.${value}`, label)),
-				selected: currentFilter === value,
+				selected: filterType === value,
 				onClick: (): void => {
-					setCurrentFilter(value);
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					updateSortAndFilterSettings({
+						folderId,
+						prefSortOrder,
+						sortType,
+						sortDirection,
+						filter: value
+					});
 				},
-				icon: getRadioIcon(currentFilter, value)
+				icon: getRadioIcon(filterType, value)
 			})),
-		[currentFilter, filteringOptions, folderId, navigate, setCurrentFilter, t]
+		[filterType, sortDirection, sortType, filteringOptions, folderId, prefSortOrder, t]
 	);
 
 	const sortLabelItem: DropdownItem = useMemo(
@@ -148,15 +156,21 @@ const useListHeaderDropdownItems = ({
 			sortingOptions.map(({ value, label }) => ({
 				id: `sort-${value}`,
 				label: capitalize(t(`sorting_dropdown.${value}`, label)),
-				selected: currentSortType === value,
+				selected: sortType === value,
 				onClick: (): void => {
-					setCurrentSortType(value);
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					updateSortAndFilterSettings({
+						folderId,
+						prefSortOrder,
+						sortType: value,
+						sortDirection,
+						filter: filterType
+					});
 				},
-				icon: getRadioIcon(currentSortType, value)
+				icon: getRadioIcon(sortType, value)
 			})),
-		[currentSortType, folderId, navigate, setCurrentSortType, sortingOptions, t]
+		[filterType, sortDirection, sortType, folderId, prefSortOrder, sortingOptions, t]
 	);
+
 	return useMemo(
 		() => [
 			toggleDirectionItem,
@@ -172,37 +186,28 @@ const useListHeaderDropdownItems = ({
 };
 
 export const SortAndFilterButtonComponent = ({
-	folderId,
-	currentSortDirection,
-	setCurrentSortDirection,
-	currentFilter,
-	setCurrentFilter,
-	currentSortType,
-	setCurrentSortType
+	folderId
 }: {
 	folderId: string;
-	currentSortDirection: 'Asc' | 'Desc';
-	setCurrentSortDirection: React.Dispatch<React.SetStateAction<'Asc' | 'Desc'>>;
-	currentFilter: string | undefined;
-	setCurrentFilter: React.Dispatch<React.SetStateAction<string | undefined>>;
-	currentSortType: string;
-	setCurrentSortType: React.Dispatch<React.SetStateAction<string>>;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
+	const { prefs } = useUserSettings();
+
+	const prefSortOrder = useMemo(
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
+		[prefs?.zimbraPrefSortOrder]
+	);
+
+	const { sortDirection } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 
 	const buttonIcon =
-		currentSortDirection === SORTING_DIRECTION.ASCENDING
-			? SORT_ICONS.ASCENDING
-			: SORT_ICONS.DESCENDING;
+		sortDirection === SORTING_DIRECTION.ASCENDING ? SORT_ICONS.ASCENDING : SORT_ICONS.DESCENDING;
 
 	const dropdownItems = useListHeaderDropdownItems({
-		folderId,
-		currentSortDirection,
-		currentSortType,
-		currentFilter,
-		setCurrentSortType,
-		setCurrentFilter,
-		setCurrentSortDirection
+		folderId
 	});
 
 	return (
