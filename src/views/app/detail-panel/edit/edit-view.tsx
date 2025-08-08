@@ -14,7 +14,7 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
@@ -46,7 +46,11 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients
 } from '../../../../store/editor';
-import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
+import {
+	EditorOperationAllowedStatus,
+	EditViewClosingReasons,
+	SaveDraftResponse
+} from '../../../../types';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -245,18 +249,16 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	function isErrorAboutInvalidRecipient(error?: unknown): boolean {
-		return typeof error === 'string' && error.includes('5.1.1');
+	function isInvalidRecipientError(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
+		return error?.Fault?.Detail?.Error?.Code === 'mail.SEND_ABORTED_ADDRESS_FAILURE';
 	}
 
 	const onSendError = useCallback(
-		(error?: unknown): void => {
+		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
 			let timeout = TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT;
 			let message = t('label.error_try_again', 'Something went wrong, please try again');
-			if (isErrorAboutInvalidRecipient(error)) {
-				const errorStr = typeof error === 'string' ? error : JSON.stringify(error);
-				const match = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/.exec(errorStr);
-				const invalidAddress = match?.[0] ?? 'unknown';
+			if (isInvalidRecipientError(error)) {
+				const invalidAddress = error?.Fault?.Detail?.Error?.a?.[0]?._content;
 				timeout = 5000;
 				message = t(
 					'error.invalid_recipient',
