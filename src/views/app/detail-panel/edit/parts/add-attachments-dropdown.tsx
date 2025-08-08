@@ -67,9 +67,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 
 			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
 			const base64conversionRate = 1.33;
-			const calculatedEditorSizeWithFiles = editor
-				? editor.size + filesSize * base64conversionRate
-				: 0;
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * base64conversionRate;
 			const modalId = 'convertToSmartlinkModal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				addStandardAttachments(files, {});
@@ -134,9 +132,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		async (fileNodes: Array<FileNode>) => {
 			const filesSize = fileNodes.reduce((acc, file) => acc + file.size, 0);
 			const base64conversionRate = 1.33;
-			const calculatedEditorSizeWithFiles = editor
-				? editor.size + filesSize * base64conversionRate
-				: 0;
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * base64conversionRate;
 			const modalId = 'convertToSmartlinkModal';
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				return uploadFromFiles(fileNodes);
