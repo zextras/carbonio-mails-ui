@@ -230,7 +230,7 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
-			const getLinkSpy = jest.fn();
+			const getLinkSpy = jest.fn().mockRejectedValue(new Error('API failure'));
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
