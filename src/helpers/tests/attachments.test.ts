@@ -463,6 +463,50 @@ describe('attachments', () => {
 				expect(result).toHaveLength(2);
 				expect(result[0].name).toBe('plainTextAttachment');
 			});
+
+			it('should NOT return parts with body=true as attachments', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body1',
+						contentType: 'text/plain',
+						size: 100,
+						content: 'This is the main body',
+						body: true,
+						disposition: 'attachment',
+						filename: 'should-not-be-attachment.txt'
+					},
+					{
+						name: 'att1',
+						contentType: 'application/pdf',
+						size: 200,
+						disposition: 'attachment',
+						filename: 'file.pdf'
+					},
+					{
+						name: 'body2',
+						contentType: 'text/html',
+						size: 120,
+						content: '<b>Body</b>',
+						body: true,
+						disposition: 'inline',
+						filename: 'should-not-be-attachment.html'
+					},
+					{
+						name: 'att2',
+						contentType: 'image/png',
+						size: 300,
+						disposition: 'inline',
+						filename: 'image.png'
+					}
+				];
+				const result = getFlattenedAttachmentParts(parts);
+				// Only real attachments (not body=true) should be returned
+				expect(result.length).toBe(2);
+				expect(result.some((p) => p.name === 'att1')).toBe(true);
+				expect(result.some((p) => p.name === 'att2')).toBe(true);
+				expect(result.some((p) => p.name === 'body1')).toBe(false);
+				expect(result.some((p) => p.name === 'body2')).toBe(false);
+			});
 		});
 		describe('EML part', () => {
 			it('should not return EML attachment if it has no disposition and contains parts', () => {
