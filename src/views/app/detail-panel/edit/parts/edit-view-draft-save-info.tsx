@@ -39,7 +39,7 @@ export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus 
 							background="gray5"
 							padding={{ vertical: 'medium', horizontal: 'large' }}
 						>
-							<Text size="extrasmall" color="secondary">
+							<Text size="extrasmall" color="secondary" style={{ fontSize : "0.7rem"}}>
 								{t('message.email_saved_at', {
 									time: moment(processStatus?.lastSaveTimestamp).format('LTS'),
 									defaultValue: 'Email saved as draft at {{time}}'
