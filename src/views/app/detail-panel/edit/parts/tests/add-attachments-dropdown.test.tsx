@@ -37,7 +37,7 @@ const generateFilesIntegrationMocks = (
 	const nodes = times<FilesNode>(filesCount, () => ({
 		id: faker.string.uuid(),
 		name: faker.system.fileName(),
-		size: faker.number.int({ min: 1, max: 3_000_000 }),
+		size: 1_000_000,
 		mime_type: faker.system.mimeType()
 	}));
 
@@ -193,8 +193,8 @@ describe('AddAttachmentsDropdown', () => {
 
 	describe('Actions', () => {
 		describe('Add files from Files', () => {
-			it('should update the store with the uploaded attachments', async () => {
-				const FILES_COUNT = 4;
+			it('should update the store with the uploaded attachments when files size is within the limit', async () => {
+				const FILES_COUNT = 2;
 				const { attachments } = generateFilesIntegrationMocks(FILES_COUNT);
 
 				const editor = generateNewMessageEditor();
@@ -214,6 +214,19 @@ describe('AddAttachmentsDropdown', () => {
 						)
 					).toBeTruthy();
 				});
+			});
+			it('should open the smartlink modal when files size is within the limit', async () => {
+				const FILES_COUNT = 50;
+				generateFilesIntegrationMocks(FILES_COUNT);
+
+				const editor = generateNewMessageEditor();
+				setupEditorStore({ editors: [editor] });
+				const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+				const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+				await user.click(dropdownIcon);
+				await user.click(screen.getByText('composer.attachment.files'));
+
+				await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
 			});
 		});
 	});
