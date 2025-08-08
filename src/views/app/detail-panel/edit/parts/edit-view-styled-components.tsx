@@ -113,4 +113,7 @@ export const StickyTimeContainer = styled(Row)`
 	bottom: 0.625rem;
 	right: 0.625rem;
 	height: 0;
+	opacity: 0.7;
+	margin-left: auto;
+  	margin-right: auto;
 `;
