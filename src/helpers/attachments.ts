@@ -209,6 +209,10 @@ function flattenAndAddDisposition(
 	);
 }
 
+/**
+ * Flattens the message parts and adds disposition to each part.
+ * It returns flattened attachments with disposition.
+ */
 export function getFlattenedAttachmentParts(
 	parts: Array<MailMessagePart>
 ): Array<MailMessagePartWithDisposition> {

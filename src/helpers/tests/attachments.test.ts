@@ -464,7 +464,7 @@ describe('attachments', () => {
 				expect(result[0].name).toBe('plainTextAttachment');
 			});
 
-			it('should NOT return parts with body=true as attachments', () => {
+			it('should NOT return body parts as attachments', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						name: 'body1',
