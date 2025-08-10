@@ -66,6 +66,7 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 
 export type EditViewProp = {
 	editorId: string;
@@ -249,22 +250,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	function isInvalidRecipientError(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
-		return error?.Fault?.Detail?.Error?.Code === 'mail.SEND_ABORTED_ADDRESS_FAILURE';
-	}
-
 	const onSendError = useCallback(
 		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
-			let timeout = TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT;
-			let message = t('label.error_try_again', 'Something went wrong, please try again');
-			if (isInvalidRecipientError(error)) {
-				const invalidAddress = error?.Fault?.Detail?.Error?.a?.[0]?._content;
-				timeout = 5000;
-				message = t(
-					'error.invalid_recipient',
-					`The recipient address "${invalidAddress}" does not exist or is invalid`
-				);
-			}
+			const { message, timeout } = getErrorSnackbarProps(error);
 			createSnackbar({
 				key: `mail-${editorId}`,
 				replace: true,
