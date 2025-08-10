@@ -615,8 +615,11 @@ describe('Edit view', () => {
 			createSoapAPIInterceptor(
 				'SendMsg',
 				buildSoapErrorResponseBody({
-					reason: '550 5.1.1 <abc@example.com>: Recipient address rejected',
-					code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
+					code: 'soap:Sender',
+					detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+					reason:
+						'Invalid address: abc@example.com.  com.zimbra.cs.mailbox.MailSender$SafeSendFailedException: MESSAGE_NOT_DELIVERED; chained exception is:\n\tcom.zimbra.cs.mailclient.smtp.InvalidRecipientException: RCPT failed: Invalid recipient abc@example.com: 550 5.1.1 <abc@example.com>: Recipient address rejected',
+					trace: 'qtp630298110-27889:1754665448505:7f9325b88e4f881d'
 				})
 			);
 
@@ -634,6 +637,10 @@ describe('Edit view', () => {
 			});
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
+
+			expect(createSnackbarSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ autoHideTimeout: 5000 })
+			);
 		});
 	});
 
