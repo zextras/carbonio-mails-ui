@@ -5,17 +5,17 @@
  */
 import React, { useCallback, useState } from 'react';
 
+import { useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-modal';
 import { SmartlinkUploadingModal } from './smartlink-uploading-modal';
-import { getPublicLinkUrl } from 'api/get-public-link-url';
 import { uploadToFiles } from 'api/upload-file-to-files';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
 
-export const SmartlinkModal = ({
+export const SmartlinkFromLocalModal = ({
 	onClose,
 	editorId,
 	files
@@ -27,7 +27,7 @@ export const SmartlinkModal = ({
 	const [t] = useTranslation();
 	const [awaitingConfirmation, setAwaitingConfirmation] = useState(true);
 	const [uploadController, setUploadController] = useState<AbortController | null>(null);
-
+	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 	const { createSnackbar } = useUiUtilities();
 	const errorSnackbar = useCallback(() => {
 		createSnackbar({
@@ -69,8 +69,18 @@ export const SmartlinkModal = ({
 					});
 					setUploadController(abortController);
 					const nodeId = await upload;
-					const publicLinkUrl = await getPublicLinkUrl(nodeId);
-					if (!publicLinkUrl) throw new Error('Link creation failed');
+
+					const publicLinkUrl =
+						getLinkAvailable &&
+						(await getLink({
+							node: { id: nodeId },
+							type: 'createLink',
+							description: nodeId
+						}));
+					if (!publicLinkUrl) {
+						errorSnackbar();
+						throw new Error('Public link creation failed');
+					}
 					return {
 						richTextLinks: generateSmartLinkHtml({
 							publicLinkUrl,
@@ -100,7 +110,16 @@ export const SmartlinkModal = ({
 			onClose();
 			setAwaitingConfirmation(true);
 		}
-	}, [errorSnackbar, files, getText, onClose, setText, uploadCancelledSnackbar]);
+	}, [
+		errorSnackbar,
+		files,
+		getLink,
+		getLinkAvailable,
+		getText,
+		onClose,
+		setText,
+		uploadCancelledSnackbar
+	]);
 
 	return awaitingConfirmation ? (
 		<SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />
