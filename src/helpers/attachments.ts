@@ -214,10 +214,11 @@ function flattenAndAddDisposition(
  * It returns flattened attachments with disposition.
  */
 export function getFlattenedAttachmentParts(
-	parts: Array<MailMessagePart>
+	mailMessage: MailMessage
 ): Array<MailMessagePartWithDisposition> {
-	const referredCIDS = getReferredContentIds(parts);
-	return flattenAndAddDisposition(parts, referredCIDS);
+	const mailMessageParts = mailMessage.parts;
+	const referredCIDS = getReferredContentIds(mailMessageParts);
+	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
 }
 
 export const getAttachmentExtension = (
@@ -449,7 +450,7 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getFlattenedAttachmentParts(message.parts);
+	const attachmentsParts = getFlattenedAttachmentParts(message);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		isInline: part.disposition === 'inline',
