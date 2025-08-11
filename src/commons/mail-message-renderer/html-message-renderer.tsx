@@ -42,10 +42,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 	const participants = message?.participants ?? [];
 
-	const parts = useMemo(() => {
-		const originalParts = message?.parts ?? [];
-		return originalParts ? getFlattenedAttachmentParts(originalParts) : [];
-	}, [message]);
+	const attachments = useMemo(() => getFlattenedAttachmentParts(message), [message]);
 
 	const divRef = useRef<HTMLDivElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
@@ -140,7 +137,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 	const processedContent = useMemo(() => {
 		// Handle images
-		const imgMap = buildImageMap(parts);
+		const imgMap = buildImageMap(attachments);
 		forEach(images, (img) => {
 			updateImageSrc(img, imgMap, showImage, msgId);
 		});
@@ -148,7 +145,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 		// Decode surrogate pairs (broken emojis handling)
 		return decodeSurrogatePairs(html);
-	}, [htmlDoc.documentElement.outerHTML, images, msgId, parts, showImage]);
+	}, [htmlDoc.documentElement.outerHTML, images, msgId, attachments, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);

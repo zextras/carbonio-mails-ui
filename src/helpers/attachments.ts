@@ -24,7 +24,6 @@ export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
 export const REFERRED_CIDURL_PATTERN = '"cid:([^"]+)"';
 export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
 export const EML_FILENAME_REGEX = '^(.+)\\.eml$';
-export const IMAGE_MIMETYPE_REGEX = '^image\\/';
 export const MIMETYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
 export const MIMETYPE_PLAINTEXT = 'text/plain';
 export const MIMETYPE_RICHTEXT = 'text/html';
@@ -50,9 +49,6 @@ export function findAttachments(
 const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
-
-export const isImage = (part: MailMessagePart): boolean =>
-	new RegExp(IMAGE_MIMETYPE_REGEX, 'g').test(part.contentType);
 
 /**
  * Extract the inner part of the content id removing the
@@ -146,25 +142,25 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	return result;
 };
 
-const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
-	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
+const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
+	referredCIDs.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
  * Filters the message parts to collect body content and attachments and adds disposition.
  *
  * @param parts
- * @param referredCids
+ * @param referredCIDs
  * @param filtered
  */
 function flattenAndAddDisposition(
 	parts: Array<MailMessagePart>,
-	referredCids: Array<string>,
+	referredCIDs: Array<string>,
 	filtered: Array<MailMessagePartWithDisposition> = []
 ): Array<MailMessagePartWithDisposition> {
 	return reduce(
 		parts,
 		(incoming, part) => {
-			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
+			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
 			const partShouldBeIncluded =
 				part.disposition === 'attachment' ||
 				(part.disposition === 'inline' && (part.filename || isReferredByCid)) ||
@@ -176,7 +172,7 @@ function flattenAndAddDisposition(
 							part.contentType !== MIMETYPE_PLAINTEXT &&
 							part.contentType !== MIMETYPE_RICHTEXT &&
 							part.name)));
-			if (partShouldBeIncluded) {
+			if (partShouldBeIncluded && !part.body) {
 				// Force the inline disposition if the part is referred by something else in the body
 				if (part.disposition === undefined) {
 					if (isReferredByCid) {
@@ -196,12 +192,22 @@ function flattenAndAddDisposition(
 						disposition: 'inline'
 					});
 				} else {
-					const { disposition } = part;
-					incoming.push({ ...part, disposition });
+					if (!isReferredByCid && 
+							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+							part.contentType !== MIMETYPE_PLAINTEXT &&
+							part.contentType !== MIMETYPE_RICHTEXT ) {
+						incoming.push({ 
+							...part, 
+							disposition: 'attachment'
+						});
+					} else {
+						const { disposition } = part;
+						incoming.push({ ...part, disposition });
+					}
 				}
 			}
 			if (part.parts && !isEml(part)) {
-				flattenAndAddDisposition(part.parts, referredCids, incoming);
+				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
 			}
 			return incoming;
 		},
@@ -209,11 +215,16 @@ function flattenAndAddDisposition(
 	);
 }
 
+/**
+ * Flattens the message parts and adds disposition to each part.
+ * It returns flattened attachments with disposition.
+ */
 export function getFlattenedAttachmentParts(
-	parts: Array<MailMessagePart>
+	mailMessage: MailMessage
 ): Array<MailMessagePartWithDisposition> {
-	const referredCIDS = getReferredContentIds(parts);
-	return flattenAndAddDisposition(parts, referredCIDS);
+	const mailMessageParts = mailMessage.parts;
+	const referredCIDS = getReferredContentIds(mailMessageParts);
+	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
 }
 
 export const getAttachmentExtension = (
@@ -419,7 +430,7 @@ export const getAttachmentExtension = (
 };
 
 export const getSizeDescription = (size: number): string => {
-	let value = '';
+	let value;
 	if (size < 1024000) {
 		value = `${Math.round((size / 1024) * 100) / 100} KB`;
 	} else if (size < 1024000000) {
@@ -445,7 +456,8 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getFlattenedAttachmentParts(message.parts);
+	const attachmentsParts = getFlattenedAttachmentParts(message);
+	console.log(attachmentsParts);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		isInline: part.disposition === 'inline',

@@ -63,6 +63,7 @@ export type IncompleteMessage = MailHeaders & {
 };
 
 export type MailMessagePart = {
+	body?: boolean;
 	contentType: string;
 	size: number;
 	content?: string;
