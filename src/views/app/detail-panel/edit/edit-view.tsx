@@ -20,6 +20,7 @@ import { filter, map, some } from 'lodash';
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -66,7 +67,6 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
-import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 
 export type EditViewProp = {
 	editorId: string;

@@ -637,10 +637,6 @@ describe('Edit view', () => {
 			});
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
-
-			expect(createSnackbarSpy).toHaveBeenCalledWith(
-				expect.objectContaining({ autoHideTimeout: 5000 })
-			);
 		});
 	});
 

@@ -33,7 +33,7 @@ describe('getErrorSnackbarProps', () => {
 		};
 		const result = getErrorSnackbarProps(error);
 		expect(result).toEqual({
-			message: 'label.invalid_recipient',
+			message: 'error.invalid_recipient',
 			timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
 		});
 	});

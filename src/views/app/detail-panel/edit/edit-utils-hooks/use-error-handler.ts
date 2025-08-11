@@ -21,7 +21,12 @@ export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyRe
 	let message = t('label.error_try_again', 'Something went wrong, please try again');
 
 	if (isErrorAboutInvalidRecipient(error)) {
-		message = t('label.invalid_recipient', 'Invalid recipient specified.');
+		const invalidAddress = error?.Fault?.Detail?.Error?.a?.[0]?._content;
+
+		message = t(
+			'error.invalid_recipient',
+			`The recipient address "${invalidAddress}" does not exist or is invalid`
+		);
 		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	}
 
