@@ -196,6 +196,7 @@ export const ConversationList = (): React.JSX.Element => {
 				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
+				onSelect={handleItemClick}
 			/>
 		</>
 	);

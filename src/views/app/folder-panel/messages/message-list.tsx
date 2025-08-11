@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { CustomListItem, FOLDERS } from '@zextras/carbonio-ui-commons';
@@ -27,6 +27,7 @@ export const MessageList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
 	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
 	const { messageListIndex, status } = messageIndexSlice;
@@ -40,7 +41,8 @@ export const MessageList = (): React.JSX.Element => {
 		selectAll,
 		toggleItemSelection: toggle,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useMultipleSelection({
 		selectedItems,
 		setSelectedItems,
@@ -81,9 +83,33 @@ export const MessageList = (): React.JSX.Element => {
 		Array.from(selectedItems, (item) => [item, true])
 	);
 
+	const handleItemClick = useCallback(
+		(index: number, id: string, event: React.MouseEvent) => {
+			if (!isSelectModeOn) {
+				// First click: turn on selection mode and select the item
+				setIsSelectModeOn(true);
+				toggle(id);
+				setLastSelectedIndex(index);
+				return;
+			}
+
+			// Selection mode is on
+			if (event.shiftKey && lastSelectedIndex !== null) {
+				const start = Math.min(lastSelectedIndex, index);
+				const end = Math.max(lastSelectedIndex, index);
+				const idsToSelect = messageListIndex.slice(start, end + 1);
+				selectRange(idsToSelect);
+			} else {
+				toggle(id);
+				setLastSelectedIndex(index);
+			}
+		},
+		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle, setIsSelectModeOn]
+	);
+
 	const listItems = useMemo(
 		() =>
-			map(messageListIndex, (id) => {
+			map(messageListIndex, (id, index) => {
 				const isSelected = selectedItems.has(id);
 				const active = itemId === id;
 
@@ -111,6 +137,8 @@ export const MessageList = (): React.JSX.Element => {
 									visible={visible}
 									setDraggedIds={setDraggedIds}
 									currentFolderId={folderId}
+									index={index}
+									onSelect={handleItemClick}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="invisible-item" />
@@ -123,6 +151,7 @@ export const MessageList = (): React.JSX.Element => {
 			deselectAll,
 			draggedIds,
 			folderId,
+			handleItemClick,
 			isSelectModeOn,
 			itemId,
 			messageListIndex,

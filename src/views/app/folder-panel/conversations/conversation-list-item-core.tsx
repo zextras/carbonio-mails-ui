@@ -135,7 +135,6 @@ export const ConversationListItemCore = ({
 					selecting={selecting}
 					folderId={folderParent}
 					index={index}
-					id={conversation.id}
 					onSelect={onSelect}
 				/>
 				<Padding horizontal="extrasmall" />

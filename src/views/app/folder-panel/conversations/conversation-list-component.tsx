@@ -29,17 +29,19 @@ const DragImageContainer = styled.div`
 
 const DragItems = ({
 	draggedIds,
-	deselectAll
+	deselectAll,
+	onSelect
 }: {
 	draggedIds: Record<string, boolean>;
 	deselectAll: () => void;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 }): React.JSX.Element => (
 	<>
 		{map(
 			Object.keys(draggedIds)
 				.map((draggedId) => getConversationById(draggedId))
 				.filter(Boolean),
-			(conversation) => (
+			(conversation, index) => (
 				<ConversationListItemComponent
 					deselectAll={deselectAll}
 					selectedItems={{}}
@@ -53,6 +55,8 @@ const DragItems = ({
 					selectedIds={[]}
 					folderId=""
 					setDraggedIds={noop}
+					index={index}
+					onSelect={onSelect}
 				/>
 			)
 		)}
@@ -96,6 +100,7 @@ export type ConversationListComponentProps = {
 	dragImageRef?: RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
 	loadMoreCallback?: () => void;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const ConversationListComponent = memo(function ConversationListComponent({
@@ -116,7 +121,8 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	totalConversations,
 	dragImageRef,
 	listRef,
-	loadMoreCallback
+	loadMoreCallback,
+	onSelect
 }: ConversationListComponentProps): React.JSX.Element {
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
@@ -192,7 +198,11 @@ export const ConversationListComponent = memo(function ConversationListComponent
 						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
-						<DragItems draggedIds={draggedIds ?? {}} deselectAll={deselectAll} />
+						<DragItems
+							draggedIds={draggedIds ?? {}}
+							deselectAll={deselectAll}
+							onSelect={onSelect}
+						/>
 					</DragImageContainer>
 				</>
 			) : (

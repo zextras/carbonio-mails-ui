@@ -29,9 +29,9 @@ export type ItemAvatarTypeProps = {
 	selected: boolean;
 	selecting: boolean;
 	folderId: string;
-	index: number;
-	id: string;
-	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	index?: number;
+	onSelect?: (index: number, id: string, event: React.MouseEvent) => void;
+	toggle?: (id: string) => void;
 };
 
 export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
@@ -40,8 +40,8 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 	selecting,
 	folderId,
 	index,
-	id,
-	onSelect
+	onSelect,
+	toggle
 }) => {
 	const targetParticipants =
 		getFolderIdParts(folderId).id === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
@@ -56,9 +56,14 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 	const handleClick = useCallback(
 		(e: React.MouseEvent) => {
 			e.preventDefault();
-			onSelect(index, id, e);
+			if (toggle) {
+				toggle(item.id);
+			}
+			if (onSelect) {
+				onSelect(index ?? 0, item.id, e);
+			}
 		},
-		[onSelect, index, id]
+		[toggle, onSelect, item, index]
 	);
 
 	return (

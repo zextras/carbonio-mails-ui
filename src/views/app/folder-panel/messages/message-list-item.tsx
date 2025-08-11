@@ -28,11 +28,12 @@ export const MessageListItem = memo(function MessageListItem({
 	message,
 	selected,
 	selecting,
-	toggle,
 	isConvChildren,
 	active,
 	isSearchModule,
-	handleReplaceHistory
+	handleReplaceHistory,
+	index,
+	onSelect
 }: MessageListItemProps): React.JSX.Element {
 	const { folderId, itemId } = useParams<RouteParams>();
 	const navigate = useNavigate();
@@ -117,9 +118,10 @@ export const MessageListItem = memo(function MessageListItem({
 						selected={selected}
 						selecting={selecting}
 						isConvChildren={isConvChildren}
-						toggle={toggle}
 						isSearchModule={isSearchModule}
 						firstChildFolderId={firstChildFolderId}
+						index={index}
+						onSelect={onSelect}
 					/>
 				</MessageListItemActionWrapper>
 			) : (
@@ -128,9 +130,10 @@ export const MessageListItem = memo(function MessageListItem({
 					selected={selected}
 					selecting={selecting}
 					isConvChildren={isConvChildren}
-					toggle={toggle}
 					isSearchModule={isSearchModule}
 					firstChildFolderId={firstChildFolderId}
+					index={index}
+					onSelect={onSelect}
 				/>
 			)}
 		</Container>
