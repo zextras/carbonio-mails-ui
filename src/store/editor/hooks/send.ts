@@ -5,7 +5,7 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { sendMsgFromEditor } from 'api/send-msg';
@@ -13,13 +13,13 @@ import { createCancelableTimer } from 'helpers/timers';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
 	onCountdownTick?: (countdown: number, cancel: () => void) => void;
 	onComplete?: () => void;
-	onError?: (error: string) => void;
+	onError?: (error: SaveDraftResponse | ErrorSoapBodyResponse) => void;
 	onCancel?: () => void;
 };
 
@@ -82,7 +82,7 @@ const sendFromEditor = (
 								abortReason: errorDescription
 							});
 							computeAndUpdateEditorStatus(editorId);
-							options?.onError && options.onError(errorDescription);
+							options?.onError && options.onError(res);
 						} else {
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
 								status: 'completed'

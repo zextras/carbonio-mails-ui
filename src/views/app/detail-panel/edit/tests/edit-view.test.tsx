@@ -57,6 +57,7 @@ import {
 import { setupEditorStore } from 'tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
 import { generateMessage } from 'tests/generators/generateMessage';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -184,6 +185,7 @@ describe('Edit view', () => {
 			createSoapAPIInterceptor('GetShareInfo');
 		});
 		const invalidEmailAddress = 'invalidmailaddress.com';
+
 		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
@@ -547,6 +549,9 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
+		beforeEach(() => {
+			jest.clearAllTimers();
+		});
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
@@ -590,6 +595,48 @@ describe('Edit view', () => {
 			const sendMsgRequest = await sendMsgInterceptor;
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
+		});
+
+		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createCheckSmimeEnabledAPIInterceptor();
+
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId'
+			});
+			setupEditorStore({ editors: [editor] });
+			addEditor({ id: editor.id, editor });
+
+			createSoapAPIInterceptor(
+				'SendMsg',
+				buildSoapErrorResponseBody({
+					code: 'soap:Sender',
+					detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+					reason:
+						'Invalid address: abc@example.com.  com.zimbra.cs.mailbox.MailSender$SafeSendFailedException: MESSAGE_NOT_DELIVERED; chained exception is:\n\tcom.zimbra.cs.mailclient.smtp.InvalidRecipientException: RCPT failed: Invalid recipient abc@example.com: 550 5.1.1 <abc@example.com>: Recipient address rejected',
+					trace: 'qtp630298110-27889:1754665448505:7f9325b88e4f881d'
+				})
+			);
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const btnSend = await screen.findByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			await act(async () => {
+				jest.advanceTimersByTime(4000);
+			});
+
+			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
 		});
 	});
 
