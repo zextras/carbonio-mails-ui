@@ -36,8 +36,9 @@ describe('attachments', () => {
 		describe('should return part with disposition inline', () => {
 			test('if has disposition inline', () => {
 				const parts: Array<MailMessagePart> = [inlinePart];
+				const message = generateMessage({ parts });
 
-				const result = getFlattenedAttachmentParts(parts);
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('inline');
@@ -57,8 +58,9 @@ describe('attachments', () => {
 						size: 200
 					}
 				];
+				const message = generateMessage({ parts });
 
-				const result = getFlattenedAttachmentParts(parts);
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('inline');
@@ -80,8 +82,9 @@ describe('attachments', () => {
 						ci
 					}
 				];
+				const message = generateMessage({ parts });
 
-				const result = getFlattenedAttachmentParts(parts);
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('inline');
@@ -101,8 +104,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('inline');
@@ -122,8 +125,8 @@ describe('attachments', () => {
 						size: 200
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -143,8 +146,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -164,8 +167,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -187,8 +190,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -208,8 +211,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -229,8 +232,8 @@ describe('attachments', () => {
 						ci
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].disposition).toBe('attachment');
@@ -238,8 +241,8 @@ describe('attachments', () => {
 		});
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13' });
-			const msg = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
-			const attachmentParts = getFlattenedAttachmentParts(msg.parts);
+			const messageFromSoap = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
+			const attachmentParts = getFlattenedAttachmentParts(messageFromSoap);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');
 			expect(attachmentParts[0].disposition).toBe('inline');
@@ -266,8 +269,8 @@ describe('attachments', () => {
 						size: 200
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].ci).toBe(ci);
@@ -283,7 +286,8 @@ describe('attachments', () => {
 						name: '3'
 					}
 				];
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 			});
@@ -299,8 +303,8 @@ describe('attachments', () => {
 						size: 200
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].filename).toBe('logo.jpg');
@@ -351,8 +355,8 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(3);
 				expect(result[0].name).toBe('5.1.3');
@@ -380,8 +384,8 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(2);
 			});
@@ -395,8 +399,8 @@ describe('attachments', () => {
 						size: 100
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].name).toBe('htmlBody');
@@ -411,8 +415,8 @@ describe('attachments', () => {
 						size: 100
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].name).toBe('plainTextAttachment');
@@ -434,8 +438,8 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(2);
 				expect(result[0].name).toBe('plainTextAttachment');
@@ -457,11 +461,56 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(2);
 				expect(result[0].name).toBe('plainTextAttachment');
+			});
+
+			it('should NOT return body parts as attachments', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body1',
+						contentType: 'text/plain',
+						size: 100,
+						content: 'This is the main body',
+						body: true,
+						disposition: 'attachment',
+						filename: 'should-not-be-attachment.txt'
+					},
+					{
+						name: 'att1',
+						contentType: 'application/pdf',
+						size: 200,
+						disposition: 'attachment',
+						filename: 'file.pdf'
+					},
+					{
+						name: 'body2',
+						contentType: 'text/html',
+						size: 120,
+						content: '<b>Body</b>',
+						body: true,
+						disposition: 'inline',
+						filename: 'should-not-be-attachment.html'
+					},
+					{
+						name: 'att2',
+						contentType: 'image/png',
+						size: 300,
+						disposition: 'inline',
+						filename: 'image.png'
+					}
+				];
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
+				// Only real attachments (not body=true) should be returned
+				expect(result.length).toBe(2);
+				expect(result.some((p) => p.name === 'att1')).toBe(true);
+				expect(result.some((p) => p.name === 'att2')).toBe(true);
+				expect(result.some((p) => p.name === 'body1')).toBe(false);
+				expect(result.some((p) => p.name === 'body2')).toBe(false);
 			});
 		});
 		describe('EML part', () => {
@@ -480,8 +529,8 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(0);
 			});
@@ -497,8 +546,8 @@ describe('attachments', () => {
 						size: 100
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 			});
@@ -518,8 +567,8 @@ describe('attachments', () => {
 						]
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].name).toBe('eml');
@@ -532,8 +581,8 @@ describe('attachments', () => {
 						size: 100
 					}
 				];
-
-				const result = getFlattenedAttachmentParts(parts);
+				const message = generateMessage({ parts });
+				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
 				expect(result[0].name).toBe('eml');
