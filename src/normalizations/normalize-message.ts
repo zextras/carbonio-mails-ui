@@ -202,7 +202,7 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 		size: v.s || 0,
 		name: v.part,
 		disposition: v.cd,
-		body: !!v.body
+		body: Boolean(v.body)
 	};
 	if (v.mp) {
 		ret.parts = map(v.mp || [], normalizeMailPartMapFn);
