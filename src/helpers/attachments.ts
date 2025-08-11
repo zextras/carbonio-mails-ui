@@ -24,7 +24,6 @@ export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
 export const REFERRED_CIDURL_PATTERN = '"cid:([^"]+)"';
 export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
 export const EML_FILENAME_REGEX = '^(.+)\\.eml$';
-export const IMAGE_MIMETYPE_REGEX = '^image\\/';
 export const MIMETYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
 export const MIMETYPE_PLAINTEXT = 'text/plain';
 export const MIMETYPE_RICHTEXT = 'text/html';
@@ -50,9 +49,6 @@ export function findAttachments(
 const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
-
-export const isImage = (part: MailMessagePart): boolean =>
-	new RegExp(IMAGE_MIMETYPE_REGEX, 'g').test(part.contentType);
 
 /**
  * Extract the inner part of the content id removing the
@@ -424,7 +420,7 @@ export const getAttachmentExtension = (
 };
 
 export const getSizeDescription = (size: number): string => {
-	let value = '';
+	let value;
 	if (size < 1024000) {
 		value = `${Math.round((size / 1024) * 100) / 100} KB`;
 	} else if (size < 1024000000) {
