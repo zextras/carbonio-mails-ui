@@ -146,25 +146,25 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	return result;
 };
 
-const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
-	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
+const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
+	referredCIDs.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
  * Filters the message parts to collect body content and attachments and adds disposition.
  *
  * @param parts
- * @param referredCids
+ * @param referredCIDs
  * @param filtered
  */
 function flattenAndAddDisposition(
 	parts: Array<MailMessagePart>,
-	referredCids: Array<string>,
+	referredCIDs: Array<string>,
 	filtered: Array<MailMessagePartWithDisposition> = []
 ): Array<MailMessagePartWithDisposition> {
 	return reduce(
 		parts,
 		(incoming, part) => {
-			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
+			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
 			const partShouldBeIncluded =
 				part.disposition === 'attachment' ||
 				(part.disposition === 'inline' && (part.filename || isReferredByCid)) ||
@@ -201,7 +201,7 @@ function flattenAndAddDisposition(
 				}
 			}
 			if (part.parts && !isEml(part)) {
-				flattenAndAddDisposition(part.parts, referredCids, incoming);
+				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
 			}
 			return incoming;
 		},
