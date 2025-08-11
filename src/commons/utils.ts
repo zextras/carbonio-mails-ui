@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray, reduce } from 'lodash';
+import { find, isArray } from 'lodash';
 import moment from 'moment';
 
 import type { MailMessagePart } from 'types/index.d';
@@ -146,17 +146,17 @@ export const replaceLinkToAnchor = (content: string): string => {
  * Builds a map of image content IDs to their corresponding mail message parts.
  *
  */
-export function buildImageMap(parts: Array<MailMessagePart>): Record<string, MailMessagePart> {
-	return reduce(
-		parts,
-		(acc, part) => {
-			const match = _CI_REGEX.exec(part.ci ?? '');
-			// eslint-disable-next-line no-param-reassign
-			if (match) acc[match[1]] = part;
-			return acc;
-		},
-		{} as Record<string, MailMessagePart>
-	);
+export function buildImageMap(parts: readonly MailMessagePart[]): Record<string, MailMessagePart> {
+	return parts.reduce((acc: Record<string, MailMessagePart>, part) => {
+		const contentId = part.ci?.trim();
+		if (!contentId) return acc;
+
+		const match = _CI_REGEX.exec(contentId);
+		if (match) {
+			return { ...acc, [match[1]]: part };
+		}
+		return acc;
+	}, {});
 }
 
 export function updateImageSrc(
