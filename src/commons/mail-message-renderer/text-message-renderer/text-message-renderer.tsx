@@ -7,13 +7,12 @@ import React, { useMemo, useState } from 'react';
 
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import Autolinker from 'autolinker';
 
+import { linkifyToHtml } from './text-linkify';
 import {
 	getOriginalTextContent,
 	getQuotedTextFromOriginalContent
-} from 'commons/get-quoted-text-util';
-import { plainTextToHTML } from 'commons/utils';
+} from '../../get-quoted-text-util';
 
 type TextMessageRendererType = {
 	body: { content: string };
@@ -24,22 +23,12 @@ export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JS
 	const originalText = getOriginalTextContent(body.content);
 	const quoted = getQuotedTextFromOriginalContent(body.content, originalText);
 
-	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : originalText),
-		[showQuotedText, body.content, originalText]
-	);
+	const convertedHTML = useMemo(() => {
+		const content = showQuotedText ? body.content : originalText;
+		const html = linkifyToHtml(content);
+		return html.replace(/\r?\n/g, '<br />');
+	}, [showQuotedText, body.content, originalText]);
 
-	const convertedHTML = useMemo(
-		() =>
-			Autolinker.link(plainTextToHTML(contentToDisplay), {
-				urls: { schemeMatches: true, tldMatches: true, ipV4Matches: false },
-				newWindow: true, // open links in new tab
-				stripPrefix: false, // keep "www."
-				stripTrailingSlash: false, // keep trailing slashes
-				sanitizeHtml: true // avoid XSS
-			}),
-		[contentToDisplay]
-	);
 	return (
 		<>
 			<Text
