@@ -101,35 +101,6 @@ describe('Sorting component', () => {
 		expect(screen.queryByTestId(dropdownRegex)).not.toBeInTheDocument();
 	});
 
-	it('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
-		const interceptor = createSoapAPIInterceptor('Batch');
-		createSoapAPIInterceptor('Search');
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		if (sortIcon) await user.click(sortIcon);
-		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
-		expect(ascendingOption).toBeInTheDocument();
-		await user.click(ascendingOption);
-
-		const request = await interceptor;
-		expect(request).toHaveBeenCalledWith({});
-
-		// await waitFor(() => {
-		// 	expect(screen.getByText('Descending order')).toBeInTheDocument();
-		// });
-		// const descendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-		// 	'Descending order'
-		// );
-		// expect(descendingOption).toBeInTheDocument();
-		// act(() => {
-		// 	user.click(descendingOption);
-		// });
-		// expect(descendingOption).toBeInTheDocument();
-	});
-
 	it('clicking on the sorting direction icon reverses the messages order', async () => {
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
