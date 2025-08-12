@@ -15,6 +15,7 @@ import { API_REQUEST_STATUS } from 'constants/index';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
+import {handleItemClick} from "../../../../helpers/messages";
 
 type SearchConversationMessagesListProps = {
 	activeItemId?: string;
@@ -44,25 +45,19 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 		setSelectedItems
 	});
 
-	const handleItemClick = useCallback(
+	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			if (!isSelectModeOn) {
-				// First click: turn on selection mode and select the item
-				toggle(id);
-				setLastSelectedIndex(index);
-				return;
-			}
-
-			// Selection mode is on
-			if (event.shiftKey && lastSelectedIndex !== null) {
-				const start = Math.min(lastSelectedIndex, index);
-				const end = Math.max(lastSelectedIndex, index);
-				const idsToSelect = messages.map((message) => message.id).slice(start, end + 1);
-				selectRange(idsToSelect);
-			} else {
-				toggle(id);
-				setLastSelectedIndex(index);
-			}
+			handleItemClick(
+				index,
+				id,
+				event,
+				isSelectModeOn,
+				lastSelectedIndex,
+				messages.map((m) => m.id),
+				toggle,
+				selectRange,
+				setLastSelectedIndex
+			);
 		},
 		[isSelectModeOn, lastSelectedIndex, toggle, messages, selectRange]
 	);
@@ -96,7 +91,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 									handleReplaceHistory={handleSearchReplaceHistory}
 									isSearchModule
 									index={index}
-									onSelect={handleItemClick}
+									onSelect={onSelect}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} />
@@ -105,7 +100,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[activeItemId, handleItemClick, isSelectModeOn, messages, navigate, selectedItems]
+		[activeItemId, onSelect, isSelectModeOn, messages, navigate, selectedItems]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {

@@ -10,6 +10,7 @@ import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
+import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
@@ -49,25 +50,19 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 		setSelectedItems
 	});
 
-	const handleItemClick = useCallback(
+	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			if (!isSelectModeOn) {
-				// First click: turn on selection mode and select the item
-				toggle(id);
-				setLastSelectedIndex(index);
-				return;
-			}
-
-			// Selection mode is on
-			if (event.shiftKey && lastSelectedIndex !== null) {
-				const start = Math.min(lastSelectedIndex, index);
-				const end = Math.max(lastSelectedIndex, index);
-				const idsToSelect = messages.map((message) => message.id).slice(start, end + 1);
-				selectRange(idsToSelect);
-			} else {
-				toggle(id);
-				setLastSelectedIndex(index);
-			}
+			handleItemClick(
+				index,
+				id,
+				event,
+				isSelectModeOn,
+				lastSelectedIndex,
+				messages.map((m) => m.id),
+				toggle,
+				selectRange,
+				setLastSelectedIndex
+			);
 		},
 		[isSelectModeOn, lastSelectedIndex, toggle, messages, selectRange]
 	);
@@ -107,7 +102,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 										currentFolderId={folderId}
 										isSearchModule={isSearchModule}
 										index={index}
-										onSelect={handleItemClick}
+										onSelect={onSelect}
 									/>
 								</DragItemWrapper>
 							) : (
@@ -121,10 +116,10 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 			activeItemId,
 			dragImageRef,
 			folderId,
-			handleItemClick,
 			isSearchModule,
 			isSelectModeOn,
 			messages,
+			onSelect,
 			selectedItems,
 			setDraggedIds
 		]

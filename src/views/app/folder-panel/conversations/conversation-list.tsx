@@ -11,6 +11,7 @@ import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -66,35 +67,21 @@ export const ConversationList = (): React.JSX.Element => {
 		return null;
 	}, [conversationsIds?.length, folderId]);
 
-	const handleItemClick = useCallback(
+	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			if (!isSelectModeOn) {
-				// First click: turn on selection mode and select the item
-				setIsSelectModeOn(true);
-				toggleMultipleSelection(id);
-				setLastSelectedIndex(index);
-				return;
-			}
-
-			// Selection mode is on
-			if (event.shiftKey && lastSelectedIndex !== null) {
-				const start = Math.min(lastSelectedIndex, index);
-				const end = Math.max(lastSelectedIndex, index);
-				const idsToSelect = conversationsIds.slice(start, end + 1);
-				selectRange(idsToSelect);
-			} else {
-				toggleMultipleSelection(id);
-				setLastSelectedIndex(index);
-			}
+			handleItemClick(
+				index,
+				id,
+				event,
+				isSelectModeOn,
+				lastSelectedIndex,
+				conversationsIds,
+				toggleMultipleSelection,
+				selectRange,
+				setLastSelectedIndex
+			);
 		},
-		[
-			isSelectModeOn,
-			lastSelectedIndex,
-			conversationsIds,
-			selectRange,
-			toggleMultipleSelection,
-			setIsSelectModeOn
-		]
+		[isSelectModeOn, lastSelectedIndex, conversationsIds, selectRange, toggleMultipleSelection]
 	);
 
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
@@ -131,7 +118,7 @@ export const ConversationList = (): React.JSX.Element => {
 									selectedIds={Object.keys(selectedItems)}
 									folderId={folderId}
 									index={index}
-									onSelect={handleItemClick}
+									onSelect={onSelect}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="conversation-invisible-item" />
@@ -144,9 +131,9 @@ export const ConversationList = (): React.JSX.Element => {
 			conversationsIds,
 			deselectAll,
 			folderId,
-			handleItemClick,
 			isSelectModeOn,
 			itemId,
+			onSelect,
 			selectedItems,
 			selectedItemsMap,
 			toggleMultipleSelection
@@ -196,7 +183,7 @@ export const ConversationList = (): React.JSX.Element => {
 				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
-				onSelect={handleItemClick}
+				onSelect={onSelect}
 			/>
 		</>
 	);

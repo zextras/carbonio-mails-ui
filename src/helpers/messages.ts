@@ -73,3 +73,45 @@ export const isConversation = (
  */
 export const isSingleMessageConversation = (item: MailMessage | NormalizedConversation): boolean =>
 	isConversation(item) && item.messageIds.length === 1;
+
+/**
+ *
+ * @param index
+ * @param id
+ * @param event
+ * @param isSelectModeOn
+ * @param lastSelectedIndex
+ * @param messages
+ * @param toggle
+ * @param selectRange
+ * @param setLastSelectedIndex
+ */
+export const handleItemClick = (
+	index: number,
+	id: string,
+	event: React.MouseEvent,
+	isSelectModeOn: boolean,
+	lastSelectedIndex: number | null,
+	messages: string[],
+	toggle: (id: string) => void,
+	selectRange: (ids: string[]) => void,
+	setLastSelectedIndex: (i: number) => void
+): void => {
+	if (!isSelectModeOn) {
+		// First click: turn on selection mode and select the item
+		toggle(id);
+		setLastSelectedIndex(index);
+		return;
+	}
+
+	// Selection mode is on
+	if (event.shiftKey && lastSelectedIndex !== null) {
+		const start = Math.min(lastSelectedIndex, index);
+		const end = Math.max(lastSelectedIndex, index);
+		const idsToSelect = messages.slice(start, end + 1);
+		selectRange(idsToSelect);
+	} else {
+		toggle(id);
+		setLastSelectedIndex(index);
+	}
+};

@@ -11,6 +11,7 @@ import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -83,28 +84,21 @@ export const MessageList = (): React.JSX.Element => {
 		Array.from(selectedItems, (item) => [item, true])
 	);
 
-	const handleItemClick = useCallback(
+	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			if (!isSelectModeOn) {
-				// First click: turn on selection mode and select the item
-				setIsSelectModeOn(true);
-				toggle(id);
-				setLastSelectedIndex(index);
-				return;
-			}
-
-			// Selection mode is on
-			if (event.shiftKey && lastSelectedIndex !== null) {
-				const start = Math.min(lastSelectedIndex, index);
-				const end = Math.max(lastSelectedIndex, index);
-				const idsToSelect = messageListIndex.slice(start, end + 1);
-				selectRange(idsToSelect);
-			} else {
-				toggle(id);
-				setLastSelectedIndex(index);
-			}
+			handleItemClick(
+				index,
+				id,
+				event,
+				isSelectModeOn,
+				lastSelectedIndex,
+				messageListIndex,
+				toggle,
+				selectRange,
+				setLastSelectedIndex
+			);
 		},
-		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle, setIsSelectModeOn]
+		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle]
 	);
 
 	const listItems = useMemo(
@@ -137,7 +131,7 @@ export const MessageList = (): React.JSX.Element => {
 									setDraggedIds={setDraggedIds}
 									currentFolderId={folderId}
 									index={index}
-									onSelect={handleItemClick}
+									onSelect={onSelect}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="invisible-item" />
@@ -150,10 +144,10 @@ export const MessageList = (): React.JSX.Element => {
 			deselectAll,
 			draggedIds,
 			folderId,
-			handleItemClick,
 			isSelectModeOn,
 			itemId,
 			messageListIndex,
+			onSelect,
 			selectedItems,
 			selectedItemsMap
 		]
