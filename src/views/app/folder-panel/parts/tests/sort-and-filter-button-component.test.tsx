@@ -46,12 +46,20 @@ describe('Sort and filter button component', () => {
 		{ label: 'Subject', value: 'subj' },
 		{ label: 'From', value: 'name' }
 	];
+
+	const DIRECTION_OPTION = [
+		{ label: 'sorting_dropdown.descendingOrder', value: 'Asc' },
+		{ label: 'sorting_dropdown.ascendingOrder', value: 'Desc' }
+	];
 	const COMBINATIONS = SORT_OPTION.flatMap((sort) =>
-		FILTER_OPTION.map((filter) => ({
-			sortValue: sort.value.toLowerCase(),
-			filterLabel: filter.label,
-			filterValue: filter.value
-		}))
+		FILTER_OPTION.flatMap((filter) =>
+			DIRECTION_OPTION.map((direction) => ({
+				sortValue: sort.value,
+				filterLabel: filter.label,
+				filterValue: filter.value,
+				directionValue: direction.value
+			}))
+		)
 	);
 
 	// TODO: Check if they are needed
@@ -91,20 +99,22 @@ describe('Sort and filter button component', () => {
 	// we need to take care also about direction
 	test.each(COMBINATIONS)(
 		'should be called with the relative zimbraPref - %s',
-		async ({ sortValue, filterLabel, filterValue }) => {
+		async ({ sortValue, filterLabel, filterValue, directionValue }) => {
 			const settings = generateSettings({
-				prefs: { zimbraPrefSortOrder: `${FOLDER_ID}:${sortValue}-Desc` }
+				prefs: { zimbraPrefSortOrder: `${FOLDER_ID}:${sortValue}-${directionValue}` }
 			});
 			useUserSettings.mockReturnValue(settings);
 			const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
 
-			await user.click(screen.getByTestId('icon: AzListOutline'));
+			const icon = directionValue === 'Desc' ? 'icon: AzListOutline' : 'icon: ZaListOutline';
+
+			await user.click(screen.getByTestId(icon));
 			await user.click(screen.getByText(filterLabel));
 
 			expect(editSettings).toHaveBeenCalledWith({
 				prefs: {
 					zimbraPrefSortOrder: expect.stringContaining(
-						`${FOLDER_ID}:${sortValue}-Desc-${filterValue}`
+						`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
 					)
 				}
 			});
