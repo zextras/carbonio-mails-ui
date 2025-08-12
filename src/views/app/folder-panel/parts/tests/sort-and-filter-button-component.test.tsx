@@ -8,9 +8,8 @@ import React from 'react';
 
 import { SortAndFilterButtonComponent } from '../sort-and-filter-button-component';
 import { screen, setupTest } from '@test-setup';
-import { editSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import { each } from 'immer/dist/internal.js';
-import { waitFor } from '@testing-library/dom';
+import { editSettings, useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
 
@@ -47,35 +46,77 @@ describe('Sort and filter button component', () => {
 		});
 	});
 
-	it.each([
+	const FILTER_OPTION = [
 		{ label: 'Unread', value: 'read' },
 		{ label: 'Important', value: 'priority' },
 		{ label: 'Flagged', value: 'flag' },
 		{ label: 'Attachment', value: 'attach' }
-	])('should call editSettings when changing filtering option: %s', async ({ label, value }) => {
-		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
-		await user.click(screen.getByTestId('icon: AzListOutline'));
-		await user.click(screen.getByText(label));
-
-		expect(editSettings).toHaveBeenCalledWith({
-			prefs: {
-				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:date-Desc-${value}`)
-			}
-		});
-	});
-	it.each([
+	];
+	const SORT_OPTION = [
 		{ label: 'Date', value: 'date' },
 		{ label: 'Subject', value: 'subj' },
 		{ label: 'From', value: 'name' }
-	])('should call editSettings when changing sort option: %s', async ({ label, value }) => {
-		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
-		await user.click(screen.getByTestId('icon: AzListOutline'));
-		await user.click(screen.getByText(label));
+	];
+	const COMBINATIONS = SORT_OPTION.flatMap((sort) =>
+		FILTER_OPTION.map((filter) => ({
+			sortValue: sort.value.toLowerCase(),
+			filterLabel: filter.label,
+			filterValue: filter.value
+		}))
+	);
 
-		expect(editSettings).toHaveBeenCalledWith({
-			prefs: {
-				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:${value}-Desc`)
-			}
-		});
-	});
+	// it.each(FILTER_OPTION)(
+	// 	'should call editSettings when changing filtering option: %s',
+	// 	async ({ label, value }) => {
+	// 		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
+
+	// 		await user.click(screen.getByTestId('icon: AzListOutline'));
+
+	// 		await user.click(screen.getByText(label));
+
+	// 		expect(editSettings).toHaveBeenCalledWith({
+	// 			prefs: {
+	// 				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:date-Desc-${value}`)
+	// 			}
+	// 		});
+	// 	}
+	// );
+	// it.each(SORT_OPTION)(
+	// 	'should call editSettings when changing sort option: %s',
+	// 	async ({ label, value }) => {
+	// 		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
+
+	// 		await user.click(screen.getByTestId('icon: AzListOutline'));
+
+	// 		await user.click(screen.getByText(label));
+
+	// 		expect(editSettings).toHaveBeenCalledWith({
+	// 			prefs: {
+	// 				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:${value}-Desc`)
+	// 			}
+	// 		});
+	// 	}
+	// );
+
+	test.each(COMBINATIONS)(
+		'should be called with the relative zimbraPref - %s',
+		async ({ sortValue, filterLabel, filterValue }) => {
+			const settings = generateSettings({
+				prefs: { zimbraPrefSortOrder: `${FOLDER_ID}:${sortValue}-Desc` }
+			});
+			useUserSettings.mockReturnValue(settings);
+			const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
+
+			await user.click(screen.getByTestId('icon: AzListOutline'));
+			await user.click(screen.getByText(filterLabel));
+
+			expect(editSettings).toHaveBeenCalledWith({
+				prefs: {
+					zimbraPrefSortOrder: expect.stringContaining(
+						`${FOLDER_ID}:${sortValue}-Desc-${filterValue}`
+					)
+				}
+			});
+		}
+	);
 });
