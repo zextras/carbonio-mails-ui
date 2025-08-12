@@ -40,11 +40,12 @@ describe.each`
 				selectedItems={{}}
 				isSelected={false}
 				active
-				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
 				isSearchModule={isSearchModule}
 				visible
+				index={0}
+				onSelect={noop}
 			/>
 		));
 

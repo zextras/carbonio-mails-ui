@@ -17,7 +17,6 @@ export type ListItemComponentProps = {
 	selectedItems: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
-	toggle: (id: string) => void;
 	isSelectModeOn: boolean;
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
@@ -35,7 +34,6 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 	selectedItems,
 	isSelected,
 	active,
-	toggle,
 	isSelectModeOn,
 	dragImageRef,
 	isSearchModule,

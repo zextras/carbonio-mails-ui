@@ -47,6 +47,8 @@ function setUpConversationList({
 			toggleMultipleSelection={jest.fn()}
 			folderId={FOLDERS.INBOX}
 			setDraggedIds={jest.fn()}
+			index={0}
+			onSelect={jest.fn()}
 		/>
 	));
 
@@ -69,7 +71,8 @@ function setUpConversationList({
 		isSearchModule,
 		setIsSelectModeOn: jest.fn(),
 		dragImageRef,
-		loadMoreCallback
+		loadMoreCallback,
+		onSelect: jest.fn()
 	};
 
 	return setupTest(<ConversationListComponent {...props} />);

@@ -129,7 +129,6 @@ export const MessageList = (): React.JSX.Element => {
 									selectedItems={selectedItemsMap}
 									isSelected={isSelected}
 									active={active}
-									toggle={toggle}
 									isSelectModeOn={isSelectModeOn}
 									dragImageRef={dragImageRef}
 									draggedIds={draggedIds}
@@ -156,8 +155,7 @@ export const MessageList = (): React.JSX.Element => {
 			itemId,
 			messageListIndex,
 			selectedItems,
-			selectedItemsMap,
-			toggle
+			selectedItemsMap
 		]
 	);
 

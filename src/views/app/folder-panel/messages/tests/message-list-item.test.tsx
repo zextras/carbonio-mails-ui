@@ -35,12 +35,13 @@ describe('MessageListItem Component', () => {
 		message,
 		selected: false,
 		selecting: false,
-		toggle: jest.fn(),
 		isConvChildren: false,
 		visible: true,
 		active: false,
 		isSearchModule: false,
-		handleReplaceHistory: jest.fn()
+		handleReplaceHistory: jest.fn(),
+		index: 0,
+		onSelect: jest.fn()
 	};
 
 	beforeEach(() => {
