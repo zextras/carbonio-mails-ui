@@ -33,6 +33,7 @@ export const TextMessageRenderer: FC<{ body: { content: string; contentType: str
 	return (
 		<>
 			<Text
+				data-testid="text-message-renderer-container"
 				overflow="break-word"
 				color="text"
 				style={{ fontFamily: 'monospace' }}
