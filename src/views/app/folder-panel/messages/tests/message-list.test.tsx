@@ -22,7 +22,13 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from 'tests/constants';
 import { generateCompleteMessageFromAPI } from 'tests/generators/api';
-import { FolderState, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import {
+	FolderState,
+	MsgActionRequest,
+	MsgActionResponse,
+	SearchRequest,
+	SearchResponse
+} from 'types/index.d';
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
@@ -678,6 +684,64 @@ describe('message-list', () => {
 			// double check that 1 messages is still selected
 			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelectedAfterAction).toHaveLength(1);
+		});
+
+		it('enables select mode on first click and supports range selection with shift-click', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+
+			populateFoldersStore();
+
+			useTagStore.setState({ tags });
+			createSoapAPIInterceptor('Search', {
+				m: [message1, message2, message3],
+				more: false
+			});
+
+			const { user } = setupTest(<MessageList />);
+
+			await screen.findAllByTestId('invisible-item');
+			makeListItemsVisible();
+			// select the first conversation
+			const actionWrapper = await screen.findByTestId(`message-item-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// Shift-click to select a range
+			const actionWrapper2 = await screen.findByTestId(`message-item-3`);
+			await user.hover(actionWrapper2);
+			const itemAvatar2 = await screen.findByTestId('message-list-item-avatar-3');
+			const avatar2 = within(itemAvatar2).getByTestId('avatar');
+			await act(async () => {
+				await user.keyboard('{Shift>}');
+				await user.click(avatar2);
+				await user.keyboard('{/Shift}');
+			});
+
+			const totalItemsSelected2 = screen.getAllByTestId('icon: Checkmark');
+			await waitFor(() => {
+				expect(totalItemsSelected2).toHaveLength(3);
+			});
+
+			// Verify that, after unselecting the second element, the first and last items are selected
+			const actionWrapperMid = screen.getByTestId('message-item-2');
+			await user.hover(actionWrapperMid);
+			const itemAvatarMid = await screen.findByTestId('message-list-item-avatar-2');
+			const avatarMid = within(itemAvatarMid).getByTestId('avatar');
+
+			await act(async () => {
+				await user.click(avatarMid); // toggle OFF sul secondo
+			});
+
+			await waitFor(() => {
+				expect(within(itemAvatarMid).queryByTestId('icon: Checkmark')).not.toBeInTheDocument();
+			});
+			expect(screen.getAllByTestId('icon: Checkmark')).toHaveLength(2);
 		});
 	});
 });
