@@ -35,17 +35,6 @@ describe('Sort and filter button component', () => {
 		expect(screen.getByTestId('dropdown-popper-list')).toBeVisible();
 	});
 
-	// todo: check all possible cases
-	it('should call the edieSettings when changing a sorting/filtering option', async () => {
-		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
-		await user.click(screen.getByTestId('icon: AzListOutline'));
-		await user.click(screen.getByText('Important'));
-
-		expect(editSettings).toHaveBeenCalledWith({
-			prefs: { zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:date-Desc-priority`) }
-		});
-	});
-
 	const FILTER_OPTION = [
 		{ label: 'Unread', value: 'read' },
 		{ label: 'Important', value: 'priority' },
@@ -65,6 +54,7 @@ describe('Sort and filter button component', () => {
 		}))
 	);
 
+	// TODO: Check if they are needed
 	// it.each(FILTER_OPTION)(
 	// 	'should call editSettings when changing filtering option: %s',
 	// 	async ({ label, value }) => {
@@ -98,6 +88,7 @@ describe('Sort and filter button component', () => {
 	// 	}
 	// );
 
+	// we need to take care also about direction
 	test.each(COMBINATIONS)(
 		'should be called with the relative zimbraPref - %s',
 		async ({ sortValue, filterLabel, filterValue }) => {

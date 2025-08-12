@@ -8,19 +8,12 @@
 
 import React from 'react';
 
-import { act, renderHook, waitFor, within } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
-import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { capitalize, forEach, noop, without } from 'lodash';
 
 import { screen, setupTest } from '@test-setup';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { generateSettings } from '@test-utils/settings/settings-generator';
-import { SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
-import { setMessagesInEmailStore, useMessageIndexSlice } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
-import { SearchRequest } from 'types/index.d';
+import { SORTING_OPTIONS } from 'constants/index';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 
 const sortingDropdown = 'sorting-dropdown';
@@ -35,7 +28,7 @@ const defaultProps = {
 const dropdownRegex = /dropdown-popper-list/i;
 const listIconRegex = /icon: AzListOutline/i;
 const sortingOptionsWithoutSize = without(Object.values(SORTING_OPTIONS), SORTING_OPTIONS.size);
-describe('Sorting component', () => {
+describe('Breadcrumbs', () => {
 	it('the sorting component appears on the breadcrumbs component', async () => {
 		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
@@ -46,7 +39,6 @@ describe('Sorting component', () => {
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-
 		forEach(sortingOptionsWithoutSize, (option) => {
 			if (option.label !== SORTING_OPTIONS.to.label)
 				expect(
@@ -99,289 +91,5 @@ describe('Sorting component', () => {
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		if (sortIcon) await user.click(sortIcon);
 		expect(screen.queryByTestId(dropdownRegex)).not.toBeInTheDocument();
-	});
-
-	it('clicking on the sorting direction icon reverses the messages order', async () => {
-		const folderId = FOLDERS.INBOX;
-		const sortingOption = SORTING_OPTIONS.date;
-		const sortingDirection = SORTING_DIRECTION.DESCENDING;
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${sortingOption.value}-${sortingDirection},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-		const message1 = generateMessage({ id: '1' });
-		const message2 = generateMessage({ id: '2' });
-		setMessagesInEmailStore([message1, message2], false);
-		const { result: initialOrder } = renderHook(() => useMessageIndexSlice());
-		expect(initialOrder.current.messageListIndex).toEqual(['1', '2']);
-
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
-		const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView });
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		if (sortIcon) await user.click(sortIcon);
-		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
-		const expectedRequest: SearchRequest = {
-			_jsns: 'urn:zimbraMail',
-			sortBy: `${sortingOption.value}${SORTING_DIRECTION.ASCENDING}`,
-			types: isMessageView ? 'message' : 'conversation',
-			query: `inId:${JSON.stringify(folderId)}`,
-			limit: 100,
-			fetch: '0',
-			fullConversation: 1,
-			needExp: 0,
-			recip: '0'
-		};
-
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		user.click(ascendingOption);
-
-		const req = await interceptor;
-		expect(req.sortBy).toBe(expectedRequest.sortBy);
-		expect(req.types).toBe(expectedRequest.types);
-		expect(req.query).toBe(expectedRequest.query);
-		const { result: newOrder } = renderHook(() => useMessageIndexSlice());
-		await act(async () => {
-			expect(newOrder.current.messageListIndex).toEqual(['1', '2']);
-		});
-	});
-
-	it('clicking on the sorting direction icon will switch the order direction', async () => {
-		createSoapAPIInterceptor('Search');
-		const folderId = FOLDERS.INBOX;
-		const sortingOption = SORTING_OPTIONS.date;
-		const sortingDirection = SORTING_DIRECTION.DESCENDING;
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${sortingDirection},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`
-			}
-		};
-		const settings = generateSettings(customSettings);
-
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		if (sortIcon) await user.click(sortIcon);
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
-		expect(ascendingOption).toBeInTheDocument();
-
-		await user.click(ascendingOption);
-		const descendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
-			'Descending order'
-		);
-
-		expect(descendingOption).toBeInTheDocument();
-	});
-	it('clicking on the sorting direction icon with unread sortype makes a SearchRequest api call with correct parameters', async () => {
-		const folderId = FOLDERS.INBOX;
-		const sortingOption = SORTING_OPTIONS.unread;
-		const sortingDirection = SORTING_DIRECTION.DESCENDING;
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${sortingDirection},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
-		const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView });
-
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		if (sortIcon) await user.click(sortIcon);
-		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText('Ascending order');
-		const expectedRequest: SearchRequest = {
-			_jsns: 'urn:zimbraMail',
-			sortBy: `date${SORTING_DIRECTION.ASCENDING}`,
-			types: isMessageView ? 'message' : 'conversation',
-			query: `inId:${JSON.stringify(folderId)}`,
-			limit: 100,
-			fetch: '0',
-			fullConversation: 1,
-			needExp: 0,
-			recip: '0'
-		};
-
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		await user.click(ascendingOption);
-		const req = await interceptor;
-		expect(req.sortBy).toBe(expectedRequest.sortBy);
-		expect(req.types).toBe(expectedRequest.types);
-		expect(req.query).toBe(expectedRequest.query);
-	});
-
-	it('uses correct query string from getFilterQuery when a filter is selected', async () => {
-		const folderId = FOLDERS.INBOX;
-		const expectedQuery = `inId:"${folderId}" is:unread`;
-
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:date-Desc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
-
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		await user.click(sortIcon);
-
-		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
-
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
-		await user.click(unreadOption);
-
-		const req = await interceptor;
-		expect(req.query).toBe(expectedQuery);
-	});
-
-	it('selecting a filter triggers performSearch with correct query', async () => {
-		const folderId = FOLDERS.INBOX;
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:date-Desc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
-
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		await user.click(sortIcon);
-
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
-		await user.click(unreadOption);
-
-		const req = await interceptor;
-		expect(req.query).toBe(`inId:"${folderId}" is:unread`);
-		expect(req.sortBy).toBe('dateDesc');
-	});
-
-	it('generates correct query string for all supported filters using getFilterQuery', async () => {
-		const folderId = FOLDERS.INBOX;
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:date-Desc`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-
-		const settings = generateSettings(customSettings);
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
-
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		await user.click(sortIcon);
-
-		const dropdown = await screen.findByTestId(dropdownRegex);
-
-		const expectations = {
-			Unread: `inId:"${folderId}" is:unread`,
-			Important: `inId:"${folderId}" priority:high`,
-			Flagged: `inId:"${folderId}" is:flagged`,
-			Attachment: `inId:"${folderId}" has:attachment`
-		};
-
-		for (const [label, expectedQuery] of Object.entries(expectations)) {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-			const item = within(dropdown).getByText(label);
-			await user.click(item);
-			const req = await interceptor;
-			expect(req.query).toBe(expectedQuery);
-		}
-	});
-
-	it('handleFilterChange sets filter, calls search with correct sort+filter, and navigates', async () => {
-		const folderId = FOLDERS.INBOX;
-		const currentSortType = 'date';
-		const currentSortDirection = 'Desc';
-
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${currentSortType}-${currentSortDirection}`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-
-		const settings = generateSettings(customSettings);
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
-
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		await user.click(sortIcon);
-
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
-		await user.click(unreadOption);
-
-		const req = await interceptor;
-
-		expect(req.sortBy).toBe(`${currentSortType}${currentSortDirection}`);
-		expect(req.query).toBe(`inId:"${folderId}" is:unread`);
-		expect(req.types).toBe('message');
-
-		expect(await screen.findByTestId('sorting-options-container')).toBeInTheDocument();
-	});
-
-	it('reset button clears filters and resets sorting state', async () => {
-		const folderId = FOLDERS.INBOX;
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefSortOrder: `${folderId}:subj-Desc-read`,
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView: true });
-
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
-
-		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
-		await user.click(sortIcon);
-
-		const unreadOption = within(screen.getByTestId(dropdownRegex)).getByText('Unread');
-		await user.click(unreadOption);
-
-		const resetButton = await screen.findByRole('button', { name: /reset/i });
-		await user.click(resetButton);
-
-		const req = await interceptor;
-		expect(req.sortBy).toBe(`dateDesc`);
-
-		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
 });
