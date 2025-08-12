@@ -3,20 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import Autolinker from 'autolinker';
 
 import {
 	getOriginalTextContent,
 	getQuotedTextFromOriginalContent
 } from 'commons/get-quoted-text-util';
-import { plainTextToHTML, replaceLinkToAnchor } from 'commons/utils';
+import { plainTextToHTML } from 'commons/utils';
 
-export const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({
-	body
-}) => {
+type TextMessageRendererType = {
+	body: { content: string };
+};
+
+export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JSX.Element => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const originalText = getOriginalTextContent(body.content);
 	const quoted = getQuotedTextFromOriginalContent(body.content, originalText);
@@ -27,7 +30,14 @@ export const TextMessageRenderer: FC<{ body: { content: string; contentType: str
 	);
 
 	const convertedHTML = useMemo(
-		() => replaceLinkToAnchor(plainTextToHTML(contentToDisplay)),
+		() =>
+			Autolinker.link(plainTextToHTML(contentToDisplay), {
+				urls: { schemeMatches: true, tldMatches: true, ipV4Matches: false },
+				newWindow: true, // open links in new tab
+				stripPrefix: false, // keep "www."
+				stripTrailingSlash: false, // keep trailing slashes
+				sanitizeHtml: true // avoid XSS
+			}),
 		[contentToDisplay]
 	);
 	return (
