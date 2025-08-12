@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
@@ -31,17 +31,45 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 }: SearchConversationMessagesListProps): React.JSX.Element {
 	const navigate = useNavigate();
 
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
-	const { toggleItemSelection: toggle, isSelectModeOn } = useMultipleSelection({
+	const {
+		toggleItemSelection: toggle,
+		isSelectModeOn,
+		selectRange
+	} = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
 	});
 
+	const handleItemClick = useCallback(
+		(index: number, id: string, event: React.MouseEvent) => {
+			if (!isSelectModeOn) {
+				// First click: turn on selection mode and select the item
+				toggle(id);
+				setLastSelectedIndex(index);
+				return;
+			}
+
+			// Selection mode is on
+			if (event.shiftKey && lastSelectedIndex !== null) {
+				const start = Math.min(lastSelectedIndex, index);
+				const end = Math.max(lastSelectedIndex, index);
+				const idsToSelect = messages.map((message) => message.id).slice(start, end + 1);
+				selectRange(idsToSelect);
+			} else {
+				toggle(id);
+				setLastSelectedIndex(index);
+			}
+		},
+		[isSelectModeOn, lastSelectedIndex, toggle, messages, selectRange]
+	);
+
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
+			map(messages, (message, index) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
 				const isSelected = selectedItems.has(message.id);
 				const handleSearchReplaceHistory = (): void => {
@@ -62,12 +90,13 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 									selected={isSelected}
 									selecting={isSelectModeOn}
 									visible={visible}
-									toggle={toggle}
 									active={isActive}
 									isConvChildren
 									currentFolderId={message.parent}
 									handleReplaceHistory={handleSearchReplaceHistory}
 									isSearchModule
+									index={index}
+									onSelect={handleItemClick}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} />
@@ -76,7 +105,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[activeItemId, isSelectModeOn, messages, navigate, selectedItems, toggle]
+		[activeItemId, handleItemClick, isSelectModeOn, messages, navigate, selectedItems]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
