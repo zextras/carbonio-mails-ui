@@ -43,6 +43,21 @@ export const getFilterQuery = (filter: string | undefined, folderId: string): st
 	}
 };
 
+function findFolderEntry(
+	prefSortOrder: string,
+	folderId: string
+): { currentFolder: string | undefined; parameters: string[] | undefined } {
+	if (!folderId || !prefSortOrder) return { currentFolder: undefined, parameters: undefined };
+
+	const folders = prefSortOrder.split(',');
+	const currentFolder = folders.find((folder) => folder.startsWith(`${folderId}:`));
+	if (!currentFolder) return { currentFolder: undefined, parameters: undefined };
+
+	const parameters = currentFolder.replace(',BDLV', '').replace(`${folderId}:`, '').split('-');
+
+	return { currentFolder, parameters };
+}
+
 export function parseMessageSortingOptions(
 	folderId: string,
 	prefSortOrder?: string
@@ -50,11 +65,7 @@ export function parseMessageSortingOptions(
 	if (!prefSortOrder || !folderId) {
 		return fallbackSortOrder;
 	}
-
-	const folders = prefSortOrder.split(',');
-	const currentFolder = folders.find((folder) => folder.startsWith(`${folderId}:`));
-	const parameters = currentFolder?.replace(`,BDLV`, '').replace(`${folderId}:`, '').split('-');
-
+	const { parameters } = findFolderEntry(prefSortOrder ?? '', folderId);
 	if (parameters?.length === 2) {
 		return {
 			sortType: parameters[0],
@@ -76,13 +87,12 @@ function modifySettingString(
 	prefToUpdate: string,
 	folderId?: string
 ): string | undefined {
-	const folders = zimbraPrefSortOrder.split(',');
-	const folderToUpdate = folders.find((folder) => folder.startsWith(`${folderId}:`));
-	if (!folderToUpdate) {
+	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId ?? '');
+	if (!currentFolder) {
 		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
 		return replacedString.concat(`,${prefToUpdate},BDLV`);
 	}
-	return folderToUpdate && zimbraPrefSortOrder.replace(folderToUpdate, prefToUpdate);
+	return currentFolder && zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
 }
 
 export function updateSortAndFilterSettings({
