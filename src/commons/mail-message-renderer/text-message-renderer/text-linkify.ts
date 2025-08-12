@@ -50,7 +50,7 @@ export function linkifyToHtml(rawText: string, options?: LinkifyOptions): string
 
 	// Re-create mailto anchors
 	const withMailto = rawText.replace(MAILTO_EMAIL_REGEX, (match, email, query) => {
-		const href = `mailto:${email}${query || ''}`;
+		const href = `mailto:${email}${query ?? ''}`;
 		return `<a href="${href}"${attrs}>${match}</a>`;
 	});
 
