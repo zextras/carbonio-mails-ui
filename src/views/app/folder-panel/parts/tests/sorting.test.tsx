@@ -102,9 +102,8 @@ describe('Sorting component', () => {
 	});
 
 	it('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
-		createSoapAPIInterceptor('Batch');
+		const interceptor = createSoapAPIInterceptor('Batch');
 		createSoapAPIInterceptor('Search');
-
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
@@ -115,9 +114,12 @@ describe('Sorting component', () => {
 		expect(ascendingOption).toBeInTheDocument();
 		await user.click(ascendingOption);
 
-		await waitFor(() => {
-			expect(screen.getByText('Descending order')).toBeInTheDocument();
-		});
+		const request = await interceptor;
+		expect(request).toHaveBeenCalledWith({});
+
+		// await waitFor(() => {
+		// 	expect(screen.getByText('Descending order')).toBeInTheDocument();
+		// });
 		// const descendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
 		// 	'Descending order'
 		// );

@@ -142,15 +142,6 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[filterType, sortDirection, sortType, filteringOptions, folderId, prefSortOrder, t]
 	);
 
-	const sortLabelItem: DropdownItem = useMemo(
-		() => ({
-			id: 'sort-label',
-			disabled: true,
-			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
-		}),
-		[t]
-	);
-
 	const sortItems: DropdownItem[] = useMemo(
 		() =>
 			sortingOptions.map(({ value, label }) => ({
@@ -169,6 +160,15 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 				icon: getRadioIcon(sortType, value)
 			})),
 		[filterType, sortDirection, sortType, folderId, prefSortOrder, sortingOptions, t]
+	);
+
+	const sortLabelItem: DropdownItem = useMemo(
+		() => ({
+			id: 'sort-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
+		}),
+		[t]
 	);
 
 	return useMemo(
