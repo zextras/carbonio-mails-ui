@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS: Required<LinkifyOptions> = {
 	autolinker: {
 		urls: { schemeMatches: true, tldMatches: true, ipV4Matches: false },
 		email: false,
+		phone: true,
 		newWindow: true,
 		stripPrefix: false,
 		stripTrailingSlash: false
@@ -41,9 +42,9 @@ function asAttrs(opts: Required<LinkifyOptions>): string {
 }
 
 /**
- * Converts raw text to HTML with linkified URLs and email addresses.
+ * Converts raw text to HTML with linkified URLs,email addresses, MailTo, and Tel links.
  *
- * @param rawText - The input text containing URLs and email addresses.
+ * @param rawText - The input text containing URLs and email addresses, Telephone numbers.
  * @param options - Optional configuration for linkification.
  * @returns The HTML string with linkified content.
  */

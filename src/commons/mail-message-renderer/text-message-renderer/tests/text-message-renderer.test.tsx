@@ -355,6 +355,24 @@ describe('TextMessageRenderer', () => {
 		});
 	});
 
+	describe('Telephone number handling', () => {
+		it('converts telephone numbers into links', () => {
+			const content = 'Call me at +1234567890';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toBeInTheDocument();
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'tel:+1234567890');
+		});
+
+		it('converts telephone numbers with special characters into links', () => {
+			const content = 'Call me at +1 (234) 567-8900';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toBeInTheDocument();
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'tel:+12345678900');
+		});
+	});
+
 	describe('Edge cases', () => {
 		it('handles content that looks like a URL but is not', () => {
 			const content = 'This is not a URL: http://';
