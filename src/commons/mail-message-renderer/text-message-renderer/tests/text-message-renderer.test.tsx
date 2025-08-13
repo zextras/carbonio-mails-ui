@@ -10,7 +10,7 @@ import { TextMessageRenderer } from '../text-message-renderer';
 import { setupTest, screen } from '@test-setup';
 
 describe('TextMessageRenderer', () => {
-	describe('Basic text rendering', () => {
+	describe('Basic text handling', () => {
 		it('renders nothing when content is empty', () => {
 			setupTest(<TextMessageRenderer body={{ content: '' }} />);
 			expect(screen.getByTestId('text-message-renderer-container')).toBeEmptyDOMElement();
