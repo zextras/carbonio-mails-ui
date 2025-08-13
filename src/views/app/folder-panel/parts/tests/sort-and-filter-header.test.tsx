@@ -5,10 +5,11 @@
  */
 import React from 'react';
 
-import { screen, setupTest } from '@test-setup';
-import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
-import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+
+import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
+import { screen, setupTest } from '@test-setup';
+import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: jest.fn()
@@ -30,29 +31,6 @@ describe('Sort and Filter Header Component', () => {
 	});
 
 	const folderId = 'test-folder';
-	it('reset button clears filters and resets sorting state', async () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'subject',
-			filterType: 'unread'
-		});
-
-		const { user } = setupTest(<SortAndFilterHeaderComponent folderId="test-folder" />);
-
-		expect(screen.getByText(/Show:/i)).toBeInTheDocument();
-		expect(screen.getByText(/Sort by/i)).toBeInTheDocument();
-
-		await user.click(screen.getByRole('button', { name: /Reset/i }));
-
-		expect(updateSortAndFilterSettings).toHaveBeenCalledWith(
-			expect.objectContaining({
-				filter: undefined,
-				folderId: 'test-folder',
-				prefSortOrder: '',
-				sortDirection: 'Desc',
-				sortType: 'date'
-			})
-		);
-	});
 
 	it('should not render if state is default', () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({

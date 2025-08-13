@@ -46,7 +46,6 @@ describe('Sort and filter button component', () => {
 		{ label: 'Subject', value: 'subj' },
 		{ label: 'From', value: 'name' }
 	];
-
 	const DIRECTION_OPTION = [
 		{ label: 'sorting_dropdown.descendingOrder', value: 'Asc' },
 		{ label: 'sorting_dropdown.ascendingOrder', value: 'Desc' }
@@ -62,41 +61,6 @@ describe('Sort and filter button component', () => {
 		)
 	);
 
-	// TODO: Check if they are needed
-	// it.each(FILTER_OPTION)(
-	// 	'should call editSettings when changing filtering option: %s',
-	// 	async ({ label, value }) => {
-	// 		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
-
-	// 		await user.click(screen.getByTestId('icon: AzListOutline'));
-
-	// 		await user.click(screen.getByText(label));
-
-	// 		expect(editSettings).toHaveBeenCalledWith({
-	// 			prefs: {
-	// 				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:date-Desc-${value}`)
-	// 			}
-	// 		});
-	// 	}
-	// );
-	// it.each(SORT_OPTION)(
-	// 	'should call editSettings when changing sort option: %s',
-	// 	async ({ label, value }) => {
-	// 		const { user } = setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
-
-	// 		await user.click(screen.getByTestId('icon: AzListOutline'));
-
-	// 		await user.click(screen.getByText(label));
-
-	// 		expect(editSettings).toHaveBeenCalledWith({
-	// 			prefs: {
-	// 				zimbraPrefSortOrder: expect.stringContaining(`${FOLDER_ID}:${value}-Desc`)
-	// 			}
-	// 		});
-	// 	}
-	// );
-
-	// we need to take care also about direction
 	test.each(COMBINATIONS)(
 		'should be called with the relative zimbraPref - %s',
 		async ({ sortValue, filterLabel, filterValue, directionValue }) => {
