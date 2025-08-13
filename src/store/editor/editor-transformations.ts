@@ -10,7 +10,6 @@ import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
-	getAttachmentParts,
 	getCidFromCidUrl,
 	isCidUrl,
 	isContentIdEqual,
@@ -27,8 +26,6 @@ import { getCompleteMessageId } from 'store/utils';
 import {
 	MailAttachment,
 	MailAttachmentParts,
-	MailMessage,
-	MailMessagePart,
 	MailsEditorV2,
 	MsgAttach,
 	Participant,
@@ -313,8 +310,7 @@ export const composeAttachMpField = (
 	attachments.forEach((attachment) => {
 		result.push({
 			mid: attachment.messageId,
-			part: attachment.partName,
-			requiresSmartLinkConversion: attachment.requiresSmartLinkConversion
+			part: attachment.partName
 		});
 	});
 	return result;
@@ -426,20 +422,3 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 
 export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
 	createSoapMessageRequestFromEditor(editor, 'sendmsg');
-
-export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message.parts);
-	const isProbablyInline = (part: MailMessagePart): boolean =>
-		part.disposition === 'inline' || (!!part.ci && part.contentType?.startsWith('image/'));
-
-	return attachmentsParts.map<SavedAttachment>((part) => ({
-		messageId: message.id,
-		isInline: isProbablyInline(part),
-		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
-		filename: part.filename ?? '',
-		partName: part.name,
-		contentType: part.contentType,
-		size: part.size,
-		requiresSmartLinkConversion: part.requiresSmartLinkConversion
-	}));
-};

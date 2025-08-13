@@ -39,14 +39,12 @@ describe('get-message', () => {
 						{
 							part: 'att1,att2',
 							ct: 'multipart/alternative',
-							filename: 'smime.p7m',
-							requiresSmartLinkConversion: false
+							filename: 'smime.p7m'
 						},
 						{
 							part: 'att1',
 							ct: 'multipart/alternative',
-							filename: 'demo.file',
-							requiresSmartLinkConversion: false
+							filename: 'demo.file'
 						}
 					]
 				})

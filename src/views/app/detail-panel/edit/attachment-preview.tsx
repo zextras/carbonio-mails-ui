@@ -3,18 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 
 import {
 	Container,
 	getColor,
-	Icon,
 	IconButton,
 	Padding,
 	Row,
 	Text,
-	Tooltip,
-	useTheme
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
@@ -35,7 +33,6 @@ import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/
 import StyledWrapper from 'styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/attachment-upload-status';
-import { ToggleSmartLinkButton } from 'views/app/detail-panel/edit/parts/toggle-smart-link-button';
 import { getAttachmentsLink } from 'views/app/detail-panel/preview/utils/index';
 
 const AttachmentHoverBarContainer = styled(Container)`
@@ -43,14 +40,11 @@ const AttachmentHoverBarContainer = styled(Container)`
 `;
 
 const AttachmentContainer = styled(Container)<{
-	$requiresSmartLinkConversion: boolean;
 	$hoverBarDisabled: boolean;
 }>`
-	border-bottom: ${({ $requiresSmartLinkConversion, theme, background }): string => {
+	border-bottom: ${({ theme, background }): string => {
 		const color = getColor(`${background}.regular`, theme);
-		return $requiresSmartLinkConversion
-			? `1px solid ${theme.palette.primary.regular}`
-			: `1px solid ${color}`;
+		return `1px solid ${color}`;
 	}};
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
@@ -103,44 +97,12 @@ const AttachmentExtension = styled(Text)<{
 type AttachmentCardProps = {
 	editorId: MailsEditorV2['id'];
 	attachment: UnsavedAttachment | SavedAttachment;
-	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
 };
 
-export const AttachmentPreview: FC<AttachmentCardProps> = ({
-	editorId,
-	attachment,
-	setLargeFileUploadInfoBannerVisible
-}) => {
+export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
 
-	const attachmentHasBeenSaved = isSavedAttachment(attachment);
-
-	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			setLargeFileUploadInfoBannerVisible(true);
-		}, 5_000);
-		if (attachmentHasBeenSaved) {
-			setLargeFileUploadInfoBannerVisible(false);
-			clearTimeout(timeoutId);
-		}
-		return () => {
-			setLargeFileUploadInfoBannerVisible(false);
-			clearTimeout(timeoutId);
-		};
-	}, [attachmentHasBeenSaved, setLargeFileUploadInfoBannerVisible]);
-
-	const requiresSmartLinkConversion =
-		isSavedAttachment(attachment) && attachment?.requiresSmartLinkConversion;
-
-	const attachmentExtensionContent = useMemo(
-		() =>
-			requiresSmartLinkConversion ? (
-				<Icon icon="Link2Outline" size="large" color="primary" />
-			) : (
-				extension
-			),
-		[extension, requiresSmartLinkConversion]
-	);
+	const attachmentExtensionContent = useMemo(() => extension, [extension]);
 
 	const sizeLabel = getSizeDescription(attachment.size);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -162,10 +124,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
 	const attachItemColor = useAttachmentIconColor(attachment);
-	const attachmentExtensionColor = useMemo(
-		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
-		[attachItemColor, requiresSmartLinkConversion]
-	);
+	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
 	const isUploading = useMemo<boolean>(
 		() => isUnsavedAttachment(attachment) && isAttachmentUploading(attachment),
@@ -195,15 +154,6 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 		[attachment]
 	);
 
-	const theme = useTheme();
-
-	const backgroundColor = useMemo(() => {
-		if (requiresSmartLinkConversion) {
-			return theme.palette.infoBanner.regular;
-		}
-		return 'gray3';
-	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
-
 	return (
 		<StyledWrapper>
 			<AttachmentContainer
@@ -211,10 +161,9 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 				mainAlignment="flex-start"
 				crossAlignment={'center'}
 				height="fit"
-				background={backgroundColor}
+				background={'gray3'}
 				data-testid={`attachment-container-${attachment.filename}`}
 				$hoverBarDisabled={isUploading}
-				$requiresSmartLinkConversion={requiresSmartLinkConversion}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -232,7 +181,6 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-							{requiresSmartLinkConversion && <Padding top="small" />}
 							<Padding style={{ width: '100%' }} bottom="extrasmall">
 								<Text size={'small'}>
 									{attachment.filename ||
@@ -242,13 +190,9 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 										})}
 								</Text>
 							</Padding>
-							{!requiresSmartLinkConversion ? (
-								<Text color="gray1" size={'small'}>
-									{sizeLabel}
-								</Text>
-							) : (
-								<Padding top="small" />
-							)}
+							<Text color="gray1" size={'small'}>
+								{sizeLabel}
+							</Text>
 						</Row>
 					</Row>
 				</Tooltip>
@@ -262,7 +206,6 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 				<Row orientation="horizontal" crossAlignment="center">
 					<AttachmentHoverBarContainer>
 						<Row>
-							<ToggleSmartLinkButton editorId={editorId} attachment={attachment} />
 							{isDeletable && (
 								<Padding right="small">
 									<Tooltip label={t('label.delete', 'Delete')}>

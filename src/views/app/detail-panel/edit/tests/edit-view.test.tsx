@@ -21,7 +21,6 @@ import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
 import type {
-	CreateSmartLinksRequest,
 	MailsEditorV2,
 	SaveDraftRequest,
 	SaveDraftResponse,
@@ -33,7 +32,6 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
-import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import {
@@ -48,7 +46,6 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import {
@@ -60,6 +57,7 @@ import {
 import { setupEditorStore } from 'tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
 import { generateMessage } from 'tests/generators/generateMessage';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -126,16 +124,6 @@ const getSoapMailBodyContent = (
 	return '';
 };
 
-const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-		'CreateSmartLinks',
-		buildSoapErrorResponseBody({
-			detailCode: 'Failed upload to Files',
-			code: '123',
-			reason: 'Failed due to connection timeout'
-		})
-	);
-
 const createCheckSmimeEnabledAPIInterceptor = (): void => {
 	createAPIInterceptor(
 		'get',
@@ -197,6 +185,7 @@ describe('Edit view', () => {
 			createSoapAPIInterceptor('GetShareInfo');
 		});
 		const invalidEmailAddress = 'invalidmailaddress.com';
+
 		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
@@ -560,6 +549,9 @@ describe('Edit view', () => {
 	});
 
 	describe('send email', () => {
+		beforeEach(() => {
+			jest.clearAllTimers();
+		});
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
 				'post',
@@ -604,47 +596,47 @@ describe('Edit view', () => {
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
 		});
-		describe('with attachment to convert to smart link', () => {
-			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-				createAPIInterceptor(
-					'post',
-					'/service/soap/GetShareInfoRequest',
-					HttpResponse.json(getEmptyMSWShareInfoResponse())
-				);
-				createCheckSmimeEnabledAPIInterceptor();
-				// setup api interceptor and mail to send editor
-				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
-				setupEditorStore({ editors: [] });
-				const editor = await readyToBeSentEditorTestCase({
-					id: '123-testId',
-					did: '123-testId',
-					savedAttachments: [
-						{
-							filename: 'large-document.pdf',
-							contentType: 'application/pdf',
-							requiresSmartLinkConversion: true,
-							size: 81290955,
-							messageId: '123-testId',
-							partName: '2',
-							isInline: false
-						}
-					]
-				});
-				addEditor({ id: editor.id, editor });
 
-				const { user } = setupTest(
-					<EditView {...{ editorId: editor.id, closeController: noop }} />
-				);
-				const btnSend = screen.queryByTestId('BtnSendMailMulti');
-				await waitFor(() => expect(btnSend).toBeEnabled());
-				await act(async () => {
-					await user.click(btnSend as HTMLElement);
-				});
+		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createCheckSmimeEnabledAPIInterceptor();
 
-				await apiInterceptor;
-				await waitFor(() => screen.findByText('label.error_try_again'));
-				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId'
 			});
+			setupEditorStore({ editors: [editor] });
+			addEditor({ id: editor.id, editor });
+
+			createSoapAPIInterceptor(
+				'SendMsg',
+				buildSoapErrorResponseBody({
+					code: 'soap:Sender',
+					detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+					reason:
+						'Invalid address: abc@example.com.  com.zimbra.cs.mailbox.MailSender$SafeSendFailedException: MESSAGE_NOT_DELIVERED; chained exception is:\n\tcom.zimbra.cs.mailclient.smtp.InvalidRecipientException: RCPT failed: Invalid recipient abc@example.com: 550 5.1.1 <abc@example.com>: Recipient address rejected',
+					trace: 'qtp630298110-27889:1754665448505:7f9325b88e4f881d'
+				})
+			);
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const btnSend = await screen.findByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			await act(async () => {
+				jest.advanceTimersByTime(4000);
+			});
+
+			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
 		});
 	});
 

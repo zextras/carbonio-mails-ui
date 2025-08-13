@@ -4,19 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
-import { createSmartLinksSoapApi } from 'api/create-smart-links-soap-api';
-import { useEditorsStore } from 'store/editor/store';
-import type {
-	CreateSmartLinksResponse,
-	SmartLinkUrl,
-	MailsEditorV2,
-	MessageAction
-} from 'types/index.d';
+import type { MailsEditorV2, MessageAction } from 'types/index.d';
 
 /**
  *
@@ -34,14 +25,45 @@ export const findMessageActionById = (
 	return find(actions, ['id', id]);
 };
 
+export function insertAboveSignature(htmlContent: string, contentToInsert: string): string {
+	// Parse the HTML string into a DOM document
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(htmlContent, 'text/html');
+
+	// Find the signature div
+	const signatureDiv = Array.from(doc.querySelectorAll('div')).find((div) =>
+		div.classList.contains('signature-div')
+	);
+
+	// Parse the content to insert
+	const contentDoc = parser.parseFromString(contentToInsert, 'text/html');
+	const contentNodes = Array.from(contentDoc.body.childNodes);
+
+	if (signatureDiv) {
+		// Insert each node before the signature div
+		contentNodes.forEach((node) => {
+			const clonedNode = node.cloneNode(true);
+			signatureDiv.parentNode?.insertBefore(clonedNode, signatureDiv);
+		});
+	} else {
+		// Append at the end of the body if no signature div found
+		contentNodes.forEach((node) => {
+			const clonedNode = node.cloneNode(true);
+			doc.body.appendChild(clonedNode);
+		});
+	}
+
+	return doc.body.innerHTML;
+}
+
 /**
  * Generate the html for the smart link
  */
 export const generateSmartLinkHtml = ({
-	smartLink,
+	publicLinkUrl,
 	filename
 }: {
-	smartLink: SmartLinkUrl;
+	publicLinkUrl: string;
 	filename: MailsEditorV2['savedAttachments'][0]['filename'];
 }): string =>
 	`<a style='background-color: #D3EBF8;
@@ -51,96 +73,10 @@ display: inline-block;
 margin-top: 5px;
 max-width: 80%;
 border-radius: 5px;'
- href='${smartLink.publicUrl}' download>${truncate(filename ?? smartLink.publicUrl, {
+ href='${publicLinkUrl}' download>${truncate(filename ?? publicLinkUrl, {
 		length: 76,
 		omission: '...'
  })}</a>`;
-
-/**
- * Add smart links to the text of the editor
- * both in plain text and rich text
- */
-export function addSmartLinksToText({
-	response,
-	text,
-	attachments
-}: {
-	response: CreateSmartLinksResponse;
-	text: MailsEditorV2['text'];
-	attachments: MailsEditorV2['savedAttachments'];
-}): MailsEditorV2['text'] {
-	return {
-		plainText: text.plainText.concat(
-			response.smartLinks.map((smartLink) => smartLink.publicUrl).join('\n')
-		),
-		richText: text.richText.concat(
-			` ${response.smartLinks
-				.map((smartLink, index) =>
-					generateSmartLinkHtml({
-						smartLink,
-						filename: attachments[index]?.filename
-					})
-				)
-				.join('<br/>')}`
-		)
-	};
-}
-
-/**
- * Create smart links for the attachments that require it
- * once obtained the response, the text of the editor is updated with the smart links
- * the attachments that have been converted are removed from the saved attachments
- * @param editorId
- * @param onResponseCallback
- * @param createSnackbar
- * @param t
- * @returns Promise<void>
- */
-export async function updateEditorWithSmartLinks({
-	createSnackbar,
-	t,
-	editorId
-}: {
-	editorId: MailsEditorV2['id'];
-	createSnackbar: CreateSnackbarFn;
-	t: TFunction;
-}): Promise<void> {
-	const savedStandardAttachments = useEditorsStore.getState().editors[editorId].savedAttachments;
-
-	const attachmentsToConvert = savedStandardAttachments
-		.filter((attachment) => attachment.requiresSmartLinkConversion)
-		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
-
-	try {
-		const result = await createSmartLinksSoapApi(attachmentsToConvert);
-
-		const { text } = useEditorsStore.getState().editors[editorId];
-
-		const attachmentsToAddToBody = savedStandardAttachments.filter(
-			(attachment) => attachment.requiresSmartLinkConversion
-		);
-
-		const textWithLinks = addSmartLinksToText({
-			response: result,
-			text,
-			attachments: attachmentsToAddToBody
-		});
-		useEditorsStore.getState().setText(editorId, textWithLinks);
-		const { removeSavedAttachment } = useEditorsStore.getState();
-		attachmentsToConvert.forEach((smartLink) => {
-			removeSavedAttachment(editorId, smartLink.partName);
-		});
-	} catch (err) {
-		createSnackbar({
-			key: `save-draft`,
-			replace: true,
-			severity: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: 3000
-		});
-		throw err;
-	}
-}
 
 // returns if in search module or not based on path
 export function useInSearchModule(): boolean {
