@@ -64,6 +64,18 @@ describe('linkifyToHtml', () => {
 		expect(output).not.toContain('target="_blank"');
 	});
 
+	it('do not applies custom anchorRel if undefined', () => {
+		const input = 'foo@bar.com';
+		const output = linkifyToHtml(input, { anchorRel: undefined });
+		expect(output).not.toContain('rel="nofollow"');
+	});
+
+	it('do not applies custom anchorRel if empty', () => {
+		const input = 'foo@bar.com';
+		const output = linkifyToHtml(input, { anchorRel: '' });
+		expect(output).not.toContain('rel="nofollow"');
+	});
+
 	it('returns empty string for empty input', () => {
 		const output = linkifyToHtml('');
 		expect(output).toBe('');
