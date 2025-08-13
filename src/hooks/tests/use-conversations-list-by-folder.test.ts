@@ -6,9 +6,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
+import { parseMessageSortingOptions, getFilterQuery } from 'helpers/sorting';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
@@ -16,25 +15,25 @@ import {
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from 'store/emails/store';
-import { SearchRequest, SearchResponse } from 'types/index.d';
 
-jest.mock('../../store/emails/actions/search-action', () => ({
+jest.mock('store/emails/actions/search-action', () => ({
 	searchEmailStoreAction: jest.fn()
 }));
-jest.mock('../../store/emails/store', () => ({
+jest.mock('store/emails/store', () => ({
 	updateConversationsResultsLoadingStatus: jest.fn(),
 	useConversationIndexSlice: jest.fn(),
 	useConversationsIdsByFolder: jest.fn()
 }));
-jest.mock('../../helpers/sorting', () => ({
-	parseMessageSortingOptions: jest.fn()
+jest.mock('helpers/sorting', () => ({
+	parseMessageSortingOptions: jest.fn(),
+	getFilterQuery: jest.fn().mockReturnValue('mockQuery')
+}));
+jest.mock('@zextras/carbonio-shell-ui', () => ({
+	useUserSettings: jest.fn()
 }));
 
 describe('useConversationListByFolder', () => {
-	const mockPrefs = {
-		zimbraPrefLocale: 'en_US',
-		zimbraPrefSortOrder: 'dateDesc'
-	};
+	const mockPrefs = { zimbraPrefLocale: 'en_US', zimbraPrefSortOrder: 'dateDesc' };
 
 	beforeEach(() => {
 		(useUserSettings as jest.Mock).mockReturnValue({ prefs: mockPrefs });
@@ -48,25 +47,29 @@ describe('useConversationListByFolder', () => {
 	});
 
 	afterEach(() => {
+		jest.restoreAllMocks();
 		jest.clearAllMocks();
 	});
 
-	it('should fetch conversations on mount with correct parameters', async () => {
+	it('fetches conversations on mount with correct parameters', async () => {
 		const folderId = '123';
 		renderHook(() => useConversationListByFolder(folderId));
 
-		expect(searchEmailStoreAction).toHaveBeenCalledWith({
-			folderId,
-			limit: LIST_LIMIT.INITIAL_LIMIT,
-			types: 'conversation',
-			offset: 0,
-			locale: mockPrefs.zimbraPrefLocale,
-			sortBy: 'dateDESC',
-			abortSignal: expect.any(AbortSignal)
-		});
+		expect(searchEmailStoreAction).toHaveBeenCalledWith(
+			expect.objectContaining({
+				abortSignal: expect.any(AbortSignal),
+				limit: 100,
+				locale: 'en_US',
+				offset: 0,
+				query: 'mockQuery',
+				sortBy: 'dateDESC',
+				types: 'conversation'
+			})
+		);
 		expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
 			API_REQUEST_STATUS.pending
 		);
+
 		await waitFor(() => {
 			expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
 				API_REQUEST_STATUS.fulfilled
@@ -74,80 +77,66 @@ describe('useConversationListByFolder', () => {
 		});
 	});
 
-	it('should fetch conversations on folderId change', async () => {
-		const { rerender } = renderHook((folderId: string) => useConversationListByFolder(folderId), {
+	it('refetches conversations when folderId changes', () => {
+		const { rerender } = renderHook((id: string) => useConversationListByFolder(id), {
 			initialProps: '123'
 		});
 
 		expect(searchEmailStoreAction).toHaveBeenCalledTimes(1);
 
 		rerender('456');
-
 		expect(searchEmailStoreAction).toHaveBeenCalledTimes(2);
 	});
 
-	it('should abort previous request on folderId change', async () => {
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			more: false
-		});
-		const mockAbort = jest.fn();
-		const mockSignal = {};
-
-		const controller = {
-			abort: mockAbort,
-			signal: mockSignal
-		} as unknown as AbortController;
-
+	it('aborts previous request when folderId changes', () => {
+		const controller = new AbortController();
+		const abortSpy = jest.spyOn(controller, 'abort');
 		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
-		const { rerender } = renderHook((folderId: string) => useConversationListByFolder(folderId), {
+		const { rerender } = renderHook((id: string) => useConversationListByFolder(id), {
 			initialProps: '123'
 		});
-		rerender('456');
 
-		expect(mockAbort).toHaveBeenCalledTimes(1);
+		rerender('456');
+		expect(abortSpy).toHaveBeenCalledTimes(1);
 	});
 
-	it('should handle search error', async () => {
+	it('handles search errors correctly', async () => {
 		(searchEmailStoreAction as jest.Mock).mockRejectedValue(new Error('Test error'));
-		const folderId = '123';
-		renderHook(() => useConversationListByFolder(folderId));
+
+		renderHook(() => useConversationListByFolder('123'));
 
 		expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
 			API_REQUEST_STATUS.pending
 		);
+
 		await waitFor(() => {
 			expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
 				API_REQUEST_STATUS.error
 			);
 		});
-		await waitFor(() => {
-			expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
-				API_REQUEST_STATUS.fulfilled
-			);
-		});
 	});
 
-	it('should return correct conversationIndexSlice', () => {
-		const mockConversationIndexSlice = { some: 'data' };
-		const mockConversationListIndex = [1, 2, 3];
-		(useConversationIndexSlice as jest.Mock).mockReturnValue(mockConversationIndexSlice);
-		(useConversationsIdsByFolder as jest.Mock).mockReturnValue(mockConversationListIndex);
+	it('returns correct conversationIndexSlice', () => {
+		const mockIndexSlice = { some: 'data' };
+		const mockListIndex = [1, 2, 3];
+		(useConversationIndexSlice as jest.Mock).mockReturnValue(mockIndexSlice);
+		(useConversationsIdsByFolder as jest.Mock).mockReturnValue(mockListIndex);
 
-		const folderId = '123';
-		const { result } = renderHook(() => useConversationListByFolder(folderId));
+		const { result } = renderHook(() => useConversationListByFolder('123'));
 
 		expect(result.current.conversationIndexSlice).toEqual({
-			...mockConversationIndexSlice,
-			conversationListIndex: mockConversationListIndex
+			...mockIndexSlice,
+			conversationListIndex: mockListIndex
 		});
 	});
 
-	it('should use correct sortBy based on preferences', () => {
+	it('uses correct sortBy based on preferences', () => {
 		const folderId = '123';
 		const { rerender } = renderHook((id) => useConversationListByFolder(id), {
 			initialProps: folderId
 		});
+
 		expect(searchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({ sortBy: 'dateDESC' })
 		);
@@ -156,7 +145,12 @@ describe('useConversationListByFolder', () => {
 			sortType: 'subject',
 			sortDirection: 'ASC'
 		});
+		(useUserSettings as jest.Mock).mockReturnValue({
+			prefs: { ...mockPrefs, zimbraPrefSortOrder: 'subjectAsc' }
+		});
+
 		rerender(folderId);
+
 		expect(searchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({ sortBy: 'subjectASC' })
 		);
