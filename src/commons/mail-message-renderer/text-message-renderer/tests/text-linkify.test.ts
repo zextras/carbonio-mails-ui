@@ -10,31 +10,33 @@ describe('linkifyToHtml', () => {
 	it('converts URLs to anchor tags', () => {
 		const input = 'Visit https://example.com for info.';
 		const output = linkifyToHtml(input);
-		expect(output).toContain('<a');
-		expect(output).toContain('https://example.com');
+		expect(output).toBe(
+			'Visit <a href="https://example.com" target="_blank" rel="noopener noreferrer">https://example.com</a> for info.'
+		);
 	});
 
 	it('converts mailto links with query to anchor tags', () => {
 		const input = 'Contact mailto:foo@bar.com?subject=Hello';
 		const output = linkifyToHtml(input);
-		expect(output).toContain('<a href="mailto:foo@bar.com?subject=Hello"');
-		expect(output).toContain('mailto:foo@bar.com?subject=Hello');
+		expect(output).toBe(
+			'Contact <a href="mailto:foo@bar.com?subject=Hello" target="_blank" rel="noopener noreferrer">mailto:foo@bar.com?subject=Hello</a>'
+		);
 	});
 
 	it('converts plain email addresses to mailto anchor tags', () => {
 		const input = 'Email me at foo@bar.com';
 		const output = linkifyToHtml(input);
-		expect(output).toContain('<a href="mailto:foo@bar.com"');
-		// eslint-disable-next-line sonarjs/no-duplicate-string
-		expect(output).toContain('foo@bar.com');
+		expect(output).toBe(
+			'Email me at <a href="mailto:foo@bar.com" target="_blank" rel="noopener noreferrer">foo@bar.com</a>'
+		);
 	});
 
 	it('converts angle-bracketed emails to mailto anchor tags with literal brackets', () => {
 		const input = 'Contact <foo@bar.com>';
 		const output = linkifyToHtml(input);
-		expect(output).toContain('&lt;<a href="mailto:foo@bar.com"');
-		expect(output).toContain('foo@bar.com');
-		expect(output).toContain('&gt;');
+		expect(output).toBe(
+			'Contact &lt;<a href="mailto:foo@bar.com" target="_blank" rel="noopener noreferrer">foo@bar.com</a>&gt;'
+		);
 	});
 
 	it('preserves non-email text', () => {
@@ -84,5 +86,13 @@ describe('linkifyToHtml', () => {
 	it('handles input with only whitespace', () => {
 		const output = linkifyToHtml('   ');
 		expect(output).toBe('   ');
+	});
+
+	it('converts plain telephone number to tel anchor tags', () => {
+		const input = 'Call me at +1234567890';
+		const output = linkifyToHtml(input);
+		expect(output).toBe(
+			'Call me at <a href="tel:+1234567890" target="_blank" rel="noopener noreferrer">+1234567890</a>'
+		);
 	});
 });
