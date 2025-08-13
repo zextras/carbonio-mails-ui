@@ -89,13 +89,14 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent): void => {
-			if (e.key === 'Delete' || e.key === 'Cancel') {
+			if (e.key === 'Delete' || e.key === 'Backspace') {
 				moveToTrashDescriptor.execute();
+				deletePermanentlyDescriptor.execute();
 			}
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [moveToTrashDescriptor]);
+	}, [deletePermanentlyDescriptor, moveToTrashDescriptor]);
 
 	return (
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
