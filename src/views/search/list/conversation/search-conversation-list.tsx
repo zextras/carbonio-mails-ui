@@ -11,6 +11,7 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { handleItemClick } from '../../../../helpers/messages';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
@@ -69,28 +70,18 @@ export const SearchConversationList = ({
 		types: 'conversation'
 	});
 
-	const handleItemClick = useCallback(
+	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			if (!isSelectModeOn) {
-				// First click: turn on selection mode and select the item
-				setIsSelectModeOn(true);
-				toggle(id);
-				setLastSelectedIndex(index);
-				return;
-			}
-
-			// Selection mode is on
-			if (event.shiftKey && lastSelectedIndex !== null) {
-				const start = Math.min(lastSelectedIndex, index);
-				const end = Math.max(lastSelectedIndex, index);
-				const idsToSelect = conversationIds.slice(start, end + 1);
-				selectRange(idsToSelect);
-			} else {
-				toggle(id);
-				setLastSelectedIndex(index);
-			}
+			handleItemClick(index, id, event, {
+				isSelectModeOn,
+				lastSelectedIndex,
+				conversationsIds: conversationIds,
+				toggle,
+				selectRange,
+				setLastSelectedIndex
+			});
 		},
-		[isSelectModeOn, lastSelectedIndex, conversationIds, selectRange, toggle, setIsSelectModeOn]
+		[isSelectModeOn, lastSelectedIndex, conversationIds, selectRange, toggle]
 	);
 
 	const listItems = useMemo(
@@ -117,7 +108,7 @@ export const SearchConversationList = ({
 									activeItemId={itemId}
 									selected={isSelected}
 									index={index}
-									onSelect={handleItemClick}
+									onSelect={onSelect}
 								/>
 							) : (
 								<div
@@ -129,7 +120,7 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, handleItemClick, isSelectModeOn, itemId, selectedItems]
+		[conversationIds, onSelect, isSelectModeOn, itemId, selectedItems]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);

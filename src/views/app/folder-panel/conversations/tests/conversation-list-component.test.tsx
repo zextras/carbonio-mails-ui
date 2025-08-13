@@ -44,7 +44,6 @@ function setUpConversationList({
 			activeItemId=""
 			selected={false}
 			selecting={false}
-			toggleMultipleSelection={jest.fn()}
 			folderId={FOLDERS.INBOX}
 			setDraggedIds={jest.fn()}
 			index={0}

@@ -34,7 +34,7 @@ export const ConversationList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 
 	const {
-		toggleItemSelection: toggleMultipleSelection,
+		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
@@ -69,19 +69,16 @@ export const ConversationList = (): React.JSX.Element => {
 
 	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(
-				index,
-				id,
-				event,
+			handleItemClick(index, id, event, {
 				isSelectModeOn,
 				lastSelectedIndex,
 				conversationsIds,
-				toggleMultipleSelection,
+				toggle,
 				selectRange,
 				setLastSelectedIndex
-			);
+			});
 		},
-		[isSelectModeOn, lastSelectedIndex, conversationsIds, selectRange, toggleMultipleSelection]
+		[isSelectModeOn, lastSelectedIndex, conversationsIds, selectRange, toggle]
 	);
 
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
@@ -110,7 +107,6 @@ export const ConversationList = (): React.JSX.Element => {
 									selected={isSelected}
 									selectedItems={selectedItemsMap}
 									activeItemId={itemId}
-									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									dragImageRef={dragImageRef}
 									selecting={isSelectModeOn}
@@ -135,8 +131,7 @@ export const ConversationList = (): React.JSX.Element => {
 			itemId,
 			onSelect,
 			selectedItems,
-			selectedItemsMap,
-			toggleMultipleSelection
+			selectedItemsMap
 		]
 	);
 

@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
-import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
@@ -38,34 +37,12 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	dragImageRef,
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const {
-		toggleItemSelection: toggle,
-		isSelectModeOn,
-		selectRange
-	} = useMultipleSelection({
+	const { isSelectModeOn } = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
 	});
-
-	const onSelect = useCallback(
-		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(
-				index,
-				id,
-				event,
-				isSelectModeOn,
-				lastSelectedIndex,
-				messages.map((m) => m.id),
-				toggle,
-				selectRange,
-				setLastSelectedIndex
-			);
-		},
-		[isSelectModeOn, lastSelectedIndex, toggle, messages, selectRange]
-	);
 
 	const listItems = useMemo(
 		() =>
@@ -102,7 +79,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 										currentFolderId={folderId}
 										isSearchModule={isSearchModule}
 										index={index}
-										onSelect={onSelect}
+										onSelect={noop}
 									/>
 								</DragItemWrapper>
 							) : (
@@ -119,7 +96,6 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 			isSearchModule,
 			isSelectModeOn,
 			messages,
-			onSelect,
 			selectedItems,
 			setDraggedIds
 		]

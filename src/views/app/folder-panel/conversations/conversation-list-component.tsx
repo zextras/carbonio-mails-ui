@@ -51,7 +51,6 @@ const DragItems = ({
 					activeItemId={conversation.id}
 					selected={false}
 					selecting={false}
-					toggleMultipleSelection={noop}
 					selectedIds={[]}
 					folderId=""
 					setDraggedIds={noop}

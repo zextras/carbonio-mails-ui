@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
@@ -32,35 +31,13 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 }: SearchConversationMessagesListProps): React.JSX.Element {
 	const navigate = useNavigate();
 
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
-	const {
-		toggleItemSelection: toggle,
-		isSelectModeOn,
-		selectRange
-	} = useMultipleSelection({
+	const { isSelectModeOn } = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
 	});
-
-	const onSelect = useCallback(
-		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(
-				index,
-				id,
-				event,
-				isSelectModeOn,
-				lastSelectedIndex,
-				messages.map((m) => m.id),
-				toggle,
-				selectRange,
-				setLastSelectedIndex
-			);
-		},
-		[isSelectModeOn, lastSelectedIndex, toggle, messages, selectRange]
-	);
 
 	const listItems = useMemo(
 		() =>
@@ -91,7 +68,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 									handleReplaceHistory={handleSearchReplaceHistory}
 									isSearchModule
 									index={index}
-									onSelect={onSelect}
+									onSelect={noop}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} />
@@ -100,7 +77,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[activeItemId, onSelect, isSelectModeOn, messages, navigate, selectedItems]
+		[activeItemId, isSelectModeOn, messages, navigate, selectedItems]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {

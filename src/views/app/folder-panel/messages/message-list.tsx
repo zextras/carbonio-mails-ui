@@ -86,17 +86,14 @@ export const MessageList = (): React.JSX.Element => {
 
 	const onSelect = useCallback(
 		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(
-				index,
-				id,
-				event,
+			handleItemClick(index, id, event, {
 				isSelectModeOn,
 				lastSelectedIndex,
-				messageListIndex,
+				conversationsIds: messageListIndex,
 				toggle,
 				selectRange,
 				setLastSelectedIndex
-			);
+			});
 		},
 		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle]
 	);

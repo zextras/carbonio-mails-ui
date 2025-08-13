@@ -14,7 +14,6 @@ type ConversationListItemComponentProps = {
 	activeItemId?: string;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean>;
