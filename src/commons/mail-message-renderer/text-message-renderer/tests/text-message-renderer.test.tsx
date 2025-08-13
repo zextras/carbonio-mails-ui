@@ -9,145 +9,265 @@ import React from 'react';
 import { TextMessageRenderer } from '../text-message-renderer';
 import { setupTest, screen } from '@test-setup';
 
-describe('text-message-renderer', () => {
-	describe('content manipulation', () => {
-		describe('common links', () => {
-			it('should return an empty string when content is empty', () => {
-				setupTest(<TextMessageRenderer body={{ content: '' }} />);
-				expect(screen.getByTestId('text-message-renderer-container')).toBeEmptyDOMElement();
-			});
-
-			it('should replaces single HTTP URL with anchor tag', () => {
-				const content = 'Visit http://example.com';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Visit <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should replaces single HTTPS URL with anchor tag', () => {
-				const content = 'Visit https://example.com';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Visit <a href="https://example.com" target="_blank" rel="noopener noreferrer">https://example.com</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should not replace URL without protocol with anchor tag', () => {
-				const content = 'Visit www.example.com';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Visit <a href="http://www.example.com" target="_blank" rel="noopener noreferrer">www.example.com</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should handle IP address input without modification', () => {
-				const content = '127.0.0.1';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result = '127.0.0.1';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should replaces URL with &amp; entity', () => {
-				const content = 'Visit http://example.com?param=1&amp;param2=2';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-
-				const result =
-					'Visit <a href="http://example.com?param=1&amp;param2=2" target="_blank" rel="noopener noreferrer">http://example.com?param=1&amp;param2=2</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should replaces URL with &#64; and &#61; entities', () => {
-				const content = 'Email me at http://example.com?email=test&#64;example.com&#61;true';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-
-				const result =
-					'Email me at <a href="http://example.com?email=test@example.com=true" target="_blank" rel="noopener noreferrer">http://example.com?email=test@example.com=true</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should replaces multiple URLs with anchor tags', () => {
-				const content = 'Visit http://example.com and https://example.org';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-
-				const result =
-					'Visit <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a> and <a href="https://example.org" target="_blank" rel="noopener noreferrer">https://example.org</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should returns content as is when there are no URLs', () => {
-				const content = 'No links here!';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(content);
-			});
-
-			it('should replaces mixed text and URLs with anchor tags', () => {
-				const content =
-					'Check http://example.com for more info and visit https://example.org later.';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-
-				const result =
-					'Check <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a> for more info and visit <a href="https://example.org" target="_blank" rel="noopener noreferrer">https://example.org</a> later.';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			it('should not include line breaks in the URL', () => {
-				const content = 'Visit http://example.com<br />';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-
-				const result =
-					'Visit <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a><br>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
-
-			// noinspection JSUnusedLocalSymbols
-			it.each([
-				['http://foo.com/blah_blah_(wikipedia)', 'URL with underscores and parentheses'],
-				['http://foo.com/blah_blah_(wikipedia)_(again)', 'URL with multiple parentheses'],
-				['http://✪df.ws/123', 'URL with unicode domain'],
-				['http://➡.ws/䨹', 'URL with unicode domain and path'],
-				['http://foo.com/blah_(wikipedia)#cite-1', 'URL with parentheses and fragment'],
-				[
-					'http://foo.com/blah_(wikipedia)_blah#cite-1',
-					'URL with multiple parentheses and fragment'
-				],
-				['http://foo.com/unicode_(✪)_in_parens', 'URL with unicode in parentheses'],
-				['http://foo.com/(something)?after=parens', 'URL with parentheses and query'],
-				['http://☺.damowmow.com/', 'URL with emoji domain']
-				// eslint-disable-next-line unused-imports/no-unused-vars
-			])('should render anchor for %s (%s)', (url, description) => {
-				const content = `Visit ${url}`;
-				const result = `Visit <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
+describe('TextMessageRenderer', () => {
+	describe('Basic text rendering', () => {
+		it('renders nothing when content is empty', () => {
+			setupTest(<TextMessageRenderer body={{ content: '' }} />);
+			expect(screen.getByTestId('text-message-renderer-container')).toBeEmptyDOMElement();
 		});
 
-		describe('emails and mailto links', () => {
-			it('should convert email addresses into mailto anchors', () => {
-				const content = 'Contact me at test@example.com';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Contact me at <a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
+		it('preserves whitespace-only content', () => {
+			const content = '   ';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(content);
+		});
 
-			it('should convert email addresses with angle brackets into mailto anchors', () => {
-				const content = 'Contact me at <test@example.com>';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
-			});
+		it('renders plain text content exactly as provided', () => {
+			const content = 'Hello, world!';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByTestId('text-message-renderer-container')).toHaveTextContent(content);
+		});
 
-			it('should convert email addresses with query parameters into mailto anchors', () => {
-				const content =
-					'Contact me at mailto:test@example.com?subject=CONFIRM%203f03cda22ea3b3876e90a23a4cd19e5b';
-				setupTest(<TextMessageRenderer body={{ content }} />);
-				const result =
-					'Contact me at <a href="mailto:test@example.com?subject=CONFIRM%203f03cda22ea3b3876e90a23a4cd19e5b" target="_blank" rel="noopener noreferrer">mailto:test@example.com?subject=CONFIRM%203f03cda22ea3b3876e90a23a4cd19e5b</a>';
-				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
+		it('converts newlines to <br> tags', () => {
+			const content = 'Line 1\nLine 2\r\nLine 3';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(
+				'Line 1<br>Line 2<br>Line 3'
+			);
+		});
+	});
+
+	describe('Quoted text handling', () => {
+		it('shows a toggle button when quoted text is detected', () => {
+			const content = 'Reply\n> Quoted message';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('button', { name: 'label.show_quoted_text' })).toBeInTheDocument();
+		});
+
+		it('does not show toggle button when no quoted text exists', () => {
+			const content = 'Simple message';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(
+				screen.queryByRole('button', { name: 'label.show_quoted_text' })
+			).not.toBeInTheDocument();
+		});
+
+		it('reveals quoted text when toggle button is clicked', async () => {
+			const content = 'Reply\n> Quoted message';
+			const { user } = setupTest(<TextMessageRenderer body={{ content }} />);
+
+			await user.click(screen.getByRole('button', { name: 'label.show_quoted_text' }));
+
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toContain(
+				'Quoted message'
+			);
+		});
+
+		it('handles multiple levels of quoted text', () => {
+			const content = 'Reply\n>> Nested quote\n> First level quote';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('button', { name: 'label.show_quoted_text' })).toBeInTheDocument();
+		});
+	});
+
+	describe('URL detection and linking', () => {
+		it('converts HTTP URLs into clickable links', () => {
+			const content = 'Visit http://example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'http://example.com' });
+			expect(link).toHaveAttribute('href', 'http://example.com');
+			expect(link).toHaveAttribute('target', '_blank');
+			expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+		});
+
+		it('converts HTTPS URLs into clickable links', () => {
+			const content = 'Secure https://example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'https://example.com' });
+			expect(link).toHaveAttribute('href', 'https://example.com');
+		});
+
+		it('adds http:// protocol to protocol-less www URLs', () => {
+			const content = 'Visit www.example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'www.example.com' });
+			expect(link).toHaveAttribute('href', 'http://www.example.com');
+		});
+
+		it('handles URLs with query parameters correctly', () => {
+			const content = 'Search https://google.com?q=test';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'https://google.com?q=test' });
+			expect(link).toHaveAttribute('href', 'https://google.com?q=test');
+		});
+
+		it('handles URLs with anchors/fragments correctly', () => {
+			const content = 'Jump to https://example.com#section';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'https://example.com#section' });
+			expect(link).toHaveAttribute('href', 'https://example.com#section');
+		});
+
+		it('handles multiple URLs in the same text', () => {
+			const content = 'Visit http://site1.com and https://site2.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const links = screen.getAllByRole('link');
+			expect(links).toHaveLength(2);
+			expect(links[0]).toHaveAttribute('href', 'http://site1.com');
+			expect(links[1]).toHaveAttribute('href', 'https://site2.com');
+		});
+
+		it('does not convert IP addresses into links', () => {
+			const content = 'Localhost is at 127.0.0.1';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.queryByRole('link')).not.toBeInTheDocument();
+			expect(screen.getByTestId('text-message-renderer-container')).toHaveTextContent(content);
+		});
+
+		it('handles URLs with special characters correctly', () => {
+			const content = 'Visit https://example.com/path?param=value&another=param';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', {
+				name: 'https://example.com/path?param=value&another=param'
 			});
+			expect(link).toHaveAttribute('href', 'https://example.com/path?param=value&another=param');
+		});
+
+		it('handles URLs at the end of content', () => {
+			const content = 'My site is http://example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toBeInTheDocument();
+			expect(screen.getByTestId('text-message-renderer-container')).toHaveTextContent(
+				'My site is http://example.com'
+			);
+		});
+
+		it('handles URLs at the start of content', () => {
+			const content = 'http://example.com is my site';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toBeInTheDocument();
+			expect(screen.getByTestId('text-message-renderer-container')).toHaveTextContent(
+				'http://example.com is my site'
+			);
+		});
+
+		it.each([
+			['http://foo.com/blah_blah_(wikipedia)', 'URL with underscores and parentheses'],
+			['http://foo.com/blah_blah_(wikipedia)_(again)', 'URL with multiple parentheses'],
+			['http://✪df.ws/123', 'URL with unicode domain'],
+			['http://➡.ws/䨹', 'URL with unicode domain and path'],
+			['http://foo.com/blah_(wikipedia)#cite-1', 'URL with parentheses and fragment'],
+			['http://foo.com/blah_(wikipedia)_blah#cite-1', 'URL with multiple parentheses and fragment'],
+			['http://foo.com/unicode_(✪)_in_parens', 'URL with unicode in parentheses'],
+			['http://foo.com/(something)?after=parens', 'URL with parentheses and query'],
+			['http://☺.damowmow.com/', 'URL with emoji domain']
+		])('handles anchor for %s (%s)', (url, _description) => {
+			const content = `Visit ${url}`;
+			const result = `Visit <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
+		});
+	});
+
+	describe('Email address handling', () => {
+		it('converts plain email addresses into mailto links', () => {
+			const content = 'Contact me at user@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'user@example.com' });
+			expect(link).toHaveAttribute('href', 'mailto:user@example.com');
+		});
+
+		it('converts mailto: links into clickable links', () => {
+			const content = 'Email mailto:user@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'mailto:user@example.com' });
+			expect(link).toHaveAttribute('href', 'mailto:user@example.com');
+		});
+
+		it('handles email addresses with display names', () => {
+			const content = 'Email <user@example.com>';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'user@example.com' });
+			expect(link).toBeInTheDocument();
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toContain(
+				'&lt;<a href="mailto:user@example.com"'
+			);
+		});
+
+		it('handles email addresses with query parameters', () => {
+			const content = 'Email mailto:user@example.com?subject=Test';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link', { name: 'mailto:user@example.com?subject=Test' });
+			expect(link).toHaveAttribute('href', 'mailto:user@example.com?subject=Test');
+		});
+
+		it('handles multiple email addresses in the same text', () => {
+			const content = 'Contact user1@example.com or user2@example.org';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const links = screen.getAllByRole('link');
+			expect(links).toHaveLength(2);
+			expect(links[0]).toHaveAttribute('href', 'mailto:user1@example.com');
+			expect(links[1]).toHaveAttribute('href', 'mailto:user2@example.org');
+		});
+	});
+
+	describe('Edge cases', () => {
+		it('handles content that looks like a URL but is not', () => {
+			const content = 'This is not a URL: http://';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.queryByRole('link')).not.toBeInTheDocument();
+			expect(screen.getByTestId('text-message-renderer-container')).toHaveTextContent(content);
+		});
+
+		it('handles very long URLs correctly', () => {
+			const longPath = '/'.repeat(1000);
+			const content = `Visit http://example.com${longPath}`;
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const link = screen.getByRole('link');
+			expect(link).toHaveAttribute('href', `http://example.com${longPath}`);
+		});
+
+		it('handles mixed content with text, URLs and emails', () => {
+			const content = 'Contact me at user@example.com or visit http://example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const links = screen.getAllByRole('link');
+			expect(links).toHaveLength(2);
+			expect(links[0]).toHaveAttribute('href', 'mailto:user@example.com');
+			expect(links[1]).toHaveAttribute('href', 'http://example.com');
+		});
+
+		it('preserves whitespace around URLs and emails', () => {
+			const content = '  http://example.com  user@example.com  ';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			const container = screen.getByTestId('text-message-renderer-container');
+
+			// start of the string has whitespace before the URL
+			expect(container.innerHTML).toMatch(/^\s+<a/);
+
+			// there's whitespace between the URL and email
+			expect(container.innerHTML).toMatch(/<\/a>\s+<a/);
+
+			// end of the string has whitespace after the email
+			expect(container.innerHTML).toMatch(/<\/a>\s+$/);
 		});
 	});
 });
