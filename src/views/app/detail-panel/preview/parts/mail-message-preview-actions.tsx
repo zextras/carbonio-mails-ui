@@ -89,7 +89,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent): void => {
-			if (e.key === 'Delete') {
+			if (e.key === 'Delete' || e.key === 'Cancel') {
 				moveToTrashDescriptor.execute();
 			}
 		};
