@@ -188,6 +188,74 @@ describe('TextMessageRenderer', () => {
 			expect(link).toHaveAttribute('href', 'mailto:user@example.com');
 		});
 
+		it('handles email addresses with numbers', () => {
+			const content = 'user123@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:user123@example.com');
+		});
+
+		it('handles email addresses with special characters', () => {
+			const content = 'user.name+tag@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:user.name+tag@example.com');
+		});
+
+		it('handles email addresses with dots', () => {
+			const content = 'firstname.lastname@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute(
+				'href',
+				'mailto:firstname.lastname@example.com'
+			);
+		});
+
+		it('handles email addresses with subdomains', () => {
+			const content = 'user@subdomain.example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:user@subdomain.example.com');
+		});
+
+		it('handles international email addresses with Unicode characters', () => {
+			const content = '用户@例子.测试';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:用户@例子.测试');
+		});
+
+		it('handles email addresses with Unicode in local part', () => {
+			const content = 'ñóñó@example.com';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:ñóñó@example.com');
+		});
+
+		it('handles email addresses with IP addresses as domain', () => {
+			const content = 'user@[192.168.1.1]';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:user@[192.168.1.1]');
+		});
+
+		it('handles email addresses with IPv6 addresses as domain', () => {
+			const content = 'user@[IPv6:2001:db8::1]';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:user@[IPv6:2001:db8::1]');
+		});
+
+		it('handles email addresses with display names', () => {
+			const content = 'John Doe <john.doe@example.com>';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:john.doe@example.com');
+			expect(screen.getByTestId('text-message-renderer-container').innerHTML).toContain(
+				'John Doe &lt;<a href="mailto:john.doe@example.com"'
+			);
+		});
+
+		it('handles email addresses with quoted display names', () => {
+			const content = '"John Q. Doe" <john.doe@example.com>';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			expect(screen.getByRole('link')).toHaveAttribute('href', 'mailto:john.doe@example.com');
+		});
+
 		it('converts mailto: links into clickable links', () => {
 			const content = 'Email mailto:user@example.com';
 			setupTest(<TextMessageRenderer body={{ content }} />);
