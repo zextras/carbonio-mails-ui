@@ -25,11 +25,14 @@ const DEFAULT_OPTIONS: Required<LinkifyOptions> = {
 	openInNewTab: true
 };
 
-const MAILTO_EMAIL_REGEX = /mailto:([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\?[^\s<>]+)?/g;
+const MAILTO_EMAIL_REGEX =
+	/mailto:([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}.]{2,}|\[[^\]\s<>]+\]))(\?[^\s<>]+)?/gu;
 
-const PLAIN_EMAIL_REGEX = /(^|\s)([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+const PLAIN_EMAIL_REGEX =
+	/(^|\s)([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}.]{2,}|\[[^\]\s<>]+\]))/gu;
 
-const ANGLE_BRACKET_EMAIL_REGEX = /<([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})>/g;
+const ANGLE_BRACKET_EMAIL_REGEX =
+	/<([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}.]{2,}|\[[^\]\s<>]+\]))>/gu;
 
 function asAttrs(opts: Required<LinkifyOptions>): string {
 	const target = opts.openInNewTab ? ' target="_blank"' : '';
@@ -38,11 +41,11 @@ function asAttrs(opts: Required<LinkifyOptions>): string {
 }
 
 /**
- * Convert raw text → safe HTML with:
- * - mailto:foo@bar with query preserved
- * - plain emails to mailto anchors
- * - <foo@bar> into &lt;<a ...>foo@bar</a>&gt;
- * - URLs via Autolinker
+ * Converts raw text to HTML with linkified URLs and email addresses.
+ *
+ * @param rawText - The input text containing URLs and email addresses.
+ * @param options - Optional configuration for linkification.
+ * @returns The HTML string with linkified content.
  */
 export function linkifyToHtml(rawText: string, options?: LinkifyOptions): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
