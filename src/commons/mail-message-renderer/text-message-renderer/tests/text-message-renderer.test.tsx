@@ -189,6 +189,13 @@ describe('TextMessageRenderer', () => {
 				expect(link).toHaveAttribute('href', 'mailto:user@example.com');
 			});
 
+			it('should not include trailing . in email address', () => {
+				const content = 'Contact me at test@unilim.fr.';
+				setupTest(<TextMessageRenderer body={{ content }} />);
+				const link = screen.getByRole('link', { name: 'test@unilim.fr' });
+				expect(link).toHaveAttribute('href', 'mailto:test@unilim.fr');
+			});
+
 			it('handles email addresses with numbers', () => {
 				const content = 'user123@example.com';
 				setupTest(<TextMessageRenderer body={{ content }} />);
