@@ -283,6 +283,14 @@ describe('TextMessageRenderer', () => {
 				expect(links[0]).toHaveAttribute('href', 'mailto:user1@example.com');
 				expect(links[1]).toHaveAttribute('href', 'mailto:user2@example.org');
 			});
+
+			it('handles email addresses with angle brackets', () => {
+				const content = 'Contact me at <test@example.com>';
+				setupTest(<TextMessageRenderer body={{ content }} />);
+				const result =
+					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
+				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
+			});
 		});
 
 		describe('mailto: links', () => {
@@ -327,6 +335,15 @@ describe('TextMessageRenderer', () => {
 					'href',
 					'mailto:user@example.com?cc=other@example.com&bcc=hidden@example.com'
 				);
+			});
+
+			it('handles international mailto email addresses within angle brackets', () => {
+				const content =
+					'Contact me at <mailto:用户@例子.测试?cc=other@example.com&bcc=hidden@example.com>';
+				setupTest(<TextMessageRenderer body={{ content }} />);
+				const result =
+					'Contact me at &lt;<a href="mailto:用户@例子.测试?cc=other@example.com&amp;bcc=hidden@example.com" target="_blank" rel="noopener noreferrer">mailto:用户@例子.测试?cc=other@example.com&amp;bcc=hidden@example.com</a>&gt;';
+				expect(screen.getByTestId('text-message-renderer-container').innerHTML).toBe(result);
 			});
 		});
 	});
