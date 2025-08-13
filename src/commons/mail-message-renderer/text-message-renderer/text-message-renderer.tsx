@@ -26,7 +26,7 @@ export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JS
 	const convertedHTML = useMemo(() => {
 		const content = showQuotedText ? body.content : originalText;
 		const html = linkifyToHtml(content);
-		return html.replace(/\r?\n/g, '<br />');
+		return html.replace(/\r\n|\r|\n/g, '<br />');
 	}, [showQuotedText, body.content, originalText]);
 
 	return (
