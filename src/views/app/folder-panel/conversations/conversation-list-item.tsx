@@ -159,16 +159,18 @@ export const ConversationListItem = memo(function ConversationListItem({
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
-				<ConversationListItemCore
-					conversation={conversation}
-					selected={selected}
-					selecting={selecting}
-					folderParent={folderParent}
-					open={open}
-					toggleCollapseElementCallback={toggleCollapseElementCallback}
-					index={index}
-					onSelect={onSelect}
-				/>
+				<Container onClick={_onClick}>
+					<ConversationListItemCore
+						conversation={conversation}
+						selected={selected}
+						selecting={selecting}
+						folderParent={folderParent}
+						open={open}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
+						index={index}
+						onSelect={onSelect}
+					/>
+				</Container>
 			)}
 			{open && conversation.messagesInConversation > 1 && (
 				<CollapseElement

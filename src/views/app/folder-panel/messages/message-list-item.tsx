@@ -125,16 +125,18 @@ export const MessageListItem = memo(function MessageListItem({
 					/>
 				</MessageListItemActionWrapper>
 			) : (
-				<MessageListItemCore
-					message={message}
-					selected={selected}
-					selecting={selecting}
-					isConvChildren={isConvChildren}
-					isSearchModule={isSearchModule}
-					firstChildFolderId={firstChildFolderId}
-					index={index}
-					onSelect={onSelect}
-				/>
+				<Container onClick={onClickCallback}>
+					<MessageListItemCore
+						message={message}
+						selected={selected}
+						selecting={selecting}
+						isConvChildren={isConvChildren}
+						isSearchModule={isSearchModule}
+						firstChildFolderId={firstChildFolderId}
+						index={index}
+						onSelect={onSelect}
+					/>
+				</Container>
 			)}
 		</Container>
 	);
