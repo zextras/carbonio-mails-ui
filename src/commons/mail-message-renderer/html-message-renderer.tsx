@@ -173,7 +173,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 				<Container
 					width={'fit'}
 					height={'100%'}
-					data-testid="message-renderer-container"
+					data-testid="html-message-renderer-container"
 					style={{ overflowY: 'auto', padding: '0.75rem 0px' }}
 					dangerouslySetInnerHTML={{
 						__html: processedContent
