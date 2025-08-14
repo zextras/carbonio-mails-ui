@@ -143,7 +143,8 @@ export const ConversationList = (): React.JSX.Element => {
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		hasMore: conversationIndexSlice.more,
 		loadingMore,
-		folderId
+		folderId,
+		filterType: undefined
 	});
 	return (
 		<>
