@@ -95,53 +95,6 @@ export const plainTextToHTML = (str: string): string => {
 	return '';
 };
 
-function isValidUrl(url: string): boolean {
-	const urlToCheck = /^(https?:\/\/)/.exec(url) ? url : `http://${url}`;
-	try {
-		const newUrl = new URL(urlToCheck);
-		return ['http:', 'https:'].includes(newUrl.protocol);
-	} catch (err) {
-		return false;
-	}
-}
-
-export const replaceLinkToAnchor = (content: string): string => {
-	if (content === '') {
-		return '';
-	}
-
-	const linkRegexp = new RegExp(
-		'https?://' +
-			'(((?=([a-z0-9-@:]|[^\x00-\x7F]){1,100}\\.)(xn--)?' +
-			'([a-z0-9]|[^\x00-\x7F])+(-([a-z0-9]|[^\x00-\x7F])+)*\\.)+' +
-			'[a-z]{2,100}|((\\d{1,3}\\.){3}\\d{1,3}))' +
-			'(:\\d+)?' +
-			'(/([-a-z\\d%_.~+#&/()=]|[^\x00-\x7F])*)*' +
-			'(\\?([;&:@a-z\\d%_.~+=#\\-/()?]|[^\x00-\x7F])*)?' +
-			'(#[:/.\\-a-z\\d_)]{0,200})?',
-		'gi'
-	);
-
-	return content.replace(linkRegexp, (url) => {
-		if (isValidUrl(url)) {
-			const wrap = document.createElement('div');
-			const anchor = document.createElement('a');
-
-			const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
-			let href = url;
-			if (!url.startsWith('http') && !url.startsWith('https')) {
-				href = `http://${url}`;
-			}
-			anchor.href = href;
-			anchor.target = '_blank';
-			anchor.innerHTML = newInnerHtml;
-			wrap.appendChild(anchor);
-			return wrap.innerHTML;
-		}
-		return url;
-	});
-};
-
 /**
  * Builds a map of image content IDs to their corresponding mail message parts.
  *
