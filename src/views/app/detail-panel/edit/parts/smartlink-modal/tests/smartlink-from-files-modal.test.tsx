@@ -79,7 +79,7 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue('url1');
+			const getLinkSpy = jest.fn().mockResolvedValue({ url: 'url1' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
@@ -133,7 +133,10 @@ describe('SmartlinkFromFilesModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest
+				.fn()
+				.mockResolvedValueOnce({ url: 'url1' })
+				.mockResolvedValueOnce({ url: 'url2' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
@@ -197,7 +200,10 @@ describe('SmartlinkFromFilesModal', () => {
 	});
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest
+				.fn()
+				.mockResolvedValueOnce({ url: 'url1' })
+				.mockResolvedValueOnce({ url: 'url2' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];

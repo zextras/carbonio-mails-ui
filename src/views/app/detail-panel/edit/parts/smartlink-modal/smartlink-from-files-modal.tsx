@@ -12,7 +12,25 @@ import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-moda
 import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
+import { NodeWithMetadata } from 'types/integrations/carbonio-files-ui';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
+
+type CreateLinkType = {
+	node: Pick<NodeWithMetadata, 'id' | '__typename'>;
+	description?: string;
+	expiresAt?: number;
+	type: 'createLink';
+};
+
+type Link = {
+	__typename?: 'Link';
+	id: string;
+	url?: string | null | undefined;
+	description?: string | null | undefined;
+	expires_at?: number | null | undefined;
+	created_at: number;
+	node: Pick<NodeWithMetadata, 'id' | '__typename'>;
+};
 
 export const SmartlinkFromFilesModal = ({
 	onClose,
@@ -24,7 +42,8 @@ export const SmartlinkFromFilesModal = ({
 	editorId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
+	const [getLink, getLinkAvailable] =
+		useIntegratedFunction<(props: CreateLinkType) => Promise<Link>>('get-link');
 	const { createSnackbar } = useUiUtilities();
 
 	const errorSnackbar = useCallback(() => {
@@ -46,23 +65,23 @@ export const SmartlinkFromFilesModal = ({
 
 			const smartLinksArray = await Promise.all(
 				fileNodes.map(async (fileNode) => {
-					const publicLinkUrl =
+					const response =
 						getLinkAvailable &&
 						(await getLink({
 							node: fileNode,
 							type: 'createLink',
 							description: fileNode.id
 						}));
-					if (!publicLinkUrl) {
+					if (!response || !response.url) {
 						errorSnackbar();
 						throw new Error('Public link creation failed');
 					}
 					return {
 						richTextLinks: generateSmartLinkHtml({
-							publicLinkUrl,
+							publicLinkUrl: response.url,
 							filename: fileNode.name
 						}),
-						plainTextLinks: publicLinkUrl
+						plainTextLinks: response.url
 					};
 				})
 			);
