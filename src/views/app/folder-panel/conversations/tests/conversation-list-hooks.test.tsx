@@ -39,7 +39,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: folder.id
+				folderId: folder.id,
+				filterType: undefined
 			})
 		);
 
@@ -81,7 +82,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -111,7 +113,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -137,7 +140,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: false,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -160,7 +164,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 

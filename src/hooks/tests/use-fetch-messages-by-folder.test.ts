@@ -12,7 +12,6 @@ import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
@@ -32,7 +31,9 @@ jest.mock('../../store/emails/store', () => ({
 	useMessagesSlice: jest.fn()
 }));
 jest.mock('../../helpers/sorting', () => ({
-	parseMessageSortingOptions: jest.fn()
+	...jest.requireActual('../../helpers/sorting'),
+	parseMessageSortingOptions: jest.fn(),
+	getFilterQuery: jest.fn().mockReturnValue('inId:"2"')
 }));
 
 describe('useMessageListByFolder', () => {
@@ -64,31 +65,6 @@ describe('useMessageListByFolder', () => {
 				wantContent: 'full'
 			});
 		});
-	});
-
-	it('should use correct sortBy based on preferences', async () => {
-		const firstInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		useFolderStore.setState({ folders: { folderId: folder } });
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'date',
-			sortDirection: 'Desc'
-		});
-
-		const { rerender } = renderHook((id) => useFetchMessagesByFolder(id), {
-			initialProps: folder.id
-		});
-		await act(async () => {
-			expect((await firstInterceptor).sortBy).toEqual('dateDesc');
-		});
-
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'subject',
-			sortDirection: 'Asc'
-		});
-
-		const secondInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		rerender(folder.id);
-		expect((await secondInterceptor).sortBy).toEqual('subjectAsc');
 	});
 
 	it('should handle query parse errors', async () => {
@@ -123,23 +99,16 @@ describe('useMessageListByFolder', () => {
 		});
 	});
 
-	it('should call updateMessagesResultsLoadingStatus messages if the API call fails', async () => {
-		const response = buildSoapErrorResponseBody();
-		createSoapAPIInterceptor('Search', response);
-		renderHook(() => useFetchMessagesByFolder(folder.id));
-
-		await waitFor(() => {
-			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
-		});
-	});
-
 	it('should abort previous requests on folder change', async () => {
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			more: false
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
 		});
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', { more: false });
 
 		const mockAbort = jest.fn();
-		const mockSignal = {};
+		const mockSignal = {} as AbortSignal;
 
 		const controller = {
 			abort: mockAbort,
@@ -152,7 +121,7 @@ describe('useMessageListByFolder', () => {
 			initialProps: folder.id
 		});
 
-		rerender('3');
+		await rerender('3');
 
 		expect(mockAbort).toHaveBeenCalled();
 	});

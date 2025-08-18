@@ -147,15 +147,22 @@ export const ConversationList = (): React.JSX.Element => {
 	);
 	const loadingMore = useRef<boolean>(false);
 	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+	const sortBy = useMemo(() => {
+		const { sortType, sortDirection } = parseMessageSortingOptions(
+			folderId,
+			prefs.zimbraPrefSortOrder as string
+		);
+		return sortType.concat(sortDirection);
+	}, [folderId, prefs.zimbraPrefSortOrder]);
 
 	const loadMoreCallback = useLoadMoreForConversationList({
-		sortBy: sortOrder,
+		sortBy,
 		offset: conversationsIds.length,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		hasMore: conversationIndexSlice.more,
 		loadingMore,
-		folderId
+		folderId,
+		filterType: undefined
 	});
 	return (
 		<>
