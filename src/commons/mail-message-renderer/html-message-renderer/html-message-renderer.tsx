@@ -9,10 +9,10 @@ import { Container } from '@zextras/carbonio-design-system';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
 import { BannerViewExternalImages } from './banner-view-external-images';
+import { ShadowDomWrapper } from './shadow-dom-wrapper';
 import { ShowQuotedTextButton } from './show-quoted-text-button';
 import { useHtmlMessageRenderer } from './use-html-message-renderer';
 import { MailMessage } from '../../../types';
-import { ShadowDomWrapper } from '../shadow-dom-wrapper';
 
 type HtmlMessageRendererProps = {
 	message: MailMessage;
