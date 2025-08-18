@@ -32,7 +32,7 @@ const DEFAULT_OPTIONS: Required<Omit<LinkifyOptions, 'autolinker'>> & {
 
 const MAILTO_EMAIL_REGEX =
 	// eslint-disable-next-line max-len
-	/mailto:([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))(\?[^&\s<>]+(?:&(?!gt;|lt;)[^&\s<>]+)*)?(?=(?:&[lg]t;|[\s<>]|$))/gu;
+	/mailto:([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))(\?[^&\s<>]+(?:&(?!gt;|lt;)[^&\s<>]+)*)?(?=&[lg]t;|[\s<>]|$)/gu;
 
 const PLAIN_EMAIL_REGEX =
 	/(^|[\s>])([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))/gu;
