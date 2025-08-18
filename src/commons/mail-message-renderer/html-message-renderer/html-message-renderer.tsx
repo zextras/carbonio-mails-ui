@@ -66,7 +66,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 			autolinker: { urls: false, email: false, phone: true },
 			linkEmails: true
 		});
-	}, []);
+	}, [cleanBodyContent, originalContent, showQuotedText]);
 
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
