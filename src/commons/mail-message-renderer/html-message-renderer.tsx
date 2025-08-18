@@ -11,6 +11,7 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
+import { linkifyToHtml } from './text-message-renderer/text-linkify';
 import { getFlattenedAttachmentParts } from '../../helpers/attachments';
 import {
 	getOriginalHtmlContent,
@@ -146,8 +147,8 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 		});
 		const html = htmlDoc.documentElement.outerHTML;
 
-		// Decode surrogate pairs (broken emojis handling)
-		return decodeSurrogatePairs(html);
+		const linkifiedHtml = linkifyToHtml(html);
+		return decodeSurrogatePairs(linkifiedHtml);
 	}, [htmlDoc.documentElement.outerHTML, images, msgId, attachments, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
