@@ -37,7 +37,7 @@ const PLAIN_EMAIL_REGEX =
 	/(^|[\s>])([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))/gu;
 
 const ANGLE_BRACKET_EMAIL_REGEX =
-	/<([a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9-]{2,}|\[[^\]\s<>]+])>/g;
+	/(?:<|&lt;)([a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9-]{2,}|\[[^\]\s<>]+])(?:>|&gt;)/g;
 
 function asAttrs(opts: Required<LinkifyOptions>): string {
 	const target = opts.openInNewTab ? ' target="_blank"' : '';
