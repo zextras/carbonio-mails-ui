@@ -20,6 +20,7 @@ import { useParams } from 'react-router-dom';
 
 import { useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
 import { MailMessage } from 'types/index.d';
+import { type DetailPanelRouteParams } from 'views/app/detail-panel';
 import PreviewHeader from 'views/app/detail-panel/preview/parts/preview-header';
 
 type MailPreviewBlockType = {
@@ -34,7 +35,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	onClick,
 	isEml = false
 }) => {
-	const { folderId, itemId } = useParams() as { folderId?: string; itemId?: string };
+	const { itemId, folderId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isEml }),
 		[message, onClick, open, isEml]

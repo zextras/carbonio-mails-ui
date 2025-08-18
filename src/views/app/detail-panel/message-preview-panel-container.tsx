@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { type DetailPanelRouteParams } from '../detail-panel';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
@@ -14,13 +15,10 @@ import { useMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
-	const { folderId, messageId } = useParams() as {
-		folderId: string;
-		messageId: string;
-	};
+	const { itemId, folderId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
 
-	const { message } = useCompleteMessageOrFetch(messageId);
-	const messageLoadingStatus = useMessageStatus(messageId);
+	const { message } = useCompleteMessageOrFetch(itemId);
+	const messageLoadingStatus = useMessageStatus(itemId);
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {

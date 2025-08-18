@@ -17,9 +17,9 @@ import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-pane
 export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 	const [message, setMessage] = useState<MailMessage>();
 
-	const { folderId, messageId, part } = useParams() as {
+	const { folderId, itemId, part } = useParams() as {
 		folderId: string;
-		messageId: string;
+		itemId: string;
 		part: string;
 	};
 
@@ -27,13 +27,13 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 		if (message) {
 			return;
 		}
-		getMsgSoapApi({ msgId: messageId, part }).then((response) => {
+		getMsgSoapApi({ msgId: itemId, part }).then((response) => {
 			if (!response || 'Fault' in response) {
 				return;
 			}
 			setMessage(normalizeMailMessageFromSoap(response.m[0], true) as MailMessage);
 		});
-	}, [message, messageId, part]);
+	}, [itemId, message, part]);
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -14,7 +14,17 @@ import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conver
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from 'views/app/detail-panel/selection-interactive';
 
-const DetailPanel: FC = () => {
+// Route parameter types for the detail panel.
+// Defined here for easy access by children components.
+// React Router DOM doesn't provide built-in type safety for route params,
+// so this serves as a workaround to ensure type consistency.
+// Better approaches are very welcome
+export type DetailPanelRouteParams = {
+	folderId: string;
+	itemId: string;
+};
+
+const DetailPanel = (): React.JSX.Element => {
 	const { multipleSelectionCount } = useAppContext<AppContext>();
 	return (
 		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
@@ -24,11 +34,11 @@ const DetailPanel: FC = () => {
 					element={<SelectionInteractive count={multipleSelectionCount} />}
 				/>
 				<Route
-					path={`folder/:folderId/conversation/:conversationId`}
+					path={`folder/:folderId/conversation/:itemId`}
 					element={<ConversationPreviewPanelContainer />}
 				/>
 				<Route
-					path={`folder/:folderId/message/:messageId`}
+					path={`folder/:folderId/message/:itemId`}
 					element={<MessagePreviewPanelContainer />}
 				/>
 			</Routes>

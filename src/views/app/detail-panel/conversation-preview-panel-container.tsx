@@ -11,6 +11,7 @@ import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { type DetailPanelRouteParams } from '../detail-panel';
 import { Spinner } from 'assets/spinner';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
@@ -24,12 +25,9 @@ import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const navigate = useNavigate();
-	const { conversationId, folderId } = useParams() as {
-		conversationId: string;
-		folderId: string;
-	};
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
-	const messages = useConversationMessages(conversationId);
+	const { itemId, folderId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch(itemId);
+	const messages = useConversationMessages(itemId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
@@ -43,9 +41,9 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 	useEffect(() => {
 		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
-			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
+			getConvEmailStoreAction({ id: itemId, onConversationIdChange });
 		}
-	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
+	}, [conversation, itemId, conversationStatus, onConversationIdChange]);
 
 	useEffect(() => {
 		if (isFocusModeMailView() && conversation?.subject) {
@@ -74,7 +72,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 						<ConversationPreviewPanel
-							data-testid={`conversation-preview-panel-${conversationId}`}
+							data-testid={`conversation-preview-panel-${itemId}`}
 							conversation={conversation}
 						/>
 					)}

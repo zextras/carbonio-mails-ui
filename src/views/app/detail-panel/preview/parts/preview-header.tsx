@@ -45,6 +45,7 @@ import { getNoIdentityPlaceholder } from 'helpers/identities';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import type { MailMessage } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
+import { type DetailPanelRouteParams } from 'views/app/detail-panel';
 import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 import { MailMsgPreviewActions } from 'views/app/detail-panel/preview/parts/mail-message-preview-actions';
@@ -96,7 +97,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
-	const { folderId } = useParams() as { folderId?: string };
+	const { folderId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
 
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);

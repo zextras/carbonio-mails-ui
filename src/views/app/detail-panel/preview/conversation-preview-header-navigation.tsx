@@ -9,20 +9,18 @@ import { useParams } from 'react-router-dom';
 
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { useConversationIndexSlice } from 'store/emails/store';
+import { type DetailPanelRouteParams } from 'views/app/detail-panel';
 import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
-	const { folderId, conversationId } = useParams() as {
-		folderId: string;
-		conversationId: string;
-	};
+	const { itemId, folderId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
 	const { conversationListIndex, more, status } = useConversationIndexSlice();
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
 		itemIds: conversationListIndex,
 		hasMore: more,
 		folderId,
-		currentItemId: conversationId,
+		currentItemId: itemId,
 		searchedInFolderStatus: status,
 		itemsType: 'conversation'
 	});

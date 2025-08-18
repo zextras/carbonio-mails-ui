@@ -18,12 +18,12 @@ export default function FocusModeMailView(): React.JSX.Element {
 		<ModalManager>
 			<Routes>
 				<Route
-					path={`folder/:folderId/conversation/:conversationId`}
+					path={`folder/:folderId/conversation/:itemId`}
 					element={<ConversationPreviewPanelContainer />}
 				/>
-				<Route path={`eml/:messageId/:part`} element={<EmlPreviewPanelContainer />} />
+				<Route path={`eml/:itemId/:part`} element={<EmlPreviewPanelContainer />} />
 				<Route
-					path={`folder/:folderId/message/:messageId`}
+					path={`folder/:folderId/message/:itemId`}
 					element={<MessagePreviewPanelContainer />}
 				/>
 			</Routes>
