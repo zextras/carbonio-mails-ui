@@ -14,16 +14,26 @@ import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
 import { MailMessage } from 'types/index.d';
+import { type DetailPanelRouteParams } from 'views/app/detail-panel';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
 };
 
+function normalizeConversationItemId(value: string): string {
+	return value.replace(/:-(\d+)$/, ':$1').replace(/^-(\d+)$/, '$1');
+}
+
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 
-	const { itemId } = useParams<{ itemId: string }>();
-	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
+	const { itemId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
+
+	const normalizedItemId = normalizeConversationItemId(itemId);
+	const shouldReplaceHistory = useMemo(
+		() => normalizedItemId === message.id,
+		[message.id, normalizedItemId]
+	);
 
 	const {
 		replyDescriptor,
