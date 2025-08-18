@@ -508,6 +508,20 @@ describe('HTMLMessageRenderer Component', () => {
 					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
 				expect(root.innerHTML).toContain(result);
 			});
+
+			it('handles email addresses with angle brackets entities', () => {
+				const content = 'Contact me at &lt;test@example.com&gt;';
+				const message = {
+					id: '1',
+					body: { contentType: 'text/html', content },
+					truncated: false
+				} as unknown as MailMessage;
+				setupTest(<HtmlMessageRenderer message={message} />);
+				const { root } = shadowAccess();
+				const result =
+					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
+				expect(root.innerHTML).toContain(result);
+			});
 		});
 
 		describe('mailto: links', () => {
