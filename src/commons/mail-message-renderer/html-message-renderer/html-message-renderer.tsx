@@ -60,13 +60,10 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 	const originalContent = getOriginalHtmlContent(cleanBodyContent);
 	const quoted = getQuotedTextFromOriginalContent(cleanBodyContent, originalContent);
 
-	const contentToDisplay = useMemo(() => {
-		const html = showQuotedText ? cleanBodyContent : originalContent;
-		return linkifyText(html, {
-			autolinker: { urls: false, email: false, phone: true },
-			linkEmails: true
-		});
-	}, [cleanBodyContent, originalContent, showQuotedText]);
+	const contentToDisplay = useMemo(
+		() => (showQuotedText ? cleanBodyContent : originalContent),
+		[cleanBodyContent, originalContent, showQuotedText]
+	);
 
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
@@ -149,7 +146,11 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 			updateImageSrc(img, imgMap, showImage, msgId);
 		});
 		const html = htmlDoc.documentElement.outerHTML;
-		return decodeSurrogatePairs(html);
+		const linkifiedText = linkifyText(html, {
+			autolinker: { urls: false, email: false, phone: true },
+			linkEmails: true
+		});
+		return decodeSurrogatePairs(linkifiedText);
 	}, [htmlDoc.documentElement.outerHTML, images, msgId, attachments, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
