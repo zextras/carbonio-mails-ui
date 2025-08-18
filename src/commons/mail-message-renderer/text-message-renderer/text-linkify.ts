@@ -11,6 +11,7 @@ export type LinkifyOptions = {
 	autolinker?: Partial<AutolinkerConfig>;
 	anchorRel?: string;
 	openInNewTab?: boolean;
+	linkEmails?: boolean;
 };
 
 const DEFAULT_OPTIONS: Required<LinkifyOptions> = {
@@ -23,7 +24,8 @@ const DEFAULT_OPTIONS: Required<LinkifyOptions> = {
 		stripTrailingSlash: false
 	},
 	anchorRel: 'noopener noreferrer',
-	openInNewTab: true
+	openInNewTab: true,
+	linkEmails: true
 };
 
 const MAILTO_EMAIL_REGEX =
@@ -52,25 +54,29 @@ export function linkifyToHtml(rawText: string, options?: LinkifyOptions): string
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 	const attrs = asAttrs(opts);
 
-	// Re-create mailto anchors
-	const withMailto = rawText.replace(MAILTO_EMAIL_REGEX, (match, email, query) => {
-		const href = `mailto:${email}${query ?? ''}`;
-		return `<a href="${href}"${attrs}>${match}</a>`;
-	});
+	let processedText = rawText;
 
-	// Plain emails (not already mailto) → anchors
-	const withPlainEmailAnchors = withMailto.replace(
-		PLAIN_EMAIL_REGEX,
-		(_m, ws, email) => `${ws}<a href="mailto:${email}"${attrs}>${email}</a>`
-	);
+	if (opts.linkEmails) {
+		// Re-create mailto anchors
+		processedText = processedText.replace(MAILTO_EMAIL_REGEX, (match, email, query) => {
+			const href = `mailto:${email}${query ?? ''}`;
+			return `<a href="${href}"${attrs}>${match}</a>`;
+		});
 
-	// Angle-bracketed emails → anchors but keep literal &lt; &gt;
-	const withAngleBracketEmails = withPlainEmailAnchors.replace(
-		ANGLE_BRACKET_EMAIL_REGEX,
-		(_m, email) => `&lt;<a href="mailto:${email}"${attrs}>${email}</a>&gt;`
-	);
+		// Plain emails (not already mailto) → anchors
+		processedText = processedText.replace(
+			PLAIN_EMAIL_REGEX,
+			(_m, ws, email) => `${ws}<a href="mailto:${email}"${attrs}>${email}</a>`
+		);
 
-	return Autolinker.link(withAngleBracketEmails, {
+		// Angle-bracketed emails → anchors but keep literal &lt; &gt;
+		processedText = processedText.replace(
+			ANGLE_BRACKET_EMAIL_REGEX,
+			(_m, email) => `&lt;<a href="mailto:${email}"${attrs}>${email}</a>&gt;`
+		);
+	}
+
+	return Autolinker.link(processedText, {
 		...opts.autolinker,
 		newWindow: opts.openInNewTab
 	});

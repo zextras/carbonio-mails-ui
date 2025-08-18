@@ -7,6 +7,8 @@
 import { linkifyToHtml } from '../text-linkify';
 
 describe('linkifyToHtml', () => {
+	const email = 'foo@bar.com';
+
 	it('converts URLs to anchor tags', () => {
 		const input = 'Visit https://example.com for info.';
 		const output = linkifyToHtml(input);
@@ -60,21 +62,19 @@ describe('linkifyToHtml', () => {
 	});
 
 	it('applies custom anchorRel and openInNewTab options', () => {
-		const input = 'foo@bar.com';
+		const input = email;
 		const output = linkifyToHtml(input, { anchorRel: 'nofollow', openInNewTab: false });
 		expect(output).toContain('rel="nofollow"');
 		expect(output).not.toContain('target="_blank"');
 	});
 
 	it('do not applies custom anchorRel if undefined', () => {
-		const input = 'foo@bar.com';
-		const output = linkifyToHtml(input, { anchorRel: undefined });
+		const output = linkifyToHtml(email, { anchorRel: undefined });
 		expect(output).not.toContain('rel="nofollow"');
 	});
 
 	it('do not applies custom anchorRel if empty', () => {
-		const input = 'foo@bar.com';
-		const output = linkifyToHtml(input, { anchorRel: '' });
+		const output = linkifyToHtml(email, { anchorRel: '' });
 		expect(output).not.toContain('rel="nofollow"');
 	});
 
@@ -94,5 +94,22 @@ describe('linkifyToHtml', () => {
 		expect(output).toBe(
 			'Call me at <a href="tel:+1234567890" target="_blank" rel="noopener noreferrer">+1234567890</a>'
 		);
+	});
+
+	it('when linkEmails=false, does NOT link plain emails or mailto:', () => {
+		const input = `Plain: ${email} and mailto:demo@example.com?subject=Hi`;
+		const html = linkifyToHtml(input, { linkEmails: false });
+
+		expect(html).toContain(`Plain: ${email}`);
+		expect(html).toContain(`mailto:demo@example.com?subject=Hi`);
+		expect(html).not.toMatch(/<a[^>]+href="mailto:[^"]+"/);
+	});
+
+	it('does not double-link inside angle brackets when linkEmails=false', () => {
+		const input = 'Send to <test@example.com>';
+		const html = linkifyToHtml(input, { linkEmails: false });
+
+		expect(html).toContain('<test@example.com>');
+		expect(html).not.toMatch(/mailto:/);
 	});
 });
