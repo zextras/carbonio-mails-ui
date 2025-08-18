@@ -363,7 +363,7 @@ describe('HTMLMessageRenderer Component', () => {
 				} as unknown as MailMessage;
 				setupTest(<HtmlMessageRenderer message={message} />);
 
-				const { getByRole, root } = shadowAccess();
+				const { getByRole } = shadowAccess();
 				const link = getByRole('link');
 				expect(link).toHaveAttribute('href', 'mailto:user123@example.com');
 				expect(link).toHaveAttribute('target', '_blank');
