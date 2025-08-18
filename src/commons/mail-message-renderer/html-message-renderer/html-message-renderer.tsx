@@ -11,24 +11,24 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
-import { linkifyToHtml } from './text-message-renderer/text-linkify';
-import { getFlattenedAttachmentParts } from '../../helpers/attachments';
+import { BannerMessageTruncated } from './banner-message-truncated';
+import { BannerViewExternalImages } from './banner-view-external-images';
+import { getFlattenedAttachmentParts } from '../../../helpers/attachments';
+import { getNoIdentityPlaceholder } from '../../../helpers/identities';
+import { getFullMessageEmailStoreAction } from '../../../store/emails/actions/get-message';
+import { BodyPart, MailMessage } from '../../../types';
 import {
 	getOriginalHtmlContent,
 	getQuotedTextFromOriginalContent
-} from 'commons/get-quoted-text-util';
-import { BannerMessageTruncated } from 'commons/mail-message-renderer/banner-message-truncated';
-import { BannerViewExternalImages } from 'commons/mail-message-renderer/banner-view-external-images';
-import { ShadowDomWrapper } from 'commons/mail-message-renderer/shadow-dom-wrapper';
+} from '../../get-quoted-text-util';
 import {
 	buildImageMap,
 	decodeSurrogatePairs,
 	isAvailableInTrusteeList,
 	updateImageSrc
-} from 'commons/utils';
-import { getNoIdentityPlaceholder } from 'helpers/identities';
-import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
-import { BodyPart, MailMessage } from 'types/index.d';
+} from '../../utils';
+import { ShadowDomWrapper } from '../shadow-dom-wrapper';
+import { linkifyText } from '../text-linkify';
 
 type HtmlMessageRendererType = {
 	message: MailMessage;
@@ -60,10 +60,13 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 	const originalContent = getOriginalHtmlContent(cleanBodyContent);
 	const quoted = getQuotedTextFromOriginalContent(cleanBodyContent, originalContent);
 
-	const contentToDisplay = useMemo(
-		() => (showQuotedText ? cleanBodyContent : originalContent),
-		[showQuotedText, cleanBodyContent, originalContent]
-	);
+	const contentToDisplay = useMemo(() => {
+		const html = showQuotedText ? cleanBodyContent : originalContent;
+		return linkifyText(html, {
+			autolinker: { urls: false, email: false, phone: true },
+			linkEmails: true
+		});
+	}, []);
 
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
@@ -146,9 +149,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 			updateImageSrc(img, imgMap, showImage, msgId);
 		});
 		const html = htmlDoc.documentElement.outerHTML;
-
-		const linkifiedHtml = linkifyToHtml(html);
-		return decodeSurrogatePairs(linkifiedHtml);
+		return decodeSurrogatePairs(html);
 	}, [htmlDoc.documentElement.outerHTML, images, msgId, attachments, showImage]);
 
 	const loadMessage = async (): Promise<void> => {

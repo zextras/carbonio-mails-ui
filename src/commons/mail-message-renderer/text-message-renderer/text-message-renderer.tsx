@@ -8,11 +8,11 @@ import React, { useMemo, useState } from 'react';
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { linkifyToHtml } from './text-linkify';
 import {
 	getOriginalTextContent,
 	getQuotedTextFromOriginalContent
 } from '../../get-quoted-text-util';
+import { linkifyText } from '../text-linkify';
 
 type TextMessageRendererType = {
 	body: { content: string };
@@ -25,7 +25,7 @@ export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JS
 
 	const convertedHTML = useMemo(() => {
 		const content = showQuotedText ? body.content : originalText;
-		const html = linkifyToHtml(content);
+		const html = linkifyText(content);
 		return html.replace(/\r\n|\r|\n/g, '<br />');
 	}, [showQuotedText, body.content, originalText]);
 
