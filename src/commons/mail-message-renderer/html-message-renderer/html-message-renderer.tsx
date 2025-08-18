@@ -3,179 +3,53 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
-import { Button, Container, Row } from '@zextras/carbonio-design-system';
-import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { filter, forEach, isArray, some } from 'lodash';
-import { Trans } from 'react-i18next';
+import { Container } from '@zextras/carbonio-design-system';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
 import { BannerViewExternalImages } from './banner-view-external-images';
-import { getFlattenedAttachmentParts } from '../../../helpers/attachments';
-import { getNoIdentityPlaceholder } from '../../../helpers/identities';
-import { getFullMessageEmailStoreAction } from '../../../store/emails/actions/get-message';
-import { BodyPart, MailMessage } from '../../../types';
-import {
-	getOriginalHtmlContent,
-	getQuotedTextFromOriginalContent
-} from '../../get-quoted-text-util';
-import {
-	buildImageMap,
-	decodeSurrogatePairs,
-	isAvailableInTrusteeList,
-	updateImageSrc
-} from '../../utils';
+import { ShowQuotedTextButton } from './show-quoted-text-button';
+import { useHtmlMessageRenderer } from './use-html-message-renderer';
+import { MailMessage } from '../../../types';
 import { ShadowDomWrapper } from '../shadow-dom-wrapper';
-import { linkifyText } from '../text-linkify';
 
-type HtmlMessageRendererType = {
+type HtmlMessageRendererProps = {
 	message: MailMessage;
 };
 
-export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React.JSX.Element => {
-	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
-	const body: BodyPart = message?.body ?? {
-		content: '',
-		truncated: false
-	};
-	const bodyContent = body.content;
-	// Step needed to remove extra color prop set when sending a message from richtexteditor it's apply to all the message sent
-	const cleanBodyContent = bodyContent.replace(/color:\s*#000000;?/i, '');
-
-	const participants = message?.participants ?? [];
-
-	const attachments = useMemo(() => getFlattenedAttachmentParts(message), [message]);
-
+export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererProps): React.JSX.Element => {
 	const divRef = useRef<HTMLDivElement>(null);
-	const [showQuotedText, setShowQuotedText] = useState(false);
 
-	const settingsPref = useUserSettings()?.prefs;
-	const from =
-		filter(participants, { type: ParticipantRole.FROM })[0]?.address ?? getNoIdentityPlaceholder();
-	const domain = from?.substring(from.lastIndexOf('@') + 1);
-	const [showExternalImage, setShowExternalImage] = useState(false);
-	const [displayBanner, setDisplayBanner] = useState(true);
-	const originalContent = getOriginalHtmlContent(cleanBodyContent);
-	const quoted = getQuotedTextFromOriginalContent(cleanBodyContent, originalContent);
-
-	const contentToDisplay = useMemo(
-		() => (showQuotedText ? cleanBodyContent : originalContent),
-		[cleanBodyContent, originalContent, showQuotedText]
-	);
-
-	const parser = new DOMParser();
-	const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
-	const images = htmlDoc.body.getElementsByTagName('img');
-
-	const hasExternalImages = useMemo(() => some(images, (i) => i.hasAttribute('dfsrc')), [images]);
-
-	const showBanner = useMemo(
-		() =>
-			hasExternalImages &&
-			!isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from) &&
-			displayBanner,
-		[from, hasExternalImages, settingsPref.zimbraPrefMailTrustedSenderList, displayBanner]
-	);
-	useEffect(() => {
-		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from))
-			setShowExternalImage(true);
-	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
-
-	const saveTrustee = useCallback(
-		(trustee: string) => {
-			let trusteeAddress: string[] = [];
-			if (settingsPref.zimbraPrefMailTrustedSenderList) {
-				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
-					? settingsPref.zimbraPrefMailTrustedSenderList
-					: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
-			}
-
-			editSettings({
-				prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddress, trustee] }
-			}).then((res) => {
-				if (res.type?.includes('fulfilled')) {
-					setShowExternalImage(true);
-				}
-			});
-		},
-		[settingsPref.zimbraPrefMailTrustedSenderList]
-	);
-
-	const items = useMemo<any[]>(
-		() => [
-			{
-				id: 'always-allow-address',
-				label: (
-					<Trans
-						i18nKey="label.always_allow_address"
-						defaults="Always allow from <strong>{{values}}</strong>"
-						values={{ from }}
-					/>
-				),
-				onClick: () => saveTrustee(from)
-			},
-			{
-				id: 'always-allow-domain',
-				label: (
-					<Trans
-						i18nKey="label.always_allow_domain"
-						defaults="Always allow from <strong>{{values}}</strong> domain"
-						values={{ domain }}
-					/>
-				),
-				onClick: () => saveTrustee(domain)
-			}
-		],
-		[from, domain, saveTrustee]
-	);
-
-	const showImage = useMemo(
-		() => showExternalImage && displayBanner,
-		[displayBanner, showExternalImage]
-	);
-	const msgId = message.id;
-
-	const processedContent = useMemo(() => {
-		// Handle images
-		const imgMap = buildImageMap(attachments);
-		forEach(images, (img) => {
-			updateImageSrc(img, imgMap, showImage, msgId);
-		});
-		const html = htmlDoc.documentElement.outerHTML;
-		const linkifiedText = linkifyText(html, {
-			autolinker: { urls: false, email: false, phone: true },
-			linkEmails: true
-		});
-		return decodeSurrogatePairs(linkifiedText);
-	}, [htmlDoc.documentElement.outerHTML, images, msgId, attachments, showImage]);
-
-	const loadMessage = async (): Promise<void> => {
-		setIsLoadingMessage(true);
-		getFullMessageEmailStoreAction(msgId).finally(() => {
-			setIsLoadingMessage(false);
-		});
-	};
+	const {
+		messageContent,
+		processedContent,
+		externalImageState,
+		isLoadingMessage,
+		showQuotedText,
+		trustMenuItems,
+		loadFullMessage,
+		handleShowQuotedText
+	} = useHtmlMessageRenderer(message);
 
 	return (
 		<div ref={divRef} style={{ height: '100%' }}>
-			{showBanner && !showExternalImage && (
+			{externalImageState.hasExternalImages && !externalImageState.showExternalImages && (
 				<BannerViewExternalImages
-					setShowExternalImages={setShowExternalImage}
-					setDisplayBanner={setDisplayBanner}
-					items={items}
+					setShowExternalImages={externalImageState.setShowExternalImages}
+					setDisplayBanner={externalImageState.setDisplayBanner}
+					items={trustMenuItems}
 				/>
 			)}
-			{body.truncated && (
-				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
+
+			{message?.body?.truncated && (
+				<BannerMessageTruncated loadMessage={loadFullMessage} isLoadingMessage={isLoadingMessage} />
 			)}
+
 			<ShadowDomWrapper>
 				<Container
-					width={'fit'}
-					height={'100%'}
+					width="fit"
+					height="100%"
 					data-testid="html-message-renderer-container"
 					style={{ overflowY: 'auto', padding: '0.75rem 0px' }}
 					dangerouslySetInnerHTML={{
@@ -183,16 +57,9 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 					}}
 				/>
 			</ShadowDomWrapper>
-			{!showQuotedText && quoted.length > 0 && (
-				<Row mainAlignment="center" crossAlignment="center">
-					<Button
-						label={t('label.show_quoted_text', 'Show quoted text')}
-						icon="EyeOutline"
-						type="outlined"
-						onClick={(): void => setShowQuotedText(true)}
-						width="fill"
-					/>
-				</Row>
+
+			{!showQuotedText && messageContent.quotedText.length > 0 && (
+				<ShowQuotedTextButton onShowQuotedText={handleShowQuotedText} />
 			)}
 		</div>
 	);
