@@ -25,9 +25,9 @@ type CreateLinkType = {
 type Link = {
 	__typename?: 'Link';
 	id: string;
-	url?: string | null | undefined;
-	description?: string | null | undefined;
-	expires_at?: number | null | undefined;
+	url?: string | null;
+	description?: string | null;
+	expires_at?: number | null;
 	created_at: number;
 	node: Pick<NodeWithMetadata, 'id' | '__typename'>;
 };
