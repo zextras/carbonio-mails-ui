@@ -62,8 +62,7 @@ describe('linkifyToHtml', () => {
 	});
 
 	it('applies custom anchorRel and openInNewTab options', () => {
-		const input = email;
-		const output = linkifyToHtml(input, { anchorRel: 'nofollow', openInNewTab: false });
+		const output = linkifyToHtml(email, { anchorRel: 'nofollow', openInNewTab: false });
 		expect(output).toContain('rel="nofollow"');
 		expect(output).not.toContain('target="_blank"');
 	});
