@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { linkifyText } from '../text-linkify';
+import { linkifyText } from './text-linkify';
 
 describe('linkifyToHtml', () => {
 	const email = 'foo@bar.com';
@@ -131,6 +131,14 @@ describe('linkifyToHtml', () => {
 		const output = linkifyText(input, { autolinker: false, linkEmails: true });
 		expect(output).toBe(
 			'Visit https://example.com and email me at <a href="mailto:foo@bar.com" target="_blank" rel="noopener noreferrer">foo@bar.com</a>'
+		);
+	});
+
+	it('doest not linkify trailing angle bracket in mailto link', () => {
+		const input = 'Contact <mailto:test@example.com?subject=Hello>';
+		const output = linkifyText(input);
+		expect(output).toBe(
+			'Contact <<a href="mailto:test@example.com?subject=Hello" target="_blank" rel="noopener noreferrer">mailto:test@example.com?subject=Hello</a>>'
 		);
 	});
 });
