@@ -20,7 +20,6 @@ export * from './search';
 export * from './settings';
 export * from './share';
 export * from './soap';
-export * from './sorting';
 export * from './state';
 export * from './tags';
 export * from './utils';

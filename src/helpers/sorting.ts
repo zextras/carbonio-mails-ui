@@ -1,21 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { editSettings } from '@zextras/carbonio-shell-ui';
-import { find } from 'lodash';
-
-import { SORTING_OPTIONS } from 'constants/index';
-import { FolderSortOrder } from 'types/index.d';
-
-const fallbackSortOrder = {
-	sortType: 'date',
-	sortDirection: 'Desc' as 'Asc' | 'Desc',
-	sortOrder: 'dateDesc',
-	remainingFoldersSortOrder: '',
-	remainingSortOptions: ''
-};
 
 /**
  * Returns sortType, sortDirection and sortOrder for the given folder
@@ -26,82 +14,115 @@ const fallbackSortOrder = {
  * returns an object containing
  * sortType: the sort type for the given folder,
  * sortDirection: the sort direction for the given folder,
- * sortOrder: the concatenation of sortType and sortDirection,
- * remainingFoldersSortOrder: the sort order of the other folders,
- * remainingSortOptions: the sort order of the other options not related to mails
  */
+
+const fallbackSortOrder = {
+	sortType: 'date',
+	sortDirection: 'Desc' as 'Asc' | 'Desc'
+};
+
+export type FolderSortOrder = {
+	sortType: string;
+	sortDirection: 'Asc' | 'Desc';
+	filterType?: string;
+};
+
+export const getFilterQuery = (filter: string | undefined, folderId: string): string => {
+	if (!filter) return `inId:"${folderId}"`;
+	switch (filter) {
+		case 'read':
+			return `inId:"${folderId}" is:unread`;
+		case 'priority':
+			return `inId:"${folderId}" priority:high`;
+		case 'flag':
+			return `inId:"${folderId}" is:flagged`;
+		case 'attach':
+			return `inId:"${folderId}" has:attachment`;
+		default:
+			return `inId:"${folderId}"`;
+	}
+};
+
+function findFolderEntry(
+	prefSortOrder: string,
+	folderId: string
+): { currentFolder: string | undefined; parameters: string[] | undefined } {
+	if (!folderId || !prefSortOrder) return { currentFolder: undefined, parameters: undefined };
+
+	const folders = prefSortOrder.split(',');
+	const currentFolder = folders.find((folder) => folder.startsWith(`${folderId}:`));
+	if (!currentFolder) return { currentFolder: undefined, parameters: undefined };
+
+	const parameters = currentFolder.replace(',BDLV', '').replace(`${folderId}:`, '').split('-');
+
+	return { currentFolder, parameters };
+}
+
 export function parseMessageSortingOptions(
-	folderId?: string,
+	folderId: string,
 	prefSortOrder?: string
 ): FolderSortOrder {
 	if (!prefSortOrder || !folderId) {
 		return fallbackSortOrder;
 	}
-	const splitString = ',BDLV';
-	const sortOrderString = prefSortOrder.split(splitString)[0];
-	const sortingFolders = sortOrderString.split(',');
-	const sortOrderOfFolder = find(
-		sortingFolders,
-		(item) => item.substring(0, item.lastIndexOf(':')) === folderId
-	);
-
-	const remainingSortOptions = splitString.concat(prefSortOrder.split(splitString)[1]) ?? '';
-	const remainingFoldersSortOrder =
-		sortingFolders
-			.filter((item) => item.substring(0, item.lastIndexOf(':')) !== folderId)
-			.join(',') ?? '';
-	if (!!sortOrderOfFolder && !sortOrderOfFolder.includes(SORTING_OPTIONS.size.value)) {
-		const sortOrder = sortOrderOfFolder.substring(sortOrderOfFolder.lastIndexOf(':') + 1);
-		const sortDirection = sortOrder.includes('Desc') ? 'Desc' : 'Asc';
-		const sortType = sortOrder.split(/Asc|Desc/i)[0];
-
-		return { sortType, sortDirection, sortOrder, remainingFoldersSortOrder, remainingSortOptions };
+	const { parameters } = findFolderEntry(prefSortOrder ?? '', folderId);
+	if (parameters?.length === 2) {
+		return {
+			sortType: parameters[0],
+			sortDirection: parameters[1] as 'Asc' | 'Desc'
+		};
+	}
+	if (parameters?.length === 3) {
+		return {
+			sortType: parameters[0],
+			sortDirection: parameters[1] as 'Asc' | 'Desc',
+			filterType: parameters[2]
+		};
 	}
 	return fallbackSortOrder;
 }
 
 function modifySettingString(
-	inputStringA: string,
-	inputStringB: string,
+	zimbraPrefSortOrder: string,
+	prefToUpdate: string,
 	folderId?: string
-): string {
-	const replaceStr = new RegExp(`${folderId}:(.*?)(Asc|Desc)`);
-	return replaceStr.test(inputStringA)
-		? inputStringA.replace(replaceStr, `${inputStringB}`)
-		: `${inputStringA},${inputStringB}`;
+): string | undefined {
+	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId ?? '');
+	if (!currentFolder) {
+		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
+		return replacedString.concat(`,${prefToUpdate},BDLV`);
+	}
+	return currentFolder && zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
 }
 
-export function updateSortingSettings({
+export function updateSortAndFilterSettings({
+	folderId,
 	prefSortOrder,
-	sortingTypeValue,
-	sortingDirection,
-	folderId
+	sortType,
+	sortDirection,
+	filter
 }: {
+	folderId: string;
 	prefSortOrder?: string;
-	sortingTypeValue: string;
-	sortingDirection: string;
-	folderId?: string;
+	sortType: string;
+	sortDirection: string;
+	filter?: string;
 }): void {
+	const sortingAndFilteringString = `${folderId}:${sortType}-${sortDirection}`.concat(
+		filter ? `-${filter}` : ''
+	);
 	if (!prefSortOrder) {
-		const changes = {
+		editSettings({
 			prefs: {
-				zimbraPrefSortOrder: `${folderId}:${sortingTypeValue}${sortingDirection},BDLV`
+				zimbraPrefSortOrder: `${sortingAndFilteringString},BDLV`
 			}
-		};
-		editSettings(changes);
+		});
 		return;
 	}
-	const secondString = prefSortOrder.substring(prefSortOrder.indexOf(',BDLV'));
-	const sortingString = `${folderId}:${sortingTypeValue}${sortingDirection}`;
-	const splitString = ',BDLV';
-	const sortOrderString = prefSortOrder.split(splitString)[0];
-	const replacedString = modifySettingString(sortOrderString, sortingString, folderId);
-	const finalString = replacedString + secondString;
-
-	const changes = {
+	const newPref = modifySettingString(prefSortOrder, sortingAndFilteringString, folderId);
+	editSettings({
 		prefs: {
-			zimbraPrefSortOrder: finalString
+			zimbraPrefSortOrder: newPref
 		}
-	};
-	editSettings(changes);
+	});
 }
