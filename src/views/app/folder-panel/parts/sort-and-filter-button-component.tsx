@@ -1,0 +1,230 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React, { useMemo } from 'react';
+
+import {
+	Button,
+	Container,
+	Dropdown,
+	DropdownItem,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { capitalize, noop } from 'lodash';
+import { useTranslation } from 'react-i18next';
+
+import { SORT_ICONS, SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
+import {
+	parseMessageSortingOptions,
+	updateSortAndFilterSettings
+} from '../../../../helpers/sorting';
+
+type SortingOption = {
+	value: string;
+	label: string;
+};
+
+function getRadioIcon(option: string | undefined, value: string): string {
+	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';
+}
+
+const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): DropdownItem[] => {
+	const [t] = useTranslation();
+	const { prefs } = useUserSettings();
+
+	const prefSortOrder = useMemo(
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
+		[prefs?.zimbraPrefSortOrder]
+	);
+
+	const { sortDirection, sortType, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
+
+	const sortingOptions: SortingOption[] = useMemo(
+		() => [
+			SORTING_OPTIONS.date,
+			SORTING_OPTIONS.subject,
+			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
+		],
+		[folderId]
+	);
+
+	const filteringOptions: SortingOption[] = useMemo(
+		() => [
+			SORTING_OPTIONS.unread,
+			SORTING_OPTIONS.important,
+			SORTING_OPTIONS.flagged,
+			SORTING_OPTIONS.attachment
+		],
+		[]
+	);
+
+	const toggleDirectionItem: DropdownItem = useMemo(
+		() => ({
+			id: 'toggle-direction',
+			onClick: (): void => {
+				const newDirection =
+					sortDirection === SORTING_DIRECTION.ASCENDING
+						? SORTING_DIRECTION.DESCENDING
+						: SORTING_DIRECTION.ASCENDING;
+
+				updateSortAndFilterSettings({
+					folderId,
+					prefSortOrder,
+					sortType,
+					sortDirection: newDirection,
+					filter: filterType
+				});
+			},
+			customComponent: (
+				<Container
+					style={{ minWidth: '160px' }}
+					crossAlignment="center"
+					mainAlignment="space-between"
+					width="fill"
+					orientation="horizontal"
+				>
+					<Button
+						color="gray0"
+						onClick={noop}
+						type="ghost"
+						size="large"
+						icon={
+							sortDirection === SORTING_DIRECTION.DESCENDING
+								? SORT_ICONS.ASCENDING
+								: SORT_ICONS.DESCENDING
+						}
+					/>
+					<Text>
+						{sortDirection === SORTING_DIRECTION.ASCENDING
+							? t('sorting_dropdown.descendingOrder', 'Descending order')
+							: t('sorting_dropdown.ascendingOrder', 'Ascending order')}
+					</Text>
+				</Container>
+			)
+		}),
+		[filterType, sortDirection, sortType, folderId, prefSortOrder, t]
+	);
+
+	const filterLabelItem: DropdownItem = useMemo(
+		() => ({
+			id: 'filter-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.show', 'Show:')}</Text>
+		}),
+		[t]
+	);
+
+	const filterItems: DropdownItem[] = useMemo(
+		() =>
+			filteringOptions.map(({ value, label }) => ({
+				id: `filter-${value}`,
+				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				selected: filterType === value,
+				onClick: (): void => {
+					updateSortAndFilterSettings({
+						folderId,
+						prefSortOrder,
+						sortType,
+						sortDirection,
+						filter: value
+					});
+				},
+				icon: getRadioIcon(filterType, value)
+			})),
+		[filterType, sortDirection, sortType, filteringOptions, folderId, prefSortOrder, t]
+	);
+
+	const sortItems: DropdownItem[] = useMemo(
+		() =>
+			sortingOptions.map(({ value, label }) => ({
+				id: `sort-${value}`,
+				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				selected: sortType === value,
+				onClick: (): void => {
+					updateSortAndFilterSettings({
+						folderId,
+						prefSortOrder,
+						sortType: value,
+						sortDirection,
+						filter: filterType
+					});
+				},
+				icon: getRadioIcon(sortType, value)
+			})),
+		[filterType, sortDirection, sortType, folderId, prefSortOrder, sortingOptions, t]
+	);
+
+	const sortLabelItem: DropdownItem = useMemo(
+		() => ({
+			id: 'sort-label',
+			disabled: true,
+			customComponent: <Text size="medium">{t('sorting_dropdown.sort_by', 'Sort by:')}</Text>
+		}),
+		[t]
+	);
+
+	return useMemo(
+		() => [
+			toggleDirectionItem,
+			{ id: 'divider-1', type: 'divider' },
+			filterLabelItem,
+			...filterItems,
+			{ id: 'divider-2', type: 'divider' },
+			sortLabelItem,
+			...sortItems
+		],
+		[filterItems, filterLabelItem, sortItems, sortLabelItem, toggleDirectionItem]
+	);
+};
+
+export const SortAndFilterButtonComponent = ({
+	folderId
+}: {
+	folderId: string;
+}): React.JSX.Element => {
+	const [t] = useTranslation();
+	const { prefs } = useUserSettings();
+
+	const prefSortOrder = useMemo(
+		() => (prefs?.zimbraPrefSortOrder as string) ?? '',
+		[prefs?.zimbraPrefSortOrder]
+	);
+
+	const { sortDirection } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
+
+	const buttonIcon =
+		sortDirection === SORTING_DIRECTION.ASCENDING ? SORT_ICONS.ASCENDING : SORT_ICONS.DESCENDING;
+
+	const dropdownItems = useListHeaderDropdownItems({
+		folderId
+	});
+
+	return (
+		<Tooltip
+			label={t('label.change_filtering_sorting_options', 'Change filtering and sorting options')}
+			placement="top"
+		>
+			<Dropdown
+				items={dropdownItems}
+				multiple
+				itemPaddingBetween="large"
+				itemIconSize="large"
+				selectedBackgroundColor="highlight"
+				data-testid="sorting-dropdown"
+			>
+				<Button type="ghost" icon={buttonIcon} color="gray0" size="large" onClick={noop} />
+			</Dropdown>
+		</Tooltip>
+	);
+};
