@@ -27,7 +27,7 @@ export type DetailPanelRouteParams = {
 const DetailPanel = (): React.JSX.Element => {
 	const { multipleSelectionCount } = useAppContext<AppContext>();
 	return (
-		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
+		<Container width="fill" data-testid="detail-panel-test-id" style={{ overflowY: 'auto' }}>
 			<Routes>
 				<Route
 					path={`folder/:folderId`}
