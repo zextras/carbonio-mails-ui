@@ -58,7 +58,9 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
-	useEditorIsSmimeEncrypt
+	useEditorIsSmimeEncrypt,
+	useEditorTextProvider,
+	useEditorDraftSave2
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -125,9 +127,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 ) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
+	const { textProvider } = useEditorTextProvider(editorId);
+
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
+	const { saveDraft: saveDraft2 } = useEditorDraftSave2(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
@@ -355,10 +360,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 
-		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() =>
-			setIsConvertingToSmartLink(false)
-		);
-	}, [editorId, createSnackbar]);
+		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() => {
+			const { text } = useEditorsStore.getState().editors[editorId];
+			textProvider?.setCurrentText(text);
+			setIsConvertingToSmartLink(false);
+		});
+	}, [editorId, createSnackbar, textProvider]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
@@ -370,6 +377,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					return;
 				}
 			}
+			await saveDraft2();
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
@@ -395,7 +403,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onSendCountdownTick,
 		onSendComplete,
 		onSendError,
-		createSmartLinksAction
+		createSmartLinksAction,
+		saveDraft2
 	]);
 
 	const handleCertificateResponse = useCallback(
@@ -549,8 +558,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						return;
 					}
 				}
+				await saveDraft2();
 				setAutoSendTime(scheduledTime);
-				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
 			};
 			checkSubjectAndAttachment({
