@@ -20,6 +20,16 @@ import { generateConversation } from 'tests/generators/generateConversation';
 import { mockLayoutStorage } from 'tests/layouts-utils';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+	const actual = jest.requireActual('react-router-dom');
+	return {
+		...actual,
+		useNavigate: (): jest.Mock => mockNavigate
+	};
+});
+
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {
 		populateFoldersStore();
@@ -87,5 +97,67 @@ describe('PreviewPanelHeader', () => {
 				screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigateNext })
 			).toBeVisible();
 		});
+	});
+
+	it('registers keydown listener on mount and removes it on unmount', () => {
+		populateFoldersStore();
+
+		const addSpy = jest.spyOn(window, 'addEventListener');
+		const removeSpy = jest.spyOn(window, 'removeEventListener');
+
+		const { unmount } = setupTest(
+			<PreviewPanelHeader itemType="conversation" isRead={false} folderId={FOLDERS.INBOX} />
+		);
+
+		// registration verify
+		const addCall = addSpy.mock.calls.find(([type]) => type === 'keydown');
+		expect(addCall).toBeTruthy();
+		const handler = addCall?.[1] as EventListener;
+		expect(typeof handler).toBe('function');
+
+		// cleanup
+		unmount();
+
+		// removal verify
+		const removeCall = removeSpy.mock.calls.find(
+			([type, h]) => type === 'keydown' && h === handler
+		);
+		expect(removeCall).toBeTruthy();
+
+		addSpy.mockRestore();
+		removeSpy.mockRestore();
+	});
+
+	it('on Escape prevents default, stops propagation and triggers replace navigation', () => {
+		populateFoldersStore();
+		mockNavigate.mockClear();
+
+		const addSpy = jest.spyOn(window, 'addEventListener');
+
+		setupTest(
+			<PreviewPanelHeader itemType="conversation" isRead={false} folderId={FOLDERS.INBOX} />
+		);
+
+		// registration verify
+		const addCall = addSpy.mock.calls.find(([type]) => type === 'keydown');
+		expect(addCall).toBeTruthy();
+		const handler = addCall?.[1] as (e: KeyboardEvent) => void;
+
+		// mock the keydown event
+		const preventDefault = jest.fn();
+		const stopPropagation = jest.fn();
+		const fakeEvent = {
+			key: 'Escape',
+			preventDefault,
+			stopPropagation
+		} as unknown as KeyboardEvent;
+
+		handler(fakeEvent);
+
+		expect(preventDefault).toHaveBeenCalled();
+		expect(stopPropagation).toHaveBeenCalled();
+		expect(mockNavigate).toHaveBeenCalled();
+
+		addSpy.mockRestore();
 	});
 });

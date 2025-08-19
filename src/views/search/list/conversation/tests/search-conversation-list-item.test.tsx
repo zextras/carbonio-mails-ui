@@ -48,8 +48,9 @@ describe('SearchConversationListItem', () => {
 				selecting={false}
 				active={false}
 				activeItemId={''}
-				toggle={jest.fn()}
 				selected={false}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -99,8 +100,9 @@ describe('SearchConversationListItem', () => {
 				selecting={false}
 				active={false}
 				activeItemId={''}
-				toggle={jest.fn()}
 				selected={false}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -152,8 +154,9 @@ describe('SearchConversationListItem', () => {
 				selecting={false}
 				active={false}
 				activeItemId={''}
-				toggle={jest.fn()}
 				selected={false}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 

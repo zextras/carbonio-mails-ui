@@ -339,6 +339,11 @@ describe('ConversationList Component', () => {
 			m: [generateConvMessageFromAPI({ id: '2', l: FOLDERS.INBOX, cid: '2' })],
 			su: conversation1Subject
 		});
+		const conversation3 = generateConversationFromAPI({
+			id: '3',
+			m: [generateConvMessageFromAPI({ id: '3', l: FOLDERS.INBOX, cid: '3' })],
+			su: conversation1Subject
+		});
 		it('items should still be selected after a multiple selection action', async () => {
 			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
@@ -519,6 +524,59 @@ describe('ConversationList Component', () => {
 			// double check that 1 conversation is still selected
 			const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
 			expect(totalItemsSelectedAfterAction).toHaveLength(1);
+		});
+		it('enables select mode on first click and supports range selection with shift-click', async () => {
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation1, conversation2, conversation3],
+				more: true
+			});
+
+			const { user } = await act(async () => setupTest(<ConversationList />));
+
+			makeAllItemsVisible();
+
+			// select the first conversation
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+			await user.hover(actionWrapper);
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+			expect(totalItemsSelected).toHaveLength(1);
+
+			// Shift-click to select a range
+			const actionWrapper2 = await screen.findByTestId(`ConversationListItem-3`);
+			await user.hover(actionWrapper2);
+			const itemAvatar2 = await screen.findByTestId('conversation-list-item-avatar-3');
+			const avatar2 = within(itemAvatar2).getByTestId('avatar');
+			await act(async () => {
+				await user.keyboard('{Shift>}');
+				await user.click(avatar2);
+				await user.keyboard('{/Shift}');
+			});
+
+			const totalItemsSelected2 = screen.getAllByTestId('icon: Checkmark');
+			await waitFor(() => {
+				expect(totalItemsSelected2).toHaveLength(3);
+			});
+
+			// Verify that, after unselecting the second element, the first and last items are selected
+			const actionWrapperMid = screen.getByTestId('ConversationListItem-2');
+			await user.hover(actionWrapperMid);
+			const itemAvatarMid = await screen.findByTestId('conversation-list-item-avatar-2');
+			const avatarMid = within(itemAvatarMid).getByTestId('avatar');
+
+			await act(async () => {
+				await user.click(avatarMid); // toggle OFF sul secondo
+			});
+
+			await waitFor(() => {
+				expect(within(itemAvatarMid).queryByTestId('icon: Checkmark')).not.toBeInTheDocument();
+			});
+			expect(screen.getAllByTestId('icon: Checkmark')).toHaveLength(2);
 		});
 	});
 });

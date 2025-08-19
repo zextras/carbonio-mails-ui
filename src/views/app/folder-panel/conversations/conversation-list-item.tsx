@@ -27,13 +27,14 @@ export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	isSearchModule?: boolean;
 	activeItemId?: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	folderId?: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -43,13 +44,14 @@ export const ConversationListItem = memo(function ConversationListItem({
 	conversation,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	active,
 	isSearchModule,
 	activeItemId,
 	dragImageRef,
 	folderId,
-	setDraggedIds
+	setDraggedIds,
+	index,
+	onSelect
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
@@ -149,22 +151,26 @@ export const ConversationListItem = memo(function ConversationListItem({
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						toggleMultipleSelection={toggleMultipleSelection}
 						folderParent={folderParent}
 						open={open}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
+						index={index}
+						onSelect={onSelect}
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
-				<ConversationListItemCore
-					conversation={conversation}
-					selected={selected}
-					selecting={selecting}
-					toggleMultipleSelection={toggleMultipleSelection}
-					folderParent={folderParent}
-					open={open}
-					toggleCollapseElementCallback={toggleCollapseElementCallback}
-				/>
+				<Container onClick={_onClick}>
+					<ConversationListItemCore
+						conversation={conversation}
+						selected={selected}
+						selecting={selecting}
+						folderParent={folderParent}
+						open={open}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
+						index={index}
+						onSelect={onSelect}
+					/>
+				</Container>
 			)}
 			{open && conversation.messagesInConversation > 1 && (
 				<CollapseElement

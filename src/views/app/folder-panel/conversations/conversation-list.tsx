@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -11,6 +11,7 @@ import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -29,16 +30,18 @@ export const ConversationList = (): React.JSX.Element => {
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const dragImageRef = useRef(null);
 
 	const {
-		toggleItemSelection: toggleMultipleSelection,
+		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useMultipleSelection({
 		allAvailableItems: conversationsIds,
 		setSelectedItems,
@@ -64,13 +67,27 @@ export const ConversationList = (): React.JSX.Element => {
 		return null;
 	}, [conversationsIds?.length, folderId]);
 
+	const onSelect = useCallback(
+		(index: number, id: string, event: React.MouseEvent) => {
+			handleItemClick(index, id, event, {
+				isSelectModeOn,
+				lastSelectedIndex,
+				conversationsIds,
+				toggle,
+				selectRange,
+				setLastSelectedIndex
+			});
+		},
+		[isSelectModeOn, lastSelectedIndex, conversationsIds, selectRange, toggle]
+	);
+
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
 		Array.from(selectedItems, (item) => [item, true])
 	);
 
 	const listItems = useMemo(
 		() =>
-			map(conversationsIds, (id) => {
+			map(conversationsIds, (id, index) => {
 				const active = itemId === id;
 				const isSelected = selectedItems.has(id);
 				return (
@@ -90,13 +107,14 @@ export const ConversationList = (): React.JSX.Element => {
 									selected={isSelected}
 									selectedItems={selectedItemsMap}
 									activeItemId={itemId}
-									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									dragImageRef={dragImageRef}
 									selecting={isSelectModeOn}
 									active={active}
 									selectedIds={Object.keys(selectedItems)}
 									folderId={folderId}
+									index={index}
+									onSelect={onSelect}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="conversation-invisible-item" />
@@ -111,9 +129,9 @@ export const ConversationList = (): React.JSX.Element => {
 			folderId,
 			isSelectModeOn,
 			itemId,
+			onSelect,
 			selectedItems,
-			selectedItemsMap,
-			toggleMultipleSelection
+			selectedItemsMap
 		]
 	);
 
@@ -167,6 +185,7 @@ export const ConversationList = (): React.JSX.Element => {
 				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
+				onSelect={onSelect}
 			/>
 		</>
 	);

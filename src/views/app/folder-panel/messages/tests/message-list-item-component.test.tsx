@@ -72,9 +72,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -107,9 +108,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -146,9 +148,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -186,9 +189,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -225,9 +229,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -263,9 +268,10 @@ describe.each`
 					isConvChildren: false,
 					visible: true,
 					active: true,
-					toggle: noop,
 					isSearchModule,
-					currentFolderId: folder.id
+					currentFolderId: folder.id,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<MessageListItem {...props} />);
@@ -332,9 +338,10 @@ describe.each`
 				isConvChildren: false,
 				visible: true,
 				active: true,
-				toggle: noop,
 				isSearchModule,
-				currentFolderId: folderId
+				currentFolderId: folderId,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = setupTest(<MessageListItem {...props} />);
@@ -369,9 +376,10 @@ describe('in the drafts folder', () => {
 			isConvChildren: false,
 			visible: true,
 			active: true,
-			toggle: noop,
 			isSearchModule: false,
-			currentFolderId: folderId
+			currentFolderId: folderId,
+			index: 0,
+			onSelect: noop
 		};
 
 		await waitFor(() => {
@@ -391,9 +399,10 @@ describe('in the drafts folder', () => {
 			isConvChildren: false,
 			visible: true,
 			active: true,
-			toggle: noop,
 			isSearchModule: true,
-			currentFolderId: folderId
+			currentFolderId: folderId,
+			index: 0,
+			onSelect: noop
 		};
 
 		setupTest(<MessageListItem {...props} />);
@@ -422,9 +431,10 @@ describe('in the drafts folder', () => {
 				isConvChildren: false,
 				visible: true,
 				active: true,
-				toggle: noop,
 				isSearchModule,
-				currentFolderId: folderId
+				currentFolderId: folderId,
+				index: 0,
+				onSelect: noop
 			};
 
 			setupTest(<MessageListItem {...props} />);
@@ -456,9 +466,10 @@ describe('in the drafts folder', () => {
 				isConvChildren: false,
 				visible: true,
 				active: true,
-				toggle: noop,
 				isSearchModule,
-				currentFolderId: folderId
+				currentFolderId: folderId,
+				index: 0,
+				onSelect: noop
 			};
 
 			setupTest(<MessageListItem {...props} />);
@@ -486,8 +497,9 @@ describe('in the trash folder', () => {
 			isConvChildren: false,
 			visible: true,
 			active: true,
-			toggle: noop,
-			currentFolderId: folderId
+			currentFolderId: folderId,
+			index: 0,
+			onSelect: noop
 		};
 		useTagStore.setState({ tags: mockTags });
 		setMessagesInEmailStore([message], false);
@@ -514,9 +526,10 @@ describe('in the trash folder', () => {
 				isConvChildren: false,
 				visible: true,
 				active: true,
-				toggle: noop,
 				isSearchModule,
-				currentFolderId: folderId
+				currentFolderId: folderId,
+				index: 0,
+				onSelect: noop
 			};
 
 			setupTest(<MessageListItem {...props} />);
