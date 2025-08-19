@@ -62,19 +62,13 @@ export const CertificateUploadModal = ({
 		if (selectedFile) {
 			try {
 				const result = await handleCertificateFileUpload(selectedFile, password ?? '');
-				if (result.caCertificate) {
-					const certificate = {
-						privateKey: result.privateKey,
-						certificate: result.certificate,
-						caCertificate: result.caCertificate
-					};
-					onConfirm(certificate, isSelected);
-					onClose();
-				} else {
-					throw new Error(
-						t('settings.uploadCertificate.caCertificateNotFound', 'CA certificate can not be found')
-					);
-				}
+				const certificate = {
+					privateKey: result.privateKey,
+					certificate: result.certificate,
+					caCertificate: result.caCertificate
+				};
+				onConfirm(certificate, isSelected);
+				onClose();
 			} catch (error) {
 				createSnackbar({
 					key: `error-on-certificate-upload`,
