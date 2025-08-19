@@ -12,7 +12,8 @@ import {
 	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
-	getMailSensitivityLabel
+	getMailSensitivityLabel,
+	normalizeConversationItemId
 } from 'views/app/detail-panel/preview/parts/utils';
 
 describe('getAuthenticationHeadersIconColor', () => {
@@ -114,5 +115,36 @@ describe('getMailSensitivityLabel', () => {
 	it('returns the label for unexpected sensitivity', () => {
 		const result = getMailSensitivityLabel(t, 'Unexpected' as never);
 		expect(result).toBe('label.mail_sensitivity_unknown');
+	});
+});
+
+describe('normalizeConversationItemId', () => {
+	it('should leave positive numbers unchanged', () => {
+		const input = '123';
+		const expected = '123';
+		expect(normalizeConversationItemId(input)).toBe(expected);
+	});
+
+	it('should normalize negative numbers to positive', () => {
+		const input = '-123';
+		const expected = '123';
+		expect(normalizeConversationItemId(input)).toBe(expected);
+	});
+	it('should leave UUID:123 format unchanged', () => {
+		const input = 'c7d0e3b2-aecd-425d-94f1-1c03b8b25bb8:123';
+		const expected = 'c7d0e3b2-aecd-425d-94f1-1c03b8b25bb8:123';
+		expect(normalizeConversationItemId(input)).toBe(expected);
+	});
+
+	it('should normalize UUID:-123 to UUID:123', () => {
+		const input = 'c7d0e3b2-aecd-425d-94f1-1c03b8b25bb8:-123';
+		const expected = 'c7d0e3b2-aecd-425d-94f1-1c03b8b25bb8:123';
+		expect(normalizeConversationItemId(input)).toBe(expected);
+	});
+
+	it('should handle empty string', () => {
+		const input = '';
+		const expected = '';
+		expect(normalizeConversationItemId(input)).toBe(expected);
 	});
 });

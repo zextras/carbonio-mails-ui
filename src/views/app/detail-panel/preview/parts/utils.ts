@@ -66,3 +66,7 @@ export function getMailSensitivityLabel(t: TFunction, sensitivity: Sensitivity):
 			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
 	}
 }
+
+export function normalizeConversationItemId(value: string): string {
+	return value.replace(/:-(\d+)$/, ':$1').replace(/^-(\d+)$/, '$1');
+}
