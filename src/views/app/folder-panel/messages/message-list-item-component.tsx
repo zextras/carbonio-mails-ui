@@ -17,7 +17,6 @@ export type ListItemComponentProps = {
 	selectedItems: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
-	toggle: (id: string) => void;
 	isSelectModeOn: boolean;
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
@@ -25,6 +24,8 @@ export type ListItemComponentProps = {
 	visible: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	currentFolderId?: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const MessageListItemComponent = memo(function MessageListItemComponent({
@@ -33,13 +34,14 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 	selectedItems,
 	isSelected,
 	active,
-	toggle,
 	isSelectModeOn,
 	dragImageRef,
 	isSearchModule,
 	visible,
 	setDraggedIds = noop,
-	currentFolderId
+	currentFolderId,
+	index,
+	onSelect
 }: ListItemComponentProps): React.JSX.Element {
 	const message = useMessageById(messageId);
 	if (!message) return <></>;
@@ -58,11 +60,12 @@ export const MessageListItemComponent = memo(function MessageListItemComponent({
 				selected={isSelected}
 				selecting={isSelectModeOn}
 				isConvChildren={false}
-				toggle={toggle}
 				active={active}
 				visible={visible}
 				isSearchModule={isSearchModule}
 				currentFolderId={currentFolderId}
+				index={index}
+				onSelect={onSelect}
 			/>
 		</DragItemWrapper>
 	);

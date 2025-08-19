@@ -24,6 +24,7 @@ type UseMultypleSelectionReturnType = {
 	selectAll: () => void;
 	isAllSelected: boolean;
 	selectAllModeOff: () => void;
+	selectRange: (ids: string[]) => void;
 };
 
 export const useMultipleSelection = ({
@@ -79,6 +80,18 @@ export const useMultipleSelection = ({
 		setSelectedItems?.(new Set());
 	}, [setSelectedItems]);
 
+	const selectRange = useCallback(
+		(ids: string[]) => {
+			setSelectedItems?.((prev) => {
+				const newSet = new Set(prev);
+				ids.forEach((id) => newSet.add(id));
+				return newSet;
+			});
+			setIsSelectModeOn(true);
+		},
+		[setSelectedItems]
+	);
+
 	return {
 		toggleItemSelection,
 		deselectAll,
@@ -86,6 +99,7 @@ export const useMultipleSelection = ({
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	};
 };

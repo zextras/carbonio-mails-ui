@@ -46,11 +46,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -72,11 +73,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={{ ...conversation, read: false }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -98,11 +100,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={mockSetOpen}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -128,11 +131,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={{ ...conversation, urgent: true }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -153,11 +157,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -186,11 +191,12 @@ describe('SearchConversationListItemCore', () => {
 					conversation={conversation}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
 					open={false}
 					setOpen={jest.fn()}
 					conversationStatus={API_REQUEST_STATUS.fulfilled}
 					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={jest.fn()}
 				/>
 			);
 
@@ -215,11 +221,12 @@ describe('SearchConversationListItemCore', () => {
 					conversation={conversation}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
 					open={false}
 					setOpen={jest.fn()}
 					conversationStatus={API_REQUEST_STATUS.fulfilled}
 					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={jest.fn()}
 				/>
 			);
 

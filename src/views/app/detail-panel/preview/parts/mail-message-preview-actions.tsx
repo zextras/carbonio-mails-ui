@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { isNil, map, noop } from 'lodash';
@@ -86,6 +86,17 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 			].filter((action) => !action.disabled)
 		}
 	];
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent): void => {
+			if (e.key === 'Delete' || e.key === 'Cancel') {
+				moveToTrashDescriptor.execute();
+				deletePermanentlyDescriptor.execute();
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [deletePermanentlyDescriptor, moveToTrashDescriptor]);
 
 	return (
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">

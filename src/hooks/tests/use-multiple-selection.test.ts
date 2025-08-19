@@ -215,4 +215,45 @@ describe('useMultipleSelection', () => {
 		testSetup(new Set());
 		expect(setMultipleSelectionCount).toHaveBeenCalledWith(0);
 	});
+
+	it('should select a range of ids and enable selection mode', () => {
+		const { result, setSelectedItems } = testSetup(new Set(['a']));
+
+		act(() => result.current.selectRange(['b', 'c']));
+
+		// Check that setSelectedItems was called
+		expect(typeof (setSelectedItems as jest.Mock).mock.calls[0][0]).toBe('function');
+
+		// Check that the updater was called with the previous state
+		const updater = (setSelectedItems as jest.Mock).mock.calls[0][0] as (
+			prev: Set<string>
+		) => Set<string>;
+		const updated = updater(new Set(['a']));
+		expect(updated).toEqual(new Set(['a', 'b', 'c']));
+
+		// Check that selection mode is on
+		expect(result.current.isSelectModeOn).toBe(true);
+	});
+
+	it('should accumulate across multiple selectRange calls', () => {
+		const { result, setSelectedItems } = testSetup(new Set(['a']));
+
+		act(() => result.current.selectRange(['b', 'c']));
+		act(() => result.current.selectRange(['d']));
+
+		// Check that the updater was called twice
+		const updater1 = (setSelectedItems as jest.Mock).mock.calls[0][0] as (
+			prev: Set<string>
+		) => Set<string>;
+		const updater2 = (setSelectedItems as jest.Mock).mock.calls[1][0] as (
+			prev: Set<string>
+		) => Set<string>;
+
+		let acc = new Set(['a']);
+		acc = updater1(acc);
+		acc = updater2(acc);
+
+		expect(acc).toEqual(new Set(['a', 'b', 'c', 'd']));
+		expect(result.current.isSelectModeOn).toBe(true);
+	});
 });
