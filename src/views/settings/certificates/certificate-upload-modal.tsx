@@ -65,7 +65,7 @@ export const CertificateUploadModal = ({
 				const certificate = {
 					privateKey: result.privateKey,
 					certificate: result.certificate,
-					caCertificate: result.caCertificate || ''
+					caCertificate: result.caCertificate
 				};
 				onConfirm(certificate, isSelected);
 				onClose();
