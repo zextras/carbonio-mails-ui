@@ -25,7 +25,7 @@ describe('MessagePreviewPanelContainer', () => {
 
 		setupTest(<MessagePreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessage.parent}/message/${mockedMessage.id}`],
-			path: '/folder/:folderId/message/:messageId'
+			path: '/folder/:folderId/message/:itemId'
 		});
 
 		expect(document.title).toEqual(defaultTitle);
@@ -37,7 +37,7 @@ describe('MessagePreviewPanelContainer', () => {
 
 		setupTest(<MessagePreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessage.parent}/message/${mockedMessage.id}`],
-			path: '/folder/:folderId/message/:messageId'
+			path: '/folder/:folderId/message/:itemId'
 		});
 
 		expect(document.title).toEqual(mockedMessage.subject);

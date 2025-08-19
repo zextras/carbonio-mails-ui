@@ -28,7 +28,7 @@ describe('ConversationPreviewPanelContainer', () => {
 		await act(() => updateConversationStatus(mockedConversation.id, 'pending'));
 		setupTest(<ConversationPreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`],
-			path: '/folder/:folderId/conversation/:conversationId'
+			path: '/folder/:folderId/conversation/:itemId'
 		});
 
 		expect(screen.getByText(/Loading conversation, please wait.../i)).toBeVisible();
@@ -42,7 +42,7 @@ describe('ConversationPreviewPanelContainer', () => {
 
 		setupTest(<ConversationPreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`],
-			path: '/folder/:folderId/conversation/:conversationId'
+			path: '/folder/:folderId/conversation/:itemId'
 		});
 
 		expect(document.title).toEqual(defaultTitle);
@@ -56,7 +56,7 @@ describe('ConversationPreviewPanelContainer', () => {
 
 		setupTest(<ConversationPreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`],
-			path: '/folder/:folderId/conversation/:conversationId'
+			path: '/folder/:folderId/conversation/:itemId'
 		});
 
 		expect(document.title).toEqual(mockedConversation.subject);

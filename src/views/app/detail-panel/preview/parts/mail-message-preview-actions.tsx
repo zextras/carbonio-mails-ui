@@ -29,7 +29,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	const { itemId } = useParams<DetailPanelRouteParams>() as DetailPanelRouteParams;
 
-	const normalizedItemId = normalizeConversationItemId(itemId);
+	const normalizedItemId = itemId ? normalizeConversationItemId(itemId) : itemId;
 	const shouldReplaceHistory = useMemo(
 		() => normalizedItemId === message.id,
 		[message.id, normalizedItemId]
