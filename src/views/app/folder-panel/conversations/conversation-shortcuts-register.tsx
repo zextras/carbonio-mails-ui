@@ -3,31 +3,35 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
 
 type ConversationShortcutsRegisterProps = {
-	conversationId: string;
+	conversationIds: Array<string>;
 	folderId: string;
 };
 
 export const ConversationShortcutsRegister = ({
-	conversationId,
+	conversationIds,
 	folderId
 }: ConversationShortcutsRegisterProps): null => {
 	const keyboardActions = useKeyboardShortcutsForConv({
-		conversationId,
+		conversationIds,
 		folderId
 	});
-
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent): void => {
+			keyboardActions(event);
+		},
+		[keyboardActions]
+	);
 	useEffect(() => {
-		const handler = (event: KeyboardEvent): void => keyboardActions(event);
-		document.addEventListener('keydown', handler);
+		document.addEventListener('keydown', handleKeyDown);
 		return () => {
-			document.removeEventListener('keydown', handler);
+			document.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [keyboardActions]);
+	}, [handleKeyDown, keyboardActions]);
 
 	return null;
 };

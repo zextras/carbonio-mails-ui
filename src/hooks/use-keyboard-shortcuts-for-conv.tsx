@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
@@ -12,8 +12,6 @@ import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useConvSetSpamFn } from 'hooks/actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
-import { useConversationById } from 'store/emails/store';
-import { NormalizedConversation } from 'types/index.d';
 
 const KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
@@ -28,7 +26,7 @@ const KEYBOARD_SHORTCUTS = {
 	NEW_FOLDER: ['nf']
 };
 
-const MODIFIER_KEYS: string[] = ['v', 'm', '.', 'n'];
+const MODIFIER_KEYS: string[] = ['m', '.', 'n'];
 
 const MODAL_SELECTORS = [
 	'[data-testid*="modal"]',
@@ -37,7 +35,7 @@ const MODAL_SELECTORS = [
 ];
 
 type UseKeyboardShortcutsForConvProps = {
-	conversationId: NormalizedConversation['id'];
+	conversationIds: Array<string>;
 	folderId: string;
 };
 
@@ -57,84 +55,84 @@ function hasModalOverlay(): boolean {
 }
 
 export const useKeyboardShortcutsForConv = ({
-	conversationId,
+	conversationIds,
 	folderId
 }: UseKeyboardShortcutsForConvProps): ((event: KeyboardEvent) => void) => {
 	const keySequence = useRef<string>('');
-	const conversation = useConversationById(conversationId);
+
+	// store the conversation IDs and folder ID in refs to avoid unnecessary re-renders
+	const conversationIdsRef = useRef(conversationIds);
+	const folderIdRef = useRef(folderId);
+
+	useEffect(() => {
+		conversationIdsRef.current = conversationIds;
+		folderIdRef.current = folderId;
+	}, [conversationIds, folderId]);
 
 	const markAsSpam = useConvSetSpamFn({
-		ids: [conversationId],
-		folderId,
+		ids: conversationIdsRef.current,
+		folderId: folderIdRef.current,
 		shouldReplaceHistory: true
 	});
 
 	const markAsNotSpam = useConvSetNotSpamFn({
-		ids: [conversationId],
-		folderId,
+		ids: conversationIdsRef.current,
+		folderId: folderIdRef.current,
 		shouldReplaceHistory: true
 	});
 
 	const moveToTrash = useConvMoveToTrashFn({
-		ids: [conversationId],
-		folderId
+		ids: conversationIdsRef.current,
+		folderId: folderIdRef.current
 	});
 
 	const setAsRead = useConvSetReadFn({
-		ids: [conversationId],
-		folderId,
-		isConversationRead: conversation?.read
-	});
-	const setAsUnread = useConvSetUnreadFn({
-		ids: [conversationId],
-		folderId,
-		isConversationRead: conversation?.read
+		ids: conversationIdsRef.current,
+		folderId: folderIdRef.current,
+		isConversationRead: false
 	});
 
-	const flag = useConvSetFlagFn([conversationId], conversation?.flagged);
-	const unflag = useConvSetUnflagFn([conversationId], conversation?.flagged);
+	const setAsUnread = useConvSetUnreadFn({
+		ids: conversationIdsRef.current,
+		folderId: folderIdRef.current,
+		isConversationRead: false
+	});
+
+	const flag = useConvSetFlagFn(conversationIdsRef.current, false);
+	const unflag = useConvSetUnflagFn(conversationIdsRef.current, true);
 
 	const callKeyboardShortcutAction = useCallback(
 		(isGlobalContext: boolean, eventActions: () => void): void => {
+			if (!isGlobalContext) return;
 			switch (true) {
 				case KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
-					if (isGlobalContext) {
-						eventActions();
-						setAsRead.canExecute() && setAsRead.execute();
-					}
+					eventActions();
+					setAsRead.canExecute() && setAsRead.execute();
 					break;
 				case KEYBOARD_SHORTCUTS.MARK_UNREAD.includes(keySequence.current):
-					if (isGlobalContext) {
-						eventActions();
-						setAsUnread.canExecute() && setAsUnread.execute();
-					}
+					eventActions();
+					setAsUnread.canExecute() && setAsUnread.execute();
 					break;
 				case KEYBOARD_SHORTCUTS.FLAG_TOGGLE.includes(keySequence.current):
-					if (isGlobalContext && conversationId) {
-						eventActions();
-						flag.canExecute() && flag.execute();
-						unflag.canExecute() && unflag.execute();
-					}
+					eventActions();
+					flag.canExecute() && flag.execute();
+					unflag.canExecute() && unflag.execute();
 					break;
 				case KEYBOARD_SHORTCUTS.SPAM_TOGGLE.includes(keySequence.current):
-					if (isGlobalContext && conversationId) {
-						eventActions();
-						markAsSpam.canExecute() && markAsSpam.execute();
-						markAsNotSpam.canExecute() && markAsNotSpam.execute();
-					}
+					eventActions();
+					markAsSpam.canExecute() && markAsSpam.execute();
+					markAsNotSpam.canExecute() && markAsNotSpam.execute();
 					break;
 				case KEYBOARD_SHORTCUTS.MOVE_TO_TRASH.includes(keySequence.current):
-					if (isGlobalContext && conversationId) {
-						eventActions();
-						moveToTrash.canExecute() && moveToTrash.execute();
-					}
+					eventActions();
+					moveToTrash.canExecute() && moveToTrash.execute();
 					break;
 				default:
 					break;
 			}
 			keySequence.current = '';
 		},
-		[conversationId, flag, markAsNotSpam, markAsSpam, moveToTrash, setAsRead, setAsUnread, unflag]
+		[flag, markAsNotSpam, markAsSpam, moveToTrash, setAsRead, setAsUnread, unflag]
 	);
 
 	return useCallback(
