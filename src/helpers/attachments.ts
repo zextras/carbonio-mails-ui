@@ -105,7 +105,7 @@ const getCidFromReference = (cidReference: string): string | null => {
  *
  * @param richText
  */
-const getCidReferences = (richText: string): Array<string> => {
+export const getCidReferences = (richText: string): Array<string> => {
 	const result: Array<string> = [];
 	const doc = new DOMParser().parseFromString(richText, MIMETYPE_RICHTEXT);
 	const escapedText = doc.documentElement.outerHTML;
@@ -142,7 +142,7 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	return result;
 };
 
-const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
+export const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
 	referredCIDs.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
 
 /**
@@ -192,7 +192,7 @@ function flattenAndAddDisposition(
 						disposition: 'inline'
 					});
 				} else {
-					if (!isReferredByCid && 
+					if (!isReferredByCid && !part.ci &&
 							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
 							part.contentType !== MIMETYPE_PLAINTEXT &&
 							part.contentType !== MIMETYPE_RICHTEXT ) {
@@ -457,7 +457,6 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getFlattenedAttachmentParts(message);
-	console.log(attachmentsParts);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		isInline: part.disposition === 'inline',

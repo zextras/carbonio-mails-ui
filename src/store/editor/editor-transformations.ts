@@ -18,9 +18,11 @@ import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
 	getCidFromCidUrl,
+	getCidReferences,
 	isCidUrl,
 	isContentIdEqual,
-	isDownloadServicedUrl
+	isDownloadServicedUrl,
+	isReferredCID
 } from '../../helpers/attachments';
 import {
 	getDefaultIdentity,
@@ -172,14 +174,28 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	};
 
 	const unsavedInlineAttachment = filterUnsavedInlineAttachment(editor.unsavedAttachments);
-	const savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
+	let savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
 
 	const contentWithCidUrl = {
 		plainText: text?.plainText,
 		richText: replaceServiceUrlWithCidUrl(text?.richText)
 	};
 
+
 	if (editor.isRichText) {
+
+		//cleanup no more cid used content
+		const getCIDs = getCidReferences(contentWithCidUrl.richText);
+
+		for (var i = 0; i < savedInlineAttachment.length; i++) {
+			const inAtt = savedInlineAttachment[i];
+			if (inAtt.isInline && inAtt.contentId && !isReferredCID("\"cid:"+inAtt.contentId+"\"",getCIDs)) {
+				savedInlineAttachment = savedInlineAttachment.filter(function( obj ) {
+					return obj.contentId !== inAtt.contentId;
+				});
+			}
+		}
+
 		if (unsavedInlineAttachment.length + savedInlineAttachment.length > 0) {
 			return [
 				{
