@@ -79,6 +79,7 @@ describe('HTMLMessageRenderer Component', () => {
 			});
 
 			it('should remove warning banner after successfully loading complete message', async () => {
+				// eslint-disable-next-line sonarjs/no-duplicate-string
 				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
 				updateMessages([message]);
 				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
@@ -338,6 +339,7 @@ describe('HTMLMessageRenderer Component', () => {
 				setupTest(<HtmlMessageRenderer message={message} />);
 				const { getByRole } = shadowAccess();
 				const link = getByRole('link', { name: 'user@example.com' });
+				// eslint-disable-next-line sonarjs/no-duplicate-string
 				expect(link).toHaveAttribute('href', 'mailto:user@example.com');
 			});
 
