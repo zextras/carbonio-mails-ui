@@ -5,7 +5,7 @@
  */
 import { useEffect } from 'react';
 
-import { useConversationKeyboardShortcuts } from 'hooks/use-conversation-keyboard-shortcuts';
+import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
 
 type ConversationShortcutsRegisterProps = {
 	conversationId: string;
@@ -16,7 +16,7 @@ export const ConversationShortcutsRegister = ({
 	conversationId,
 	folderId
 }: ConversationShortcutsRegisterProps): null => {
-	const keyboardActions = useConversationKeyboardShortcuts({
+	const keyboardActions = useKeyboardShortcutsForConv({
 		conversationId,
 		folderId
 	});
