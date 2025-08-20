@@ -577,7 +577,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			savedStandardAttachments,
 			draftSmartLinks.length,
 			setAutoSendTime,
-			saveDraft,
+			saveDraft2,
 			close,
 			createSmartLinksAction,
 			onSendError
