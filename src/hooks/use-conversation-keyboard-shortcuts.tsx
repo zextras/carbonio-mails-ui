@@ -69,6 +69,16 @@ export const useConversationKeyboardShortcuts = ({
 				event.stopImmediatePropagation();
 			};
 
+			const hasModalOverlay =
+				document.querySelector('[data-testid*="modal"]') ||
+				document.querySelector('[data-testid*="Modal"]') ||
+				document.querySelector('[data-testid*="BoardContainerComp"]');
+
+			// Don't execute actions if modal is open
+			if (hasModalOverlay) {
+				return;
+			}
+
 			const isGlobalContext =
 				event.target instanceof HTMLElement &&
 				!event.target.isContentEditable &&
@@ -105,6 +115,8 @@ export const useConversationKeyboardShortcuts = ({
 							markAsNotSpam.canExecute() && markAsNotSpam.execute();
 						}
 						break;
+					case 'Delete': // Move to Trash
+					case 'Backspace': // Move to Trash
 					case '.t': // Move to Trash
 						if (isGlobalContext && conversationId) {
 							eventActions();
