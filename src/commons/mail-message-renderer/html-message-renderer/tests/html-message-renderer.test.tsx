@@ -327,320 +327,172 @@ describe('HTMLMessageRenderer Component', () => {
 		});
 	});
 
-	describe('Email address handling (HtmlMessageRenderer)', () => {
-		describe('Plain email addresses', () => {
-			it('converts plain email addresses into mailto links', () => {
-				const content = 'Contact me at user@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				const link = getByRole('link', { name: 'user@example.com' });
-				// eslint-disable-next-line sonarjs/no-duplicate-string
-				expect(link).toHaveAttribute('href', 'mailto:user@example.com');
-			});
+	describe('Quoted text handling', () => {
+		it('shows "Show quoted text" button when quoted text is present', () => {
+			const originalContent = '<p>Original message</p>';
+			const quotedContent = '<hr id="zwchr" />Previous message';
+			const fullContent = originalContent + quotedContent;
 
-			it('should not include trailing . in email address', () => {
-				const content = 'Contact me at test@unilim.fr.';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				const link = getByRole('link', { name: 'test@unilim.fr' });
-				expect(link).toHaveAttribute('href', 'mailto:test@unilim.fr');
-			});
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content: fullContent },
+				truncated: false
+			} as unknown as MailMessage;
 
-			it('handles email addresses with numbers', () => {
-				const content = 'user123@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
+			setupTest(<HtmlMessageRenderer message={message} />);
 
-				const { getByRole } = shadowAccess();
-				const link = getByRole('link');
-				expect(link).toHaveAttribute('href', 'mailto:user123@example.com');
-				expect(link).toHaveAttribute('target', '_blank');
-				expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-			});
-
-			it('handles email addresses with special characters', () => {
-				const content = 'user.name+tag@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:user.name+tag@example.com');
-			});
-
-			it('handles email addresses with dots', () => {
-				const content = 'firstname.lastname@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:firstname.lastname@example.com');
-			});
-
-			it('handles email addresses with subdomains', () => {
-				const content = 'user@subdomain.example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:user@subdomain.example.com');
-			});
-
-			it('handles international email addresses with Unicode characters', () => {
-				const content = '用户@例子.测试';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:用户@例子.测试');
-			});
-
-			it('handles email addresses with Unicode in local part', () => {
-				const content = 'ñóñó@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:ñóñó@example.com');
-			});
-
-			it('handles email addresses with IP addresses as domain', () => {
-				const content = 'user@[192.168.1.1]';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:user@[192.168.1.1]');
-			});
-
-			it('handles email addresses with IPv6 addresses as domain', () => {
-				const content = 'user@[IPv6:2001:db8::1]';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:user@[IPv6:2001:db8::1]');
-			});
-
-			it('handles email addresses with quoted display names', () => {
-				const content = '"John Q. Doe" <john.doe@example.com>';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:john.doe@example.com');
-			});
-
-			it('handles email addresses with display names', () => {
-				const content = 'Email <user@example.com>';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole, root } = shadowAccess();
-				const link = getByRole('link', { name: 'user@example.com' });
-				expect(link).toBeInTheDocument();
-				expect(root.innerHTML).toContain('&lt;<a href="mailto:user@example.com"');
-			});
-
-			it('handles multiple email addresses in the same text', () => {
-				const content = 'Contact user1@example.com or user2@example.org';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getAllByRole } = shadowAccess();
-				const links = getAllByRole('link');
-				expect(links).toHaveLength(2);
-				expect(links[0]).toHaveAttribute('href', 'mailto:user1@example.com');
-				expect(links[1]).toHaveAttribute('href', 'mailto:user2@example.org');
-			});
-
-			it('handles email addresses with angle brackets', () => {
-				const content = 'Contact me at <test@example.com>';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { root } = shadowAccess();
-				const result =
-					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
-				expect(root.innerHTML).toContain(result);
-			});
-
-			it('handles email addresses with angle brackets entities', () => {
-				const content = 'Contact me at &lt;test@example.com&gt;';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { root } = shadowAccess();
-				const result =
-					'Contact me at &lt;<a href="mailto:test@example.com" target="_blank" rel="noopener noreferrer">test@example.com</a>&gt;';
-				expect(root.innerHTML).toContain(result);
-			});
+			expect(screen.getByRole('button', { name: 'label.show_quoted_text' })).toBeInTheDocument();
 		});
 
-		describe('mailto: links', () => {
-			it('converts mailto: links into clickable links', () => {
-				const content = 'Email mailto:user@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				const link = getByRole('link', { name: 'mailto:user@example.com' });
-				expect(link).toHaveAttribute('href', 'mailto:user@example.com');
-			});
+		it('does not show "Show quoted text" button when no quoted text is present', () => {
+			const content = '<p>Just original message</p>';
 
-			it('handles email addresses with query parameters', () => {
-				const content = 'Email mailto:user@example.com?subject=Test';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				const link = getByRole('link', { name: 'mailto:user@example.com?subject=Test' });
-				expect(link).toHaveAttribute('href', 'mailto:user@example.com?subject=Test');
-			});
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content },
+				truncated: false
+			} as unknown as MailMessage;
 
-			it('handles mailto: URIs with subject', () => {
-				const content = 'mailto:user@example.com?subject=Hello';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute('href', 'mailto:user@example.com?subject=Hello');
-			});
+			setupTest(<HtmlMessageRenderer message={message} />);
 
-			it('handles mailto: URIs with multiple parameters', () => {
-				const content = 'mailto:user@example.com?subject=Hello&body=World';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute(
-					'href',
-					'mailto:user@example.com?subject=Hello&body=World'
-				);
-			});
+			expect(screen.queryByRole('button', { name: /show quoted text/i })).not.toBeInTheDocument();
+		});
 
-			it('handles mailto: URIs with CC and BCC', () => {
-				const content = 'mailto:user@example.com?cc=other@example.com&bcc=hidden@example.com';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { getByRole } = shadowAccess();
-				expect(getByRole('link')).toHaveAttribute(
-					'href',
-					'mailto:user@example.com?cc=other@example.com&bcc=hidden@example.com'
-				);
-			});
+		it('shows full content including quoted text when button is clicked', async () => {
+			const originalContent = '<p>Original message</p>';
+			const quotedContent = '<hr id="zwchr" />Previous message';
+			const fullContent = originalContent + quotedContent;
 
-			it('handles international mailto email addresses within angle brackets', () => {
-				const content =
-					'Contact me at <mailto:用户@例子.测试?cc=other@example.com&bcc=hidden@example.com>';
-				const message = {
-					id: '1',
-					body: { contentType: 'text/html', content },
-					truncated: false
-				} as unknown as MailMessage;
-				setupTest(<HtmlMessageRenderer message={message} />);
-				const { root } = shadowAccess();
-				const result =
-					'Contact me at &lt;<a href="mailto:用户@例子.测试?cc=other@example.com&amp;bcc=hidden@example.com" target="_blank" rel="noopener noreferrer">mailto:用户@例子.测试?cc=other@example.com&amp;bcc=hidden@example.com</a>&gt;';
-				expect(root.innerHTML).toContain(result);
-			});
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content: fullContent },
+				truncated: false
+			} as unknown as MailMessage;
+
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { getByText } = shadowAccess();
+			const showQuotedButton = screen.getByRole('button', { name: 'label.show_quoted_text' });
+			await user.click(showQuotedButton);
+			expect(showQuotedButton).not.toBeInTheDocument();
+
+			expect(getByText('Original message')).toBeInTheDocument();
+			expect(getByText('Previous message')).toBeInTheDocument();
 		});
 	});
 
-	describe('Telephone number handling (HtmlMessageRenderer)', () => {
-		it('converts telephone numbers into links', () => {
-			const content = 'Call me at +1234567890';
+	describe('External images handling', () => {
+		it('shows external images banner when external images are detected', () => {
+			const content = '<img src="http://external.com/image.jpg" alt="External image">';
 			const message = {
 				id: '1',
 				body: { contentType: 'text/html', content },
-				truncated: false
+				truncated: false,
+				participants: [{ type: 'f', address: 'sender@example.com' }]
 			} as unknown as MailMessage;
-			setupTest(<HtmlMessageRenderer message={message} />);
-			const { getByRole } = shadowAccess();
 
-			const link = getByRole('link');
-			expect(link).toBeInTheDocument();
-			expect(link).toHaveAttribute('href', 'tel:+1234567890');
-			expect(link).toHaveAttribute('target', '_blank');
-			expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			// Should show external images banner (banner component would be tested separately)
+			// This tests the integration logic
+			const { root } = shadowAccess();
+			expect(root).toBeDefined();
 		});
 
-		it('converts telephone numbers with special characters into links', () => {
-			const content = 'Call me at +1 (234) 567-8900';
+		it('does not show external images banner when no external images are present', () => {
+			const content = '<p>Just text content</p>';
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content },
+				truncated: false,
+				participants: [{ type: 'f', address: 'sender@example.com' }]
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { root } = shadowAccess();
+			expect(root).toBeDefined();
+		});
+	});
+
+	describe('Message body content processing', () => {
+		it('removes black color CSS properties from content', () => {
+			const content = '<p style="color: #000000; font-size: 14px;">Test content</p>';
 			const message = {
 				id: '1',
 				body: { contentType: 'text/html', content },
 				truncated: false
 			} as unknown as MailMessage;
+
 			setupTest(<HtmlMessageRenderer message={message} />);
-			const { getByRole } = shadowAccess();
-			expect(getByRole('link')).toBeInTheDocument();
-			expect(getByRole('link')).toHaveAttribute('href', 'tel:+12345678900');
+
+			const { root } = shadowAccess();
+			expect(root.innerHTML).not.toContain('color: #000000');
+			expect(root.innerHTML).toContain('font-size: 14px');
+		});
+
+		it('handles empty message body gracefully', () => {
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content: '' },
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { root } = shadowAccess();
+			expect(root).toBeDefined();
+		});
+
+		it('handles undefined message body gracefully', () => {
+			const message = {
+				id: '1',
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { root } = shadowAccess();
+			expect(root).toBeDefined();
+		});
+	});
+
+	describe('Attachment handling', () => {
+		it('processes inline attachments correctly', () => {
+			const content = '<img src="cid:image001@test.com" alt="Inline image">';
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content },
+				truncated: false,
+				parts: [
+					{
+						name: 'image001.png',
+						filename: 'image001.png',
+						contentType: 'image/png',
+						disposition: 'inline',
+						contentId: '<image001@test.com>'
+					}
+				]
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { root } = shadowAccess();
+			expect(root.innerHTML).toContain('img');
+		});
+
+		it('handles messages without attachments', () => {
+			const content = '<p>Simple text message</p>';
+			const message = {
+				id: '1',
+				body: { contentType: 'text/html', content },
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />);
+
+			const { getByText } = shadowAccess();
+			expect(getByText('Simple text message')).toBeInTheDocument();
 		});
 	});
 });

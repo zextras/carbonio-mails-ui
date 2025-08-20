@@ -23,7 +23,6 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from '../../utils';
-import { linkifyText } from '../text-linkify';
 
 export type ExternalImageState = {
 	showExternalImages: boolean;
@@ -185,14 +184,8 @@ const useProcessedContent = (
 			updateImageSrc(img, imageMap, showExternalImages, messageId);
 		});
 
-		const html = htmlDoc.documentElement.outerHTML;
-		const linkifiedText = linkifyText(html, {
-			autolinker: { urls: false, email: false, phone: true },
-			linkEmails: true
-		});
-
 		return {
-			processedContent: decodeSurrogatePairs(linkifiedText),
+			processedContent: decodeSurrogatePairs(htmlDoc.documentElement.outerHTML),
 			hasExternalImages: hasExtImages
 		};
 	}, [contentToDisplay, attachments, showExternalImages, messageId]);
