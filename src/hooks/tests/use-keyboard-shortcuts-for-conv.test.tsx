@@ -20,7 +20,7 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 // Mock all dependencies
 jest.mock('react-router-dom', () => ({
 	useNavigate: jest.fn(),
-	useLocation: jest.fn()
+	useLocation: jest.fn().mockReturnValue({ pathname: 'carbonio/mails/folder/2/conversation/1' })
 }));
 
 jest.mock('hooks/utils', () => ({
@@ -352,7 +352,9 @@ describe('useKeyboardShortcutsForConv', () => {
 		});
 
 		it('should not execute actions when a conversaton message is selected', () => {
-			(useLocation as jest.Mock).mockReturnValue({ pathname: 'carbonio/mails/folder/2/message/1' });
+			(useLocation as jest.Mock).mockReturnValueOnce({
+				pathname: 'carbonio/mails/folder/2/message/1'
+			});
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
 			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
 
