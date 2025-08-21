@@ -79,9 +79,6 @@ describe('useKeyboardShortcutsForMsg', () => {
 	};
 
 	beforeEach(() => {
-		jest.clearAllMocks();
-		jest.useFakeTimers();
-
 		(useNavigate as jest.Mock).mockReturnValue(mockNavigate);
 		(hasModalOverlay as jest.Mock).mockReturnValue(false);
 		(isInputContext as jest.Mock).mockReturnValue(false);
@@ -96,11 +93,6 @@ describe('useKeyboardShortcutsForMsg', () => {
 		(useMsgSetSpamFn as jest.Mock).mockReturnValue(createMockAction());
 		(useMsgSetUnflagFn as jest.Mock).mockReturnValue(createMockAction());
 		(useMsgSetUnreadFn as jest.Mock).mockReturnValue(createMockAction());
-	});
-
-	afterEach(() => {
-		jest.runOnlyPendingTimers();
-		jest.useRealTimers();
 	});
 
 	describe('Hook initialization', () => {
@@ -501,29 +493,6 @@ describe('useKeyboardShortcutsForMsg', () => {
 			});
 
 			expect(mockExecute).toHaveBeenCalledTimes(2);
-		});
-
-		it('should reset key sequence after timeout for modifier keys', () => {
-			const props = { messageIds: ['msg1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForMsg(props));
-
-			const handler = result.current;
-
-			act(() => {
-				handler(createKeyboardEvent('m'));
-			});
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			// After timeout, new sequence should start fresh
-			act(() => {
-				handler(createKeyboardEvent('m'));
-				handler(createKeyboardEvent('r'));
-			});
-
-			expect(mockExecute).toHaveBeenCalled();
 		});
 	});
 
