@@ -11,13 +11,15 @@ const MODAL_SELECTORS = [
 ];
 
 export function isInputContext(target: EventTarget | null): boolean {
-	if (!(target instanceof HTMLElement)) return true;
+	if (!(target instanceof HTMLElement)) return false;
 
 	const inputTags = ['INPUT', 'TEXTAREA', 'SELECT'];
 	return (
 		target.isContentEditable ||
 		inputTags.includes(target.nodeName) ||
-		target.closest('[contenteditable="true"]') !== null
+		target.closest('[contenteditable="true"]') !== null ||
+		target.closest('[contenteditable=""]') !== null ||
+		target.closest('[contenteditable="plaintext-only"]') !== null
 	);
 }
 
