@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { renderHook, act } from '@testing-library/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { MAILS_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
@@ -19,7 +19,8 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 // Mock all dependencies
 jest.mock('react-router-dom', () => ({
-	useNavigate: jest.fn()
+	useNavigate: jest.fn(),
+	useLocation: jest.fn()
 }));
 
 jest.mock('hooks/utils', () => ({
@@ -338,6 +339,20 @@ describe('useKeyboardShortcutsForConv', () => {
 		it('should not execute actions when modal overlay is present', () => {
 			(hasModalOverlay as jest.Mock).mockReturnValue(true);
 
+			const props = { conversationIds: ['1'], folderId: 'folder1' };
+			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+
+			const handler = result.current;
+
+			act(() => {
+				handler(createKeyboardEvent('z'));
+			});
+
+			expect(mockExecute).not.toHaveBeenCalled();
+		});
+
+		it('should not execute actions when a conversaton message is selected', () => {
+			(useLocation as jest.Mock).mockReturnValue({ pathname: 'carbonio/mails/folder/2/message/1' });
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
 			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
 
