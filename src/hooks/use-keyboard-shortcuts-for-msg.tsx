@@ -8,13 +8,13 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useMsgMoveToTrashFn } from './actions/use-msg-move-to-trash';
+import { useMsgSetFlagFn } from './actions/use-msg-set-flag';
+import { useMsgSetNotSpamFn } from './actions/use-msg-set-not-spam';
+import { useMsgSetReadFn } from './actions/use-msg-set-read';
+import { useMsgSetSpamFn } from './actions/use-msg-set-spam';
+import { useMsgSetUnflagFn } from './actions/use-msg-set-unflag';
+import { useMsgSetUnreadFn } from './actions/use-msg-set-unread';
 import { MAILS_ROUTE } from 'constants/index';
-import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
-import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
-import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
-import { useConvSetSpamFn } from 'hooks/actions/use-conv-set-spam';
-import { useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
-import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
 
 const KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
@@ -65,7 +65,7 @@ export const useKeyboardShortcutsForMsg = ({
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
-	// store the conversation IDs and folder ID in refs to avoid unnecessary re-renders
+	// store the message IDs and folder ID in refs to avoid unnecessary re-renders
 	const messageIdsRef = useRef(messageIds);
 	const folderIdRef = useRef(folderId);
 
@@ -78,13 +78,13 @@ export const useKeyboardShortcutsForMsg = ({
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
 		[folderId, navigate]
 	);
-	const markAsSpam = useConvSetSpamFn({
+	const markAsSpam = useMsgSetSpamFn({
 		ids: messageIdsRef.current,
 		folderId: folderIdRef.current,
 		shouldReplaceHistory: true
 	});
 
-	const markAsNotSpam = useConvSetNotSpamFn({
+	const markAsNotSpam = useMsgSetNotSpamFn({
 		ids: messageIdsRef.current,
 		folderId: folderIdRef.current,
 		shouldReplaceHistory: true
@@ -95,20 +95,20 @@ export const useKeyboardShortcutsForMsg = ({
 		folderId: folderIdRef.current
 	});
 
-	const setAsRead = useConvSetReadFn({
+	const setAsRead = useMsgSetReadFn({
 		ids: messageIdsRef.current,
 		folderId: folderIdRef.current,
-		isConversationRead: false
+		isMessageRead: false
 	});
 
-	const setAsUnread = useConvSetUnreadFn({
+	const setAsUnread = useMsgSetUnreadFn({
 		ids: messageIdsRef.current,
 		folderId: folderIdRef.current,
-		isConversationRead: false
+		isMessageRead: false
 	});
 
-	const flag = useConvSetFlagFn(messageIdsRef.current, false);
-	const unflag = useConvSetUnflagFn(messageIdsRef.current, true);
+	const flag = useMsgSetFlagFn(messageIdsRef.current, false);
+	const unflag = useMsgSetUnflagFn(messageIdsRef.current, true);
 
 	const callKeyboardShortcutAction = useCallback(
 		(isGlobalContext: boolean, eventActions: () => void): void => {
