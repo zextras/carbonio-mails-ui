@@ -215,7 +215,7 @@ describe('useKeyboardShortcutsForMsg', () => {
 	});
 
 	describe('Spam toggle shortcut', () => {
-		it('should mark as spam when "ms" is pressed', () => {
+		it('should mark as spam when "ms" is pressed and message is not spam', () => {
 			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
 			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
 
@@ -234,6 +234,27 @@ describe('useKeyboardShortcutsForMsg', () => {
 
 			expect(spamAction.execute).toHaveBeenCalled();
 			expect(notSpamAction.execute).not.toHaveBeenCalled();
+		});
+
+		it('should mark not spam when "ms" is pressed and message is spam', () => {
+			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
+			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
+
+			(useMsgSetSpamFn as jest.Mock).mockReturnValue(spamAction);
+			(useMsgSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
+
+			const props = { messageIds: ['msg1'], folderId: 'folder1' };
+			const { result } = renderHook(() => useKeyboardShortcutsForMsg(props));
+
+			const handler = result.current;
+
+			act(() => {
+				handler(createKeyboardEvent('m'));
+				handler(createKeyboardEvent('s'));
+			});
+
+			expect(spamAction.execute).not.toHaveBeenCalled();
+			expect(notSpamAction.execute).toHaveBeenCalled();
 		});
 	});
 
