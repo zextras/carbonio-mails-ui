@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -45,50 +45,41 @@ export const useKeyboardShortcutsForConv = ({
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
-	// store the conversation IDs and folder ID in refs to avoid unnecessary re-renders
-	const conversationIdsRef = useRef(conversationIds);
-	const folderIdRef = useRef(folderId);
-
-	useEffect(() => {
-		conversationIdsRef.current = conversationIds;
-		folderIdRef.current = folderId;
-	}, [conversationIds, folderId]);
-
 	const closePreviewPanel = useCallback(
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
 		[folderId, navigate]
 	);
 	const markAsSpam = useConvSetSpamFn({
-		ids: conversationIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: conversationIds,
+		folderId,
 		shouldReplaceHistory: true
 	});
 
 	const markAsNotSpam = useConvSetNotSpamFn({
-		ids: conversationIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: conversationIds,
+		folderId,
 		shouldReplaceHistory: true
 	});
 
 	const moveToTrash = useConvMoveToTrashFn({
-		ids: conversationIdsRef.current,
-		folderId: folderIdRef.current
+		ids: conversationIds,
+		folderId
 	});
 
 	const setAsRead = useConvSetReadFn({
-		ids: conversationIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: conversationIds,
+		folderId,
 		isConversationRead: false
 	});
 
 	const setAsUnread = useConvSetUnreadFn({
-		ids: conversationIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: conversationIds,
+		folderId,
 		isConversationRead: false
 	});
 
-	const flag = useConvSetFlagFn(conversationIdsRef.current, false);
-	const unflag = useConvSetUnflagFn(conversationIdsRef.current, true);
+	const flag = useConvSetFlagFn(conversationIds, false);
+	const unflag = useConvSetUnflagFn(conversationIds, true);
 
 	const callKeyboardShortcutAction = useCallback(
 		(isGlobalContext: boolean, eventActions: () => void): void => {
