@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { isInputContext } from 'hooks/utils';
+import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 describe('isInputContext', () => {
 	let container: HTMLDivElement;
@@ -144,6 +144,153 @@ describe('isInputContext', () => {
 			div2.setAttribute('contenteditable', 'plaintext-only');
 			container.appendChild(div2);
 			expect(isInputContext(div2)).toBe(true);
+		});
+	});
+});
+
+describe('hasModalOverlay', () => {
+	// Save original querySelector to restore after tests
+	const originalQuerySelector = document.querySelector;
+
+	afterEach(() => {
+		// Restore original querySelector after each test
+		document.querySelector = originalQuerySelector;
+	});
+
+	describe('when modal elements are present', () => {
+		it('should return true when element with data-testid containing "modal" (lowercase) exists', () => {
+			document.querySelector = jest.fn((selector) => {
+				if (selector === '[data-testid*="modal"]') {
+					return document.createElement('div');
+				}
+				return null;
+			});
+
+			expect(hasModalOverlay()).toBe(true);
+		});
+
+		it('should return true when element with data-testid containing "Modal" (capitalized) exists', () => {
+			document.querySelector = jest.fn((selector) => {
+				if (selector === '[data-testid*="Modal"]') {
+					return document.createElement('div');
+				}
+				return null;
+			});
+
+			expect(hasModalOverlay()).toBe(true);
+		});
+
+		it('should return true when element with data-testid containing "BoardContainerComp" exists', () => {
+			document.querySelector = jest.fn((selector) => {
+				if (selector === '[data-testid*="BoardContainerComp"]') {
+					return document.createElement('div');
+				}
+				return null;
+			});
+
+			expect(hasModalOverlay()).toBe(true);
+		});
+
+		it('should return true when multiple modal elements exist', () => {
+			document.querySelector = jest.fn(() => document.createElement('div'));
+
+			expect(hasModalOverlay()).toBe(true);
+		});
+
+		it('should stop checking once first modal element is found', () => {
+			const querySelectorMock = jest.fn((selector) => {
+				if (selector === '[data-testid*="modal"]') {
+					return document.createElement('div');
+				}
+				return null;
+			});
+			document.querySelector = querySelectorMock;
+
+			const result = hasModalOverlay();
+
+			expect(result).toBe(true);
+			// Should only call querySelector once since first selector matches
+			expect(querySelectorMock).toHaveBeenCalledTimes(1);
+			expect(querySelectorMock).toHaveBeenCalledWith('[data-testid*="modal"]');
+		});
+	});
+
+	describe('when no modal elements are present', () => {
+		it('should return false when no matching elements exist', () => {
+			document.querySelector = jest.fn(() => null);
+
+			expect(hasModalOverlay()).toBe(false);
+		});
+
+		it('should check all selectors when none match', () => {
+			const querySelectorMock = jest.fn(() => null);
+			document.querySelector = querySelectorMock;
+
+			const result = hasModalOverlay();
+
+			expect(result).toBe(false);
+			expect(querySelectorMock).toHaveBeenCalledTimes(3);
+			expect(querySelectorMock).toHaveBeenCalledWith('[data-testid*="modal"]');
+			expect(querySelectorMock).toHaveBeenCalledWith('[data-testid*="Modal"]');
+			expect(querySelectorMock).toHaveBeenCalledWith('[data-testid*="BoardContainerComp"]');
+		});
+	});
+
+	describe('edge cases', () => {
+		it('should work with actual DOM elements', () => {
+			// Create a real DOM element
+			const modalElement = document.createElement('div');
+			modalElement.setAttribute('data-testid', 'modal-dialog');
+			document.body.appendChild(modalElement);
+
+			// Use the real querySelector
+			document.querySelector = originalQuerySelector;
+
+			expect(hasModalOverlay()).toBe(true);
+
+			// Clean up
+			document.body.removeChild(modalElement);
+		});
+
+		it('should match partial data-testid values correctly', () => {
+			const testCases = [
+				'modal',
+				'modalDialog',
+				'userModal',
+				'Modal',
+				'ModalComponent',
+				'UserModal',
+				'BoardContainerComp',
+				'BoardContainerComponent'
+			];
+
+			testCases.forEach((testId) => {
+				const element = document.createElement('div');
+				element.setAttribute('data-testid', testId);
+				document.body.appendChild(element);
+
+				// Use the real querySelector
+				document.querySelector = originalQuerySelector;
+
+				expect(hasModalOverlay()).toBe(true);
+
+				// Clean up
+				document.body.removeChild(element);
+			});
+		});
+
+		it('should not match elements without matching data-testid', () => {
+			const element = document.createElement('div');
+			element.setAttribute('data-testid', 'button');
+			document.body.appendChild(element);
+
+			// Use the real querySelector
+			document.querySelector = originalQuerySelector;
+
+			expect(hasModalOverlay()).toBe(false);
+
+			// Clean up
+			document.body.removeChild(element);
 		});
 	});
 });
