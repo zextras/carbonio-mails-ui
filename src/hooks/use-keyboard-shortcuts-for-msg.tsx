@@ -17,7 +17,7 @@ import { useMsgSetUnreadFn } from './actions/use-msg-set-unread';
 import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
 
-const KEYBOARD_SHORTCUTS = {
+const MSG_KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
 	MARK_UNREAD: ['mu', 'x'],
 	FLAG_TOGGLE: ['mf'],
@@ -85,29 +85,29 @@ export const useKeyboardShortcutsForMsg = ({
 		(isGlobalContext: boolean, eventActions: () => void): void => {
 			if (!isGlobalContext) return;
 			switch (true) {
-				case KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
 					eventActions();
 					setAsRead.canExecute() && setAsRead.execute();
 					break;
-				case KEYBOARD_SHORTCUTS.MARK_UNREAD.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.MARK_UNREAD.includes(keySequence.current):
 					eventActions();
 					setAsUnread.canExecute() && setAsUnread.execute();
 					break;
-				case KEYBOARD_SHORTCUTS.FLAG_TOGGLE.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.FLAG_TOGGLE.includes(keySequence.current):
 					eventActions();
 					flag.canExecute() && flag.execute();
 					unflag.canExecute() && unflag.execute();
 					break;
-				case KEYBOARD_SHORTCUTS.SPAM_TOGGLE.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.SPAM_TOGGLE.includes(keySequence.current):
 					eventActions();
 					markAsSpam.canExecute() && markAsSpam.execute();
 					markAsNotSpam.canExecute() && markAsNotSpam.execute();
 					break;
-				case KEYBOARD_SHORTCUTS.MOVE_TO_TRASH.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.MOVE_TO_TRASH.includes(keySequence.current):
 					eventActions();
 					moveToTrash.canExecute() && moveToTrash.execute();
 					break;
-				case KEYBOARD_SHORTCUTS.CLOSE_PRVIEW_PANEL.includes(keySequence.current):
+				case MSG_KEYBOARD_SHORTCUTS.CLOSE_PRVIEW_PANEL.includes(keySequence.current):
 					eventActions();
 					closePreviewPanel();
 					break;
