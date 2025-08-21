@@ -5,6 +5,9 @@
  */
 import { useCallback, useEffect, useRef } from 'react';
 
+import { MAILS_ROUTE } from 'constants';
+import { useNavigate } from 'react-router-dom';
+
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
@@ -20,6 +23,7 @@ const KEYBOARD_SHORTCUTS = {
 	SPAM_TOGGLE: ['ms'],
 	MOVE_TO_TRASH: ['Delete', 'Backspace', '.t'],
 	MOVE_TO_INBOX: ['.i'],
+	CLOSE_PRVIEW_PANEL: ['Escape', 'Esc'],
 	REPLY: ['r'],
 	REPLY_ALL: ['a'],
 	FORWARD: ['f'],
@@ -59,6 +63,7 @@ export const useKeyboardShortcutsForConv = ({
 	folderId
 }: UseKeyboardShortcutsForConvProps): ((event: KeyboardEvent) => void) => {
 	const keySequence = useRef<string>('');
+	const navigate = useNavigate();
 
 	// store the conversation IDs and folder ID in refs to avoid unnecessary re-renders
 	const conversationIdsRef = useRef(conversationIds);
@@ -69,6 +74,10 @@ export const useKeyboardShortcutsForConv = ({
 		folderIdRef.current = folderId;
 	}, [conversationIds, folderId]);
 
+	const closePreviewPanel = useCallback(
+		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
+		[folderId, navigate]
+	);
 	const markAsSpam = useConvSetSpamFn({
 		ids: conversationIdsRef.current,
 		folderId: folderIdRef.current,
@@ -127,12 +136,25 @@ export const useKeyboardShortcutsForConv = ({
 					eventActions();
 					moveToTrash.canExecute() && moveToTrash.execute();
 					break;
+				case KEYBOARD_SHORTCUTS.CLOSE_PRVIEW_PANEL.includes(keySequence.current):
+					eventActions();
+					closePreviewPanel();
+					break;
 				default:
 					break;
 			}
 			keySequence.current = '';
 		},
-		[flag, markAsNotSpam, markAsSpam, moveToTrash, setAsRead, setAsUnread, unflag]
+		[
+			closePreviewPanel,
+			flag,
+			markAsNotSpam,
+			markAsSpam,
+			moveToTrash,
+			setAsRead,
+			setAsUnread,
+			unflag
+		]
 	);
 
 	return useCallback(
