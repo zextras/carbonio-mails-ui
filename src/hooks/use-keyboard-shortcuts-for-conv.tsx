@@ -49,37 +49,37 @@ export const useKeyboardShortcutsForConv = ({
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
 		[folderId, navigate]
 	);
-	const markAsSpam = useConvSetSpamFn({
+	const markConvAsSpam = useConvSetSpamFn({
 		ids: conversationIds,
 		folderId,
 		shouldReplaceHistory: true
 	});
 
-	const markAsNotSpam = useConvSetNotSpamFn({
+	const markConvAsNotSpam = useConvSetNotSpamFn({
 		ids: conversationIds,
 		folderId,
 		shouldReplaceHistory: true
 	});
 
-	const moveToTrash = useConvMoveToTrashFn({
+	const moveConvToTrash = useConvMoveToTrashFn({
 		ids: conversationIds,
 		folderId
 	});
 
-	const setAsRead = useConvSetReadFn({
+	const setConvAsRead = useConvSetReadFn({
 		ids: conversationIds,
 		folderId,
 		isConversationRead: false
 	});
 
-	const setAsUnread = useConvSetUnreadFn({
+	const setConvAsUnread = useConvSetUnreadFn({
 		ids: conversationIds,
 		folderId,
 		isConversationRead: false
 	});
 
-	const flag = useConvSetFlagFn(conversationIds, false);
-	const unflag = useConvSetUnflagFn(conversationIds, true);
+	const flagConv = useConvSetFlagFn(conversationIds, false);
+	const unflagConv = useConvSetUnflagFn(conversationIds, true);
 
 	const callKeyboardShortcutAction = useCallback(
 		(isGlobalContext: boolean, eventActions: () => void): void => {
@@ -87,25 +87,25 @@ export const useKeyboardShortcutsForConv = ({
 			switch (true) {
 				case CONV_KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
 					eventActions();
-					setAsRead.canExecute() && setAsRead.execute();
+					setConvAsRead.canExecute() && setConvAsRead.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.MARK_UNREAD.includes(keySequence.current):
 					eventActions();
-					setAsUnread.canExecute() && setAsUnread.execute();
+					setConvAsUnread.canExecute() && setConvAsUnread.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.FLAG_TOGGLE.includes(keySequence.current):
 					eventActions();
-					flag.canExecute() && flag.execute();
-					unflag.canExecute() && unflag.execute();
+					flagConv.canExecute() && flagConv.execute();
+					unflagConv.canExecute() && unflagConv.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.SPAM_TOGGLE.includes(keySequence.current):
 					eventActions();
-					markAsSpam.canExecute() && markAsSpam.execute();
-					markAsNotSpam.canExecute() && markAsNotSpam.execute();
+					markConvAsSpam.canExecute() && markConvAsSpam.execute();
+					markConvAsNotSpam.canExecute() && markConvAsNotSpam.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.MOVE_TO_TRASH.includes(keySequence.current):
 					eventActions();
-					moveToTrash.canExecute() && moveToTrash.execute();
+					moveConvToTrash.canExecute() && moveConvToTrash.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.CLOSE_PRVIEW_PANEL.includes(keySequence.current):
 					eventActions();
@@ -118,13 +118,13 @@ export const useKeyboardShortcutsForConv = ({
 		},
 		[
 			closePreviewPanel,
-			flag,
-			markAsNotSpam,
-			markAsSpam,
-			moveToTrash,
-			setAsRead,
-			setAsUnread,
-			unflag
+			flagConv,
+			markConvAsNotSpam,
+			markConvAsSpam,
+			moveConvToTrash,
+			setConvAsRead,
+			setConvAsUnread,
+			unflagConv
 		]
 	);
 
