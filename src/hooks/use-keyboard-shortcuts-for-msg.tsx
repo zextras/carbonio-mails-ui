@@ -14,6 +14,7 @@ import { useMsgSetReadFn } from './actions/use-msg-set-read';
 import { useMsgSetSpamFn } from './actions/use-msg-set-spam';
 import { useMsgSetUnflagFn } from './actions/use-msg-set-unflag';
 import { useMsgSetUnreadFn } from './actions/use-msg-set-unread';
+import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
 
 const KEYBOARD_SHORTCUTS = {
@@ -32,31 +33,10 @@ const KEYBOARD_SHORTCUTS = {
 
 const MODIFIER_KEYS: Array<string> = ['m', '.', 'n'];
 
-const MODAL_SELECTORS = [
-	'[data-testid*="modal"]',
-	'[data-testid*="Modal"]',
-	'[data-testid*="BoardContainerComp"]'
-];
-
 type UseKeyboardShortcutsForMsgProps = {
 	messageIds: Array<string>;
 	folderId: string;
 };
-
-function isInputContext(target: EventTarget | null): boolean {
-	if (!(target instanceof HTMLElement)) return true;
-
-	const inputTags = ['INPUT', 'TEXTAREA', 'SELECT'];
-	return (
-		target.isContentEditable ||
-		inputTags.includes(target.nodeName) ||
-		target.closest('[contenteditable="true"]') !== null
-	);
-}
-
-function hasModalOverlay(): boolean {
-	return MODAL_SELECTORS.some((selector) => document.querySelector(selector) !== null);
-}
 
 export const useKeyboardShortcutsForMsg = ({
 	messageIds,

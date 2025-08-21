@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
@@ -32,31 +33,10 @@ const KEYBOARD_SHORTCUTS = {
 
 const MODIFIER_KEYS: string[] = ['m', '.', 'n'];
 
-const MODAL_SELECTORS = [
-	'[data-testid*="modal"]',
-	'[data-testid*="Modal"]',
-	'[data-testid*="BoardContainerComp"]'
-];
-
 type UseKeyboardShortcutsForConvProps = {
 	conversationIds: Array<string>;
 	folderId: string;
 };
-
-function isInputContext(target: EventTarget | null): boolean {
-	if (!(target instanceof HTMLElement)) return true;
-
-	const inputTags = ['INPUT', 'TEXTAREA', 'SELECT'];
-	return (
-		target.isContentEditable ||
-		inputTags.includes(target.nodeName) ||
-		target.closest('[contenteditable="true"]') !== null
-	);
-}
-
-function hasModalOverlay(): boolean {
-	return MODAL_SELECTORS.some((selector) => document.querySelector(selector) !== null);
-}
 
 export const useKeyboardShortcutsForConv = ({
 	conversationIds,
