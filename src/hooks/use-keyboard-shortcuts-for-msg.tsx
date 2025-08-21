@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -45,50 +45,41 @@ export const useKeyboardShortcutsForMsg = ({
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
-	// store the message IDs and folder ID in refs to avoid unnecessary re-renders
-	const messageIdsRef = useRef(messageIds);
-	const folderIdRef = useRef(folderId);
-
-	useEffect(() => {
-		messageIdsRef.current = messageIds;
-		folderIdRef.current = folderId;
-	}, [messageIds, folderId]);
-
 	const closePreviewPanel = useCallback(
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
 		[folderId, navigate]
 	);
 	const markAsSpam = useMsgSetSpamFn({
-		ids: messageIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: messageIds,
+		folderId,
 		shouldReplaceHistory: true
 	});
 
 	const markAsNotSpam = useMsgSetNotSpamFn({
-		ids: messageIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: messageIds,
+		folderId,
 		shouldReplaceHistory: true
 	});
 
 	const moveToTrash = useMsgMoveToTrashFn({
-		ids: messageIdsRef.current,
-		folderId: folderIdRef.current
+		ids: messageIds,
+		folderId
 	});
 
 	const setAsRead = useMsgSetReadFn({
-		ids: messageIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: messageIds,
+		folderId,
 		isMessageRead: false
 	});
 
 	const setAsUnread = useMsgSetUnreadFn({
-		ids: messageIdsRef.current,
-		folderId: folderIdRef.current,
+		ids: messageIds,
+		folderId,
 		isMessageRead: false
 	});
 
-	const flag = useMsgSetFlagFn(messageIdsRef.current, false);
-	const unflag = useMsgSetUnflagFn(messageIdsRef.current, true);
+	const flag = useMsgSetFlagFn(messageIds, false);
+	const unflag = useMsgSetUnflagFn(messageIds, true);
 
 	const callKeyboardShortcutAction = useCallback(
 		(isGlobalContext: boolean, eventActions: () => void): void => {
