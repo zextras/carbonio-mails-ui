@@ -154,6 +154,6 @@ export const useKeyboardShortcutsForConv = ({
 				callKeyboardShortcutAction(isGlobalContext, eventActions);
 			}
 		},
-		[callKeyboardShortcutAction]
+		[callKeyboardShortcutAction, isConversationMessage]
 	);
 };
