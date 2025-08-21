@@ -11,6 +11,7 @@ import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import { MessageShortcutsRegister } from './message-shortcuts-register';
 import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
@@ -155,30 +156,36 @@ export const MessageList = (): React.JSX.Element => {
 		]
 	);
 
-	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	const totalMessages = useMemo(() => messageListIndex.length, [messageListIndex.length]);
 
 	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
 
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	return (
-		<MessageListComponent
-			totalMessages={totalMessages}
-			displayerTitle={displayerTitle}
-			listItems={listItems}
-			loadMoreCallback={hasMore ? loadMoreCallback : undefined}
-			messagesLoadingCompleted={messagesLoadingCompleted}
-			selectedIds={selectedIds}
-			folderId={folderId}
-			messageIds={messageListIndex}
-			draggedIds={draggedIds}
-			isSelectModeOn={isSelectModeOn}
-			setIsSelectModeOn={setIsSelectModeOn}
-			isAllSelected={isAllSelected}
-			selectAll={selectAll}
-			deselectAll={deselectAll}
-			selectAllModeOff={selectAllModeOff}
-			dragImageRef={dragImageRef}
-		/>
+		<>
+			<MessageShortcutsRegister messageIds={keyboardShortcutsIds} folderId={folderId} />
+			<MessageListComponent
+				totalMessages={totalMessages}
+				displayerTitle={displayerTitle}
+				listItems={listItems}
+				loadMoreCallback={hasMore ? loadMoreCallback : undefined}
+				messagesLoadingCompleted={messagesLoadingCompleted}
+				selectedIds={selectedIdsArray}
+				folderId={folderId}
+				messageIds={messageListIndex}
+				draggedIds={draggedIds}
+				isSelectModeOn={isSelectModeOn}
+				setIsSelectModeOn={setIsSelectModeOn}
+				isAllSelected={isAllSelected}
+				selectAll={selectAll}
+				deselectAll={deselectAll}
+				selectAllModeOff={selectAllModeOff}
+				dragImageRef={dragImageRef}
+			/>
+		</>
 	);
 };
