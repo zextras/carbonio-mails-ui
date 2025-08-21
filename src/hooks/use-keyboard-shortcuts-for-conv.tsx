@@ -5,9 +5,9 @@
  */
 import { useCallback, useEffect, useRef } from 'react';
 
-import { MAILS_ROUTE } from 'constants';
 import { useNavigate } from 'react-router-dom';
 
+import { MAILS_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
