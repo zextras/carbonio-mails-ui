@@ -5,7 +5,7 @@
  */
 import { useCallback, useRef } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
@@ -42,6 +42,7 @@ export const useKeyboardShortcutsForConv = ({
 	conversationIds,
 	folderId
 }: UseKeyboardShortcutsForConvProps): ((event: KeyboardEvent) => void) => {
+	const isConversationMessage = useLocation().pathname.includes('message');
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
@@ -135,7 +136,7 @@ export const useKeyboardShortcutsForConv = ({
 				event.stopImmediatePropagation();
 			};
 
-			if (hasModalOverlay()) {
+			if (hasModalOverlay() || isConversationMessage) {
 				return;
 			}
 
