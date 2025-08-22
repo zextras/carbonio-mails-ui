@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{"Header":{"context":{"session":{"id":"114","_content":"114"},"change":{"token":1},"_jsns":"urn:zimbra"}},"Body":{"SearchResponse":{"sortBy":"dateDesc","offset":0,"more":false,"_jsns":"urn:zimbraMail"}},"_jsns":"urn:zimbraSoap"}
