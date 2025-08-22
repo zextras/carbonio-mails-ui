@@ -22,14 +22,16 @@ type SearchMessageListItemProps = {
 	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 	active?: boolean;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
 	completeMessage,
 	selected,
 	selecting,
-	toggle,
+	index,
+	onSelect,
 	active
 }) {
 	const { ref, hasBeenHovered } = useOnMouseHover();
@@ -102,7 +104,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 						completeMessage={completeMessage}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						onSelect={onSelect}
+						index={index}
 						folderId={folderId}
 					/>
 				</MessageListItemActionWrapper>
@@ -111,7 +114,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					completeMessage={completeMessage}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
+					onSelect={onSelect}
+					index={index}
 					folderId={folderId}
 				/>
 			)}

@@ -46,7 +46,7 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
+					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
 			);

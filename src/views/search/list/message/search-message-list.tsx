@@ -35,19 +35,22 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = React.useState<number | null>(null);
 
 	const {
-		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useMultipleSelection({
 		allAvailableItems: messageIds,
 		selectedItems,
-		setSelectedItems
+		setSelectedItems,
+		lastSelectedIndex,
+		setLastSelectedIndex
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -74,7 +77,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map(messageIds, (messageId) => {
+			map(messageIds, (messageId, index) => {
 				const active = itemId === messageId;
 				const isSelected = selectedItems.has(messageId);
 				return (
@@ -95,7 +98,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 										messageId={messageId}
 										selected={isSelected}
 										selecting={isSelectModeOn}
-										toggle={toggle}
+										onSelect={selectRange}
+										index={index}
 										active={active}
 									/>
 								</>
@@ -106,7 +110,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[isSelectModeOn, itemId, keyboardShortcutsIds, messageIds, selectedItems, toggle]
+		[isSelectModeOn, itemId, keyboardShortcutsIds, messageIds, selectRange, selectedItems]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
