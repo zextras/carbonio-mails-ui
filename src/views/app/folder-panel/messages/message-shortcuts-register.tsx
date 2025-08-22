@@ -6,6 +6,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { useKeyboardShortcutsForMsg } from 'hooks/use-keyboard-shortcuts-for-msg';
+import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 type MessageShortcutsRegisterProps = {
 	messageIds: Array<string>;
@@ -22,6 +23,14 @@ export const MessageShortcutsRegister = ({
 	});
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent): void => {
+			const isInputField = isInputContext(event.target);
+
+			// Ignore shortcuts when typing in form fields
+			// or when a modal overlay is present
+			if (isInputField || hasModalOverlay()) {
+				return;
+			}
+
 			keyboardActions(event);
 		},
 		[keyboardActions]
