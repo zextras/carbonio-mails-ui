@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { linkifyText } from './text-linkify';
+import { linkifyText } from '../text-linkify';
 
 describe('linkifyToHtml', () => {
 	const email = 'foo@bar.com';
