@@ -45,10 +45,6 @@ export const useKeyboardShortcutsForConv = ({
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
-	// Store parameters in refs to avoid recreating hooks
-	const paramsRef = useRef({ conversationIds, folderId });
-	paramsRef.current = { conversationIds, folderId };
-
 	const closePreviewPanel = useCallback(
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
 		[folderId, navigate]
