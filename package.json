@@ -20,7 +20,10 @@
 		"lint-check": "npm run lint-errors; npm run type-check",
 		"test": "TZ=Europe/Rome jest --maxWorkers=50%",
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
-		"dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy"
+		"dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy",
+		"copy-dist": "cp -r ./dist ./static/carbonio-mails-ui",
+		"integration-tests": "npm run build:dev copy-shell-to-it-folder copy-mails-to-it-folder",
+		"open": "http-server ./it -a localhost -p 1234"
 	},
 	"files": [
 		"src/types/"
@@ -64,20 +67,27 @@
 		"babel-jest": "^29.4.3",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",
+		"concurrently": "^9.2.0",
+		"cross-env": "^10.0.0",
 		"eslint-plugin-jest-dom": "^5.4.0",
 		"eslint-plugin-notice": "^0.9.10",
 		"eslint-plugin-testing-library": "^5.10.1",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"eslint-stats": "^1.0.1",
+		"http-server": "^14.1.1",
+		"jasmine-browser-runner": "^3.0.0",
+		"jasmine-core": "^5.9.0",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"jest-fail-on-console": "^3.1.2",
 		"jest-fetch-mock": "^3.0.3",
+		"mockserver": "^3.1.1",
 		"msw": "^2.2.3",
 		"npm": "^10.5.0",
 		"react-redux": "^8.0.5",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.7.2"
+		"typescript": "^5.7.2",
+		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.11.4",
