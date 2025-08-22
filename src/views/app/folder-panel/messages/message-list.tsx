@@ -104,6 +104,10 @@ export const MessageList = (): React.JSX.Element => {
 		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle]
 	);
 
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	const listItems = useMemo(
 		() =>
 			map(messageListIndex, (id, index) => {
@@ -120,22 +124,30 @@ export const MessageList = (): React.JSX.Element => {
 					>
 						{(visible: boolean): ReactElement =>
 							visible ? (
-								<MessageListItemComponent
-									deselectAll={deselectAll}
-									messageId={id}
-									selectedItems={selectedItemsMap}
-									isSelected={isSelected}
-									active={active}
-									isSelectModeOn={isSelectModeOn}
-									dragImageRef={dragImageRef}
-									draggedIds={draggedIds}
-									key={id}
-									visible={visible}
-									setDraggedIds={setDraggedIds}
-									currentFolderId={folderId}
-									index={index}
-									onSelect={onSelect}
-								/>
+								<>
+									{(active || isSelected) && (
+										<MessageShortcutsRegister
+											messageIds={keyboardShortcutsIds}
+											folderId={folderId}
+										/>
+									)}
+									<MessageListItemComponent
+										deselectAll={deselectAll}
+										messageId={id}
+										selectedItems={selectedItemsMap}
+										isSelected={isSelected}
+										active={active}
+										isSelectModeOn={isSelectModeOn}
+										dragImageRef={dragImageRef}
+										draggedIds={draggedIds}
+										key={id}
+										visible={visible}
+										setDraggedIds={setDraggedIds}
+										currentFolderId={folderId}
+										index={index}
+										onSelect={onSelect}
+									/>
+								</>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="invisible-item" />
 							)
@@ -149,6 +161,7 @@ export const MessageList = (): React.JSX.Element => {
 			folderId,
 			isSelectModeOn,
 			itemId,
+			keyboardShortcutsIds,
 			messageListIndex,
 			onSelect,
 			selectedItems,
@@ -156,36 +169,28 @@ export const MessageList = (): React.JSX.Element => {
 		]
 	);
 
-	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
-
 	const totalMessages = useMemo(() => messageListIndex.length, [messageListIndex.length]);
 
 	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
 
-	const keyboardShortcutsIds =
-		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
-
 	return (
-		<>
-			<MessageShortcutsRegister messageIds={keyboardShortcutsIds} folderId={folderId} />
-			<MessageListComponent
-				totalMessages={totalMessages}
-				displayerTitle={displayerTitle}
-				listItems={listItems}
-				loadMoreCallback={hasMore ? loadMoreCallback : undefined}
-				messagesLoadingCompleted={messagesLoadingCompleted}
-				selectedIds={selectedIdsArray}
-				folderId={folderId}
-				messageIds={messageListIndex}
-				draggedIds={draggedIds}
-				isSelectModeOn={isSelectModeOn}
-				setIsSelectModeOn={setIsSelectModeOn}
-				isAllSelected={isAllSelected}
-				selectAll={selectAll}
-				deselectAll={deselectAll}
-				selectAllModeOff={selectAllModeOff}
-				dragImageRef={dragImageRef}
-			/>
-		</>
+		<MessageListComponent
+			totalMessages={totalMessages}
+			displayerTitle={displayerTitle}
+			listItems={listItems}
+			loadMoreCallback={hasMore ? loadMoreCallback : undefined}
+			messagesLoadingCompleted={messagesLoadingCompleted}
+			selectedIds={selectedIdsArray}
+			folderId={folderId}
+			messageIds={messageListIndex}
+			draggedIds={draggedIds}
+			isSelectModeOn={isSelectModeOn}
+			setIsSelectModeOn={setIsSelectModeOn}
+			isAllSelected={isAllSelected}
+			selectAll={selectAll}
+			deselectAll={deselectAll}
+			selectAllModeOff={selectAllModeOff}
+			dragImageRef={dragImageRef}
+		/>
 	);
 };

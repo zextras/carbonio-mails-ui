@@ -179,27 +179,25 @@ export const ConversationList = (): React.JSX.Element => {
 	});
 
 	return (
-		<>
-			<ConversationListComponent
-				listItems={listItems}
-				displayerTitle={displayerTitle}
-				totalConversations={totalConversations}
-				conversationsLoadingCompleted={conversationsLoadingCompleted}
-				selectedIds={selectedIdsArray}
-				isSelectModeOn={isSelectModeOn}
-				setIsSelectModeOn={setIsSelectModeOn}
-				selectAll={selectAll}
-				isAllSelected={isAllSelected}
-				selectAllModeOff={selectAllModeOff}
-				draggedIds={draggedIds}
-				folderId={folderId}
-				conversationsIds={conversationsIds}
-				selected={selectedItemsMap}
-				deselectAll={deselectAll}
-				dragImageRef={dragImageRef}
-				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
-				onSelect={onSelect}
-			/>
-		</>
+		<ConversationListComponent
+			listItems={listItems}
+			displayerTitle={displayerTitle}
+			totalConversations={totalConversations}
+			conversationsLoadingCompleted={conversationsLoadingCompleted}
+			selectedIds={selectedIdsArray}
+			isSelectModeOn={isSelectModeOn}
+			setIsSelectModeOn={setIsSelectModeOn}
+			selectAll={selectAll}
+			isAllSelected={isAllSelected}
+			selectAllModeOff={selectAllModeOff}
+			draggedIds={draggedIds}
+			folderId={folderId}
+			conversationsIds={conversationsIds}
+			selected={selectedItemsMap}
+			deselectAll={deselectAll}
+			dragImageRef={dragImageRef}
+			loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
+			onSelect={onSelect}
+		/>
 	);
 };
