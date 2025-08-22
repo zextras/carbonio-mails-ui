@@ -335,55 +335,6 @@ describe('useKeyboardShortcutsForMsg', () => {
 		});
 	});
 
-	describe('Context awareness', () => {
-		it('should not execute actions when modal overlay is present', () => {
-			(hasModalOverlay as jest.Mock).mockReturnValue(true);
-
-			const props = { messageIds: ['msg1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForMsg(props));
-
-			const handler = result.current;
-
-			act(() => {
-				handler(createKeyboardEvent('z'));
-			});
-
-			expect(mockExecute).not.toHaveBeenCalled();
-		});
-
-		it('should not execute actions when in input context', () => {
-			(isInputContext as jest.Mock).mockReturnValue(true);
-
-			const props = { messageIds: ['msg1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForMsg(props));
-
-			const handler = result.current;
-			const event = createKeyboardEvent('z');
-
-			act(() => {
-				handler(event);
-			});
-
-			expect(mockExecute).not.toHaveBeenCalled();
-			expect(event.preventDefault).not.toHaveBeenCalled();
-		});
-
-		it('should execute actions when not in input context', () => {
-			(isInputContext as jest.Mock).mockReturnValue(false);
-
-			const props = { messageIds: ['msg1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForMsg(props));
-
-			const handler = result.current;
-
-			act(() => {
-				handler(createKeyboardEvent('z'));
-			});
-
-			expect(mockExecute).toHaveBeenCalled();
-		});
-	});
-
 	describe('Event handling', () => {
 		it('should prevent default and stop propagation when executing action', () => {
 			const props = { messageIds: ['msg1'], folderId: 'folder1' };

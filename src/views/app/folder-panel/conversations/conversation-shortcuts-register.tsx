@@ -6,12 +6,17 @@
 import { useCallback, useEffect } from 'react';
 
 import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
+import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 type ConversationShortcutsRegisterProps = {
 	conversationIds: Array<string>;
 	folderId: string;
 };
 
+/**
+ * Registers global keyboard shortcuts for conversation actions.
+ * This component doesn't render anything but manages event listeners.
+ */
 export const ConversationShortcutsRegister = ({
 	conversationIds,
 	folderId
@@ -20,18 +25,28 @@ export const ConversationShortcutsRegister = ({
 		conversationIds,
 		folderId
 	});
+
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent): void => {
+			const isInputField = isInputContext(event.target);
+
+			// Ignore shortcuts when typing in form fields
+			// or when a modal overlay is present
+			if (isInputField || hasModalOverlay()) {
+				return;
+			}
+
 			keyboardActions(event);
 		},
 		[keyboardActions]
 	);
+
 	useEffect(() => {
 		document.addEventListener('keydown', handleKeyDown);
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [handleKeyDown, keyboardActions]);
+	}, [handleKeyDown]);
 
 	return null;
 };

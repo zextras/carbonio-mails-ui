@@ -7,7 +7,6 @@ import { useCallback, useRef } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
@@ -76,40 +75,39 @@ export const useKeyboardShortcutsForConv = ({
 	const setConvAsUnread = useConvSetUnreadFn({
 		ids: conversationIds,
 		folderId,
-		isConversationRead: false
+		isConversationRead: true
 	});
 
 	const flagConv = useConvSetFlagFn(conversationIds, false);
 	const unflagConv = useConvSetUnflagFn(conversationIds, true);
 
 	const callKeyboardShortcutAction = useCallback(
-		(isGlobalContext: boolean, eventActions: () => void): void => {
-			if (!isGlobalContext) return;
+		(defaultEventActions: () => void): void => {
 			switch (true) {
 				case CONV_KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					setConvAsRead.canExecute() && setConvAsRead.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.MARK_UNREAD.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					setConvAsUnread.canExecute() && setConvAsUnread.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.FLAG_TOGGLE.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					flagConv.canExecute() && flagConv.execute();
 					unflagConv.canExecute() && unflagConv.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.SPAM_TOGGLE.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					markConvAsSpam.canExecute() && markConvAsSpam.execute();
 					markConvAsNotSpam.canExecute() && markConvAsNotSpam.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.MOVE_TO_TRASH.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					moveConvToTrash.canExecute() && moveConvToTrash.execute();
 					break;
 				case CONV_KEYBOARD_SHORTCUTS.CLOSE_PRVIEW_PANEL.includes(keySequence.current):
-					eventActions();
+					defaultEventActions();
 					closePreviewPanel();
 					break;
 				default:
@@ -131,16 +129,15 @@ export const useKeyboardShortcutsForConv = ({
 
 	return useCallback(
 		(event) => {
-			const eventActions = (): void => {
+			const defaultEventActions = (): void => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 			};
 
-			if (hasModalOverlay() || isConversationMessage) {
+			if (isConversationMessage) {
 				return;
 			}
 
-			const isGlobalContext = !isInputContext(event.target);
 			keySequence.current = keySequence.current.concat(event.key);
 
 			/**
@@ -151,7 +148,7 @@ export const useKeyboardShortcutsForConv = ({
 			const timer = setTimeout(callKeyboardShortcutAction, 1000);
 			if (MODIFIER_KEYS.indexOf(event.key) === -1) {
 				clearTimeout(timer);
-				callKeyboardShortcutAction(isGlobalContext, eventActions);
+				callKeyboardShortcutAction(defaultEventActions);
 			}
 		},
 		[callKeyboardShortcutAction, isConversationMessage]
