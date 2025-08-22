@@ -11,6 +11,7 @@ import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
 import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
@@ -20,7 +21,6 @@ import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { ConversationListComponent } from 'views/app/folder-panel/conversations/conversation-list-component';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
-import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 
 export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
@@ -85,6 +85,10 @@ export const ConversationList = (): React.JSX.Element => {
 		Array.from(selectedItems, (item) => [item, true])
 	);
 
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	const listItems = useMemo(
 		() =>
 			map(conversationsIds, (id, index) => {
@@ -100,22 +104,31 @@ export const ConversationList = (): React.JSX.Element => {
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<ConversationListItemComponent
-									deselectAll={deselectAll}
-									conversationId={id}
-									visible={visible}
-									selected={isSelected}
-									selectedItems={selectedItemsMap}
-									activeItemId={itemId}
-									setDraggedIds={setDraggedIds}
-									dragImageRef={dragImageRef}
-									selecting={isSelectModeOn}
-									active={active}
-									selectedIds={Object.keys(selectedItems)}
-									folderId={folderId}
-									index={index}
-									onSelect={onSelect}
-								/>
+								<>
+									{(active || isSelected) && (
+										<ConversationShortcutsRegister
+											conversationIds={keyboardShortcutsIds}
+											folderId={folderId}
+										/>
+									)}
+
+									<ConversationListItemComponent
+										deselectAll={deselectAll}
+										conversationId={id}
+										visible={visible}
+										selected={isSelected}
+										selectedItems={selectedItemsMap}
+										activeItemId={itemId}
+										setDraggedIds={setDraggedIds}
+										dragImageRef={dragImageRef}
+										selecting={isSelectModeOn}
+										active={active}
+										selectedIds={Object.keys(selectedItems)}
+										folderId={folderId}
+										index={index}
+										onSelect={onSelect}
+									/>
+								</>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="conversation-invisible-item" />
 							)
@@ -129,6 +142,7 @@ export const ConversationList = (): React.JSX.Element => {
 			folderId,
 			isSelectModeOn,
 			itemId,
+			keyboardShortcutsIds,
 			onSelect,
 			selectedItems,
 			selectedItemsMap
@@ -139,7 +153,6 @@ export const ConversationList = (): React.JSX.Element => {
 		() => conversationsIds.length ?? folder?.n ?? 0,
 		[conversationsIds.length, folder?.n]
 	);
-	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	const conversationsLoadingCompleted = useMemo(
 		() => status === API_REQUEST_STATUS.fulfilled,
@@ -165,12 +178,8 @@ export const ConversationList = (): React.JSX.Element => {
 		filterType: undefined
 	});
 
-	const keyboardShortcutsIds =
-		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
-
 	return (
 		<>
-			<ConversationShortcutsRegister conversationIds={keyboardShortcutsIds} folderId={folderId} />
 			<ConversationListComponent
 				listItems={listItems}
 				displayerTitle={displayerTitle}
