@@ -38,6 +38,16 @@ npm install
 git submodule update --recursive --init
 ```
 
+<h4>Playwright Tests</h4>
+
+You may need to setup your environment before doing these steps (WIP: build, 
+copy shell, etc.)
+
+1) Run npm run integration-tests (starts an http server with mails and some 
+   mocks)
+2) Run npx playwright test (runs playwright tests against server instance)
+
+
 <h4>Watch Mode</h4>
 
 ```
