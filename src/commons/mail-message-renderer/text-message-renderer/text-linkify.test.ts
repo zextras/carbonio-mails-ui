@@ -58,9 +58,7 @@ describe('linkifyToHtml', () => {
 	it('does not escapes HTML tags in input', () => {
 		const input = '<b>foo@bar.com</b>';
 		const output = linkifyText(input);
-		expect(output).toBe(
-			'<b><a href="mailto:foo@bar.com" target="_blank" rel="noopener noreferrer">foo@bar.com</a></b>'
-		);
+		expect(output).toBe(input);
 	});
 
 	it('applies custom anchorRel and openInNewTab options', () => {

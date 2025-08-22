@@ -8,11 +8,11 @@ import React, { useMemo, useState } from 'react';
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { linkifyText } from './text-linkify';
 import {
 	getOriginalTextContent,
 	getQuotedTextFromOriginalContent
 } from '../../get-quoted-text-util';
-import { linkifyText } from '../text-linkify';
 
 type TextMessageRendererType = {
 	body: { content: string };
