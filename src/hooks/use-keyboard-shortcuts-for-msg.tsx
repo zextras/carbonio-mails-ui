@@ -14,7 +14,6 @@ import { useMsgSetReadFn } from './actions/use-msg-set-read';
 import { useMsgSetSpamFn } from './actions/use-msg-set-spam';
 import { useMsgSetUnflagFn } from './actions/use-msg-set-unflag';
 import { useMsgSetUnreadFn } from './actions/use-msg-set-unread';
-import { hasModalOverlay, isInputContext } from './utils';
 import { MAILS_ROUTE } from 'constants/index';
 
 const MSG_KEYBOARD_SHORTCUTS = {
@@ -75,15 +74,14 @@ export const useKeyboardShortcutsForMsg = ({
 	const setAsUnread = useMsgSetUnreadFn({
 		ids: messageIds,
 		folderId,
-		isMessageRead: false
+		isMessageRead: true
 	});
 
 	const flag = useMsgSetFlagFn(messageIds, false);
 	const unflag = useMsgSetUnflagFn(messageIds, true);
 
 	const callKeyboardShortcutAction = useCallback(
-		(isGlobalContext: boolean, eventActions: () => void): void => {
-			if (!isGlobalContext) return;
+		(eventActions: () => void): void => {
 			switch (true) {
 				case MSG_KEYBOARD_SHORTCUTS.MARK_READ.includes(keySequence.current):
 					eventActions();
@@ -135,11 +133,6 @@ export const useKeyboardShortcutsForMsg = ({
 				event.stopImmediatePropagation();
 			};
 
-			if (hasModalOverlay()) {
-				return;
-			}
-
-			const isGlobalContext = !isInputContext(event.target);
 			keySequence.current = keySequence.current.concat(event.key);
 
 			/**
@@ -150,7 +143,7 @@ export const useKeyboardShortcutsForMsg = ({
 			const timer = setTimeout(callKeyboardShortcutAction, 1000);
 			if (MODIFIER_KEYS.indexOf(event.key) === -1) {
 				clearTimeout(timer);
-				callKeyboardShortcutAction(isGlobalContext, eventActions);
+				callKeyboardShortcutAction(eventActions);
 			}
 		},
 		[callKeyboardShortcutAction]
