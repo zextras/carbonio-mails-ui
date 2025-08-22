@@ -54,3 +54,10 @@ zextras-carbonio-*.tgz
 /it/static/
 /static/iris/
 /it/carbonio/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
