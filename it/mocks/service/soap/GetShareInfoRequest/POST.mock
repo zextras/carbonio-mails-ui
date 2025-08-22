@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{"Header":{"context":{"session":{"id":"114","_content":"114"},"change":{"token":1},"_jsns":"urn:zimbra"}},"Body":{"GetShareInfoResponse":{"_jsns":"urn:zimbraAccount"}},"_jsns":"urn:zimbraSoap"}

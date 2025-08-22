@@ -24,7 +24,8 @@
 		"copy-dist": "cp -r ./dist ./static/carbonio-mails-ui",
 		"integration-tests": "concurrently \"mockserver -p 8080 -m it/mocks\" \"http-server ./it -a localhost -p 1234 -P http://localhost:8080\"",
 		"open": "http-server ./it -a localhost -p 1234 -P http://localhost:8080",
-		"mockserver": "mockserver -p 8080 -m it/mocks"
+		"mockserver": "mockserver -p 8080 -m it/mocks",
+		"copy-shell": "TODO: copy shell under it/static/iris"
 
 	},
 	"files": [
