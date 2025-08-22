@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,7 +12,6 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
-import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -34,7 +33,6 @@ export const ConversationList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 
 	const {
-		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
@@ -43,6 +41,8 @@ export const ConversationList = (): React.JSX.Element => {
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
 		allAvailableItems: conversationsIds,
 		setSelectedItems,
 		selectedItems
@@ -66,20 +66,6 @@ export const ConversationList = (): React.JSX.Element => {
 		}
 		return null;
 	}, [conversationsIds?.length, folderId]);
-
-	const onSelect = useCallback(
-		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(index, id, event, {
-				isSelectModeOn,
-				lastSelectedIndex,
-				conversationsIds,
-				toggle,
-				selectRange,
-				setLastSelectedIndex
-			});
-		},
-		[isSelectModeOn, lastSelectedIndex, conversationsIds, selectRange, toggle]
-	);
 
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
 		Array.from(selectedItems, (item) => [item, true])
@@ -126,7 +112,7 @@ export const ConversationList = (): React.JSX.Element => {
 										selectedIds={Object.keys(selectedItems)}
 										folderId={folderId}
 										index={index}
-										onSelect={onSelect}
+										onSelect={selectRange}
 									/>
 								</>
 							) : (
@@ -143,7 +129,7 @@ export const ConversationList = (): React.JSX.Element => {
 			isSelectModeOn,
 			itemId,
 			keyboardShortcutsIds,
-			onSelect,
+			selectRange,
 			selectedItems,
 			selectedItemsMap
 		]
@@ -197,7 +183,7 @@ export const ConversationList = (): React.JSX.Element => {
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
 			loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
-			onSelect={onSelect}
+			onSelect={selectRange}
 		/>
 	);
 };
