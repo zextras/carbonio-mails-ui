@@ -22,8 +22,10 @@
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
 		"dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy",
 		"copy-dist": "cp -r ./dist ./static/carbonio-mails-ui",
-		"integration-tests": "npm run build:dev copy-shell-to-it-folder copy-mails-to-it-folder",
-		"open": "http-server ./it -a localhost -p 1234"
+		"integration-tests": "concurrently \"mockserver -p 8080 -m it/mocks\" \"http-server ./it -a localhost -p 1234 -P http://localhost:8080\"",
+		"open": "http-server ./it -a localhost -p 1234 -P http://localhost:8080",
+		"mockserver": "mockserver -p 8080 -m it/mocks"
+
 	},
 	"files": [
 		"src/types/"
