@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useMemo, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { CustomListItem, FOLDERS } from '@zextras/carbonio-ui-commons';
@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageShortcutsRegister } from './message-shortcuts-register';
-import { handleItemClick } from '../../../../helpers/messages';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -45,11 +44,12 @@ export const MessageList = (): React.JSX.Element => {
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
-		toggleItemSelection: toggle,
 		isAllSelected,
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
 		selectedItems,
 		setSelectedItems,
 		allAvailableItems: messageListIndex
@@ -88,20 +88,6 @@ export const MessageList = (): React.JSX.Element => {
 
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
 		Array.from(selectedItems, (item) => [item, true])
-	);
-
-	const onSelect = useCallback(
-		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(index, id, event, {
-				isSelectModeOn,
-				lastSelectedIndex,
-				conversationsIds: messageListIndex,
-				toggle,
-				selectRange,
-				setLastSelectedIndex
-			});
-		},
-		[isSelectModeOn, lastSelectedIndex, messageListIndex, selectRange, toggle]
 	);
 
 	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
@@ -145,7 +131,7 @@ export const MessageList = (): React.JSX.Element => {
 										setDraggedIds={setDraggedIds}
 										currentFolderId={folderId}
 										index={index}
-										onSelect={onSelect}
+										onSelect={selectRange}
 									/>
 								</>
 							) : (
@@ -163,7 +149,7 @@ export const MessageList = (): React.JSX.Element => {
 			itemId,
 			keyboardShortcutsIds,
 			messageListIndex,
-			onSelect,
+			selectRange,
 			selectedItems,
 			selectedItemsMap
 		]
