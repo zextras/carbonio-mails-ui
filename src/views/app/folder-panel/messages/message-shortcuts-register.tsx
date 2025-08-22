@@ -5,19 +5,19 @@
  */
 import { useCallback, useEffect } from 'react';
 
-import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
+import { useKeyboardShortcutsForMsg } from 'hooks/use-keyboard-shortcuts-for-msg';
 
-type ConversationShortcutsRegisterProps = {
-	conversationIds: Array<string>;
+type MessageShortcutsRegisterProps = {
+	messageIds: Array<string>;
 	folderId: string;
 };
 
-export const ConversationShortcutsRegister = ({
-	conversationIds,
+export const MessageShortcutsRegister = ({
+	messageIds,
 	folderId
-}: ConversationShortcutsRegisterProps): null => {
-	const keyboardActions = useKeyboardShortcutsForConv({
-		conversationIds,
+}: MessageShortcutsRegisterProps): null => {
+	const keyboardActions = useKeyboardShortcutsForMsg({
+		messageIds,
 		folderId
 	});
 	const handleKeyDown = useCallback(

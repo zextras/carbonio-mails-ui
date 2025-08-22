@@ -139,7 +139,7 @@ export const ConversationList = (): React.JSX.Element => {
 		() => conversationsIds.length ?? folder?.n ?? 0,
 		[conversationsIds.length, folder?.n]
 	);
-	const selectedIds = useMemo(() => Object.keys(selectedItems), [selectedItems]);
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	const conversationsLoadingCompleted = useMemo(
 		() => status === API_REQUEST_STATUS.fulfilled,
@@ -164,15 +164,19 @@ export const ConversationList = (): React.JSX.Element => {
 		folderId,
 		filterType: undefined
 	});
+
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	return (
 		<>
-			{itemId && <ConversationShortcutsRegister conversationId={itemId} folderId={folderId} />}
+			<ConversationShortcutsRegister conversationIds={keyboardShortcutsIds} folderId={folderId} />
 			<ConversationListComponent
 				listItems={listItems}
 				displayerTitle={displayerTitle}
 				totalConversations={totalConversations}
 				conversationsLoadingCompleted={conversationsLoadingCompleted}
-				selectedIds={selectedIds}
+				selectedIds={selectedIdsArray}
 				isSelectModeOn={isSelectModeOn}
 				setIsSelectModeOn={setIsSelectModeOn}
 				selectAll={selectAll}
