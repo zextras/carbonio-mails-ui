@@ -25,7 +25,7 @@
 		"integration-tests": "concurrently \"mockserver -p 8080 -m it/mocks\" \"http-server ./it -a localhost -p 1234 -P http://localhost:8080\"",
 		"open": "http-server ./it -a localhost -p 1234 -P http://localhost:8080",
 		"mockserver": "mockserver -p 8080 -m it/mocks",
-		"copy-shell": "TODO: copy shell under it/static/iris"
+		"copy-shell": "./copy-resources.sh"
 
 	},
 	"files": [
