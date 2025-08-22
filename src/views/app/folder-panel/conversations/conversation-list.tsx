@@ -170,9 +170,7 @@ export const ConversationList = (): React.JSX.Element => {
 
 	return (
 		<>
-			{itemId && (
-				<ConversationShortcutsRegister conversationIds={keyboardShortcutsIds} folderId={folderId} />
-			)}
+			<ConversationShortcutsRegister conversationIds={keyboardShortcutsIds} folderId={folderId} />
 			<ConversationListComponent
 				listItems={listItems}
 				displayerTitle={displayerTitle}
