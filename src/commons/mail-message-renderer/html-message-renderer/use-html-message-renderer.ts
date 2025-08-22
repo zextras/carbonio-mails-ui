@@ -194,7 +194,7 @@ const useProcessedContent = (
 };
 
 /**
- * Main business logic hook for HTML message renderer
+ * HTML message renderer hook
  */
 export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendererState => {
 	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
@@ -220,7 +220,7 @@ export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendere
 	const { hasExternalImages } = useProcessedContent(
 		messageContent.contentToDisplay,
 		attachments,
-		false, // Initially don't show external images
+		false,
 		message.id
 	);
 
