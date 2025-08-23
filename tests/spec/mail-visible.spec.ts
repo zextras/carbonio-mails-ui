@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {
-	await page.goto('http://localhost:1234/carbonio');
+	await page.goto('/carbonio');
 
 	// eslint-disable-next-line testing-library/prefer-screen-queries
 	await expect(page.getByText('Test to myself'), 'Email should be visible').toBeVisible();

@@ -43,10 +43,18 @@ git submodule update --recursive --init
 You may need to setup your environment before doing these steps (WIP: build, 
 copy shell, etc.)
 
-1) Run npm run integration-tests (starts an http server with mails and some 
-   mocks)
-2) Run npx playwright test (runs playwright tests against server instance)
+To run integration tests you can run `npm run it`. \
+This will start an http-server serving mails-ui and a mockserver that mocks 
+backend api calls, and run playwright tests against it. 
+Configuration parameters for the endpoint are defined in [playwright.config.ts](playwright.config.ts)
 
+<h4>Lightweight dev mode</h4>
+You can also see how your UI looks by running `PORT=1234 npm run start:mock`. \
+This will spin up the same environment as the mock test and serve the UI at 
+port 1234. \
+Visit http://localhost:1234/carbonio to see the web application. \
+The result of what you see depends on the mocked apis. Feel free to adjust 
+the mocks based on your needs.
 
 <h4>Watch Mode</h4>
 
