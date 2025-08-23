@@ -9,7 +9,7 @@ import { IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { WarningBanner } from 'commons/mail-message-renderer/warning-banner';
+import { WarningBanner } from './warning-banner';
 
 const StyledMultiBtn = styled(MultiButton)`
 	border: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
