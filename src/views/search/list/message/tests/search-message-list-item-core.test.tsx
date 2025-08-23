@@ -46,6 +46,7 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
+					index={0}
 					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
@@ -69,7 +70,8 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
+					index={0}
+					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
 			);
@@ -90,7 +92,8 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
+					index={0}
+					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
 			);
@@ -111,7 +114,8 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
+					index={0}
+					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
 			);
@@ -136,7 +140,8 @@ describe('SearchMessageListItemCore', () => {
 					completeMessage={generatedMessages[0]}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
+					index={0}
+					onSelect={mockToggle}
 					folderId={FOLDERS.INBOX}
 				/>
 			);

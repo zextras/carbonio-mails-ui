@@ -48,7 +48,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -71,7 +72,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -90,7 +92,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -111,7 +114,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
