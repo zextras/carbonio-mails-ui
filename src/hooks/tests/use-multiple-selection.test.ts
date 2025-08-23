@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import { act, renderHook } from '@testing-library/react';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 
@@ -25,13 +24,16 @@ describe('useMultipleSelection', () => {
 	});
 
 	const testSetup = (
-		selectedItemsInit = new Set<string>()
+		selectedItemsInit = new Set<string>(),
+		lastSelectedIndexInit: number | null = null
 	): {
 		result: { current: ReturnType<typeof useMultipleSelection> };
-		setSelectedItems: (fn: (items: Set<string>) => Set<string>) => void;
+		setSelectedItems: jest.Mock;
+		setLastSelectedIndex: jest.Mock;
 		rerender: () => void;
 	} => {
 		let selectedItems = selectedItemsInit;
+		let lastSelectedIndex = lastSelectedIndexInit;
 
 		const setSelectedItems = jest.fn((updater: (prev: Set<string>) => Set<string>) => {
 			if (typeof updater === 'function') {
@@ -39,15 +41,21 @@ describe('useMultipleSelection', () => {
 			}
 		}) as jest.Mock;
 
+		const setLastSelectedIndex = jest.fn((index: number | null) => {
+			lastSelectedIndex = index;
+		}) as jest.Mock;
+
 		const { result, rerender } = renderHook(() =>
 			useMultipleSelection({
 				allAvailableItems: allItems,
 				selectedItems,
-				setSelectedItems
+				setSelectedItems,
+				lastSelectedIndex,
+				setLastSelectedIndex
 			})
 		);
 
-		return { result, setSelectedItems, rerender };
+		return { result, setSelectedItems, setLastSelectedIndex, rerender };
 	};
 
 	it('should start with selection mode off', () => {
@@ -94,9 +102,7 @@ describe('useMultipleSelection', () => {
 
 	it('should deselect all items and turn off selection mode', () => {
 		const { result, setSelectedItems } = testSetup(new Set(['a', 'b']));
-
 		act(() => result.current.deselectAll());
-
 		expect(setSelectedItems).toHaveBeenCalledWith(new Set());
 		expect(result.current.isSelectModeOn).toBe(false);
 	});
@@ -113,9 +119,7 @@ describe('useMultipleSelection', () => {
 
 	it('should clear all selected and turn OFF selection mode in selectAllModeOff', () => {
 		const { result, setSelectedItems } = testSetup(new Set(['a']));
-
 		act(() => result.current.selectAllModeOff());
-
 		expect(setSelectedItems).toHaveBeenCalledWith(new Set());
 		expect(result.current.isSelectModeOn).toBe(false);
 	});
@@ -155,7 +159,6 @@ describe('useMultipleSelection', () => {
 	it('should update isAllSelected when selectedItems change', () => {
 		const { result } = testSetup(new Set(['a']));
 		expect(result.current.isAllSelected).toBe(false);
-
 		const { result: result2 } = testSetup(new Set(allItems));
 		expect(result2.current.isAllSelected).toBe(true);
 	});
@@ -178,15 +181,12 @@ describe('useMultipleSelection', () => {
 
 	it('should maintain selection state when toggling same item multiple times', () => {
 		const { result } = testSetup();
-
 		// Toggle item on
 		act(() => result.current.selectRange(0, 'item1', {} as React.MouseEvent));
 		expect(result.current.isSelectModeOn).toBe(true);
-
 		// Toggle same item off
 		act(() => result.current.selectRange(0, 'item1', {} as React.MouseEvent));
 		expect(result.current.isSelectModeOn).toBe(false);
-
 		// Toggle same item on again
 		act(() => result.current.selectRange(0, 'item1', {} as React.MouseEvent));
 		expect(result.current.isSelectModeOn).toBe(true);
@@ -194,18 +194,15 @@ describe('useMultipleSelection', () => {
 
 	it('should handle multiple items selection and deselection', () => {
 		const { result } = testSetup();
-
 		// Select multiple items
 		act(() => {
 			result.current.selectRange(0, 'item1', {} as React.MouseEvent);
 			result.current.selectRange(1, 'item2', {} as React.MouseEvent);
 		});
 		expect(result.current.isSelectModeOn).toBe(true);
-
 		// Deselect one item
 		act(() => result.current.selectRange(0, 'item1', {} as React.MouseEvent));
 		expect(result.current.isSelectModeOn).toBe(true); // Should still be on
-
 		// Deselect last item
 		act(() => result.current.selectRange(1, 'item2', {} as React.MouseEvent));
 		expect(result.current.isSelectModeOn).toBe(false);
@@ -214,12 +211,10 @@ describe('useMultipleSelection', () => {
 	it('should call setMultipleSelectionCount with correct count on updates', () => {
 		testSetup(new Set(['a']));
 		expect(setMultipleSelectionCount).toHaveBeenCalledWith(1);
-
 		// Test with a fresh setup to avoid state issues
 		setMultipleSelectionCount.mockClear();
 		testSetup(new Set(['a', 'b']));
 		expect(setMultipleSelectionCount).toHaveBeenCalledWith(2);
-
 		// Test with empty selection
 		setMultipleSelectionCount.mockClear();
 		testSetup(new Set());
@@ -236,57 +231,28 @@ describe('useMultipleSelection', () => {
 
 		describe('when shift key is pressed and selection mode is ON', () => {
 			it('should select range from last selected index to current index (forward selection)', () => {
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems
-					})
-				);
-
+				const { result, setLastSelectedIndex } = testSetup();
 				// Enable selection mode and select first item
 				act(() => {
 					result.current.setIsSelectModeOn(true);
 					result.current.selectRange(1, 'item2', createMockEvent(false));
 				});
-
+				expect(setLastSelectedIndex).toHaveBeenCalledWith(1);
 				// Shift+click on item4 (index 3)
 				act(() => {
 					result.current.selectRange(3, 'item4', createMockEvent(true));
 				});
-
 				// Should have selected items 2, 3, and 4 (indices 1, 2, 3)
 				expect(result.current.isSelectModeOn).toBe(true);
-				// Note: We can't directly access selectedItems from the hook return,
-				// but we can verify the behavior through the isSelectModeOn state
 			});
 
 			it('should select range from last selected index to current index (backward selection)', () => {
 				const selectedItems = new Set<string>();
-				const setSelectedItems = jest.fn((updater) => {
-					if (typeof updater === 'function') {
-						const newSet = updater(selectedItems);
-						selectedItems.clear();
-						newSet.forEach((item: string) => selectedItems.add(item));
-					}
-				});
-				let lastSelectedIndex: number | null = null;
-				const setLastSelectedIndex = jest.fn((index) => {
-					lastSelectedIndex = index;
-				});
+				const { result, setSelectedItems } = testSetup(new Set(), 3);
 
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems,
-						setSelectedItems,
-						lastSelectedIndex,
-						setLastSelectedIndex
-					})
-				);
-
-				// Enable selection mode and select item at index 3
+				// Enable selection mode and set initial state
 				act(() => {
 					result.current.setIsSelectModeOn(true);
-					lastSelectedIndex = 3;
 					selectedItems.add('item4');
 				});
 
@@ -309,23 +275,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should add to existing selection when shift+clicking', () => {
-				const selectedItems = new Set<string>(['item1']);
-				const setSelectedItems = jest.fn((updater) => {
-					if (typeof updater === 'function') {
-						return updater(selectedItems);
-					}
-					return updater;
-				});
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems,
-						setSelectedItems,
-						lastSelectedIndex: 2,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result, setSelectedItems } = testSetup(new Set(['item1']), 2);
 
 				// Enable selection mode
 				act(() => {
@@ -340,7 +290,6 @@ describe('useMultipleSelection', () => {
 				// Verify the updater function adds new items to existing selection
 				const updaterFn = setSelectedItems.mock.calls[0][0];
 				const newSet = updaterFn(new Set(['item1']));
-
 				expect(newSet.has('item1')).toBe(true); // Original selection
 				expect(newSet.has('item3')).toBe(true); // New range
 				expect(newSet.has('item4')).toBe(true);
@@ -349,23 +298,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should handle shift+click on the same index as lastSelectedIndex', () => {
-				const selectedItems = new Set<string>(['item3']);
-				const setSelectedItems = jest.fn((updater) => {
-					if (typeof updater === 'function') {
-						return updater(selectedItems);
-					}
-					return updater;
-				});
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems,
-						setSelectedItems,
-						lastSelectedIndex: 2,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result, setSelectedItems } = testSetup(new Set(['item3']), 2);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -379,24 +312,12 @@ describe('useMultipleSelection', () => {
 				// Should only select the single item at that index
 				const updaterFn = setSelectedItems.mock.calls[0][0];
 				const newSet = updaterFn(new Set(['item3']));
-
 				expect(newSet.has('item3')).toBe(true);
 				expect(newSet.size).toBe(1);
 			});
 
 			it('should handle shift+click when lastSelectedIndex is null', () => {
-				const setSelectedItems = jest.fn();
-				const setLastSelectedIndex = jest.fn();
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems: new Set(),
-						setSelectedItems,
-						lastSelectedIndex: null,
-						setLastSelectedIndex
-					})
-				);
+				const { result, setSelectedItems, setLastSelectedIndex } = testSetup(new Set(), null);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -413,22 +334,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should handle range selection at boundaries (first to last item)', () => {
-				const setSelectedItems = jest.fn((updater) => {
-					if (typeof updater === 'function') {
-						return updater(new Set());
-					}
-					return updater;
-				});
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems: new Set(),
-						setSelectedItems,
-						lastSelectedIndex: 0,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result, setSelectedItems } = testSetup(new Set(), 0);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -450,15 +356,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should maintain selection mode after shift+click range selection', () => {
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems: new Set(),
-						setSelectedItems: jest.fn(),
-						lastSelectedIndex: 0,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result } = testSetup(new Set(), 0);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -478,19 +376,7 @@ describe('useMultipleSelection', () => {
 
 		describe('when shift key is NOT pressed', () => {
 			it('should toggle selection for clicked item only', () => {
-				const selectedItems = new Set<string>(['item2']);
-				const setSelectedItems = jest.fn();
-				const setLastSelectedIndex = jest.fn();
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems,
-						setSelectedItems,
-						lastSelectedIndex: 1,
-						setLastSelectedIndex
-					})
-				);
+				const { result, setLastSelectedIndex } = testSetup(new Set(['item2']), 1);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -506,17 +392,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should enable selection mode when clicking without shift in non-selection mode', () => {
-				const setSelectedItems = jest.fn();
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems: new Set(),
-						setSelectedItems,
-						lastSelectedIndex: null,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result, setSelectedItems } = testSetup(new Set(), null);
 
 				// Start with selection mode off
 				expect(result.current.isSelectModeOn).toBe(false);
@@ -556,22 +432,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should handle out-of-bounds indices gracefully', () => {
-				const setSelectedItems = jest.fn((updater) => {
-					if (typeof updater === 'function') {
-						return updater(new Set());
-					}
-					return updater;
-				});
-
-				const { result } = renderHook(() =>
-					useMultipleSelection({
-						allAvailableItems: allItems,
-						selectedItems: new Set(),
-						setSelectedItems,
-						lastSelectedIndex: 1,
-						setLastSelectedIndex: jest.fn()
-					})
-				);
+				const { result, setSelectedItems } = testSetup(new Set(), 1);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
