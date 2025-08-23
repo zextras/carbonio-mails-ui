@@ -119,7 +119,7 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, itemId, selectedItems, isSelectModeOn, selectRange]
+		[conversationIds, itemId, selectedItems, keyboardShortcutsIds, isSelectModeOn, selectRange]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
