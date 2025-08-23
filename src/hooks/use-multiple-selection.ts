@@ -59,9 +59,7 @@ export const useMultipleSelection = ({
 					newSet.add(id);
 				}
 				// Update lastSelectedIndex when provided
-				if (index !== undefined) {
-					setLastSelectedIndex?.(index);
-				}
+				setLastSelectedIndex?.(index);
 				const newSize = newSet.size;
 				setIsSelectModeOn(!itemWasAlreadySelected || newSize > 0);
 
