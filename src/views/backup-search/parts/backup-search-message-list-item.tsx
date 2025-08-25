@@ -18,13 +18,15 @@ import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 type BackupSearchMessageListmessageProps = {
 	message: BackupSearchMessage;
 	messageIsSelected: boolean;
-	toggle: (id: string) => void;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	index: number;
 };
 
 export const BackupSearchMessageListItem = ({
 	message,
 	messageIsSelected,
-	toggle
+	onSelect,
+	index = 0
 }: BackupSearchMessageListmessageProps): React.JSX.Element => {
 	const navigate = useNavigate();
 	const accountName = getUserAccount()?.name;
@@ -40,9 +42,14 @@ export const BackupSearchMessageListItem = ({
 	const handleComponentOnClick = useCallback(() => {
 		navigate(`/${BACKUP_SEARCH_ROUTE}/${messageId}`, { replace: true });
 	}, [messageId, navigate]);
-	const handleAvatarOnClick = useCallback(() => {
-		toggle(messageId);
-	}, [messageId, toggle]);
+
+	const handleClick = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			onSelect?.(index, message.id, e);
+		},
+		[onSelect, index, message.id]
+	);
 
 	return (
 		<HoverContainer
@@ -53,7 +60,7 @@ export const BackupSearchMessageListItem = ({
 		>
 			<div style={{ alignSelf: 'center' }}>
 				<Avatar
-					onClick={handleAvatarOnClick}
+					onClick={handleClick}
 					selecting
 					selected={messageIsSelected}
 					label={message.to}

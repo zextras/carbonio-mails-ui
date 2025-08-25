@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,10 +11,10 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { handleItemClick } from '../../../../helpers/messages';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';
@@ -38,7 +38,6 @@ export const SearchConversationList = ({
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 
 	const {
-		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
@@ -47,6 +46,8 @@ export const SearchConversationList = ({
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
 		allAvailableItems: conversationIds,
 		selectedItems,
 		setSelectedItems
@@ -69,20 +70,9 @@ export const SearchConversationList = ({
 		loadingMore,
 		types: 'conversation'
 	});
-
-	const onSelect = useCallback(
-		(index: number, id: string, event: React.MouseEvent) => {
-			handleItemClick(index, id, event, {
-				isSelectModeOn,
-				lastSelectedIndex,
-				conversationsIds: conversationIds,
-				toggle,
-				selectRange,
-				setLastSelectedIndex
-			});
-		},
-		[isSelectModeOn, lastSelectedIndex, conversationIds, selectRange, toggle]
-	);
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
 
 	const listItems = useMemo(
 		() =>
@@ -100,16 +90,25 @@ export const SearchConversationList = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchConversationListItem
-									key={conversationId}
-									active={active}
-									conversationId={conversationId}
-									selecting={isSelectModeOn}
-									activeItemId={itemId}
-									selected={isSelected}
-									index={index}
-									onSelect={onSelect}
-								/>
+								<>
+									{(active || isSelected) && (
+										<ConversationShortcutsRegister
+											conversationIds={keyboardShortcutsIds}
+											folderId={''}
+										/>
+									)}
+
+									<SearchConversationListItem
+										key={conversationId}
+										active={active}
+										conversationId={conversationId}
+										selecting={isSelectModeOn}
+										activeItemId={itemId}
+										selected={isSelected}
+										index={index}
+										onSelect={selectRange}
+									/>
+								</>
 							) : (
 								<div
 									style={{ height: '4rem' }}
@@ -120,7 +119,7 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, onSelect, isSelectModeOn, itemId, selectedItems]
+		[conversationIds, itemId, selectedItems, keyboardShortcutsIds, isSelectModeOn, selectRange]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);

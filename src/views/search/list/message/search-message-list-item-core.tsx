@@ -31,14 +31,16 @@ type SearchMessageListItemCoreProps = {
 	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 	folderId: string;
 };
 export const SearchMessageListItemCore = ({
 	completeMessage,
 	selected,
 	selecting,
-	toggle,
+	index,
+	onSelect,
 	folderId
 }: SearchMessageListItemCoreProps): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -150,8 +152,6 @@ export const SearchMessageListItemCore = ({
 		[completeMessage?.autoSendTime, t]
 	);
 
-	const onToggle = useMemo(() => toggle, [toggle]);
-
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
 			<div
@@ -162,8 +162,9 @@ export const SearchMessageListItemCore = ({
 					item={completeMessage}
 					selected={selected}
 					selecting={selecting}
-					toggle={onToggle}
 					folderId={folderId}
+					index={index}
+					onSelect={onSelect}
 				/>
 				<Padding horizontal="extrasmall" />
 			</div>

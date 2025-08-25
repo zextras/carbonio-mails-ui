@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,7 +11,7 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import styled from 'styled-components';
 
 import { getFolderIdParts } from 'helpers/folders';
-import type { ItemAvatarType, Participant } from 'types/index.d';
+import type { Participant } from 'types/index.d';
 import { TooltipWrapper } from 'views/app/folder-panel/parts/tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
@@ -29,9 +29,8 @@ export type ItemAvatarTypeProps = {
 	selected: boolean;
 	selecting: boolean;
 	folderId: string;
-	index?: number;
-	onSelect?: (index: number, id: string, event: React.MouseEvent) => void;
-	toggle?: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
@@ -39,9 +38,8 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 	selected,
 	selecting,
 	folderId,
-	index,
-	onSelect,
-	toggle
+	index = 0,
+	onSelect
 }) => {
 	const targetParticipants =
 		getFolderIdParts(folderId).id === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
@@ -56,14 +54,9 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 	const handleClick = useCallback(
 		(e: React.MouseEvent) => {
 			e.preventDefault();
-			if (toggle) {
-				toggle(item.id);
-			}
-			if (onSelect) {
-				onSelect(index ?? 0, item.id, e);
-			}
+			onSelect?.(index, item.id, e);
 		},
-		[toggle, onSelect, item, index]
+		[onSelect, item, index]
 	);
 
 	return (

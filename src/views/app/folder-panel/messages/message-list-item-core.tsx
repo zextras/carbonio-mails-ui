@@ -145,7 +145,10 @@ export const MessageListItemCore = ({
 			}),
 		[message?.autoSendTime]
 	);
-	const onToggle = useMemo(() => (isConvChildren ? noop : onSelect), [isConvChildren, onSelect]);
+	const onSelectCallback = useMemo(
+		() => (isConvChildren ? noop : onSelect),
+		[isConvChildren, onSelect]
+	);
 
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
@@ -155,7 +158,7 @@ export const MessageListItemCore = ({
 					selected={selected}
 					selecting={selecting}
 					index={index}
-					onSelect={onToggle}
+					onSelect={onSelectCallback}
 					folderId={firstChildFolderId}
 				/>
 				<Padding horizontal="extrasmall" />
