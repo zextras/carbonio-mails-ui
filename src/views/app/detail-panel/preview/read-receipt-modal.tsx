@@ -7,14 +7,13 @@ import React, { FC, ReactElement, useCallback, useEffect } from 'react';
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
+import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { MailMessage } from 'types/index.d';
 
-import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
 import { updateMessages } from '../../../../store/emails/store';
-import type { MailMessage } from '../../../../types';
 
 type ReadReceiptModalProps = {
 	open: boolean;

@@ -1,4 +1,5 @@
 /* eslint-disable testing-library/prefer-user-event */
+
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -8,18 +9,18 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { ConvActionRequest } from '../../../types/soap/conv-action';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
-} from '../use-conv-delete-permanently';
+} from 'hooks/actions/use-conv-delete-permanently';
+import { TIMERS } from 'tests/constants';
+import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvDeletePermanently', () => {
 	describe('Descriptor', () => {
@@ -31,7 +32,7 @@ describe('useConvDeletePermanently', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvDeletePermanentlyDescriptor, {
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -52,7 +53,7 @@ describe('useConvDeletePermanently', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvDeletePermanentlyFn, {
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -74,7 +75,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -86,7 +87,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -106,7 +107,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
@@ -127,7 +128,7 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {

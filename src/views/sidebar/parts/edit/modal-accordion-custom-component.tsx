@@ -15,11 +15,15 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
+import { StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
 import styled from 'styled-components';
 
-import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
-import { isRoot } from '../../../../helpers/folders';
-import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
+import { isRoot } from 'helpers/folders';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getSystemFolderTranslatedName
+} from 'views/sidebar/utils';
 
 /**
  * Process the absolute path of the given folder, removing

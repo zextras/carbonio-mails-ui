@@ -10,7 +10,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find, isEqual, isObject, map, reduce, transform } from 'lodash';
 
-import { NO_SIGNATURE_ID } from '../../../helpers/signatures';
+import { NO_SIGNATURE_ID } from 'helpers/signatures';
 
 const arraysProps = [
 	'zimbraPrefMailTrustedSenderList',

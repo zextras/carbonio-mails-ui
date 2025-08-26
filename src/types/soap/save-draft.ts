@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SoapMailMessage } from './soap-mail-message';
-import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+
+import { SoapMailMessage } from 'types/soap/soap-mail-message';
 
 export type MailAttachmentParts = {
 	mid: string;
 	part: string;
-	requiresSmartLinkConversion: boolean;
 };
 
 export type MsgAttach = {
@@ -64,18 +64,6 @@ export type SaveDraftRequest = {
 };
 
 export type SaveDraftResponse = {
-	[x: string]: any;
-	m?: Array<SoapMailMessage>;
-	Fault?: any;
-};
-
-export type SendMsgWithSmartLinksRequest = {
-	_jsns: 'urn:zimbraMail';
-	m: SoapDraftMessageObj;
-	smartlinks: Array<{ partName: string; draftId: string }>;
-};
-
-export type SendMsgWithSmartLinksResponse = {
 	[x: string]: any;
 	m?: Array<SoapMailMessage>;
 	Fault?: any;

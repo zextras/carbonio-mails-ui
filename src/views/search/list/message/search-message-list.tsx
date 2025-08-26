@@ -7,63 +7,61 @@
 import React, { FC, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, SearchListProps } from '../../../../types';
-import { MessagesMultipleSelectionActions } from '../../../app/folder-panel/messages/messages-multiple-selection-actions';
-import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
-import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
-import ShimmerList from '../../shimmer-list';
-import { SearchListHeader } from '../parts/search-list-header';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import type { SearchListProps } from 'types/index.d';
+import { MessageShortcutsRegister } from 'views/app/folder-panel/messages/message-shortcuts-register';
+import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
+import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
+import { SearchListHeader } from 'views/search/list/parts/search-list-header';
+import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
+import ShimmerList from 'views/search/shimmer-list';
 
 export const SearchMessageList: FC<SearchListProps> = ({
-	searchDisabled,
 	searchResults: messageIds,
 	query,
 	loading,
-	setShowAdvanceFilters,
 	isInvalidQuery,
-	invalidQueryTooltip,
-	hasMore
+	hasMore,
+	searchResultsStatus
 }) => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
-	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = React.useState<number | null>(null);
+
 	const {
-		selected,
-		toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
-	} = useSelection({
-		setCount,
-		count,
-		items: messageIds
+		selectAllModeOff,
+		selectRange
+	} = useMultipleSelection({
+		allAvailableItems: messageIds,
+		selectedItems,
+		setSelectedItems,
+		lastSelectedIndex,
+		setLastSelectedIndex
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery) return null;
-
-		if (totalMessages === 0) {
+		if (searchResultsStatus === 'fulfilled' && messageIds.length === 0 && !loading) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, totalMessages]);
+	}, [searchResultsStatus, messageIds, loading]);
 
 	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
@@ -73,11 +71,15 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		types: 'message'
 	});
 
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	const listItems = useMemo(
 		() =>
-			map(messageIds, (messageId) => {
+			map(messageIds, (messageId, index) => {
 				const active = itemId === messageId;
-				const isSelected = selected[messageId];
+				const isSelected = selectedItems.has(messageId);
 				return (
 					<CustomListItem
 						key={messageId}
@@ -87,15 +89,20 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchMessageListItemWrapper
-									key={messageId}
-									messageId={messageId}
-									selected={isSelected}
-									selecting={isSelectModeOn}
-									toggle={toggle}
-									active={active}
-									deselectAll={deselectAll}
-								/>
+								<>
+									{(active || isSelected) && (
+										<MessageShortcutsRegister messageIds={keyboardShortcutsIds} folderId={''} />
+									)}
+									<SearchMessageListItemWrapper
+										key={messageId}
+										messageId={messageId}
+										selected={isSelected}
+										selecting={isSelectModeOn}
+										onSelect={selectRange}
+										index={index}
+										active={active}
+									/>
+								</>
 							) : (
 								<div style={{ height: '4rem' }} data-testid={`invisible-message-${messageId}`} />
 							)
@@ -103,44 +110,30 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
+		[isSelectModeOn, itemId, keyboardShortcutsIds, messageIds, selectRange, selectedItems]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
-		<Container
-			background={'gray6'}
-			width="25%"
-			height="fill"
-			mainAlignment="flex-start"
-			data-testid="MailsSearchResultListContainer"
-		>
-			<AdvancedFilterButton
-				setShowAdvanceFilters={setShowAdvanceFilters}
-				searchDisabled={searchDisabled}
-				invalidQueryTooltip={invalidQueryTooltip}
-			/>
-
+		<>
 			{!isInvalidQuery && !loading && (
-				<>
-					<SearchListHeader
-						itemIds={messageIds}
-						selected={selected}
-						deselectAll={deselectAll}
-						isSelectModeOn={isSelectModeOn}
-						setIsSelectModeOn={setIsSelectModeOn}
-						selectAll={selectAll}
-						isAllSelected={isAllSelected}
-						selectAllModeOff={selectAllModeOff}
-					>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={''}
-						/>
-					</SearchListHeader>
+				<SearchListHeader
+					itemIds={messageIds}
+					selectedItems={selectedItems}
+					deselectAll={deselectAll}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
+				>
+					<MessagesMultipleSelectionActions ids={selectedIds} folderId={''} />
+				</SearchListHeader>
+			)}
 
+			{!loading && (
+				<>
 					{totalMessages > 0 || hasMore ? (
 						<CustomList
 							onListBottom={onScrollBottom}
@@ -166,6 +159,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				</>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
-		</Container>
+		</>
 	);
 };

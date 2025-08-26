@@ -4,18 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
-import * as searchSoapApi from '../../../../../api/search-soap-api';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import * as storeHooks from '../../../../../store/emails/store';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import * as searchSoapApi from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import * as storeHooks from 'store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConversationFromAPI
-} from '../../../../../tests/generators/api';
-import { useLoadMoreForConversationList } from '../conversation-list-hooks';
+} from 'tests/generators/api';
+import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 
 describe('ConversationListHooks', () => {
 	it('should load more results for the current folder', async () => {
@@ -39,7 +39,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: folder.id
+				folderId: folder.id,
+				filterType: undefined
 			})
 		);
 
@@ -81,7 +82,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -111,7 +113,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -137,7 +140,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: false,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 
@@ -160,7 +164,8 @@ describe('ConversationListHooks', () => {
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: 'inbox',
+				filterType: undefined
 			})
 		);
 

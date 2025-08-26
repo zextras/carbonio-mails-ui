@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type React from 'react';
-import { CSSProperties, useEffect, useCallback, useRef } from 'react';
+import { CSSProperties, useCallback, useEffect, useRef } from 'react';
 
 import { find } from 'lodash';
 
-import { BORDERS } from '../constants';
+import { BORDERS } from 'constants/index';
 
 /**
  * Define the border following the cardinal points (north, south, west, east).

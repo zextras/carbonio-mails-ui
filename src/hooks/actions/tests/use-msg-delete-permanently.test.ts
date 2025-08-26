@@ -6,16 +6,16 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
+import { setupHook, screen } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgDeletePermanentlyDescriptor,
 	useMsgDeletePermanentlyFn
-} from '../use-msg-delete-permanently';
+} from 'hooks/actions/use-msg-delete-permanently';
+import { TIMERS } from 'tests/constants';
 
 describe('useMsgDeletePermanently', () => {
 	const messagesId = times(faker.number.int({ max: 42 }), () =>
@@ -27,7 +27,7 @@ describe('useMsgDeletePermanently', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgDeletePermanentlyDescriptor, {
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -45,7 +45,7 @@ describe('useMsgDeletePermanently', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgDeletePermanentlyFn, {
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -67,7 +67,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: messagesId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -79,7 +79,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {
@@ -99,7 +99,7 @@ describe('useMsgDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgDeletePermanentlyFn, {
-					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {

@@ -6,24 +6,24 @@
 
 import React, { memo } from 'react';
 
-import { SearchMessageListItem } from './search-message-list-item';
-import { useMessageById } from '../../../../store/emails/store';
+import { useMessageById } from 'store/emails/store';
+import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
 type SearchMessageListItemWrapperProps = {
 	messageId: string;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 	active?: boolean;
-	deselectAll: () => void;
 };
 export const SearchMessageListItemWrapper = memo(function MessageListItem({
 	messageId,
 	selected,
 	selecting,
-	toggle,
-	active,
-	deselectAll
+	onSelect,
+	index,
+	active
 }: SearchMessageListItemWrapperProps): React.JSX.Element {
 	const completeMessage = useMessageById(messageId);
 
@@ -37,9 +37,9 @@ export const SearchMessageListItemWrapper = memo(function MessageListItem({
 			key={messageId}
 			selected={selected}
 			selecting={selecting}
-			toggle={toggle}
+			onSelect={onSelect}
+			index={index}
 			active={active}
-			deselectAll={deselectAll}
 		/>
 	);
 });

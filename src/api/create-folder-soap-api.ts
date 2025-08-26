@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { type CreateFolderResponse } from '../types';
+import { type CreateFolderResponse } from 'types/index.d';
 
 export function createFolderSoapApi({
 	parentFolderId,
@@ -15,7 +15,7 @@ export function createFolderSoapApi({
 	parentFolderId: string;
 	name: string;
 }): Promise<CreateFolderResponse> {
-	return soapFetch('CreateFolder', {
+	return legacySoapFetch('CreateFolder', {
 		_jsns: 'urn:zimbraMail',
 		folder: {
 			view: 'message',

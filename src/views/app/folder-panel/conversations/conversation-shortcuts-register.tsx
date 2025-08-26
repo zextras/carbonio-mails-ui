@@ -3,34 +3,50 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
+import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
+import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 type ConversationShortcutsRegisterProps = {
-	conversationId: string;
+	conversationIds: Array<string>;
 	folderId: string;
-	deselectAll: () => void;
 };
 
+/**
+ * Registers global keyboard shortcuts for conversation actions.
+ * This component doesn't render anything but manages event listeners.
+ */
 export const ConversationShortcutsRegister = ({
-	conversationId,
-	deselectAll,
+	conversationIds,
 	folderId
 }: ConversationShortcutsRegisterProps): null => {
-	const keyboardActions = useConversationKeyboardShortcuts({
-		conversationId,
-		deselectAll,
+	const keyboardActions = useKeyboardShortcutsForConv({
+		conversationIds,
 		folderId
 	});
 
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent): void => {
+			const isInputField = isInputContext(event.target);
+
+			// Ignore shortcuts when typing in form fields
+			// or when a modal overlay is present
+			if (isInputField || hasModalOverlay()) {
+				return;
+			}
+
+			keyboardActions(event);
+		},
+		[keyboardActions]
+	);
+
 	useEffect(() => {
-		const handler = (event: KeyboardEvent): void => keyboardActions(event);
-		document.addEventListener('keydown', handler);
+		document.addEventListener('keydown', handleKeyDown);
 		return () => {
-			document.removeEventListener('keydown', handler);
+			document.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [keyboardActions]);
+	}, [handleKeyDown]);
 
 	return null;
 };

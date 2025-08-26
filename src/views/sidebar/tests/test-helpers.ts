@@ -4,15 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { SoapNotify } from '@zextras/carbonio-shell-ui';
+import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 
-import { SoapIncompleteMessage, SoapConversation } from '../../../types';
+import { SoapIncompleteMessage, SoapConversation } from 'types/index.d';
 
 export function mockSoapRefresh(mailbox: number): void {
-	(useRefresh as jest.Mock).mockReturnValue({
-		mbx: [{ s: mailbox }]
-	});
+	const result = {
+		mbx: [{ s: mailbox }] satisfies [{ s: number }]
+	};
+	jest.mocked(useInfoRefresh).mockReturnValue(result);
 }
+
+export function mockSoapSync(notify: Array<SoapNotify>): void {
+	jest.mocked(useSync).mockReturnValue(notify);
+}
+
 function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
 	return {
 		deleted: [],
@@ -38,7 +45,7 @@ export function mockSoapModifyConversationAction(
 			]
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 export function mockSoapModifyMessageAction(
 	mailboxNumber: number,
@@ -60,7 +67,7 @@ export function mockSoapModifyMessageAction(
 		},
 		...(seq ? { seq } : {})
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapMessageActionAndConversationModified(
@@ -88,7 +95,7 @@ export function mockSoapMessageActionAndConversationModified(
 			]
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapModifyMessageFolder(
@@ -109,7 +116,7 @@ export function mockSoapModifyMessageFolder(
 			]
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void {
@@ -118,7 +125,7 @@ export function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>)
 	const soapNotify = generateSoapAction({
 		deleted: deletedIds
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapCreateMessage(
@@ -131,7 +138,7 @@ export function mockSoapCreateMessage(
 			m: messages
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapCreateConversation(soapConversations: Array<SoapConversation>): void {
@@ -143,7 +150,7 @@ export function mockSoapCreateConversation(soapConversations: Array<SoapConversa
 			m: []
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockSoapCreateMessageAndConversation(
@@ -158,11 +165,11 @@ export function mockSoapCreateMessageAndConversation(
 			c: conversation
 		}
 	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }
 
 export function mockShellSoapNotify(shellNotifyResponse: Partial<SoapNotify>): void {
 	mockSoapRefresh(1);
 	const soapNotify = generateSoapAction(shellNotifyResponse);
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+	mockSoapSync([soapNotify]);
 }

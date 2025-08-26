@@ -5,12 +5,11 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { convertHtmlToPlainText } from '../../commons/utilities';
-import { updateMessages } from '../../store/emails/store';
-import { MailMessage, MailMessagePart, Participant, Sensitivity } from '../../types';
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { updateMessages } from 'store/emails/store';
+import { MailMessage, MailMessagePart, Participant, Sensitivity } from 'types/index.d';
 
 export type MessageGenerationParams = {
 	id?: string;
@@ -101,26 +100,22 @@ export const generateMessage = ({
 			name: 'TEXT',
 			contentType: 'multipart/mixed',
 			size: 0,
-			requiresSmartLinkConversion: false,
 			parts: [
 				{
 					name: '1',
 					size: 0,
 					contentType: 'multipart/alternative',
-					requiresSmartLinkConversion: false,
 					parts: [
 						{
 							name: '1.1',
 							contentType: 'text/plain',
-							size: body?.length,
-							requiresSmartLinkConversion: false
+							size: body?.length
 						},
 						{
 							name: '1.2',
 							contentType: 'text/html',
 							size: body?.length,
-							content: body,
-							requiresSmartLinkConversion: false
+							content: body
 						}
 					]
 				}

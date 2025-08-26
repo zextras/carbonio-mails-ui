@@ -7,12 +7,12 @@ import React from 'react';
 
 import { Container, Icon, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { BackupSearchPanelTextLine } from './backup-search-panel-text-line';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchPanelTextLine } from 'views/backup-search/parts/backup-search-panel-text-line';
 
 const SearchIcon = styled(Icon)`
 	width: 3.3rem;

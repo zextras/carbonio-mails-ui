@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
-import { MAIL_VERIFICATION_HEADERS } from '../constants';
-import { normalizeConversations } from '../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
+import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
+import { normalizeConversations } from 'normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import type {
 	GetConvParameters,
 	GetConvRequest,
 	GetConvResponse,
 	IncompleteMessage,
 	NormalizedConversation
-} from '../types';
+} from 'types/index.d';
 
 export const getConvSoapApi = async ({
 	conversationId,
@@ -25,7 +25,7 @@ export const getConvSoapApi = async ({
 	conversation: Array<NormalizedConversation>;
 	messages: Array<IncompleteMessage>;
 }> => {
-	const result = await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {
+	const result = await legacySoapFetch<GetConvRequest, GetConvResponse>('GetConv', {
 		_jsns: 'urn:zimbraMail',
 		c: {
 			id: conversationId,

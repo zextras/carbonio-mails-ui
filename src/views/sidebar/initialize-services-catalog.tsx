@@ -8,8 +8,8 @@ import { useEffect } from 'react';
 import { setAppContext, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
-import { requestServiceCatalogApi } from '../../api/request-service-catalog-api';
-import { AppContext } from '../../types';
+import { requestServiceCatalogApi } from 'api/request-service-catalog-api';
+import { AppContext } from 'app-utils/app-context-initializer';
 
 export const InitializeServicesCatalog = (): null => {
 	const { servicesCatalog } = useAppContext<AppContext>();

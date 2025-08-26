@@ -9,9 +9,9 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Route, Routes, useParams } from 'react-router-dom';
 
-import { SearchConversationPanel } from './conversation/search-conversation-panel';
-import { SearchMessagePanel } from './message/search-message-panel';
-import { SearchPanelProps } from '../../../types';
+import { SearchPanelProps } from 'types/index.d';
+import { SearchConversationPanel } from 'views/search/panel/conversation/search-conversation-panel';
+import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
 type WithMessageIdProps = {
 	messageId: string;

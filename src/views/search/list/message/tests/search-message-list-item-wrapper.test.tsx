@@ -8,11 +8,11 @@ import React from 'react';
 
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import * as storeModule from '../../../../../store/emails/store';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { MailMessage } from '../../../../../types';
-import { SearchMessageListItemWrapper } from '../search-message-list-item-wrapper';
+import { setupTest } from '@test-setup';
+import * as storeModule from 'store/emails/store';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { MailMessage } from 'types/index.d';
+import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 
 describe('SearchMessageListItemWrapper', () => {
 	beforeEach(() => {
@@ -27,8 +27,8 @@ describe('SearchMessageListItemWrapper', () => {
 				messageId="1"
 				selected={false}
 				selecting={false}
-				toggle={jest.fn()}
-				deselectAll={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -49,8 +49,8 @@ describe('SearchMessageListItemWrapper', () => {
 				messageId={generatedMessages[0].id}
 				selected={false}
 				selecting={false}
-				toggle={jest.fn()}
-				deselectAll={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				active
 			/>
 		);

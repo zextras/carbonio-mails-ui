@@ -14,12 +14,13 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
+import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { filter, map, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -27,26 +28,11 @@ import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
-import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
-import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
-import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
-import { buildArrayFromFileList } from '../../../../helpers/files';
-import { getAvailableAddresses } from '../../../../helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from '../../../../helpers/identities';
-import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from '../../../../store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -58,11 +44,29 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
-	useEditorIsSmimeEncrypt
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
 } from '../../../../store/editor';
-import { EditViewClosingReasons } from '../../../../types';
-import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
+import {
+	EditorOperationAllowedStatus,
+	EditViewClosingReasons,
+	SaveDraftResponse
+} from '../../../../types';
+import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
+import { GapContainer, GapRow } from 'commons/gap-container';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { buildArrayFromFileList } from 'helpers/files';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
+import {
+	useCertificatesStore,
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from 'store/certificates/store';
 
 export type EditViewProp = {
 	editorId: string;
@@ -72,6 +76,20 @@ export type EditViewProp = {
 export type EditViewHandle = {
 	closeEditView: () => void;
 };
+
+// TODO: sendAllowedStatus is completely flawed and full of logical errors
+function evaluateSendDisabledReason(
+	invalidRecipientsPresent: boolean,
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined
+): string | undefined {
+	let sendDisabledReason;
+	if (invalidRecipientsPresent) {
+		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else {
+		sendDisabledReason = sendAllowedStatus?.reason;
+	}
+	return sendDisabledReason;
+}
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
@@ -125,8 +143,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 ) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
-	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
-	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
@@ -137,6 +153,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
+
+	const {
+		recipients: { to, cc, bcc }
+	} = useEditorRecipients(editorId);
+	const invalidRecipientsPresent = useMemo(
+		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
+		[bcc, cc, to]
+	);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
@@ -152,7 +176,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	useEffect(() => {
 		if (!isCarbonioCE) {
-			checkIsSmimeEnabled().then((res) => {
+			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
 				if ('data' in res) {
 					useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 				} else {
@@ -226,20 +250,24 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	const onSendError = useCallback((): void => {
-		createSnackbar({
-			key: `mail-${editorId}`,
-			replace: true,
-			severity: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
-		});
-		createEditBoard({
-			action: EditViewActions.RESUME,
-			actionTargetId: editorId
-		});
-	}, [createSnackbar, editorId]);
+	const onSendError = useCallback(
+		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
+			const { message, timeout } = getErrorSnackbarProps(error);
+			createSnackbar({
+				key: `mail-${editorId}`,
+				replace: true,
+				severity: 'error',
+				label: message,
+				autoHideTimeout: timeout,
+				hideButton: true
+			});
+			createEditBoard({
+				action: EditViewActions.RESUME,
+				actionTargetId: editorId
+			});
+		},
+		[createSnackbar, editorId]
+	);
 
 	const onSendComplete = useCallback((): void => {
 		createSnackbar({
@@ -293,33 +321,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
-	const draftSmartLinks = useMemo(
-		() =>
-			savedStandardAttachments
-				.filter((attachment) => attachment.requiresSmartLinkConversion)
-				.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName })),
-		[savedStandardAttachments]
-	);
-	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
-
-	const createSmartLinksAction = useCallback((): Promise<void> => {
-		setIsConvertingToSmartLink(true);
-
-		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() =>
-			setIsConvertingToSmartLink(false)
-		);
-	}, [editorId, createSnackbar]);
-
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			if (draftSmartLinks.length > 0) {
-				try {
-					await createSmartLinksAction();
-				} catch (err) {
-					onSendError?.();
-					return;
-				}
-			}
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
@@ -340,12 +343,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		close,
 		createModal,
 		closeModal,
-		draftSmartLinks.length,
 		sendMessage,
 		onSendCountdownTick,
 		onSendComplete,
-		onSendError,
-		createSmartLinksAction
+		onSendError
 	]);
 
 	const handleCertificateResponse = useCallback(
@@ -491,14 +492,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
-				if (draftSmartLinks.length > 0) {
-					try {
-						await createSmartLinksAction();
-					} catch (err) {
-						onSendError?.();
-						return;
-					}
-				}
 				setAutoSendTime(scheduledTime);
 				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
@@ -511,19 +504,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				hasAttachments: savedStandardAttachments.length > 0
 			});
 		},
-		[
-			editorId,
-			createModal,
-			closeModal,
-			savedStandardAttachments,
-			draftSmartLinks.length,
-			setAutoSendTime,
-			saveDraft,
-			close,
-			createSmartLinksAction,
-			onSendError
-		]
+		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
+	const sendDisabled = !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
+
+	const sendDisabledReason = evaluateSendDisabledReason(
+		invalidRecipientsPresent,
+		sendAllowedStatus
+	);
+
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -580,14 +569,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={
-								isMailSizeWarning ||
-								!sendAllowedStatus?.allowed ||
-								isConvertingToSmartLink ||
-								!draftId
-							}
-							tooltip={sendAllowedStatus?.reason ?? ''}
-							isLoading={isConvertingToSmartLink}
+							disabled={sendDisabled}
+							tooltip={sendDisabledReason ?? ''}
 						/>
 					</GapRow>
 				</GapRow>
@@ -595,12 +578,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				{/* Header end */}
 
 				<SendToYourselfWarningBanner editorId={editorId} />
-				{largeFileUploadInfoBannerVisible && <LargeFileUploadInfoBanner />}
-				<SizeExceededWarningBanner
-					editorId={editorId}
-					isMailSizeWarning={isMailSizeWarning}
-					setIsMailSizeWarning={setIsMailSizeWarning}
-				/>
 				<GapContainer
 					mainAlignment={flexStart}
 					crossAlignment={flexStart}
@@ -614,12 +591,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
-
-					<EditAttachmentsBlock
-						editorId={editorId}
-						setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
-					/>
-
+					<EditAttachmentsBlock editorId={editorId} />
 					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>

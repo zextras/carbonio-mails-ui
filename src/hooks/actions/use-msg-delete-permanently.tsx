@@ -8,23 +8,21 @@ import React, { useCallback, useMemo } from 'react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isFocusModeMailView } from '../../helpers/external-tabs';
-import { isSpam, isTrash } from '../../helpers/folders';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { PermanentlyDeleteModal } from '../../ui-actions/permanently-delete-modal';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isFocusModeMailView } from 'helpers/external-tabs';
+import { isSpam, isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
 type MsgDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
-	deselectAll: () => void;
 };
 
 export const useMsgDeletePermanentlyFn = ({
 	ids,
-	deselectAll,
 	folderId
 }: MsgDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
@@ -38,7 +36,6 @@ export const useMsgDeletePermanentlyFn = ({
 				ids
 			});
 			if (!('Fault' in response)) {
-				deselectAll?.();
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
@@ -58,7 +55,7 @@ export const useMsgDeletePermanentlyFn = ({
 			}
 			onClose();
 		},
-		[ids, deselectAll, createSnackbar, t]
+		[ids, createSnackbar, t]
 	);
 
 	const canExecute = useCallback(
@@ -75,7 +72,7 @@ export const useMsgDeletePermanentlyFn = ({
 					children: (
 						<PermanentlyDeleteModal
 							onClose={closeModalFn}
-							onDeleteConfirm={() => deleteMessage(closeModalFn)}
+							onDeleteConfirm={(): Promise<void> => deleteMessage(closeModalFn)}
 						/>
 					)
 				},
@@ -89,10 +86,9 @@ export const useMsgDeletePermanentlyFn = ({
 
 export const useMsgDeletePermanentlyDescriptor = ({
 	ids,
-	deselectAll,
 	folderId
 }: MsgDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, deselectAll, folderId });
+	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, folderId });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.DELETE_PERMANENTLY.id,

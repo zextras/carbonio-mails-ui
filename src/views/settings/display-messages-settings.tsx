@@ -22,6 +22,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { MAIL_APP_ID } from 'constants/index';
+import type { DisplayingMessagesSettingsProps } from 'types/index.d';
 import {
 	CheckNewMailOptions,
 	DisplayMailOptions,
@@ -29,10 +31,8 @@ import {
 	findLabel,
 	ConversationSortingSettings,
 	UnsendTimeOptions
-} from './components/utils';
-import { displayingMessagesSubSection } from './subsections';
-import { MAIL_APP_ID } from '../../constants';
-import type { DisplayingMessagesSettingsProps } from '../../types';
+} from 'views/settings/components/utils';
+import { displayingMessagesSubSection } from 'views/settings/subsections';
 
 export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,

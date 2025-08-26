@@ -5,34 +5,33 @@
  */
 import { useMemo } from 'react';
 
+import { isTrash } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 
-import { useConvApplyTagDescriptor } from './use-conv-apply-tag';
-import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
-import { useConvForwardDescriptor } from './use-conv-forward';
-import { useConvForwardAsAttachmentDescriptor } from './use-conv-forward-as-attachment';
-import { useConvMoveToFolderDescriptor } from './use-conv-move-to-folder';
-import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
-import { useConvPreviewOnSeparatedWindowDescriptor } from './use-conv-preview-on-separated-window';
-import { useConvPrintDescriptor } from './use-conv-print';
-import { useConvReplyDescriptor } from './use-conv-reply';
-import { useConvReplyAllDescriptor } from './use-conv-reply-all';
-import { useConvRestoreDescriptor } from './use-conv-restore';
-import { useConvSetFlagDescriptor } from './use-conv-set-flag';
-import { useConvSetNotSpamDescriptor } from './use-conv-set-not-spam';
-import { useConvSetReadDescriptor } from './use-conv-set-read';
-import { useConvSetSpamDescriptor } from './use-conv-set-spam';
-import { useConvSetUnflagDescriptor } from './use-conv-set-unflag';
-import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
-import { useConvShowOriginalDescriptor } from './use-conv-show-original';
-import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
-import { useConversationMessages } from '../../store/emails/store';
-import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
+import { getFolderIdParts, getParentFolderId, isDraft } from 'helpers/folders';
+import { useConvApplyTagDescriptor } from 'hooks/actions/use-conv-apply-tag';
+import { useConvDeletePermanentlyDescriptor } from 'hooks/actions/use-conv-delete-permanently';
+import { useConvForwardDescriptor } from 'hooks/actions/use-conv-forward';
+import { useConvForwardAsAttachmentDescriptor } from 'hooks/actions/use-conv-forward-as-attachment';
+import { useConvMoveToFolderDescriptor } from 'hooks/actions/use-conv-move-to-folder';
+import { useConvMoveToTrashDescriptor } from 'hooks/actions/use-conv-move-to-trash';
+import { useConvPreviewOnSeparatedWindowDescriptor } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { useConvPrintDescriptor } from 'hooks/actions/use-conv-print';
+import { useConvReplyDescriptor } from 'hooks/actions/use-conv-reply';
+import { useConvReplyAllDescriptor } from 'hooks/actions/use-conv-reply-all';
+import { useConvRestoreDescriptor } from 'hooks/actions/use-conv-restore';
+import { useConvSetFlagDescriptor } from 'hooks/actions/use-conv-set-flag';
+import { useConvSetNotSpamDescriptor } from 'hooks/actions/use-conv-set-not-spam';
+import { useConvSetReadDescriptor } from 'hooks/actions/use-conv-set-read';
+import { useConvSetSpamDescriptor } from 'hooks/actions/use-conv-set-spam';
+import { useConvSetUnflagDescriptor } from 'hooks/actions/use-conv-set-unflag';
+import { useConvSetUnreadDescriptor } from 'hooks/actions/use-conv-set-unread';
+import { useConvShowOriginalDescriptor } from 'hooks/actions/use-conv-show-original';
+import { useConversationMessages } from 'store/emails/store';
+import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
-	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
@@ -59,7 +58,6 @@ type ConversationActionsReturnType = {
 
 export const useConvActions = ({
 	conversation,
-	deselectAll,
 	shouldReplaceHistory = false
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
@@ -94,23 +92,19 @@ export const useConvActions = ({
 	});
 	const moveToTrashDescriptor = useConvMoveToTrashDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId
 	});
 	const deletePermanentlyDescriptor = useConvDeletePermanentlyDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId
 	});
 	const setAsReadDescriptor = useConvSetReadDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId,
 		isConversationRead: conversation.read
 	});
 	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
-		deselectAll,
 		folderId,
 		isConversationRead: conversation.read
 	});
@@ -134,13 +128,11 @@ export const useConvActions = ({
 	});
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
-		ids: [conversation.id],
-		deselectAll
+		ids: [conversation.id]
 	});
 	const restoreFolderDescriptor = useConvRestoreDescriptor({
 		folderId,
-		conversationId: conversation.id,
-		deselectAll
+		conversationId: conversation.id
 	});
 	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
 

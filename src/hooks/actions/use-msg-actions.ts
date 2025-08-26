@@ -5,35 +5,34 @@
  */
 import { useMemo } from 'react';
 
-import { useMsgApplyTagDescriptor } from './use-msg-apply-tag';
-import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
-import { useMsgDeletePermanentlyDescriptor } from './use-msg-delete-permanently';
-import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
-import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
-import { useMsgEditDraftDescriptor } from './use-msg-edit-draft';
-import { useMsgForwardDescriptor } from './use-msg-forward';
-import { useMsgForwardAsAttachmentDescriptor } from './use-msg-forward-as-attachment';
-import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
-import { useMsgMoveToTrashDescriptor } from './use-msg-move-to-trash';
-import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-separated-window';
-import { useMsgPrintDescriptor } from './use-msg-print';
-import { useMsgRedirectDescriptor } from './use-msg-redirect';
-import { useMsgReplyDescriptor } from './use-msg-reply';
-import { useMsgReplyAllDescriptor } from './use-msg-reply-all';
-import { useMsgRestoreDescriptor } from './use-msg-restore';
-import { useMsgSetFlagDescriptor } from './use-msg-set-flag';
-import { useMsgSetNotSpamDescriptor } from './use-msg-set-not-spam';
-import { useMsgSetReadDescriptor } from './use-msg-set-read';
-import { useMsgSetSpamDescriptor } from './use-msg-set-spam';
-import { useMsgSetUnflagDescriptor } from './use-msg-set-unflag';
-import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
-import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
-import { getParentFolderId } from '../../helpers/folders';
-import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
+import { getParentFolderId } from 'helpers/folders';
+import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
+import { useMsgCreateAppointmentDescriptor } from 'hooks/actions/use-msg-create-appointment';
+import { useMsgDeletePermanentlyDescriptor } from 'hooks/actions/use-msg-delete-permanently';
+import { useMsgDownloadEmlDescriptor } from 'hooks/actions/use-msg-download-eml';
+import { useMsgEditAsNewDescriptor } from 'hooks/actions/use-msg-edit-as-new';
+import { useMsgEditDraftDescriptor } from 'hooks/actions/use-msg-edit-draft';
+import { useMsgForwardDescriptor } from 'hooks/actions/use-msg-forward';
+import { useMsgForwardAsAttachmentDescriptor } from 'hooks/actions/use-msg-forward-as-attachment';
+import { useMsgMoveToFolderDescriptor } from 'hooks/actions/use-msg-move-to-folder';
+import { useMsgMoveToTrashDescriptor } from 'hooks/actions/use-msg-move-to-trash';
+import { useMsgPreviewOnSeparatedWindowDescriptor } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgPrintDescriptor } from 'hooks/actions/use-msg-print';
+import { useMsgRedirectDescriptor } from 'hooks/actions/use-msg-redirect';
+import { useMsgReplyDescriptor } from 'hooks/actions/use-msg-reply';
+import { useMsgReplyAllDescriptor } from 'hooks/actions/use-msg-reply-all';
+import { useMsgRestoreDescriptor } from 'hooks/actions/use-msg-restore';
+import { useMsgSetFlagDescriptor } from 'hooks/actions/use-msg-set-flag';
+import { useMsgSetNotSpamDescriptor } from 'hooks/actions/use-msg-set-not-spam';
+import { useMsgSetReadDescriptor } from 'hooks/actions/use-msg-set-read';
+import { useMsgSetSpamDescriptor } from 'hooks/actions/use-msg-set-spam';
+import { useMsgSetUnflagDescriptor } from 'hooks/actions/use-msg-set-unflag';
+import { useMsgSetUnreadDescriptor } from 'hooks/actions/use-msg-set-unread';
+import { useMsgShowOriginalDescriptor } from 'hooks/actions/use-msg-show-original';
+import { MailMessage, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
-	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
@@ -64,7 +63,6 @@ type MessageActionsReturnType = {
 };
 
 export const useMsgActions = ({
-	deselectAll,
 	message,
 	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
@@ -76,25 +74,21 @@ export const useMsgActions = ({
 	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor([message.id], folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
-		deselectAll,
 		folderId,
 		shouldReplaceHistory
 	});
 	const deletePermanentlyDescriptor = useMsgDeletePermanentlyDescriptor({
 		ids: [message.id],
-		deselectAll,
 		folderId
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
 	});
 	const messageUnreadDescriptor = useMsgSetUnreadDescriptor({
 		ids: [message.id],
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
@@ -118,13 +112,11 @@ export const useMsgActions = ({
 	});
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
-		ids: [message.id],
-		deselectAll
+		ids: [message.id]
 	});
 	const restoreFolderDescriptor = useMsgRestoreDescriptor({
 		folderId,
-		messageId: message.id,
-		deselectAll
+		messageId: message.id
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message, folderId);
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);

@@ -5,26 +5,27 @@
  */
 import React, { RefObject } from 'react';
 
-import { ConversationListItem } from './conversation-list-item';
-import { useConversationById } from '../../../../store/emails/store';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { useConversationById } from 'store/emails/store';
+import { ConversationListItem } from 'views/app/folder-panel/conversations/conversation-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 type ConversationListItemComponentProps = {
 	conversationId: string;
 	activeItemId?: string;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean>;
-	selectedItems?: Record<string, boolean>;
+	selectedItems: Record<string, boolean>;
 	dragImageRef?: RefObject<HTMLInputElement>;
+	deselectAll: () => void;
 	isSearchModule?: boolean;
 	selectedIds?: string[];
-	deselectAll: () => void;
 	folderId: string;
 	visible?: boolean;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const ConversationListItemComponent = ({
@@ -32,17 +33,19 @@ export const ConversationListItemComponent = ({
 	conversationId,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	active,
 	setDraggedIds,
-	selectedItems = {},
+	selectedItems,
 	dragImageRef,
+	deselectAll,
 	isSearchModule,
 	selectedIds = [],
-	deselectAll,
-	folderId
+	folderId,
+	index,
+	onSelect
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
+
 	return (
 		conversation && (
 			<DragItemWrapper
@@ -50,22 +53,22 @@ export const ConversationListItemComponent = ({
 				selectedIds={selectedIds}
 				selectedItems={selectedItems}
 				setDraggedIds={setDraggedIds}
+				deselectAll={deselectAll}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
-				deselectAll={deselectAll}
 			>
 				<ConversationListItem
 					activeItemId={activeItemId}
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggleMultipleSelection={toggleMultipleSelection}
 					active={active}
 					setDraggedIds={setDraggedIds}
 					dragImageRef={dragImageRef}
 					isSearchModule={isSearchModule}
-					deselectAll={deselectAll}
 					folderId={folderId}
+					index={index}
+					onSelect={onSelect}
 				/>
 			</DragItemWrapper>
 		)

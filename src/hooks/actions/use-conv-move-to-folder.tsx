@@ -7,20 +7,18 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveConversation } from '../../ui-actions/move-conv';
-import { useUiUtilities } from '../use-ui-utilities';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { MoveConversation } from 'ui-actions/move-conv';
 
 export const useConvMoveToFolderFn = ({
 	folderId,
-	ids,
-	deselectAll
+	ids
 }: {
 	folderId: string;
 	ids: Array<string>;
-	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
@@ -42,30 +40,26 @@ export const useConvMoveToFolderFn = ({
 						selectedIDs={ids}
 						onClose={(): void => closeModal(id)}
 						isRestore={false}
-						deselectAll={deselectAll}
 					/>
 				)
 			},
 			true
 		);
-	}, [canExecute, createModal, folderId, ids, deselectAll, closeModal]);
+	}, [canExecute, createModal, folderId, ids, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvMoveToFolderDescriptor = ({
 	folderId,
-	ids,
-	deselectAll
+	ids
 }: {
 	folderId: string;
 	ids: Array<string>;
-	deselectAll: () => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useConvMoveToFolderFn({
 		folderId,
-		ids,
-		deselectAll
+		ids
 	});
 	const [t] = useTranslation();
 	return {

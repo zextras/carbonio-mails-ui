@@ -6,27 +6,21 @@
 
 import React, { ReactElement } from 'react';
 
-import { act, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import * as searchSoapApi from '../../../api/search-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import {
-	screen,
-	makeListItemsVisible,
-	setupTest,
-	within
-} from '../../../carbonio-ui-commons/test/test-setup';
-import * as useSelection from '../../../hooks/use-selection';
-import { TESTID_SELECTORS } from '../../../tests/constants';
-import { generateSoapConversationMessage } from '../../../tests/generators/api';
+import { within, makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { tags } from '@test-utils/tags/tags';
+import * as searchSoapApi from 'api/search-soap-api';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -41,8 +35,8 @@ import {
 	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage
-} from '../../../types';
-import SearchView from '../search-view';
+} from 'types/index.d';
+import SearchView from 'views/search/search-view';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
@@ -79,16 +73,6 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 		settings,
 		queryChip
 	};
-};
-const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
-	selectAll: jest.fn(),
-	selected: { '10': true },
-	toggle: jest.fn(),
-	isSelectModeOn: false,
-	setIsSelectModeOn: jest.fn(),
-	deselectAll: jest.fn(),
-	isAllSelected: false,
-	selectAllModeOff: jest.fn()
 };
 
 async function waitAndMakeConversationVisible(conversationId: string): Promise<void> {
@@ -160,8 +144,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
@@ -182,8 +166,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
@@ -213,8 +197,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			setupTest(<SearchView {...searchViewProps} />);
@@ -247,8 +231,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
@@ -284,8 +268,8 @@ describe('SearchView', () => {
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
+				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>,
+				useDisableSearch: () => [false, noop]
 			};
 			const { count, setCount } = fakeCounter();
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ count, setCount });
@@ -322,8 +306,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 
@@ -378,8 +362,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			setupTest(<SearchView {...searchViewProps} />, {
@@ -401,8 +385,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
@@ -442,6 +426,301 @@ describe('SearchView', () => {
 				expect(receivedRequest.action.op).toBe('trash');
 			});
 		});
+
+		describe('multiple selection interactions', () => {
+			const conversation1 = getSoapConversation('1', { t: '' });
+			const conversation2 = getSoapConversation('2', { t: '' });
+			const conversation3 = getSoapConversation('3', { t: '' });
+
+			it('closes the conversation panel on Escape (window keydown)', async () => {
+				const addSpy = jest.spyOn(window, 'addEventListener');
+
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+
+				const defaultConversation = getSoapConversation('123');
+				const message1 = generateSoapConversationMessage('100', '123');
+				const message2 = generateSoapConversationMessage('200', '123');
+				const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
+
+				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+					c: [conversation],
+					more: false
+				});
+				createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
+					m: [message1, message2],
+					more: false,
+					offset: '0',
+					orderBy: 'dateDesc'
+				});
+
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+
+				setupTest(<SearchView {...searchViewProps} />, { initialEntries: ['/conversation/123'] });
+
+				expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
+
+				// retrieve the last keydown event handler
+				const keydownCalls = addSpy.mock.calls.filter(([type]) => type === 'keydown');
+				expect(keydownCalls.length).toBeGreaterThan(0);
+				const handler = keydownCalls[keydownCalls.length - 1][1] as (e: KeyboardEvent) => void;
+
+				// mock the event
+				const preventDefault = jest.fn();
+				const stopPropagation = jest.fn();
+				const fakeEvent = {
+					key: 'Escape',
+					preventDefault,
+					stopPropagation
+				} as unknown as KeyboardEvent;
+
+				act(() => {
+					handler(fakeEvent);
+				});
+
+				expect(preventDefault).toHaveBeenCalled();
+				expect(stopPropagation).toHaveBeenCalled();
+			});
+
+			it('items should still be selected after a multiple selection action', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '1,2,3',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select all conversations
+				const enterMultipleSelectionMode = await screen.findByTestId('icon: CheckmarkSquare');
+				await user.click(enterMultipleSelectionMode);
+				const selectAllButton = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				await user.click(selectAllButton);
+				const deselectAllButton = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButton).toBeInTheDocument();
+
+				// perform a multiple selection action
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionMoreVertical = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
+					icon: 'icon: MoreVertical'
+				});
+				await user.click(multipleSelectionMoreVertical);
+				const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+				expect(within(actionsDropdown).getByText(/tag/i)).toBeVisible();
+				await user.hover(within(actionsDropdown).getByText(/tag/i));
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// verify that all conversations are still selected
+				const deselectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that all 3 conversations are still selected
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(3);
+			});
+
+			it('items should still be selected after a single conversation action on a unselected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '2',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select the first conversation
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single conversation action on the second conversation
+				const listItem = screen.getByTestId('ConversationListItem-2');
+				await user.hover(listItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success snackbar to appear
+				const successSnackbar = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successSnackbar).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 conversation is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
+
+			it('items should still be selected after a single conversation action on a selected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						c: [conversation1, conversation2, conversation3],
+						more: false
+					}
+				);
+				const convActionInterceptor = createSoapAPIInterceptor<
+					ConvActionRequest,
+					ConvActionResponse
+				>('ConvAction', {
+					action: {
+						id: '2',
+						op: 'tag'
+					}
+				});
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeConversationVisible('1');
+
+				// select the first conversation
+				const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single conversation action on the selected conversation
+				const listItem = screen.getByTestId('ConversationListItem-1');
+				await user.hover(listItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-1/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => convActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success snackbar to appear
+				const successSnackbar = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successSnackbar).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 conversation is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
+		});
 	});
 
 	describe('view by messages', () => {
@@ -460,8 +739,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			setupTest(<SearchView {...searchViewProps} />);
@@ -489,8 +768,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
@@ -546,15 +825,14 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			setupTest(<SearchView {...searchViewProps} />, {
 				initialEntries: [`/message/${messageId}`]
 			});
 
-			// await waitFor(() => searchInterceptor);
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 
@@ -568,15 +846,14 @@ describe('SearchView', () => {
 				],
 				more: false
 			});
-			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 
 			const mockUseQuery = jest.fn();
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
@@ -625,11 +902,10 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
-			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(async () => searchInterceptor);
 
@@ -665,8 +941,8 @@ describe('SearchView', () => {
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: mockUseQuery,
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
+				ResultsHeader: resultsHeader,
+				useDisableSearch: () => [false, noop]
 			};
 
 			const { rerender } = setupTest(<SearchView {...searchViewProps} />, {
@@ -679,109 +955,275 @@ describe('SearchView', () => {
 			const updatedSearchSettings = setupSearchViewTest({ viewBy: 'message', query: 'subject' });
 			const { queryChip: updatedQueryChip } = updatedSearchSettings;
 
-			rerender(<SearchView {...searchViewProps} useQuery={() => [[updatedQueryChip], noop]} />);
+			rerender(
+				<SearchView {...searchViewProps} useQuery={(): any => [[updatedQueryChip], noop]} />
+			);
 
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
-	});
 
-	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
-			useDisableSearch: () => [true, noop],
-			ResultsHeader: resultsHeader
-		};
+		describe('multiple selection interactions', () => {
+			const message1 = getSoapMessage('1', { t: '' });
+			const message2 = getSoapMessage('2', { t: '' });
+			const message3 = getSoapMessage('3', { t: '' });
 
-		setupTest(<SearchView {...searchViewProps} />);
-		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+			it('items should still be selected after a multiple selection action', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						m: [message1, message2, message3],
+						more: false
+					}
+				);
+
+				const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					{
+						action: {
+							id: '1,2,3',
+							op: 'tag'
+						}
+					}
+				);
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeMessageVisible('1');
+
+				// select all messages
+				const enterMultipleSelectionMode = await screen.findByTestId('icon: CheckmarkSquare');
+				await user.click(enterMultipleSelectionMode);
+				const selectAllButton = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				await user.click(selectAllButton);
+				const deselectAllButton = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButton).toBeInTheDocument();
+
+				// perform a multiple selection action
+				const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+				const multipleSelectionMoreVertical = await within(
+					multipleSelectionPanel
+				).findByRoleWithIcon('button', {
+					icon: 'icon: MoreVertical'
+				});
+				await user.click(multipleSelectionMoreVertical);
+				const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+				expect(within(actionsDropdown).getByText(/tag/i)).toBeVisible();
+				await user.hover(within(actionsDropdown).getByText(/tag/i));
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => msgActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// verify that all messages are still selected
+				const deselectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.deselect_all/i
+				});
+				expect(deselectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that all 3 messages are selected
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(3);
+			});
+
+			it('items should still be selected after a single message action on a unselected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						m: [message1, message2, message3],
+						more: false
+					}
+				);
+
+				const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					{
+						action: {
+							id: '2',
+							op: 'tag'
+						}
+					}
+				);
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeMessageVisible('1');
+
+				// select the first message
+				const actionWrapper = await screen.findByTestId(`MessageListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('message-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single message action on the second message
+				const messageListItem = screen.getByTestId('MessageListItem-2');
+				await user.hover(messageListItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-2/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => msgActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success message to appear
+				const successMessage = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 messages is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
+			it('items should still be selected after a single message action on a selected item', async () => {
+				const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+
+				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+					'Search',
+					{
+						m: [message1, message2, message3],
+						more: false
+					}
+				);
+
+				const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					{
+						action: {
+							id: '1',
+							op: 'tag'
+						}
+					}
+				);
+				const mockUseQuery = jest.fn();
+				mockUseQuery.mockReturnValue([[queryChip], noop]);
+				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+				const searchViewProps: SearchViewProps = {
+					useQuery: mockUseQuery,
+					ResultsHeader: resultsHeader,
+					useDisableSearch: () => [false, noop]
+				};
+				useTagStore.setState({ tags });
+
+				const { user } = setupTest(<SearchView {...searchViewProps} />);
+				await waitFor(async () => searchInterceptor);
+				expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+				await waitAndMakeMessageVisible('1');
+
+				// select the first message
+				const actionWrapper = await screen.findByTestId(`MessageListItem-1`);
+				await user.hover(actionWrapper);
+				const itemAvatar = await screen.findByTestId('message-list-item-avatar-1');
+				const avatar = within(itemAvatar).getByTestId('avatar');
+				await act(async () => {
+					await user.click(avatar);
+				});
+				const totalItemsSelected = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelected).toHaveLength(1);
+
+				// perform a single message action on the selected message
+				const messageListItem = screen.getByTestId('MessageListItem-1');
+				await user.hover(messageListItem);
+				fireEvent.contextMenu(await screen.findByTestId(/hover-container-1/));
+				const tagMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+					(item) => item.textContent === 'Tag'
+				) as Element;
+				await user.hover(tagMenuItem);
+				const tagActionIcon = screen.getByTestId('tag-item-2291');
+				const tagActionButton = within(tagActionIcon).getByTestId('icon: Square');
+				await user.click(tagActionButton);
+				const request = await waitFor(() => msgActionInterceptor);
+				await act(async () => {
+					expect(request.action.op).toBe('tag');
+				});
+
+				// await for the success message to appear
+				const successMessage = await screen.findByText(/tag applied/);
+				await act(async () => {
+					expect(successMessage).toBeInTheDocument();
+				});
+
+				// verify that selection mode is still on
+				const selectAllButtonAfterAction = screen.getByRole('button', {
+					name: /label\.select_all/i
+				});
+				expect(selectAllButtonAfterAction).toBeInTheDocument();
+
+				// double check that 1 messages is still selected
+				const totalItemsSelectedAfterAction = screen.getAllByTestId('icon: Checkmark');
+				expect(totalItemsSelectedAfterAction).toHaveLength(1);
+			});
 		});
-		expect(advancedFiltersButton).toBeVisible();
-		expect(advancedFiltersButton).toBeDisabled();
 	});
 
 	it('should not call search API if query empty', async () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[], noop]);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
-			useDisableSearch: () => [false, noop],
-			ResultsHeader: resultsHeader
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
 		};
 
 		setupTest(<SearchView {...searchViewProps} />);
 
 		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+			name: 'Advanced Filters'
 		});
+
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
 		expect(searchSpy).not.toHaveBeenCalled();
-	});
-
-	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
-			'Search',
-			buildSoapErrorResponseBody({
-				detailCode: 'mail.QUERY_PARSE_ERROR',
-				reason: 'Failed to execute search'
-			})
-		);
-		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-			m: {}
-		} as GetMsgResponse);
-
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const setSearchDisabled = jest.fn();
-		const queryChip: QueryChip = {
-			hasAvatar: false,
-			id: '0',
-			label: 'ciao'
-		};
-
-		const mockUseQuery = jest.fn();
-		mockUseQuery.mockReturnValue([[queryChip], noop]);
-		const searchViewProps: SearchViewProps = {
-			useQuery: mockUseQuery,
-			useDisableSearch: () => [false, setSearchDisabled],
-			ResultsHeader: resultsHeader
-		};
-
-		setupTest(<SearchView {...searchViewProps} />);
-		await interceptor;
-		await waitFor(() => expect(setSearchDisabled).toHaveBeenCalled());
-	});
-
-	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
-			'Search',
-			buildSoapErrorResponseBody({
-				detailCode: 'Other code',
-				reason: 'Failed to execute search'
-			})
-		);
-		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-		const setSearchDisabled = jest.fn();
-		const queryChip: QueryChip = {
-			hasAvatar: false,
-			id: '0',
-			label: 'ciao'
-		};
-		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[queryChip], noop],
-			useDisableSearch: () => [false, setSearchDisabled],
-			ResultsHeader: resultsHeader
-		};
-
-		setupTest(<SearchView {...searchViewProps} />);
-
-		await interceptor;
-		act(() => {
-			jest.advanceTimersByTime(10_000);
-		});
-
-		expect(setSearchDisabled).not.toHaveBeenCalled();
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
@@ -811,11 +1253,10 @@ describe('SearchView', () => {
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: mockUseQuery,
-			useDisableSearch: () => [false, noop],
-			ResultsHeader: resultsHeader
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
 		};
 
-		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const { user } = setupTest(<SearchView {...searchViewProps} />);
 
@@ -842,5 +1283,109 @@ describe('SearchView', () => {
 		});
 		expect(navigate).toHaveBeenCalledWith('../message/10', { replace: true });
 		expect(navigate).toHaveBeenCalledTimes(1);
+	});
+
+	it('should call onSearchConfirm with correct parameters when advanced filters are applied', async () => {
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test'
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChip], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		const { user } = setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.results_for');
+
+		const advancedFiltersButton = screen.getByRole('button', {
+			name: 'Advanced Filters'
+		});
+		await user.click(advancedFiltersButton);
+
+		await screen.findByText('Advanced Filters');
+
+		const searchButton = screen.getByRole('button', {
+			name: 'action.search'
+		});
+		await user.click(searchButton);
+
+		expect(mockUpdateQuery).toHaveBeenCalled();
+	});
+
+	it('should not show special character warning for chips with queryChipsToAdvancedFiltersValue', async () => {
+		const queryChipWithAdvancedFilters: any = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test!',
+			value: 'test!',
+			queryChipsToAdvancedFiltersValue: {
+				folderId: { value: 'LOCAL_ROOT', label: 'in:Home' }
+			}
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChipWithAdvancedFilters], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.results_for');
+
+		expect(screen.queryByText('label.invalid_query')).not.toBeInTheDocument();
+	});
+
+	it('should show special character warning for chips without queryChipsToAdvancedFiltersValue', async () => {
+		const queryChipWithSpecialChars: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'test!',
+			value: 'test!'
+		};
+		const mockUpdateQuery = jest.fn();
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChipWithSpecialChars], mockUpdateQuery]);
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [getSoapConversation('123')],
+			more: false
+		});
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: mockUseQuery,
+			ResultsHeader: resultsHeader,
+			useDisableSearch: () => [false, noop]
+		};
+
+		setupTest(<SearchView {...searchViewProps} />);
+
+		await screen.findByText('label.invalid_query');
+
+		expect(screen.getByText('label.invalid_query')).toBeInTheDocument();
 	});
 });

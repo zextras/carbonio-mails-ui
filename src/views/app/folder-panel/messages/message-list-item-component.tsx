@@ -7,63 +7,65 @@ import React, { memo } from 'react';
 
 import { noop } from 'lodash';
 
-import { MessageListItem } from './message-list-item';
-import { useMessageById } from '../../../../store/emails/store';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { useMessageById } from 'store/emails/store';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 export type ListItemComponentProps = {
+	deselectAll: () => void;
 	messageId: string;
-	selected: Record<string, boolean>;
+	selectedItems: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
-	toggle: (id: string) => void;
 	isSelectModeOn: boolean;
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
 	isSearchModule?: boolean;
-	deselectAll: () => void;
 	visible: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	currentFolderId?: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const MessageListItemComponent = memo(function MessageListItemComponent({
 	messageId,
-	selected,
+	deselectAll,
+	selectedItems,
 	isSelected,
 	active,
-	toggle,
 	isSelectModeOn,
 	dragImageRef,
 	isSearchModule,
-	deselectAll,
 	visible,
 	setDraggedIds = noop,
-	currentFolderId
+	currentFolderId,
+	index,
+	onSelect
 }: ListItemComponentProps): React.JSX.Element {
 	const message = useMessageById(messageId);
 	if (!message) return <></>;
 	return (
 		<DragItemWrapper
 			item={message}
+			deselectAll={deselectAll}
 			selectedIds={[]}
-			selectedItems={selected}
+			selectedItems={selectedItems}
 			setDraggedIds={setDraggedIds}
 			dragImageRef={dragImageRef}
 			dragAndDropIsDisabled={!!isSearchModule}
-			deselectAll={deselectAll}
 		>
 			<MessageListItem
 				message={message}
 				selected={isSelected}
 				selecting={isSelectModeOn}
 				isConvChildren={false}
-				toggle={toggle}
 				active={active}
 				visible={visible}
 				isSearchModule={isSearchModule}
-				deselectAll={deselectAll}
 				currentFolderId={currentFolderId}
+				index={index}
+				onSelect={onSelect}
 			/>
 		</DragItemWrapper>
 	);

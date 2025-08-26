@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getConvSoapApi } from '../../../api/get-conv-soap-api';
-import { updateConversations, updateMessages } from '../store';
+import { getConvSoapApi } from 'api/get-conv-soap-api';
+import { updateConversations, updateMessages } from 'store/emails/store';
 
 export async function getConvEmailStoreAction({
 	id,

@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export * from '../carbonio-ui-commons/types';
+export * from '@zextras/carbonio-ui-commons';
 export * from './actions';
 export * from './api';
+export * from './attachments';
+export * from './backup-search';
 export * from './conversations';
 export * from './details-pannel';
 export * from './editor';
@@ -21,6 +23,3 @@ export * from './soap';
 export * from './state';
 export * from './tags';
 export * from './utils';
-export * from './attachments';
-export * from './sorting';
-export * from './backup-search';

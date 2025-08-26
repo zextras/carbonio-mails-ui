@@ -1,8 +1,5 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-// noinspection DuplicatedCode
-
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -11,11 +8,11 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMessageById } from '../../../../../store/emails/store';
-import AttachmentsBlock from '../attachments-block';
+import { setupTest } from '@test-setup';
+import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { previewContextMock } from '@test-utils/carbonio-ui-preview';
+import { getMessageById } from 'store/emails/store';
+import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
@@ -26,8 +23,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'large-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -51,8 +47,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'random.txt',
 				size: 123,
-				contentType: 'text/plain',
-				requiresSmartLinkConversion: false
+				contentType: 'text/plain'
 			} as const
 		];
 		const { user } = setupTest(
@@ -76,8 +71,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -101,8 +95,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -126,8 +119,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'any-document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -151,8 +143,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -176,8 +167,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'document.pdf',
 				size: 123,
-				contentType: 'application/pdf',
-				requiresSmartLinkConversion: false
+				contentType: 'application/pdf'
 			} as const
 		];
 		const { user } = setupTest(
@@ -201,8 +191,7 @@ describe('attachments-block', () => {
 				name: 'test',
 				filename: 'large-document.csv',
 				size: 123,
-				contentType: 'text/csv',
-				requiresSmartLinkConversion: false
+				contentType: 'text/csv'
 			} as const
 		];
 		const { user } = setupTest(
@@ -326,8 +315,7 @@ describe('Attachment link validation', () => {
 				name: 'test',
 				filename: 'image.tiff',
 				size: 12345,
-				contentType: 'image/tiff',
-				requiresSmartLinkConversion: false
+				contentType: 'image/tiff'
 			} as const
 		];
 		const { user } = setupTest(

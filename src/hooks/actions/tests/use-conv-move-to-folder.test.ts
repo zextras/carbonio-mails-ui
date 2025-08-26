@@ -3,16 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { useConvMoveToFolderDescriptor, useConvMoveToFolderFn } from '../use-conv-move-to-folder';
+import { setupHook, screen } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvMoveToFolderDescriptor,
+	useConvMoveToFolderFn
+} from 'hooks/actions/use-conv-move-to-folder';
+import { TIMERS } from 'tests/constants';
 
 describe('useConvMoveToFolder', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>
@@ -24,7 +28,7 @@ describe('useConvMoveToFolder', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvMoveToFolderDescriptor, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -42,7 +46,7 @@ describe('useConvMoveToFolder', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvMoveToFolderFn, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -64,7 +68,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: conversationsId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -76,7 +80,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
@@ -94,7 +98,7 @@ describe('useConvMoveToFolder', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToFolderFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.TRASH }]
 				});
 
 				act(() => {

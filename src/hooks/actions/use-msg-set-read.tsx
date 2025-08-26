@@ -8,22 +8,20 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
-import { isDraft } from '../../helpers/folders';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
+import { isDraft } from 'helpers/folders';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type MsgSetReadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isMessageRead: boolean;
 	shouldReplaceHistory?: boolean;
-	deselectAll?: () => void;
 };
 
 export const useMsgSetReadFn = ({
 	ids,
-	deselectAll,
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
@@ -37,27 +35,24 @@ export const useMsgSetReadFn = ({
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			msgActionEmailStoreAction({ operation: 'read', ids }).then((res) => {
-				deselectAll && deselectAll();
 				if (!('Fault' in res) && shouldReplaceHistory) {
 					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
 			});
 		}
-	}, [canExecute, deselectAll, folderId, ids, navigate, shouldReplaceHistory]);
+	}, [canExecute, folderId, ids, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgSetReadDescriptor = ({
 	ids,
-	deselectAll,
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
 }: MsgSetReadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetReadFn({
 		ids,
-		deselectAll,
 		shouldReplaceHistory,
 		folderId,
 		isMessageRead

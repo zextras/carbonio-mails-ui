@@ -3,14 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import React, { act } from 'react';
+
 import { useTheme } from '@zextras/carbonio-design-system';
+import { capitalize, forEach, noop, without } from 'lodash';
 
-import { setupHook, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
-import { Breadcrumbs } from '../breadcrumbs';
+import { setupHook, within, setupTest, screen } from '@test-setup';
+import { SORTING_OPTIONS } from 'constants/index';
+import { getFolderPathForBreadcrumb } from 'helpers/folders';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 jest.mock('../../../../../helpers/folders', () => ({
 	getFolderPathForBreadcrumb: jest.fn()
@@ -95,5 +98,83 @@ describe('Breadcrumbs Component', () => {
 		setupTest(<Breadcrumbs {...defaultProps} isSearchModule />);
 		expect(screen.queryByTestId('layout-component')).not.toBeInTheDocument();
 		expect(screen.queryByTestId('sorting-dropdown')).not.toBeInTheDocument();
+	});
+});
+
+const sortingDropdown = 'sorting-dropdown';
+const defaultProps = {
+	folderId: FOLDERS.INBOX,
+	folderPath: '',
+	isSearchModule: false,
+	isSelectModeOn: false,
+	itemsCount: 0,
+	setIsSelectModeOn: noop
+};
+const dropdownRegex = /dropdown-popper-list/i;
+const listIconRegex = /icon: AzListOutline/i;
+const sortingOptionsWithoutSize = without(Object.values(SORTING_OPTIONS), SORTING_OPTIONS.size);
+describe('Breadcrumbs sorting', () => {
+	it('the sorting component appears on the breadcrumbs component', async () => {
+		setupTest(<Breadcrumbs {...defaultProps} />);
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+	});
+	it('in a folder different from SENT, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded TO', async () => {
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		if (sortIcon) await user.click(sortIcon);
+		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
+		forEach(sortingOptionsWithoutSize, (option) => {
+			if (option.label !== SORTING_OPTIONS.to.label)
+				expect(
+					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+				).toBeInTheDocument();
+			else {
+				const excludedOptionRegexPattern = new RegExp(
+					`sorting_dropdown.${SORTING_OPTIONS.to.label}`,
+					'i'
+				);
+				const dropdownElement = within(screen.getByTestId(dropdownRegex)).queryByText(
+					excludedOptionRegexPattern
+				);
+				expect(dropdownElement).not.toBeInTheDocument();
+			}
+		});
+	});
+	it('in SENT folder, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded FROM', async () => {
+		const props = {
+			...defaultProps,
+			folderId: FOLDERS.SENT
+		};
+		const { user } = setupTest(<Breadcrumbs {...props} />);
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		if (sortIcon) await user.click(sortIcon);
+		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
+		forEach(sortingOptionsWithoutSize, (option) => {
+			if (option.label !== SORTING_OPTIONS.from.label)
+				expect(
+					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+				).toBeInTheDocument();
+			else {
+				const excludedOptionRegexPattern = new RegExp(
+					`sorting_dropdown.${SORTING_OPTIONS.from.value}`,
+					'i'
+				);
+				const dropdownElement = within(screen.getByTestId(dropdownRegex)).queryByText(
+					excludedOptionRegexPattern
+				);
+				expect(dropdownElement).not.toBeInTheDocument();
+			}
+		});
+	});
+	it('clicking on the sorting component icon when open will close the dropdown', async () => {
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		if (sortIcon) await user.click(sortIcon);
+		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
+		if (sortIcon) await user.click(sortIcon);
+		expect(screen.queryByTestId(dropdownRegex)).not.toBeInTheDocument();
 	});
 });

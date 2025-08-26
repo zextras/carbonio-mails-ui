@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { ConversationIndexSliceState } from '../../../../types';
+import { ConversationIndexSliceState } from 'types/index.d';
 
 export const CONVERSATION_INDEX_SLICE_INITIAL_STATE: ConversationIndexSliceState['conversationIndexSlice'] =
 	{

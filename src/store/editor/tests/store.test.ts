@@ -4,57 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { setupEditorStore } from '../../../tests/generators/editor-store';
-import {
-	readyToBeSentEditorTestCase,
-	aSmartLinkAttachment,
-	aSavedAttachment
-} from '../../../tests/generators/editors';
-import { SavedAttachment } from '../../../types';
-import { useEditorsStore } from '../store';
-
-const smartLinkAttachment = (size: number): SavedAttachment => ({
-	...aSmartLinkAttachment(),
-	size
-});
-const attachment = (size: number): SavedAttachment => ({ ...aSavedAttachment(), size });
+import { useEditorsStore } from 'store/editor/store';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
 
 describe('store', () => {
-	test('toggleSmartLink should set to true the requiresSmartLinkConversion value of an attachment', async () => {
-		const oldEditor = await readyToBeSentEditorTestCase({
-			savedAttachments: [attachment(444)]
-		});
-		setupEditorStore({ editors: [oldEditor] });
-
-		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
-
-		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
-		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(true);
-	});
-	test('toggleSmartLink should set to false the requiresSmartLinkConversion value of a smartlink attachment', async () => {
-		const oldEditor = await readyToBeSentEditorTestCase({
-			savedAttachments: [smartLinkAttachment(444)]
-		});
-		setupEditorStore({ editors: [oldEditor] });
-
-		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
-
-		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
-		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
-	});
-
-	test('toggleSmartLink should not change the value of requiresSmartLinkConversion if there is no current editor', async () => {
-		const oldEditor = await readyToBeSentEditorTestCase({
-			savedAttachments: [attachment(444)]
-		});
-		setupEditorStore({ editors: [oldEditor] });
-
-		useEditorsStore.getState().toggleSmartLink('wrong-editor-id', '2');
-
-		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
-		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
-	});
-
 	test('setSize should set the editor size for the provided editor id', async () => {
 		const editor = await readyToBeSentEditorTestCase();
 		setupEditorStore({ editors: [editor] });

@@ -3,19 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { memo, useEffect, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
+import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import styled from 'styled-components';
 
-import { DragItems } from './message-list-drag-component';
-import { MessagesMultipleSelectionActions } from './messages-multiple-selection-actions';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import ShimmerList from '../../../search/shimmer-list';
-import { Breadcrumbs } from '../parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
-import { getFolderPath } from '../parts/utils/utils';
+import { DragItems } from 'views/app/folder-panel/messages/message-list-drag-component';
+import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
+import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
+import ShimmerList from 'views/search/shimmer-list';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -44,14 +43,10 @@ export type MessageListComponentProps = {
 	messageIds: Array<string>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a message
-	setDraggedIds: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
-	// the selected messages
-	selected: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
 	// the function to call when the user selects all messages
@@ -77,10 +72,8 @@ export const MessageListComponent = memo(function MessageListComponent({
 	folderId,
 	messageIds,
 	draggedIds,
-	setDraggedIds,
 	isSearchModule,
 	isSelectModeOn,
-	selected,
 	deselectAll,
 	selectAll,
 	isAllSelected,
@@ -89,10 +82,6 @@ export const MessageListComponent = memo(function MessageListComponent({
 	dragImageRef,
 	listRef
 }: MessageListComponentProps): React.JSX.Element {
-	useEffect(() => {
-		setDraggedIds?.(selected);
-	}, [selected, setDraggedIds]);
-
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
 	const showBreadcrumbs = useMemo(
@@ -121,11 +110,7 @@ export const MessageListComponent = memo(function MessageListComponent({
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
 				>
-					<MessagesMultipleSelectionActions
-						ids={selectedIds}
-						deselectAll={deselectAll}
-						folderId={folderId}
-					/>
+					<MessagesMultipleSelectionActions ids={selectedIds} folderId={folderId} />
 				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (

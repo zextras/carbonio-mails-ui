@@ -16,28 +16,26 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { IncompleteMessage, TextReadValuesType } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/participants-name';
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type MessageListItemCoreProps = {
 	message: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
 	isConvChildren: boolean;
-	toggle: (id: string) => void;
 	isSearchModule?: boolean;
 	firstChildFolderId: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const MessageListItemCore = ({
@@ -45,9 +43,10 @@ export const MessageListItemCore = ({
 	selected,
 	selecting,
 	isConvChildren,
-	toggle,
 	isSearchModule,
-	firstChildFolderId
+	firstChildFolderId,
+	index,
+	onSelect
 }: MessageListItemCoreProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
@@ -146,7 +145,10 @@ export const MessageListItemCore = ({
 			}),
 		[message?.autoSendTime]
 	);
-	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
+	const onSelectCallback = useMemo(
+		() => (isConvChildren ? noop : onSelect),
+		[isConvChildren, onSelect]
+	);
 
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
@@ -155,7 +157,8 @@ export const MessageListItemCore = ({
 					item={message}
 					selected={selected}
 					selecting={selecting}
-					toggle={onToggle}
+					index={index}
+					onSelect={onSelectCallback}
 					folderId={firstChildFolderId}
 				/>
 				<Padding horizontal="extrasmall" />

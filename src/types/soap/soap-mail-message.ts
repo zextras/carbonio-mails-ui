@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { type MailVerificationHeader } from './soap';
-import { type SoapMailParticipant } from './soap-mail-participant';
+import { type MailVerificationHeader } from 'types/soap/soap';
+import { type SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 type MailHeaderAttrs = {
 	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;
@@ -68,6 +68,5 @@ export type SoapMailMessagePart = {
 	filename?: string;
 	// FIXME see IRIS-4029 Based on the compose settings the content could be a string or an object of type { _content: string }
 	content?: string;
-	requiresSmartLinkConversion: boolean;
 	truncated?: boolean;
 };

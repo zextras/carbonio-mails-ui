@@ -4,18 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { Button, Container, List } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';
-import { MessageListItem } from '../messages/message-list-item';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import type { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 
 type ConversationMessagesListProps = {
 	activeItemId?: string;
@@ -38,19 +37,18 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	dragImageRef,
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
-	const { setCount, count } = useAppContext<AppContext>();
-
-	const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
-		setCount,
-		count,
-		items: messages.map((message) => message.id)
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const { isSelectModeOn } = useMultipleSelection({
+		allAvailableItems: messages.map((message) => message.id),
+		selectedItems,
+		setSelectedItems
 	});
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
+			map(messages, (message, index) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
-				const isSelected = selected[message.id];
+				const isSelected = selectedItems.has(message.id);
 
 				return (
 					<CustomListItem
@@ -63,25 +61,25 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 						{(visible: boolean): React.JSX.Element =>
 							visible && message ? (
 								<DragItemWrapper
+									deselectAll={noop}
 									item={message}
 									selectedIds={[]}
 									selectedItems={{}}
 									setDraggedIds={setDraggedIds}
 									dragImageRef={dragImageRef}
 									dragAndDropIsDisabled={!!isSearchModule}
-									deselectAll={deselectAll}
 								>
 									<MessageListItem
 										message={message}
 										selected={isSelected}
 										selecting={isSelectModeOn}
 										visible={visible}
-										toggle={toggle}
 										active={isActive}
 										isConvChildren
-										deselectAll={deselectAll}
 										currentFolderId={folderId}
 										isSearchModule={isSearchModule}
+										index={index}
+										onSelect={noop}
 									/>
 								</DragItemWrapper>
 							) : (
@@ -93,15 +91,13 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 			}),
 		[
 			activeItemId,
-			deselectAll,
 			dragImageRef,
 			folderId,
 			isSearchModule,
 			isSelectModeOn,
 			messages,
-			selected,
-			setDraggedIds,
-			toggle
+			selectedItems,
+			setDraggedIds
 		]
 	);
 

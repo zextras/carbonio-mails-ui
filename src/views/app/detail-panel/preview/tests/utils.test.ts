@@ -8,7 +8,11 @@
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 
-import { ErrorMessageCode, getAttachmentsLink, getSignedIconColor } from '../utils';
+import {
+	ErrorMessageCode,
+	getAttachmentsLink,
+	getSignedIconColor
+} from 'views/app/detail-panel/preview/utils/index';
 
 jest.mock('lodash', () => ({
 	includes: jest.fn()

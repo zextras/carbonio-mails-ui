@@ -7,11 +7,11 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isDraft, isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import RedirectAction from '../../ui-actions/redirect-message-action';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isDraft, isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import RedirectAction from 'ui-actions/redirect-message-action';
 
 export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();

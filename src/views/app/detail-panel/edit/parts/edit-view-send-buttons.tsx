@@ -8,23 +8,20 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { SendLaterModal } from './send-later-modal';
-import { AnimatedLoader } from '../../../../../assets/animated-loader';
+import { SendLaterModal } from 'views/app/detail-panel/edit/parts/send-later-modal';
 
 export type EditViewSendButtonsProps = {
 	onSendLater: (autoSendTime: number) => void;
 	onSendNow: () => void;
 	disabled: boolean;
 	tooltip: string;
-	isLoading: boolean;
 };
 
 export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendLater,
 	onSendNow,
 	disabled,
-	tooltip,
-	isLoading
+	tooltip
 }) => {
 	const { attrs } = useUserSettings();
 	const { createModal, closeModal } = useModal();
@@ -83,7 +80,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						// TOFIX: remove this ts-ignore once SHELL 5.3.0 is released
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						icon={isLoading ? AnimatedLoader : 'ChevronDownOutline'}
+						icon={'ChevronDownOutline'}
 						items={multiBtnActions}
 					/>
 				</Tooltip>
@@ -93,7 +90,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						color="primary"
 						data-testid="BtnSendMail"
 						disabled={disabled}
-						icon={isLoading ? AnimatedLoader : 'PaperPlane'}
+						icon={'PaperPlane'}
 						onClick={onSendNow}
 						label={t('label.send', 'Send')}
 					/>

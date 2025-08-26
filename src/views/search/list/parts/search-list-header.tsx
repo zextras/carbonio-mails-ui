@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 
-import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
 	itemIds: Array<string>;
-	selected: Record<string, boolean>;
+	selectedItems: Set<string>;
 	deselectAll: () => void;
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -21,7 +21,7 @@ type SearchConversationListHeaderProps = {
 };
 export const SearchListHeader = ({
 	itemIds,
-	selected,
+	selectedItems,
 	deselectAll,
 	isSelectModeOn,
 	setIsSelectModeOn,
@@ -32,14 +32,12 @@ export const SearchListHeader = ({
 }: PropsWithChildren<SearchConversationListHeaderProps>): React.JSX.Element => {
 	const totalItems = itemIds.length;
 
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
-
 	if (isSelectModeOn && totalItems > 0)
 		return (
 			<MultipleSelectionActionsPanel
 				itemsIds={itemIds}
 				folderId={''}
-				selectedIds={selectedIds}
+				selectedIds={Array.from(selectedItems)}
 				deselectAll={deselectAll}
 				selectAll={selectAll}
 				isAllSelected={isAllSelected}

@@ -12,23 +12,30 @@ import {
 	Tooltip,
 	Icon,
 	Padding,
-	DropdownItem
+	DropdownItem,
+	useModal
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import * as StyledComp from './edit-view-styled-components';
-import { buildArrayFromFileList } from '../../../../../helpers/files';
-import { isFulfilled } from '../../../../../helpers/promises';
-import { useEditorAttachments, useEditorText } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
-import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
+import { SmartlinkFromFilesModal } from './smartlink-modal/smartlink-from-files-modal';
+import { SmartlinkFromLocalModal } from './smartlink-modal/smartlink-from-local-modal';
+import { buildArrayFromFileList } from 'helpers/files';
+import { isFulfilled } from 'helpers/promises';
+import { useEditorAttachments, useEditorsStore, useEditorText } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
 import {
+	useGetPublicUrl,
+	UseGetPublicUrlRespType
+} from 'views/app/detail-panel/edit/edit-utils-hooks/use-get-public-url';
+import {
+	FileNode,
 	useUploadFromFiles,
 	UseUploadFromFilesResult
-} from '../edit-utils-hooks/use-upload-from-files';
+} from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -38,6 +45,7 @@ const SelectorContainer = styled(Row)`
 	}
 `;
 
+const BASE_64_CONVERSION_RATE = 1.33;
 export type AddAttachmentsDropdownProps = {
 	editorId: MailsEditorV2['id'];
 };
@@ -49,12 +57,39 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { getText, setText } = useEditorText(editorId);
 	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
 
+	const editor = useEditorsStore((state) => state.editors[editorId]);
+	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
+	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
+	const { createModal, closeModal } = useModal();
+
 	const addFilesFromLocal = useCallback(
-		(fileList: FileList) => {
+		async (fileList: FileList) => {
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files, {});
+
+			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const modalId = 'smartlink-from-local-modal';
+			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
+				addStandardAttachments(files, {});
+			} else {
+				createModal(
+					{
+						id: modalId,
+						maxHeight: '90vh',
+						size: 'medium',
+						children: (
+							<SmartlinkFromLocalModal
+								onClose={(): void => closeModal(modalId)}
+								files={files}
+								editorId={editorId}
+							/>
+						)
+					},
+					true
+				);
+			}
 		},
-		[addStandardAttachments]
+		[addStandardAttachments, closeModal, createModal, editor, editorId, maxAllowedMailSize]
 	);
 
 	const onUploadFromFilesComplete = useCallback(
@@ -88,21 +123,50 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		[setText, getText]
 	);
 
+	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
 	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
 		onComplete: onUploadFromFilesComplete
 	});
-	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
+
+	const addFilesFromFiles = useCallback(
+		async (fileNodes: Array<FileNode>) => {
+			const filesSize = fileNodes.reduce((acc, file) => acc + file.size, 0);
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const modalId = 'smartlink-from-files-modal';
+			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
+				return uploadFromFiles(fileNodes);
+			}
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					size: 'medium',
+					children: (
+						<SmartlinkFromFilesModal
+							onClose={(): void => closeModal(modalId)}
+							fileNodes={fileNodes}
+							editorId={editorId}
+						/>
+					)
+				},
+				true
+			);
+			return null;
+		},
+		[closeModal, createModal, editor, editorId, maxAllowedMailSize, uploadFromFiles]
+	);
+
 	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
 
 	const uploadFromFilesSelectionConfig = useMemo(
 		() => ({
 			title: t('label.choose_file', 'Choose file'),
-			confirmAction: uploadFromFiles,
+			confirmAction: addFilesFromFiles,
 			confirmLabel: t('label.select', 'Select'),
 			allowFiles: true,
 			allowFolders: false
 		}),
-		[uploadFromFiles]
+		[addFilesFromFiles]
 	);
 
 	const getPublicLinkSelectionConfig = useMemo(

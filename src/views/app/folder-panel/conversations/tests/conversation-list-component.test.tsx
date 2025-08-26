@@ -7,16 +7,16 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest, triggerLoadMore } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
+import { setupTest, triggerLoadMore } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
-} from '../conversation-list-component';
-import { ConversationListItemComponent } from '../conversation-list-item-component';
+} from 'views/app/folder-panel/conversations/conversation-list-component';
+import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
 
 function setUpConversationList({
 	folderId,
@@ -35,23 +35,19 @@ function setUpConversationList({
 		});
 	});
 
-	const toggle = jest.fn();
-	const selectAll = jest.fn();
-	const deselectAll = jest.fn();
-	const selectAllModeOff = jest.fn();
-	const setIsSelectModeOn = jest.fn();
-
 	const listItems = conversationsIds.map((conversationId, index) => (
 		<ConversationListItemComponent
+			deselectAll={jest.fn()}
 			key={index}
 			conversationId={conversationId}
+			selectedItems={{}}
 			activeItemId=""
 			selected={false}
 			selecting={false}
-			toggleMultipleSelection={toggle}
-			deselectAll={deselectAll}
 			folderId={FOLDERS.INBOX}
 			setDraggedIds={jest.fn()}
+			index={0}
+			onSelect={jest.fn()}
 		/>
 	));
 
@@ -67,14 +63,15 @@ function setUpConversationList({
 		conversationsIds,
 		isSelectModeOn: false,
 		selected: {},
-		deselectAll,
-		selectAll,
+		deselectAll: jest.fn(),
+		selectAll: jest.fn(),
 		isAllSelected: false,
-		selectAllModeOff,
+		selectAllModeOff: jest.fn(),
 		isSearchModule,
-		setIsSelectModeOn,
+		setIsSelectModeOn: jest.fn(),
 		dragImageRef,
-		loadMoreCallback
+		loadMoreCallback,
+		onSelect: jest.fn()
 	};
 
 	return setupTest(<ConversationListComponent {...props} />);

@@ -7,17 +7,14 @@
 import type { Editor } from 'tinymce';
 import { v4 as uuid } from 'uuid';
 
-import { uploadFileApi } from '../../../../../api/upload-file-api';
-import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
-import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import { getEditor, useEditorsStore } from '../../../../../store/editor';
-import {
-	buildSavedAttachments,
-	composeCidUrlFromContentId
-} from '../../../../../store/editor/editor-transformations';
-import { getSavedInlineAttachmentByContentId } from '../../../../../store/editor/editor-utils';
-import { saveDraftEmailStoreAction } from '../../../../../store/emails/actions/save-draft-action';
-import { MailsEditorV2, UnsavedAttachment } from '../../../../../types';
+import { uploadFileApi } from 'api/upload-file-api';
+import { buildSavedAttachments, composeAttachmentDownloadUrl } from 'helpers/attachments';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
+import { getSavedInlineAttachmentByContentId } from 'store/editor/editor-utils';
+import { getEditor, useEditorsStore } from 'store/editor/index';
+import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
+import { MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
 type UploadImageResult = {
 	downloadServiceUrl: string;

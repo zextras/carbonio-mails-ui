@@ -8,51 +8,112 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { Route, Routes } from 'react-router-dom';
 
-import { AdvancedFilterModal } from './advanced-filter-modal';
-import { Query } from '../../types';
-import { SearchConversationList } from './list/conversation/search-conversation-list';
-import { SearchMessageList } from './list/message/search-message-list';
-import SearchPanel from './panel/search-panel';
-import { useIsMessageView, useRunSearch } from './search-view-hooks';
-import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
-import { API_REQUEST_STATUS } from '../../constants';
-import { resetSearchAndPopulatedItems } from '../../store/emails/store';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { resetSearchAndPopulatedItems } from 'store/emails/store';
+import { SearchConversationList } from 'views/search/list/conversation/search-conversation-list';
+import { SearchMessageList } from 'views/search/list/message/search-message-list';
+import SearchPanel from 'views/search/panel/search-panel';
+import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button';
+import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
+import { Query } from 'views/search/types/types';
 
-const SearchView = ({
-	useDisableSearch,
-	useQuery,
-	ResultsHeader
-}: SearchViewProps): React.JSX.Element => {
+const specialChars = [
+	'~',
+	"'",
+	'!',
+	'#',
+	'$',
+	'%',
+	'^',
+	'&',
+	'(',
+	')',
+	'_',
+	'?',
+	'/',
+	'{',
+	'}',
+	'[',
+	']',
+	';',
+	':',
+	'-',
+	'+',
+	'<',
+	'>'
+];
+const prefixes = [
+	'has',
+	'is',
+	'Subject',
+	'from',
+	'to',
+	'attachment',
+	'smaller',
+	'larger',
+	'after',
+	'before',
+	'tag',
+	'in'
+];
+
+export const containsSpecialCharacters = (value: string | boolean): boolean => {
+	const stringValue = typeof value === 'string' ? value : '';
+	const prefix = prefixes.find((pr) => stringValue.startsWith(`${pr}:`));
+	if (prefix === 'attachment' || prefix === 'in' || prefix === 'before' || prefix === 'after') {
+		return false;
+	}
+	const text = prefix ? stringValue.substring(prefix.length + 1) : stringValue;
+	return specialChars.some((specialChar) => text.includes(specialChar));
+};
+
+const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
+
 	const isMessageView = useIsMessageView();
-	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
-	const settings = useUserSettings();
-	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
-		includeSharedItemsInSearch
-	);
+
 	const invalidQueryTooltip = useMemo(
-		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
+		() =>
+			t(
+				'label.invalid_query',
+				'Special characters like :, ", -, !, etc., are ignored in the search. This may lead to unexpected results for:'
+			),
 		[]
 	);
 
-	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
-		useRunSearch({
-			query,
-			updateQuery,
-			useDisableSearch,
-			invalidQueryTooltip,
-			isSharedFolderIncluded
-		});
+	const settings = useUserSettings();
+	const includeSharedItemsInSearchDefaultPref =
+		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
+		includeSharedItemsInSearchDefaultPref
+	);
 
-	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
+	const { searchResults, isInvalidQuery, queryToString, executeSearch } = useRunSearch({
+		query,
+		updateQuery,
+		isSharedFolderIncluded
+	});
+
+	const containsSpecialCharacter = useMemo(
+		() =>
+			query.some(
+				(ch) =>
+					ch.value !== undefined &&
+					containsSpecialCharacters(ch.value) &&
+					!('queryChipsToAdvancedFiltersValue' in ch)
+			),
+		[query]
+	);
+
+	const resultLabelType = containsSpecialCharacter ? 'warning' : undefined;
 
 	const resultLabel = useMemo(() => {
-		if (isInvalidQuery) {
+		if (containsSpecialCharacter) {
 			return invalidQueryTooltip;
 		}
 		if (!query.length) return '';
@@ -63,96 +124,88 @@ const SearchView = ({
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip]);
+	}, [searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
-
-	const onModalConfirm = useCallback(
-		(request: { query: Query; includeSharedFolders: boolean }) => {
-			setIsSharedFolderIncluded(request.includeSharedFolders);
-			updateQuery(request.query);
-		},
-		[updateQuery]
-	);
 
 	useEffect(() => {
 		const controller = new AbortController();
 		if (query.length > 0) {
 			executeSearch(controller.signal);
 		} else {
+			setIsSharedFolderIncluded(includeSharedItemsInSearchDefaultPref);
 			resetSearchAndPopulatedItems();
-			setIsSharedFolderIncluded(includeSharedItemsInSearch);
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query, includeSharedItemsInSearch]);
+	}, [executeSearch, query, includeSharedItemsInSearchDefaultPref, updateQuery]);
+
+	const onSearchConfirm = useCallback(
+		(options: { query: Query; includeSharedFolders: boolean }): void => {
+			updateQuery(options.query);
+			setIsSharedFolderIncluded(options.includeSharedFolders);
+		},
+		[updateQuery]
+	);
 
 	return (
-		<>
-			<Container>
-				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
-				<ResultsHeader
-					label={resultLabel}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					labelType={resultLabelType}
-				/>
-				<Container
-					orientation="horizontal"
-					background="gray4"
-					style={{ overflowY: 'auto' }}
-					mainAlignment="flex-start"
-				>
-					<Routes>
-						<Route
-							path={`:type?/:itemId?`}
-							element={
-								isMessageView ? (
+		<Container>
+			{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
+			<ResultsHeader label={resultLabel} labelType={resultLabelType} />
+			<Container
+				orientation="horizontal"
+				background="gray4"
+				style={{ overflowY: 'auto' }}
+				mainAlignment="flex-start"
+			>
+				<Routes>
+					<Route
+						path={`:type?/:itemId?`}
+						element={
+							<Container
+								background={'gray6'}
+								width="25%"
+								height="fill"
+								mainAlignment="flex-start"
+								data-testid="MailsSearchResultListContainer"
+							>
+								<AdvancedFilterButton
+									query={query as Query}
+									isSharedFolderIncluded={isSharedFolderIncluded}
+									onSearchConfirm={onSearchConfirm}
+									invalidQueryTooltip={containsSpecialCharacter ? invalidQueryTooltip : undefined}
+								/>
+								{isMessageView ? (
 									<SearchMessageList
-										searchDisabled={searchDisabled}
 										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
-										invalidQueryTooltip={invalidQueryTooltip}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
 								) : (
 									<SearchConversationList
-										searchDisabled={searchDisabled}
 										searchResults={searchResults.conversationListIndex}
 										query={queryToString}
 										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
-										invalidQueryTooltip={invalidQueryTooltip}
 										hasMore={searchResults.more}
+										searchResultsStatus={searchResults.status}
 									/>
-								)
-							}
-						/>
-					</Routes>
-					<Suspense fallback={<Spinner color="gray5" />}>
-						<Container mainAlignment="flex-start" width="75%">
-							<SearchPanel searchResults={searchResults} query={query} />
-						</Container>
-					</Suspense>
-				</Container>
+								)}
+							</Container>
+						}
+					/>
+				</Routes>
+				<Suspense fallback={<Spinner color="gray5" />}>
+					<Container mainAlignment="flex-start" width="75%">
+						<SearchPanel searchResults={searchResults} query={query} />
+					</Container>
+				</Suspense>
 			</Container>
-			<AdvancedFilterModal
-				// TOFIX: fix type definition
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				query={query}
-				open={showAdvanceFilters}
-				onSearchConfirm={onModalConfirm}
-				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
-				onClose={(): void => setShowAdvanceFilters(false)}
-				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
-			/>
-		</>
+		</Container>
 	);
 };
 

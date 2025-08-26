@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
-import { Text, Tooltip } from '@zextras/carbonio-design-system';
 
+import { Text, Tooltip } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
-import type { Crumb } from '../../../../types';
+
+import type { Crumb } from 'types/index.d';
 
 type BreadcrumbsProps = Array<Crumb>;
 

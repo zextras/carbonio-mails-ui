@@ -8,8 +8,8 @@ import React, { useMemo } from 'react';
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { includes, reduce } from 'lodash';
 
-import { UIActionAggregator } from '../types';
-import { TagsDropdownItem } from '../ui-actions/tag-actions';
+import { UIActionAggregator } from 'types/index.d';
+import { TagsDropdownItem } from 'ui-actions/tag-actions';
 
 export const useTagDropdownItem = (
 	applyTagDescriptor: UIActionAggregator,

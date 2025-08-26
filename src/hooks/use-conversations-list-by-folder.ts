@@ -7,15 +7,15 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { parseMessageSortingOptions } from '../helpers/sorting';
-import { searchEmailStoreAction } from '../store/emails/actions/search-action';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { getFilterQuery, parseMessageSortingOptions } from 'helpers/sorting';
+import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
-} from '../store/emails/store';
-import { ConversationIndexSliceState } from '../types';
+} from 'store/emails/store';
+import { ConversationIndexSliceState } from 'types/index.d';
 
 /**
  * Manages the state and logic for retrieving and maintaining a list of conversation indices
@@ -33,20 +33,23 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 		() => prefs?.zimbraPrefSortOrder,
 		[prefs?.zimbraPrefSortOrder]
 	) as string;
-	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+	const { sortType, sortDirection, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefSortOrder),
+		[folderId, prefSortOrder]
+	);
 	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchConversations = useCallback(
 		async (signal: AbortSignal | undefined) => {
 			updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			searchEmailStoreAction({
-				folderId,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy,
+				query: getFilterQuery(filterType, folderId),
 				types: 'conversation',
 				offset: 0,
-				locale: prefLocale,
-				sortBy,
-				abortSignal: signal
+				abortSignal: signal,
+				locale: prefLocale
 			})
 				.catch(() => {
 					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
@@ -55,7 +58,7 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				});
 		},
-		[folderId, prefLocale, sortBy]
+		[filterType, folderId, prefLocale, sortBy]
 	);
 
 	useEffect(() => {

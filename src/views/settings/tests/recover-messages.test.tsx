@@ -9,11 +9,10 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useAdvancedAccountStore } from '../../../store/advanced-account/store';
-import { RecoverMessages } from '../recover-messages';
+import { setupTest } from '@test-setup';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { useAdvancedAccountStore } from 'store/advanced-account/store';
+import { RecoverMessages } from 'views/settings/recover-messages';
 
 function getParams(url: string): Record<string, string> {
 	const params = [...new URLSearchParams(new URL(url).searchParams)];
@@ -25,10 +24,6 @@ function getParams(url: string): Record<string, string> {
 }
 
 describe('Recover messages', () => {
-	beforeAll(() => {
-		defaultBeforeAllTests({ onUnhandledRequest: 'error' });
-	});
-
 	it('should render view if backupSelfUndelete is allowed', () => {
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		setupTest(<RecoverMessages />);

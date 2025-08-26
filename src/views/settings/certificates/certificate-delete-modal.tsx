@@ -6,10 +6,8 @@
 import React, { FC, ReactElement } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 
 type CertificateDeleteModalProps = {
 	onClose: () => void;

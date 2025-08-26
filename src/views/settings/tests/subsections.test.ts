@@ -7,6 +7,7 @@
 import {
 	allowedSendersSubSection,
 	blockedSendersSubSection,
+	composingMsgSubSection,
 	displayingMessagesSubSection,
 	filtersSubSection,
 	getSettingsSubSections,
@@ -15,7 +16,7 @@ import {
 	setDefaultSignaturesSubSection,
 	signaturesSubSection,
 	trustedAddressesSubSection
-} from '../subsections';
+} from 'views/settings/subsections';
 
 describe('Settings subsections', () => {
 	test('displayingMessagesSubSection should return a specific result', () => {
@@ -81,6 +82,13 @@ describe('Settings subsections', () => {
 		});
 	});
 
+	test('composingMsgSubSection should return a specific result', () => {
+		expect(composingMsgSubSection()).toEqual({
+			label: 'labels.composing_messages',
+			id: 'compose'
+		});
+	});
+
 	describe('getSettingsSubSections', () => {
 		it('should return a specific list of subsections if the parameter is true', () => {
 			const subSectionsIds = getSettingsSubSections(true).map((subSection) => subSection.id);
@@ -91,6 +99,7 @@ describe('Settings subsections', () => {
 					'recover_messages',
 					'signatures',
 					'using_signatures',
+					'compose',
 					'filters',
 					'trusted_addresses',
 					'allowed_addresses',
@@ -107,6 +116,7 @@ describe('Settings subsections', () => {
 					'receiving_messages',
 					'signatures',
 					'using_signatures',
+					'compose',
 					'filters',
 					'trusted_addresses',
 					'allowed_addresses',

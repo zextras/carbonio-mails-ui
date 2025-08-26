@@ -7,10 +7,10 @@
 import { addBoardView, addRoute, addSettingsView, upsertApp } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from '../../constants';
-import { mockAdvancedAccountAPI } from '../../tests/utils';
-import { addComponentsToShell } from '../add-shell-components';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { addComponentsToShell } from 'app-utils/add-shell-components';
+import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from 'constants/index';
+import { mockAdvancedAccountAPI } from 'tests/utils';
 
 beforeEach(() => {
 	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
@@ -61,6 +61,7 @@ describe('addShellComponents', () => {
 					{ id: 'recover_messages', label: 'label.recover_messages' },
 					{ id: 'signatures', label: 'signatures.signature_heading' },
 					{ id: 'using_signatures', label: 'label.using_signatures' },
+					{ id: 'compose', label: 'labels.composing_messages' },
 					{ id: 'filters', label: 'filters.filters' },
 					{ id: 'trusted_addresses', label: 'label.trusted_addresses' },
 					{ id: 'allowed_addresses', label: 'label.allowed_addresses' },
@@ -96,6 +97,7 @@ describe('addShellComponents', () => {
 					{ id: 'receiving_messages', label: 'label.receive_message' },
 					{ id: 'signatures', label: 'signatures.signature_heading' },
 					{ id: 'using_signatures', label: 'label.using_signatures' },
+					{ id: 'compose', label: 'labels.composing_messages' },
 					{ id: 'filters', label: 'filters.filters' },
 					{ id: 'trusted_addresses', label: 'label.trusted_addresses' },
 					{ id: 'allowed_addresses', label: 'label.allowed_addresses' },

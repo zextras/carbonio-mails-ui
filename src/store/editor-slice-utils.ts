@@ -4,18 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../carbonio-ui-commons/constants/participants';
-import { htmlEncode } from '../commons/get-quoted-text-util';
-import { convertHtmlToPlainText } from '../commons/utilities';
-import { LineType } from '../commons/utils';
-import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
+import { htmlEncode } from 'commons/get-quoted-text-util';
+import { LineType } from 'commons/utils';
+import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -25,7 +20,7 @@ import type {
 	Participant,
 	SharedParticipant,
 	SoapDraftMessageObj
-} from '../types';
+} from 'types/index.d';
 
 export const retrieveAttachmentsType = (
 	original: MailMessage,
@@ -39,8 +34,7 @@ export const retrieveAttachmentsType = (
 						...acc,
 						{
 							part: part.name,
-							mid: original.id,
-							requiresSmartLinkConversion: !!part.requiresSmartLinkConversion
+							mid: original.id
 						}
 					]
 				: acc,
@@ -204,19 +198,33 @@ export function findBodyPart(
 	);
 }
 
-export const extractBody = (msg: MailMessage): Array<string> => {
+type ExtractedBody = {
+	richText: string;
+	plainText: string;
+};
+
+export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
 	const html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
-	return [text ?? html ?? '', html ?? text ?? ''];
+	return { richText: html ?? text ?? '', plainText: text ?? html ?? '' };
 };
 
-export function generateReplyText(
-	mail: MailMessage,
-	labels: { [k: string]: string }
-): Array<string> {
+type Labels = {
+	to: string;
+	from: string;
+	cc: string;
+	sent: string;
+	subject: string;
+};
+type ReplyText = {
+	richText: string;
+	plainText: string;
+};
+
+export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
 		(c) => `"${c.fullName}" <${c.address}>`
@@ -234,33 +242,32 @@ export function generateReplyText(
 
 	const date = moment(mail.date).format('LLLL');
 
-	const textToRetArray = [
-		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="${
-			LineType.HTML_SEP_ID
-		}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
-			labels.from
-		}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`
-	];
+	let plainText = `${LineType.PLAINTEXT_SEP}\n\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`;
 
+	let richText = `<hr id="${
+		LineType.HTML_SEP_ID
+	}" ><div style="font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
+		labels.from
+	}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`;
 	if (headingCc.length > 0) {
-		textToRetArray[1] += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
-		textToRetArray[0] += `${labels.cc} ${headingCc}\n`;
+		richText += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
+		plainText += `${labels.cc} ${headingCc}\n`;
 	}
 
-	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
+	richText += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
 		mail.subject
-	)} <br /><br />${extractBody(mail)[1]}</div>`;
+	)} <br /><br />${extractBody(mail).richText}</div>`;
 
-	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
-		extractBody(mail)[0]
-	}`;
+	plainText += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${extractBody(mail).plainText}`;
 
-	return [convertHtmlToPlainText(textToRetArray[0]), textToRetArray[1]];
+	return {
+		richText,
+		plainText
+	};
 }
 
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
-	const richText = extractBody(msg);
+	const extractedBody = extractBody(msg);
 	const body = isHtml(msg.parts);
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
@@ -282,18 +289,18 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 							{
 								ct: 'text/html',
 								body: true,
-								content: { _content: richText[1] ?? '' }
+								content: { _content: extractedBody.richText ?? '' }
 							},
 							{
 								ct: 'text/plain',
-								content: { _content: richText[0] ?? '' }
+								content: { _content: extractedBody.plainText ?? '' }
 							}
 						]
 					}
 				: {
 						ct: 'text/plain',
 						body: true,
-						content: { _content: richText[0] ?? '' }
+						content: { _content: extractedBody.plainText ?? '' }
 					}
 		]
 	};

@@ -8,16 +8,18 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvMoveToTrashDescriptor,
+	useConvMoveToTrashFn
+} from 'hooks/actions/use-conv-move-to-trash';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -30,7 +32,7 @@ describe('useConMoveToTrash', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvMoveToTrashDescriptor, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -48,7 +50,7 @@ describe('useConMoveToTrash', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvMoveToTrashFn, {
-				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(functions).toEqual({
@@ -70,7 +72,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: folder.id }]
+					initialProps: [{ ids: conversationsId, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -93,7 +95,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				await act(async () => {
@@ -123,7 +125,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				await act(async () => {
@@ -152,7 +154,7 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.TRASH }]
 				});
 
 				await act(async () => {

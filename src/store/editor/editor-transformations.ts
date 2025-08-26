@@ -4,35 +4,28 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
-import { getCompleteMessageId } from '../utils';
+import {
+	composeAttachmentDownloadUrl,
+	extractContentIdInnerPart,
+	getCidFromCidUrl,
+	isCidUrl,
+	isContentIdEqual,
+	isDownloadServicedUrl
+} from 'helpers/attachments';
+import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
 import {
 	filterSavedInlineAttachment,
 	filterSavedStandardAttachment,
 	filterUnsavedInlineAttachment,
 	filterUnsavedStandardAttachment
-} from './editor-utils';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import {
-	composeAttachmentDownloadUrl,
-	extractContentIdInnerPart,
-	getAttachmentParts,
-	getCidFromCidUrl,
-	isCidUrl,
-	isContentIdEqual,
-	isDownloadServicedUrl
-} from '../../helpers/attachments';
-import {
-	getDefaultIdentity,
-	getIdentityDescriptor,
-	IdentityDescriptor
-} from '../../helpers/identities';
+} from 'store/editor/editor-utils';
+import { getCompleteMessageId } from 'store/utils';
 import {
 	MailAttachment,
 	MailAttachmentParts,
-	MailMessage,
-	MailMessagePart,
 	MailsEditorV2,
 	MsgAttach,
 	Participant,
@@ -40,7 +33,7 @@ import {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
 	const contentIdInnerPart = extractContentIdInnerPart(contentId);
@@ -317,8 +310,7 @@ export const composeAttachMpField = (
 	attachments.forEach((attachment) => {
 		result.push({
 			mid: attachment.messageId,
-			part: attachment.partName,
-			requiresSmartLinkConversion: attachment.requiresSmartLinkConversion
+			part: attachment.partName
 		});
 	});
 	return result;
@@ -430,20 +422,3 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 
 export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
 	createSoapMessageRequestFromEditor(editor, 'sendmsg');
-
-export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message.parts);
-	const isProbablyInline = (part: MailMessagePart): boolean =>
-		part.disposition === 'inline' || (!!part.ci && part.contentType?.startsWith('image/'));
-
-	return attachmentsParts.map<SavedAttachment>((part) => ({
-		messageId: message.id,
-		isInline: isProbablyInline(part),
-		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
-		filename: part.filename ?? '',
-		partName: part.name,
-		contentType: part.contentType,
-		size: part.size,
-		requiresSmartLinkConversion: part.requiresSmartLinkConversion
-	}));
-};

@@ -5,23 +5,20 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveMessage } from '../../ui-actions/move-msg';
-import { useUiUtilities } from '../use-ui-utilities';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { MoveMessage } from 'ui-actions/move-msg';
 
 export const useMsgRestoreFn = ({
 	folderId,
-	messageId,
-	deselectAll
+	messageId
 }: {
 	folderId: string;
 	messageId: string;
-	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
@@ -40,31 +37,27 @@ export const useMsgRestoreFn = ({
 							selectedIDs={[messageId]}
 							onClose={(): void => closeModal(modalId)}
 							isRestore
-							deselectAll={deselectAll ?? noop}
 						/>
 					)
 				},
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, messageId, deselectAll, closeModal]);
+	}, [canExecute, createModal, folderId, messageId, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgRestoreDescriptor = ({
 	folderId,
-	messageId,
-	deselectAll
+	messageId
 }: {
 	folderId: string;
 	messageId: string;
-	deselectAll: () => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgRestoreFn({
 		folderId,
-		messageId,
-		deselectAll
+		messageId
 	});
 	const [t] = useTranslation();
 	return {

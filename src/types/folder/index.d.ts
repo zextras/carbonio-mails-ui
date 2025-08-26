@@ -4,13 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 
-import { ContainerProps } from '@zextras/carbonio-design-system';
-
-import { UIActionDescriptor } from '../actions';
-import { Conversation } from '../conversations';
-import { IncompleteMessage, MailMessage } from '../messages';
+import { IncompleteMessage, MailMessage } from 'types/messages/index.d';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 
@@ -18,15 +14,15 @@ export type MessageListItemProps = {
 	message: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
 	visible: boolean;
 	isConvChildren: boolean;
 	active?: boolean;
 	isSearchModule?: boolean;
 	isConversation?: boolean;
-	deselectAll: () => void;
 	currentFolderId?: string;
 	handleReplaceHistory?: () => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export type TextReadValuesType = {
@@ -42,18 +38,6 @@ export type MsgListDraggableItemType = {
 	isMessageView: boolean;
 	dragCheck: (e: React.DragEvent, id: string) => void;
 	selectedIds: Array<string>;
-};
-export type ListItemActionWrapperProps = {
-	children?: ReactNode;
-	onClick?: MouseEventHandler<HTMLDivElement>;
-	onDoubleClick?: ContainerProps['onDoubleClick'];
-	messagesToRender?: Array<IncompleteMessage>;
-	hoverTooltipLabel?: string;
-	active?: boolean;
-	item: Conversation | MailMessage;
-	deselectAll: () => void;
-	hoverActions: UIActionDescriptor[];
-	dropdownActions: UIActionDescriptor[];
 };
 
 export type ItemAvatarType = {

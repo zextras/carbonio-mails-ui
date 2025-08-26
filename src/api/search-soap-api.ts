@@ -5,9 +5,9 @@
  */
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
 
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import type { SearchSoapApiParams, SearchRequest, SearchResponse } from '../types';
+import type { SearchSoapApiParams, SearchRequest, SearchResponse } from 'types/index.d';
 
 export async function searchSoapApi({
 	folderId,
@@ -62,7 +62,7 @@ export async function searchSoapApi({
 		finalQuery = query;
 	}
 
-	return soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
+	return legacySoapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
 		'Search',
 		{
 			_jsns: 'urn:zimbraMail',

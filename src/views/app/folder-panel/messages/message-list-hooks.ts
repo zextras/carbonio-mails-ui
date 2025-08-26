@@ -5,16 +5,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
-import { searchSoapApi } from '../../../../api/search-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { getFilterQuery } from '../../../../helpers/sorting';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	appendMessagesToMessagesSlice,
 	updateMessagesResultsLoadingStatus
-} from '../../../../store/emails/store';
-import { SearchResponse } from '../../../../types';
+} from 'store/emails/store';
+import { SearchResponse } from 'types/index.d';
 
 function handleLoadMoreResults({
 	searchResponse,
@@ -36,7 +37,8 @@ export function useLoadMoreForMessageList({
 	limit,
 	hasMore,
 	loadingMore,
-	folderId
+	folderId,
+	filterType
 }: {
 	limit: number;
 	sortBy: string;
@@ -44,12 +46,13 @@ export function useLoadMoreForMessageList({
 	offset: number;
 	hasMore?: boolean;
 	loadingMore: React.MutableRefObject<boolean>;
+	filterType: string | undefined;
 }): () => Promise<void> {
 	return useCallback(async () => {
 		if (hasMore && !loadingMore.current) {
 			loadingMore.current = true;
 			const searchResponse = await searchSoapApi({
-				folderId,
+				query: getFilterQuery(filterType, folderId),
 				limit,
 				sortBy,
 				types: 'message',
@@ -68,5 +71,5 @@ export function useLoadMoreForMessageList({
 			}
 			handleLoadMoreResults({ searchResponse, offset });
 		}
-	}, [folderId, hasMore, limit, loadingMore, offset, sortBy]);
+	}, [filterType, folderId, hasMore, limit, loadingMore, offset, sortBy]);
 }

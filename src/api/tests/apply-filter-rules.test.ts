@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
+
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import {
 	applyFilterRulesSoapApi,
 	ApplyFilterRulesSoapRequest,
@@ -14,7 +15,7 @@ import {
 	composeFoldersIdSoapCriteria,
 	composeMessagesIdSoapCriteria,
 	extractMessagesIdFromSoapResponse
-} from '../apply-filter-rules-soap-api';
+} from 'api/apply-filter-rules-soap-api';
 
 describe('composeMessagesIdCriteria', () => {
 	it('returns undefined if an undefined value is provided as parameter', () => {

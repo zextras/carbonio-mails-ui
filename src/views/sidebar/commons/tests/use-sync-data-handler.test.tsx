@@ -5,38 +5,16 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
+import {
+	FOLDERS,
+	folderWorker,
+	tagsWorker,
+	useFolderStore,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
-import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
-import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
-import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
-import {
-	getUseEmailStoreAndHooksForTesting,
-	setConversationsInEmailStore,
-	setSearchResultsByConversation,
-	setSearchResultsByMessage,
-	useConversationById,
-	useConversationIndexSlice,
-	useConversationsByIds,
-	useMessageById
-} from '../../../../store/emails/store';
-import * as triggerNotification from '../../../../store/emails/sync-data-handler/trigger-notification';
-import {
-	generateConversationFromAPI,
-	generateMessageFromAPI
-} from '../../../../tests/generators/api';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
 import {
 	mockShellSoapNotify,
 	mockSoapCreateConversation,
@@ -47,9 +25,31 @@ import {
 	mockSoapModifyConversationAction,
 	mockSoapModifyMessageAction,
 	mockSoapModifyMessageFolder,
-	mockSoapRefresh
+	mockSoapRefresh,
+	mockSoapSync
 } from '../../tests/test-helpers';
-import { useSyncDataHandler } from '../use-sync-data-handler';
+import { getSetupServer } from '@jest-setup';
+import { setupHook } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
+import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import {
+	getUseEmailStoreAndHooksForTesting,
+	setConversationsInEmailStore,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	useConversationById,
+	useConversationIndexSlice,
+	useConversationsByIds,
+	useMessageById
+} from 'store/emails/store';
+import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
+import { generateConversationFromAPI, generateMessageFromAPI } from 'tests/generators/api';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
+import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
 const READ = '';
@@ -58,23 +58,12 @@ const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
-	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
-	getTags: jest.fn()
-}));
-
-jest.mock('../../../../carbonio-ui-commons/worker', () => ({
-	...jest.requireActual('../../../../carbonio-ui-commons/worker'),
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	getTags: jest.fn(),
 	folderWorker: {
 		postMessage: jest.fn()
 	}
-}));
-jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
-	triggerNotification: jest.fn()
-}));
-
-jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
-	triggerNotification: jest.fn()
 }));
 
 jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
@@ -528,7 +517,7 @@ describe('sync data handler', () => {
 				http.post('/service/soap/GetShareInfoRequest', handleGetShareInfoRequest)
 			);
 
-			useNotify.mockReturnValueOnce([notify]);
+			mockSoapSync([notify]);
 			setupHook(() => useSyncDataHandler());
 
 			expect(workerSpy).toHaveBeenCalledTimes(1);

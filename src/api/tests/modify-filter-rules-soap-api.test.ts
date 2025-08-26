@@ -4,55 +4,47 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import {
 	modifyFilterRulesSoapApi,
 	modifyOutgoingFilterRulesSoapApi
-} from '../modify-filter-rules-soap-api';
+} from 'api/modify-filter-rules-soap-api';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	soapFetch: jest.fn()
+jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	legacySoapFetch: jest.fn()
 }));
 
-describe('modifyFilterRulesSoapApi', () => {
-	const mockResponse = { success: true };
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
+const mockResponse = { success: true };
 
+describe('modifyFilterRulesSoapApi', () => {
 	it('should call soapFetch with correct params', async () => {
-		(soapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
+		(legacySoapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
 		await modifyFilterRulesSoapApi([{ name: 'rule1' }]);
-		expect(soapFetch).toHaveBeenCalledWith('ModifyFilterRules', {
+		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyFilterRules', {
 			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
 			_jsns: 'urn:zimbraMail'
 		});
 	});
 
 	it('handles error during filter rule modification', async () => {
-		(soapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(legacySoapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
 		await expect(modifyFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
 	});
 });
 
 describe('modifyOutgoingFilterRulesSoapApi', () => {
-	const mockResponse = { success: true };
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('should call soapFetch with correct params', async () => {
-		(soapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
+		(legacySoapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
 		await modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }]);
-		expect(soapFetch).toHaveBeenCalledWith('ModifyOutgoingFilterRules', {
+		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyOutgoingFilterRules', {
 			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
 			_jsns: 'urn:zimbraMail'
 		});
 	});
 
 	it('handles error during outgoing filter rule modification', async () => {
-		(soapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(legacySoapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
 		await expect(modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
 	});
 });

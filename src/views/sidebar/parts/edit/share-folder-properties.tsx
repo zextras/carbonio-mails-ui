@@ -14,23 +14,21 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 import styled from 'styled-components';
 
-import { Context } from './edit-context';
-import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import {
-	findLabel,
-	ShareCalendarRoleOptions
-} from '../../../../integrations/shared-invite-reply/parts/utils';
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { findLabel, ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import type {
 	ActionProps,
 	GranteeInfoProps,
 	GranteeProps,
 	ShareFolderPropertiesProps
-} from '../../../../types';
+} from 'types/index.d';
+import { Context } from 'views/sidebar/parts/edit/edit-context';
 
 const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
 	background-color: ${({ theme, $hovered }): string =>
@@ -168,7 +166,7 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	const [grant, setGrant] = useState<Array<Grant> | undefined>();
 
 	useEffect(() => {
-		soapFetch('GetFolder', {
+		legacySoapFetch('GetFolder', {
 			_jsns: 'urn:zimbraMail',
 			folder: { l: folder.id }
 		}).then((res: any): void => {

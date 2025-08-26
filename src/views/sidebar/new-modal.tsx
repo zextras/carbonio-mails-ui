@@ -7,17 +7,15 @@ import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } fro
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { find, includes, noop } from 'lodash';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { isValidFolderName, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
+import { find, includes, noop, toLower } from 'lodash';
 
-import { FolderSelector } from './commons/folder-selector';
-import { useTranslatedSystemFolders } from './utils';
-import { createFolderSoapApi } from '../../api/create-folder-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import type { ModalProps } from '../../types';
+import { createFolderSoapApi } from 'api/create-folder-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { ModalProps } from 'types/index.d';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
+import { useTranslatedSystemFolders } from 'views/sidebar/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
@@ -32,7 +30,12 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	);
 	const systemFolderNames = useTranslatedSystemFolders();
 	const showWarning = useMemo(() => {
-		if (includes(systemFolderNames, inputValue)) {
+		if (
+			includes(
+				systemFolderNames.map((name) => name.toLowerCase()),
+				inputValue.toLowerCase()
+			)
+		) {
 			setErrorMsg(
 				t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 			);
@@ -57,7 +60,10 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			setDisabled(true);
 			return;
 		}
-		const value = !!find(folderDestination?.children, (item) => item.name === inputValue);
+		const value = !!find(
+			folderDestination?.children,
+			(item) => toLower(item.name) === toLower(inputValue)
+		);
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
@@ -133,7 +139,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 				/>
 				{showWarning && (
 					<Padding all="small">
-						<Text size="small" color="error">
+						<Text size="small" color="error" data-testid="error-message">
 							{errorMsg}
 						</Text>
 					</Padding>

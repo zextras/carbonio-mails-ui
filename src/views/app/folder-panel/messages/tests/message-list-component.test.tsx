@@ -7,14 +7,17 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop, times } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { setMessagesInEmailStore } from '../../../../../store/emails/store';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
-import { MessageListItemComponent } from '../message-list-item-component';
+import { setupTest } from '@test-setup';
+import { setMessagesInEmailStore } from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
+import {
+	MessageListComponent,
+	MessageListComponentProps
+} from 'views/app/folder-panel/messages/message-list-component';
+import { MessageListItemComponent } from 'views/app/folder-panel/messages/message-list-item-component';
 
 describe.each`
 	type                     | isSearchModule
@@ -32,16 +35,17 @@ describe.each`
 		setMessagesInEmailStore(messages, false);
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
+				deselectAll={noop}
 				messageId={message.id}
-				selected={{}}
+				selectedItems={{}}
 				isSelected={false}
 				active
-				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
 				isSearchModule={isSearchModule}
-				deselectAll={noop}
 				visible
+				index={0}
+				onSelect={noop}
 			/>
 		));
 
@@ -56,12 +60,10 @@ describe.each`
 			messagesLoadingCompleted: true,
 			selectAll: noop,
 			selectAllModeOff: noop,
-			selected: {},
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,
-			totalMessages: messages.length,
-			setDraggedIds: noop
+			totalMessages: messages.length
 		};
 
 		setupTest(<MessageListComponent {...props} />);

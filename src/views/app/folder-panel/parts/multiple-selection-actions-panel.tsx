@@ -9,7 +9,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 
 type MultipleSelectionActionsPanelProps = {
 	itemsIds: Array<string>;

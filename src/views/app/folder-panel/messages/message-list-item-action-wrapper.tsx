@@ -8,15 +8,15 @@ import React, { ReactNode, useMemo } from 'react';
 import { ContainerProps } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { isDraft } from '../../../../helpers/folders';
-import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
-import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { MailMessage } from '../../../../types';
-import { HoverBarContainer } from '../parts/hover-bar-container';
-import { HoverContainer } from '../parts/hover-container';
-import { ListItemDropdownAction } from '../parts/list-item-dropdown-action';
-import { ListItemHoverActions } from '../parts/list-item-hover-actions';
+import { normalizeDropdownActionItem } from 'helpers/actions';
+import { isDraft } from 'helpers/folders';
+import { useMsgActions } from 'hooks/actions/use-msg-actions';
+import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
+import { MailMessage } from 'types/index.d';
+import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
+import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
+import { ListItemDropdownAction } from 'views/app/folder-panel/parts/list-item-dropdown-action';
+import { ListItemHoverActions } from 'views/app/folder-panel/parts/list-item-hover-actions';
 
 type MessageListItemActionWrapperProps = {
 	children?: ReactNode;
@@ -25,14 +25,12 @@ type MessageListItemActionWrapperProps = {
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	item: MailMessage;
-	deselectAll: () => void;
 };
 export const MessageListItemActionWrapper = ({
 	item,
 	active,
 	onClick,
 	onDoubleClick,
-	deselectAll,
 	shouldReplaceHistory,
 	children
 }: MessageListItemActionWrapperProps): React.JSX.Element => {
@@ -60,7 +58,7 @@ export const MessageListItemActionWrapper = ({
 		editAsNewDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory });
+	} = useMsgActions({ message: item, shouldReplaceHistory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const draftItem = isDraft(item.parent);

@@ -8,25 +8,60 @@ import '@testing-library/jest-dom';
 
 import failOnConsole from 'jest-fail-on-console';
 import fetchMock from 'jest-fetch-mock';
+import { noop } from 'lodash';
 import { http } from 'msw';
+import { SetupServer, setupServer } from 'msw/node';
 
-import {
-	defaultAfterAllTests,
-	defaultAfterEachTest,
-	defaultBeforeAllTests,
-	defaultBeforeEachTest,
-	getFailOnConsoleDefaultConfig
-} from './src/carbonio-ui-commons/test/jest-setup';
-import { useLocalStorage } from './src/carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
-import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
-import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
+import { handleGetConvRequest } from 'tests/mocks/network/msw/handle-get-conv';
+import { handleGetMsgRequest } from 'tests/mocks/network/msw/handle-get-msg';
+
+let server: SetupServer;
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig(),
+	shouldFailOnError: true,
+	shouldFailOnWarn: true,
 	silenceMessage: (message) =>
-		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
+		message.includes('React does not recognize the `isGeneric` prop on a DOM element') ||
+		message.includes('React does not recognize the `isQueryFilter` prop on a DOM element') ||
+		message.includes('React does not recognize the `searchString` prop on a DOM element')
 });
+
+/**
+ * Default logic to execute before all the tests
+ */
+type DefaultBeforeAllTestsProps = {
+	onUnhandledRequest: 'warn' | 'error';
+};
+
+export const defaultBeforeAllTests = (
+	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }
+): void => {
+	// Do not useFakeTimers with `whatwg-fetch` if using mocked server
+	// https://github.com/mswjs/msw/issues/448
+
+	// mock a simplified Intersection Observer
+	Object.defineProperty(window, 'IntersectionObserver', {
+		writable: true,
+		value: jest.fn(function intersectionObserverMock(
+			callback: IntersectionObserverCallback,
+			options: IntersectionObserverInit
+		) {
+			return {
+				thresholds: options.threshold,
+				root: options.root,
+				rootMargin: options.rootMargin,
+				observe: jest.fn(),
+				unobserve: jest.fn(),
+				disconnect: jest.fn()
+			};
+		})
+	});
+
+	server = setupServer(...getRestHandlers());
+	server.listen({ onUnhandledRequest });
+};
 
 beforeAll(() => {
 	fetchMock.doMock();
@@ -34,20 +69,17 @@ beforeAll(() => {
 	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
 	registerRestHandler(j);
-	defaultBeforeAllTests();
+	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
 });
 
-beforeEach(() => {
-	defaultBeforeEachTest();
-});
-
 afterEach(() => {
-	defaultAfterEachTest();
+	jest.clearAllTimers();
 });
 
 afterAll(() => {
-	defaultAfterAllTests();
+	server.resetHandlers();
+	server.close();
 });
 
 // Mock matchMedia
@@ -76,3 +108,37 @@ Object.defineProperty(window.crypto, 'randomUUID', {
 	writable: true,
 	value: jest.fn(() => Math.random().toString())
 });
+
+/**
+ * Mocks the Worker class
+ */
+
+type MessageHandler = (msg: string) => void;
+
+class Worker {
+	url: string;
+
+	onmessage: MessageHandler;
+
+	constructor(stringUrl: string) {
+		this.url = stringUrl;
+		this.onmessage = noop;
+	}
+
+	postMessage(msg: string): void {
+		this.onmessage(msg);
+	}
+}
+
+Object.defineProperty(window, 'Worker', {
+	writable: true,
+	value: Worker
+});
+
+export const getSetupServer = (): SetupServer => server;
+
+window.ResizeObserver = jest.fn().mockImplementation(() => ({
+	observe: jest.fn(),
+	unobserve: jest.fn(),
+	disconnect: jest.fn()
+}));

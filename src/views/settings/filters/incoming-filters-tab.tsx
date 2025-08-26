@@ -6,10 +6,10 @@
 
 import React, { useMemo } from 'react';
 
-import { getFiltermanager } from './parts/filter-manager';
-import { MessageFilterTab } from './parts/message-filter-tab';
-import { getIncomingFilters } from '../../../api/get-filters';
-import { modifyFilterRulesSoapApi } from '../../../api/modify-filter-rules-soap-api';
+import { getIncomingFilters } from 'api/get-filters';
+import { modifyFilterRulesSoapApi } from 'api/modify-filter-rules-soap-api';
+import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
+import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 
 export const IncomingFiltersTab = (): React.JSX.Element => {
 	const filtersManagerComponent = useMemo(() => getFiltermanager(true), []);

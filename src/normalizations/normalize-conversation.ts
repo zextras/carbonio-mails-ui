@@ -5,10 +5,14 @@
  */
 import { filter, isNil, map, omitBy } from 'lodash';
 
-import { normalizeParticipantsFromSoap } from './normalize-message';
-import type { NormalizedConversation, SoapConversation, SoapIncompleteMessage } from '../types';
-import { getTagIds } from './utils';
-import { OptionalExcept, SoapPartialConversation } from '../views/sidebar/commons/types';
+import { normalizeParticipantsFromSoap } from 'normalizations/normalize-message';
+import { getTagIds } from 'normalizations/utils';
+import type {
+	NormalizedConversation,
+	SoapConversation,
+	SoapIncompleteMessage
+} from 'types/index.d';
+import { OptionalExcept, SoapPartialConversation } from 'views/sidebar/commons/types';
 
 export type NormalizeConversationProps = {
 	conversation: SoapConversation;

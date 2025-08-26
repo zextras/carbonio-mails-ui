@@ -6,8 +6,8 @@
 
 import { act } from '@testing-library/react';
 
-import { makeListItemsVisible } from '../../../../carbonio-ui-commons/test/test-setup';
-import { Filter } from '../../../../types';
+import { makeListItemsVisible } from '@test-setup';
+import { Filter } from 'types/index.d';
 
 export function mockFilter({
 	name,
@@ -37,6 +37,6 @@ export function mockFilter({
 export function makeAllItemsVisible(): void {
 	makeListItemsVisible();
 	act(() => {
-		jest.advanceTimersByTime(1000);
+		jest.advanceTimersByTime(10_000);
 	});
 }

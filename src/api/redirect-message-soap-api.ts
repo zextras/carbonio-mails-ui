@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, SoapBody, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, legacySoapFetch, SoapBody } from '@zextras/carbonio-ui-soap-lib';
 
-import type { RedirectMessageActionRequest, MessageSpecification } from '../types';
+import type { RedirectMessageActionRequest, MessageSpecification } from 'types/index.d';
 
 export const redirectMessageSoapApi = ({
 	id,
 	e
 }: MessageSpecification): Promise<SoapBody | ErrorSoapBodyResponse> =>
-	soapFetch<RedirectMessageActionRequest, SoapBody | ErrorSoapBodyResponse>('BounceMsg', {
+	legacySoapFetch<RedirectMessageActionRequest, SoapBody | ErrorSoapBodyResponse>('BounceMsg', {
 		_jsns: 'urn:zimbraMail',
 		m: {
 			id,

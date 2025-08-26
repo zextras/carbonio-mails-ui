@@ -4,21 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { RefObject, memo, useEffect, useMemo } from 'react';
+import React, { RefObject, memo, useMemo } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
+import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getConversationById } from '../../../../store/emails/store';
-import ShimmerList from '../../../search/shimmer-list';
-import { Breadcrumbs } from '../parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
-import { getFolderPath } from '../parts/utils/utils';
+import { getConversationById } from 'store/emails/store';
+import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
+import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
+import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
+import ShimmerList from 'views/search/shimmer-list';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -28,25 +27,35 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
+const DragItems = ({
+	draggedIds,
+	deselectAll,
+	onSelect
+}: {
+	draggedIds: Record<string, boolean>;
+	deselectAll: () => void;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+}): React.JSX.Element => (
 	<>
 		{map(
 			Object.keys(draggedIds)
 				.map((draggedId) => getConversationById(draggedId))
 				.filter(Boolean),
-			(conversation) => (
+			(conversation, index) => (
 				<ConversationListItemComponent
+					deselectAll={deselectAll}
+					selectedItems={{}}
 					conversationId={conversation.id}
 					key={conversation.id}
 					draggedIds={draggedIds}
 					activeItemId={conversation.id}
 					selected={false}
 					selecting={false}
-					toggleMultipleSelection={noop}
 					selectedIds={[]}
-					deselectAll={noop}
 					folderId=""
 					setDraggedIds={noop}
+					index={index}
+					onSelect={onSelect}
 				/>
 			)
 		)}
@@ -70,8 +79,6 @@ export type ConversationListComponentProps = {
 	conversationsIds: Array<string>;
 	// the ids of the conversations being dragged
 	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a conversation
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
@@ -92,6 +99,7 @@ export type ConversationListComponentProps = {
 	dragImageRef?: RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
 	loadMoreCallback?: () => void;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const ConversationListComponent = memo(function ConversationListComponent({
@@ -108,17 +116,13 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	setIsSelectModeOn,
 	conversationsLoadingCompleted,
 	draggedIds,
-	setDraggedIds,
 	listItems,
 	totalConversations,
 	dragImageRef,
 	listRef,
-	loadMoreCallback
+	loadMoreCallback,
+	onSelect
 }: ConversationListComponentProps): React.JSX.Element {
-	useEffect(() => {
-		setDraggedIds?.(selected);
-	}, [selected, setDraggedIds]);
-
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
 
@@ -152,7 +156,6 @@ export const ConversationListComponent = memo(function ConversationListComponent
 				>
 					<ConversationsMultipleSelectionActions
 						selectedConversationsIds={selectedIds}
-						deselectAll={deselectAll}
 						folderId={folderId}
 					/>
 				</MultipleSelectionActionsPanel>
@@ -194,7 +197,11 @@ export const ConversationListComponent = memo(function ConversationListComponent
 						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
-						<DragItems draggedIds={draggedIds ?? {}} />
+						<DragItems
+							draggedIds={draggedIds ?? {}}
+							deselectAll={deselectAll}
+							onSelect={onSelect}
+						/>
 					</DragImageContainer>
 				</>
 			) : (

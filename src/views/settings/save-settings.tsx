@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { Identity, updateAccount, updateSettings } from '@zextras/carbonio-shell-ui';
+import { ApiManager, legacyXmlSoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isArray, map } from 'lodash';
 
-import { MAIL_APP_ID } from '../../constants';
+import { MAIL_APP_ID } from 'constants/index';
 
 type AccountSettings = {
 	[key: string]: string | number | Array<string | number> | undefined;
@@ -99,7 +100,7 @@ export const saveSettings = (
 		identity: [Identity];
 	}[];
 }> =>
-	xmlSoapFetch<string, SaveSettingsResponse>(
+	legacyXmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
 				${getRequestForProps(mods.props, appId)}
@@ -116,5 +117,12 @@ export const saveSettings = (
 			};
 			updateAccount({ identities });
 		}
+
+		if (mods.prefs?.zimbraPrefMailPollingInterval !== undefined) {
+			ApiManager.getApiManager().setPollingPreference(
+				mods.prefs?.zimbraPrefMailPollingInterval as string
+			);
+		}
+
 		return resp;
 	});

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { selectPersonalCertificate } from '../select-personal-certificate-api';
+import { selectPersonalCertificate } from 'api/select-personal-certificate-api';
 
 describe('selectPersonalCertificate', () => {
 	const apiURL = '/service/extension/encryption/smime/personal/select';

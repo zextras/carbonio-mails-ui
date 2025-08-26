@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { isNil, noop } from 'lodash';
 
-import { UIActionDescriptor } from '../../../../types';
+import { UIActionDescriptor } from 'types/index.d';
 
 export const MultipleSelectionActionsComponent = ({
 	actions

@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
-import { SmimeIcon } from '../smime-icon';
+import { setupTest } from '@test-setup';
+import { SmimeIcon } from 'views/app/detail-panel/preview/parts/info-block/smime-icon';
 
 describe('SmimeIcon', () => {
 	const validSignature = {

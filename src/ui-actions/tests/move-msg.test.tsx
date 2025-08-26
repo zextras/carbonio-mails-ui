@@ -3,22 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import { MoveMessage } from '../move-msg';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MoveMessage } from 'ui-actions/move-msg';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -39,7 +39,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -50,13 +49,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage
-					folderId={sourceFolder}
-					selectedIDs={msgIds}
-					onClose={jest.fn()}
-					isRestore
-					deselectAll={jest.fn()}
-				/>
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -73,7 +66,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -96,7 +88,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -104,17 +95,10 @@ describe('MoveMsg', () => {
 			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
 
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			await act(async () => {
-				await user.click(inboxFolderListItem);
-			});
+			await user.click(inboxFolderListItem);
 
 			const button = screen.getByRole('button', {
 				name: /Move/
@@ -145,7 +129,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -154,13 +137,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);
@@ -200,7 +178,6 @@ describe('MoveMsg', () => {
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
 					isRestore={false}
-					deselectAll={jest.fn()}
 				/>
 			);
 
@@ -209,13 +186,8 @@ describe('MoveMsg', () => {
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				{}
 			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
 
 			await act(async () => {
 				await user.click(inboxFolderListItem);

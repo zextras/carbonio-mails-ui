@@ -8,10 +8,10 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MarkAs } from './mark-as';
-import { getMarkAsOptions } from './mark-as-utils';
-import { FilterFlag, MarkAsOption } from '../../../../../types';
-import { ActionComponentProps } from '../../types';
+import { FilterFlag, MarkAsOption } from 'types/index.d';
+import { MarkAs } from 'views/settings/filters/parts/filter-actions/mark-as';
+import { getMarkAsOptions } from 'views/settings/filters/parts/filter-actions/mark-as-utils';
+import { ActionComponentProps } from 'views/settings/filters/types';
 
 export const ActionMarkAsComponent = ({
 	value,

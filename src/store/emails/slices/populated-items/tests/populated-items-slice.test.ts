@@ -5,27 +5,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { awaitExpression } from '@babel/types';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { CONVACTIONS } from '../../../../../commons/utilities';
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
+import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
+import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { generateCompleteMessageFromAPI } from 'tests/generators/api';
 import {
 	generateConversation,
 	populateConversationInEmailStore
-} from '../../../../../tests/generators/generateConversation';
-import {
-	generateMessage,
-	populateMessagesInEmailStore
-} from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse, IncompleteMessage, MailMessage } from '../../../../../types';
+} from 'tests/generators/generateConversation';
+import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
 	getConversationMessages,
@@ -52,12 +48,12 @@ import {
 	useMessagesByFolder,
 	useMessagesByIds,
 	useMessageStatus
-} from '../../../store';
-import { omit } from 'lodash';
+} from 'store/emails/store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 
@@ -109,8 +105,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/plain',
 						size: 0,
-						name: 'My Part',
-						requiresSmartLinkConversion: false
+						name: 'My Part'
 					}
 				];
 				populateMessagesInEmailStore({
@@ -140,8 +135,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/plain',
 						size: 0,
-						name: 'My Part',
-						requiresSmartLinkConversion: false
+						name: 'My Part'
 					}
 				];
 				populateMessagesInEmailStore({
@@ -156,8 +150,7 @@ describe('store-populated-items-slice', () => {
 					{
 						contentType: 'text/html',
 						size: 100,
-						name: 'My Part updated',
-						requiresSmartLinkConversion: true
+						name: 'My Part updated'
 					}
 				];
 				const messages = [

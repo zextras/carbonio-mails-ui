@@ -3,16 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useMemo } from 'react';
+
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import {
+	DragEnterAction,
+	Folder,
+	FOLDERS,
+	isSystemFolder,
+	OnDropActionProps,
+	ROOT_NAME,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { ROOT_NAME, ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import { type Folder } from '../../carbonio-ui-commons/types/folder';
-import { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
-import { getFolderIdParts, isDraft, isSpam } from '../../helpers/folders';
+import { getFolderIdParts, isDraft, isSpam } from 'helpers/folders';
 
 export const capitalise = (word: string): string => {
 	const asciiRef = word?.charCodeAt(0);
@@ -30,8 +36,20 @@ export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
-export const getFolderIconName = (folder: Folder | AccordionItemType): string | null => {
+/**
+ * Get the icon name for a folder
+ * @param folder - The folder object
+ * @param withNotificationDot - Whether to add a notification dot to the icon name
+ *
+ * NOTE: Icons with dots are not available in the design system, they are provided by the
+ * {@link StyledWrapper} component.
+ */
+export const getFolderIconName = (
+	folder: Folder | AccordionItemType,
+	withNotificationDot = false
+): string | null => {
 	const { id } = getFolderIdParts(folder.id);
+
 	if (
 		id === FOLDERS.USER_ROOT ||
 		('isLink' in folder && folder.isLink && folder.oname === ROOT_NAME)
@@ -39,35 +57,48 @@ export const getFolderIconName = (folder: Folder | AccordionItemType): string | 
 		return null;
 	}
 
+	let iconName: string;
+
 	if (id && isSystemFolder(id)) {
 		switch (id) {
 			case FOLDERS.INBOX:
-				return 'InboxOutline';
+				iconName = 'InboxOutline';
+				break;
 			case FOLDERS.DRAFTS:
-				return 'FileOutline';
+				iconName = 'FileOutline';
+				break;
 			case FOLDERS.SENT:
-				return 'PaperPlaneOutline';
+				iconName = 'PaperPlaneOutline';
+				break;
 			case FOLDERS.SPAM:
-				return 'SlashOutline';
+				iconName = 'SlashOutline';
+				break;
 			case FOLDERS.TRASH:
-				return 'Trash2Outline';
+				iconName = 'Trash2Outline';
+				break;
 			default:
-				return 'FolderOutline';
+				iconName = 'FolderOutline';
 		}
+	} else {
+		iconName = 'FolderOutline';
 	}
-	return 'FolderOutline';
+
+	return withNotificationDot ? `${iconName}WithDot` : iconName;
 };
 
 export const useTranslatedSystemFolders = (): Array<string> => {
 	const [translate] = useTranslation();
-	return [
-		translate('folders.inbox', 'Inbox'),
-		translate('folders.sent', 'Sent'),
-		translate('folders.drafts', 'Drafts'),
-		translate('folders.trash', 'Trash'),
-		translate('folders.spam', 'Spam'),
-		translate('folders.junk', 'Junk')
-	];
+	return useMemo(
+		() => [
+			translate('folders.inbox', 'Inbox'),
+			translate('folders.sent', 'Sent'),
+			translate('folders.drafts', 'Drafts'),
+			translate('folders.trash', 'Trash'),
+			translate('folders.spam', 'Spam'),
+			translate('folders.junk', 'Junk')
+		],
+		[translate]
+	);
 };
 
 type GetSystemFolderProps = {
@@ -115,9 +146,9 @@ export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEn
 	const isTrash = itemData.parentFolderId === FOLDERS.TRASH;
 
 	if (type === 'conversation' || type === 'message') {
-		const restrictedDestinations = new Set([FOLDERS.USER_ROOT]);
-		const restrictedInboxTargets = new Set([FOLDERS.SENT, FOLDERS.DRAFTS]);
-		const restrictedDraftTargets = new Set([FOLDERS.TRASH]);
+		const restrictedDestinations = new Set<string>([FOLDERS.USER_ROOT]);
+		const restrictedInboxTargets = new Set<string>([FOLDERS.SENT, FOLDERS.DRAFTS]);
+		const restrictedDraftTargets = new Set<string>([FOLDERS.TRASH]);
 
 		if (
 			itemData.parentFolderId === id || // same folder not allowed
@@ -144,4 +175,28 @@ export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEn
 	}
 
 	return undefined;
+}
+
+export function getTotalUnreadCount(folder: Folder): number {
+	let count = folder.u ?? 0;
+
+	folder.children?.forEach((subfolder) => {
+		count += getTotalUnreadCount(subfolder);
+	});
+
+	return count;
+}
+
+export function getTotalUnreadCountInSubfolders(folder: Folder): number {
+	let count = 0;
+	if (folder.children?.length) {
+		folder.children.forEach((subfolder) => {
+			count += getTotalUnreadCount(subfolder);
+		});
+	}
+	return count;
+}
+
+export function folderHasChildren(folder: Folder): boolean {
+	return folder.children?.length > 0;
 }

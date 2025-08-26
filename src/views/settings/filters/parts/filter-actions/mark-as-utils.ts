@@ -6,7 +6,7 @@
 
 import { TFunction } from 'i18next';
 
-import { MarkAsOption } from '../../../../../types';
+import { MarkAsOption } from 'types/index.d';
 
 export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
 	{

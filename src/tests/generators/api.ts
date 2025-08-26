@@ -7,14 +7,14 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import { getSetupServer } from '@jest-setup';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
-} from '../../types';
+} from 'types/index.d';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}
@@ -22,7 +22,6 @@ export function generateMessagePartFromAPI(
 	return {
 		part: 'part',
 		ct: 'ct',
-		requiresSmartLinkConversion: false,
 		...params
 	};
 }
@@ -95,12 +94,12 @@ export const createSoapAPIInterceptorWithError = <RequestParamsType>(
 					const requestContent = await request.json();
 					const params = requestContent?.Body?.[reqActionParamWrapper];
 					resolve(params);
-
 					return HttpResponse.error();
 				}
 			)
 		);
 	});
+
 export function generateConversationFromAPI(
 	params: Partial<SoapConversation> = {}
 ): SoapConversation {

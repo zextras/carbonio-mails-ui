@@ -5,15 +5,15 @@
  */
 
 import { SoapNotify } from '@zextras/carbonio-shell-ui';
+import { TagState } from '@zextras/carbonio-ui-commons';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { TagState } from '../../../carbonio-ui-commons/types/tags';
 import {
 	FolderState,
 	IncompleteMessage,
 	SoapConversation,
 	SoapIncompleteMessage
-} from '../../../types';
+} from 'types/index.d';
 
 export type OptionalExcept<T, K extends keyof T> = {
 	[P in keyof T as P extends K ? P : never]: T[P];
@@ -37,3 +37,12 @@ export type HandleTagsNotifyProps = {
 export type SoapPartialConversation = OptionalExcept<SoapConversation, 'id'>;
 export type SoapPartialIncompleteMessage = OptionalExcept<SoapIncompleteMessage, 'id'>;
 export type PartialIncompleteMessage = OptionalExcept<IncompleteMessage, 'id'>;
+
+export type RetentionPolicyState = {
+	showPolicy: boolean;
+	dsblMsgDis: boolean;
+	emptyDisValue: boolean;
+	purgeValue: number | string;
+	dspYear: string | null;
+	dspRange: string;
+};

@@ -6,20 +6,17 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
+import { Folder, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
-import { Folder } from '../carbonio-ui-commons/types/folder';
-import { isRoot } from '../helpers/folders';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
-import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { isRoot } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type MoveMessageProps = {
 	selectedIDs: string[];
 	isRestore?: boolean;
-	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
 };
@@ -27,7 +24,6 @@ type MoveMessageProps = {
 export const MoveMessage = ({
 	selectedIDs,
 	isRestore,
-	deselectAll,
 	onClose,
 	folderId
 }: MoveMessageProps): ReactElement => {
@@ -48,7 +44,6 @@ export const MoveMessage = ({
 				parent: newFolderId
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -72,7 +67,7 @@ export const MoveMessage = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, createSnackbar, isRestore, t]
 	);
 
 	const isDestinationFolderSelectionInvalid = useMemo(

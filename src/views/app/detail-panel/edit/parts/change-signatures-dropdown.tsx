@@ -9,9 +9,9 @@ import { Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-sys
 import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
 
-import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
-import { useEditorSignatureId, useEditorText } from '../../../../../store/editor';
-import { MailsEditorV2, SignItemType } from '../../../../../types';
+import { getMailBodyWithSignature } from 'helpers/signatures';
+import { useEditorSignatureId, useEditorText } from 'store/editor/index';
+import { MailsEditorV2, SignItemType } from 'types/index.d';
 
 export type SignaturesDropdownProps = {
 	editorId: MailsEditorV2['id'];
@@ -44,11 +44,16 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
+			const oldSignatureId = signatureId;
 			setSignatureId(signature.id);
-			const textWithSignature = getMailBodyWithSignature(getText(), signature.id);
+			const textWithSignature = getMailBodyWithSignature({
+				editorText: getText(),
+				newSignatureId: signature.id,
+				oldSignatureId
+			});
 			setText(textWithSignature);
 		},
-		[setSignatureId, setText, getText]
+		[signatureId, setSignatureId, getText, setText]
 	);
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(

@@ -10,19 +10,19 @@ import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../constants';
-import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
+import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from 'constants/index';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
-	useMessagesByIds,
-	useMessageLoadingStatus
-} from '../store/emails/store';
-import { SearchRequestStatus } from '../types';
-import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';
-import { useLoadMoreForMessageList } from '../views/app/folder-panel/messages/message-list-hooks';
+	useMessageLoadingStatus,
+	useMessagesByIds
+} from 'store/emails/store';
+import { SearchRequestStatus } from 'types/index.d';
+import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
+import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 
 export type HeaderNavigationActionItem = {
 	tooltipLabel: string | undefined;
@@ -67,11 +67,11 @@ export const usePreviewHeaderNavigation = ({
 	const items = isMessageView ? messages : conversations;
 
 	const itemIndex = findIndex(itemIds, (item) => item === currentItemId);
-
-	const { sortOrder } = parseMessageSortingOptions(
-		folderId,
-		settings.prefs.zimbraPrefSortOrder as string
+	const { sortType, sortDirection, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, settings.prefs.zimbraPrefSortOrder as string),
+		[folderId, settings.prefs.zimbraPrefSortOrder]
 	);
+	const sortOrder = useMemo(() => sortType.concat(sortDirection), [sortDirection, sortType]);
 
 	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 
@@ -183,7 +183,8 @@ export const usePreviewHeaderNavigation = ({
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		hasMore,
 		loadingMore,
-		folderId
+		folderId,
+		filterType
 	});
 
 	const loadMoreMessages = useLoadMoreForMessageList({
@@ -192,7 +193,8 @@ export const usePreviewHeaderNavigation = ({
 		offset: items.length,
 		hasMore,
 		loadingMore,
-		folderId
+		folderId,
+		filterType
 	});
 
 	const loadMore = isMessageView ? loadMoreMessages : loadMoreConversations;

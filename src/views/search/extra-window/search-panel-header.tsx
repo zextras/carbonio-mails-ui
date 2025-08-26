@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import {
 	Button,
@@ -17,7 +17,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
-import type { MailMessage, NormalizedConversation } from '../../../types';
+import type { MailMessage, NormalizedConversation } from 'types/index.d';
 
 export const SearchPanelHeader: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
@@ -30,6 +30,19 @@ export const SearchPanelHeader: FC<{
 		() => item?.subject ?? t('label.no_subject_with_tags', '<No Subject>'),
 		[item?.subject]
 	);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent): void => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				e.stopPropagation();
+				closePanelCallback();
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [closePanelCallback]);
+
 	return (
 		<>
 			<Container

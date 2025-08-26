@@ -15,42 +15,36 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { BackupSearchMessageListItem } from './backup-search-message-list-item';
-import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
-import { restoreMessagesApi } from '../../../api/restore-messages-api';
-import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
-import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
-import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
-import { useSelection } from '../../../hooks/use-selection';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
+import { restoreMessagesApi } from 'api/restore-messages-api';
+import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from 'constants/index';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
+import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-search-recovery-modal';
 
 export const BackupSearchList = (): React.JSX.Element => {
-	const [count, setCount] = useState(0);
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
-	const {
-		selected: selectedMessage,
-		toggle,
-		deselectAll,
-		selectAll,
-		isAllSelected
-	} = useSelection({
-		setCount,
-		count,
-		items: [...Object.keys(messages ?? {})]
+	const { selectRange, deselectAll, selectAll, isAllSelected } = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
+		allAvailableItems: [...Object.keys(messages ?? {})],
+		selectedItems,
+		setSelectedItems
 	});
 
-	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);
 	const createSnackbar = useSnackbar();
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			const response = await restoreMessagesApi(selectedIds);
+			const response = await restoreMessagesApi(Array.from(selectedItems));
 			closeModal();
 			if ('error' in response) {
 				createSnackbar({
@@ -76,7 +70,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 				hideButton: true
 			});
 		},
-		[createSnackbar, navigate, selectedIds]
+		[createSnackbar, navigate, selectedItems]
 	);
 
 	const { createModal, closeModal } = useModal();
@@ -101,9 +95,9 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
+			Object.values(messages).map((message, index) => {
 				const active = itemId === message.id;
-				const isSelected = selectedMessage[message.id];
+				const isSelected = selectedItems?.has(message.id);
 				return (
 					<CustomListItem
 						key={message.id}
@@ -116,7 +110,8 @@ export const BackupSearchList = (): React.JSX.Element => {
 								<BackupSearchMessageListItem
 									message={message}
 									messageIsSelected={isSelected}
-									toggle={toggle}
+									onSelect={selectRange}
+									index={index}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} />
@@ -125,7 +120,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 					</CustomListItem>
 				);
 			}),
-		[itemId, messages, selectedMessage, toggle]
+		[itemId, messages, selectRange, selectedItems]
 	);
 
 	const selectAllOnClick = useCallback(() => {
@@ -177,7 +172,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 							size="medium"
 							type="outlined"
 							width="fill"
-							disabled={!selectedIds.length}
+							disabled={selectedItems.size === 0}
 						/>
 					</Row>
 				</Row>

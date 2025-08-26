@@ -9,30 +9,30 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SearchMessageListItemCore } from './search-message-list-item-core';
-import { EditViewActions } from '../../../../constants';
-import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
-import { MailMessage } from '../../../../types';
-import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
-import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
+import { EditViewActions } from 'constants/index';
+import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { MailMessage } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
+import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 	active?: boolean;
-	deselectAll: () => void;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
 	completeMessage,
 	selected,
 	selecting,
-	toggle,
-	active,
-	deselectAll
+	index,
+	onSelect,
+	active
 }) {
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const itemId = completeMessage.id;
@@ -53,7 +53,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		ids: [itemId],
 		shouldReplaceHistory,
 		isMessageRead: completeMessage.read,
-		deselectAll,
 		folderId
 	});
 
@@ -99,14 +98,14 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					active={active}
 					onClick={onClick}
 					onDoubleClick={onDoubleClick}
-					deselectAll={deselectAll}
 					shouldReplaceHistory={shouldReplaceHistory}
 				>
 					<SearchMessageListItemCore
 						completeMessage={completeMessage}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						onSelect={onSelect}
+						index={index}
 						folderId={folderId}
 					/>
 				</MessageListItemActionWrapper>
@@ -115,7 +114,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					completeMessage={completeMessage}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
+					onSelect={onSelect}
+					index={index}
 					folderId={folderId}
 				/>
 			)}

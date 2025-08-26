@@ -3,22 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
+import { fireEvent } from '@testing-library/react';
 import { forEach, reduce, times } from 'lodash';
 
+import { setupTest, screen } from '@test-setup';
 import {
 	getIntegratedFunction,
 	useIntegratedFunction
-} from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { getEditor } from '../../../../../../store/editor';
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { TESTID_SELECTORS } from '../../../../../../tests/constants';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
-import { AddAttachmentsDropdown } from '../add-attachments-dropdown';
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { getEditor } from 'store/editor/index';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 
 type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };
@@ -35,7 +37,7 @@ const generateFilesIntegrationMocks = (
 	const nodes = times<FilesNode>(filesCount, () => ({
 		id: faker.string.uuid(),
 		name: faker.system.fileName(),
-		size: faker.number.int({ min: 1, max: 3_000_000 }),
+		size: 1_000_000,
 		mime_type: faker.system.mimeType()
 	}));
 
@@ -164,10 +166,35 @@ describe('AddAttachmentsDropdown', () => {
 		expect(screen.getByText('composer.attachment.url')).toBeVisible();
 	});
 
+	it('should open convert to smartlink modal when files exceed size limit', async () => {
+		const editor = generateNewMessageEditor();
+		setupEditorStore({ editors: [editor] });
+		setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+		const fileInput = screen.getByTestId('file-input');
+
+		// Create large mock files that exceed limit
+		const largeFile = new File(['large content'], 'large-file.txt', { type: 'text/plain' });
+		Object.defineProperty(largeFile, 'size', { value: 50000000 }); // 50MB
+
+		const fileList = {
+			0: largeFile,
+			length: 1,
+			item: (): File => largeFile
+		};
+
+		Object.defineProperty(fileInput, 'files', { value: fileList });
+
+		// Trigger file change
+		// eslint-disable-next-line testing-library/prefer-user-event
+		fireEvent.change(fileInput);
+		await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
+	});
+
 	describe('Actions', () => {
 		describe('Add files from Files', () => {
-			it('should update the store with the uploaded attachments', async () => {
-				const FILES_COUNT = 4;
+			it('should update the store with the uploaded attachments when files size is within the limit', async () => {
+				const FILES_COUNT = 2;
 				const { attachments } = generateFilesIntegrationMocks(FILES_COUNT);
 
 				const editor = generateNewMessageEditor();
@@ -187,6 +214,19 @@ describe('AddAttachmentsDropdown', () => {
 						)
 					).toBeTruthy();
 				});
+			});
+			it('should open the smartlink modal when files size is within the limit', async () => {
+				const FILES_COUNT = 50;
+				generateFilesIntegrationMocks(FILES_COUNT);
+
+				const editor = generateNewMessageEditor();
+				setupEditorStore({ editors: [editor] });
+				const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+				const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+				await user.click(dropdownIcon);
+				await user.click(screen.getByText('composer.attachment.files'));
+
+				await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
 			});
 		});
 	});

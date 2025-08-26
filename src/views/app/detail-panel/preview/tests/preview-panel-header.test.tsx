@@ -3,21 +3,32 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
-import { setConversationsInEmailStore } from '../../../../../store/emails/store';
-import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
-import { PreviewPanelHeader } from '../preview-panel-header';
+import { screen, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { MAILS_VIEW_LAYOUTS } from 'constants/index';
+import { setConversationsInEmailStore } from 'store/emails/store';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { mockLayoutStorage } from 'tests/layouts-utils';
+import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+	const actual = jest.requireActual('react-router-dom');
+	return {
+		...actual,
+		useNavigate: (): jest.Mock => mockNavigate
+	};
+});
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {

@@ -9,15 +9,14 @@ import { Container, Icon, Link, Padding, Row, Text } from '@zextras/carbonio-des
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { AttachmentPreview } from './attachment-preview';
-import * as StyledComp from './parts/edit-view-styled-components';
-import { useEditorAttachments } from '../../../../store/editor';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
+import { useEditorAttachments } from 'store/editor/index';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import { AttachmentPreview } from 'views/app/detail-panel/edit/attachment-preview';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
-	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
-}> = ({ editorId, setLargeFileUploadInfoBannerVisible }): ReactElement => {
+}> = ({ editorId }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
@@ -54,7 +53,6 @@ export const EditAttachmentsBlock: FC<{
 									key={`att-${attachment.filename}-${index}`}
 									editorId={editorId}
 									attachment={attachment}
-									setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
 								/>
 							) : (
 								<></>

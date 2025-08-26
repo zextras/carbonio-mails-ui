@@ -7,18 +7,18 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { useTagExist } from '../../../../../ui-actions/tag-actions';
-import { SearchConversationListItemCore } from '../search-conversation-list-item-core';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 jest.mock('../../../../../ui-actions/tag-actions', () => ({
@@ -46,11 +46,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -72,11 +73,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={{ ...conversation, read: false }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -98,11 +100,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={mockSetOpen}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -128,11 +131,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={{ ...conversation, urgent: true }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -153,11 +157,12 @@ describe('SearchConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
 				open={false}
 				setOpen={jest.fn()}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -186,11 +191,12 @@ describe('SearchConversationListItemCore', () => {
 					conversation={conversation}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
 					open={false}
 					setOpen={jest.fn()}
 					conversationStatus={API_REQUEST_STATUS.fulfilled}
 					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={jest.fn()}
 				/>
 			);
 
@@ -215,11 +221,12 @@ describe('SearchConversationListItemCore', () => {
 					conversation={conversation}
 					selected={false}
 					selecting={false}
-					toggle={mockToggle}
 					open={false}
 					setOpen={jest.fn()}
 					conversationStatus={API_REQUEST_STATUS.fulfilled}
 					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={jest.fn()}
 				/>
 			);
 

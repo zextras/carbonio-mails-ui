@@ -9,13 +9,13 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { forEach, noop, reduce } from 'lodash';
 
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from '../../constants';
-import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import type { MailMessage } from '../../types';
-import { MessagesMultipleSelectionActions } from '../../views/app/folder-panel/messages/messages-multiple-selection-actions';
-import { MultipleSelectionActionsPanel } from '../../views/app/folder-panel/parts/multiple-selection-actions-panel';
+import { setupTest } from '@test-setup';
+import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from 'constants/index';
+import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from 'tests/constants';
+import { generateMessage } from 'tests/generators/generateMessage';
+import type { MailMessage } from 'types/index.d';
+import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
+import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 const generalFolders = {
 	desc: 'general folders',
@@ -65,9 +65,6 @@ function getFoldersAllowed(
 	};
 }
 
-const deselectAll = jest.fn();
-const selectAll = jest.fn();
-
 const props = {
 	items: [],
 	selectAllModeOff: noop,
@@ -75,8 +72,8 @@ const props = {
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
-	deselectAll,
-	selectAll
+	deselectAll: jest.fn(),
+	selectAll: jest.fn()
 };
 describe('Actions visibility', () => {
 	test.each`
@@ -104,11 +101,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -133,11 +126,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion === true)
@@ -174,11 +163,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -202,11 +187,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion === true)
@@ -243,11 +224,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -271,11 +248,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				if (assertion === true)
@@ -311,11 +284,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(
@@ -340,11 +309,7 @@ describe('Actions visibility', () => {
 
 				setupTest(
 					<MultipleSelectionActionsPanel {...testProps}>
-						<MessagesMultipleSelectionActions
-							ids={selectedIds}
-							deselectAll={deselectAll}
-							folderId={excludedFolder}
-						/>
+						<MessagesMultipleSelectionActions ids={selectedIds} folderId={excludedFolder} />
 					</MultipleSelectionActionsPanel>
 				);
 				expect(screen.getByTestId(`primary-multi-action-button-${action.id}`)).toBeInTheDocument();

@@ -3,16 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 
-import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getUserAccount } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
-import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
+import { setupTest } from '@test-setup';
+import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	getFolder: jest.fn()
+}));
 
 const deletedMessage = {
 	messageId: '1',
@@ -27,8 +33,11 @@ const deletedMessage = {
 };
 
 describe('Backup search list', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should display To when sender is the owner', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'francesco@example.com'
 		});
@@ -39,7 +48,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -53,7 +63,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should display inbox chip', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(generateFolder({ name: 'Inbox' }));
+		(getFolder as jest.Mock).mockReturnValue(generateFolder({ name: 'Inbox' }));
 
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
@@ -62,7 +72,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -73,8 +84,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should not display the chip if no folder is found', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
-
+		(getFolder as jest.Mock).mockReturnValue(undefined);
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
@@ -82,7 +92,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -103,7 +114,8 @@ describe('Backup search list', () => {
 		setupTest(
 			<BackupSearchMessageListItem
 				message={message}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,

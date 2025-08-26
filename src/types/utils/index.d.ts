@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { TextProps } from '@zextras/carbonio-design-system';
-
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder } from '@zextras/carbonio-ui-commons';
 
 export type ModalProps = {
 	folder: Folder;
@@ -21,14 +20,6 @@ export type TextReadValuesProps = {
 	color: string;
 	weight: TextProps['weight'];
 	badge: 'unread' | 'read';
-};
-
-export type ServicesCatalog = Array<string>;
-export type AppContext = {
-	isMessageView: boolean;
-	count: number;
-	setCount: (arg: number | ((prevState: number) => number)) => void;
-	servicesCatalog: ServicesCatalog;
 };
 
 export type ThemeObj = {
@@ -88,9 +79,9 @@ export type DragItemWrapperProps = {
 	item: MailMessage | Conversation;
 	selectedIds: Array<string>;
 	selectedItems: Record<string, boolean>;
+	deselectAll: () => void;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	dragImageRef: React.RefObject<HTMLElement> | undefined;
 	dragAndDropIsDisabled: boolean;
-	deselectAll: () => void;
 	children: React.ReactNode;
 };

@@ -8,8 +8,8 @@ import React from 'react';
 
 import { map, noop } from 'lodash';
 
-import { MessageListItem } from './message-list-item';
-import { getMessageById } from '../../../../store/emails/store';
+import { getMessageById } from 'store/emails/store';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 export const DragItems = ({
 	draggedIds
@@ -21,16 +21,16 @@ export const DragItems = ({
 	).filter(Boolean);
 	return (
 		<>
-			{map(items, (item) => (
+			{map(items, (item, index) => (
 				<MessageListItem
 					message={item}
 					key={`dragged-item-${item.id}`}
 					isConvChildren={false}
-					toggle={noop}
 					selected={false}
 					selecting={false}
 					visible={false}
-					deselectAll={noop}
+					index={index}
+					onSelect={noop}
 				/>
 			))}
 		</>

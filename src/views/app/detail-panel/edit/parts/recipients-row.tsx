@@ -5,13 +5,16 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
+import {
+	CONTACT_TYPES,
+	ContactInputItem,
+	ParticipantRoleType,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 import { Participant } from '../../../../../types';
+import { isValidEmail } from 'views/search/parts/utils';
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;
@@ -84,7 +87,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 							email: recipient.address,
 							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 						},
-						error: recipient.error
+						error: !isValidEmail(recipient.address)
 					}
 				);
 			}),
@@ -97,7 +100,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			placeholder={label}
 			onChange={onContactInputChange}
 			defaultValue={recipientsAsContacts}
-			hasError={some(recipients ?? [], { error: true })}
+			hasError={some(recipientsAsContacts ?? [], { error: true })}
 			dragAndDropEnabled
 			orderedAccountIds={orderedAccountIds}
 		/>

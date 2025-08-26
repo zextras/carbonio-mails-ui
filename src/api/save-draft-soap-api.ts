@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../types';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+
+import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
 
 export const saveDraftSoapApi = ({
 	soapDraftMessageObj,
 	signal
 }: SaveDraftParameters): Promise<SaveDraftResponse> =>
-	soapFetch<SaveDraftRequest, SaveDraftResponse>(
+	legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SaveDraft',
 		{
 			_jsns: 'urn:zimbraMail',

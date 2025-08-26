@@ -11,17 +11,17 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { SearchConversationListItemCore } from './search-conversation-list-item-core';
-import { SearchConversationMessagesList } from './search-conversation-messages-list';
-import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
-import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
+import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import {
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus
-} from '../../../../store/emails/store';
-import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
+} from 'store/emails/store';
+import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
+import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
+import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -31,9 +31,9 @@ type SearchConversationListItemProps = {
 	selecting: boolean;
 	active: boolean;
 	activeItemId?: string;
-	toggle: (id: string) => void;
 	selected: boolean;
-	deselectAll: () => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
@@ -41,16 +41,16 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	selecting,
 	active,
 	activeItemId,
-	toggle,
 	selected,
-	deselectAll
+	index,
+	onSelect
 }) => {
 	const conversation = useConversationById(conversationId);
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
-	const { id, isDraft, parent } = messages[0];
+	const { parent } = messages[0];
 	const navigate = useNavigate();
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -63,7 +63,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
 		isConversationRead: conversation.read,
-		deselectAll,
 		folderId: parent ?? ''
 	});
 
@@ -103,17 +102,17 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
-					deselectAll={deselectAll}
 				>
 					<SearchConversationListItemCore
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
 						open={open}
 						setOpen={setOpen}
 						conversationStatus={conversationStatus}
 						parent={messages[0].parent}
+						index={index}
+						onSelect={onSelect}
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
@@ -121,11 +120,12 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
 					open={open}
 					setOpen={setOpen}
 					conversationStatus={conversationStatus}
 					parent={messages[0].parent}
+					index={index}
+					onSelect={onSelect}
 				/>
 			)}
 			{open && (

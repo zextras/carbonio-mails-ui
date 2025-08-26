@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
-
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const MAILS_ROUTE = 'mails';
 
@@ -481,7 +480,8 @@ export const TIMEOUTS = {
 	SET_AS_SPAM: SNACKBAR_DEFAULT_TIMEOUT,
 	REDIRECT: SNACKBAR_DEFAULT_TIMEOUT,
 	DRAFT_INFO_HIDING_DELAY: 3000,
-	COMPLETED_UPLOAD_NOTIFICATION_VISIBILITY: 3000
+	COMPLETED_UPLOAD_NOTIFICATION_VISIBILITY: 3000,
+	INVALID_EMAIL_RECIPIENT_TIMEOUT: 5000
 };
 
 export const LIST_LIMIT = {

@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 /**
  * Describes the portion of the SOAP request that
@@ -132,21 +133,21 @@ export const applyFilterRulesSoapApi = async ({
 	const messagesCriteria =
 		folderCriteria === undefined ? composeMessagesIdSoapCriteria(messagesId) : undefined;
 	try {
-		const soapResult = await soapFetch<ApplyFilterRulesSoapRequest, ApplyFilterRulesSoapResponse>(
-			'ApplyFilterRules',
-			{
-				filterRules: [
-					{
-						filterRule: {
-							name: ruleName
-						}
+		const soapResult = await legacySoapFetch<
+			ApplyFilterRulesSoapRequest,
+			ApplyFilterRulesSoapResponse
+		>('ApplyFilterRules', {
+			filterRules: [
+				{
+					filterRule: {
+						name: ruleName
 					}
-				],
-				...(messagesCriteria && { m: messagesCriteria }),
-				...(folderCriteria && { query: folderCriteria }),
-				_jsns: 'urn:zimbraMail'
-			}
-		);
+				}
+			],
+			...(messagesCriteria && { m: messagesCriteria }),
+			...(folderCriteria && { query: folderCriteria }),
+			_jsns: 'urn:zimbraMail'
+		});
 
 		if (isSoapError(soapResult)) {
 			return Promise.reject(soapResult.Fault.Reason.Text);

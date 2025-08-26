@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import {
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus
-} from '../../store/editor/editor-utils';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 
 const alignState = (editor: MailsEditorV2): void => {
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -39,24 +36,13 @@ export const readyToBeSentEditorTestCase = async (
 	return editor;
 };
 
-export const aSmartLinkAttachment = (): SavedAttachment => ({
-	contentType: 'message/rfc822',
-	size: 12,
-	partName: '2',
-	messageId: '11215',
-	isInline: false,
-	filename: `smartlink-attachment`,
-	requiresSmartLinkConversion: true
-});
-
 export const aSavedAttachment = (): SavedAttachment => ({
 	contentType: 'message/rfc822',
 	size: 13,
 	partName: '2',
 	messageId: '11215',
 	isInline: false,
-	filename: `saved-attachment`,
-	requiresSmartLinkConversion: false
+	filename: `saved-attachment`
 });
 
 export const anUnsavedAttachment = (): UnsavedAttachment => ({

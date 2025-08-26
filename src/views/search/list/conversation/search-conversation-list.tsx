@@ -3,68 +3,65 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isEmpty, map } from 'lodash';
+import { t } from '@zextras/carbonio-shell-ui';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchConversationListItem } from './search-conversation-list-item';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, SearchListProps } from '../../../../types';
-import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
-import { ConversationsMultipleSelectionActions } from '../../../app/folder-panel/conversations/conversations-multiple-selection-actions';
-import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
-import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
-import ShimmerList from '../../shimmer-list';
-import { SearchListHeader } from '../parts/search-list-header';
+import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import type { SearchListProps } from 'types/index.d';
+import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
+import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
+import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
+import { SearchListHeader } from 'views/search/list/parts/search-list-header';
+import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
+import ShimmerList from 'views/search/shimmer-list';
 
 export const SearchConversationList = ({
 	searchResults: conversationIds,
 	query,
 	loading,
-	setShowAdvanceFilters,
 	isInvalidQuery,
-	searchDisabled,
-	invalidQueryTooltip,
-	hasMore
+	hasMore,
+	searchResultsStatus
 }: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams() as { itemId?: string };
 	const loadingMore = useRef<boolean>(false);
-	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+
 	const {
-		selected,
-		toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
-	} = useSelection({
-		setCount,
-		count,
-		items: conversationIds
+		selectAllModeOff,
+		selectRange
+	} = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
+		allAvailableItems: conversationIds,
+		selectedItems,
+		setSelectedItems
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (isInvalidQuery) {
-			return null;
-		}
-		if (isEmpty(conversationIds)) {
+		if (searchResultsStatus === 'fulfilled' && conversationIds.length === 0 && !loading) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, conversationIds]);
+	}, [searchResultsStatus, conversationIds, loading]);
 
 	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
@@ -73,13 +70,16 @@ export const SearchConversationList = ({
 		loadingMore,
 		types: 'conversation'
 	});
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
 
 	const listItems = useMemo(
 		() =>
-			map(conversationIds, (conversationId) => {
+			map(conversationIds, (conversationId, index) => {
 				const active = itemId === conversationId;
 
-				const isSelected = selected[conversationId];
+				const isSelected = selectedItems.has(conversationId);
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
 					<CustomListItem
@@ -90,16 +90,25 @@ export const SearchConversationList = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchConversationListItem
-									key={conversationId}
-									active={active}
-									conversationId={conversationId}
-									selecting={isSelectModeOn}
-									activeItemId={itemId}
-									toggle={toggle}
-									selected={isSelected}
-									deselectAll={deselectAll}
-								/>
+								<>
+									{(active || isSelected) && (
+										<ConversationShortcutsRegister
+											conversationIds={keyboardShortcutsIds}
+											folderId={''}
+										/>
+									)}
+
+									<SearchConversationListItem
+										key={conversationId}
+										active={active}
+										conversationId={conversationId}
+										selecting={isSelectModeOn}
+										activeItemId={itemId}
+										selected={isSelected}
+										index={index}
+										onSelect={selectRange}
+									/>
+								</>
 							) : (
 								<div
 									style={{ height: '4rem' }}
@@ -110,23 +119,18 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversationIds, itemId, selectedItems, keyboardShortcutsIds, isSelectModeOn, selectRange]
 	);
 
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	return (
-		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
-			<AdvancedFilterButton
-				setShowAdvanceFilters={setShowAdvanceFilters}
-				searchDisabled={searchDisabled}
-				invalidQueryTooltip={invalidQueryTooltip}
-			/>
+		<>
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
 						itemIds={conversationIds}
-						selected={selected}
+						selectedItems={selectedItems}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
 						setIsSelectModeOn={setIsSelectModeOn}
@@ -136,11 +140,14 @@ export const SearchConversationList = ({
 					>
 						<ConversationsMultipleSelectionActions
 							selectedConversationsIds={selectedIds}
-							deselectAll={deselectAll}
 							folderId={''}
 						/>
 					</SearchListHeader>
 					<Divider color="gray2" />
+				</>
+			)}
+			{!loading && (
+				<>
 					{totalConversations > 0 || hasMore ? (
 						<CustomList
 							onListBottom={(): void => {
@@ -168,6 +175,6 @@ export const SearchConversationList = ({
 				</>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
-		</Container>
+		</>
 	);
 };

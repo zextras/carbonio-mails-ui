@@ -6,42 +6,41 @@
 import React, { useMemo } from 'react';
 
 import {
-	Text,
 	Badge,
 	Container,
 	Icon,
 	Padding,
 	Row,
+	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { TextReadValuesType, MailMessage } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from '../../../app/folder-panel/parts/participants-name';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { MailMessage, TextReadValuesType } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type SearchMessageListItemCoreProps = {
 	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 	folderId: string;
 };
 export const SearchMessageListItemCore = ({
 	completeMessage,
 	selected,
 	selecting,
-	toggle,
+	index,
+	onSelect,
 	folderId
 }: SearchMessageListItemCoreProps): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -153,8 +152,6 @@ export const SearchMessageListItemCore = ({
 		[completeMessage?.autoSendTime, t]
 	);
 
-	const onToggle = useMemo(() => toggle, [toggle]);
-
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
 			<div
@@ -165,8 +162,9 @@ export const SearchMessageListItemCore = ({
 					item={completeMessage}
 					selected={selected}
 					selecting={selecting}
-					toggle={onToggle}
 					folderId={folderId}
+					index={index}
+					onSelect={onSelect}
 				/>
 				<Padding horizontal="extrasmall" />
 			</div>

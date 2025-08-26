@@ -6,24 +6,21 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
+import { Folder, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { createFolderSoapApi } from '../api/create-folder-soap-api';
-import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
-import { Folder } from '../carbonio-ui-commons/types/folder';
-import { MAILS_ROUTE } from '../constants';
-import { isRoot } from '../helpers/folders';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { createFolderSoapApi } from 'api/create-folder-soap-api';
+import { MAILS_ROUTE } from 'constants/index';
+import { isRoot } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type MoveMessageProps = {
 	selectedIDs: string[];
 	isRestore?: boolean;
-	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
 };
@@ -31,7 +28,6 @@ type MoveMessageProps = {
 export const MoveConversation = ({
 	selectedIDs,
 	isRestore,
-	deselectAll,
 	onClose,
 	folderId
 }: MoveMessageProps): ReactElement => {
@@ -57,7 +53,6 @@ export const MoveConversation = ({
 				parent: id
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					deselectAll?.();
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -85,7 +80,7 @@ export const MoveConversation = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t, navigate]
+		[selectedIDs, onCloseModal, createSnackbar, isRestore, t, navigate]
 	);
 
 	const hasSameName = useMemo(

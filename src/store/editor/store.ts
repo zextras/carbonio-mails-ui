@@ -4,11 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { produce } from 'immer';
-import { find, remove } from 'lodash';
+import { remove } from 'lodash';
 import { create } from 'zustand';
 
-import { filterSavedInlineAttachment, filterUnsavedInlineAttachment } from './editor-utils';
-import { getUnsavedAttachmentIndex } from './store-utils';
+import {
+	filterSavedInlineAttachment,
+	filterUnsavedInlineAttachment
+} from 'store/editor/editor-utils';
+import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
@@ -16,7 +19,7 @@ import {
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
-} from '../../types';
+} from 'types/index.d';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
@@ -205,21 +208,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].sendProcessStatus = status;
-				}
-			})
-		);
-	},
-	toggleSmartLink: (id: MailsEditorV2['id'], partName: string): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				const currentEditor = state?.editors?.[id];
-				if (!currentEditor) {
-					return;
-				}
-
-				const attachment = find(currentEditor.savedAttachments, ['partName', partName]);
-				if (attachment) {
-					attachment.requiresSmartLinkConversion = !attachment.requiresSmartLinkConversion;
 				}
 			})
 		);
