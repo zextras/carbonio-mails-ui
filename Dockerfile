@@ -6,5 +6,7 @@ RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
 && echo deb https://repo.zextras.io/release/ubuntu jammy main > /etc/apt/sources.list.d/zextras.list \
 && apt update && apt install -y carbonio-shell-ui && apt clean
 
+# TODO: define an image on shell and publish it to avoid rebuilding locally
+
 COPY entrypoint.sh .
 ENTRYPOINT ["./entrypoint.sh"]
