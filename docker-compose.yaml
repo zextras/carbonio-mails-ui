@@ -1,0 +1,7 @@
+services:
+  ui:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./it/static/iris:/tmp/iris
+      - ./dist:/tmp/dist
