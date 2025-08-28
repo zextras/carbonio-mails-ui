@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{"Header":{"context":{"session":{"id":"127","_content":"127"},"change":{"token":14},"_jsns":"urn:zimbra"}},"Body":{"SearchResponse":{"sortBy":"dateDesc","offset":0,"c":[{"id":"263","u":1,"n":2,"f":"su","d":1755873475000,"su":"Test to myself","fr":"Hello","e":[{"a":"test@demo.zextras.io","d":"DEFAULT","p":"DEFAULT","t":"f"},{"a":"test@demo.zextras.io","d":"test","t":"t"}],"m":[{"id":"262","l":"2","f":"u","d":"1755873475000"},{"id":"261","l":"5","f":"s","d":"1755873475000"}],"sf":"1755873475000"}],"more":false,"_jsns":"urn:zimbraMail"}},"_jsns":"urn:zimbraSoap"}

@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu/nginx:1.18-20.04_beta
 
 USER root
 RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \

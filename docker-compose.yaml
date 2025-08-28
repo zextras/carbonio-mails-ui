@@ -1,0 +1,30 @@
+services:
+  ui:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx-webui.conf:ro
+      - ./dist:/tmp/dist:ro
+      - /it/carbonio:/tmp/carbonio
+    ports:
+      - 9090:80
+  backend:
+    image: "wiremock/wiremock:latest"
+    healthcheck:
+      test: /bin/bash -c "printf \"GET / HTTP/1.1\n\n\" > /dev/tcp/127.0.0.1/8500"
+      interval: 60s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
+    entrypoint:
+      [
+        "/docker-entrypoint.sh",
+        "--global-response-templating",
+        "--disable-gzip",
+        "--verbose",
+        "--port=8080",
+      ]
+    volumes:
+      - ./it/wiremock:/home/wiremock/mappings/carbonio-mails-ui
+    ports:
+      - 8080:8080

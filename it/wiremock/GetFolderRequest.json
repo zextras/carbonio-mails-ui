@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/service/soap/GetFolderRequest"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"Header\":{\"context\":{\"session\":{\"id\":\"120\",\"_content\":\"120\"},\"change\":{\"token\":1},\"_jsns\":\"urn:zimbra\"}},\"Body\":{\"GetFolderResponse\":{\"folder\":[{\"id\":\"1\",\"name\":\"USER_ROOT\",\"folder\":[{\"id\":\"14\",\"uuid\":\"43b8068a-b58c-401a-9e94-61f6460a4fed\",\"deletable\":false,\"name\":\"Chats\",\"absFolderPath\":\"/Chats\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"view\":\"message\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":0,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":15},{\"id\":\"6\",\"uuid\":\"375e1e93-3bb2-4268-bae9-c593958476da\",\"deletable\":false,\"name\":\"Drafts\",\"absFolderPath\":\"/Drafts\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"view\":\"message\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":30,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":7},{\"id\":\"2\",\"uuid\":\"521ed442-fbd9-49e2-a06d-7413e365025b\",\"deletable\":false,\"name\":\"Inbox\",\"absFolderPath\":\"/Inbox\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"view\":\"message\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":30,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":3},{\"id\":\"4\",\"uuid\":\"10b51960-df22-4173-9aca-e020f966e6d3\",\"deletable\":false,\"name\":\"Junk\",\"absFolderPath\":\"/Junk\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"view\":\"message\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":0,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":5},{\"id\":\"5\",\"uuid\":\"34c16992-bb9c-435f-8616-b4bd5550c890\",\"deletable\":false,\"name\":\"Sent\",\"absFolderPath\":\"/Sent\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"view\":\"message\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":30,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":6},{\"id\":\"3\",\"uuid\":\"be8c4e08-8ec1-40fe-88e8-51c323739714\",\"deletable\":false,\"name\":\"Trash\",\"absFolderPath\":\"/Trash\",\"l\":\"1\",\"luuid\":\"5ed91c4f-ca09-4783-8c31-364302b4801e\",\"rev\":1,\"ms\":1,\"webOfflineSyncDays\":30,\"activesyncdisabled\":false,\"n\":0,\"s\":0,\"i4ms\":1,\"i4next\":4}]}],\"_jsns\":\"urn:zimbraMail\"}},\"_jsns\":\"urn:zimbraSoap\"}",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Server": "wiremock"
+    }
+  }
+}

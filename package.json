@@ -22,8 +22,7 @@
     "it": "npx playwright test",
     "build:dev": "sdk build --dev --pkgRel $(date +%s)",
     "dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy",
-    "prepare-tests": "docker build -t mails-ui . && docker run -v ./it/static/iris:/tmp/iris -v ./it/carbonio:/tmp/carbonio -v ./dist:/tmp/dist --rm -it mails-ui",
-    "start:mock": "npm run prepare-tests && concurrently 'mockserver -p 8080 -m it/mocks' 'http-server ./it -a localhost -p $PORT -P http://localhost:8080'",
+    "start:mock": "docker compose up"
   },
   "files": [
     "src/types/"
