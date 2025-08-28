@@ -42,7 +42,6 @@ git submodule update --recursive --init
 
 You can run integration tests with `npm run it`. \
 This will start a docker compose with the UI and a mocked backend.
-Configuration parameters for the endpoint are defined in [playwright.config.ts](playwright.config.ts)
 
 <h4>Lightweight dev mode</h4>
 You can also see how your UI looks by running `npm run start:mock`. \
