@@ -49,11 +49,6 @@ zextras-carbonio-*.tgz
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
-/it/carbonio-shell-ui/
-/it/carbonio-mails-ui/
-/it/static/
-/static/iris/
-/it/carbonio/
 
 # Playwright
 node_modules/
