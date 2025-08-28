@@ -20,14 +20,21 @@ import {
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { reject, concat, map } from 'lodash';
 import styled from 'styled-components';
+import type { TinyMCE } from 'tinymce';
 import { v4 as uuidv4 } from 'uuid';
 
 import SelectIdentitySignature from './components/select-identity-signature';
 import { ListOld } from './list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
+import { buildArrayFromFileList } from '../../helpers/files';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
 import { getFonts, getFontSizesOptions } from './components/utils';
+
+type FileSelectProps = {
+	editor: TinyMCE;
+	files: FileList;
+};
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -59,6 +66,22 @@ const EditorWrapper = styled.div`
  */
 type EditorType = {
 	hasFocus: () => boolean;
+};
+
+const onInlineImagesSelected = ({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+	const files = buildArrayFromFileList(fileList);
+
+	files.forEach((file) => {
+		const fileReader = new FileReader();
+
+		fileReader.addEventListener('load', () => {
+			const img = `&nbsp;<img src="${fileReader.result}"/><br/>`;
+
+			tinymce?.activeEditor?.insertContent(img);
+		});
+
+		fileReader.readAsDataURL(file);
+	});
 };
 
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
@@ -324,6 +347,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								<EditorWrapper>
 									<Composer
 										data-testid={'signature-editor'}
+										onFileSelect={onInlineImagesSelected}
 										value={currentSignature?.description ?? ''}
 										customInitOptions={composerCustomOptions}
 										disabled={editingDisabled}
