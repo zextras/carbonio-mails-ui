@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.0...v1.26.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* [CO-2475] display inline attachments with no content-id in editor ([d654765](https://github.com/zextras/carbonio-mails-ui/commit/d654765e1f7fd3edb21857966d17de9a1fe22b33))
+* display inline saved attachments with no content id ([4548421](https://github.com/zextras/carbonio-mails-ui/commit/45484218bd98fd5d6de1f2ac91afaebb57ae8451))
+
 ## [1.26.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.12...v1.26.0) (2025-08-26)
 
 
