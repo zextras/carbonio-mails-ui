@@ -6,8 +6,12 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
+import { EditViewActions } from '../../../../../constants';
+import { generateEditor } from '../../../../../store/editor/editor-generators';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import type { MailsEditorV2 } from '../../../../../types';
 import { setupTest } from '@test-setup';
 import { addEditor } from 'store/editor/index';
 import { setupEditorStore } from 'tests/generators/editor-store';
@@ -55,5 +59,65 @@ describe('Attachments visualization', () => {
 				throw new Error(`The attachment block for the file ${filename} is not present`);
 			}
 		});
+	});
+	it('should display inline attachments with no Content-ID', async () => {
+		setupEditorStore({ editors: [] });
+		const message = generateMessage({
+			parts: [
+				{
+					name: 'part2',
+					filename: 'file-with-no-content-id',
+					disposition: 'inline' as const,
+					contentType: 'image/png',
+					size: 200
+				}
+			]
+		});
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_DRAFT,
+			id: 'test-id',
+			message
+		}) as MailsEditorV2;
+		addEditor({ id: editor.id, editor });
+
+		setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
+		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
+	});
+	it('should NOT display inline attachments with Content-ID', async () => {
+		setupEditorStore({ editors: [] });
+		const message = generateMessage({
+			parts: [
+				{
+					name: 'part2',
+					filename: 'other',
+					disposition: 'inline' as const,
+					contentType: 'image/png',
+					size: 200
+				},
+				{
+					name: 'inlinePart1',
+					filename: 'file-with-content-id',
+					disposition: 'inline' as const,
+					ci: '123',
+					contentType: 'image/png',
+					size: 200
+				}
+			]
+		});
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_DRAFT,
+			id: 'test-id',
+			message
+		}) as MailsEditorV2;
+		addEditor({ id: editor.id, editor });
+
+		setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
+		expect(
+			within(editAttachmentsBlock).queryByText('file-with-content-id')
+		).not.toBeInTheDocument();
 	});
 });
