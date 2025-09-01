@@ -65,14 +65,6 @@ describe('Attachments visualization', () => {
 		const message = generateMessage({
 			parts: [
 				{
-					name: 'inlinePart1',
-					filename: 'part1',
-					disposition: 'inline' as const,
-					ci: '123',
-					contentType: 'image/png',
-					size: 200
-				},
-				{
 					name: 'part2',
 					filename: 'file-with-no-content-id',
 					disposition: 'inline' as const,
@@ -92,5 +84,40 @@ describe('Attachments visualization', () => {
 
 		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
 		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
+	});
+	it('should NOT display inline attachments with Content-ID', async () => {
+		setupEditorStore({ editors: [] });
+		const message = generateMessage({
+			parts: [
+				{
+					name: 'part2',
+					filename: 'other',
+					disposition: 'inline' as const,
+					contentType: 'image/png',
+					size: 200
+				},
+				{
+					name: 'inlinePart1',
+					filename: 'file-with-content-id',
+					disposition: 'inline' as const,
+					ci: '123',
+					contentType: 'image/png',
+					size: 200
+				}
+			]
+		});
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_DRAFT,
+			id: 'test-id',
+			message
+		}) as MailsEditorV2;
+		addEditor({ id: editor.id, editor });
+
+		setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
+		expect(
+			within(editAttachmentsBlock).queryByText('file-with-content-id')
+		).not.toBeInTheDocument();
 	});
 });
