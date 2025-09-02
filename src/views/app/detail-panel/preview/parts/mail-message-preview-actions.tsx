@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, ReactElement } from 'react';
 
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { isNil, map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 
+import { useShouldReplaceHistory } from '../../../../../hooks/use-should-replace-history';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
@@ -21,9 +21,7 @@ type MailMsgPreviewActionsType = {
 
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
-
-	const { itemId } = useParams<{ itemId: string }>();
-	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
+	const shouldReplaceHistory = useShouldReplaceHistory(message);
 
 	const {
 		replyDescriptor,
