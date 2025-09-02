@@ -11,6 +11,7 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import type { SearchFolderPanelRouteParams } from '../../../../types/routes';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
@@ -29,7 +30,7 @@ export const SearchConversationList = ({
 	hasMore,
 	searchResultsStatus
 }: SearchListProps): React.JSX.Element => {
-	const { itemId } = useParams() as { itemId?: string };
+	const { itemId } = useParams<SearchFolderPanelRouteParams>() as SearchFolderPanelRouteParams;
 	const loadingMore = useRef<boolean>(false);
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);

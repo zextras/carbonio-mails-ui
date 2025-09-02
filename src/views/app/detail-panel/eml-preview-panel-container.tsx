@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import type { EmlRouteParams } from '../../../types/routes';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
@@ -17,11 +18,7 @@ import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-pane
 export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 	const [message, setMessage] = useState<MailMessage>();
 
-	const { folderId, messageId, part } = useParams() as {
-		folderId: string;
-		messageId: string;
-		part: string;
-	};
+	const { folderId, messageId, part } = useParams<EmlRouteParams>() as EmlRouteParams;
 
 	useEffect(() => {
 		if (message) {
