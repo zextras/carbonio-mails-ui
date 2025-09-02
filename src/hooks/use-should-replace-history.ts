@@ -6,7 +6,7 @@
 
 import { useMemo } from 'react';
 
-import { FOLDERS, getFolderIdParts } from '@zextras/carbonio-ui-commons';
+import { getFolderIdParts } from '@zextras/carbonio-ui-commons';
 import { filter } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -21,10 +21,11 @@ export const useShouldReplaceHistory = (message: MailMessage): boolean => {
 	const messages = useConversationMessages(conversationId ?? message.conversation);
 
 	return useMemo(() => {
+		if (!folderId) {
+			return false;
+		}
 		if (conversationId) {
-			return getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? messages?.length <= 0
-				: filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length <= 0;
+			return filter(messages, (m) => getFolderIdParts(folderId).id === m.parent).length <= 1;
 		}
 		return messageId === message.id;
 	}, [conversationId, folderId, message.id, messageId, messages]);
