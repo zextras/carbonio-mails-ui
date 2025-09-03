@@ -38,20 +38,17 @@ export type SidebarRouteParams = {
 	itemId?: string;
 };
 
-export type SearchFolderPanelRouteParams = {
-	folderId: string;
+export type SearchListPanelRouteParams = {
 	type?: 'message' | 'conversation';
 	itemId?: string;
 };
 
 export type SearchDetailPanelConversationRouteParams = {
-	folderId: string;
 	conversationId: string;
 	messageId?: never;
 };
 
 export type SearchDetailPanelMessagePanelRouteParams = {
-	folderId: string;
 	messageId: string;
 	conversationId?: never;
 };
@@ -59,3 +56,5 @@ export type SearchDetailPanelMessagePanelRouteParams = {
 export type SearchDetailPanelRouteParams =
 	| SearchDetailPanelConversationRouteParams
 	| SearchDetailPanelMessagePanelRouteParams;
+
+export type SearchRoutesParams = SearchDetailPanelRouteParams | SearchListPanelRouteParams;
