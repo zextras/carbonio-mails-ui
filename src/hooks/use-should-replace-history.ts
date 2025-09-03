@@ -25,19 +25,15 @@ import type {
 const isItemAMessage = (item: MailMessage | NormalizedConversation): item is MailMessage =>
 	!!(item as MailMessage)?.conversation;
 
-const isFolderPanelRoute = (
-	route: DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams
-): route is FolderPanelRouteParams =>
+type MailGenericRoute = DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams;
+
+const isFolderPanelRoute = (route: MailGenericRoute): route is FolderPanelRouteParams =>
 	!!(route as FolderPanelRouteParams).itemId && !!(route as FolderPanelRouteParams).folderId;
 
-const isDetailPanelRoute = (
-	route: DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams
-): route is DetailPanelRoutesParams =>
+const isDetailPanelRoute = (route: MailGenericRoute): route is DetailPanelRoutesParams =>
 	!(route as FolderPanelRouteParams).itemId && !!(route as FolderPanelRouteParams).folderId;
 
-const isSearchDetailPanelRoute = (
-	route: DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams
-): route is SearchDetailPanelRouteParams =>
+const isSearchDetailPanelRoute = (route: MailGenericRoute): route is SearchDetailPanelRouteParams =>
 	!(route as SearchListPanelRouteParams).itemId &&
 	!(route as FolderPanelRouteParams).folderId &&
 	!!(
@@ -45,9 +41,7 @@ const isSearchDetailPanelRoute = (
 		(route as SearchDetailPanelMessagePanelRouteParams).messageId
 	);
 
-const isSearchListPanelRoute = (
-	route: DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams
-): route is SearchListPanelRouteParams =>
+const isSearchListPanelRoute = (route: MailGenericRoute): route is SearchListPanelRouteParams =>
 	!(route as FolderPanelRouteParams).folderId &&
 	!(route as SearchDetailPanelConversationRouteParams).conversationId &&
 	!(route as SearchDetailPanelMessagePanelRouteParams).messageId;
@@ -108,9 +102,7 @@ const shouldSearchListPanelReplaceHistory = (
 };
 
 export const useShouldReplaceHistory = (item: MailMessage | NormalizedConversation): boolean => {
-	const params = useParams<
-		DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams
-	>() as DetailPanelRoutesParams | FolderPanelRouteParams | SearchRoutesParams;
+	const params = useParams<MailGenericRoute>() as MailGenericRoute;
 
 	const id = useMemo(() => {
 		if (isFolderPanelRoute(params)) {
