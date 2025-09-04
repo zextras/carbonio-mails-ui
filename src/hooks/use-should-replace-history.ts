@@ -74,6 +74,12 @@ const shouldDetailPanelReplaceHistory = (
 		return false;
 	}
 	if (params.conversationId) {
+		if (isItemAMessage(item)) {
+			return (
+				item.parent === params.folderId &&
+				filter(messages, (m) => getFolderIdParts(params.folderId).id === m.parent).length <= 1
+			);
+		}
 		return filter(messages, (m) => getFolderIdParts(params.folderId).id === m.parent).length <= 1;
 	}
 	return params.messageId === item.id;

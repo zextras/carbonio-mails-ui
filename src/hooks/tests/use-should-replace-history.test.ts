@@ -59,6 +59,28 @@ describe('useShouldReplaceHistory', () => {
 				});
 				expect(current).toEqual(false);
 			});
+			it('should return false if there are multiple messages in the conversation and the given message is from a different folder', async () => {
+				const { conversation, messages } = await waitFor(() =>
+					populateConversationInEmailStore({
+						conversationParams: {
+							messageIds: ['22', '23']
+						},
+						messageGeneratorParams: [
+							{ id: '22', folderId: '2' },
+							{ id: '23', folderId: '4' }
+						]
+					})
+				);
+				const message = messages[1];
+				const {
+					result: { current }
+				} = setupHook(useShouldReplaceHistory, {
+					initialProps: [message],
+					initialEntries: [`/mails/folder/2/conversation/${conversation.id}`],
+					path: conversationPath
+				});
+				expect(current).toEqual(false);
+			});
 			it('should return true if there are multiple messages in a conversation but this is the only one related to the folder', async () => {
 				const { conversation, messages } = await waitFor(() =>
 					populateConversationInEmailStore({
@@ -67,29 +89,6 @@ describe('useShouldReplaceHistory', () => {
 						},
 						messageGeneratorParams: [
 							{ id: '22', folderId: '2' },
-							{ id: '23', folderId: '3' },
-							{ id: '24', folderId: '3' }
-						]
-					})
-				);
-				const message = messages[0];
-				const {
-					result: { current }
-				} = setupHook(useShouldReplaceHistory, {
-					initialProps: [message],
-					initialEntries: [`/mails/folder/2/conversation/${conversation.id}`],
-					path: conversationPath
-				});
-				expect(current).toEqual(true);
-			});
-			it('should return true if there are multiple messages in a conversation but none of them are related to the folder', async () => {
-				const { conversation, messages } = await waitFor(() =>
-					populateConversationInEmailStore({
-						conversationParams: {
-							messageIds: ['22', '23', '24']
-						},
-						messageGeneratorParams: [
-							{ id: '22', folderId: '3' },
 							{ id: '23', folderId: '3' },
 							{ id: '24', folderId: '3' }
 						]
@@ -320,6 +319,28 @@ describe('useShouldReplaceHistory', () => {
 						})
 					);
 					const message = messages[0];
+					const {
+						result: { current }
+					} = setupHook(useShouldReplaceHistory, {
+						initialProps: [message],
+						initialEntries: [`/search/conversation/${conversation.id}`],
+						path: conversationPath
+					});
+					expect(current).toEqual(false);
+				});
+				it('should return false if there are multiple messages in the conversation and the given message is from a different folder', async () => {
+					const { conversation, messages } = await waitFor(() =>
+						populateConversationInEmailStore({
+							conversationParams: {
+								messageIds: ['22', '23']
+							},
+							messageGeneratorParams: [
+								{ id: '22', folderId: '2' },
+								{ id: '23', folderId: '4' }
+							]
+						})
+					);
+					const message = messages[1];
 					const {
 						result: { current }
 					} = setupHook(useShouldReplaceHistory, {
