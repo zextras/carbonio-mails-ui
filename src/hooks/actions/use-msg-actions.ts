@@ -5,6 +5,8 @@
  */
 import { useMemo } from 'react';
 
+import { useParams } from 'react-router-dom';
+
 import { getParentFolderId } from 'helpers/folders';
 import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
 import { useMsgCreateAppointmentDescriptor } from 'hooks/actions/use-msg-create-appointment';
@@ -67,6 +69,7 @@ export const useMsgActions = ({
 	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
 	const folderId = getParentFolderId(message.parent);
+	const { folderId: routeFolderId } = useParams();
 
 	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useMsgReplyAllDescriptor(message.id, folderId);
@@ -74,12 +77,14 @@ export const useMsgActions = ({
 	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor([message.id], folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
-		folderId,
+		messageFolderId: folderId,
+		routeFolderId,
 		shouldReplaceHistory
 	});
 	const deletePermanentlyDescriptor = useMsgDeletePermanentlyDescriptor({
 		ids: [message.id],
-		folderId
+		folderId,
+		shouldReplaceHistory
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],
