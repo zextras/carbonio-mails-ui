@@ -41,25 +41,21 @@ export const createEditBoard = ({
 	onConfirm,
 	title = ''
 }: CreateEditBoardParams): Board => {
-	if (action === EditViewActions.EDIT_AS_DRAFT && actionTargetId) {
-		const boardId = generateBoardId(action, actionTargetId);
-		const existingBoard = getBoardById(boardId);
+	const isDraftEdit = action === EditViewActions.EDIT_AS_DRAFT && actionTargetId;
+	const boardId = isDraftEdit ? generateBoardId(action, actionTargetId) : undefined;
 
+	if (isDraftEdit) {
+		const existingBoard = boardId ? getBoardById(boardId) : undefined;
 		if (existingBoard) {
 			setCurrentBoard(existingBoard.id);
 			return existingBoard;
 		}
 	}
 
-	const idForCreation =
-		action === EditViewActions.EDIT_AS_DRAFT && actionTargetId
-			? generateBoardId(action, actionTargetId)
-			: undefined;
-
 	return addBoard<EditViewBoardContext>({
 		boardViewId: MAILS_BOARD_VIEW_ID,
 		title,
-		id: idForCreation,
+		id: boardId,
 		context: {
 			originAction: action,
 			originActionTargetId: actionTargetId,
