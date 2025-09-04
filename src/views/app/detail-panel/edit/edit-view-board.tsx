@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { addBoard, Board } from '@zextras/carbonio-shell-ui';
+import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
 
-import { MAILS_BOARD_VIEW_ID } from 'constants/index';
+import { MAILS_BOARD_VIEW_ID, EditViewActions } from 'constants/index';
 import { EditorPrefillData, EditViewActionsType } from 'types/index.d';
 
 export type EditViewBoardContext = {
@@ -16,11 +16,6 @@ export type EditViewBoardContext = {
 	onConfirm?: (param: { editor: { text: [string, string] }; onBoardClose: () => void }) => void;
 };
 
-export type BoardContext = {
-	action: EditViewActionsType;
-	id?: string;
-};
-
 type CreateEditBoardParams = {
 	action: EditViewActionsType;
 	actionTargetId?: string;
@@ -29,16 +24,42 @@ type CreateEditBoardParams = {
 	onConfirm?: () => void;
 };
 
+/**
+ * Generate a consistent board ID for draft editing
+ */
+const generateBoardId = (action: EditViewActionsType, actionTargetId?: string): string => {
+	if (action === EditViewActions.EDIT_AS_DRAFT && actionTargetId) {
+		return `${MAILS_BOARD_VIEW_ID}-edit-draft-${actionTargetId}`;
+	}
+	return `${MAILS_BOARD_VIEW_ID}-${action}-${actionTargetId || Date.now()}`;
+};
+
 export const createEditBoard = ({
 	action,
 	actionTargetId,
 	compositionData,
 	onConfirm,
 	title = ''
-}: CreateEditBoardParams): Board =>
-	addBoard<EditViewBoardContext>({
+}: CreateEditBoardParams): Board => {
+	if (action === EditViewActions.EDIT_AS_DRAFT && actionTargetId) {
+		const boardId = generateBoardId(action, actionTargetId);
+		const existingBoard = getBoardById(boardId);
+
+		if (existingBoard) {
+			setCurrentBoard(existingBoard.id);
+			return existingBoard;
+		}
+	}
+
+	const idForCreation =
+		action === EditViewActions.EDIT_AS_DRAFT && actionTargetId
+			? generateBoardId(action, actionTargetId)
+			: undefined;
+
+	return addBoard<EditViewBoardContext>({
 		boardViewId: MAILS_BOARD_VIEW_ID,
 		title,
+		id: idForCreation,
 		context: {
 			originAction: action,
 			originActionTargetId: actionTargetId,
@@ -46,3 +67,4 @@ export const createEditBoard = ({
 			compositionData
 		}
 	});
+};
