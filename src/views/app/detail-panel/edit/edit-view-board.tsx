@@ -31,7 +31,7 @@ const generateBoardId = (action: EditViewActionsType, actionTargetId?: string): 
 	if (action === EditViewActions.EDIT_AS_DRAFT && actionTargetId) {
 		return `${MAILS_BOARD_VIEW_ID}-edit-draft-${actionTargetId}`;
 	}
-	return `${MAILS_BOARD_VIEW_ID}-${action}-${actionTargetId || Date.now()}`;
+	return `${MAILS_BOARD_VIEW_ID}-${action}-${actionTargetId ?? Date.now()}`;
 };
 
 export const createEditBoard = ({
