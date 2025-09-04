@@ -108,6 +108,9 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 				{
 					id,
 					size: 'large',
+					onClose: (): void => {
+						closeModal?.(id);
+					},
 					children: (
 						<Container crossAlignment="baseline">
 							<ShowAllCertificatesModal
@@ -161,6 +164,9 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 			{
 				id,
 				size: 'medium',
+				onClose: (): void => {
+					closeModal?.(id);
+				},
 				children: (
 					<Container crossAlignment="baseline">
 						<CertificateUploadModal

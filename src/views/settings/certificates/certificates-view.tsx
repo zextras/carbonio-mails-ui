@@ -61,6 +61,9 @@ const CertificatesView: FC = () => {
 				{
 					id,
 					size: 'medium',
+					onClose: (): void => {
+						closeModal?.(id);
+					},
 					children: (
 						<Container crossAlignment="baseline">
 							<CertificatePasswordModal isReset={isReset} onClose={(): void => closeModal?.(id)} />
@@ -79,6 +82,9 @@ const CertificatesView: FC = () => {
 			{
 				id,
 				size: 'medium',
+				onClose: (): void => {
+					closeModal?.(id);
+				},
 				children: (
 					<Container crossAlignment="baseline">
 						<EnterPasswordModal

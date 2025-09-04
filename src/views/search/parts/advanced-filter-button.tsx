@@ -42,6 +42,9 @@ export const AdvancedFilterButton = ({
 							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: (
 								<AdvancedFilterModal
 									query={query}

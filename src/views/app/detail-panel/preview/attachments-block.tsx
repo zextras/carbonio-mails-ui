@@ -172,6 +172,9 @@ const Attachment = ({
 			{
 				id,
 				maxHeight: '90vh',
+				onClose: (): void => {
+					closeModal(id);
+				},
 				children: (
 					<DeleteAttachmentModal
 						onClose={(): void => closeModal(id)}

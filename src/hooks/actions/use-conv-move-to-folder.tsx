@@ -34,6 +34,9 @@ export const useConvMoveToFolderFn = ({
 				id,
 				maxHeight: '90vh',
 				size: 'medium',
+				onClose: (): void => {
+					closeModal(id);
+				},
 				children: (
 					<MoveConversation
 						folderId={folderId}

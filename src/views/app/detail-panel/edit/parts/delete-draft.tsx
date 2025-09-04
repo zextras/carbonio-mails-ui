@@ -88,6 +88,9 @@ export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) =>
 				createModal(
 					{
 						id,
+						onClose: (): void => {
+							closeModal(id);
+						},
 						children: (
 							<DeleteDraftModal
 								ids={[draftId]}

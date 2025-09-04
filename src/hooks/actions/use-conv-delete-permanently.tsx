@@ -66,6 +66,7 @@ export const useConvDeletePermanentlyFn = ({
 			createModal(
 				{
 					id,
+					onClose: closeModalFn,
 					children: (
 						<PermanentlyDeleteModal
 							onClose={closeModalFn}

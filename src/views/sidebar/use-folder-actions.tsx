@@ -63,6 +63,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: <NewModal folder={folder} onClose={(): void => closeModal(modalId)} />
 						},
 						true
@@ -90,6 +93,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								id: modalId,
 								maxHeight: '90vh',
 								size: 'medium',
+								onClose: (): void => {
+									closeModal(modalId);
+								},
 								children: (
 									<MoveMessage
 										folderId={folder.id}
@@ -170,6 +176,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								id: modalId,
 								maxHeight: '90vh',
 								size: 'medium',
+								onClose: (): void => {
+									closeModal(modalId);
+								},
 								children: (
 									<SelectFolderModal
 										folder={folder}
@@ -211,6 +220,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					createModal(
 						{
 							id: modalId,
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: <EmptyModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
@@ -233,6 +245,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						{
 							id: modalId,
 							maxHeight: '90vh',
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: <EditModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
@@ -254,6 +269,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					createModal(
 						{
 							id: modalId,
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: <DeleteModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
@@ -285,6 +303,9 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					createModal(
 						{
 							id: modalId,
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: (
 								<SharesInfoModal onClose={(): void => closeModal(modalId)} folder={folder} />
 							)

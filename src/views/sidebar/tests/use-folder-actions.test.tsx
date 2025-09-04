@@ -272,6 +272,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -295,6 +296,7 @@ describe('useFolderActions', () => {
 			{
 				id: expect.any(String),
 				maxHeight: '90vh',
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -317,6 +319,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -395,6 +398,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true

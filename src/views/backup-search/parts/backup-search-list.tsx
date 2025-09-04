@@ -80,6 +80,9 @@ export const BackupSearchList = (): React.JSX.Element => {
 			{
 				id: modalId,
 				maxHeight: '90vh',
+				onClose: (): void => {
+					closeModal?.(modalId);
+				},
 				children: (
 					<BackupSearchRecoveryModal
 						onConfirm={(): Promise<void> =>

@@ -31,6 +31,9 @@ export const useMsgRestoreFn = ({
 					id: modalId,
 					maxHeight: '90vh',
 					size: 'medium',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
 					children: (
 						<MoveMessage
 							folderId={folderId}
