@@ -25,13 +25,19 @@ type CreateEditBoardParams = {
 };
 
 /**
- * Generate a consistent board ID for draft editing
+ * Get draft board ID based on action and target ID
+ *
+ * @param action
+ * @param actionTargetId
  */
-const generateBoardId = (action: EditViewActionsType, actionTargetId?: string): string => {
+const getDraftBoardId = (
+	action: EditViewActionsType,
+	actionTargetId?: string
+): string | undefined => {
 	if (action === EditViewActions.EDIT_AS_DRAFT && actionTargetId) {
 		return `${MAILS_BOARD_VIEW_ID}-edit-draft-${actionTargetId}`;
 	}
-	return `${MAILS_BOARD_VIEW_ID}-${action}-${actionTargetId ?? Date.now()}`;
+	return undefined;
 };
 
 export const createEditBoard = ({
@@ -41,11 +47,10 @@ export const createEditBoard = ({
 	onConfirm,
 	title = ''
 }: CreateEditBoardParams): Board => {
-	const isDraftEdit = action === EditViewActions.EDIT_AS_DRAFT && actionTargetId;
-	const boardId = isDraftEdit ? generateBoardId(action, actionTargetId) : undefined;
+	const draftBoardId = getDraftBoardId(action, actionTargetId);
 
-	if (isDraftEdit) {
-		const existingBoard = boardId ? getBoardById(boardId) : undefined;
+	if (draftBoardId) {
+		const existingBoard = getBoardById(draftBoardId);
 		if (existingBoard) {
 			setCurrentBoard(existingBoard.id);
 			return existingBoard;
@@ -55,7 +60,7 @@ export const createEditBoard = ({
 	return addBoard<EditViewBoardContext>({
 		boardViewId: MAILS_BOARD_VIEW_ID,
 		title,
-		id: boardId,
+		id: draftBoardId,
 		context: {
 			originAction: action,
 			originActionTargetId: actionTargetId,
