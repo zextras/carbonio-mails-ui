@@ -51,13 +51,19 @@ const shouldFolderPanelReplaceHistory = (
 	item: MailMessage | NormalizedConversation,
 	messages: MailMessage[]
 ): boolean => {
-	if (isItemAMessage(item)) {
-		return filter(messages, (m) => getFolderIdParts(params.folderId).id === m.parent).length <= 1;
+	if (params.itemId) {
+		if (isItemAMessage(item)) {
+			if (params.type === 'message') {
+				return params.itemId === item.id && item.parent === params.folderId;
+			}
+			return (
+				item.parent === getFolderIdParts(params.folderId).id &&
+				filter(messages, (m) => getFolderIdParts(params.folderId).id === m.parent).length <= 1
+			);
+		}
+		return params.itemId === item.id;
 	}
-	return (
-		params.itemId === item.id &&
-		filter(messages, (m) => getFolderIdParts(params.folderId).id === m.parent).length <= 1
-	);
+	return false;
 };
 const shouldDetailPanelReplaceHistory = (
 	params: DetailPanelRoutesParams,

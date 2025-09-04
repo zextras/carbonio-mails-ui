@@ -32,7 +32,7 @@ describe('useShouldReplaceHistory', () => {
 							id: '-234',
 							messageIds: ['22']
 						},
-						messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+						messageGeneratorParams: [{ id: '22' }]
 					})
 				);
 				const message = messages[0];
@@ -114,7 +114,7 @@ describe('useShouldReplaceHistory', () => {
 						id: '-234',
 						messageIds: ['22']
 					},
-					messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+					messageGeneratorParams: [{ id: '22' }]
 				})
 			);
 			const message = messages[0];
@@ -137,11 +137,7 @@ describe('useShouldReplaceHistory', () => {
 						conversationParams: {
 							messageIds: ['22', '23', '24']
 						},
-						messageGeneratorParams: [
-							{ id: '22', folderId: '3' },
-							{ id: '23', folderId: '3' },
-							{ id: '24', folderId: '3' }
-						]
+						messageGeneratorParams: [{ id: '22' }, { id: '23' }, { id: '24' }]
 					})
 				);
 				const {
@@ -159,11 +155,7 @@ describe('useShouldReplaceHistory', () => {
 						conversationParams: {
 							messageIds: ['22', '23', '24']
 						},
-						messageGeneratorParams: [
-							{ id: '22', folderId: '3' },
-							{ id: '23', folderId: '3' },
-							{ id: '24', folderId: '3' }
-						]
+						messageGeneratorParams: [{ id: '22' }, { id: '23' }, { id: '24' }]
 					})
 				);
 				const {
@@ -183,7 +175,7 @@ describe('useShouldReplaceHistory', () => {
 								id: '-234',
 								messageIds: ['22']
 							},
-							messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+							messageGeneratorParams: [{ id: '22' }]
 						})
 					);
 					const message = messages[0];
@@ -206,6 +198,26 @@ describe('useShouldReplaceHistory', () => {
 					} = setupHook(useShouldReplaceHistory, {
 						initialProps: [message],
 						initialEntries: [`/mails/folder/${message.parent}/conversation/${conversation.id}`],
+						path
+					});
+					expect(current).toEqual(false);
+				});
+				it('should return false if the given message is not related to the current folder', async () => {
+					const { conversation, messages } = await waitFor(() =>
+						populateConversationInEmailStore({
+							conversationParams: {
+								id: '-234',
+								messageIds: ['22']
+							},
+							messageGeneratorParams: [{ id: '22' }, { id: '23', folderId: 'anyOtherId' }]
+						})
+					);
+					const message = messages[1];
+					const {
+						result: { current }
+					} = setupHook(useShouldReplaceHistory, {
+						initialProps: [message],
+						initialEntries: [`/mails/folder/2/conversation/${conversation.id}`],
 						path
 					});
 					expect(current).toEqual(false);
@@ -233,29 +245,6 @@ describe('useShouldReplaceHistory', () => {
 					});
 					expect(current).toEqual(true);
 				});
-				it('should return true if there are multiple messages in a conversation but none of them are related to the folder', async () => {
-					const { conversation, messages } = await waitFor(() =>
-						populateConversationInEmailStore({
-							conversationParams: {
-								messageIds: ['22', '23', '24']
-							},
-							messageGeneratorParams: [
-								{ id: '22', folderId: '3' },
-								{ id: '23', folderId: '3' },
-								{ id: '24', folderId: '3' }
-							]
-						})
-					);
-					const message = messages[0];
-					const {
-						result: { current }
-					} = setupHook(useShouldReplaceHistory, {
-						initialProps: [message],
-						initialEntries: [`/mails/folder/2/conversation/${conversation.id}`],
-						path
-					});
-					expect(current).toEqual(true);
-				});
 			});
 		});
 		test('given a message and a /message/ path should return true if this has same id as the path', async () => {
@@ -265,7 +254,7 @@ describe('useShouldReplaceHistory', () => {
 						id: '-234',
 						messageIds: ['22']
 					},
-					messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+					messageGeneratorParams: [{ id: '22' }]
 				})
 			);
 			const message = messages[0];
@@ -290,7 +279,7 @@ describe('useShouldReplaceHistory', () => {
 								id: '-234',
 								messageIds: ['22']
 							},
-							messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+							messageGeneratorParams: [{ id: '22' }]
 						})
 					);
 					const message = messages[0];
@@ -349,7 +338,7 @@ describe('useShouldReplaceHistory', () => {
 							id: '-234',
 							messageIds: ['22']
 						},
-						messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+						messageGeneratorParams: [{ id: '22' }]
 					})
 				);
 				const message = messages[0];
@@ -369,7 +358,7 @@ describe('useShouldReplaceHistory', () => {
 							id: '-234',
 							messageIds: ['22']
 						},
-						messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+						messageGeneratorParams: [{ id: '22' }]
 					})
 				);
 				const message = messages[0];
@@ -392,11 +381,7 @@ describe('useShouldReplaceHistory', () => {
 							conversationParams: {
 								messageIds: ['22', '23', '24']
 							},
-							messageGeneratorParams: [
-								{ id: '22', folderId: '3' },
-								{ id: '23', folderId: '3' },
-								{ id: '24', folderId: '3' }
-							]
+							messageGeneratorParams: [{ id: '22' }, { id: '23' }, { id: '24' }]
 						})
 					);
 					const {
@@ -414,11 +399,7 @@ describe('useShouldReplaceHistory', () => {
 							conversationParams: {
 								messageIds: ['22', '23', '24']
 							},
-							messageGeneratorParams: [
-								{ id: '22', folderId: '3' },
-								{ id: '23', folderId: '3' },
-								{ id: '24', folderId: '3' }
-							]
+							messageGeneratorParams: [{ id: '22' }, { id: '23' }, { id: '24' }]
 						})
 					);
 					const {
@@ -438,7 +419,7 @@ describe('useShouldReplaceHistory', () => {
 									id: '-234',
 									messageIds: ['22']
 								},
-								messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+								messageGeneratorParams: [{ id: '22' }]
 							})
 						);
 						const message = messages[0];
@@ -497,7 +478,7 @@ describe('useShouldReplaceHistory', () => {
 							id: '-234',
 							messageIds: ['22']
 						},
-						messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+						messageGeneratorParams: [{ id: '22' }]
 					})
 				);
 				const message = messages[0];
@@ -517,7 +498,7 @@ describe('useShouldReplaceHistory', () => {
 							id: '-234',
 							messageIds: ['22']
 						},
-						messageGeneratorParams: [{ id: '22', folderId: '-234' }]
+						messageGeneratorParams: [{ id: '22' }]
 					})
 				);
 				const message = messages[0];
