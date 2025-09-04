@@ -1,13 +1,20 @@
 services:
-  ui:
+  carbonio-proxy:
+    build:
+      dockerfile: Dockerfile-proxy
+    ports:
+      - 9090:80
+    volumes:
+      - ui:/opt/zextras/web/
+  shell-ui:
+    image: carbonio-shell-ui:local
+    volumes:
+      - ui:/opt/zextras/web
+  mails-ui:
     build:
       dockerfile: Dockerfile
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx-webui.conf:ro
-      - ./dist:/tmp/dist:ro
-      - /it/carbonio:/tmp/carbonio
-    ports:
-      - 9090:80
+      - ui:/opt/zextras/web
   backend:
     image: "wiremock/wiremock:latest"
     healthcheck:
@@ -28,3 +35,5 @@ services:
       - ./it/wiremock:/home/wiremock/mappings/carbonio-mails-ui
     ports:
       - 8080:8080
+volumes:
+  ui:
