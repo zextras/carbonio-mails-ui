@@ -17,7 +17,7 @@ import {
 import { Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';

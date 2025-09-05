@@ -5,6 +5,7 @@
  */
 import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,
@@ -20,14 +21,13 @@ import {
 import {
 	ErrorSoapBodyResponse,
 	getIntegratedFunction,
-	soapFetch,
 	useAppContext,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { AppContext } from 'app-utils/app-context-initializer';
 import { getFileExtension } from 'commons/utilities';
@@ -186,12 +186,15 @@ const Attachment = ({
 
 	const confirmAction = useCallback(
 		(nodes: { id: string }[]) => {
-			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
-				_jsns: 'urn:zimbraMail',
-				mid: messageId,
-				part: att.name,
-				destinationFolderId: nodes[0].id
-			})
+			legacySoapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>(
+				'CopyToFiles',
+				{
+					_jsns: 'urn:zimbraMail',
+					mid: messageId,
+					part: att.name,
+					destinationFolderId: nodes[0].id
+				}
+			)
 				.then((res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
@@ -472,7 +475,7 @@ const copyToFiles = (
 	messageId: string,
 	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>
-	soapFetch('CopyToFiles', {
+	legacySoapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: messageId,
 		part: att.name,

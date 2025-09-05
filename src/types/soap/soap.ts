@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { Folder } from '@zextras/carbonio-ui-commons';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 
 import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from 'constants/index';
 import { MailsEditorV2 } from 'types/editor/index.d';

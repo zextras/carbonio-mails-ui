@@ -12,7 +12,7 @@ import {
 	Row,
 	RowProps
 } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 type GapContainerProps = ContainerProps & { gap?: ContainerProps['padding'] };
 

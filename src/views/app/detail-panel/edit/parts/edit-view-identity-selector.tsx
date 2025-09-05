@@ -5,6 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Avatar,
 	Container,
@@ -17,7 +18,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import styled from 'styled-components';
 
 import {
 	getIdentitiesDescriptors,

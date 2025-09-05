@@ -35,10 +35,6 @@ jest.mock('../../../../api/check-exist-password-api', () => ({
 describe('CertificatesView', () => {
 	const mockCheckExistEncryptionPassword = checkExistEncryptionPassword as jest.Mock;
 
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('calls checkExistEncryptionPassword API when password is empty', async () => {
 		(useSmimePasswordStore as unknown as jest.Mock).mockReturnValue({ smimePassword: '' });
 		mockCheckExistEncryptionPassword.mockResolvedValue({ data: {} });
@@ -51,11 +47,13 @@ describe('CertificatesView', () => {
 	});
 
 	it('should close modal correctly after opening', async () => {
-		setupTest(<CertificatesView />);
+		mockCheckExistEncryptionPassword.mockResolvedValue({ data: {} });
+
+		const { user } = setupTest(<CertificatesView />);
 		const modalCloseButton = await screen.findByText('Close');
 
 		await act(async () => {
-			modalCloseButton.click();
+			user.click(modalCloseButton);
 		});
 
 		expect(screen.queryByText('Certificate Password Modal')).not.toBeInTheDocument();

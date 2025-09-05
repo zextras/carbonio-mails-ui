@@ -5,9 +5,9 @@
  */
 import React, { memo, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { DragItems } from 'views/app/folder-panel/messages/message-list-drag-component';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';

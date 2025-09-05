@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Container } from '@zextras/carbonio-design-system';
-import styled, { DefaultTheme } from 'styled-components';
+import styled from '@emotion/styled';
+import { Container, PaletteColor } from '@zextras/carbonio-design-system';
 
-export const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
+export const HoverBarContainer = styled(Container)<{ $hoverBackground: PaletteColor }>`
 	top: 0;
 	right: 0;
 	display: none;
@@ -15,7 +15,7 @@ export const HoverBarContainer = styled(Container)<{ background: keyof DefaultTh
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ background, theme }): string => theme.palette[background].hover}
+		${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover}
 	);
 	width: calc(100% - 4rem);
 	height: 45%;
