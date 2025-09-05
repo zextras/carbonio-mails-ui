@@ -5,6 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	AccordionItem,
 	Avatar,
@@ -26,7 +27,6 @@ import {
 	ROOT_NAME
 } from '@zextras/carbonio-ui-commons';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { isDraft } from 'helpers/folders';

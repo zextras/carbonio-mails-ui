@@ -5,9 +5,9 @@
  */
 import React, { FC, useCallback, useRef, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Icon } from '@zextras/carbonio-design-system';
 import { HexColorPicker } from 'react-colorful';
-import styled from 'styled-components';
 
 import useClickOutside from 'hooks/use-click-outside-picker';
 import { ColorContainer } from 'integrations/shared-invite-reply/parts/styled-components';

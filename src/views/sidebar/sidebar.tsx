@@ -6,11 +6,10 @@
 
 import React, { FC, memo, useMemo } from 'react';
 
-import { ThemeProvider } from '@mui/material';
-import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
+import { Accordion, Container, Divider, ThemeProvider } from '@zextras/carbonio-design-system';
 import { SecondaryBarComponentProps } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import { FOLDERS, SidebarAccordionMui, themeMui } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, SidebarAccordionMui, themeMuiExtension } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { Route, Routes, useParams } from 'react-router-dom';
 
@@ -58,7 +57,7 @@ const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	const accordions = useFolders();
 
 	return (
-		<ThemeProvider theme={themeMui}>
+		<ThemeProvider extension={themeMuiExtension}>
 			{expanded ? (
 				<Routes>
 					<Route

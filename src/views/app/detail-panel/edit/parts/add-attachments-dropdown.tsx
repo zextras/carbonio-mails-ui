@@ -5,6 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Dropdown,
 	Row,
@@ -18,7 +19,6 @@ import {
 import { getIntegratedFunction, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
-import styled from 'styled-components';
 
 import { SmartlinkFromFilesModal } from './smartlink-modal/smartlink-from-files-modal';
 import { SmartlinkFromLocalModal } from './smartlink-modal/smartlink-from-local-modal';
