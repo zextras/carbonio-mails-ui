@@ -31,8 +31,9 @@ type SearchConversationListItemProps = {
 	selecting: boolean;
 	active: boolean;
 	activeItemId?: string;
-	toggle: (id: string) => void;
 	selected: boolean;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
@@ -40,8 +41,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	selecting,
 	active,
 	activeItemId,
-	toggle,
-	selected
+	selected,
+	index,
+	onSelect
 }) => {
 	const conversation = useConversationById(conversationId);
 	const { ref, hasBeenHovered } = useOnMouseHover();
@@ -105,11 +107,12 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
 						open={open}
 						setOpen={setOpen}
 						conversationStatus={conversationStatus}
 						parent={messages[0].parent}
+						index={index}
+						onSelect={onSelect}
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
@@ -117,11 +120,12 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
 					open={open}
 					setOpen={setOpen}
 					conversationStatus={conversationStatus}
 					parent={messages[0].parent}
+					index={index}
+					onSelect={onSelect}
 				/>
 			)}
 			{open && (

@@ -14,12 +14,13 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -46,7 +47,11 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients
 } from '../../../../store/editor';
-import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../../types';
+import {
+	EditorOperationAllowedStatus,
+	EditViewClosingReasons,
+	SaveDraftResponse
+} from '../../../../types';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -245,20 +250,24 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	const onSendError = useCallback((): void => {
-		createSnackbar({
-			key: `mail-${editorId}`,
-			replace: true,
-			severity: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
-		});
-		createEditBoard({
-			action: EditViewActions.RESUME,
-			actionTargetId: editorId
-		});
-	}, [createSnackbar, editorId]);
+	const onSendError = useCallback(
+		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
+			const { message, timeout } = getErrorSnackbarProps(error);
+			createSnackbar({
+				key: `mail-${editorId}`,
+				replace: true,
+				severity: 'error',
+				label: message,
+				autoHideTimeout: timeout,
+				hideButton: true
+			});
+			createEditBoard({
+				action: EditViewActions.RESUME,
+				actionTargetId: editorId
+			});
+		},
+		[createSnackbar, editorId]
+	);
 
 	const onSendComplete = useCallback((): void => {
 		createSnackbar({

@@ -27,7 +27,8 @@ describe('SearchMessageListItemWrapper', () => {
 				messageId="1"
 				selected={false}
 				selecting={false}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -48,7 +49,8 @@ describe('SearchMessageListItemWrapper', () => {
 				messageId={generatedMessages[0].id}
 				selected={false}
 				selecting={false}
-				toggle={jest.fn()}
+				index={0}
+				onSelect={jest.fn()}
 				active
 			/>
 		);

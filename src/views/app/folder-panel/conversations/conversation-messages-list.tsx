@@ -38,7 +38,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	setDraggedIds = noop
 }: ConversationMessagesListProps): React.JSX.Element {
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const { toggleItemSelection: toggle, isSelectModeOn } = useMultipleSelection({
+	const { isSelectModeOn } = useMultipleSelection({
 		allAvailableItems: messages.map((message) => message.id),
 		selectedItems,
 		setSelectedItems
@@ -46,7 +46,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
+			map(messages, (message, index) => {
 				const isActive = activeItemId === message.id || activeItemId === message.conversation;
 				const isSelected = selectedItems.has(message.id);
 
@@ -74,11 +74,12 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 										selected={isSelected}
 										selecting={isSelectModeOn}
 										visible={visible}
-										toggle={toggle}
 										active={isActive}
 										isConvChildren
 										currentFolderId={folderId}
 										isSearchModule={isSearchModule}
+										index={index}
+										onSelect={noop}
 									/>
 								</DragItemWrapper>
 							) : (
@@ -96,8 +97,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 			isSelectModeOn,
 			messages,
 			selectedItems,
-			setDraggedIds,
-			toggle
+			setDraggedIds
 		]
 	);
 

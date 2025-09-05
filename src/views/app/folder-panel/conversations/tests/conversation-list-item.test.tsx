@@ -57,10 +57,11 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggleMultipleSelection: noop,
 					activeItemId: '',
 					isSearchModule,
-					folderId
+					folderId,
+					index: 0,
+					onSelect: noop
 				};
 				setConversationsInEmailStore([conversation], false);
 
@@ -95,10 +96,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 					setupTest(<ConversationListItem {...props} />);
 					const avatar = await screen.findByTestId(
@@ -135,10 +137,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -182,10 +185,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -232,10 +236,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -278,10 +283,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -321,10 +327,11 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggleMultipleSelection: noop,
 						activeItemId: '',
 						isSearchModule,
-						folderId: folder.id
+						folderId: folder.id,
+						index: 0,
+						onSelect: noop
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -361,10 +368,11 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggleMultipleSelection: noop,
 					activeItemId: '',
 					isSearchModule,
-					folderId: FOLDERS.INBOX
+					folderId: FOLDERS.INBOX,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<ConversationListItem {...props} />);
@@ -393,10 +401,11 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggleMultipleSelection: noop,
 					activeItemId: '',
 					isSearchModule,
-					folderId
+					folderId,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<ConversationListItem {...props} />);
@@ -415,10 +424,11 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggleMultipleSelection: noop,
 					activeItemId: '',
 					isSearchModule,
-					folderId
+					folderId,
+					index: 0,
+					onSelect: noop
 				};
 
 				setupTest(<ConversationListItem {...props} />);
@@ -439,10 +449,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule,
-				folderId
+				folderId,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -473,10 +484,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: false,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
@@ -513,10 +525,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: false,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -554,10 +567,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
@@ -594,10 +608,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -633,10 +648,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			setupTest(<ConversationListItem {...props} />);
@@ -658,10 +674,11 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggleMultipleSelection: noop,
 				activeItemId: '',
 				isSearchModule: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop
 			};
 
 			setupTest(<ConversationListItem {...props} />);

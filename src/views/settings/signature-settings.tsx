@@ -340,8 +340,9 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				<FormSubSection>
 					<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 						{signatures.length > 0 &&
-							map(updatedIdentities, (acc) => (
+							map(updatedIdentities, (acc, index) => (
 								<SelectIdentitySignature
+									key={`${acc?.id}-${index}`}
 									acc={acc}
 									signatures={signatures}
 									signatureSelectItems={signatureSelectItems}

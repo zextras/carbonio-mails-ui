@@ -20,7 +20,6 @@ jest.mock('@zextras/carbonio-ui-commons', () => ({
 	useTags: jest.fn()
 }));
 
-const mockToggle = jest.fn();
 const mockToggleOpen = jest.fn();
 const tagsArray = Object.values(tags);
 
@@ -42,10 +41,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -67,10 +67,11 @@ describe('ConversationListItemCore', () => {
 				conversation={{ ...conversation, read: false }}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -91,10 +92,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -118,10 +120,11 @@ describe('ConversationListItemCore', () => {
 				conversation={{ ...conversation, urgent: true }}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -142,10 +145,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -165,10 +169,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -193,10 +198,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 
@@ -220,10 +226,11 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={jest.fn()}
 			/>
 		);
 

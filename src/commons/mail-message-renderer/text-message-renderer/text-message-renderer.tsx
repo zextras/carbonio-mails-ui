@@ -3,36 +3,36 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { linkifyText } from './text-linkify';
 import {
 	getOriginalTextContent,
 	getQuotedTextFromOriginalContent
-} from 'commons/get-quoted-text-util';
-import { plainTextToHTML, replaceLinkToAnchor } from 'commons/utils';
+} from '../../get-quoted-text-util';
 
-export const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({
-	body
-}) => {
+type TextMessageRendererType = {
+	body: { content: string };
+};
+
+export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JSX.Element => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const originalText = getOriginalTextContent(body.content);
 	const quoted = getQuotedTextFromOriginalContent(body.content, originalText);
 
-	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : originalText),
-		[showQuotedText, body.content, originalText]
-	);
+	const convertedHTML = useMemo(() => {
+		const content = showQuotedText ? body.content : originalText;
+		const html = linkifyText(content);
+		return html.replace(/\r\n|\r|\n/g, '<br />');
+	}, [showQuotedText, body.content, originalText]);
 
-	const convertedHTML = useMemo(
-		() => replaceLinkToAnchor(plainTextToHTML(contentToDisplay)),
-		[contentToDisplay]
-	);
 	return (
 		<>
 			<Text
+				data-testid="text-message-renderer-container"
 				overflow="break-word"
 				color="text"
 				style={{ fontFamily: 'monospace' }}

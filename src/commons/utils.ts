@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray, reduce } from 'lodash';
+import { find, isArray } from 'lodash';
 import moment from 'moment';
 
 import type { MailMessagePart } from 'types/index.d';
@@ -95,68 +95,21 @@ export const plainTextToHTML = (str: string): string => {
 	return '';
 };
 
-function isValidUrl(url: string): boolean {
-	const urlToCheck = /^(https?:\/\/)/.exec(url) ? url : `http://${url}`;
-	try {
-		const newUrl = new URL(urlToCheck);
-		return ['http:', 'https:'].includes(newUrl.protocol);
-	} catch (err) {
-		return false;
-	}
-}
-
-export const replaceLinkToAnchor = (content: string): string => {
-	if (content === '') {
-		return '';
-	}
-
-	const linkRegexp = new RegExp(
-		'https?://' +
-			'(((?=([a-z0-9-@:]|[^\x00-\x7F]){1,100}\\.)(xn--)?' +
-			'([a-z0-9]|[^\x00-\x7F])+(-([a-z0-9]|[^\x00-\x7F])+)*\\.)+' +
-			'[a-z]{2,100}|((\\d{1,3}\\.){3}\\d{1,3}))' +
-			'(:\\d+)?' +
-			'(/([-a-z\\d%_.~+#&/()=]|[^\x00-\x7F])*)*' +
-			'(\\?([;&:@a-z\\d%_.~+=#\\-/()?]|[^\x00-\x7F])*)?' +
-			'(#[:/.\\-a-z\\d_)]{0,200})?',
-		'gi'
-	);
-
-	return content.replace(linkRegexp, (url) => {
-		if (isValidUrl(url)) {
-			const wrap = document.createElement('div');
-			const anchor = document.createElement('a');
-
-			const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
-			let href = url;
-			if (!url.startsWith('http') && !url.startsWith('https')) {
-				href = `http://${url}`;
-			}
-			anchor.href = href;
-			anchor.target = '_blank';
-			anchor.innerHTML = newInnerHtml;
-			wrap.appendChild(anchor);
-			return wrap.innerHTML;
-		}
-		return url;
-	});
-};
-
 /**
  * Builds a map of image content IDs to their corresponding mail message parts.
  *
  */
-export function buildImageMap(parts: Array<MailMessagePart>): Record<string, MailMessagePart> {
-	return reduce(
-		parts,
-		(acc, part) => {
-			const match = _CI_REGEX.exec(part.ci ?? '');
-			// eslint-disable-next-line no-param-reassign
-			if (match) acc[match[1]] = part;
-			return acc;
-		},
-		{} as Record<string, MailMessagePart>
-	);
+export function buildImageMap(parts: readonly MailMessagePart[]): Record<string, MailMessagePart> {
+	return parts.reduce((acc: Record<string, MailMessagePart>, part) => {
+		const contentId = part.ci?.trim();
+		if (!contentId) return acc;
+
+		const match = _CI_REGEX.exec(contentId);
+		if (match) {
+			return { ...acc, [match[1]]: part };
+		}
+		return acc;
+	}, {});
 }
 
 export function updateImageSrc(

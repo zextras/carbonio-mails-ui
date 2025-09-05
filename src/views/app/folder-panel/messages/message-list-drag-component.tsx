@@ -21,15 +21,16 @@ export const DragItems = ({
 	).filter(Boolean);
 	return (
 		<>
-			{map(items, (item) => (
+			{map(items, (item, index) => (
 				<MessageListItem
 					message={item}
 					key={`dragged-item-${item.id}`}
 					isConvChildren={false}
-					toggle={noop}
 					selected={false}
 					selecting={false}
 					visible={false}
+					index={index}
+					onSelect={noop}
 				/>
 			))}
 		</>

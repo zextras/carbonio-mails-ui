@@ -30,21 +30,23 @@ type SearchConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	conversationStatus: SearchRequestStatus;
 	parent: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 export const SearchConversationListItemCore = ({
 	conversation,
 	selected,
 	selecting,
-	toggle,
 	conversationStatus,
 	open,
 	setOpen,
-	parent
+	parent,
+	index,
+	onSelect
 }: SearchConversationListItemCoreProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
@@ -145,8 +147,9 @@ export const SearchConversationListItemCore = ({
 					item={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
 					folderId={avatarFolderId}
+					index={index}
+					onSelect={onSelect}
 				/>
 				<Padding horizontal="extrasmall" />
 			</div>

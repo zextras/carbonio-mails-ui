@@ -28,12 +28,13 @@ type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggleMultipleSelection: (id: string) => void;
 	folderParent: string;
 	open: boolean;
 	toggleCollapseElementCallback: (
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
 	) => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 function cleanSubject(subject: string): string {
@@ -44,10 +45,11 @@ export const ConversationListItemCore = ({
 	conversation,
 	selected,
 	selecting,
-	toggleMultipleSelection,
 	folderParent,
 	toggleCollapseElementCallback,
-	open
+	open,
+	index,
+	onSelect
 }: ConversationListItemCoreProps): React.JSX.Element => {
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -131,8 +133,9 @@ export const ConversationListItemCore = ({
 					item={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggleMultipleSelection}
 					folderId={folderParent}
+					index={index}
+					onSelect={onSelect}
 				/>
 				<Padding horizontal="extrasmall" />
 			</div>

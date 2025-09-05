@@ -63,6 +63,7 @@ export type IncompleteMessage = MailHeaders & {
 };
 
 export type MailMessagePart = {
+	body?: boolean;
 	contentType: string;
 	size: number;
 	content?: string;
@@ -72,6 +73,10 @@ export type MailMessagePart = {
 	ci?: string;
 	cd?: string;
 	disposition?: 'inline' | 'attachment';
+};
+
+export type MailMessagePartWithDisposition = MailMessagePart & {
+	disposition: 'inline' | 'attachment';
 };
 
 export type AttachmentPart = {

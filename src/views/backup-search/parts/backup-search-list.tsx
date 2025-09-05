@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
-import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { restoreMessagesApi } from 'api/restore-messages-api';
@@ -28,16 +27,14 @@ import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-sear
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
-	const {
-		toggleItemSelection: toggle,
-		deselectAll,
-		selectAll,
-		isAllSelected
-	} = useMultipleSelection({
+	const { selectRange, deselectAll, selectAll, isAllSelected } = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
 		allAvailableItems: [...Object.keys(messages ?? {})],
 		selectedItems,
 		setSelectedItems
@@ -98,7 +95,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
+			Object.values(messages).map((message, index) => {
 				const active = itemId === message.id;
 				const isSelected = selectedItems?.has(message.id);
 				return (
@@ -113,7 +110,8 @@ export const BackupSearchList = (): React.JSX.Element => {
 								<BackupSearchMessageListItem
 									message={message}
 									messageIsSelected={isSelected}
-									toggle={toggle}
+									onSelect={selectRange}
+									index={index}
 								/>
 							) : (
 								<div style={{ height: '4rem' }} />
@@ -122,7 +120,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 					</CustomListItem>
 				);
 			}),
-		[itemId, messages, selectedItems, toggle]
+		[itemId, messages, selectRange, selectedItems]
 	);
 
 	const selectAllOnClick = useCallback(() => {

@@ -20,6 +20,16 @@ import { generateConversation } from 'tests/generators/generateConversation';
 import { mockLayoutStorage } from 'tests/layouts-utils';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+	const actual = jest.requireActual('react-router-dom');
+	return {
+		...actual,
+		useNavigate: (): jest.Mock => mockNavigate
+	};
+});
+
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {
 		populateFoldersStore();

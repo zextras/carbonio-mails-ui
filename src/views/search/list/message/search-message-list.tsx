@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom';
 
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
+import { MessageShortcutsRegister } from 'views/app/folder-panel/messages/message-shortcuts-register';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';
@@ -34,19 +35,22 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = React.useState<number | null>(null);
 
 	const {
-		toggleItemSelection: toggle,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useMultipleSelection({
 		allAvailableItems: messageIds,
 		selectedItems,
-		setSelectedItems
+		setSelectedItems,
+		lastSelectedIndex,
+		setLastSelectedIndex
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -67,9 +71,13 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		types: 'message'
 	});
 
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	const listItems = useMemo(
 		() =>
-			map(messageIds, (messageId) => {
+			map(messageIds, (messageId, index) => {
 				const active = itemId === messageId;
 				const isSelected = selectedItems.has(messageId);
 				return (
@@ -81,14 +89,20 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchMessageListItemWrapper
-									key={messageId}
-									messageId={messageId}
-									selected={isSelected}
-									selecting={isSelectModeOn}
-									toggle={toggle}
-									active={active}
-								/>
+								<>
+									{(active || isSelected) && (
+										<MessageShortcutsRegister messageIds={keyboardShortcutsIds} folderId={''} />
+									)}
+									<SearchMessageListItemWrapper
+										key={messageId}
+										messageId={messageId}
+										selected={isSelected}
+										selecting={isSelectModeOn}
+										onSelect={selectRange}
+										index={index}
+										active={active}
+									/>
+								</>
 							) : (
 								<div style={{ height: '4rem' }} data-testid={`invisible-message-${messageId}`} />
 							)
@@ -96,7 +110,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[isSelectModeOn, itemId, messageIds, selectedItems, toggle]
+		[isSelectModeOn, itemId, keyboardShortcutsIds, messageIds, selectRange, selectedItems]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);

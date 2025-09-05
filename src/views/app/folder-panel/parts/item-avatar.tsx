@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { Avatar, Container } from '@zextras/carbonio-design-system';
@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { getFolderIdParts } from 'helpers/folders';
-import type { ItemAvatarType, Participant } from 'types/index.d';
+import type { Participant } from 'types/index.d';
 import { TooltipWrapper } from 'views/app/folder-panel/parts/tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
@@ -24,7 +24,23 @@ const AvatarElement = styled(Avatar)`
 	}
 `;
 
-export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, toggle, folderId }) => {
+export type ItemAvatarTypeProps = {
+	item: any;
+	selected: boolean;
+	selecting: boolean;
+	folderId: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+};
+
+export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
+	item,
+	selected,
+	selecting,
+	folderId,
+	index = 0,
+	onSelect
+}) => {
 	const targetParticipants =
 		getFolderIdParts(folderId).id === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [avatarLabel, avatarEmail] = useMemo(() => {
@@ -33,15 +49,15 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 		return [sender?.fullName || sender?.name || sender?.address || '.', sender?.address];
 	}, [item.participants, targetParticipants]);
 
-	const conversationSelect = useCallback(
-		(id: string) => (ev: SyntheticEvent) => {
-			ev.preventDefault();
-			toggle && toggle(id);
-		},
-		[toggle]
-	);
-
 	const activateSelectionMode = t('label.activate_selection_mode', 'Activate selection mode');
+
+	const handleClick = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			onSelect?.(index, item.id, e);
+		},
+		[onSelect, item, index]
+	);
 
 	return (
 		<Container
@@ -56,7 +72,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 					selected={selected}
 					label={avatarLabel}
 					colorLabel={avatarEmail}
-					onClick={conversationSelect(item.id)}
+					onClick={handleClick}
 					size="large"
 				/>
 			</TooltipWrapper>

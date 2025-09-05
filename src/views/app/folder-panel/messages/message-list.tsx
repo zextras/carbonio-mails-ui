@@ -11,6 +11,7 @@ import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import { MessageShortcutsRegister } from './message-shortcuts-register';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -27,21 +28,28 @@ export const MessageList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
 	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
 	const { messageListIndex, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+	const { sortType, sortDirection, filterType } = useMemo(
+		() => parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string),
+		[folderId, prefs.zimbraPrefSortOrder]
+	);
+	const sortOrder = useMemo(() => sortType.concat(sortDirection), [sortDirection, sortType]);
 	const {
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
 		selectAll,
-		toggleItemSelection: toggle,
 		isAllSelected,
-		selectAllModeOff
+		selectAllModeOff,
+		selectRange
 	} = useMultipleSelection({
+		lastSelectedIndex,
+		setLastSelectedIndex,
 		selectedItems,
 		setSelectedItems,
 		allAvailableItems: messageListIndex
@@ -55,7 +63,8 @@ export const MessageList = (): React.JSX.Element => {
 		hasMore,
 		sortBy: sortOrder,
 		offset: messageListIndex.length,
-		limit: LIST_LIMIT.LOAD_MORE_LIMIT
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		filterType
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -81,9 +90,13 @@ export const MessageList = (): React.JSX.Element => {
 		Array.from(selectedItems, (item) => [item, true])
 	);
 
+	const selectedIdsArray = useMemo(() => Array.from(selectedItems), [selectedItems]);
+	const keyboardShortcutsIds =
+		selectedItems.size > 0 ? selectedIdsArray : ([itemId].filter(Boolean) as Array<string>);
+
 	const listItems = useMemo(
 		() =>
-			map(messageListIndex, (id) => {
+			map(messageListIndex, (id, index) => {
 				const isSelected = selectedItems.has(id);
 				const active = itemId === id;
 
@@ -97,21 +110,30 @@ export const MessageList = (): React.JSX.Element => {
 					>
 						{(visible: boolean): ReactElement =>
 							visible ? (
-								<MessageListItemComponent
-									deselectAll={deselectAll}
-									messageId={id}
-									selectedItems={selectedItemsMap}
-									isSelected={isSelected}
-									active={active}
-									toggle={toggle}
-									isSelectModeOn={isSelectModeOn}
-									dragImageRef={dragImageRef}
-									draggedIds={draggedIds}
-									key={id}
-									visible={visible}
-									setDraggedIds={setDraggedIds}
-									currentFolderId={folderId}
-								/>
+								<>
+									{(active || isSelected) && (
+										<MessageShortcutsRegister
+											messageIds={keyboardShortcutsIds}
+											folderId={folderId}
+										/>
+									)}
+									<MessageListItemComponent
+										deselectAll={deselectAll}
+										messageId={id}
+										selectedItems={selectedItemsMap}
+										isSelected={isSelected}
+										active={active}
+										isSelectModeOn={isSelectModeOn}
+										dragImageRef={dragImageRef}
+										draggedIds={draggedIds}
+										key={id}
+										visible={visible}
+										setDraggedIds={setDraggedIds}
+										currentFolderId={folderId}
+										index={index}
+										onSelect={selectRange}
+									/>
+								</>
 							) : (
 								<div style={{ height: '4rem' }} data-testid="invisible-item" />
 							)
@@ -125,14 +147,13 @@ export const MessageList = (): React.JSX.Element => {
 			folderId,
 			isSelectModeOn,
 			itemId,
+			keyboardShortcutsIds,
 			messageListIndex,
+			selectRange,
 			selectedItems,
-			selectedItemsMap,
-			toggle
+			selectedItemsMap
 		]
 	);
-
-	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
 
 	const totalMessages = useMemo(() => messageListIndex.length, [messageListIndex.length]);
 
@@ -145,7 +166,7 @@ export const MessageList = (): React.JSX.Element => {
 			listItems={listItems}
 			loadMoreCallback={hasMore ? loadMoreCallback : undefined}
 			messagesLoadingCompleted={messagesLoadingCompleted}
-			selectedIds={selectedIds}
+			selectedIds={selectedIdsArray}
 			folderId={folderId}
 			messageIds={messageListIndex}
 			draggedIds={draggedIds}

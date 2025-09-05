@@ -14,7 +14,6 @@ export type MessageListItemProps = {
 	message: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
 	visible: boolean;
 	isConvChildren: boolean;
 	active?: boolean;
@@ -22,6 +21,8 @@ export type MessageListItemProps = {
 	isConversation?: boolean;
 	currentFolderId?: string;
 	handleReplaceHistory?: () => void;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export type TextReadValuesType = {

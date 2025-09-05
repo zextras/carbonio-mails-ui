@@ -32,9 +32,10 @@ type MessageListItemCoreProps = {
 	selected: boolean;
 	selecting: boolean;
 	isConvChildren: boolean;
-	toggle: (id: string) => void;
 	isSearchModule?: boolean;
 	firstChildFolderId: string;
+	index: number;
+	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
 
 export const MessageListItemCore = ({
@@ -42,9 +43,10 @@ export const MessageListItemCore = ({
 	selected,
 	selecting,
 	isConvChildren,
-	toggle,
 	isSearchModule,
-	firstChildFolderId
+	firstChildFolderId,
+	index,
+	onSelect
 }: MessageListItemCoreProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
@@ -143,7 +145,10 @@ export const MessageListItemCore = ({
 			}),
 		[message?.autoSendTime]
 	);
-	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
+	const onSelectCallback = useMemo(
+		() => (isConvChildren ? noop : onSelect),
+		[isConvChildren, onSelect]
+	);
 
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
@@ -152,7 +157,8 @@ export const MessageListItemCore = ({
 					item={message}
 					selected={selected}
 					selecting={selecting}
-					toggle={onToggle}
+					index={index}
+					onSelect={onSelectCallback}
 					folderId={firstChildFolderId}
 				/>
 				<Padding horizontal="extrasmall" />
