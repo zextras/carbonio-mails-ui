@@ -95,45 +95,43 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		};
 
 	return (
-		<div data-testid="mail-msg-preview-actions">
-			<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
-				{actions?.length > 0 &&
-					map(actions, (action) => {
-						if ('items' in action && !isNil(action.items) && action.icon) {
-							return (
-								<Padding key={action.label} right="small">
-									<Tooltip label={action.label}>
-										<Dropdown items={action.items}>
-											<Button
-												type="default"
-												backgroundColor={'transparent'}
-												labelColor={'text'}
-												icon={action.icon}
-												size="medium"
-												onClick={noop}
-											/>
-										</Dropdown>
-									</Tooltip>
-								</Padding>
-							);
-						}
-						if ('execute' in action && action.canExecute()) {
-							return (
-								<Tooltip key={`${action.icon}`} label={action.label}>
-									<Button
-										type="default"
-										backgroundColor={'transparent'}
-										labelColor={'text'}
-										size="medium"
-										icon={action.icon}
-										onClick={stopPropagationWrapperForButton(action.execute)}
-									/>
+		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
+			{actions?.length > 0 &&
+				map(actions, (action) => {
+					if ('items' in action && !isNil(action.items) && action.icon) {
+						return (
+							<Padding key={action.label} right="small">
+								<Tooltip label={action.label}>
+									<Dropdown items={action.items}>
+										<Button
+											type="default"
+											backgroundColor={'transparent'}
+											labelColor={'text'}
+											icon={action.icon}
+											size="medium"
+											onClick={noop}
+										/>
+									</Dropdown>
 								</Tooltip>
-							);
-						}
-						return null;
-					})}
-			</Row>
-		</div>
+							</Padding>
+						);
+					}
+					if ('execute' in action && action.canExecute()) {
+						return (
+							<Tooltip key={`${action.icon}`} label={action.label}>
+								<Button
+									type="default"
+									backgroundColor={'transparent'}
+									labelColor={'text'}
+									size="medium"
+									icon={action.icon}
+									onClick={stopPropagationWrapperForButton(action.execute)}
+								/>
+							</Tooltip>
+						);
+					}
+					return null;
+				})}
+		</Row>
 	);
 };
