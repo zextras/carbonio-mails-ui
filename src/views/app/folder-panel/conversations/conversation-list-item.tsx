@@ -6,11 +6,11 @@
 
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';

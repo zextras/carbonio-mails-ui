@@ -16,7 +16,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import { isRoot } from 'helpers/folders';
 import {

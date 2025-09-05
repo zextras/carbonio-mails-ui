@@ -6,6 +6,7 @@
 
 import '@testing-library/jest-dom';
 
+import { matchers } from '@emotion/jest';
 import failOnConsole from 'jest-fail-on-console';
 import fetchMock from 'jest-fetch-mock';
 import { noop } from 'lodash';
@@ -34,6 +35,9 @@ failOnConsole({
 type DefaultBeforeAllTestsProps = {
 	onUnhandledRequest: 'warn' | 'error';
 };
+
+// Inject custom matchers for Jest
+expect.extend(matchers);
 
 export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }

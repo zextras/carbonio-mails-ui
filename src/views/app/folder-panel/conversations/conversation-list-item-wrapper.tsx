@@ -156,7 +156,7 @@ export const ConversationListItemActionWrapper = ({
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
-					background={active ? 'highlight' : 'gray6'}
+					$hoverBackground={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${conversation.id}`}
 				>
 					<ListItemHoverActions actions={hoverActions} />

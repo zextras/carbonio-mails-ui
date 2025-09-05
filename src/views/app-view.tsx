@@ -5,7 +5,8 @@
  */
 import React, { Suspense, lazy, useRef } from 'react';
 
-import { useUpdateView } from '@zextras/carbonio-ui-commons';
+import { ThemeProvider } from '@zextras/carbonio-design-system';
+import { themeMuiExtension, useUpdateView } from '@zextras/carbonio-ui-commons';
 
 import { Spinner } from 'assets/spinner';
 import { FolderView } from 'views/folder-view';
@@ -26,11 +27,13 @@ const AppView = (): React.JSX.Element => {
 	useUpdateView();
 
 	return (
-		<LayoutSelector
-			folderView={<FolderView containerRef={containerRef} />}
-			detailPanel={<DetailPanel />}
-			containerRef={containerRef}
-		/>
+		<ThemeProvider extension={themeMuiExtension}>
+			<LayoutSelector
+				folderView={<FolderView containerRef={containerRef} />}
+				detailPanel={<DetailPanel />}
+				containerRef={containerRef}
+			/>
+		</ThemeProvider>
 	);
 };
 

@@ -5,11 +5,11 @@
  */
 import React from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Icon, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchPanelTextLine } from 'views/backup-search/parts/backup-search-panel-text-line';

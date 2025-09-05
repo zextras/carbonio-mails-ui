@@ -38,7 +38,7 @@ import {
 import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { getTimeLabel, participantToString } from 'commons/utils';
