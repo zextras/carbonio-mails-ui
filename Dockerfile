@@ -1,6 +1,4 @@
-FROM dwdraju/alpine-curl-jq
+FROM registry.dev.zextras.com/dev/carbonio-webui-builder:dfrison
 
 COPY dist /tmp/build
-COPY entrypoint.sh entrypoint
-
-ENTRYPOINT ["./entrypoint"]
+ENV PROJECT_NAME="carbonio-mails-ui"
