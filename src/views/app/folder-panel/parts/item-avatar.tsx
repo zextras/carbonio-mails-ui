@@ -5,10 +5,10 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
 
 import { getFolderIdParts } from 'helpers/folders';
 import type { Participant } from 'types/index.d';

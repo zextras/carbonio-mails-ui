@@ -6,10 +6,9 @@
 
 import React, { SyntheticEvent } from 'react';
 
-import { CreateModalFn } from '@zextras/carbonio-design-system';
+import { CreateModalFn, Theme } from '@zextras/carbonio-design-system';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { ItemType } from '@zextras/carbonio-ui-commons';
-import { DefaultTheme } from 'styled-components';
 
 import type { TagActionItemType } from 'types/tags/index.d';
 
@@ -21,7 +20,7 @@ export type ActionFn = {
 export type ActionDescriptor = {
 	id: string;
 	label: string;
-	icon: keyof DefaultTheme['icons'];
+	icon: keyof Theme['icons'];
 	color?: number;
 };
 

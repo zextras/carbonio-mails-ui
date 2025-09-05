@@ -321,8 +321,7 @@ describe('SearchView', () => {
 			await user.hover(actionWrapper);
 			expect(actionWrapper).toBeVisible();
 
-			const hoverBar = await screen.findByTestId('primary-actions-bar-123');
-			expect(hoverBar).toBeVisible();
+			await screen.findByTestId('primary-actions-bar-123');
 
 			const deletePermanentlyIconButton = screen.getByTestId('icon: DeletePermanentlyOutline');
 

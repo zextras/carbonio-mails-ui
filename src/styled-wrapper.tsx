@@ -6,8 +6,8 @@
 
 import React, { SVGProps } from 'react';
 
+import { Global, css } from '@emotion/react';
 import { Theme, ThemeProvider } from '@zextras/carbonio-design-system';
-import { createGlobalStyle } from 'styled-components';
 
 import { AnimatedLoader } from 'assets/animated-loader';
 
@@ -49,19 +49,20 @@ const themeOverride = (theme: Theme): Theme => {
 	};
 };
 
-const GlobalStyle = createGlobalStyle`
-  .disable-hover, .disable-hover * {
-	  &:hover {
-		  background-color: transparent;
-	  }
-  }
+const styles = css`
+	.disable-hover,
+	.disable-hover * {
+		&:hover {
+			background-color: transparent;
+		}
+	}
 `;
 
 const StyledWrapper: React.FC<{
 	children: React.ReactNode;
 }> = ({ children }) => (
 	<ThemeProvider loadDefaultFont={false} extension={themeOverride}>
-		<GlobalStyle />
+		<Global styles={styles} />
 		{children}
 	</ThemeProvider>
 );

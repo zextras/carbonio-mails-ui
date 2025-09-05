@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import LabelRow from 'integrations/shared-invite-reply/parts/label-row';
 import ResponseActions from 'integrations/shared-invite-reply/parts/response-actions';

@@ -5,10 +5,10 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { getColor, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
-import styled from 'styled-components';
 
 import type { Participant, MailMessage } from 'types/index.d';
 
