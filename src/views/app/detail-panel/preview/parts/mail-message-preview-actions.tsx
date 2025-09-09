@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Dropdown, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { isNil, map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -87,6 +87,13 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		}
 	];
 
+	const stopPropagationWrapperForButton =
+		<E extends KeyboardEvent | React.MouseEvent<HTMLButtonElement>>(handler: (event: E) => void) =>
+		(event: E) => {
+			event.stopPropagation();
+			handler(event);
+		};
+
 	return (
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
 			{actions?.length > 0 &&
@@ -96,7 +103,14 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 							<Padding key={action.label} right="small">
 								<Tooltip label={action.label}>
 									<Dropdown items={action.items}>
-										<IconButton icon={action.icon} size="medium" onClick={noop} />
+										<Button
+											type="default"
+											backgroundColor={'transparent'}
+											labelColor={'text'}
+											icon={action.icon}
+											size="medium"
+											onClick={noop}
+										/>
 									</Dropdown>
 								</Tooltip>
 							</Padding>
@@ -105,7 +119,14 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 					if ('execute' in action && action.canExecute()) {
 						return (
 							<Tooltip key={`${action.icon}`} label={action.label}>
-								<IconButton size="medium" icon={action.icon} onClick={action.execute} />
+								<Button
+									type="default"
+									backgroundColor={'transparent'}
+									labelColor={'text'}
+									size="medium"
+									icon={action.icon}
+									onClick={stopPropagationWrapperForButton(action.execute)}
+								/>
 							</Tooltip>
 						);
 					}
