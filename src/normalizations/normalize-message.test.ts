@@ -232,6 +232,17 @@ describe('Normalize partial soap incomplete message', () => {
 
 		const result = normalizePartialIncompleteMessageFromSoap(input);
 
-		expect(result).toEqual({ id: '111' });
+		expect(result).toEqual({ id: '111', read: true }); // read flag, since it has a default fallback
+	});
+
+	describe.each([
+		['should return flag read: true when the flag is empty', { id: '111', f: '' }],
+		['should return flag read: true when the flag is undefined', { id: '111', f: undefined }],
+		['should return flag read: true when the flag is missing', { id: '111' }]
+	])('%s', (_desc, input) => {
+		it('returns { id, read: true }', () => {
+			const result = normalizePartialIncompleteMessageFromSoap(input);
+			expect(result).toEqual({ id: '111', read: true });
+		});
 	});
 });
