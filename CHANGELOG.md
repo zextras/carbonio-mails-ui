@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.1...v1.26.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* [CO-2516] Ensure default read flag is set to true in message normalization [#995](https://github.com/zextras/carbonio-mails-ui/issues/995) ([79e1086](https://github.com/zextras/carbonio-mails-ui/commit/79e10869cfc0b12129782731819d8c93d95ef580))
+* ensure default read flag is set to true in message normalization ([09d1494](https://github.com/zextras/carbonio-mails-ui/commit/09d1494ea0ae9eaf92e800163c33e0532d7c394c))
+
 ### [1.26.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.0...v1.26.1) (2025-09-01)
 
 
