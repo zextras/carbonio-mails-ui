@@ -325,7 +325,7 @@ const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
 	if (isNil(m?.f) || m.f === '') {
 		return defaultFlag;
 	}
-	const flags = m?.f;
+	const flags = m.f;
 	return {
 		read: !/u/.test(flags),
 		hasAttachment: /a/.test(flags),
