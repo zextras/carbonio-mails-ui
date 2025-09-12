@@ -217,7 +217,7 @@ export const isInboxSubfolder = ({
 		return false;
 	}
 
-	return path.toLowerCase().startsWith('/inbox') || path.toLowerCase() === '/inbox';
+	return path.toLowerCase().startsWith('/inbox');
 };
 
 /**
