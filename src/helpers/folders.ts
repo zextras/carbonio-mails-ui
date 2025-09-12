@@ -212,11 +212,30 @@ export const isInboxSubfolder = ({
 
 	const folderIdAbsPath = useFolderStore.getState()?.folders?.[folderId ?? '']?.absFolderPath;
 	const path = folder ? folder.absFolderPath : folderIdAbsPath;
+
 	if (!path) {
 		return false;
 	}
 
-	return path.toLowerCase().startsWith('/inbox');
+	return path.toLowerCase().startsWith('/inbox/') || path.toLowerCase() === '/inbox';
+};
+
+/**
+ * Tells if a folder is a subfolder of the sent folder
+ * @param folderId
+ */
+export const isSentSubfolder = (folder: Folder | undefined): boolean => {
+	if (!folder) {
+		return false;
+	}
+
+	const path = folder.absFolderPath;
+
+	if (!path) {
+		return false;
+	}
+
+	return path.toLowerCase().startsWith('/sent/') || path.toLowerCase() === '/sent';
 };
 
 /**
