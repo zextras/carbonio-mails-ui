@@ -8,7 +8,8 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, fireEvent } from '@testing-library/react';
-import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
+import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import type { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { times } from 'lodash';
 
 import { setupTest, screen, UserEvent, within } from '@test-setup';

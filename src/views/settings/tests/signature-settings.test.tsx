@@ -108,7 +108,13 @@ describe('Signature settings', () => {
 			});
 		});
 
-		it('should display a delete button when when user hover on the list item', async () => {
+		/*
+		 * Set as "failing" because the actual visibility of the delete button cannot be tested
+		 * with the current version of JSDOM.
+		 * JSDOM does not support the `:hover` pseudo-class and it is impossible to simulate
+		 * when the visibility is changed in a nested css selector.
+		 */
+		it.failing('should display a delete button when when user hover on the list item', async () => {
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);
@@ -182,10 +188,8 @@ describe('Signature settings', () => {
 			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
-			const listItem = await within(list).findByText(signature.name);
-			await user.hover(listItem);
 
-			await user.click(screen.getByRole('button', { name: 'label.delete' }));
+			await user.click(screen.getByTestId('delete-signature-button'));
 
 			expect(within(list).queryByText(signature.label)).not.toBeInTheDocument();
 		});
@@ -195,19 +199,15 @@ describe('Signature settings', () => {
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);
+
 			const { user } = setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
 
 			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
-
-			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
-			const listItem = await within(list).findByText(signature.name);
-			await user.hover(listItem);
-
-			await user.click(screen.getByRole('button', { name: 'label.delete' }));
-
+			await user.click(screen.getByTestId('delete-signature-button'));
 			expect(screen.getByRole('textbox', { name: 'signatures.name' })).not.toHaveValue(
 				signature.name
 			);
+
 			expect(mockedEditor).toHaveBeenLastCalledWith(
 				expect.not.objectContaining({
 					value: signature.description

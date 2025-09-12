@@ -6,6 +6,7 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Button,
 	Checkbox,
@@ -19,7 +20,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { PersonalCertificate } from 'store/certificates/store';
 import { handleCertificateFileUpload } from 'views/settings/certificates/certificate-utils';
