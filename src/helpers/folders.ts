@@ -217,14 +217,14 @@ export const isInboxSubfolder = ({
 		return false;
 	}
 
-	return path.toLowerCase().startsWith('/inbox/') || path.toLowerCase() === '/inbox';
+	return path.toLowerCase().startsWith('/inbox') || path.toLowerCase() === '/inbox';
 };
 
 /**
  * Tells if a folder is a subfolder of the sent folder
  * @param folderId
  */
-export const isSentSubfolder = (folder: Folder | undefined): boolean => {
+export const isSentOrItsSubfolder = (folder: Folder | undefined): boolean => {
 	if (!folder) {
 		return false;
 	}

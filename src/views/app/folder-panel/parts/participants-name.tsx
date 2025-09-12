@@ -11,7 +11,7 @@ import { FOLDERS, getFolder, ParticipantRole } from '@zextras/carbonio-ui-common
 import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
 import { participantToString } from 'commons/utils';
-import { getFolderIdParts, isSentSubfolder } from 'helpers/folders';
+import { getFolderIdParts, isSentOrItsSubfolder } from 'helpers/folders';
 import { isConversation } from 'helpers/messages';
 import { getConversationMessages } from 'store/emails/store';
 import {
@@ -54,10 +54,10 @@ export const ParticipantsName = ({
 				folderId !== FOLDERS.SENT &&
 				folderId !== FOLDERS.DRAFTS &&
 				!isSearchModule &&
-				!isSentSubfolder(folder)
+				!isSentOrItsSubfolder(folder)
 			)
 				return p.type === ParticipantRole.FROM; // Not sent or drafts
-			if (!isSearchModule && (isSentSubfolder(folder) || folderId === FOLDERS.SENT))
+			if (!isSearchModule && (isSentOrItsSubfolder(folder) || folderId === FOLDERS.SENT))
 				return p.type === ParticipantRole.TO; // sent
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
