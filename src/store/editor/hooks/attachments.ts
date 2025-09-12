@@ -92,7 +92,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	);
 	const savedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].savedAttachments),
-		'isInline'
+		(x) => x.isInline && x.contentId !== undefined
 	);
 	const removeStandardAttachmentsInvoker = useEditorsStore(
 		(state) => state.clearStandardAttachments

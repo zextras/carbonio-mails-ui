@@ -316,25 +316,34 @@ export const haveReadReceipt = (
 	);
 };
 
-const getFlags = (flags: string | undefined): Flags => ({
-	read: !isNil(flags) ? !/u/.test(flags) : true,
-	hasAttachment: !isNil(flags) ? /a/.test(flags) : undefined,
-	flagged: !isNil(flags) ? /f/.test(flags) : undefined,
-	urgent: !isNil(flags) ? /!/.test(flags) : undefined,
-	isDeleted: !isNil(flags) ? /x/.test(flags) : undefined,
-	isDraft: !isNil(flags) ? /d/.test(flags) : undefined,
-	isForwarded: !isNil(flags) ? /w/.test(flags) : undefined,
-	isSentByMe: !isNil(flags) ? /s/.test(flags) : undefined,
-	isInvite: !isNil(flags) ? /v/.test(flags) : undefined,
-	isReplied: !isNil(flags) ? /r/.test(flags) : undefined
-});
+/**
+ * Extracts and maps flags from a SOAP message to a Flags object.
+ * */
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
+	const defaultFlag = { read: true };
+
+	if (isNil(m?.f) || m.f === '') {
+		return defaultFlag;
+	}
+	const flags = m.f;
+	return {
+		read: !/u/.test(flags),
+		hasAttachment: /a/.test(flags),
+		flagged: /f/.test(flags),
+		urgent: /!/.test(flags),
+		isDeleted: /x/.test(flags),
+		isDraft: /d/.test(flags),
+		isForwarded: /w/.test(flags),
+		isSentByMe: /s/.test(flags),
+		isInvite: /v/.test(flags),
+		isReplied: /r/.test(flags)
+	};
+};
 
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean
 ): IncompleteMessage => {
-	const flags = getFlags(m.f);
-
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
 	)[0];
@@ -372,7 +381,7 @@ export const normalizeMailMessageFromSoap = (
 			isComplete,
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
-			...flags,
+			...getFlags(m),
 			isReadReceiptRequested: m.e
 				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 				: undefined,
@@ -428,7 +437,7 @@ export const normalizePartialIncompleteMessageFromSoap = (
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
 			autoSendTime: m.autoSendTime,
-			...(m.f ? getFlags(m.f) : {}),
+			...getFlags(m),
 			// TODO: this function is accepting undefined values and assuming defaults
 			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
 			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
