@@ -8,7 +8,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
@@ -58,9 +58,20 @@ describe('ParticipantsName component', () => {
 
 	it('renders participants string for subfolder of sent folder', async () => {
 		const subFolderId = '500';
+		const subFolder = generateFolder({
+			id: subFolderId,
+			name: 'Sent Subfolder',
+			l: FOLDERS.SENT,
+			parent: FOLDERS.SENT,
+			absFolderPath: '/Sent/Sent Subfolder'
+		} satisfies Partial<Folder>);
 		populateFoldersStore();
-		const subFolder = generateFolder({ id: subFolderId, name: 'Sent Subfolder' });
+
 		useFolderStore.getState().updateFolder(FOLDERS.SENT, { children: [subFolder] });
+		useFolderStore.setState((state) => ({
+			...state,
+			folders: { ...state.folders, [subFolderId]: subFolder }
+		}));
 
 		const message = await waitFor(() =>
 			populateMessagesInEmailStore({
