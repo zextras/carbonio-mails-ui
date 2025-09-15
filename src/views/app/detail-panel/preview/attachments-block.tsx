@@ -251,6 +251,7 @@ const Attachment = ({
 			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 			allowFiles: false,
 			allowFolders: true,
+			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
 			canSelectOpenedFolder: true,
 			maxSelection: 1
@@ -573,6 +574,7 @@ const AttachmentsBlock = ({
 			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 			allowFiles: false,
 			allowFolders: true,
+			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
 			canSelectOpenedFolder: true,
 			maxSelection: 1
