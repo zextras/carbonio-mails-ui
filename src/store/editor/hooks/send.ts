@@ -39,10 +39,25 @@ const sendFromEditor = (
 	const editorExist = getEditor({ id: editorId });
 	if (!editorExist) {
 		console.warn('Cannot find the editor', editorId);
+		const customSendErr = 'Errore individuazione editor di posta, prego riprovare ad inviare la mail!';
+		useEditorsStore.getState().setSendProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: customSendErr
+		});
+		//computeAndUpdateEditorStatus(editorId);
+		options?.onError && options.onError(customSendErr);
 		return {};
 	}
 
 	if (!editorExist.sendAllowedStatus?.allowed) {
+		console.warn('Errore, invio bloccato.', editorExist);
+		const customSendErr = 'Errore durante il salvataggio della bozza, prego riprovare ad inviare la mail!';
+		useEditorsStore.getState().setSendProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: customSendErr
+		});
+		//computeAndUpdateEditorStatus(editorId);
+		options?.onError && options.onError(customSendErr);
 		return {};
 	}
 

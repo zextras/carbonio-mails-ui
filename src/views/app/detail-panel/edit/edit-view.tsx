@@ -377,6 +377,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					return;
 				}
 			}
+			const currText = textProvider?.getCurrentText();
+			if (currText) {
+				useEditorsStore.getState().setText(editorId,currText);
+			}
 			await saveDraft2();
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
@@ -557,6 +561,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						//onSendError?.();
 						return;
 					}
+				}
+				const currText = textProvider?.getCurrentText();
+				if (currText) {
+					useEditorsStore.getState().setText(editorId,currText);
 				}
 				await saveDraft2();
 				setAutoSendTime(scheduledTime);
