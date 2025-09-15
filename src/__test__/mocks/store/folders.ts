@@ -37,11 +37,10 @@ export const populateFoldersStore = ({
 		}
 		return { ...result, [key]: link.id };
 	}, {});
-	const initialStoreState: FolderState = {
+	const initialStoreState: Partial<FolderState> = {
 		linksIdMap,
 		folders,
-		searches: {},
-		updateFolder: jest.fn()
+		searches: {}
 	};
-	useFolderStore.setState(initialStoreState, true);
+	useFolderStore.setState((state) => ({ ...state, ...initialStoreState }), true);
 };

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.2...v1.26.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* messages in a sent subfolder doesn't show recipient in the message list ([9212ab6](https://github.com/zextras/carbonio-mails-ui/commit/9212ab62c959e0491ed8c18d4258a3e4f1458626))
+* sender name visible in sent subfolder ([38cd91c](https://github.com/zextras/carbonio-mails-ui/commit/38cd91cc7b4925cf103e4bb84d1de2d2c2bf7b49))
+
 ### [1.26.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.1...v1.26.2) (2025-09-11)
 
 
