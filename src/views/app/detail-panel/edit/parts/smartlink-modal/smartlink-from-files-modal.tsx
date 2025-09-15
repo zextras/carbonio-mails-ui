@@ -9,28 +9,11 @@ import { useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-modal';
+import { CreateLinkType, Link } from './types';
 import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
-import { NodeWithMetadata } from 'types/integrations/carbonio-files-ui';
 import { generateSmartLinkHtml, insertAboveSignature } from 'ui-actions/utils';
-
-type CreateLinkType = {
-	node: Pick<NodeWithMetadata, 'id' | '__typename'>;
-	description?: string;
-	expiresAt?: number;
-	type: 'createLink';
-};
-
-type Link = {
-	__typename?: 'Link';
-	id: string;
-	url?: string | null;
-	description?: string | null;
-	expires_at?: number | null;
-	created_at: number;
-	node: Pick<NodeWithMetadata, 'id' | '__typename'>;
-};
 
 export const SmartlinkFromFilesModal = ({
 	onClose,
