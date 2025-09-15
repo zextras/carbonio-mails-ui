@@ -6,10 +6,10 @@
 
 import React, { FC, useCallback, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';

@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 const BannerContainer = styled(Container)`
 	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};

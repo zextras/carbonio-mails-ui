@@ -7,7 +7,7 @@ import React, { FC } from 'react';
 
 import { Container, Icon, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 const BackDropLayout = styled(Container)`
 	width: 100%;
