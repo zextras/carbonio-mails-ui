@@ -49,3 +49,7 @@ License: CC0-1.0
 Files: .gitmodules
 Copyright: 2021 Zextras <https://www.zextras.com>
 License: CC0-1.0
+
+Files: Dockerfile
+Copyright: 2025 Zextras <https://www.zextras.com>
+License: AGPL-3.0-only
