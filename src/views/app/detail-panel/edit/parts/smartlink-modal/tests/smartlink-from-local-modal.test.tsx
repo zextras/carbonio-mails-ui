@@ -134,7 +134,7 @@ describe('SmartlinkFromLocalModal', () => {
 				abortController: new AbortController()
 			});
 
-			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1');
+			const getLinkSpy = jest.fn().mockResolvedValueOnce({ url: 'url1' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
@@ -199,7 +199,10 @@ describe('SmartlinkFromLocalModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
-			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest
+				.fn()
+				.mockResolvedValueOnce({ url: 'url1' })
+				.mockResolvedValueOnce({ url: 'url2' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
@@ -276,7 +279,10 @@ describe('SmartlinkFromLocalModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
-			const getLinkSpy = jest.fn().mockResolvedValueOnce('url1').mockResolvedValueOnce('url2');
+			const getLinkSpy = jest
+				.fn()
+				.mockResolvedValueOnce({ url: 'url1' })
+				.mockResolvedValueOnce({ url: 'url2' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];

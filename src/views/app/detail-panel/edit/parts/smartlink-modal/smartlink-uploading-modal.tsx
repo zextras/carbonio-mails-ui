@@ -51,7 +51,7 @@ export const SmartlinkUploadingModal = ({
 					overflowY: 'auto'
 				}}
 			>
-				<Text>{modalBodyText1}</Text>
+				<Text overflow="break-word">{modalBodyText1}</Text>
 				<br />
 				<ModalFooter
 					onConfirm={noop}
