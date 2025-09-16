@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
 import {
 	Button,
@@ -210,6 +210,20 @@ const ShowAllCertificatesModal = ({
 
 	// Close modal callback
 	const onCloseModal = useCallback(() => onClose(isUpdateList), [isUpdateList, onClose]);
+
+	// ESC key handler to close modal
+	useEffect(() => {
+		const handleEscKey = (event: KeyboardEvent): void => {
+			if (event.key === 'Escape') {
+				onCloseModal();
+			}
+		};
+
+		document.addEventListener('keydown', handleEscKey);
+		return () => {
+			document.removeEventListener('keydown', handleEscKey);
+		};
+	}, [onCloseModal]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">

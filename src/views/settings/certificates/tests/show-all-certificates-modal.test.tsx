@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { Certificate } from 'types/certificates/certificates';
@@ -37,6 +37,11 @@ describe('ShowAllCertificatesModal', () => {
 	const onClose = jest.fn();
 	const createModal = jest.fn();
 	const closeModal = jest.fn();
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should render the modal with the correct title', async () => {
 		setupTest(
 			<ShowAllCertificatesModal
@@ -72,5 +77,30 @@ describe('ShowAllCertificatesModal', () => {
 		});
 		expect(setActiveBtn).toBeInTheDocument();
 		expect(setActiveBtn).toBeDisabled();
+	});
+
+	it('should close the modal when ESC key is pressed', async () => {
+		const { user } = setupTest(
+			<ShowAllCertificatesModal
+				certificates={certificate}
+				onClose={onClose}
+				createModal={createModal}
+				closeModal={closeModal}
+			/>
+		);
+
+		// Verify modal is rendered
+		await waitFor(() => {
+			const header = screen.getByText(`Personal Certificates of ${certificate[0].email}`);
+			expect(header).toBeVisible();
+		});
+
+		// Try firing ESC key event on document
+		fireEvent.keyDown(document, { key: 'Escape', code: 'Escape', keyCode: 27 });
+
+		// Verify onClose callback was called
+		await waitFor(() => {
+			expect(onClose).toHaveBeenCalledTimes(1);
+		});
 	});
 });
