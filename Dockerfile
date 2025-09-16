@@ -10,4 +10,6 @@ RUN COMMIT_ID=$(jq -r .commit /tmp/build/component.json) \
 && cp -r /tmp/build/* "${WEB_PATH}" \
 && rm -r /tmp/build
 
-ENTRYPOINT ["/bin/sh", "-c", "tail -f > /dev/null"]
+# TODO: since all operations are the same for all UI containers, we can consider defining a base image
+
+ENTRYPOINT ["/bin/sh", "-c", "jq -s '{components: .}' $(find /opt/zextras/web/iris/ -name component.json) > /opt/zextras/web/iris/components.json"]
