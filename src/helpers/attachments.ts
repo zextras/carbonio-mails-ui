@@ -206,6 +206,17 @@ function flattenAndAddDisposition(
 					}
 				}
 			}
+			if (partShouldBeIncluded && part.body) {
+				if (!isReferredByCid && !part.ci &&
+						part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+						part.contentType !== MIMETYPE_PLAINTEXT &&
+						part.contentType !== MIMETYPE_RICHTEXT ) {
+					incoming.push({ 
+						...part, 
+						disposition: 'attachment'
+					});
+				}
+			}
 			if (part.parts && !isEml(part)) {
 				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
 			}
