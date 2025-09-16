@@ -23,10 +23,10 @@ export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyRe
 	if (isErrorAboutInvalidRecipient(error)) {
 		const invalidAddress = error?.Fault?.Detail?.Error?.a?.[0]?._content;
 
-		message = t(
-			'error.invalid_recipient',
-			`The recipient address "${invalidAddress}" does not exist or is invalid`
-		);
+		message = t('error.invalid_recipient', {
+			defaultValue: `The recipient address "${invalidAddress}" does not exist or is invalid`,
+			invalidAddress
+		});
 		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	}
 
