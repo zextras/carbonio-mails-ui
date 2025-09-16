@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, waitFor, fireEvent } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { Certificate } from 'types/certificates/certificates';
@@ -95,8 +95,8 @@ describe('ShowAllCertificatesModal', () => {
 			expect(header).toBeVisible();
 		});
 
-		// Try firing ESC key event on document
-		fireEvent.keyDown(document, { key: 'Escape', code: 'Escape', keyCode: 27 });
+		// Press ESC key using userEvent
+		await user.keyboard('{Escape}');
 
 		// Verify onClose callback was called
 		await waitFor(() => {
