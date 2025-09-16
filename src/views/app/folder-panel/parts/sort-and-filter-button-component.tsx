@@ -126,7 +126,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() =>
 			filteringOptions.map(({ value, label }) => ({
 				id: `filter-${value}`,
-				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				label: capitalize(t(`sorting_dropdown.${label}`, label)),
 				selected: filterType === value,
 				onClick: (): void => {
 					updateSortAndFilterSettings({
@@ -146,7 +146,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() =>
 			sortingOptions.map(({ value, label }) => ({
 				id: `sort-${value}`,
-				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				label: capitalize(t(`sorting_dropdown.${label}`, label)),
 				selected: sortType === value,
 				onClick: (): void => {
 					updateSortAndFilterSettings({
