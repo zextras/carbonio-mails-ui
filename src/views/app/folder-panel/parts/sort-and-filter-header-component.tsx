@@ -9,6 +9,7 @@ import {
 	Button,
 	Container,
 	Divider,
+	Icon,
 	Padding,
 	Row,
 	Text,
@@ -99,7 +100,7 @@ export const SortAndFilterHeaderComponent = ({
 		>
 			<Divider />
 			<Row padding={{ all: 'small' }}>
-				<Text size="medium" color="gray1">
+				<Text size="medium" color="gray1" overflow="ellipsis">
 					{`${currentFilterLabel}${currentSortLabel}`}
 				</Text>
 				<Padding right="medium" />
@@ -110,9 +111,11 @@ export const SortAndFilterHeaderComponent = ({
 					<Button
 						type="ghost"
 						size="medium"
-						label={t('label.reset', 'Reset')}
 						onClick={resetToDefaultState}
-					/>
+						icon="CloseOutline"
+						shape="regular"
+						color="gray0"
+					></Button>
 				</Tooltip>
 			</Row>
 		</Container>

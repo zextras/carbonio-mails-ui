@@ -42,7 +42,7 @@ export const LayoutSelector = ({
 		return 'vertical';
 	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutVerticalSplit]);
 
-	const maxWidth = isCurrentLayoutVerticalSplit ? 'calc(100% - 22.5rem)' : '100%';
+	const maxWidth = isCurrentLayoutVerticalSplit ? 'calc(100% - 27.5rem)' : '100%';
 
 	const maxHeight = isCurrentLayoutHorizontalSplit ? 'calc(100% - 11.25rem)' : '100%';
 
@@ -93,7 +93,7 @@ export const LayoutSelector = ({
 					data-testid={'LayoutSelectorInnerContainer'}
 					ref={containerRef}
 					minHeight={'11.25rem'}
-					minWidth={'22.5rem'}
+					minWidth={'27.5rem'}
 					maxHeight={maxHeight}
 					maxWidth={maxWidth}
 					style={{ flexShrink: 0 }}
