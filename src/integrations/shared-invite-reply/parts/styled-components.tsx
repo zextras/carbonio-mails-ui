@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import styled from '@emotion/styled';
 import { Container, Text } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
 
 export const Square = styled.div<{ $color: string }>`
 	width: 1.125rem;

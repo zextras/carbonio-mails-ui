@@ -5,6 +5,7 @@
  */
 import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,
@@ -15,7 +16,6 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import {
 	composeAttachmentDownloadUrl,
