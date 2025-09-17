@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.3...v1.26.4) (2025-09-16)
+
+
+### Bug Fixes
+
+* add text ellipse refs:CO-2530 ([26ddca5](https://github.com/zextras/carbonio-mails-ui/commit/26ddca5d548a5317210045abd4ab174b75a5df52))
+* update signature for get link integration that return an object and not a string ([2c8b611](https://github.com/zextras/carbonio-mails-ui/commit/2c8b6118249e7614063957dfea30d5c4828e4119))
+
 ### [1.26.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.2...v1.26.3) (2025-09-12)
 
 
