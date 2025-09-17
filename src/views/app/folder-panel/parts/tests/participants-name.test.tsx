@@ -8,9 +8,10 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
 import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
@@ -41,7 +42,8 @@ describe('ParticipantsName component', () => {
 				messageGeneratorParams: [
 					{
 						id: '1',
-						from: { address: 'recipient@example.com', type: ParticipantRole.TO },
+						from: { address: 'me@example.com', type: ParticipantRole.FROM },
+						to: [{ address: 'recipient@example.com', type: ParticipantRole.TO }],
 						folderId: FOLDERS.SENT
 					}
 				]
@@ -54,15 +56,31 @@ describe('ParticipantsName component', () => {
 		);
 	});
 
-	it('renders participants string for sent folder', async () => {
+	it('renders participants string for subfolder of sent folder', async () => {
+		const subFolderId = '500';
+		const subFolder = generateFolder({
+			id: subFolderId,
+			name: 'Sent Subfolder',
+			l: FOLDERS.SENT,
+			parent: FOLDERS.SENT,
+			absFolderPath: '/Sent/Sent Subfolder'
+		} satisfies Partial<Folder>);
 		populateFoldersStore();
+
+		useFolderStore.getState().updateFolder(FOLDERS.SENT, { children: [subFolder] });
+		useFolderStore.setState((state) => ({
+			...state,
+			folders: { ...state.folders, [subFolderId]: subFolder }
+		}));
+
 		const message = await waitFor(() =>
 			populateMessagesInEmailStore({
 				messageGeneratorParams: [
 					{
 						id: '1',
-						from: { address: 'recipient@example.com', type: ParticipantRole.TO },
-						folderId: FOLDERS.SENT
+						from: { address: 'me@example.com', type: ParticipantRole.FROM },
+						to: [{ address: 'recipient@example.com', type: ParticipantRole.TO }],
+						folderId: subFolderId // subfolder of sent
 					}
 				]
 			})

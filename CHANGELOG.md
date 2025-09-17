@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.2...v1.26.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* messages in a sent subfolder doesn't show recipient in the message list ([9212ab6](https://github.com/zextras/carbonio-mails-ui/commit/9212ab62c959e0491ed8c18d4258a3e4f1458626))
+* sender name visible in sent subfolder ([38cd91c](https://github.com/zextras/carbonio-mails-ui/commit/38cd91cc7b4925cf103e4bb84d1de2d2c2bf7b49))
+
+### [1.26.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.1...v1.26.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* [CO-2516] Ensure default read flag is set to true in message normalization [#995](https://github.com/zextras/carbonio-mails-ui/issues/995) ([79e1086](https://github.com/zextras/carbonio-mails-ui/commit/79e10869cfc0b12129782731819d8c93d95ef580))
+* ensure default read flag is set to true in message normalization ([09d1494](https://github.com/zextras/carbonio-mails-ui/commit/09d1494ea0ae9eaf92e800163c33e0532d7c394c))
+
+### [1.26.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.0...v1.26.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* [CO-2475] display inline attachments with no content-id in editor ([d654765](https://github.com/zextras/carbonio-mails-ui/commit/d654765e1f7fd3edb21857966d17de9a1fe22b33))
+* display inline saved attachments with no content id ([4548421](https://github.com/zextras/carbonio-mails-ui/commit/45484218bd98fd5d6de1f2ac91afaebb57ae8451))
+
+## [1.26.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.12...v1.26.0) (2025-08-26)
+
+
+### Features
+
+* [CO-1983] Implement visual notification for unread emails in subfolders [#909](https://github.com/zextras/carbonio-mails-ui/issues/909)  ([50f5d64](https://github.com/zextras/carbonio-mails-ui/commit/50f5d643a512cd4be6626f986de38c5b05a6e538))
+* 5s snackbar duration for invalid address case ([23af067](https://github.com/zextras/carbonio-mails-ui/commit/23af0673558c77cab999fa1b5b9e8cf2fabd00fe))
+* must actions inside mails module refs: CO-2228 ([#968](https://github.com/zextras/carbonio-mails-ui/issues/968)) ([232f0f7](https://github.com/zextras/carbonio-mails-ui/commit/232f0f783a229b4c0f6458a5cecda24d771f99b7))
+* showing error related to internal address ([f2bcde0](https://github.com/zextras/carbonio-mails-ui/commit/f2bcde0cedc42f640880793116e9b49dd0eb6b13))
+
+
+### Bug Fixes
+
+* [CO-2021] restore 'Include shared folder' toggle state onClose ([#908](https://github.com/zextras/carbonio-mails-ui/issues/908)) ([afaebf5](https://github.com/zextras/carbonio-mails-ui/commit/afaebf5fa940e7d7fb6e4e6324dd4d15a9303352))
+* [CO-2126] prevent duplications inside Advanced Filters ([#924](https://github.com/zextras/carbonio-mails-ui/issues/924)) ([f299d25](https://github.com/zextras/carbonio-mails-ui/commit/f299d25fe29fa8a1902af873e5057a8398a54c90))
+* [CO-2175] avoid accidentally writing in signature while composing an email ([#962](https://github.com/zextras/carbonio-mails-ui/issues/962)) ([65031b9](https://github.com/zextras/carbonio-mails-ui/commit/65031b92fb11c5050cebfc33d71d29eefda33e61))
+* [CO-2188] FilterModule, add id prop to FormSection for improved accessibility ([#958](https://github.com/zextras/carbonio-mails-ui/issues/958)) ([2d90a2b](https://github.com/zextras/carbonio-mails-ui/commit/2d90a2b6f34e74fa8c95ba3e33dd4aba3c27ff97))
+* [CO-2234] Strip threading metadata in "Edit as new" to avoid conversation merge ([#960](https://github.com/zextras/carbonio-mails-ui/issues/960)) ([25fd366](https://github.com/zextras/carbonio-mails-ui/commit/25fd3667a11261b33594a98745ccd0efd3c87e08))
+* [CO-2244] Faulty rendering of links in text message preview ([#976](https://github.com/zextras/carbonio-mails-ui/issues/976)) ([73bab4f](https://github.com/zextras/carbonio-mails-ui/commit/73bab4fe6f790c32dd025b933dd5f9c5d6784c4f))
+* [CO-2255] attachment not displaying in composer ([#971](https://github.com/zextras/carbonio-mails-ui/issues/971)) ([8d8b4b6](https://github.com/zextras/carbonio-mails-ui/commit/8d8b4b6c388e78e640c6ad97d4396dfb7f8eec38))
+* [CO-2264] Missing mail body while forwarding plain text emails ([#974](https://github.com/zextras/carbonio-mails-ui/issues/974)) ([0a210b4](https://github.com/zextras/carbonio-mails-ui/commit/0a210b40b14f3aaba81d2c89248f4ec4da54766d))
+* [CO-2268] Plain text signature removing quoted text reply ([#966](https://github.com/zextras/carbonio-mails-ui/issues/966)) ([4df6b2a](https://github.com/zextras/carbonio-mails-ui/commit/4df6b2a95ad0a543645c7b00d2b6721469b7d893))
+* [CO-2295] default caCertificate to empty string ([#979](https://github.com/zextras/carbonio-mails-ui/issues/979)) ([22309bb](https://github.com/zextras/carbonio-mails-ui/commit/22309bb3c5be4196cc2a482956c05a5a90c96a05))
+* added label and divider in sort options ([cec0511](https://github.com/zextras/carbonio-mails-ui/commit/cec0511e822186f7ddd1d79554741d19fbb93115))
+* asceinding descending behaviuor ([66c78ec](https://github.com/zextras/carbonio-mails-ui/commit/66c78ec77420c691df0f6a29e43a2d2268e237f4))
+* badge counter for drafts on shared accounts ([0939d2c](https://github.com/zextras/carbonio-mails-ui/commit/0939d2c0742f8e40722e4679fe63ae3d3b2a1770))
+* call API when clicking dropdown items ([f5e1cba](https://github.com/zextras/carbonio-mails-ui/commit/f5e1cba55e6b1d9e43d7afed5ccc0b9936c667ff))
+* changed retencion policy types ([884b6af](https://github.com/zextras/carbonio-mails-ui/commit/884b6af74f625a8eeb9b9ec478d311dbd266569d))
+* code cleanup ([cf6f86a](https://github.com/zextras/carbonio-mails-ui/commit/cf6f86a41f9701ca6fc3023e2e7c4f893681da50))
+* conflicts ([4d10852](https://github.com/zextras/carbonio-mails-ui/commit/4d108527e0edd5ddfabe44f239d625e4664625b6))
+* creating new folder with system folder name breaking the ui ([cdaee56](https://github.com/zextras/carbonio-mails-ui/commit/cdaee56b83175591d8d8eb3e0e46142aa2ecdac1))
+* currentSortFilter ([a73808c](https://github.com/zextras/carbonio-mails-ui/commit/a73808ca090c8b7838651b677ecdf12f549fc404))
+* edit modal tests ([bc1c1ef](https://github.com/zextras/carbonio-mails-ui/commit/bc1c1ef7565e364ab393a0b8c4d17c8dcdf2c36f))
+* edit modal tests ([6dcb7f2](https://github.com/zextras/carbonio-mails-ui/commit/6dcb7f24ee120078e5e0108f31cbeaa47eda7ae6))
+* error handling change ([9d8fc3e](https://github.com/zextras/carbonio-mails-ui/commit/9d8fc3e3b9a83b44ce6b295ca7888e74c1172754))
+* focus is not changed when double click on email ([0614480](https://github.com/zextras/carbonio-mails-ui/commit/06144806164d4472c487c4e02a9c3a0720419598))
+* import ([f3faf6f](https://github.com/zextras/carbonio-mails-ui/commit/f3faf6f94de85581b537704ad6ef4d55d7c88334))
+* in advanced filters root folders are not selectable ([#910](https://github.com/zextras/carbonio-mails-ui/issues/910)) ([b6e1c12](https://github.com/zextras/carbonio-mails-ui/commit/b6e1c12d31ed20d7b30971a2a91920ff7ece7fc9))
+* internal address custom error string ([50a82e0](https://github.com/zextras/carbonio-mails-ui/commit/50a82e0ad46202ba2be9dcfa898a63d1e30ad572))
+* **mail-message-preview-actions.tsx:** adjust IconButton size ([#874](https://github.com/zextras/carbonio-mails-ui/issues/874)) ([bf9a37b](https://github.com/zextras/carbonio-mails-ui/commit/bf9a37b141a38f16fb1eb047248129002a205ab1))
+* mails composing messages option is missing in the settings left panel ([fae0f5f](https://github.com/zextras/carbonio-mails-ui/commit/fae0f5fc4552aaf7ad0eefd75cbfc4a8dfd8b08d))
+* mock alignment ([fa473f3](https://github.com/zextras/carbonio-mails-ui/commit/fa473f3f401fbebbb8d53f3b5e57906c497cbbc4))
+* no actions available on an appointment invite email  ([66e6dab](https://github.com/zextras/carbonio-mails-ui/commit/66e6dab3f4a2ca3a2ffd1884328a6e7324e8a2f3))
+* remount component when folder changes ([9061080](https://github.com/zextras/carbonio-mails-ui/commit/9061080df1edd77bae13e3ce8258b589f612273c))
+* remove RE FWD prefixes from subject ([024883a](https://github.com/zextras/carbonio-mails-ui/commit/024883a738d582c7c275f10f7e28eb9de4b0fe81))
+* remove sorting type export ([0f8c01f](https://github.com/zextras/carbonio-mails-ui/commit/0f8c01f7d85472df0b8fdeff1cd11046ec0b24e1))
+* remove unnecessary logic ([c039e84](https://github.com/zextras/carbonio-mails-ui/commit/c039e84d34fd03208e2846fee1591cfade2333f1))
+* remove unnecessary logic ([fd1d67a](https://github.com/zextras/carbonio-mails-ui/commit/fd1d67a239a6126495e29e4781c510186d5f4f88))
+* removed delete key interaction ([#981](https://github.com/zextras/carbonio-mails-ui/issues/981)) ([620b1e6](https://github.com/zextras/carbonio-mails-ui/commit/620b1e66b235994bce4f4e1bbcb7ba7b7af1ef6d))
+* retention policies tests ([bd76b29](https://github.com/zextras/carbonio-mails-ui/commit/bd76b29645715740f94fdad05f72779849456842))
+* retention policy refactor ([48d45fa](https://github.com/zextras/carbonio-mails-ui/commit/48d45fa46b6f2a1a3fecb3d6f290a7ed40637e88))
+* revert default sort ([10df02c](https://github.com/zextras/carbonio-mails-ui/commit/10df02cb52b8d053a21b4b308f76fd30a92dbc7b))
+* reveting default filter and sort to default ([c371e8a](https://github.com/zextras/carbonio-mails-ui/commit/c371e8a43d149f6e3f1969313562894e08e8528f))
+* **search:** display contact email in chips label ([e4b9105](https://github.com/zextras/carbonio-mails-ui/commit/e4b9105834f0ed60f2f3d8aa5b893a1e15bc64fd))
+* sonar ([cc375c3](https://github.com/zextras/carbonio-mails-ui/commit/cc375c33583ccc16c5457443738b109fda7b4977))
+* sonar error ([52f138c](https://github.com/zextras/carbonio-mails-ui/commit/52f138c367e04b7a4b46c57b5390d9689f000265))
+* sonar issuesses ([688a289](https://github.com/zextras/carbonio-mails-ui/commit/688a289d7e53c8ec263e177d204f77c3bd4b91a6))
+* sorting persistance ([1f0b4a8](https://github.com/zextras/carbonio-mails-ui/commit/1f0b4a8c93709352db90355484b1f8652c520628))
+* sorting test fix ([bb833e0](https://github.com/zextras/carbonio-mails-ui/commit/bb833e0eaee2c23bc52dd8247d626c319cd3c9d8))
+* test ([370581c](https://github.com/zextras/carbonio-mails-ui/commit/370581c008f42c7c52075ace84884dc0a295ca48))
+* test ([ff52227](https://github.com/zextras/carbonio-mails-ui/commit/ff52227f7e36c5c7349e375e34d415b05664c0ed))
+* test ([694876b](https://github.com/zextras/carbonio-mails-ui/commit/694876b844817797173b20eac64e8f1029ff2e38))
+* tests ([6354546](https://github.com/zextras/carbonio-mails-ui/commit/6354546ef4726122331d47618946ee3ba693f548))
+* type error ([dd26552](https://github.com/zextras/carbonio-mails-ui/commit/dd26552b191d7f40fabe159f54a0ea09536f8be1))
+* typo ([726bdbe](https://github.com/zextras/carbonio-mails-ui/commit/726bdbe64ad1847381d576e35ece93d6a1f09d2b))
+* update get-link usage in smartlinks-from-files to expect object ([#978](https://github.com/zextras/carbonio-mails-ui/issues/978)) ([796a5d4](https://github.com/zextras/carbonio-mails-ui/commit/796a5d402f7aee63218fe929679c7bc02e557e5e))
+* update search API using active filters ([415ad1e](https://github.com/zextras/carbonio-mails-ui/commit/415ad1e63ef1bb4c08ee45010cd005db8d3ad6db))
+
 ### 1.25.12 (2025-07-04)
 
 ### 1.25.11 (2025-07-04)

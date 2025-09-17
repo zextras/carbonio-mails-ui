@@ -44,7 +44,12 @@ export const EditAttachmentsBlock: FC<{
 		<StyledComp.RowContainer background="gray6">
 			<StyledComp.ColContainer $occupyFull>
 				<Container crossAlignment="flex-start">
-					<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
+					<Container
+						orientation="horizontal"
+						mainAlignment="space-between"
+						wrap="wrap"
+						data-testid={'edit-attachments-block'}
+					>
 						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) =>
 							// FIXME: This ternary is a temporary fix. Remove once the backend is exposing the correct data
 							// REF IRIS-4205
