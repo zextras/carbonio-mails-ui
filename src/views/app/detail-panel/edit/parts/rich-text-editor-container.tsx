@@ -101,7 +101,7 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor]);
 
 	const onComposerClose = useCallback(() => {
-		//saveEditor();
+		saveEditor();
 		composerRef.current = undefined;
 		setTextProvider(undefined);
 	}, [saveEditor, setTextProvider]);

@@ -59,8 +59,7 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
-	useEditorTextProvider,
-	useEditorDraftSave2
+	useEditorTextProvider
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -132,7 +131,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	const { saveDraft: saveDraft2 } = useEditorDraftSave2(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
@@ -381,7 +379,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			if (currText) {
 				useEditorsStore.getState().setText(editorId,currText);
 			}
-			await saveDraft2();
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
@@ -407,8 +404,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onSendCountdownTick,
 		onSendComplete,
 		onSendError,
-		createSmartLinksAction,
-		saveDraft2
+		createSmartLinksAction
 	]);
 
 	const handleCertificateResponse = useCallback(
@@ -566,8 +562,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				if (currText) {
 					useEditorsStore.getState().setText(editorId,currText);
 				}
-				await saveDraft2();
 				setAutoSendTime(scheduledTime);
+				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
 			};
 			checkSubjectAndAttachment({
@@ -585,7 +581,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			savedStandardAttachments,
 			draftSmartLinks.length,
 			setAutoSendTime,
-			saveDraft2,
+			saveDraft,
 			close,
 			createSmartLinksAction,
 			onSendError

@@ -44,7 +44,7 @@ const sendFromEditor = (
 			status: 'aborted',
 			abortReason: customSendErr
 		});
-		//computeAndUpdateEditorStatus(editorId);
+		computeAndUpdateEditorStatus(editorId);
 		options?.onError && options.onError(customSendErr);
 		return {};
 	}
@@ -56,7 +56,7 @@ const sendFromEditor = (
 			status: 'aborted',
 			abortReason: customSendErr
 		});
-		//computeAndUpdateEditorStatus(editorId);
+		computeAndUpdateEditorStatus(editorId);
 		options?.onError && options.onError(customSendErr);
 		return {};
 	}
