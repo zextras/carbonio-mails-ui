@@ -47,7 +47,7 @@ export const SortAndFilterHeaderComponent = ({
 		[prefs?.zimbraPrefSortOrder]
 	);
 
-	const { sortType, filterType } = useMemo(
+	const { sortType: rawSortType, filterType: rawFilterType } = useMemo(
 		() => parseMessageSortingOptions(folderId, prefSortOrder),
 		[folderId, prefSortOrder]
 	);
@@ -58,6 +58,22 @@ export const SortAndFilterHeaderComponent = ({
 			filter: undefined
 		}),
 		[]
+	);
+
+	const sortType = useMemo(
+		() =>
+			Object.values(SORTING_OPTIONS).some((opt) => opt.value === rawSortType)
+				? rawSortType
+				: defaultState.type,
+		[rawSortType, defaultState.type]
+	);
+
+	const filterType = useMemo(
+		() =>
+			rawFilterType && Object.values(SORTING_OPTIONS).some((opt) => opt.value === rawFilterType)
+				? rawFilterType
+				: defaultState.filter,
+		[rawFilterType, defaultState.filter]
 	);
 
 	const resetToDefaultState = useCallback(() => {
