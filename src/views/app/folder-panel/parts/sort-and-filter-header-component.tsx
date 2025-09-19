@@ -9,7 +9,6 @@ import {
 	Button,
 	Container,
 	Divider,
-	Icon,
 	Padding,
 	Row,
 	Text,
@@ -68,13 +67,12 @@ export const SortAndFilterHeaderComponent = ({
 	);
 
 	const sortType = useMemo(
-		() => (isValid(rawSortType, SORTING_OPTIONS) ? (rawSortType as string) : defaultState.type),
+		() => (isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultState.type),
 		[rawSortType, defaultState.type]
 	);
 
 	const filterType = useMemo(
-		() =>
-			isValid(rawFilterType, FILTER_OPTIONS) ? (rawFilterType as string) : defaultState.filter,
+		() => (isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultState.filter),
 		[rawFilterType, defaultState.filter]
 	);
 
