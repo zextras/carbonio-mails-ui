@@ -9,7 +9,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
 import { screen, setupTest } from '@test-setup';
-import { SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
+import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
 import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -43,7 +43,7 @@ describe('Sort and Filter Header Component', () => {
 	it('should render with modified state', () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.subject.value,
-			filterType: SORTING_OPTIONS.unread.value
+			filterType: FILTER_OPTIONS.unread.value
 		});
 		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
 
@@ -55,7 +55,7 @@ describe('Sort and Filter Header Component', () => {
 	it('should call updateSortAndFilterSettings when Reset is clicked', async () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.subject.value,
-			filterType: SORTING_OPTIONS.unread.value
+			filterType: FILTER_OPTIONS.unread.value
 		});
 		const { user } = setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
 
@@ -70,5 +70,15 @@ describe('Sort and Filter Header Component', () => {
 				sortType: SORTING_OPTIONS.date.value
 			})
 		);
+	});
+
+	it('should not render when invalid legacy values are normalized to defaults', () => {
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'legacy_sort',
+			filterType: 'legacy_filter'
+		});
+		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+
+		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
 });
