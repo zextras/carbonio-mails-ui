@@ -58,10 +58,11 @@ export const normalizeConversations = (
 	map(soapConversations, (conv) => mapToNormalizedConversation({ conversation: conv }));
 
 function calculateReadFlag(conversation: SoapPartialConversation): boolean | undefined {
-	if (conversation.f) return !/u/.test(conversation.f);
+	if (!isNil(conversation.f)) return !/u/.test(conversation.f);
 	if (conversation.u) return conversation.u <= 0;
 	return undefined;
 }
+
 const mapToNormalizedPartialConversation = ({
 	conversation
 }: NormalizePartialConversationProps): NormalizedPartialConversation => {
@@ -76,8 +77,8 @@ const mapToNormalizedPartialConversation = ({
 			subject: conversation.su,
 			fragment: conversation.fr,
 			read: calculateReadFlag(conversation),
-			hasAttachment: conversation.f ? /a/.test(conversation.f) : undefined,
-			flagged: conversation.f ? /f/.test(conversation.f) : undefined,
+			hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : undefined,
+			flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : undefined,
 			urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : undefined,
 			// Number of (nondeleted) messages. messages in trash or spam are in the count
 			messagesInConversation: conversation.n

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.5...v1.26.6) (2025-09-19)
+
+
+### Bug Fixes
+
+* update the status of the conversations after 'mark all as read' action on the folder ([5e5d8c5](https://github.com/zextras/carbonio-mails-ui/commit/5e5d8c50dfe75d6ba32a241f65741ed9c2ddf2c6))
+* Update the status of the conversations after 'mark all as read' action on the folder ([45fcce4](https://github.com/zextras/carbonio-mails-ui/commit/45fcce408b1d86e3c4feecb3ea504e8ceed57df9))
+
 ### [1.26.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.4...v1.26.5) (2025-09-17)
 
 
