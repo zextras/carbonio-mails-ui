@@ -83,8 +83,7 @@ export const useMsgActions = ({
 	});
 	const deletePermanentlyDescriptor = useMsgDeletePermanentlyDescriptor({
 		ids: [message.id],
-		folderId,
-		shouldReplaceHistory
+		folderId
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],

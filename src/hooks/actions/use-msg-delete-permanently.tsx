@@ -19,7 +19,6 @@ import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 type MsgDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
-	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgDeletePermanentlyFn = ({
@@ -87,8 +86,7 @@ export const useMsgDeletePermanentlyFn = ({
 
 export const useMsgDeletePermanentlyDescriptor = ({
 	ids,
-	folderId,
-	shouldReplaceHistory
+	folderId
 }: MsgDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, folderId });
 	const [t] = useTranslation();
