@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.6...v1.26.7) (2025-09-22)
+
+
+### Bug Fixes
+
+* removed unused import ([45095a1](https://github.com/zextras/carbonio-mails-ui/commit/45095a111fdf12c4e772cf22860aa71fa1b163ae))
+* test and code improvements ([30ddbba](https://github.com/zextras/carbonio-mails-ui/commit/30ddbba7fefeea8c5c47e891aaca659b254a7afa))
+* test and code improvements ([6a5ac7e](https://github.com/zextras/carbonio-mails-ui/commit/6a5ac7ebaa982d30da66114d8defb4943743deb9))
+* zimbraPref fallback ([f7c3cb1](https://github.com/zextras/carbonio-mails-ui/commit/f7c3cb1b92287849b90cf27ed190c7fea04801a6))
+
 ### [1.26.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.5...v1.26.6) (2025-09-19)
 
 
