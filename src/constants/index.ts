@@ -520,10 +520,6 @@ export const EDIT_VIEW_CLOSING_REASONS = {
 } as const;
 
 export const SORTING_OPTIONS = {
-	// unread: { label: 'unread', value: 'read' },
-	// important: { label: 'important', value: 'priority' },
-	// flagged: { label: 'flagged', value: 'flag' },
-	// attachment: { label: 'attachment', value: 'attach' },
 	from: { label: 'from', value: 'name' },
 	to: { label: 'to', value: 'rcpt' },
 	date: { label: 'date', value: 'date' },
