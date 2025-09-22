@@ -87,10 +87,21 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(() => {
 			const editor = getEditor({ id: editorId });
+			if (!editor) {
+				console.log("Editor non trovato: "+ editorId);
+				const errorDescription = "Rilevato errore durante l'invio del messaggio, prego contattare l'assistenza";
+				useEditorsStore.getState().setSendProcessStatus(editorId, {
+					status: 'aborted',
+					abortReason: errorDescription
+				});
+				computeAndUpdateEditorStatus(editorId);
+				options?.onError && options.onError(errorDescription);
+			}
 			editor?.identityId &&
 				sendMsgFromEditor({ editor })
 					.then((res) => {
 						if ('Fault' in res) {
+							console.log(editor);
 							const errorDescription: string = res.Fault.Reason.Text;
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
 								status: 'aborted',
@@ -98,12 +109,22 @@ const sendFromEditor = (
 							});
 							computeAndUpdateEditorStatus(editorId);
 							options?.onError && options.onError(errorDescription);
-						} else {
+						} else if ( 'm' in res ) {
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
 								status: 'completed'
 							});
 							computeAndUpdateEditorStatus(editorId);
 							options?.onComplete && options.onComplete();
+						} else {
+							console.log(editor);
+							console.log(res);
+							const errorDescription = "Rilevato errore durante l'invio del messaggio, prego contattare l'assistenza";
+							useEditorsStore.getState().setSendProcessStatus(editorId, {
+								status: 'aborted',
+								abortReason: errorDescription
+							});
+							computeAndUpdateEditorStatus(editorId);
+							options?.onError && options.onError(errorDescription);
 						}
 					})
 					.catch((err) => {
