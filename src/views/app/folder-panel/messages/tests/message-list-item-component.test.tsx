@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { FOLDERS, ParticipantRole, useTagStore } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
@@ -64,7 +64,9 @@ describe.each`
 				useTagStore.setState({ tags: mockTags });
 				const message = generateMessage({ folderId: folder.id });
 
-				setMessagesInEmailStore([message], false);
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 				const props: MessageListItemProps = {
 					message,
 					selected: false,
@@ -99,7 +101,9 @@ describe.each`
 				useTagStore.setState({ tags: mockTags });
 				const receiveDate = Date.parse('2023-04-07T12:59:06');
 				const message = generateMessage({ receiveDate, folderId: folder.id });
-				setMessagesInEmailStore([message], false);
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 
 				const props: MessageListItemProps = {
 					message,
@@ -139,8 +143,9 @@ describe.each`
 				useTagStore.setState({ tags: mockTags });
 				const subject = 'This is an interesting subject';
 				const message = generateMessage({ subject, folderId: folder.id });
-				setMessagesInEmailStore([message], false);
-
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 				const props: MessageListItemProps = {
 					message,
 					selected: false,
@@ -180,7 +185,9 @@ describe.each`
 				useTagStore.setState({ tags: mockTags });
 				const subject = '';
 				const message = generateMessage({ subject, folderId: folder.id });
-				setMessagesInEmailStore([message], false);
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 
 				const props: MessageListItemProps = {
 					message,
@@ -220,8 +227,9 @@ describe.each`
 			async ({ folder, assertion }) => {
 				useTagStore.setState({ tags: mockTags });
 				const message = generateMessage({ folderId: folder.id });
-				setMessagesInEmailStore([message], false);
-
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 				const props: MessageListItemProps = {
 					message,
 					selected: false,
@@ -259,8 +267,9 @@ describe.each`
 				useTagStore.setState({ tags: mockTags });
 				const from = { type: ParticipantRole.FROM, address: senderAddress };
 				const message = generateMessage({ from, folderId: folder.id });
-				setMessagesInEmailStore([message], false);
-
+				await act(async () => {
+					setMessagesInEmailStore([message], false);
+				});
 				const props: MessageListItemProps = {
 					message,
 					selected: false,

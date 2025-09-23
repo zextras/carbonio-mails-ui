@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageShortcutsRegister } from './message-shortcuts-register';
+import type { FolderPanelRouteParams } from '../../../../types/routes';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -23,7 +24,7 @@ import { MessageListItemComponent } from 'views/app/folder-panel/messages/messag
 
 export const MessageList = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	const { itemId, folderId } = useParams() as { itemId?: string; folderId: string };
+	const { itemId, folderId } = useParams<FolderPanelRouteParams>() as FolderPanelRouteParams;
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});

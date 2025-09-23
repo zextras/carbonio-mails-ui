@@ -40,6 +40,7 @@ import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 
+import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
@@ -67,12 +68,10 @@ const TagChip = styled(Chip)`
 `;
 
 type PreviewHeaderProps = {
-	compProps: {
-		message: MailMessage;
-		onClick: (e: SyntheticEvent) => void;
-		open: boolean;
-		isEml?: boolean;
-	};
+	message: MailMessage;
+	onClick: (e: SyntheticEvent) => void;
+	open: boolean;
+	isEml?: boolean;
 };
 
 const fallbackContact = {
@@ -82,9 +81,12 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isEml } = compProps;
-
+export const PreviewHeader: FC<PreviewHeaderProps> = ({
+	message,
+	onClick,
+	open,
+	isEml
+}): ReactElement => {
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
 
@@ -96,7 +98,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
-	const { folderId } = useParams() as { folderId?: string };
+	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
@@ -426,5 +428,3 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		</HoverContainer>
 	);
 };
-
-export default PreviewHeader;

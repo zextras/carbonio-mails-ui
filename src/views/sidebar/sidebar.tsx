@@ -13,6 +13,7 @@ import { FOLDERS, SidebarAccordionMui, themeMuiExtension } from '@zextras/carbon
 import { map } from 'lodash';
 import { Route, Routes, useParams } from 'react-router-dom';
 
+import type { SidebarRouteParams } from '../../types/routes';
 import { LOCAL_STORAGES } from 'constants/index';
 import { useFolders } from 'hooks/use-folders';
 import { useGetTagsAccordion } from 'hooks/use-get-tags-accordions';
@@ -22,7 +23,7 @@ import { ButtonFindShares } from 'views/sidebar/button-find-shares';
 import CollapsedSideBarItems from 'views/sidebar/collapsed-sidebar-items';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {
-	const { folderId } = useParams() as { folderId: string };
+	const { folderId } = useParams<SidebarRouteParams>() as SidebarRouteParams;
 	const tagsAccordionItems = useGetTagsAccordion();
 
 	const accordionsWithFindShare = useMemo(() => {
