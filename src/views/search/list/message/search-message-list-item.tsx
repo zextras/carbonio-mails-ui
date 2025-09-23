@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
+import React, { FC, memo, MouseEventHandler, useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
+import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { EditViewActions } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
@@ -37,10 +38,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
-	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 	const navigate = useNavigate();
 
-	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
+	const shouldReplaceHistory = useShouldReplaceHistory(completeMessage);
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
