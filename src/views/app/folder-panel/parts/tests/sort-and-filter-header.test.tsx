@@ -9,6 +9,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
 import { screen, setupTest } from '@test-setup';
+import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
 import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -19,9 +20,6 @@ jest.mock('helpers/sorting', () => ({
 	updateSortAndFilterSettings: jest.fn()
 }));
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserSettings: jest.fn()
-}));
 describe('Sort and Filter Header Component', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -34,7 +32,7 @@ describe('Sort and Filter Header Component', () => {
 
 	it('should not render if state is default', () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'date',
+			sortType: SORTING_OPTIONS.date.value,
 			filterType: undefined
 		});
 		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
@@ -44,8 +42,8 @@ describe('Sort and Filter Header Component', () => {
 
 	it('should render with modified state', () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'subject',
-			filterType: 'unread'
+			sortType: SORTING_OPTIONS.subject.value,
+			filterType: FILTER_OPTIONS.unread.value
 		});
 		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
@@ -56,8 +54,8 @@ describe('Sort and Filter Header Component', () => {
 
 	it('should call updateSortAndFilterSettings when Reset is clicked', async () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
-			sortType: 'subject',
-			filterType: 'unread'
+			sortType: SORTING_OPTIONS.subject.value,
+			filterType: FILTER_OPTIONS.unread.value
 		});
 		const { user } = setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
@@ -68,9 +66,19 @@ describe('Sort and Filter Header Component', () => {
 				filter: undefined,
 				folderId: FOLDER_ID,
 				prefSortOrder: '',
-				sortDirection: 'Desc',
-				sortType: 'date'
+				sortDirection: SORTING_DIRECTION.DESCENDING,
+				sortType: SORTING_OPTIONS.date.value
 			})
 		);
+	});
+
+	it('should not render when invalid legacy values are normalized to defaults', () => {
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'legacy_sort',
+			filterType: 'legacy_filter'
+		});
+		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+
+		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
 });

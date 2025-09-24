@@ -18,7 +18,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
+import { SORTING_DIRECTION, SORTING_OPTIONS, FILTER_OPTIONS } from '../../../../constants';
 import {
 	parseMessageSortingOptions,
 	updateSortAndFilterSettings
@@ -29,10 +29,15 @@ const getTranslatedLabelFromValue = (
 	t: TFunction<'translation', undefined, 'translation'>
 ): string => {
 	if (!value) return '';
-	const option = Object.values(SORTING_OPTIONS).find((opt) => opt.value === value);
-	if (!option) return value;
-	return t(`sorting_dropdown.${option.label}`, option.label);
+	const sortOpt = Object.values(SORTING_OPTIONS).find((opt) => opt.value === value);
+	if (sortOpt) return t(`sorting_dropdown.${sortOpt.label}`, sortOpt.label);
+	const filterOpt = Object.values(FILTER_OPTIONS).find((opt) => opt.value === value);
+	if (filterOpt) return t(`sorting_dropdown.${filterOpt.label}`, filterOpt.label);
+	return value;
 };
+
+const isValid = (val: string | undefined, options: Record<string, { value: string }>): boolean =>
+	!!val && Object.values(options).some((opt) => opt.value === val);
 
 export const SortAndFilterHeaderComponent = ({
 	folderId
@@ -47,17 +52,28 @@ export const SortAndFilterHeaderComponent = ({
 		[prefs?.zimbraPrefSortOrder]
 	);
 
-	const { sortType, filterType } = useMemo(
+	const { sortType: rawSortType, filterType: rawFilterType } = useMemo(
 		() => parseMessageSortingOptions(folderId, prefSortOrder),
 		[folderId, prefSortOrder]
 	);
+
 	const defaultState = useMemo(
 		() => ({
 			type: SORTING_OPTIONS.date.value,
 			direction: SORTING_DIRECTION.DESCENDING,
-			filter: undefined
+			filter: undefined as string | undefined
 		}),
 		[]
+	);
+
+	const sortType = useMemo(
+		() => (isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultState.type),
+		[rawSortType, defaultState.type]
+	);
+
+	const filterType = useMemo(
+		() => (isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultState.filter),
+		[rawFilterType, defaultState.filter]
 	);
 
 	const resetToDefaultState = useCallback(() => {
@@ -113,6 +129,8 @@ export const SortAndFilterHeaderComponent = ({
 						minWidth: 0
 					}}
 				>
+			<Row padding={{ all: 'small' }}>
+				<Text size="medium" color="gray1" overflow="ellipsis">
 					{`${currentFilterLabel}${currentSortLabel}`}
 				</Text>
 				<Padding right="medium" />

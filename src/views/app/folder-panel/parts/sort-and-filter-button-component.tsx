@@ -18,13 +18,18 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { SORT_ICONS, SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../constants';
+import {
+	FILTER_OPTIONS,
+	SORT_ICONS,
+	SORTING_DIRECTION,
+	SORTING_OPTIONS
+} from '../../../../constants';
 import {
 	parseMessageSortingOptions,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
 
-type SortingOption = {
+type Option = {
 	value: string;
 	label: string;
 };
@@ -47,7 +52,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId, prefSortOrder]
 	);
 
-	const sortingOptions: SortingOption[] = useMemo(
+	const sortingOptions: Option[] = useMemo(
 		() => [
 			SORTING_OPTIONS.date,
 			SORTING_OPTIONS.subject,
@@ -56,12 +61,12 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId]
 	);
 
-	const filteringOptions: SortingOption[] = useMemo(
+	const filteringOptions: Option[] = useMemo(
 		() => [
-			SORTING_OPTIONS.unread,
-			SORTING_OPTIONS.important,
-			SORTING_OPTIONS.flagged,
-			SORTING_OPTIONS.attachment
+			FILTER_OPTIONS.unread,
+			FILTER_OPTIONS.important,
+			FILTER_OPTIONS.flagged,
+			FILTER_OPTIONS.attachment
 		],
 		[]
 	);
@@ -126,7 +131,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() =>
 			filteringOptions.map(({ value, label }) => ({
 				id: `filter-${value}`,
-				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				label: capitalize(t(`sorting_dropdown.${label}`, label)),
 				selected: filterType === value,
 				onClick: (): void => {
 					updateSortAndFilterSettings({
@@ -146,7 +151,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() =>
 			sortingOptions.map(({ value, label }) => ({
 				id: `sort-${value}`,
-				label: capitalize(t(`sorting_dropdown.${value}`, label)),
+				label: capitalize(t(`sorting_dropdown.${label}`, label)),
 				selected: sortType === value,
 				onClick: (): void => {
 					updateSortAndFilterSettings({
