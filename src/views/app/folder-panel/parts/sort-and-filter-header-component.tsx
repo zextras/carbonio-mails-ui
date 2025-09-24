@@ -129,8 +129,6 @@ export const SortAndFilterHeaderComponent = ({
 						minWidth: 0
 					}}
 				>
-			<Row padding={{ all: 'small' }}>
-				<Text size="medium" color="gray1" overflow="ellipsis">
 					{`${currentFilterLabel}${currentSortLabel}`}
 				</Text>
 				<Padding right="medium" />
