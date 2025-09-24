@@ -19,18 +19,20 @@ import { useInSearchModule } from 'ui-actions/utils';
 
 const useRestoreMessage = (): ((
 	ids: Array<string>,
-	folderId: string,
+	messageFolderId: string,
 	closeEditor: boolean | undefined
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	const navigate = useNavigate();
 	const [t] = useTranslation();
 	return useCallback(
-		(ids, folderId, closeEditor): void => {
-			msgActionEmailStoreAction({ ids, parent: folderId, operation: 'move' }).then((res) => {
+		(ids, messageFolderId, closeEditor): void => {
+			msgActionEmailStoreAction({ ids, parent: messageFolderId, operation: 'move' }).then((res) => {
 				if (!('Fault' in res)) {
 					closeEditor &&
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}/message/${ids[0]}`, { replace: true });
+						navigate(`/${MAILS_ROUTE}/folder/${messageFolderId}/message/${ids[0]}`, {
+							replace: true
+						});
 					createSnackbar({
 						key: `move-${ids}`,
 						replace: true,
@@ -57,18 +59,20 @@ const useRestoreMessage = (): ((
 
 type MoveToTrashExecute = {
 	ids: Array<string>;
-	folderId?: string;
+	messageFolderId?: string;
+	routeFolderId?: string;
 	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgMoveToTrashFn = ({
 	ids,
-	folderId = FOLDERS.INBOX,
+	messageFolderId = FOLDERS.INBOX,
+	routeFolderId,
 	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
 	const canExecute = useCallback(
-		(): boolean => !isTrash(folderId) && !isFocusModeMailView(),
-		[folderId]
+		(): boolean => !isTrash(messageFolderId) && !isFocusModeMailView(),
+		[messageFolderId]
 	);
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
@@ -85,7 +89,7 @@ export const useMsgMoveToTrashFn = ({
 				if (!('Fault' in res)) {
 					if (!inSearchModule) {
 						shouldReplaceHistory &&
-							navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+							navigate(`/${MAILS_ROUTE}/folder/${routeFolderId}`, { replace: true });
 					}
 					createSnackbar({
 						key: `trash-${ids}`,
@@ -95,7 +99,7 @@ export const useMsgMoveToTrashFn = ({
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreMessage(ids, folderId, shouldReplaceHistory)
+						onActionClick: () => restoreMessage(ids, messageFolderId, shouldReplaceHistory)
 					});
 				} else {
 					createSnackbar({
@@ -117,8 +121,9 @@ export const useMsgMoveToTrashFn = ({
 		t,
 		shouldReplaceHistory,
 		navigate,
-		folderId,
-		restoreMessage
+		routeFolderId,
+		restoreMessage,
+		messageFolderId
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
@@ -126,12 +131,14 @@ export const useMsgMoveToTrashFn = ({
 
 export const useMsgMoveToTrashDescriptor = ({
 	ids,
-	folderId,
+	messageFolderId,
+	routeFolderId,
 	shouldReplaceHistory
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
 		ids,
-		folderId,
+		messageFolderId,
+		routeFolderId,
 		shouldReplaceHistory
 	});
 	const [t] = useTranslation();

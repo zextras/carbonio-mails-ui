@@ -62,7 +62,7 @@ export const useKeyboardShortcutsForMsg = ({
 
 	const moveToTrash = useMsgMoveToTrashFn({
 		ids: messageIds,
-		folderId
+		messageFolderId: folderId
 	});
 
 	const setAsRead = useMsgSetReadFn({

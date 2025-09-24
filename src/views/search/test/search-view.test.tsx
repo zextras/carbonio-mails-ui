@@ -914,7 +914,7 @@ describe('SearchView', () => {
 			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
 			await user.hover(messageContainer);
 			const hoverContainer = await screen.findByTestId('hover-container-10');
-			user.click(hoverContainer);
+			await user.click(hoverContainer);
 			const requestParameter = await waitFor(async () => msgActionInterceptor);
 
 			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
