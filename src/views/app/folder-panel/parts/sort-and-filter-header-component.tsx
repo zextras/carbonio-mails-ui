@@ -9,7 +9,6 @@ import {
 	Button,
 	Container,
 	Divider,
-	Icon,
 	Padding,
 	Row,
 	Text,
