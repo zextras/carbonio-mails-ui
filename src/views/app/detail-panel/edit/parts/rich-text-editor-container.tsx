@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';
@@ -232,7 +232,9 @@ export const RichTextEditorContainer = ({
 				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
-				editor.on('input NodeChange', handleAttachmentCleanup);
+
+				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
+				editor.on('Change', debounce(handleAttachmentCleanup, 800));
 
 				const mutationObserver = setupResizeObserver();
 
