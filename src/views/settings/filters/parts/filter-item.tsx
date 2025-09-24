@@ -5,8 +5,8 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
 
 import { Filter } from 'types/index.d';
 

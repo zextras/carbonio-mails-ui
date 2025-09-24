@@ -12,6 +12,7 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
+import type { FolderPanelRouteParams } from '../../../../types/routes';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -22,7 +23,7 @@ import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversat
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
 
 export const ConversationList = (): React.JSX.Element => {
-	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
+	const { folderId, itemId } = useParams<FolderPanelRouteParams>() as FolderPanelRouteParams;
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;

@@ -5,7 +5,7 @@
  */
 import React, { HTMLAttributes } from 'react';
 
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 // TODO add supports for 	italic, strikethrough and underlined
 export type TextStylerProps = HTMLAttributes<HTMLSpanElement> & {

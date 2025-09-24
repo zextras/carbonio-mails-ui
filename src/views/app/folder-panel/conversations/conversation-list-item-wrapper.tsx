@@ -3,6 +3,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useConvActions } from 'hooks/actions/use-conv-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
@@ -21,17 +22,16 @@ export const ConversationListItemActionWrapper = ({
 	active,
 	onClick,
 	onDoubleClick,
-	shouldReplaceHistory,
 	children
 }: {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
-	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	conversation: NormalizedConversation;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
+	const shouldReplaceHistory = useShouldReplaceHistory(conversation);
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -156,7 +156,7 @@ export const ConversationListItemActionWrapper = ({
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
-					background={active ? 'highlight' : 'gray6'}
+					$hoverBackground={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${conversation.id}`}
 				>
 					<ListItemHoverActions actions={hoverActions} />

@@ -6,9 +6,9 @@
 
 import React, { FC, useEffect, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Icon, IconButton, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import { TIMEOUTS } from 'constants/index';
 import { AttachmentUploadProcessStatus } from 'types/index.d';

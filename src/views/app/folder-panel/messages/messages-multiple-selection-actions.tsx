@@ -9,6 +9,7 @@ import React from 'react';
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
@@ -34,6 +35,7 @@ export const MessagesMultipleSelectionActions = ({
 	folderId: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
+	const { folderId: routeFolderId } = useParams();
 
 	const items = useMessagesByIds(ids);
 	const selectedItems = filter(items, (item) => ids.includes(item.id));
@@ -51,7 +53,11 @@ export const MessagesMultipleSelectionActions = ({
 		folderId,
 		isMessageRead: !atLeastOneMsgIsUnread
 	});
-	const moveToTrash = useMsgMoveToTrashDescriptor({ ids, folderId });
+	const moveToTrash = useMsgMoveToTrashDescriptor({
+		ids,
+		messageFolderId: folderId,
+		routeFolderId
+	});
 	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, folderId });
 	const applyTagDescriptor = useMsgApplyTagDescriptor({
 		ids,

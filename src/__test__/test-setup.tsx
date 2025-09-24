@@ -23,6 +23,7 @@ import {
 } from '@testing-library/react';
 import userEvent, { UserEvent as RTLUserEvent } from '@testing-library/user-event';
 import { ModalManager, SnackbarManager, ThemeProvider } from '@zextras/carbonio-design-system';
+import { themeMuiExtension } from '@zextras/carbonio-ui-commons';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter, MemoryRouterProps, Route, RouteProps, Routes } from 'react-router-dom';
@@ -110,7 +111,7 @@ export const ProvidersWrapper = ({
 	const i18n = useMemo(() => getAppI18n(), []);
 
 	return (
-		<ThemeProvider>
+		<ThemeProvider extension={themeMuiExtension}>
 			<MemoryRouter
 				future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
 				initialEntries={initialEntries}

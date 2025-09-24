@@ -11,6 +11,10 @@ import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import type {
+	DetailPanelConversationRouteParams,
+	DetailPanelRoutesParams
+} from '../../../types/routes';
 import { Spinner } from 'assets/spinner';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
@@ -24,10 +28,8 @@ import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const navigate = useNavigate();
-	const { conversationId, folderId } = useParams() as {
-		conversationId: string;
-		folderId: string;
-	};
+	const { conversationId, folderId } =
+		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);
 

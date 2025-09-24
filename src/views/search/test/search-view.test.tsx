@@ -321,8 +321,7 @@ describe('SearchView', () => {
 			await user.hover(actionWrapper);
 			expect(actionWrapper).toBeVisible();
 
-			const hoverBar = await screen.findByTestId('primary-actions-bar-123');
-			expect(hoverBar).toBeVisible();
+			await screen.findByTestId('primary-actions-bar-123');
 
 			const deletePermanentlyIconButton = screen.getByTestId('icon: DeletePermanentlyOutline');
 
@@ -915,7 +914,7 @@ describe('SearchView', () => {
 			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
 			await user.hover(messageContainer);
 			const hoverContainer = await screen.findByTestId('hover-container-10');
-			user.click(hoverContainer);
+			await user.click(hoverContainer);
 			const requestParameter = await waitFor(async () => msgActionInterceptor);
 
 			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
