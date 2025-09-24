@@ -233,6 +233,7 @@ describe('Normalize partial conversation', () => {
 			messagesInConversation: 2
 		});
 	});
+
 	it('should omit fields when not defined', () => {
 		const partialConversation = {
 			id: '123'
@@ -241,5 +242,36 @@ describe('Normalize partial conversation', () => {
 		expect(result).toEqual({
 			id: '123'
 		});
+	});
+
+	it('returns normalized conversation with the correct flags value if the f field is empty', () => {
+		const msg1 = generateSoapConversationMessage('msg1', '123');
+		const msg2 = generateSoapConversationMessage('msg2', '456');
+		const partialConversation = {
+			id: '123',
+			n: 2,
+			u: 1,
+			f: '',
+			t: '1,2,3',
+			tn: 'tag1,tag2,tag3',
+			d: 123,
+			m: [msg1, msg2],
+			e: [
+				{ a: 'user1@example.com', t: ParticipantRole.FROM, p: '' },
+				{ a: 'user2@example.com', t: ParticipantRole.TO, p: '' }
+			],
+			su: 'Subject',
+			fr: 'fragment'
+		};
+
+		const result = normalizePartialConversations([partialConversation])[0];
+		expect(result).toEqual(
+			expect.objectContaining({
+				read: true,
+				hasAttachment: false,
+				flagged: false,
+				urgent: false
+			})
+		);
 	});
 });
