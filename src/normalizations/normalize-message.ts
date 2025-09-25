@@ -274,7 +274,7 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 		mp,
 		(found, part) => {
 			if (part.mp) return findBodyPart(part.mp, found, id);
-			if (part?.body) {
+			if (part && part.body && ( part.ct == "text/plain" || part.ct == "text/html" )) {
 				if (!found.contentType.length) {
 					return { contentType: part.ct, content: part.content ?? '', truncated: !!part.truncated };
 				}
