@@ -14,6 +14,7 @@ import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';
+import { isFocusModeMailView } from 'helpers/external-tabs';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -66,7 +67,11 @@ const sendFromEditor = (
 		});
 		computeAndUpdateEditorStatus(editorId);
 	};
-	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+
+	let delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+	if ( isFocusModeMailView() ) {
+		delay = '0';
+	}
 
 	window.addEventListener('beforeunload', onBeforeUnload);
 
