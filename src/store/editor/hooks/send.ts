@@ -14,6 +14,7 @@ import { sendMsgFromEditor } from '../../../api/send-msg';
 import { createCancelableTimer } from '../../../helpers/timers';
 import { MailsEditorV2 } from '../../../types';
 import { useEditorsStore } from '../store';
+import { isFocusModeMailView } from '../../../helpers/external-tabs';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -76,7 +77,11 @@ const sendFromEditor = (
 		});
 		computeAndUpdateEditorStatus(editorId);
 	};
-	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+
+	let delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+	if ( isFocusModeMailView() ) {
+		delay = '0';
+	}
 
 	const cancelableTimer = createCancelableTimer({
 		secondsDelay: parseInt(delay, 10),
