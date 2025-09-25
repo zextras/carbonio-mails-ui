@@ -12,18 +12,27 @@ test('log in', async ({ page }) => {
 	// Expect a title "to contain" a substring.
 	await expect(page.getByTestId('logo')).toBeVisible();
 
-	await page.getByPlaceholder('Username').fill('zextras');
-	await page.getByPlaceholder('Password').fill('assext');
+	await page.getByPlaceholder('Username').fill('test');
+	await page.getByPlaceholder('Password').fill('password');
 
 	await page.click('[data-testid="login"]');
 	await expect(page).toHaveURL(/.*carbonio\/mails/);
+	// end of login
 
-	await page.locator('[data-testid="AvatarContainer"]').nth(1).click();
-	await page
-		.locator('[data-testid="AvatarContainer"]')
-		.nth(5)
-		.click({ modifiers: ['Shift'] });
+	// await page.click('[data-testid="icon: DriveOutline"]');
+	await page.locator('[data-testid="icon: DriveOutline"]').click();
+	await expect(page).toHaveURL(/.*carbonio\/files\/root\/LOCAL_ROOT/);
+	await expect(page.getByText('file_user_test.png')).toBeAttached();
 
-	const checkmarkCount = await page.locator('[data-name="checkmark"]').count();
-	expect(checkmarkCount).toBe(5);
+	await page.locator('[data-testid="icon: MailModOutline"]').click();
+	await expect(page).toHaveURL(/.*carbonio\/mails/);
+	await expect(page.getByText('file_user_test.png')).not.toBeAttached();
+	// Scroll the file into view and then click
+	// const fileElement = page.locator('text=file_user_test.png');
+	// await expect(fileElement).toBeVisible();
+	// await fileElement.click();
+	//
+	// await expect(page).toHaveURL(
+	// /.*carbonio\/files\/root\/LOCAL_ROOT\?node=f8a1e462-1bb2-4f66-b1ee-4138721027d6/
+	// );
 });

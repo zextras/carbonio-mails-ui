@@ -16,25 +16,27 @@ export default defineConfig({
 		baseURL: 'https://localhost',
 		ignoreHTTPSErrors: true,
 
-		// Collect trace when retrying the failed test
-		trace: 'on-first-retry',
-
+		// Add navigation timeout
+		navigationTimeout: 30000,
+		// Useful for debugging
+		trace: 'retain-on-failure',
+		screenshot: 'only-on-failure',
 		// Viewport size
 		viewport: { width: 1280, height: 720 }
 	},
 
+	retries: process.env.CI ? 2 : 0,
 	// Configure projects for major browsers
 	projects: [
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'], ignoreHTTPSErrors: true }
 		}
-	]
+	],
+	outputDir: './e2e_tests/output/',
 
-	// Run your local dev server before starting the tests
-	// webServer: {
-	//   command: 'npm run start',
-	//   url: 'http://localhost:3000',
-	//   reuseExistingServer: !process.env.CI,
-	// },
+	expect: {
+		// Maximum time expect() should wait for the condition to be met.
+		timeout: 5000
+	}
 });
