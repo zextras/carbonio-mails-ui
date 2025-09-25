@@ -20,19 +20,35 @@ test('log in', async ({ page }) => {
 	// end of login
 
 	// await page.click('[data-testid="icon: DriveOutline"]');
-	await page.locator('[data-testid="icon: DriveOutline"]').click();
-	await expect(page).toHaveURL(/.*carbonio\/files\/root\/LOCAL_ROOT/);
-	await expect(page.getByText('file_user_test.png')).toBeAttached();
 
-	await page.locator('[data-testid="icon: MailModOutline"]').click();
-	await expect(page).toHaveURL(/.*carbonio\/mails/);
-	await expect(page.getByText('file_user_test.png')).not.toBeAttached();
-	// Scroll the file into view and then click
-	// const fileElement = page.locator('text=file_user_test.png');
-	// await expect(fileElement).toBeVisible();
-	// await fileElement.click();
-	//
-	// await expect(page).toHaveURL(
-	// /.*carbonio\/files\/root\/LOCAL_ROOT\?node=f8a1e462-1bb2-4f66-b1ee-4138721027d6/
-	// );
+	const n = 100_000;
+	Array.from({ length: n }, (_, i) => i).forEach(async (i) => {
+		try {
+			console.log(`Iteration ${i + 1}/${n}`);
+
+			await page.locator('[data-testid="icon: DriveOutline"]').click();
+			await expect(page).toHaveURL(/.*carbonio\/files\/root\/LOCAL_ROOT/);
+			await expect(page.getByText('file_user_test.png')).toBeAttached();
+			await page.locator('[data-testid="icon: MailModOutline"]').click();
+			await expect(page).toHaveURL(/.*carbonio\/mails/);
+			await expect(page.getByText('file_user_test.png')).not.toBeAttached();
+		} catch (error) {
+			console.error(`Error on iteration ${i + 1}:`, error);
+
+			// Take screenshot on failure
+			const screenshotPath = `./screenshots/failure-iteration-${i + 1}-${Date.now()}.png`;
+			await page.screenshot({
+				path: screenshotPath,
+				fullPage: true
+			});
+			console.log(`Screenshot saved: ${screenshotPath}`);
+
+			// Log page state for debugging
+			const currentUrl = page.url();
+			console.log(`Current URL: ${currentUrl}`);
+
+			// Re-throw to fail the test
+			throw error;
+		}
+	});
 });

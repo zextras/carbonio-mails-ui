@@ -1,0 +1,1 @@
+{"Body":{"AuthRequest":{"_jsns":"urn:zimbraAccount","csrfTokenSecured":"0","persistAuthTokenCookie":"1","generateDeviceId":"1","account":{"by":"name","_content":"test"},"password":{"_content":"password"},"prefs":[{"pref":{"name":"zimbraPrefMailPollingInterval"}}]}}}

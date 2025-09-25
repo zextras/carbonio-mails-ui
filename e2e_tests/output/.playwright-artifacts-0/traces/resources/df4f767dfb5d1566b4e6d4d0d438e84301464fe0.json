@@ -1,0 +1,15 @@
+{
+    "active_input_label": "Separate your keywords by a comma",
+    "already_clear": "Search input is already clear",
+    "app": "Search",
+    "clear": "Clear search input",
+    "idle_input_label": "Search in {{module}}",
+    "module": "Module",
+    "start": "Start search",
+    "type_or_choose_suggestion": "Type or choose some keywords to start a search",
+    "type_to_start_search": "Type some keywords to start a search",
+    "unable_to_parse_query": "Unable to complete the search, clear it and retry",
+    "label": {
+        "clear_search_query": "CLEAR SEARCH"
+    }
+}

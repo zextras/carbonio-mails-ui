@@ -1,0 +1,1181 @@
+{
+    "actions": {
+        "copy": "Copy",
+        "deletePermanently": "Delete permanently",
+        "edit": "Edit",
+        "flag": "Flag",
+        "goToFolder": "Go to destination folder",
+        "manageShares": "Manage shares",
+        "markForDeletion": "Mark for deletion",
+        "move": "Move",
+        "moveToTrash": "Delete",
+        "openWithDocs": "Open document",
+        "preview": "Preview",
+        "removeUpload": "Remove upload",
+        "rename": "Rename",
+        "restore": "Restore",
+        "retryUpload": "Retry upload",
+        "sendViaMail": "Send via e-mail",
+        "unflag": "Unflag",
+        "transferOwnership": "Transfer ownership",
+        "download": {
+            "multiple": {
+                "modal": {
+                    "button": {
+                        "label": "Download all"
+                    }
+                },
+                "button": {
+                    "tooltip": "Download all"
+                }
+            }
+        },
+        "downloadNode": "Download"
+    },
+    "breadcrumb": {
+        "expander": {
+            "hide": "Hide folder's path",
+            "show": "Show folder's path"
+        }
+    },
+    "carbonio-public-folder-ui": {
+        "emptyFolder": "There are no items in this folder.",
+        "invalidLink": {
+            "description": {
+                "line1": "This link has been removed or is not valid.",
+                "line2": "For more information, try to contact the person who shared it with you."
+            },
+            "title": "Public access link not available."
+        },
+        "listHeader": {
+            "extension": "Extension",
+            "lastModified": "Last modified",
+            "name": "Name",
+            "size": "Size"
+        },
+        "accessCode": {
+            "modal": {
+                "title": "The link is secured by an access code",
+                "description": "Please, insert the access code to proceed",
+                "button": {
+                    "confirm": "Done"
+                },
+                "wrongAccessCode": "Wrong access code, try again"
+            }
+        },
+        "fileDownload": {
+            "modal": {
+                "confirmLabel1": "Download",
+                "confirmLabel2": "Download again",
+                "description": "Access code entered correctly. Now you can download the file."
+            }
+        }
+    },
+    "collaborationLinks": {
+        "button": {
+            "generateLink": "Generate Link",
+            "revoke": "Revoke",
+            "choosePermission": "Choose permissions to generate link"
+        },
+        "description": "Internal users will receive the permissions by opening the link. You can always modify granted permissions.",
+        "link": {
+            "urlChip": {
+                "tooltip": {
+                    "copy": "Copy Collaboration link"
+                }
+            }
+        },
+        "row": {
+            "placeholder": "Create a link in order to share the item",
+            "title": {
+                "ReadAndShare": "Read and Share",
+                "writeAndShare": "Write and Share"
+            }
+        },
+        "title": "Collaboration links",
+        "permission": {
+            "readOnly": "View",
+            "readAndWrite": "Edit",
+            "optionDisabled": {
+                "tooltip": "This type of link has already been created"
+            },
+            "readWriteAndShare": "Edit and manage sharing",
+            "readAndShare": "View and manage sharing",
+            "cannotWrite": {
+                "tooltip": "You are not allowed to create this collaboration link because you don't have edit permission"
+            }
+        },
+        "maximumLinks": {
+            "tooltip": "You've reached the maximum number of links. Revoke one to create a new one."
+        }
+    },
+    "create": {
+        "options": {
+            "new": {
+                "document": "New document",
+                "folder": "New folder",
+                "libreDocument": "OpenDocument {{ext}}",
+                "msDocument": "Microsoft {{ext}}",
+                "msDocument_docx": "Microsoft Word {{ext}}",
+                "msDocument_pptx": "Microsoft PowerPoint {{ext}}",
+                "msDocument_xlsx": "Microsoft Excel {{ext}}",
+                "presentation": "New presentation",
+                "spreadsheet": "New spreadsheet",
+                "upload": "Upload"
+            }
+        }
+    },
+    "displayer": {
+        "details": {
+            "collaborators": "Collaborators",
+            "collaboratorsTooltip": "See the list of collaborators",
+            "content": "Content",
+            "copyShortcut": "copy item's shortcut",
+            "createdBy": "Created by",
+            "description": "Description",
+            "editDescription": {
+                "closeIconTooltip": "Close without saving",
+                "editIconTooltip": "Edit description",
+                "input": {
+                    "label": "Maximum length allowed is 4096 characters"
+                },
+                "saveIconTooltip": "Save edits"
+            },
+            "lastEdit": "Last edit",
+            "missingDescription": "Click the edit button to add a description",
+            "owner": "Owner",
+            "position": "Position",
+            "sendMailTo": "Send e-mail to: {{email}}",
+            "showPath": "Show path",
+            "size": "Size"
+        },
+        "filter": {
+            "flagged_empty": [
+                {
+                    "message": "You'll find it here whenever you'll need it.",
+                    "title": "Click the flag to mark an item."
+                },
+                {
+                    "message": "They'll be listed here.",
+                    "title": "Flag your most important items by clicking the flag."
+                }
+            ],
+            "flagged_full": [
+                {
+                    "message": "You'll find it here whenever you'll need it.",
+                    "title": "Click the flag to mark an item."
+                },
+                {
+                    "message": "They'll be listed here.",
+                    "title": "Flag your most important items by clicking the flag."
+                }
+            ],
+            "recents_empty": [
+                {
+                    "message": "You will see the most recents here.",
+                    "title": "Open, read, edit your items."
+                }
+            ],
+            "recents_full": [
+                {
+                    "message": "Click an item to select it.",
+                    "title": "View details of the latest updated items."
+                },
+                {
+                    "message": "Select an item to proceed.",
+                    "title": "Review and edit the latest updated items."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "Quickly review the latest updated items."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "Keep up to date on the latest updated items."
+                }
+            ],
+            "sharedByMe_empty": [
+                {
+                    "message": "Select an item to proceed.",
+                    "title": "Review and edit the items you've shared with your contacts."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "View details of folders you've shared."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "Find here all the items shared with your contacts."
+                }
+            ],
+            "sharedByMe_full": [
+                {
+                    "message": "Select an item to proceed.",
+                    "title": "Review and edit the items you've shared with your contacts."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "View details of folders you've shared."
+                }
+            ],
+            "sharedWithMe_empty": [
+                {
+                    "message": "Click the \"NEW\" button to create a new item and share it with your contacts.",
+                    "title": "There are no items shared with you yet."
+                },
+                {
+                    "message": "Let other users know that you're ready to collaborate with them.",
+                    "title": "Click the \"NEW\" button and create a new e-mail."
+                }
+            ],
+            "sharedWithMe_full": [
+                {
+                    "message": "Click an item to select it.",
+                    "title": "Start editing and sharing your items."
+                },
+                {
+                    "message": "Click an item to select it.",
+                    "title": "View your folders' details and share them with your contacts."
+                },
+                {
+                    "title": "Select an item and start working on it with other users."
+                }
+            ],
+            "trash_empty": [
+                {
+                    "message": "Click on the trash icon to delete an item.",
+                    "title": "Move to trash everything you don't need."
+                },
+                {
+                    "message": "Click the trash icon to delete an item.",
+                    "title": "The trash is empty."
+                },
+                {
+                    "title": "Keep your workspace clean: delete all items you don't need anymore."
+                }
+            ],
+            "trash_full": [
+                {
+                    "title": "Select and restore your items that are now in the trash."
+                },
+                {
+                    "message": "Select an item to restore it or delete it permanently.",
+                    "title": "Nothing is lost!"
+                },
+                {
+                    "message": "Or, when possible, select it and restore it in its original folder.",
+                    "title": "Select an item to delete it permanently."
+                }
+            ]
+        },
+        "folder_empty": [
+            {
+                "title": "Click the \"NEW\" button to create a new item and share it with your contacts."
+            },
+            {
+                "message": "Create an item by clicking the \"NEW\" button.",
+                "title": "Start editing and sharing your works."
+            },
+            {
+                "message": "You'll be able to edit, flag and share it.",
+                "title": "Click the \"NEW\" button to create a new item."
+            }
+        ],
+        "folder_full": [
+            {
+                "message": "Click an item to select it.",
+                "title": "Start editing and sharing your items."
+            },
+            {
+                "message": "Click an item to select it.",
+                "title": "View your folders' details and share them with your contacts."
+            },
+            {
+                "title": "Select a folder to edit or rename it."
+            },
+            {
+                "message": "Select the item and then go to the \"Shares\" tab.",
+                "title": "Provide your contacts with editing rights to let them edit an item."
+            },
+            {
+                "title": "Select an item to share or move it to another folder."
+            }
+        ],
+        "generic": {
+            "message": "Click an item to select it.",
+            "title": "View files and folders, share them with your contacts."
+        },
+        "list": {
+            "you": "You"
+        },
+        "search": {
+            "title": "Type some keywords to start a search."
+        },
+        "search_empty": [
+            {
+                "message": "Or select “Advanced filters” to refine your search.",
+                "title": "Start another search."
+            },
+            {
+                "message": "Don’t give up, keep searching!",
+                "title": "No results."
+            },
+            {
+                "message": "Try to start another search.",
+                "title": "We’re sorry but there are no results for your search."
+            },
+            {
+                "message": "Check the spelling and the filters' options or try with another keyword.",
+                "title": "There are no results for your search."
+            }
+        ],
+        "search_full": [
+            {
+                "title": "Select one or more results to perform actions or display details."
+            }
+        ],
+        "share": {
+            "addShare": {
+                "button": "Share",
+                "checkbox": {
+                    "label": "Add a custom message to mail notification"
+                },
+                "input": {
+                    "label": "Add a custom message to this notification",
+                    "placeholder": "Add new people or groups"
+                },
+                "note": "Note:",
+                "noteDescription": "The standard message displays your name, the name of the shared item, permissions granted to the recipients and sign in information."
+            },
+            "chip": {
+                "owner": "Owner",
+                "popover": {
+                    "role": {
+                        "editor": "Editor",
+                        "editorDescription": "It will be able to view and edit the item",
+                        "viewer": "Viewer",
+                        "viewerDescription": "It will only be able to view or download the item"
+                    },
+                    "save": "Save",
+                    "sharingAllowed": "Sharing allowed",
+                    "sharingAllowedDescription": "It will be able to manage shares of the item"
+                },
+                "tooltip": {
+                    "edit": {
+                        "collaborator": "Edit collaboration",
+                        "you": "Edit your collaboration"
+                    },
+                    "remove": {
+                        "collaborator": "Remove collaboration",
+                        "yourself": "Remove your collaboration"
+                    }
+                },
+                "you": "You"
+            },
+            "noSharePermissionHeader": "You are not allowed to share this item.",
+            "editor": {
+                "tooltip": "You don't have the necessary permissions to assign editor rights"
+            },
+            "tooltip": {
+                "no_edit_permission": "You don’t have the necessary permissions to edit collaboration",
+                "no_remove_permission": "You don’t have the necessary permissions to remove collaboration"
+            }
+        },
+        "tabs": {
+            "activities": "Activities",
+            "details": "Details",
+            "sharing": "Sharing",
+            "versioning": "Versioning"
+        },
+        "uploads": {
+            "message": "Here you can find all the items that are currently uploading, you can manage them from here.",
+            "title": "Upload suggestions"
+        },
+        "version": {
+            "actions": {
+                "cloneAsCurrent": "Clone as current",
+                "deleteVersion": "Delete version",
+                "downloadVersion": "Download version",
+                "keepVersion": "Keep this version forever",
+                "openDocumentVersion": "Open document version",
+                "removeKeepVersion": "Remove keep forever",
+                "tooltip": {
+                    "disabledByDeleteCurrent": "Current version cannot be deleted",
+                    "disabledByDocs": "This version cannot be opened by the online editor",
+                    "disabledByMaxKeepVersion": "You have reached the maximum number of versions to keep forever",
+                    "disabledByMaxVersion": "You have reached the maximum number of versions",
+                    "disabledByPermission": "You don't have the correct permissions",
+                    "disabledByVersionKeepForever": "Versions marked to be kept forever cannot be deleted"
+                }
+            },
+            "button": {
+                "purgeAllVersions": "Purge all versions",
+                "upload": "Upload version"
+            },
+            "mainHint": "Files saves the last {{maxVersions}} versions of your items. You can manually delete any item version or restore one as the current version. Select one or more versions that you want to keep forever.",
+            "row": {
+                "clonedIcon": {
+                    "tooltip1": "Cloned from version {{versionNumber}} ({{cloneDate}})",
+                    "tooltip2": "Cloned from version {{versionNumber}} (version deleted)"
+                },
+                "versionNumber": "Version {{versionNumber}}"
+            },
+            "rowHeaders": {
+                "currentVersion": "Current version",
+                "lastWeek": "Last 7 days",
+                "olderVersions": "Older versions"
+            }
+        },
+        "upload": {
+            "error": {
+                "aborted": "The upload was interrupted or blocked. Please try again or check your connection.",
+                "fileSizeExceeded": "The file could not be uploaded because it exceeds the allowed limit.",
+                "maxVersionReached": "The file could not be uploaded because the maximum number of versions has been reached."
+            }
+        },
+        "uploadFailure": {
+            "title": "Upload suggestions",
+            "message": "Here you can find all the items that are currently uploading. If a file failed to upload, click on it to see more details."
+        }
+    },
+    "docs": {
+        "create": {
+            "modal": {
+                "input": {
+                    "label": {
+                        "name": {
+                            "document": "Document name",
+                            "presentation": "Presentation name",
+                            "spreadsheet": "Spreadsheet name"
+                        }
+                    }
+                },
+                "title": {
+                    "document": "Create new document",
+                    "presentation": "Create new presentation",
+                    "spreadsheet": "Create new spreadsheet"
+                }
+            }
+        }
+    },
+    "dropzone": {
+        "move": {
+            "message": {
+                "disabled": "You cannot drop your items in this area.",
+                "enabled": "Drop here your items \n to quickly move them to this folder."
+            },
+            "title": {
+                "disabled": "Drag&Drop mode.",
+                "enabled": "Drag&Drop mode."
+            }
+        }
+    },
+    "empty": {
+        "filter": {
+            "flagged": "There are no flagged items.",
+            "hint": "It looks like there's nothing here.",
+            "recents": "It looks like there are no recent items yet.",
+            "sharedByMe": "You haven't shared any item with your collaborators yet.",
+            "sharedWithMe": "There are no items shared with you yet.",
+            "trash": "The trash is empty."
+        },
+        "folder": {
+            "displayerContent": "This folder has no content.",
+            "hint": "It seems that this folder is empty.",
+            "state": "Drag a file or create a new one clicking \"NEW\"."
+        },
+        "search": {
+            "hint": "Your search didn't match any files or folders.",
+            "noResults": [
+                "No results. Keep searching!",
+                "None of your items matches your search."
+            ],
+            "notRun": "No search was carried out yet."
+        }
+    },
+    "errorCode": {
+        "code": "Something went wrong",
+        "code_ACCOUNT_NOT_FOUND": "It seems that this email is not associated to a user",
+        "code_FILE_VERSION_NOT_FOUND": "We're sorry, but this version of the item cannot be found",
+        "code_Generic": "Something went wrong",
+        "code_LINK_NOT_FOUND": "Action failed. This link no longer exists",
+        "code_MISSING_FIELD": "An internal error occurred, not all information of this item has been recovered",
+        "code_NODE_COPY_ERROR": "Sorry, copy of the item failed. Try again",
+        "code_NODE_DUPLICATED": "There is an item with the same name in this folder",
+        "code_NODE_NOT_FOUND": "It seems that this item doesn't exist, or you do not have permission to access it",
+        "code_NODE_WRITE_ERROR": "It seems that this item cannot be edited or that you do not have permission to edit it",
+        "code_SHARE_CREATION_ERROR": "We are sorry, but it is not possible to share the item with this user",
+        "code_SHARE_NOT_FOUND": "We're sorry, but this share cannot be found",
+        "code_VERSIONS_LIMIT_REACHED": "The operation cannot be completed. You have reached the maximum limit.",
+        "code_OVER_QUOTA_REACHED": "You have reached your storage limit. Delete some items to free up storage space and try again",
+        "operation_copyNodes": "Copy action failed.",
+        "operation_cloneVersion": "Clone action failed."
+    },
+    "folder": {
+        "create": {
+            "modal": {
+                "button": {
+                    "confirm": "Create"
+                },
+                "input": {
+                    "label": {
+                        "name": "Folder name"
+                    }
+                },
+                "title": "Create new folder"
+            }
+        }
+    },
+    "label": {
+        "app_name": "Files"
+    },
+    "modal": {
+        "button": {
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+        },
+        "close": {
+            "tooltip": "Close"
+        },
+        "decreaseYourOwnSharePermissions": {
+            "body": "Are you sure to decrease your rights on this item? The action is permanent and you won't be able to restore the previous share's rights by yourself. You can always contact the shared item's owner if you need the previous permission to be restored.",
+            "button": {
+                "confirm": "Confirm"
+            },
+            "header": "Decrease your current rights"
+        },
+        "deletePermanently": {
+            "body": "You will delete permanently this item/these items. You will not be able to recover this item/these items anymore. This action is irreversible.",
+            "button": {
+                "confirm": "Delete permanently"
+            },
+            "header": "This action is irreversible"
+        },
+        "deleteShare": {
+            "body": "Are you sure to remove all the access permission previously given to {{shareTarget}} ?",
+            "button": {
+                "confirm": "Remove"
+            },
+            "header": "Remove share",
+            "yourShare": {
+                "body": {
+                    "answer": "Are you sure to remove yourself from this collaboration?",
+                    "permissionLost": "All the access permissions previously given to you will be lost."
+                }
+            }
+        },
+        "moreInfo": {
+            "title": "Additional information"
+        },
+        "nodeSelection": {
+            "button": {
+                "create": "Create",
+                "newFolder": {
+                    "disabled": "You don't have the correct permissions",
+                    "label": "New folder"
+                }
+            },
+            "input": {
+                "newFolder": "New folder's name"
+            }
+        },
+        "nodesSelection": {
+            "selectedCount_one": "{{count}} selected item",
+            "selectedCount_other": "{{count}} selected items"
+        },
+        "purgeAllVersions": {
+            "body": "All versions that are not marked to be kept forever, except the current one, will be deleted. You will not be able to recover these versions.",
+            "button": {
+                "confirm": "Purge all versions"
+            },
+            "header": "Purge all versions"
+        },
+        "removeLink": {
+            "body": "This link has expired, therefore it can't be used anymore to access the item. You can remove the link from the list or you can update its expiration date and other information in order to keep using it.",
+            "button": {
+                "confirm": "Remove"
+            },
+            "header": "Remove {{nodeName}} {{linkName}}"
+        },
+        "revokeCollaborationLink": {
+            "body": "By revoking this link, you are blocking the possibility to create new shares with it. Everyone who has already used the collaboration link will keep the access to the item.",
+            "button": {
+                "confirm": "Revoke"
+            },
+            "header": "Revoke {{nodeName}} collaboration link"
+        },
+        "revokeLink": {
+            "body": "By revoking this link, you are blocking access to {{nodeName}} for anyone who tries to use the link to access the item.",
+            "button": {
+                "confirm": "Revoke"
+            },
+            "header": "Revoke {{nodeName}} {{linkName}}"
+        },
+        "roots": {
+            "filesHome": "Home",
+            "rootsList": "Files",
+            "sharedWitMe": "Shared with me",
+            "trash": {
+                "myElements": "My items",
+                "sharedWitMe": "Shared items",
+                "trash": "Trash"
+            }
+        },
+        "unsaved_changes": {
+            "body": {
+                "line1": "Are you sure you want to leave this page without saving?",
+                "line2": "All your unsaved changes will be lost."
+            },
+            "button": {
+                "leave_anyway": "Leave anyway",
+                "save_and_leave": "Save and leave"
+            },
+            "title": {
+                "cannot_saved_changes": "Some changes cannot be saved",
+                "unsaved_changes": "You have unsaved changes"
+            }
+        },
+        "cancel": {
+            "label": "Cancel"
+        },
+        "transferOwnership": {
+            "title_one": "Transfer Ownership of {{node.name}}",
+            "title_other": "Transfer Ownership of {{count}} items"
+        }
+    },
+    "node": {
+        "alias": {
+            "name_LOCAL_ROOT": "Home",
+            "name_SHARED_WITH_ME_ROOT": "Shared with me",
+            "name_TRASH_ROOT": "Trash"
+        },
+        "copy": {
+            "modal": {
+                "button": {
+                    "confirm": "Copy",
+                    "tooltip": {
+                        "confirm": "You can't perform this action here"
+                    }
+                },
+                "title_one": "Copy {{node.name}}",
+                "title_other": "Copy items"
+            }
+        },
+        "move": {
+            "error": {
+                "not": {
+                    "allowed": "You cannot move multiple items from a filter or a search"
+                }
+            },
+            "modal": {
+                "button": {
+                    "confirm": "Move",
+                    "tooltip": {
+                        "confirm": "You can't perform this action here"
+                    }
+                },
+                "input": {
+                    "filter": "Filter folders"
+                },
+                "subtitle": "Select a destination folder:",
+                "title_one": "Move {{node.name}}",
+                "title_other": "Move items"
+            }
+        },
+        "rename": {
+            "modal": {
+                "button": {
+                    "confirm": "Rename"
+                },
+                "input": {
+                    "label": {
+                        "name": "Item name"
+                    }
+                },
+                "title": "Rename item"
+            }
+        },
+        "type": {
+            "folder": "Folder"
+        },
+        "preview": {
+            "failed": "Failed to load image"
+        }
+    },
+    "preview": {
+        "actions": {
+            "tooltip": {
+                "download": "Download",
+                "edit": "Edit",
+                "manageShares": "Manage shares"
+            }
+        },
+        "button": {
+            "refresh": "Refresh preview"
+        },
+        "close": {
+            "tooltip": "Close"
+        },
+        "loading": {
+            "error": "An error occurred while loading the preview. Try again.",
+            "file": "Loading item preview, please wait…",
+            "retrying": "Trying to load the preview…"
+        },
+        "video": {
+            "errorLabel": "This video cannot be played. Try to reproduce it using another browser"
+        },
+        "print": {
+            "tooltip": "Print"
+        },
+        "document": {
+            "loadingLabel": "Loading document preview…",
+            "errorLabel": "Failed to load document preview."
+        },
+        "page": {
+            "label": "Page"
+        },
+        "fileSizeExceeded": {
+            "download": "DOWNLOAD FILE",
+            "openTab": "OPEN IN A SEPARATE TAB",
+            "note": "Please, download it or open it in a separate tab",
+            "title": "This item cannot be displayed",
+            "content": "The file size exceeds the limit allowed and cannot be displayed"
+        },
+        "previous": {
+            "tooltip": "Previous"
+        },
+        "next": {
+            "tooltip": "Next"
+        },
+        "zoomOut": {
+            "tooltip": "Zoom out"
+        },
+        "resetZoom": {
+            "tooltip": "Reset zoom"
+        },
+        "fitWidth": {
+            "label": "Fit to width"
+        },
+        "maximumZoomReached": {
+            "tooltip": "Maximum zoom level reached"
+        },
+        "minimumZoomReached": {
+            "tooltip": "Minimum zoom level reached"
+        },
+        "zoomIn": {
+            "tooltip": "Zoom in"
+        }
+    },
+    "publicLink": {
+        "addLink": {
+            "addLink": "Add Link",
+            "description": "Internal and external users that have access to the link can download the item.",
+            "generateLink": "Generate Link",
+            "limitReached": "The maximum amount of public links has been reached",
+            "undo": "Undo"
+        },
+        "datePickerInput": {
+            "description": "The link expires at the end of the chosen day"
+        },
+        "dateTimePicker": {
+            "label": "Expiration date"
+        },
+        "fileLink": {
+            "addLink": {
+                "description": "Internal and external users that have access to the link can download the item."
+            },
+            "title_one": "Public download link",
+            "title_other": "Public download links"
+        },
+        "folderLink": {
+            "addLink": {
+                "description": "Anyone with this link can view and download the content of this folder."
+            },
+            "title_one": "Public access link",
+            "title_other": "Public access links"
+        },
+        "input": {
+            "description": {
+                "error": {
+                    "maxLengthAllowed": "Maximum length allowed is 300 characters"
+                }
+            },
+            "label": "Link's description"
+        },
+        "link": {
+            "edit": "Edit",
+            "editLink": "Edit Link",
+            "expireOn": "Expires on:",
+            "expiredOn": "This link has expired on:",
+            "noExpirationDate": "Has no expiration date",
+            "remove": "Remove",
+            "revoke": "Revoke",
+            "undo": "Undo",
+            "urlChip": {
+                "tooltip": {
+                    "copy": "Copy {{linkName}}",
+                    "expired": "This link has expired"
+                }
+            }
+        },
+        "accessCode": {
+            "chip": {
+                "tooltip": "Copy access code",
+                "label": "Access code"
+            },
+            "switch": {
+                "label": "Enable access code"
+            },
+            "input": {
+                "label": "Access code"
+            },
+            "buttons": {
+                "copy": {
+                    "tooltip": "Copy access code"
+                },
+                "regenerate": {
+                    "tooltip": "Generate new access code"
+                }
+            }
+        }
+    },
+    "quota": {
+        "limitedSpace": "{{used}} of {{limit}} used",
+        "overQuota": {
+            "tooltip": {
+                "label": "You have reached the maximum quota available."
+            }
+        },
+        "refresh": {
+            "tooltip": {
+                "label": "Refresh"
+            }
+        },
+        "unlimitedSpace": "{{used}} of unlimited space"
+    },
+    "search": {
+        "advancedSearch": {
+            "button": {
+                "filters_one": "{{count}} advanced filter",
+                "filters_other": "{{count}} advanced filters"
+            },
+            "modal": {
+                "button": {
+                    "confirm": "Search",
+                    "reset": "Reset filters"
+                },
+                "flagged": {
+                    "description": "Filter the results by items that you've flagged",
+                    "label": "Flagged"
+                },
+                "folder": {
+                    "label": "Select a folder",
+                    "modal": {
+                        "cancel": "Go back",
+                        "cascade": "search also in contained folders",
+                        "confirm": "Choose folder",
+                        "subtitle": "Result will be searched only inside the selected folder",
+                        "title": "Select a folder"
+                    }
+                },
+                "itemType": {
+                    "dropdownOption": {
+                        "audio": "Audio",
+                        "document": "Document",
+                        "folder": "Folder",
+                        "image": "Image",
+                        "presentation": "Presentation",
+                        "spreadsheet": "Spreadsheet",
+                        "video": "Video"
+                    },
+                    "label": "Item type"
+                },
+                "keywords": {
+                    "label": "Keywords"
+                },
+                "owner": {
+                    "label": "Owner"
+                },
+                "shared": {
+                    "description": "Filter the results by items that contain at least one collaborator besides you",
+                    "label": "Shared"
+                },
+                "title": "Advanced filters"
+            }
+        },
+        "clear": {
+            "tooltip": {
+                "clear": "Clear search input",
+                "empty": "Search input is already clear"
+            }
+        },
+        "header": {
+            "close": "Quit the search",
+            "result": "Results that contain all the keywords:",
+            "search": "Search",
+            "start": "Start a search"
+        },
+        "resultsFor": "Results for:",
+        "search": {
+            "tooltip": {
+                "edit": "Edit your search to start a new one",
+                "empty": "Type some keywords to start a search",
+                "search": "Search"
+            }
+        },
+        "searchBar": {
+            "label": {
+                "active": "Separate your keywords by a comma, semicolon or pressing TAB",
+                "default": "Type your search"
+            }
+        }
+    },
+    "secondaryBar": {
+        "filesHome": "Home",
+        "filters": "Filters",
+        "filtersList": {
+            "flagged": "Flagged",
+            "myElements": "My items",
+            "recents": "Recents",
+            "sharedByMe": "Shared by me",
+            "sharedElements": "Shared items",
+            "sharedWithMe": "Shared with me",
+            "trash": "Trash"
+        },
+        "uploads": "Uploads"
+    },
+    "selectionMode": {
+        "header": {
+            "exit": "Exit selection mode",
+            "selectAll": "Select all",
+            "unselectAll": "Deselect all"
+        },
+        "node": {
+            "tooltip": "Activate selection mode"
+        }
+    },
+    "snackbar": {
+        "clipboard": {
+            "email": "Email address copied",
+            "itemShortcutCopied": "Item shortcut copied",
+            "accessCodeCopied": "Access code copied"
+        },
+        "collaborationLink": {
+            "actionLabel": {
+                "copyLink": "Copy link"
+            },
+            "copyCollaborationLink": "Collaboration link copied",
+            "newCollaborationLinkGenerated": {
+                "label": "New Collaboration link generated"
+            }
+        },
+        "copyNodes": {
+            "action": "Go to folder",
+            "error": "Something went wrong, try again",
+            "success": "Item copied"
+        },
+        "decreaseYourOwnShare": {
+            "success": "Rights updated successfully"
+        },
+        "deletePermanently": {
+            "error": "Error",
+            "success": "Success"
+        },
+        "deleteShare": {
+            "error": "Error",
+            "success": "Success"
+        },
+        "download": {
+            "start": "Your download will start soon",
+            "error": "Download size exceeds the {{limit}} limit. Please reduce items to download"
+        },
+        "markForDeletion": {
+            "error": "Something went wrong, try again",
+            "showTrash": "Open Trash folder",
+            "success": "Item moved to trash"
+        },
+        "moveNodes": {
+            "action": "Go to folder",
+            "error": "Something went wrong, try again",
+            "success": "Item moved"
+        },
+        "publicLink": {
+            "actionLabel": {
+                "copyLink": "Copy Link"
+            },
+            "copyLink": "{{linkName}} copied",
+            "linkUpdated": {
+                "label": "{{linkName}} updated"
+            },
+            "newPublicLinkGenerated": {
+                "label": "New {{linkName}} generated"
+            }
+        },
+        "restore": {
+            "error": "Something went wrong, try again",
+            "showInFolder": "Show in folder",
+            "success": "Success"
+        },
+        "unflag": {
+            "success": "Item unflagged successfully"
+        },
+        "upload": {
+            "foldersNotAllowed": "Folders cannot be uploaded",
+            "goToFolder": "Go to folder",
+            "moreInfo": "More info",
+            "nodesNotAllowed": "Some items have not been uploaded",
+            "success": "Upload occurred in {{destination}}"
+        },
+        "version": {
+            "clone": "Version cloned as the current one",
+            "keepForeverAdded": "Version marked as to be kept forever",
+            "keepForeverRemoved": "\"Keep forever\" removed"
+        },
+        "createDocument": {
+            "error": {
+                "overQuota": {
+                    "spreadsheet": "New spreadsheet creation failed. You have reached your storage limit. Delete some items to free up storage space and try again",
+                    "document": "New document creation failed. You have reached your storage limit. Delete some items to free up storage space and try again",
+                    "presentation": "New presentation creation failed. You have reached your storage limit. Delete some items to free up storage space and try again",
+                    "actionLabel": "OK"
+                }
+            }
+        },
+        "error": {
+            "overQuota": {
+                "actionLabel": "OK"
+            }
+        },
+        "accessCode": {
+            "regenerate": "New access code generated"
+        },
+        "openWithDocs": {
+            "error": {
+                "pleaseDownload": "To view the item, please download it on your device",
+                "exceedSizeLimit": "The item exceeds the size limit allowed and cannot be opened."
+            }
+        },
+        "transferOwnership": {
+            "error": {
+                "overQuota": "Ownership transfer failed.",
+                "overQuota2": "The new owner doesn’t have enough storage available."
+            },
+            "success2": "The items are now in your \"Shared with me\" folder.",
+            "success1": "Ownership transferred successfully.",
+            "actionLabel": "OK"
+        }
+    },
+    "sortingDropdown": {
+        "ascendingOrder": "Ascending order",
+        "descendingOrder": "Descending order",
+        "icon": {
+            "tooltip": {
+                "OrderLastUpdateAscending": "Ascending order by last update",
+                "OrderLastUpdateDescending": "Descending order by last update",
+                "OrderNameAscending": "Ascending order by name",
+                "OrderNameDescending": "Descending order by name",
+                "OrderSizeAscending": "Ascending order by size",
+                "OrderSizeDescending": "Descending order by size"
+            }
+        },
+        "lastUpdate": "Last update",
+        "name": "Name",
+        "size": "Size"
+    },
+    "uploadItem": {
+        "queued": "Queued"
+    },
+    "uploads": {
+        "banner": {
+            "overQuota": {
+                "description": "The uploading of some items failed because you have reached your storage limit. Delete some items to free up storage space and try again.",
+                "title": "Quota exceeded"
+            }
+        },
+        "clean": {
+            "completed": "Clean completed uploads"
+        },
+        "destination": {
+            "home": "Upload started in Files' Home"
+        },
+        "dropzone": {
+            "message": {
+                "disabled": "You cannot drop an attachment in this area",
+                "folderView": {
+                    "disabled": "You cannot drop an attachment in this area",
+                    "enabled": "Drop here your attachments \n to quick-add them to this folder"
+                },
+                "otherView": {
+                    "enabled": "Drop here your attachments\nto quick-add them to your Home"
+                }
+            },
+            "title": {
+                "disabled": "Drag&Drop mode.",
+                "enabled": "Drag&Drop mode."
+            }
+        },
+        "error": {
+            "moreInfo": {
+                "foldersNotAllowed": "Folders cannot be uploaded. Instead, if you are trying to upload a file, the system may not have recognized it. Try again using the \"UPLOAD\" button."
+            }
+        }
+    },
+    "size": {
+        "unitMeasure_B": "B",
+        "unitMeasure_KB": "KB",
+        "unitMeasure_MB": "MB",
+        "unitMeasure_TB": "TB",
+        "unitMeasure_GB": "GB",
+        "unitMeasure_ZB": "ZB",
+        "unitMeasure_PB": "PB",
+        "unitMeasure_EB": "EB",
+        "unitMeasure_YB": "YB"
+    },
+    "header": {
+        "iconTooltip": {
+            "ListLayout": "List layout",
+            "GridLayout": "Grid layout"
+        }
+    },
+    "notifications": {
+        "empty": {
+            "title": "No notifications",
+            "message": "You don’t have any notifications at the moment"
+        },
+        "addedNode": {
+            "message": "<bold>{{email}}</bold> added <bold>{{node}}</bold> in <bold>{{folder}}</bold>"
+        },
+        "newShare": {
+            "message": "<bold>{{email}}</bold> shared <bold>{{node}}</bold> with you"
+        },
+        "removedNode": {
+            "message": "<bold>{{email}}</bold> removed <bold>{{node}}</bold> from <bold>{{folder}}</bold>"
+        },
+        "title": "Notifications",
+        "refresh": "Check for updates",
+        "transferredOwnership": {
+            "message": "<bold>{{email}}</bold> transferred ownership of items to you. You’ll find them in folder <bold>{{folder}}</bold>"
+        }
+    },
+    "transferOwnership": {
+        "modal": {
+            "available": "The new owner has enough storage available.",
+            "description": "Select a new owner for the selected items.",
+            "note1": "You’ll remain as a <bold>collaborator with editing and sharing rights.</bold>",
+            "note4": "Please note:",
+            "note": "After the transfer:",
+            "note5": "If the new owner exceeds their storage quota, the transfer will fail.",
+            "note2": "All sharing settings will be kept.",
+            "note3": "The new owner <bold>will be notified.</bold>",
+            "note6": "This action is permanent and cannot be undone.",
+            "unavailable": "The new owner doesn't have enough storage available.",
+            "placeholder": "Select a new owner",
+            "loadingTooltip": "Checking the new owner’s storage quota...",
+            "unavailableTooltip": "The new owner doesn’t have enough storage available.",
+            "button": {
+                "confirm": "Transfer"
+            },
+            "loading": "Checking the new owner’s storage quota..."
+        }
+    }
+}

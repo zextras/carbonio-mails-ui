@@ -1,0 +1,21 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/less-loader/dist/cjs.js??ruleSet[1].rules[1].use[3]!./src/shell/boards/board-tab.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************/
+/*
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+@container tab (width < calc(3rem + 3ch)) {
+  .tab-close-icon-button {
+    display: none !important;
+  }
+}
+@container tab (width < calc(2rem)) {
+  .tab-text {
+    display: none !important;
+  }
+}
+
+
+/*# sourceMappingURL=src_boot_bootstrapper_tsx.css.map*/

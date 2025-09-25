@@ -1,0 +1,82 @@
+{
+  "components": [
+    {
+      "name": "carbonio-mails-ui",
+      "js_entrypoint": "/static/iris/carbonio-mails-ui/acfc2db8f7fbfa0753b2a329ea6101f82feb9a2e/app.7ede284641838040b1fd.js",
+      "description": "Mails module",
+      "version": "1.26.7",
+      "commit": "acfc2db8f7fbfa0753b2a329ea6101f82feb9a2e",
+      "priority": 5,
+      "type": "carbonio",
+      "attrKey": "zimbraFeatureMailEnabled",
+      "icon": "MailModOutline",
+      "display": "Mails",
+      "sentryDsn": ""
+    },
+    {
+      "name": "carbonio-shell-ui",
+      "js_entrypoint": "/static/iris/carbonio-shell-ui/c0ca47faacdb8c7c14051258e9037e29659cf52a/zapp-shell.bundle.js",
+      "description": "The Zextras Carbonio web client",
+      "version": "12.0.0",
+      "commit": "c0ca47faacdb8c7c14051258e9037e29659cf52a",
+      "priority": -1,
+      "type": "shell",
+      "attrKey": "",
+      "icon": "CubeOutline",
+      "display": "Shell",
+      "sentryDsn": ""
+    },
+    {
+      "name": "carbonio-contacts-ui",
+      "js_entrypoint": "/static/iris/carbonio-contacts-ui/b1f4d8bdb7d047c4c7a004021cec85b27e26a633/app.f28db8733dc6a4e26244.js",
+      "description": "Contacts module",
+      "version": "1.16.1",
+      "commit": "b1f4d8bdb7d047c4c7a004021cec85b27e26a633",
+      "priority": 7,
+      "type": "carbonio",
+      "attrKey": "zimbraFeatureContactsEnabled",
+      "icon": "ContactsModOutline",
+      "display": "Contacts",
+      "sentryDsn": ""
+    },
+    {
+      "name": "carbonio-calendars-ui",
+      "js_entrypoint": "/static/iris/carbonio-calendars-ui/c37144babe80956076c03ca7aaef94634b7a125f/app.78d112f674d8835e4b43.js",
+      "description": "Calendars module",
+      "version": "1.16.5",
+      "commit": "c37144babe80956076c03ca7aaef94634b7a125f",
+      "priority": 6,
+      "type": "carbonio",
+      "attrKey": "zimbraFeatureCalendarEnabled",
+      "icon": "CalendarModOutline",
+      "display": "Calendars",
+      "sentryDsn": ""
+    },
+    {
+      "name": "carbonio-files-ui",
+      "js_entrypoint": "/static/iris/carbonio-files-ui/663c81d092bac8b0877fb81ff5a30f19a1690ac2/app.06526f668723cbbf22f2.js",
+      "description": "Files module",
+      "version": "2.13.1",
+      "commit": "663c81d092bac8b0877fb81ff5a30f19a1690ac2",
+      "priority": 9,
+      "type": "carbonio",
+      "attrKey": "carbonioFeatureFilesEnabled",
+      "icon": "DriveOutline",
+      "display": "Files",
+      "sentryDsn": ""
+    },
+    {
+      "name": "carbonio-search-ui",
+      "js_entrypoint": "/static/iris/carbonio-search-ui/394249478c655586d66f488eb3858c5c77e63a3f/app.9ba95ede5713436da792.js",
+      "description": "Search module for Zextras Carbonio",
+      "version": "0.0.5",
+      "commit": "394249478c655586d66f488eb3858c5c77e63a3f",
+      "priority": 1000,
+      "type": "carbonio",
+      "attrKey": "",
+      "icon": "SearchModOutline",
+      "display": "Search",
+      "sentryDsn": ""
+    }
+  ]
+}

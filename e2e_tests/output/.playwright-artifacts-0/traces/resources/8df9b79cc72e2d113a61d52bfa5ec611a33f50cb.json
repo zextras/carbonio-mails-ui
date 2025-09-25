@@ -1,0 +1,605 @@
+{
+    "action": {
+        "contactGroup": {
+            "delete": "Delete"
+        },
+        "copy": "Copy",
+        "delete": "Delete",
+        "delete_permanently": "Delete Permanently",
+        "edit": "Edit",
+        "edit_distribution_list": "Edit",
+        "goto_folder": "Go to folder",
+        "mail": "Send e-mail",
+        "reset_filters": "Reset Filters",
+        "search": "Search",
+        "send_msg": "Send e-mail",
+        "share_folder": "Share folder",
+        "add_shared_address_books": "Add shares"
+    },
+    "board": {
+        "editContactGroup": {
+            "snackbar": {
+                "contact_group_edited": "Group successfully updated",
+                "error": "Something went wrong saving the edits, try again"
+            }
+        },
+        "label": {
+            "description": "Description"
+        },
+        "newContactGroup": {
+            "addresses": {
+                "label": "Addresses"
+            },
+            "input": {
+                "contact_input": {
+                    "error": {
+                        "address_already_present_one": "Address already present",
+                        "address_already_present_other": "Addresses already present",
+                        "invalid_address_one": "Invalid address",
+                        "invalid_address_other": "Invalid addresses",
+                        "invalid_already_present_addresses": "Invalid and already present addresses"
+                    },
+                    "placeholder": "Type an address, click ‘+’ to add to the group",
+                    "title": "Addresses list"
+                },
+                "name_input": {
+                    "error": {
+                        "max_length": "Maximum length allowed is 256 characters",
+                        "required": "Group name is required, enter a name to proceed"
+                    },
+                    "name": {
+                        "label": "Group name*"
+                    }
+                }
+            },
+            "name": "New Group",
+            "snackbar": {
+                "contact_group_created": "Contact group successfully created"
+            },
+            "title": "New Group"
+        }
+    },
+    "contactGroupDisplayer": {
+        "label": {
+            "members_total": "Addresses: {{count}}"
+        }
+    },
+    "contactGroupList": {
+        "addressCount_one": "{{count}} address",
+        "addressCount_other": "{{count}} addresses",
+        "emptyList": "No contact groups have been created yet"
+    },
+    "contact_restored": "Contact restored",
+    "contacts": {
+        "importAction": {
+            "modalButton": "IMPORT",
+            "modalTitle": "Import contacts"
+        }
+    },
+    "displayer": {
+        "description2": "Click the “NEW” button to start creating a new one.",
+        "description3": "Click the “NEW” button to create a new group of contacts.",
+        "description4": "Create a new one by clicking the “NEW” button.",
+        "description5": "Discover all the ways you can connect with other users.",
+        "description6": "Use the “Edit” mode to add any personal note to a contact.",
+        "description7": "Create a group of contacts by clicking the “NEW” button.",
+        "description8": "Select a contact or a group of contacts to send shared emails.",
+        "distribution_list": {
+            "empty_displayer": "Select a distribution list or contact the Admin to have one.",
+            "label": {
+                "description": "Description",
+                "filter_hint": "You can filter this list by looking for specific member’s name.",
+                "manager_total": "Manager list {{total}}",
+                "member_total": "Member list {{total}}"
+            },
+            "member_not_visible": "You don't have the permissions to see the members of this distribution list. For more information, ask to the administrator.",
+            "no_details": "There are no additional details for this distribution list. For more information, ask to the administrator.",
+            "no_details_owner": "There are no additional details for this distribution list. Edit the distribution list to add them or ask to the administrator.",
+            "placeholder": {
+                "filter_member": "Filter an address"
+            }
+        },
+        "list_title1": "It looks like there are no contacts yet",
+        "list_title2": "The trash is empty",
+        "search_description1": "Or select “Advanced Filters” to refine your search.",
+        "search_description2": "Try to start another search.",
+        "search_description3": "Check the spelling and the filters' options or try with another keyword.",
+        "search_list_title1": "It looks like there are no results. Keep searching!",
+        "search_list_title2": "None of your items matches your search.",
+        "search_title1": "Start another search",
+        "search_title2": "We’re sorry but there are no results for your search",
+        "search_title3": "There are no results for your search.",
+        "search_title4": "Select one or more results to perform actions or display details.",
+        "title1": "Create a new contact by clicking the “NEW” button.",
+        "title10": "Select and restore contacts from the trash",
+        "title2": "Share all your works with your contacts.",
+        "title3": "Stay in touch with your colleagues.",
+        "title4": "Customize your contacts by adding personal notes",
+        "title5": "Select a contact",
+        "title6": "Customize a contact",
+        "title7": "Stay in touch with your colleagues",
+        "title8": "Send shared e-mail",
+        "title9": "Click the trash icon to delete a contact."
+    },
+    "distribution_list": {
+        "label": {
+            "empty_message": "There are no distribution lists yet."
+        },
+        "tabs": {
+            "details": "Details",
+            "managers": "Manager list",
+            "members": "Member list"
+        }
+    },
+    "edit_dl_component": {
+        "error": {
+            "duplicated_address_one": "Address already present",
+            "duplicated_address_other": "Addresses already present",
+            "invalid_address_one": "Invalid address",
+            "invalid_address_other": "Invalid addresses",
+            "invalid_and_duplicated_addresses": "Invalid and already present addresses"
+        },
+        "input": {
+            "description": {
+                "label": "Description"
+            },
+            "name": {
+                "error": {
+                    "max_length": "Maximum length allowed is 256 characters"
+                },
+                "label": "Distribution List name"
+            }
+        },
+        "label": {
+            "dl_email": "Distribution list",
+            "hint": "You can filter this list by looking for specific member’s name or add new ones by editing the Distribution List.",
+            "members_total": "Member list {{total}}"
+        },
+        "placeholder": {
+            "add_members": "Type an address, click '+' to add to the distribution list",
+            "filter_member": "Filter an address"
+        }
+    },
+    "emptyDisplayer": {
+        "contactGroup": {
+            "hint": "Click the “NEW” button to create a new contacts group."
+        }
+    },
+    "expand_distribution_list": "Expand address list",
+    "folder": {
+        "action": {
+            "delete": "Delete address book",
+            "deleteContactGroup": "Delete \"{{contactGroupTitle}}\"",
+            "delete_permanently": "Delete address book permanently",
+            "edit": "Edit address book",
+            "empty": {
+                "folder": "Empty address book",
+                "trash": "Empty trash"
+            },
+            "move": "Move",
+            "moved": "Address book moved successfully"
+        },
+        "modal": {
+            "delete": {
+                "body": {
+                    "message1": "Do you want to delete the selected address book? If you delete it, the related content will be permanently removed and the address book will no longer be recoverable.",
+                    "message2": "Do you want to delete permanently the selected address book? If you delete it, the related content will be permanently removed and the address book will no longer be recoverable."
+                },
+                "title": "Delete {{addressBookName}}"
+            },
+            "edit": {
+                "body": {
+                    "item": {
+                        "empty": "No path available"
+                    }
+                }
+            },
+            "empty": {
+                "body": {
+                    "message1": "Do you want to empty the selected address book?",
+                    "message2": "If you empty it, all the related content will be moved to trash."
+                },
+                "message1": "Do you want to empty the selected address book?",
+                "message2": "All the related contacts will be permanently deleted and it won't be possible to recover them.",
+                "message3": "Do you want to empty the trash?",
+                "message4": "Its content will be permanently deleted and it won't be possible to recover it.",
+                "title": "Empty {{addressBookName}}"
+            },
+            "footer": {
+                "go_back": "Go back"
+            },
+            "item": {
+                "empty": "No items available"
+            },
+            "move": {
+                "body": {
+                    "message1": "Select an address book to move the considered one to:",
+                    "message3": "Select a folder to move the considered one to:"
+                },
+                "input": {
+                    "filter": "Filter address book"
+                },
+                "title": "Move {{addressBookName}}"
+            },
+            "new": {
+                "body": {
+                    "message1": "New address book name",
+                    "message2": "Select an address book which will contain the newly created one:"
+                },
+                "create_footer": "Create and Move",
+                "input": {
+                    "name": "Insert address book name",
+                    "name_exist": "Name already exists in this path"
+                },
+                "title": "Create new address book",
+                "title2": "New folder creation"
+            },
+            "restore": {
+                "create_footer": "Create and Restore"
+            }
+        },
+        "share_folder": "Share address book",
+        "snackbar": {
+            "address_book_moved_to_trash": "Address book moved to trash",
+            "address_book_permanently_deleted": "Address book permanently deleted",
+            "folder_empty": "Address book emptied successfully",
+            "folder_new": "New address book created",
+            "trash_empty": "Trash folder emptied successfully"
+        },
+        "type": "Contact Folder"
+    },
+    "folders": {
+        "auto_contacts": "Emailed Contacts",
+        "contacts": "Contacts",
+        "root": "Root",
+        "trash": "Trash"
+    },
+    "import_contacts": {
+        "modal": {
+            "confirm": "Import",
+            "description": "The contacts inside the chosen {{fileName}} file will be imported inside the selected address book “{{folderName}}” folder.",
+            "title": "Import contacts"
+        },
+        "snackbar": {
+            "import_contacts_success_one": "{{count}} contact imported and added to the selected address book",
+            "import_contacts_success_other": "{{count}} contacts imported and added to the selected address book"
+        }
+    },
+    "job": {
+        "company": "Company",
+        "department": "Department",
+        "title": "Job Role"
+    },
+    "label": {
+        "activate_selection_mode": "Activate selection mode",
+        "add_share": "Add Share",
+        "address_book_restored": "Address book restored",
+        "advanced_filter_one": "{{count}} Advanced Filter",
+        "advanced_filter_other": "{{count}} Advanced Filters",
+        "app_name": "Contacts",
+        "autocomplete": "Autocomplete",
+        "cancel": "Cancel",
+        "cannot_move": "Cannot move to same folder",
+        "contact_created_in_folder": "This contact will be created in the \"{{name}}\" folder",
+        "contact_setting": "Contact Settings",
+        "contacts": "Contacts",
+        "create": "Create",
+        "create_tag": "Create Tag",
+        "delete": "Delete",
+        "delete_tag": "Delete Tag",
+        "delete_tag_name": "Delete \"{{name}}\" tag",
+        "destination_address_book": "Destination address book",
+        "discard": "discard",
+        "discard_changes": "DISCARD CHANGES",
+        "edit": "Edit",
+        "edit_access": "Edit access",
+        "edit_access_name": "Edit {{name}}'s access",
+        "edit_contacts": "Edit contacts",
+        "edit_email": "Edit E-mail",
+        "edit_folder_properties": "Edit {{name}}'s properties",
+        "edit_invalid_email": "E-mail is invalid, click to edit it",
+        "edit_tag": "Edit Tag",
+        "edit_tag_name": "Edit \"{{name}}\" tag",
+        "email": "E-mail",
+        "empty": "Empty",
+        "error_try_again": "Something went wrong, please try again",
+        "errors": {
+            "upload_failed_generic": "Upload failed for the file \"{{filename}}\""
+        },
+        "export_address_book": "Export csv file",
+        "folder_name": "Folder name",
+        "groups_app_name": "Contact Groups and Distribution Lists",
+        "import_address_book": "Import csv file",
+        "include_shared_folders": "Include shared address books",
+        "move": "Move",
+        "newContactGroup": "New contact group",
+        "new_address_book": "New address Book",
+        "new_contact": "New contact",
+        "new_contact_created": "New contact created",
+        "new_tag": "New Tag",
+        "no_data": "No Data",
+        "no_name": "No Name",
+        "no_special_char_allowed": "Name should not contain any special character",
+        "note": "Note:",
+        "notes": "Notes",
+        "of": "of",
+        "options": "Options",
+        "resend": "Resend",
+        "restore": "Restore",
+        "results_for": "Results for:",
+        "revoke": "Revoke",
+        "revoke_share": "Revoke {{title}}'s share",
+        "revoke_with_custom_msg": "Revoke access sending a custom notification",
+        "revoke_with_standard_msg": "Revoke access sending a standard notification",
+        "revoke_without_notification": "Revoke access without sending a notification",
+        "root": "Root",
+        "save": "Save",
+        "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
+        "select_all_addresses_one": "Select address",
+        "select_all_addresses_other": "Select all {{count}} addresses",
+        "select_color": "Select Color",
+        "share": "Share",
+        "share_with": "Share with",
+        "shares_folder_edit": "Sharing of this address book",
+        "show_more": "show more",
+        "tag": "Tag",
+        "tag_max_length": "Max 128 characters are allowed",
+        "tag_name": "Tag name",
+        "tags": "Tags",
+        "type": "Type",
+        "undo": "Undo",
+        "update": "Update",
+        "website_one": "Website",
+        "website_other": "Websites",
+        "find_share": "Find shares",
+        "filter_folders": "Filter folders",
+        "new_folder": "New Folder",
+        "export_contact": "Export vCard file",
+        "keyword": "Keywords",
+        "find_shares": "FIND SHARES",
+        "filter_mode": "Filter mode",
+        "distribution_list_app_name": "Distribution Lists",
+        "invalid_query": "Special characters like :, \", -, !, etc., are ignored in the search. This may lead to unexpected results for:"
+    },
+    "members_list_item_component": {
+        "button": {
+            "remove": "remove"
+        }
+    },
+    "message": {
+        "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
+        "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
+        "new_contact": "This contact will be created in the 'Contacts' folder",
+        "require_field": "Fill at least one of the required * field",
+        "snackbar": {
+            "settings_saved": "Edits saved correctly"
+        }
+    },
+    "messages": {
+        "modal": {
+            "delete": {
+                "if_delete_lost_forever": "By permanently deleting this contact you will not be able to recover it anymore, continue?",
+                "sure_delete_contact_one": "Are you sure to permanently delete this contact?",
+                "sure_delete_contact_other": "Are you sure to permanently delete these contacts?"
+            }
+        },
+        "snackbar": {
+            "address_book_moved": "Address book moved to destination folder",
+            "contact_deleted_permanently": "Contact permanently deleted",
+            "contact_moved": "Contact moved",
+            "contact_moved_to_trash": "Contact moved to trash",
+            "contact_restored": "Contact restored",
+            "tag_created": "Tag {{name}} successfully created",
+            "tag_deleted": "{{name}} Tag deleted successfully",
+            "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
+            "tag_updated": "Tag successfully updated",
+            "conversation_move": "Conversation successfully moved",
+            "folder_moved": "Folder successfully moved",
+            "message_move": "Message successfully moved"
+        }
+    },
+    "modal": {
+        "address_book_name": "Address book name",
+        "cancel": "cancel",
+        "close": {
+            "tooltip": "Close"
+        },
+        "delete": {
+            "button": {
+                "confirm": "delete"
+            },
+            "contactGroup": {
+                "body1": "Are you sure to delete the selected contact group?",
+                "body2": "If you delete it will be lost forever.",
+                "header": "Delete \"{{contactGroupName}}\""
+            }
+        },
+        "destination": "Destination folder",
+        "edit_distribution_list": {
+            "title": "Edit \"{{displayName}}\""
+        },
+        "initializeError": {
+            "content": "Please refresh the page or try again later. Other modules might still be available on limited functionality.",
+            "title": "Something went wrong",
+            "buttonConfirm": "RELOAD"
+        }
+    },
+    "name": {
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "middle_name": "Middle Name",
+        "nickName": "Nickname",
+        "prefix": "Prefix",
+        "suffix": "Suffix"
+    },
+    "search": {
+        "shared_folders_note": "Include shared address books in searches."
+    },
+    "secondaryBar": {
+        "contextualMenu": {
+            "new_contact_group_creation_action": "New Contact Group"
+        },
+        "distributionLists": "Distribution Lists",
+        "distributionListsManager": "Manager",
+        "distributionListsMember": "Member",
+        "myContactGroups": "My Contact Groups",
+        "contactGroups": "Contact Groups"
+    },
+    "section": {
+        "field": {
+            "city": "City",
+            "country": "Country",
+            "number": "Number",
+            "postalCode": "PostalCode",
+            "state": "State",
+            "street": "Street",
+            "website": "Website"
+        },
+        "title": {
+            "address_one": "Address",
+            "address_other": "Addresses",
+            "mail": "E-mail address",
+            "phone_number": "Phone contact"
+        }
+    },
+    "select": {
+        "default": "Select type"
+    },
+    "settings": {
+        "contacts": {
+            "checkbox": {
+                "add_contact_to_emailed_contacts": "Add new contacts to \"Emailed Contacts\"",
+                "autocomplete_on_comma": "Select autocomplete match when a comma is typed",
+                "incl_addrs_in_glbl_addrs_list": "Include addresses in the Global Address List",
+                "include_add_in_shared_contact": "Include addresses in shared contacts",
+                "srch_glbl_addrs_list": "Initially search the Global Address List when using the contact picker"
+            }
+        }
+    },
+    "share": {
+        "add": "Add",
+        "admin": "Admin",
+        "administer": "Administer",
+        "allowed_actions": "Allowed actions",
+        "contact_folder": "Address Book",
+        "filter_user": "Find users",
+        "find_contact_shares": "Find Contact Shares",
+        "find_shares": "Find Shares",
+        "find_shares_label": "Select which address book you want to see in contact’s tree",
+        "insert": "Insert",
+        "manager": "Manager",
+        "none": "None",
+        "options": {
+            "share_calendar_with": {
+                "external_guests": "External guests (view only)",
+                "internal_users_groups": "Internal Users or Groups",
+                "public": "Public (view only, no password required)"
+            }
+        },
+        "owner": "Owner",
+        "read": "Read",
+        "recipients_address": "Recipients’ e-mail addresses",
+        "remove_from_this_list": "Remove from this list",
+        "role": "Role",
+        "send_notification": "Send notification about this share",
+        "share_added_succesfully": "Shared added successfully",
+        "share_info": "Shared address book's info",
+        "share_note": "The standard message displays your name, the name of the shared item, permissions granted to the recipients, and sign-in information.",
+        "share_removed_succesfully": "Shared removed successfuly",
+        "shared_folders": "Shared Address Books",
+        "shared_item": "Shared Item",
+        "shared_items": "{{value}}'s shared address books",
+        "standard_message": "Add a note to standard message",
+        "viewer": "Viewer",
+        "workflow": "Workflow",
+        "write": "Write",
+        "link_name": "{{shareName}} of {{ownerName}}",
+        "is_contained_in": "Is contained in"
+    },
+    "snackbar": {
+        "delete_contact_group": {
+            "confirm": {
+                "success": "Contact group successfully deleted"
+            }
+        },
+        "edit_distribution_list": {
+            "save": {
+                "success": "\"{{displayName}}\" distribution list edits saved successfully"
+            }
+        },
+        "email_copied_to_clipboard": "Email copied to clipboard.",
+        "folder_edited": "Address book edited successfully",
+        "folder_shared": "Address book shared",
+        "import_contacts_success_one": "{{number}} contacts imported and added to the selected address book",
+        "import_contacts_success_other": "",
+        "share_resend": "Share invite resent",
+        "share_revoke": "Share access revoked",
+        "share_updated": "Access rights updated",
+        "tag_applied": "\"{{tag}}\" tag applied",
+        "tag_removed": "\"{{tag}}\" tag removed"
+    },
+    "title": {
+        "advanced_filters": "Advanced Filters"
+    },
+    "tooltip": {
+        "address_book_sharing_status_one": "Shared with {{count}} person",
+        "address_book_sharing_status_other": "Shared with {{count}} people",
+        "resend": "Send e-mail notification about this share",
+        "revoke": "Revoke access",
+        "folder_linked_status": "Shared with me",
+        "folder_sharing_status_one": "Shared with 1 person",
+        "folder_sharing_status_other": "Shared with {{count}} people",
+        "list_trash": {
+            "deletePermanently": "Delete contact permanently"
+        }
+    },
+    "types": {
+        "home": "home",
+        "mobile": "mobile",
+        "other": "other",
+        "work": "work"
+    },
+    "contact": {
+        "modal": {
+            "move_multiple": {
+                "title": "Move {{count}} contacts"
+            },
+            "move_single": {
+                "title": "Move {{contactDesc}}'s contact"
+            },
+            "restore_multiple": {
+                "title": "Restore {{count}} contacts"
+            },
+            "restore_single": {
+                "title": "Restore {{contactDesc}}'s contact"
+            }
+        }
+    },
+    "folder_panel": {
+        "option": {
+            "all_contacts": "All",
+            "contacts": "Contacts",
+            "contact_group": "Contact Groups"
+        }
+    },
+    "colors": {
+        "black": "Black",
+        "purple": "Purple",
+        "blue": "Blue",
+        "cyan": "Cyan",
+        "red": "Red",
+        "green": "Green",
+        "orange": "Orange",
+        "pink": "Pink",
+        "yellow": "Yellow",
+        "gray": "Gray"
+    },
+    "advancedFilters": {
+        "isContainedIn": {
+            "chooseFolder": "Choose folder"
+        },
+        "phoneNumber": "Phone Number",
+        "title": "Advanced Filters",
+        "keywords": "Keywords"
+    }
+}
