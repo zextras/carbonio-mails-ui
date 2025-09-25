@@ -15,6 +15,7 @@ import { computeSendAllowedStatus, useEditorSendAllowedStatus } from 'store/edit
 import { useEditorsStore } from 'store/editor/store';
 import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
 import { SaveDraftResponse } from 'types/soap/save-draft';
+import { isFocusModeMailView } from 'helpers/external-tabs';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -126,7 +127,11 @@ const sendFromEditor = (
 			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
 		});
 	};
-	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+
+	let delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+	if ( isFocusModeMailView() ) {
+		delay = '0';
+	}
 
 	window.addEventListener('beforeunload', onBeforeUnload);
 
