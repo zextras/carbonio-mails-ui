@@ -10,6 +10,8 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
+import { FolderPanelRouteParams } from '../../../../types/routes';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
@@ -18,11 +20,6 @@ import { MessageListItemProps } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
-
-type RouteParams = {
-	folderId: string;
-	itemId: string;
-};
 
 export const MessageListItem = memo(function MessageListItem({
 	message,
@@ -35,10 +32,10 @@ export const MessageListItem = memo(function MessageListItem({
 	index,
 	onSelect
 }: MessageListItemProps): React.JSX.Element {
-	const { folderId, itemId } = useParams<RouteParams>();
+	const { folderId } = useParams<FolderPanelRouteParams>();
 	const navigate = useNavigate();
 	const firstChildFolderId = folderId ?? message?.parent;
-	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
+	const shouldReplaceHistory = useShouldReplaceHistory(message);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({

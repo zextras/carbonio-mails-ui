@@ -7,11 +7,11 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, getFolder, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
 import { participantToString } from 'commons/utils';
-import { getFolderIdParts } from 'helpers/folders';
+import { getFolderIdParts, isSentOrItsSubfolder } from 'helpers/folders';
 import { isConversation } from 'helpers/messages';
 import { getConversationMessages } from 'store/emails/store';
 import {
@@ -43,15 +43,22 @@ export const ParticipantsName = ({
 
 	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
 
+	const folder = getFolder(parent);
 	const folderId = getFolderIdParts(parent).id;
 	const participantsWithoutReplyTo = removeReplyToParticipants(item.participants);
 
 	const participantsString = useMemo(() => {
 		const participants = participantsWithoutReplyTo.filter((p) => {
 			if (isConversation(item)) return true;
-			if (folderId !== FOLDERS.SENT && folderId !== FOLDERS.DRAFTS && !isSearchModule)
+			if (
+				folderId !== FOLDERS.SENT &&
+				folderId !== FOLDERS.DRAFTS &&
+				!isSearchModule &&
+				!isSentOrItsSubfolder(folder)
+			)
 				return p.type === ParticipantRole.FROM; // Not sent or drafts
-			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
+			if (!isSearchModule && (isSentOrItsSubfolder(folder) || folderId === FOLDERS.SENT))
+				return p.type === ParticipantRole.TO; // sent
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
 		});
@@ -68,7 +75,7 @@ export const ParticipantsName = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isSearchModule, item, participantsWithoutReplyTo]);
+	}, [account, folder, folderId, isSearchModule, item, participantsWithoutReplyTo]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">

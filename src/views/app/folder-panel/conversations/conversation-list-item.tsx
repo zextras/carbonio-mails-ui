@@ -10,7 +10,7 @@ import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
@@ -53,7 +53,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	index,
 	onSelect
 }: ConversationListItemProps): React.JSX.Element {
-	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
@@ -131,8 +130,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[debouncedPushHistory, previewOnSeparatedWindow]
 	);
 
-	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
-
 	return (
 		<Container
 			ref={ref}
@@ -145,7 +142,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
-					shouldReplaceHistory={shouldReplaceHistory}
 				>
 					<ConversationListItemCore
 						conversation={conversation}

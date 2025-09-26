@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SmartlinkAwaitingConfirmModal } from './smartlink-awaiting-confirm-modal';
 import { SmartlinkUploadingModal } from './smartlink-uploading-modal';
+import { CreateLinkType, Link } from './types';
 import { uploadToFiles } from 'api/upload-file-to-files';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { useEditorText } from 'store/editor/hooks';
@@ -27,7 +28,8 @@ export const SmartlinkFromLocalModal = ({
 	const [t] = useTranslation();
 	const [awaitingConfirmation, setAwaitingConfirmation] = useState(true);
 	const [uploadController, setUploadController] = useState<AbortController | null>(null);
-	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
+	const [getLink, getLinkAvailable] =
+		useIntegratedFunction<(props: CreateLinkType) => Promise<Link>>('get-link');
 	const { createSnackbar } = useUiUtilities();
 	const errorSnackbar = useCallback(() => {
 		createSnackbar({
@@ -70,23 +72,23 @@ export const SmartlinkFromLocalModal = ({
 					setUploadController(abortController);
 					const nodeId = await upload;
 
-					const publicLinkUrl =
+					const response =
 						getLinkAvailable &&
 						(await getLink({
 							node: { id: nodeId },
 							type: 'createLink',
 							description: nodeId
 						}));
-					if (!publicLinkUrl) {
+					if (!response || !response.url) {
 						errorSnackbar();
 						throw new Error('Public link creation failed');
 					}
 					return {
 						richTextLinks: generateSmartLinkHtml({
-							publicLinkUrl,
+							publicLinkUrl: response.url,
 							filename: file.name
 						}),
-						plainTextLinks: publicLinkUrl
+						plainTextLinks: response.url
 					};
 				})
 			);

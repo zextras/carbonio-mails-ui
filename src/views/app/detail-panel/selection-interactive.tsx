@@ -10,6 +10,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
+import type { DetailPanelRoutesParams } from '../../../types/routes';
 import { getFolderIdParts } from 'helpers/folders';
 import { useConversationsIdsByFolder } from 'store/emails/store';
 import {
@@ -20,7 +21,7 @@ import {
 } from 'views/app/detail-panel/utils';
 
 export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
-	const { folderId } = useParams() as { folderId: string };
+	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 	const conversationIds = useConversationsIdsByFolder(folderId);
 	const spamMessages = useMemo(() => SpamMessages(), []);
 	const sentMessages = useMemo(() => SentMessages(), []);
