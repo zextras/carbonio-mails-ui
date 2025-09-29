@@ -114,8 +114,21 @@ export const SortAndFilterHeaderComponent = ({
 			data-testid="sorting-options-container"
 		>
 			<Divider />
-			<Row padding={{ all: 'small' }}>
-				<Text size="medium" color="gray1" overflow="ellipsis">
+			<Row
+				padding={{ all: 'small' }}
+				width="fill"
+				mainAlignment="space-between"
+				crossAlignment="center"
+			>
+				<Text
+					size="medium"
+					color="gray1"
+					overflow="ellipsis"
+					style={{
+						flex: 1,
+						minWidth: 0
+					}}
+				>
 					{`${currentFilterLabel}${currentSortLabel}`}
 				</Text>
 				<Padding right="medium" />
