@@ -13,16 +13,9 @@ import React, {
 	useState
 } from 'react';
 
-import {
-	Checkbox,
-	Container,
-	Divider,
-	Input,
-	ModalHeader,
-	Padding,
-	Row
-} from '@zextras/carbonio-design-system';
+import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
+import { ModalHeader } from '@zextras/carbonio-ui-commons';
 import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
