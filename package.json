@@ -111,7 +111,10 @@
 		"react-i18next": "^12.2.0",
 		"react-router-dom": "^6.30.0",
 		"uuid": "^9.0.0",
-		"zustand": "^4.5.2"
+		"zustand": "^4.5.2",
+		"tinymce": "^6.8.4",
+		"@tinymce/tinymce-react": "^4.3.2",
+		"date-fns": "^4.1.0"
 	},
 	"browserslist": [
 		">1%",
