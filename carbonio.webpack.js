@@ -11,7 +11,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const { SUPPORTED_LOCALES } = require('./src/constants/locale-consts');
+const { STATIC_LOCALES } = require('./src/constants/locale-consts');
 
 const customizeConfig = (config) => {
 	const newConfig = { ...config };
@@ -20,7 +20,7 @@ const customizeConfig = (config) => {
 	const commitHash = execSync('git rev-parse HEAD').toString().trim();
 	const baseStaticPath = `/static/iris/carbonio-mails-ui/${commitHash}/`;
 
-	const supportedLocalesList = Object.values(SUPPORTED_LOCALES);
+	const supportedLocalesList = Object.values(STATIC_LOCALES);
 
 	const tinymceLocales = supportedLocalesList.map(
 		(locale) => ('tinymceLocale' in locale && locale.tinymceLocale) || locale.value
@@ -35,11 +35,11 @@ const customizeConfig = (config) => {
 		modules: [path.resolve(__dirname, 'src'), 'node_modules']
 	};
 
-	// Add DefinePlugin to define BASE_PATH_2 as a global variable with commit hash
+	// Add DefinePlugin to define BASE_PATH as a global variable with commit hash
 	newConfig.plugins = newConfig.plugins || [];
 	newConfig.plugins.push(
 		new webpack.DefinePlugin({
-			BASE_PATH_2: JSON.stringify(baseStaticPath)
+			BASE_PATH: JSON.stringify(baseStaticPath)
 		})
 	);
 

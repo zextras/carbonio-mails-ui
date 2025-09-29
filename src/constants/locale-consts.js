@@ -1,214 +1,148 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-// NOTE: ATM this object is duplicated by Shell due to the usages
-export const SUPPORTED_LOCALES = {
+export const STATIC_LOCALES = {
 	zh_CN: {
 		name: '中文 (中国)',
 		value: 'zh_CN',
-		dateFnsLocale: {
-			key: 'zh-CN',
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "zh-CN" */ import('date-fns/locale/zh-CN').then(
-					({ zhCN }) => zhCN
-				)
-		},
-		tinymceLocale: 'zh-Hans'
+		tinymceLocale: 'zh-Hans',
+		labelKey: 'locale.label_chinese',
+		labelDefaultValue: 'Chinese (China) - {{value}}'
 	},
 	nl: {
 		name: 'Nederlands',
 		value: 'nl',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "nl" */ import('date-fns/locale/nl').then(
-					({ nl }) => nl
-				)
-		}
+		tinymceLocale: 'nl',
+		labelKey: 'locale.label_dutch',
+		labelDefaultValue: 'Dutch - {{value}}'
 	},
 	en: {
 		name: 'English',
 		value: 'en',
-		dateFnsLocale: {
-			key: 'en-US',
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "en-US" */ import('date-fns/locale/en-US').then(
-					({ enUS }) => enUS
-				)
-		}
+		tinymceLocale: 'en',
+		labelKey: 'locale.label_english',
+		labelDefaultValue: 'English - {{value}}'
 	},
 	de: {
 		name: 'Deutsch',
 		value: 'de',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "de" */ import('date-fns/locale/de').then(
-					({ de }) => de
-				)
-		}
+		tinymceLocale: 'de',
+		labelKey: 'locale.label_german',
+		labelDefaultValue: 'German - {{value}}'
 	},
 	hi: {
 		name: 'हिंदी',
 		value: 'hi',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "hi" */ import('date-fns/locale/hi').then(
-					({ hi }) => hi
-				)
-		}
+		tinymceLocale: 'hi',
+		labelKey: 'locale.label_hindi',
+		labelDefaultValue: 'Hindi - {{value}}'
 	},
 	hu: {
 		name: 'Magyar',
 		value: 'hu',
 		tinymceLocale: 'hu_HU',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "hu" */ import('date-fns/locale/hu').then(
-					({ hu }) => hu
-				)
-		}
+		labelKey: 'locale.label_hungarian',
+		labelDefaultValue: 'Hungarian - {{value}}'
 	},
 	it: {
 		name: 'italiano',
 		value: 'it',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "it" */ import('date-fns/locale/it').then(
-					({ it }) => it
-				)
-		}
+		tinymceLocale: 'it',
+		labelKey: 'locale.label_italian',
+		labelDefaultValue: 'Italian - {{value}}'
 	},
 	ja: {
 		name: '日本語',
 		value: 'ja',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "ja" */ import('date-fns/locale/ja').then(
-					({ ja }) => ja
-				)
-		}
+		tinymceLocale: 'ja',
+		labelKey: 'locale.label_japanese',
+		labelDefaultValue: 'Japanese - {{value}}'
 	},
-
 	pt: {
 		name: 'português',
 		value: 'pt',
 		tinymceLocale: 'pt_BR',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "pt" */ import('date-fns/locale/pt').then(
-					({ pt }) => pt
-				)
-		}
+		labelKey: 'locale.label_portuguese',
+		labelDefaultValue: 'Portuguese - {{value}}'
 	},
 	pl: {
 		name: 'polski',
 		value: 'pl',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "pl" */ import('date-fns/locale/pl').then(
-					({ pl }) => pl
-				)
-		}
+		tinymceLocale: 'pl',
+		labelKey: 'locale.label_polish',
+		labelDefaultValue: 'Polish - {{value}}'
 	},
-
 	ro: {
 		name: 'română',
 		value: 'ro',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "ro" */ import('date-fns/locale/ro').then(
-					({ ro }) => ro
-				)
-		}
+		tinymceLocale: 'ro',
+		labelKey: 'locale.label_romanian',
+		labelDefaultValue: 'Romanian - {{value}}'
 	},
 	ru: {
 		name: 'русский',
 		value: 'ru',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "ru" */ import('date-fns/locale/ru').then(
-					({ ru }) => ru
-				)
-		}
+		tinymceLocale: 'ru',
+		labelKey: 'locale.label_russian',
+		labelDefaultValue: 'Russian - {{value}}'
 	},
 	es: {
 		name: 'español',
 		value: 'es',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "es" */ import('date-fns/locale/es').then(
-					({ es }) => es
-				)
-		}
+		tinymceLocale: 'es',
+		labelKey: 'locale.label_spanish',
+		labelDefaultValue: 'Spanish - {{value}}'
 	},
 	th: {
 		name: 'ไทย',
 		value: 'th',
 		tinymceLocale: 'th_TH',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "th" */ import('date-fns/locale/th').then(
-					({ th }) => th
-				)
-		}
+		labelKey: 'locale.label_thai',
+		labelDefaultValue: 'Thai - {{value}}'
 	},
 	tr: {
 		name: 'Türkçe',
 		value: 'tr',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "tr" */ import('date-fns/locale/tr').then(
-					({ tr }) => tr
-				)
-		}
+		tinymceLocale: 'tr',
+		labelKey: 'locale.label_turkish',
+		labelDefaultValue: 'Turkish - {{value}}'
 	},
 	fr: {
 		name: 'français',
 		value: 'fr',
 		tinymceLocale: 'fr_FR',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "fr" */ import('date-fns/locale/fr').then(
-					({ fr }) => fr
-				)
-		}
+		labelKey: 'locale.label_french',
+		labelDefaultValue: 'French - {{value}}'
 	},
 	vi: {
 		name: 'Tiếng Việt',
 		value: 'vi',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "vi" */ import('date-fns/locale/vi').then(
-					({ vi }) => vi
-				)
-		}
+		tinymceLocale: 'vi',
+		labelKey: 'locale.label_vietnamese',
+		labelDefaultValue: 'Vietnamese - {{value}}'
 	},
 	ky: {
 		name: 'Кыргызча',
 		value: 'ky',
-		dateFnsLocale: undefined
+		tinymceLocale: 'ky',
+		labelKey: 'locale.label_kyrgyz',
+		labelDefaultValue: 'Kyrgyz - {{value}}'
 	},
 	bs: {
 		name: 'Bosanski',
 		value: 'bs',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "bs" */ import('date-fns/locale/bs').then(
-					({ bs }) => bs
-				)
-		}
+		tinymceLocale: 'bs',
+		labelKey: 'locale.label_bosnian',
+		labelDefaultValue: 'Bosnian - {{value}}'
 	},
 	sl: {
 		name: 'Slovenščina',
 		value: 'sl',
 		tinymceLocale: 'sl_SI',
-		dateFnsLocale: {
-			localeImportPath: () =>
-				/* webpackMode: "lazy", webpackChunkName: "sl" */ import('date-fns/locale/sl').then(
-					({ sl }) => sl
-				)
-		}
+		labelKey: 'locale.label_slovenian',
+		labelDefaultValue: 'Slovenian - {{value}}'
 	}
 };

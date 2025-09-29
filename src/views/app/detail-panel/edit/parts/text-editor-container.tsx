@@ -7,7 +7,6 @@
 import React, { FC } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 
 import { useEditorIsRichText } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
@@ -20,7 +19,6 @@ export type TextEditorContainerProps = {
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
-	const [composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	return (
@@ -30,7 +28,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, on
 			background={'gray6'}
 			crossAlignment="flex-end"
 		>
-			{isRichText && composerIsAvailable ? (
+			{isRichText ? (
 				<RichTextEditorContainer editorId={editorId} onDragOver={onDragOver} />
 			) : (
 				<PlainTextEditorContainer editorId={editorId} />
