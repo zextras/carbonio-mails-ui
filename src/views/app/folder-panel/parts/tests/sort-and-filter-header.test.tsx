@@ -77,7 +77,7 @@ describe('Sort and Filter Header Component', () => {
 			sortType: 'legacy_sort',
 			filterType: 'legacy_filter'
 		});
-		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
