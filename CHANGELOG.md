@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.27.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.7...v1.27.0) (2025-09-29)
+
+
+### Features
+
+* prevent data loss closing the tab ([37c769c](https://github.com/zextras/carbonio-mails-ui/commit/37c769c4876beab80d335421525224ac16abb564))
+* prevent data loss closing the tab ([1f0dcd7](https://github.com/zextras/carbonio-mails-ui/commit/1f0dcd78dca8fef55892b3c0db283807d7356bfd))
+
 ### [1.26.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.6...v1.26.7) (2025-09-22)
 
 
