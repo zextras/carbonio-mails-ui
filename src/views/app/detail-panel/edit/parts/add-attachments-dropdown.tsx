@@ -77,6 +77,9 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						id: modalId,
 						maxHeight: '90vh',
 						size: 'medium',
+						onClose: (): void => {
+							closeModal(modalId);
+						},
 						children: (
 							<SmartlinkFromLocalModal
 								onClose={(): void => closeModal(modalId)}
@@ -141,6 +144,9 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 					id: modalId,
 					maxHeight: '90vh',
 					size: 'medium',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
 					children: (
 						<SmartlinkFromFilesModal
 							onClose={(): void => closeModal(modalId)}

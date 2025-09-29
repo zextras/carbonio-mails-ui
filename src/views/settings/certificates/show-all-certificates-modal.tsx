@@ -137,6 +137,9 @@ const ShowAllCertificatesModal = ({
 				{
 					id: certificate.email,
 					size: 'small',
+					onClose: (): void => {
+						closeModal?.(certificate.email);
+					},
 					children: (
 						<CertificateDeleteModal
 							onClose={(): void => closeModal?.(certificate.email)}

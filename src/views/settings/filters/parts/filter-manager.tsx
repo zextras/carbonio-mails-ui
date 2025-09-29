@@ -107,6 +107,7 @@ const FilterManager: FC<
 				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
+				onClose: modalClose,
 				children: (
 					<CreateFilterModal
 						onConfirm={onCreateConfirm}
@@ -158,6 +159,7 @@ const FilterManager: FC<
 			{
 				id: modalId,
 				size: 'small',
+				onClose: modalClose,
 				children: (
 					<DeleteFilterModal
 						onClose={modalClose}
@@ -223,6 +225,7 @@ const FilterManager: FC<
 				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
+				onClose: modalClose,
 				children: (
 					<ModifyFilterModal
 						isIncoming={isIncoming}

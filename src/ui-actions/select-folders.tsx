@@ -74,6 +74,10 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 				{
 					id,
 					size: 'medium',
+					onClose: (): void => {
+						uiUtilities.closeModal(id);
+						callbacks.onCancel?.();
+					},
 					children: (
 						<ModalManager>
 							<SelectFolderModal

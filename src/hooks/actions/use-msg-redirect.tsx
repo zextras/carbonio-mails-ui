@@ -28,6 +28,9 @@ export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn 
 				{
 					id: modalId,
 					maxHeight: '90vh',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
 					children: <RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
 				},
 				true

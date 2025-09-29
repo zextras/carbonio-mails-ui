@@ -69,6 +69,7 @@ export const useMsgDeletePermanentlyFn = ({
 			createModal(
 				{
 					id: modalId,
+					onClose: closeModalFn,
 					children: (
 						<PermanentlyDeleteModal
 							onClose={closeModalFn}
