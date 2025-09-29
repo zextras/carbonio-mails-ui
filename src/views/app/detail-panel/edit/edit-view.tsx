@@ -235,7 +235,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					defaultValue_one: 'Sending your message in {{count}} second',
 					defaultValue_other: 'Sending your message in {{count}} seconds'
 				}),
-				autoHideTimeout: (countdown ?? 0) * 1000,
+				disableAutoHide: true,
 				hideButton: !cancel,
 				actionLabel: t('label.undo', 'Undo'),
 				onActionClick: () => {

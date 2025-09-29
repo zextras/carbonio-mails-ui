@@ -48,16 +48,17 @@ export const createCancelableTimer = ({
 			resolve();
 			return;
 		}
-
 		intervalId = setInterval(() => {
-			if (countdown > 0) {
+			if (countdown > 1) {
 				countdown -= 1;
 				onTick && onTick(countdown, cancel);
 			} else {
+				onTick && onTick(countdown, cancel);
 				intervalId && clearInterval(intervalId);
 				resolve();
 			}
 		}, TICK_DELAY_TIME);
+		onTick && onTick(countdown, cancel);
 	});
 	return {
 		promise,

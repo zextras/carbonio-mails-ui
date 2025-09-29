@@ -54,7 +54,12 @@ const sendFromEditor = (
 		options?.onCountdownTick && options?.onCountdownTick(remain, cancel);
 	};
 
+	const onBeforeUnload = (event: Event): void => {
+		event.preventDefault();
+	};
+
 	const onTimerCanceled = (): void => {
+		window.removeEventListener('beforeunload', onBeforeUnload);
 		useEditorsStore.getState().setSendProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
@@ -62,6 +67,8 @@ const sendFromEditor = (
 		computeAndUpdateEditorStatus(editorId);
 	};
 	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
+
+	window.addEventListener('beforeunload', onBeforeUnload);
 
 	const cancelableTimer = createCancelableTimer({
 		secondsDelay: parseInt(delay, 10),
@@ -107,6 +114,9 @@ const sendFromEditor = (
 			});
 			computeAndUpdateEditorStatus(editorId);
 			options?.onError && options.onError(err);
+		})
+		.finally(() => {
+			window.removeEventListener('beforeunload', onBeforeUnload);
 		});
 
 	useEditorsStore.getState().setSendProcessStatus(editorId, {
