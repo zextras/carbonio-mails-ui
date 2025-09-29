@@ -140,7 +140,7 @@ describe('LayoutSelector', () => {
 		);
 		const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveStyle({ minWidth: '22.5rem' });
+		expect(component).toHaveStyle({ minWidth: '27.5rem' });
 	});
 
 	test('The inner container has a minHeight set', async () => {

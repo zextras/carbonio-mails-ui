@@ -28,14 +28,14 @@ describe('Sort and Filter Header Component', () => {
 		});
 	});
 
-	const folderId = 'test-folder';
+	const FOLDER_ID = 'test-folder';
 
 	it('should not render if state is default', () => {
 		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.date.value,
 			filterType: undefined
 		});
-		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
@@ -45,7 +45,7 @@ describe('Sort and Filter Header Component', () => {
 			sortType: SORTING_OPTIONS.subject.value,
 			filterType: FILTER_OPTIONS.unread.value
 		});
-		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		expect(screen.getByTestId('sorting-options-container')).toBeInTheDocument();
 		expect(screen.getByText(/Show:/i)).toBeInTheDocument();
@@ -57,14 +57,14 @@ describe('Sort and Filter Header Component', () => {
 			sortType: SORTING_OPTIONS.subject.value,
 			filterType: FILTER_OPTIONS.unread.value
 		});
-		const { user } = setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+		const { user } = setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		await user.click(screen.getByRole('button', { name: /Reset/i }));
 
 		expect(updateSortAndFilterSettings).toHaveBeenCalledWith(
 			expect.objectContaining({
 				filter: undefined,
-				folderId,
+				folderId: FOLDER_ID,
 				prefSortOrder: '',
 				sortDirection: SORTING_DIRECTION.DESCENDING,
 				sortType: SORTING_OPTIONS.date.value
@@ -77,7 +77,7 @@ describe('Sort and Filter Header Component', () => {
 			sortType: 'legacy_sort',
 			filterType: 'legacy_filter'
 		});
-		setupTest(<SortAndFilterHeaderComponent folderId={folderId} />);
+		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 	});
