@@ -399,6 +399,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						{
 							id,
 							size: 'medium',
+							onClose: (): void => {
+								closeModal?.(id);
+							},
 							children: (
 								<Container crossAlignment="baseline">
 									<EnterPasswordModal

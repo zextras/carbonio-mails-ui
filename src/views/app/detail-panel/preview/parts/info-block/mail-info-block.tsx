@@ -49,6 +49,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				{
 					id: modalId,
 					maxHeight: '90vh',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
 					children: (
 						<MailInfoDetailModal
 							onClose={(): void => closeModal(modalId)}
@@ -108,6 +111,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 							{
 								id,
 								size: 'medium',
+								onClose: (): void => {
+									closeModal?.(id);
+								},
 								children: (
 									<Container crossAlignment="baseline">
 										<EnterPasswordModal
