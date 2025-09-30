@@ -98,7 +98,7 @@ describe('tinymce-config-utils', () => {
 			const result = createTinyMCEConfig(options);
 
 			expect(result.min_height).toBe(500); // overridden
-			expect((result as any).custom_property).toBe('test-value'); // added
+			expect(result.custom_property).toBe('test-value'); // added
 		});
 
 		it('should use correct toolbar configuration based on inline mode', () => {
