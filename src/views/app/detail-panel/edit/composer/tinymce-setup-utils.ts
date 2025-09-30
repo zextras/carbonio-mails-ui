@@ -4,9 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { EditorOptions } from 'tinymce/tinymce';
+import type { Ui, EditorOptions, TinyMCE } from 'tinymce';
 
-import { createImageSelectorMenuItems, type FileSelectCallbackArg } from './file-handler-utils';
+interface FileSelectCallbackArg {
+	editor: TinyMCE;
+	files: HTMLInputElement['files'] | undefined;
+}
 
 /**
  * Creates TinyMCE editor setup callback with image selector functionality
@@ -27,7 +30,15 @@ export function createTinyMCESetup(options: {
 				icon: 'gallery',
 				tooltip: selectImageTooltip,
 				fetch: (callback) => {
-					const items = createImageSelectorMenuItems(inlineLabel, onFileClick);
+					const items: Ui.Menu.MenuItemSpec[] = [
+						{
+							type: 'menuitem',
+							text: inlineLabel,
+							onAction: (): void => {
+								onFileClick();
+							}
+						}
+					];
 					callback(items);
 				}
 			});
