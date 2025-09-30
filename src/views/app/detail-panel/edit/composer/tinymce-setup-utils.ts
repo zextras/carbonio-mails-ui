@@ -25,7 +25,7 @@ export function createTinyMCESetup(options: {
 	const { onFileSelect, onFileClick, inlineLabel, selectImageTooltip } = options;
 
 	return (editor) => {
-		if (onFileSelect) {
+		if (onFileSelect && editor.ui?.registry) {
 			editor.ui.registry.addMenuButton('imageSelector', {
 				icon: 'gallery',
 				tooltip: selectImageTooltip,
