@@ -43,7 +43,6 @@ import 'tinymce/plugins/table';
 import 'tinymce/plugins/visualblocks';
 import 'tinymce/plugins/wordcount';
 import { createEditorDefaultStyle, generateEditorContentStyle } from './editor-style-utils';
-import { createFileClickHandler, createFileInputChangeHandler } from './file-handler-utils';
 import { calculateTinyMCELanguage } from './locale-utils';
 import { createTinyMCEConfig } from './tinymce-config-utils';
 import { createTinyMCESetup } from './tinymce-setup-utils';
@@ -62,7 +61,7 @@ type ComposerProps = EditorProps & {
 	 * If defined, a menu item to add inline images is added to the composer.
 	 */
 	onFileSelect?: (arg: { editor: TinyMCE; files: HTMLInputElement['files'] | undefined }) => void;
-	customInitOptions?: Partial<EditorProps['init']>;
+	customInitOptions?: Partial<Omit<EditorOptions, 'selector' | 'target'>>;
 };
 
 export const FileInput = styled.input`
@@ -81,7 +80,7 @@ export const Composer = ({
 	const isControlledMode = useMemo(() => !!onEditorChange, [onEditorChange]);
 
 	const _onEditorChange = useCallback<NonNullable<EditorProps['onEditorChange']>>(
-		(newContent, editor) => {
+		(_newContent, editor) => {
 			onEditorChange?.([
 				editor.getContent({ format: 'text' }),
 				editor.getContent({ format: 'html' })
@@ -94,7 +93,10 @@ export const Composer = ({
 	const defaultStyle = useMemo(() => createEditorDefaultStyle(prefs), [prefs]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const onFileClick = useCallback(() => {
-		createFileClickHandler(inputRef);
+		if (inputRef.current) {
+			inputRef.current.value = '';
+			inputRef.current.click();
+		}
 	}, []);
 	const [t] = useTranslation();
 
@@ -126,13 +128,17 @@ export const Composer = ({
 				inline,
 				contentStyle,
 				setup: setupCallback,
-				customOptions: customInitOptions as Partial<EditorOptions> | undefined
+				customOptions: customInitOptions
 			}),
 		[contentStyle, customInitOptions, inline, language, setupCallback]
 	);
 
 	const fileInputOnChange = useCallback(() => {
-		createFileInputChangeHandler(inputRef, onFileSelect);
+		if (onFileSelect && inputRef.current) {
+			// eslint-disable-next-line global-require,@typescript-eslint/no-var-requires
+			const tinymce = require('tinymce/tinymce');
+			onFileSelect({ editor: tinymce, files: inputRef.current.files });
+		}
 	}, [onFileSelect]);
 
 	return (
