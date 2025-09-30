@@ -90,5 +90,9 @@ module.exports = {
 			}
 		}
 	},
-	ignorePatterns: ['notice.template.ts', 'carbonio.webpack.js']
+	ignorePatterns: [
+		'notice.template.ts',
+		'carbonio.webpack.js',
+		'src/views/app/detail-panel/edit/composer/assets/**/*'
+	]
 };
