@@ -16,7 +16,6 @@ const { STATIC_LOCALES } = require('./src/constants/locale-consts');
 const customizeConfig = (config) => {
 	const newConfig = { ...config };
 
-	// Generate commit hash for static path (similar to shell project)
 	const commitHash = execSync('git rev-parse HEAD').toString().trim();
 	const baseStaticPath = `/static/iris/carbonio-mails-ui/${commitHash}/`;
 
@@ -35,7 +34,6 @@ const customizeConfig = (config) => {
 		modules: [path.resolve(__dirname, 'src'), 'node_modules']
 	};
 
-	// Add DefinePlugin to define BASE_PATH as a global variable with commit hash
 	newConfig.plugins = newConfig.plugins || [];
 	newConfig.plugins.push(
 		new webpack.DefinePlugin({
