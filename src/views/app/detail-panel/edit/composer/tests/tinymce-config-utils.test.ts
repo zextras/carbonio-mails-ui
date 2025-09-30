@@ -10,15 +10,6 @@ import {
 	createTinyMCEConfig
 } from '../tinymce-config-utils';
 
-declare global {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const BASE_PATH: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global as any).BASE_PATH = '/test-base-path/';
-
 describe('tinymce-config-utils', () => {
 	describe('generateToolbarConfig', () => {
 		it('should return false for inline mode', () => {

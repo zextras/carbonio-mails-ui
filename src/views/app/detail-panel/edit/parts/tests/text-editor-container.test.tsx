@@ -26,15 +26,6 @@ jest.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => 
 	)
 }));
 
-declare global {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const BASE_PATH: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global as any).BASE_PATH = '/test-base-path/';
-
 describe('TextEditorContainer', () => {
 	it('should render textarea when RichText is not enabled', () => {
 		const editor = generateNewMessageEditor();
