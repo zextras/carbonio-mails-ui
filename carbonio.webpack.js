@@ -45,7 +45,7 @@ const customizeConfig = (config) => {
 		new CopyPlugin({
 			patterns: [
 				{
-					from: 'assets/',
+					from: 'src/views/app/detail-panel/edit/composer/assets/',
 					to: ''
 				},
 				{
