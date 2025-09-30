@@ -7,7 +7,7 @@
 import { calculateTinyMCELanguage } from '../locale-utils';
 
 // Mock the locale constants
-jest.mock('../../../../../../constants/locale-consts', () => ({
+jest.mock('constants/locale-consts', () => ({
 	STATIC_LOCALES: {
 		zh_CN: {
 			name: '中文 (中国)',
