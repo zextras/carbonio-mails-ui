@@ -296,6 +296,17 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		setDropZoneEnabled(true);
 	}, []);
 
+	// Wrapper function to convert React.DragEvent to native DragEvent for TextEditorContainer
+	const onTextEditorDragOver = useCallback((event: DragEvent): void => {
+		const eventType = event?.dataTransfer?.types;
+		if (eventType?.includes('contact')) {
+			setDropZoneEnabled(false);
+			return;
+		}
+		event.preventDefault();
+		setDropZoneEnabled(true);
+	}, []);
+
 	// TODO complete with new attachment management
 	const onDropEvent = useCallback(
 		(event: DragEvent): void => {
@@ -595,7 +606,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
+					<MemoizedTextEditorContainer onDragOver={onTextEditorDragOver} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>

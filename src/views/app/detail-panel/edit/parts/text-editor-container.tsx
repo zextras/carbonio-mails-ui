@@ -15,7 +15,7 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/parts/rich-
 
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];
-	onDragOver: (event: React.DragEvent) => void;
+	onDragOver: (event: DragEvent) => void;
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
