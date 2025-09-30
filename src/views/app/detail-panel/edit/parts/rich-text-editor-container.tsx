@@ -21,7 +21,7 @@ import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {
 	editor: TinyMCE;
-	files: FileList;
+	files: FileList | null | undefined;
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
@@ -61,7 +61,7 @@ export const RichTextEditorContainer = ({
 	}, []);
 
 	const onComposerInit = useCallback(
-		(evt: Event, composer: Editor) => {
+		(evt: any, composer: Editor) => {
 			composerRef.current = composer;
 			setTextProvider({
 				setCurrentText: onExternalTextChanges,
@@ -79,6 +79,7 @@ export const RichTextEditorContainer = ({
 		const richText = composerRef.current.getContent({ format: 'html' });
 		setText({ plainText, richText }, { syncTextProvider: false });
 	}, [setText]);
+
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
@@ -103,11 +104,12 @@ export const RichTextEditorContainer = ({
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
 			addInlineAttachments(files, {
 				onSaveComplete: (inlineAttachments) => {
 					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
+						const img = `&nbsp;<img alt="Inline attachment" data-pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
 						tinymce?.activeEditor?.insertContent(img);
 					});
 				}
@@ -171,11 +173,15 @@ export const RichTextEditorContainer = ({
 				'insertfile image',
 				'imageSelector',
 				'emoticons'
-			].join(' | '),
+			].join(' '),
 
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
 				if (!editor) return noop;
+
+				// Call the init handler
+				onComposerInit({} as any, editor);
+
 				editor.on('paste', (event) => {
 					const editViewWrapper = document.querySelector(
 						'[data-testid="edit-view-editor"]'
@@ -189,6 +195,13 @@ export const RichTextEditorContainer = ({
 
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
+
+				// Handle drag over events
+				if (onDragOver) {
+					editor.on('dragover', (event: any) => {
+						onDragOver(event as any);
+					});
+				}
 
 				const mutationObserver = new MutationObserver(() => {
 					editor.dispatch('ResizeWindow');
@@ -209,6 +222,8 @@ export const RichTextEditorContainer = ({
 	}, [
 		editorId,
 		onComposerClose,
+		onComposerInit,
+		onDragOver,
 		onTextChange,
 		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
 		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
@@ -225,10 +240,7 @@ export const RichTextEditorContainer = ({
 				<Composer
 					initialValue={initialValue.current}
 					onFileSelect={onInlineAttachmentsSelected}
-					onDragOver={onDragOver}
 					customInitOptions={composerCustomOptions}
-					onInit={onComposerInit}
-					onDirty={onTextChange}
 				/>
 			</StyledComp.EditorWrapper>
 		</Container>
