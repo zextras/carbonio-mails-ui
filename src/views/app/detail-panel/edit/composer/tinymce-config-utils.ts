@@ -131,7 +131,7 @@ export function createTinyMCEConfig(options: {
 	const quickBarsConfig = generateQuickBarsConfig(inline);
 
 	return {
-		content_css: [`${BASE_PATH}tinymce/skins/content/default/content.css`],
+		content_css: [''],
 		language_url: `${BASE_PATH}tinymce/langs/${language}.js`,
 		language,
 		setup,
