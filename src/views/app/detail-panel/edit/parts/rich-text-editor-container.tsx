@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';
@@ -39,7 +39,7 @@ export const RichTextEditorContainer = ({
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments } = useEditorAttachments(editorId);
+	const { addInlineAttachments, removeInlineAttachments } = useEditorAttachments(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -177,30 +177,66 @@ export const RichTextEditorContainer = ({
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
 				if (!editor) return noop;
-				editor.on('paste', (event) => {
+
+				// Paste handler
+				const handlePaste = (event: ClipboardEvent): void => {
 					const editViewWrapper = document.querySelector(
 						'[data-testid="edit-view-editor"]'
 					)?.parentElement;
 					const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
+
 					event.preventDefault();
 					handleEditorPaste(editor, editorId, event);
-					// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-					if (editViewWrapper) editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
-				});
 
+					// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+					if (editViewWrapper) {
+						editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
+					}
+				};
+
+				// Attachment cleanup
+				const handleAttachmentCleanup = (): void => {
+					const content = editor.getContent({ format: 'html' });
+					const parser = new DOMParser();
+					const doc = parser.parseFromString(content, 'text/html');
+					const usedCids = [
+						...Array.from(doc.querySelectorAll('img[pnsrc]')).map((img) =>
+							img.getAttribute('pnsrc')
+						),
+						...Array.from(doc.querySelectorAll('img[src^="cid:"]')).map((img) =>
+							img.getAttribute('src')
+						)
+					].filter((cid): cid is string => Boolean(cid));
+
+					removeInlineAttachments(usedCids);
+				};
+
+				// Mutation observer setup
+				const setupResizeObserver = (): MutationObserver => {
+					const mutationObserver = new MutationObserver(() => {
+						editor.dispatch('ResizeWindow');
+					});
+
+					const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+					if (boardElement) {
+						mutationObserver.observe(boardElement, {
+							attributes: true,
+							attributeFilter: ['style']
+						});
+					}
+
+					return mutationObserver;
+				};
+
+				// Register handlers
+				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
 
-				const mutationObserver = new MutationObserver(() => {
-					editor.dispatch('ResizeWindow');
-				});
-				const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-				if (boardElement) {
-					mutationObserver.observe(boardElement, {
-						attributes: true,
-						attributeFilter: ['style']
-					});
-				}
+				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
+				editor.on('Change', debounce(handleAttachmentCleanup, 800));
+
+				const mutationObserver = setupResizeObserver();
 
 				return () => {
 					mutationObserver.disconnect();
@@ -213,7 +249,8 @@ export const RichTextEditorContainer = ({
 		onTextChange,
 		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
 		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize
+		prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		removeInlineAttachments
 	]);
 
 	return (
