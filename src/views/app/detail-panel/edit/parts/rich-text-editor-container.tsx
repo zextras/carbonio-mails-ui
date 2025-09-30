@@ -173,7 +173,7 @@ export const RichTextEditorContainer = ({
 				'insertfile image',
 				'imageSelector',
 				'emoticons'
-			].join(' '),
+			].join(' | '),
 
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
