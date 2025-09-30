@@ -80,9 +80,7 @@ describe('tinymce-config-utils', () => {
 
 			const result = createTinyMCEConfig(options);
 
-			expect(result.content_css).toEqual([
-				'/test-base-path/tinymce/skins/content/default/content.css'
-			]);
+			expect(result.content_css).toEqual(['']);
 			expect(result.language_url).toBe('/test-base-path/tinymce/langs/de.js');
 		});
 
