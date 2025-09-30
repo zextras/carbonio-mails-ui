@@ -61,7 +61,7 @@ export const RichTextEditorContainer = ({
 	}, []);
 
 	const onComposerInit = useCallback(
-		(evt: any, composer: Editor) => {
+		(_evt: Event, composer: Editor) => {
 			composerRef.current = composer;
 			setTextProvider({
 				setCurrentText: onExternalTextChanges,
@@ -180,7 +180,7 @@ export const RichTextEditorContainer = ({
 				if (!editor) return noop;
 
 				// Call the init handler
-				onComposerInit({} as any, editor);
+				onComposerInit({} as Event, editor);
 
 				editor.on('paste', (event) => {
 					const editViewWrapper = document.querySelector(
@@ -198,8 +198,8 @@ export const RichTextEditorContainer = ({
 
 				// Handle drag over events
 				if (onDragOver) {
-					editor.on('dragover', (event: any) => {
-						onDragOver(event as any);
+					editor.on('dragover', (event: DragEvent) => {
+						onDragOver(event);
 					});
 				}
 
