@@ -125,8 +125,8 @@ export function createTinyMCEConfig(options: {
 	inline: boolean;
 	contentStyle: string;
 	setup?: EditorOptions['setup'];
-	customOptions?: Partial<EditorOptions>;
-}): Partial<EditorOptions> {
+	customOptions?: Partial<Omit<EditorOptions, 'selector' | 'target'>>;
+}): Omit<EditorOptions, 'selector' | 'target'> {
 	const { language, inline, contentStyle, setup, customOptions } = options;
 	const quickBarsConfig = generateQuickBarsConfig(inline);
 
