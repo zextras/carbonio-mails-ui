@@ -12,8 +12,8 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import type { EditorOptions, TinyMCE } from 'tinymce/tinymce';
-// TinyMCE so the global var exists
 
+import 'tinymce/tinymce'; // Required for global tinymce variable
 import 'tinymce/models/dom';
 // Theme
 import 'tinymce/themes/silver';
@@ -106,14 +106,16 @@ export const Composer = ({
 	const inlineLabel = useMemo(() => t('label.add_inline_image', 'Add inline image'), [t]);
 	const selectImageTooltip = useMemo(() => t('label.select_image', 'Select image'), [t]);
 
-	const setupCallback = useCallback(() => {
-		createTinyMCESetup({
-			onFileSelect,
-			onFileClick,
-			inlineLabel,
-			selectImageTooltip
-		});
-	}, [inlineLabel, onFileClick, onFileSelect, selectImageTooltip]);
+	const setupCallback = useMemo(
+		() =>
+			createTinyMCESetup({
+				onFileSelect,
+				onFileClick,
+				inlineLabel,
+				selectImageTooltip
+			}),
+		[inlineLabel, onFileClick, onFileSelect, selectImageTooltip]
+	);
 
 	const contentStyle = useMemo(() => generateEditorContentStyle(defaultStyle), [defaultStyle]);
 
