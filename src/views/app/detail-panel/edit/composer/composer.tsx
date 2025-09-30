@@ -43,7 +43,7 @@ import 'tinymce/plugins/searchreplace';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/visualblocks';
 import 'tinymce/plugins/wordcount';
-import { STATIC_LOCALES } from '../../../../../constants/locale-consts';
+import { calculateTinyMCELanguage } from './locale-utils';
 
 type ComposerProps = EditorProps & {
 	/** The callback invoked when an edit is performed into the editor. `([text, html]) => {}` */
@@ -105,16 +105,10 @@ export const Composer = ({
 	}, []);
 	const [t] = useTranslation();
 
-	const locale = prefs.zimbraPrefLocale ?? 'en';
-
-	const language = useMemo(() => {
-		const localeObj = locale in STATIC_LOCALES && STATIC_LOCALES[locale];
-		return (
-			(localeObj &&
-				(('tinymceLocale' in localeObj && localeObj?.tinymceLocale) || localeObj?.value)) ||
-			locale
-		);
-	}, [locale]);
+	const language = useMemo(
+		() => calculateTinyMCELanguage(prefs.zimbraPrefLocale),
+		[prefs.zimbraPrefLocale]
+	);
 
 	const inlineLabel = useMemo(() => t('label.add_inline_image', 'Add inline image'), [t]);
 
