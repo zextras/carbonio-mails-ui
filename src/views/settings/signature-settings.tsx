@@ -18,10 +18,11 @@ import {
 	FormSection,
 	Input
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { reject, concat, map } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
+import { Composer } from '../app/detail-panel/edit/composer/composer';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
@@ -69,7 +70,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	setSignatures
 }): ReactElement => {
 	const [currentSignature, setCurrentSignature] = useState<SignItemType | undefined>(undefined);
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const editorRef = useRef<{ editor: EditorType | undefined }>({
@@ -227,7 +227,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const onSignatureContentChange = useCallback(
-		(ev: [string, string]): void => {
+		(values: [string, string]): void => {
 			if (!getEditor()?.hasFocus()) {
 				return;
 			}
@@ -236,8 +236,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				return;
 			}
 
-			// Rich text signature
-			const newDescription = ev[1];
+			// Rich text signature - values[1] contains the HTML content
+			const newDescription = values[1];
 
 			if (currentSignature?.description === newDescription) {
 				return;
@@ -321,17 +321,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								backgroundColor="gray5"
 								onChange={onSignatureNameChange}
 							/>
-							{composerIsAvailable && (
-								<EditorWrapper>
-									<Composer
-										data-testid={'signature-editor'}
-										value={currentSignature?.description ?? ''}
-										customInitOptions={composerCustomOptions}
-										disabled={editingDisabled}
-										onEditorChange={onSignatureContentChange}
-									/>
-								</EditorWrapper>
-							)}
+							<EditorWrapper>
+								<Composer
+									data-testid={'signature-editor'}
+									value={currentSignature?.description ?? ''}
+									customInitOptions={composerCustomOptions}
+									onEditorChange={onSignatureContentChange}
+									disabled={editingDisabled}
+								/>
+							</EditorWrapper>
 						</Container>
 					</Container>
 				</FormSubSection>
