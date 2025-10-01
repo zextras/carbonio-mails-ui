@@ -5,9 +5,9 @@
  */
 import React, { FC } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Icon, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from '@emotion/styled';
 
 const BackDropLayout = styled(Container)`
 	width: 100%;
@@ -72,7 +72,7 @@ const DropZoneAttachment: FC<DropZoneAttachmentType> = ({
 				<BackDropLayoutInnerBox>
 					<Padding all="medium">
 						<BackDropLayoutContentBox>
-							<Container mainAlignment="center">
+							<Container mainAlignment="center" data-testid="drop-zone-attachment">
 								<DropBoxIconGroup mainAlignment="center" orientation="horizontal">
 									<Padding right="small" left="small">
 										<Icon

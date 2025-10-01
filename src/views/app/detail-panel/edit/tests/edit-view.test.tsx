@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
@@ -1219,6 +1219,129 @@ describe('Edit view', () => {
 					);
 				});
 			});
+		});
+	});
+
+	describe('Text Editor Drag Over functionality', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		beforeEach(() => {
+			aSuccessfullSaveDraft();
+		});
+
+		it('should enable drop zone when dragging files over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a mock file for the drag event
+			const file = new File(['test'], 'test.txt', { type: 'text/plain' });
+
+			// Use fireEvent.dragOver with proper dataTransfer mock
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Check if drop zone becomes visible (indicating it was enabled)
+			await waitFor(() => {
+				const dropZone = screen.queryByTestId('drop-zone-attachment');
+				expect(dropZone).toBeInTheDocument();
+			});
+		});
+
+		it('should disable drop zone when dragging contacts over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver with contact type
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['contact'],
+						getData: () => 'contact-data'
+					}
+				});
+			});
+
+			// Verify drop zone is not enabled/visible for contacts
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
+		it('should handle drag events without dataTransfer gracefully', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver without dataTransfer
+			await act(async () => {
+				expect(() => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: null
+					});
+				}).not.toThrow();
+			});
+		});
+
+		it('should prevent default behavior for file types other than contacts', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Test with various file types
+			const fileTypes = ['application/pdf', 'image/jpeg', 'text/html', 'application/zip'];
+
+			// eslint-disable-next-line no-restricted-syntax
+			for (const fileType of fileTypes) {
+				const file = new File(['test'], `test.${fileType.split('/')[1]}`, { type: fileType });
+
+				// Use fireEvent.dragOver for each file type
+				// eslint-disable-next-line no-await-in-loop
+				await act(async () => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: {
+							types: [fileType],
+							files: [file]
+						}
+					});
+				});
+
+				// Check if drop zone is enabled for file types
+				// eslint-disable-next-line no-await-in-loop
+				await waitFor(() => {
+					const dropZone = screen.queryByTestId('drop-zone-attachment');
+					expect(dropZone).toBeInTheDocument();
+				});
+			}
 		});
 	});
 });
