@@ -152,6 +152,7 @@ export const Composer = ({
 			style={{ overflowY: 'hidden' }}
 		>
 			<FileInput
+				data-testid="file-input"
 				type="file"
 				ref={inputRef}
 				accept="image/*"
