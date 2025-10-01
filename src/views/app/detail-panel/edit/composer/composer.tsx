@@ -47,7 +47,7 @@ import { calculateTinyMCELanguage } from './locale-utils';
 import { createTinyMCEConfig } from './tinymce-config-utils';
 import { createTinyMCESetup } from './tinymce-setup-utils';
 
-type ComposerProps = EditorProps & {
+type ComposerProps = Omit<EditorProps, 'onEditorChange'> & {
 	/** The callback invoked when an edit is performed into the editor. `([text, html]) => {}` */
 	onEditorChange?: (values: [string, string]) => void;
 	/** Enable the distraction-free mode */
@@ -62,6 +62,8 @@ type ComposerProps = EditorProps & {
 	 */
 	onFileSelect?: (arg: { editor: TinyMCE; files: HTMLInputElement['files'] | undefined }) => void;
 	customInitOptions?: Partial<Omit<EditorOptions, 'selector' | 'target'>>;
+	/** Whether the editor should be disabled */
+	disabled?: boolean;
 };
 
 export const FileInput = styled.input`
@@ -75,6 +77,7 @@ export const Composer = ({
 	value,
 	initialValue,
 	customInitOptions,
+	disabled,
 	...rest
 }: ComposerProps): React.JSX.Element => {
 	const isControlledMode = useMemo(() => !!onEditorChange, [onEditorChange]);
@@ -161,6 +164,7 @@ export const Composer = ({
 				value={value}
 				init={editorInitConfig}
 				onEditorChange={isControlledMode ? _onEditorChange : undefined}
+				disabled={disabled}
 				{...rest}
 			/>
 		</Container>
