@@ -281,30 +281,29 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
-		const eventType = event?.dataTransfer?.types;
-		if (eventType?.includes('contact')) {
-			setDropZoneEnabled(false);
-
-			return;
-		}
-		event.preventDefault();
-		setDropZoneEnabled(true);
-	}, []);
-
-	// Wrapper function to convert React.DragEvent to native DragEvent for TextEditorContainer
-	const onTextEditorDragOver = useCallback((event: DragEvent): void => {
-		const eventType = event?.dataTransfer?.types;
+	const processDragOver = (event: React.DragEvent): void => {
+		const eventType = event.dataTransfer?.types;
 		if (eventType?.includes('contact')) {
 			setDropZoneEnabled(false);
 			return;
 		}
+
 		event.preventDefault();
 		setDropZoneEnabled(true);
+	};
+
+	const handleDragOver = useCallback((event: React.DragEvent) => processDragOver(event), []);
+	const handleEditorDragOver = useCallback((event: DragEvent) => {
+		const reactEvent = {
+			...event,
+			preventDefault: () => event.preventDefault(),
+			dataTransfer: event.dataTransfer
+		} as unknown as React.DragEvent<HTMLElement>;
+		processDragOver(reactEvent);
 	}, []);
 
 	// TODO complete with new attachment management
-	const onDropEvent = useCallback(
+	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
@@ -319,7 +318,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[addStandardAttachments]
 	);
 
-	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
+	const handleDragLeave = useCallback((event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
 	}, []);
@@ -531,13 +530,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
-			onDragOver={onDragOverEvent}
+			onDragOver={handleDragOver}
 		>
 			{dropZoneEnabled && (
 				<DropZoneAttachment
-					onDragOverEvent={onDragOverEvent}
-					onDropEvent={onDropEvent}
-					onDragLeaveEvent={onDragLeaveEvent}
+					onDragOverEvent={handleDragOver}
+					onDropEvent={handleDrop}
+					onDragLeaveEvent={handleDragLeave}
 				/>
 			)}
 			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
@@ -602,7 +601,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={onTextEditorDragOver} editorId={editorId} />
+					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>

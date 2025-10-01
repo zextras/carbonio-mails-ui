@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-unnecessary-act */
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
