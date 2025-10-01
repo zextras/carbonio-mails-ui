@@ -16,7 +16,7 @@ import type {
 } from '../../../../types/routes';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
+import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
 
 export const SearchConversationPanel = (): React.JSX.Element => {

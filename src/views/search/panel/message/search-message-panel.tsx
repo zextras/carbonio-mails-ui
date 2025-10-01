@@ -11,16 +11,19 @@ import { useNavigate } from 'react-router-dom';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
-import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
+import { SearchPanelHeader } from '../../parts/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
 	const navigate = useNavigate();
 
-	if (!message) {
+	if (messageStatus === API_REQUEST_STATUS.error) {
 		navigate('/search', { replace: true });
-		return <></>;
 	}
+
+    if (!message) {
+        return <></>;
+    }
 
 	return (
 		<Container
