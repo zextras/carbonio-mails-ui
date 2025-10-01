@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { STATIC_LOCALES } from 'constants/locale-consts';
+import { STATIC_LOCALES } from 'views/app/detail-panel/edit/composer/locale-consts';
 
 /**
  * Type guard to check if a string is a valid locale key

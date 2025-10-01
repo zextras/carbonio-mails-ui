@@ -33,27 +33,6 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import {
-	useEditorAutoSendTime,
-	useEditorDraftSave,
-	useEditorDraftSaveProcessStatus,
-	useEditorSend,
-	useEditorAttachments,
-	deleteEditor,
-	useEditorDid,
-	useEditorsStore,
-	useEditorIsSmimeSign,
-	useEditorIdentityId,
-	useEditorIsSmimeEncrypt,
-	useEditorRecipients
-} from '../../../../store/editor';
-import {
-	EditorOperationAllowedStatus,
-	EditViewClosingReasons,
-	SaveDraftResponse
-} from '../../../../types';
-import { isValidEmail } from '../../../search/parts/utils';
-import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -67,6 +46,23 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+import {
+	useEditorAutoSendTime,
+	useEditorDraftSave,
+	useEditorDraftSaveProcessStatus,
+	useEditorSend,
+	useEditorAttachments,
+	deleteEditor,
+	useEditorDid,
+	useEditorsStore,
+	useEditorIsSmimeSign,
+	useEditorIdentityId,
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
+} from 'store/editor';
+import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
+import { isValidEmail } from 'views/search/parts/utils';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
 	editorId: string;

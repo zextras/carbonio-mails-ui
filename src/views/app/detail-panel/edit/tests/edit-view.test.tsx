@@ -16,21 +16,7 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { addEditor } from '../../../../../store/editor';
-import type {
-	MailsEditorV2,
-	SaveDraftRequest,
-	SaveDraftResponse,
-	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from '../../../../../types';
-import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
@@ -46,8 +32,12 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { getDefaultIdentity } from 'helpers/identities';
+import { addEditor } from 'store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
@@ -57,7 +47,17 @@ import {
 import { setupEditorStore } from 'tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
 import { generateMessage } from 'tests/generators/generateMessage';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import type {
+	MailsEditorV2,
+	SaveDraftRequest,
+	SaveDraftResponse,
+	SoapDraftMessageObj,
+	SoapEmailMessagePartObj,
+	SoapMailMessage,
+	SoapMailMessagePart
+} from 'types';
+import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -110,7 +110,7 @@ const getSoapMailBodyContent = (
 	 * present:
 	 * - a text/plain type content
 	 * - a text/html type content
-	 * The one who matches the gioven content type will be returned
+	 * The one who matches the given content type will be returned
 	 */
 	if (mp.ct === CT_MULTIPART_ALTERNATIVE) {
 		const part = find<SoapMailMessagePart | SoapEmailMessagePartObj>(mp.mp, ['ct', contentType]);
@@ -148,8 +148,8 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-jest.mock('../../../../../store/editor', () => ({
-	...jest.requireActual('../../../../../store/editor'),
+jest.mock('store/editor', () => ({
+	...jest.requireActual('store/editor'),
 	deleteEditor: jest.fn()
 }));
 

@@ -11,7 +11,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const { STATIC_LOCALES } = require('./src/constants/locale-consts');
+const { STATIC_LOCALES } = require('./src/views/app/detail-panel/edit/composer/locale-consts');
 
 const customizeConfig = (config) => {
 	const newConfig = { ...config };
