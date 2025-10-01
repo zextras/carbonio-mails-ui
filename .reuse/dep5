@@ -54,7 +54,6 @@ Files: Dockerfile
 Copyright: 2025 Zextras <https://www.zextras.com>
 License: AGPL-3.0-only
 
-
 Files: src/views/app/detail-panel/edit/composer/assets/*
 Copyright: 2021 Zextras <https://www.zextras.com>
 License: CC-BY-NC-SA-4.0
