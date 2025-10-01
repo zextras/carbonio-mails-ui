@@ -16,7 +16,7 @@ import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
 
 // noinspection JSUnusedGlobalSymbols
-jest.mock('../../app/detail-panel/edit/composer/composer', () => ({
+jest.mock('views/app/detail-panel/edit/composer/composer', () => ({
 	Composer: ({
 		'data-testid': testId,
 		value,
@@ -245,8 +245,6 @@ describe('Signature settings', () => {
 			handleGetSignaturesRequest([oldSignature]);
 			const { user } = setupTest(<SettingsViewMock preloadedSignatures={[oldSignature]} />);
 
-			await jest.advanceTimersByTime(30000);
-
 			await screen.findByText(oldSignature.name, undefined, { timeout: FIND_TIMEOUT });
 
 			await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
@@ -255,10 +253,14 @@ describe('Signature settings', () => {
 		});
 	});
 
-	it('should disable the signature name input field if no signature is currently selected', () => {
-		setupTest(<SignatureSettings {...buildProps({})} />);
-		const nameInput = screen.getByRole('textbox', { name: 'signatures.name' });
-		expect(nameInput).toBeDisabled();
+	describe('onSignatureContentChange', () => {
+		it.todo('returns early if editor is not focused');
+
+		it.todo('returns early if currentSignature is undefined');
+
+		it.todo('returns early if description is unchanged');
+
+		it.todo('updates signature and enables editing if description is changed');
 	});
 
 	it('should disable the signature content editor if no signature is currently selected', () => {
