@@ -18,11 +18,6 @@ import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-past
 import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
-type FileSelectProps = {
-	editor: TinyMCE;
-	files: FileList;
-};
-
 export const SAVE_EDITOR_DELAY = 2000;
 
 export const RichTextEditorContainer = ({
@@ -103,7 +98,7 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
-		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+		({ editor: tinymce, files: fileList }: { editor: TinyMCE; files: FileList }): void => {
 			const files = buildArrayFromFileList(fileList);
 			addInlineAttachments(files, {
 				onSaveComplete: (inlineAttachments) => {
@@ -117,7 +112,7 @@ export const RichTextEditorContainer = ({
 		[addInlineAttachments]
 	);
 
-	function createPasteHandler(editor: Editor, editorId: string) {
+	function createPasteHandler(editor: Editor, _editorId: string) {
 		return (event: ClipboardEvent): void => {
 			const editViewWrapper = document.querySelector(
 				'[data-testid="edit-view-editor"]'
@@ -125,7 +120,7 @@ export const RichTextEditorContainer = ({
 			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
 
 			event.preventDefault();
-			handleEditorPaste(editor, editorId, event);
+			handleEditorPaste(editor, _editorId, event);
 
 			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
 			if (editViewWrapper) {
@@ -134,10 +129,7 @@ export const RichTextEditorContainer = ({
 		};
 	}
 
-	function createAttachmentCleanupHandler(
-		editor: Editor,
-		removeInlineAttachments: (cids: string[]) => void
-	) {
+	function createAttachmentCleanupHandler(editor: Editor, removeFn: (usedCids: string[]) => void) {
 		return (): void => {
 			const content = editor.getContent({ format: 'html' });
 			const parser = new DOMParser();
@@ -149,7 +141,7 @@ export const RichTextEditorContainer = ({
 				)
 			].filter((cid): cid is string => Boolean(cid));
 
-			removeInlineAttachments(usedCids);
+			removeFn(usedCids);
 		};
 	}
 
@@ -169,7 +161,6 @@ export const RichTextEditorContainer = ({
 		return mutationObserver;
 	}
 
-	// --- main hook ---
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
 		const fontFamilyOptions = getFonts();
@@ -241,7 +232,6 @@ export const RichTextEditorContainer = ({
 				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
-
 				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
 				editor.on('Change', debounce(handleAttachmentCleanup, 800));
 
