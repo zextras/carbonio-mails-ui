@@ -92,7 +92,7 @@
 		"@zextras/carbonio-ui-preview": "3.3.0-devel.1",
 		"@zextras/carbonio-ui-soap-lib": "^1.0.2",
 		"autolinker": "^4.1.5",
-		"axios": "^1.6.7",
+		"axios": "^1.12.0",
 		"core-js": "^3.36.0",
 		"darkreader": "^4.9.79",
 		"eslint": "^8.57.0",
