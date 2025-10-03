@@ -79,14 +79,13 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					(recipient) => recipient.address === contact.value.email
 				);
 				const isGroup = contact.value.type === CONTACT_TYPES.DISTRIBUTION_LIST;
-				const contactName = getContactName(contact);
 				return (
 					alreadyExists || {
 						id: contact.id,
 						type,
 						address: contact.value.email,
 						isGroup,
-						name: contactName
+						name: getContactName(contact)
 					}
 				);
 			});
