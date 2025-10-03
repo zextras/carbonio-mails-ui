@@ -58,13 +58,20 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					(recipient) => recipient.address === contact.value.email
 				);
 				const isGroup = contact.value.type === CONTACT_TYPES.DISTRIBUTION_LIST;
+				const contactName =
+					contact.value.type === CONTACT_TYPES.CONTACT
+						? contact.value.fullName ||
+							(contact.value.firstName && contact.value.lastName
+								? `${contact.value.firstName} ${contact.value.lastName}`
+								: contact.value.firstName)
+						: undefined;
 				return (
 					alreadyExists || {
 						id: contact.id,
 						type,
 						address: contact.value.email,
 						isGroup,
-						name: contact.value.type === CONTACT_TYPES.CONTACT ? contact.value.firstName : undefined
+						name: contactName
 					}
 				);
 			});
