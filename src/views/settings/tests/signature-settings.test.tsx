@@ -98,7 +98,6 @@ describe('Signature settings', () => {
 		it.todo('should display an error if the request for the list of signatures fails');
 
 		it('should render the list of signatures', async () => {
-			// const signatures: Array<SignItemType> = times(12, () => buildSignature({}));
 			const signatures: Array<SignItemType> = times(12, (i) =>
 				buildSignature({ label: `Signature ${i}` })
 			);
