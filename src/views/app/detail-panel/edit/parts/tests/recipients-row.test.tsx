@@ -152,6 +152,178 @@ describe('recipients-row', () => {
 				)
 			).toBeInTheDocument();
 		});
+
+		describe('contact name handling', () => {
+			it('should use fullName when available for contact', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'test@test.com',
+						type: CONTACT_TYPES.CONTACT,
+						firstName: 'John',
+						lastName: 'Doe',
+						fullName: 'John Doe'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: 'John Doe' })]);
+			});
+
+			it('should fallback to firstName + lastName when fullName is not available', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'test@test.com',
+						type: CONTACT_TYPES.CONTACT,
+						firstName: 'John',
+						lastName: 'Doe'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: 'John Doe' })]);
+			});
+
+			it('should fallback to firstName when only firstName is available', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'test@test.com',
+						type: CONTACT_TYPES.CONTACT,
+						firstName: 'John'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: 'John' })]);
+			});
+
+			it('should use fullName even when firstName and lastName are also present', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'dummy.user@gmail.com',
+						type: CONTACT_TYPES.CONTACT,
+						firstName: 'dummy',
+						lastName: 'user',
+						fullName: 'dummy user'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([
+					expect.objectContaining({ name: 'dummy user' })
+				]);
+			});
+
+			it('should set name to undefined for distribution lists', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'list@test.com',
+						type: CONTACT_TYPES.DISTRIBUTION_LIST,
+						firstName: 'List',
+						lastName: 'Name',
+						fullName: 'List Name'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: undefined })]);
+			});
+
+			it('should set name to undefined when no name fields are available', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'test@test.com',
+						type: CONTACT_TYPES.CONTACT
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = jest.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: undefined })]);
+			});
+		});
 	});
 
 	describe('when ContactInput is available', () => {
