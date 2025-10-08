@@ -10,18 +10,26 @@ import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 
 import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
+import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
 jest.mock('lodash', () => ({
 	...jest.requireActual('lodash'),
 	debounce: (fn: (...args: any[]) => any): any => fn,
 	noop: (): void => {
-		// empty noop
+		// empty
 	}
+}));
+
+jest.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
+	handleEditorPaste: jest.fn()
 }));
 
 let editorInstance: any = null;
 
 const mockRemoveInlineAttachments = jest.fn();
+const mockSetText = jest.fn();
+const mockSetTextProvider = jest.fn();
+
 const MockComposer: React.FC<any> = (props) => {
 	React.useEffect(() => {
 		const handlers: Record<string, ((evt?: any) => void)[]> = {};
@@ -32,14 +40,18 @@ const MockComposer: React.FC<any> = (props) => {
 				if (!handlers[event]) handlers[event] = [];
 				handlers[event].push(cb);
 			},
-			dispatch: (event: string): void => {
-				(handlers[event] || []).forEach((cb) => cb({ type: event }));
+			dispatch: (event: string, evt?: any): void => {
+				(handlers[event] || []).forEach((cb) => cb(evt || { type: event }));
 			},
 			getContent: ({ format }: { format: 'html' | 'text' }) =>
 				format === 'html' ? editorInstance.html : editorInstance.html.replace(/<[^>]+>/g, ''),
 			setContent: (html: string): void => {
 				editorInstance.html = html;
-			}
+			},
+			hasFocus: jest.fn(() => true),
+			setDirty: jest.fn(),
+			focus: jest.fn(),
+			dispatchEvent: jest.fn()
 		};
 
 		if (props.customInitOptions?.init_instance_callback) {
@@ -57,9 +69,9 @@ const MockComposer: React.FC<any> = (props) => {
 jest.mock('store/editor/index', () => ({
 	useEditorText: jest.fn(() => ({
 		getText: jest.fn(() => ({ plainText: '', richText: '' })),
-		setText: jest.fn()
+		setText: mockSetText
 	})),
-	useEditorTextProvider: jest.fn(() => ({ setTextProvider: jest.fn() })),
+	useEditorTextProvider: jest.fn(() => ({ setTextProvider: mockSetTextProvider })),
 	useEditorAttachments: jest.fn(() => ({
 		addInlineAttachments: jest.fn(),
 		removeInlineAttachments: mockRemoveInlineAttachments
@@ -69,9 +81,12 @@ jest.mock('store/editor/index', () => ({
 (useIntegratedComponent as jest.Mock).mockImplementation(() => [MockComposer]);
 
 describe('RichTextEditorContainer', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	test('cleans up inline attachments that are no longer in content', async () => {
 		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
-
 		await screen.findByTestId('mock-composer');
 
 		editorInstance?.setContent(
@@ -87,5 +102,27 @@ describe('RichTextEditorContainer', () => {
 			'cid:first',
 			'cid:second'
 		]);
+	});
+
+	test('handles paste event and restores scroll position', async () => {
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
+		await screen.findByTestId('mock-composer');
+
+		const editWrapper = document.createElement('div');
+		editWrapper.dataset.testid = 'edit-view-editor';
+		const parent = document.createElement('div');
+		parent.scrollTop = 42;
+		parent.appendChild(editWrapper);
+		document.body.appendChild(parent);
+
+		const event = {
+			preventDefault: jest.fn()
+		} as unknown as ClipboardEvent;
+
+		editorInstance.dispatch('paste', event);
+
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, 'editor-1', event);
+		expect(parent.scrollTop).toBe(42);
 	});
 });
