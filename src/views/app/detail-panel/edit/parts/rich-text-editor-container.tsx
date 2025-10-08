@@ -233,7 +233,7 @@ export const RichTextEditorContainer = ({
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
 				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
-				editor.on('Change', debounce(handleAttachmentCleanup, 800));
+				editor.on('Change', debounce(handleAttachmentCleanup, 300));
 
 				const mutationObserver = setupResizeObserver(editor);
 
