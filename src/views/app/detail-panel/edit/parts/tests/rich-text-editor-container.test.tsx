@@ -5,9 +5,11 @@
  */
 
 import React from 'react';
-import { setupTest, screen } from '@test-setup';
+
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+
 import { RichTextEditorContainer } from '../rich-text-editor-container';
+import { setupTest, screen } from '@test-setup';
 
 jest.mock('lodash', () => ({
 	...jest.requireActual('lodash'),
@@ -18,8 +20,8 @@ jest.mock('lodash', () => ({
 }));
 
 let editorInstance: any = null;
-const mockRemoveInlineAttachments = jest.fn();
 
+const mockRemoveInlineAttachments = jest.fn();
 const MockComposer: React.FC<any> = (props) => {
 	React.useEffect(() => {
 		const handlers: Record<string, ((evt?: any) => void)[]> = {};
@@ -67,18 +69,15 @@ jest.mock('store/editor/index', () => ({
 (useIntegratedComponent as jest.Mock).mockImplementation(() => [MockComposer]);
 
 describe('RichTextEditorContainer', () => {
-	const editorId = 'editor-1';
-
 	test('cleans up inline attachments that are no longer in content', async () => {
-		setupTest(<RichTextEditorContainer editorId={editorId} onDragOver={jest.fn()} />);
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
 
 		await screen.findByTestId('mock-composer');
 
 		editorInstance?.setContent(
 			'<p><img pnsrc="cid:first" src="cid:first" />' +
 				'<img src="cid:second" />' +
-				'<img src="https://test.test/image.png" /></p>' +
-				'<img src="https://test.test/image2.png" /></p>'
+				'<img src="https://test.test/image.png" /></p>'
 		);
 
 		editorInstance?.dispatch('Change');
