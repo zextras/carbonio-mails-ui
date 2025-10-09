@@ -16,7 +16,7 @@ import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
 
 // noinspection JSUnusedGlobalSymbols
-jest.mock('views/app/detail-panel/edit/composer/composer', () => ({
+jest.mock('@zextras/carbonio-ui-text-composer', () => ({
 	Composer: ({
 		'data-testid': testId,
 		value,
