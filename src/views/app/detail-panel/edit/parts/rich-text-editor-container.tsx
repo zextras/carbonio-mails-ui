@@ -7,12 +7,12 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
-import { Composer } from '../composer/composer';
 import { buildArrayFromFileList } from 'helpers/files';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -127,6 +127,7 @@ export const RichTextEditorContainer = ({
 			(font: { label: string; value: string }) => `${font.label}=${font.value};`
 		);
 		return {
+			base_url: `${BASE_PATH}`,
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
@@ -241,6 +242,12 @@ export const RichTextEditorContainer = ({
 					initialValue={initialValue.current}
 					onFileSelect={onInlineAttachmentsSelected}
 					customInitOptions={composerCustomOptions}
+					accountSettingsPrefs={{
+						zimbraPrefLocale: prefs?.zimbraPrefLocale,
+						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+					}}
 				/>
 			</StyledComp.EditorWrapper>
 		</Container>
