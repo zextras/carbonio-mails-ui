@@ -92,7 +92,7 @@
 		"@zextras/carbonio-ui-preview": "3.3.0-devel.1",
 		"@zextras/carbonio-ui-soap-lib": "^1.0.2",
 		"autolinker": "^4.1.5",
-		"axios": "^1.6.7",
+		"axios": "^1.12.0",
 		"core-js": "^3.36.0",
 		"darkreader": "^4.9.79",
 		"eslint": "^8.57.0",
@@ -111,10 +111,7 @@
 		"react-i18next": "^12.2.0",
 		"react-router-dom": "^6.30.0",
 		"uuid": "^9.0.0",
-		"zustand": "^4.5.2",
-		"tinymce": "^6.8.4",
-		"@tinymce/tinymce-react": "^4.3.2",
-		"date-fns": "^4.1.0"
+		"zustand": "^4.5.2"
 	},
 	"browserslist": [
 		">1%",
