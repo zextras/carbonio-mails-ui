@@ -108,7 +108,9 @@ describe('Signature settings', () => {
 		it.todo('should display an error if the request for the list of signatures fails');
 
 		it('should render the list of signatures', async () => {
-			const signatures: Array<SignItemType> = times(12, () => buildSignature({}));
+			const signatures: Array<SignItemType> = times(12, (i) =>
+				buildSignature({ label: `Signature ${i}` })
+			);
 			handleGetSignaturesRequest(signatures);
 			setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
 			await screen.findByText(signatures[0].label, undefined, { timeout: FIND_TIMEOUT });
