@@ -19,10 +19,10 @@ import {
 	Input
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { reject, concat, map } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Composer } from '../app/detail-panel/edit/composer/composer';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
@@ -278,6 +278,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const composerCustomOptions = {
+		base_url: `${BASE_PATH}`,
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
 		auto_focus: false,
