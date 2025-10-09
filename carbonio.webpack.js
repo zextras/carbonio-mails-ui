@@ -11,19 +11,12 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const { STATIC_LOCALES } = require('./src/views/app/detail-panel/edit/composer/locale-consts');
-
-const customizeConfig = (config) => {
+const customizeConfig = (config, pkg) => {
 	const newConfig = { ...config };
 
 	const commitHash = execSync('git rev-parse HEAD').toString().trim();
-	const baseStaticPath = `/static/iris/carbonio-mails-ui/${commitHash}/`;
-
-	const supportedLocalesList = Object.values(STATIC_LOCALES);
-
-	const tinymceLocales = supportedLocalesList.map(
-		(locale) => ('tinymceLocale' in locale && locale.tinymceLocale) || locale.value
-	);
+	const packageName = pkg.name || require(path.resolve(__dirname, 'package.json')).name;
+	const baseStaticPath = `/static/iris/${packageName}/${commitHash}/`;
 
 	newConfig.resolve = {
 		...config.resolve,
@@ -45,18 +38,12 @@ const customizeConfig = (config) => {
 		new CopyPlugin({
 			patterns: [
 				{
-					from: 'src/views/app/detail-panel/edit/composer/assets/',
-					to: ''
-				},
-				{
-					from: `plugins/help/js/i18n/**/(${tinymceLocales.join('|')}).js`,
-					to: '',
-					context: 'node_modules/tinymce/'
-				},
-				{
-					from: 'plugins/emoticons',
-					to: 'plugins/emoticons',
-					context: 'node_modules/tinymce/'
+					from: path.resolve(
+						__dirname,
+						'node_modules/@zextras/carbonio-ui-text-composer/dist/assets'
+					),
+					to: path.resolve(__dirname, 'dist/'),
+					noErrorOnMissing: true
 				}
 			]
 		})
