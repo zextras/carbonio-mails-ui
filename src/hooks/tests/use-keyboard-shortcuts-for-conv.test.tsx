@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook, act } from '@testing-library/react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { act } from '@testing-library/react';
+import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE } from 'constants/index';
+import { setupHook } from '../../__test__/test-setup';
+import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
@@ -17,10 +18,12 @@ import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
 import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
 import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
+const defaultLocation = `/${MAILS_ROUTE}/folder/2/conversation/1`;
+
 // Mock all dependencies
 jest.mock('react-router-dom', () => ({
-	useNavigate: jest.fn(),
-	useLocation: jest.fn().mockReturnValue({ pathname: 'carbonio/mails/folder/2/conversation/1' })
+	...jest.requireActual('react-router-dom'),
+	useNavigate: jest.fn()
 }));
 
 jest.mock('hooks/utils', () => ({
@@ -103,7 +106,10 @@ describe('useKeyboardShortcutsForConv', () => {
 				folderId: '123'
 			};
 
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			expect(result.current).toBeInstanceOf(Function);
 			expect(useConvSetReadFn).toHaveBeenCalledWith(
@@ -118,7 +124,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Mark as read/unread shortcuts', () => {
 		it('should mark conversation as read when "mr" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -133,7 +142,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should mark conversation as read when "z" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -147,7 +159,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should mark conversation as unread when "mu" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -162,7 +177,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should mark conversation as unread when "x" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -178,7 +196,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Flag toggle shortcut', () => {
 		it('should toggle flag when "mf" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -199,7 +220,10 @@ describe('useKeyboardShortcutsForConv', () => {
 			(useConvSetUnflagFn as jest.Mock).mockReturnValue(unflagAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -224,7 +248,10 @@ describe('useKeyboardShortcutsForConv', () => {
 			(useConvSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -244,7 +271,10 @@ describe('useKeyboardShortcutsForConv', () => {
 			(useConvSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -261,7 +291,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Move to trash shortcuts', () => {
 		it('should move to trash when Delete key is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -275,7 +308,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should move to trash when Backspace key is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -289,7 +325,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should move to trash when ".t" is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -306,7 +345,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Close preview panel shortcuts', () => {
 		it('should close preview panel when Escape is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -319,9 +361,12 @@ describe('useKeyboardShortcutsForConv', () => {
 			});
 		});
 
-		it('should close preview panel when Esc is pressed', () => {
+		it('should navigate to the folder view when Esc is pressed and the current view does not belong to the search', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -333,15 +378,33 @@ describe('useKeyboardShortcutsForConv', () => {
 				replace: true
 			});
 		});
+
+		it('should navigate to the folder view when Esc is pressed and the current view belongs to the search', () => {
+			const props = { conversationIds: ['1'], folderId: 'folder1' };
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [`/${SEARCH_ROUTE}/conversation/1`]
+			});
+
+			const handler = result.current;
+
+			act(() => {
+				handler(createKeyboardEvent('Esc'));
+			});
+
+			expect(mockNavigate).toHaveBeenCalledWith(`/${SEARCH_ROUTE}`, {
+				replace: true
+			});
+		});
 	});
 
 	describe('Context awareness', () => {
 		it('should not execute actions when a conversaton message is selected', () => {
-			(useLocation as jest.Mock).mockReturnValueOnce({
-				pathname: 'carbonio/mails/folder/2/message/1'
-			});
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [`/${MAILS_ROUTE}/folder/2/message/1`]
+			});
 
 			const handler = result.current;
 
@@ -356,7 +419,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Event handling', () => {
 		it('should prevent default and stop propagation when executing action', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 			const event = createKeyboardEvent('z');
@@ -373,7 +439,10 @@ describe('useKeyboardShortcutsForConv', () => {
 			mockCanExecute.mockReturnValue(false);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 			const event = createKeyboardEvent('z');
@@ -389,7 +458,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Modifier key handling with timeout', () => {
 		it('should wait for timeout when modifier key is pressed', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -410,7 +482,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should execute immediately when non-modifier key follows modifier', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -425,7 +500,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should handle dot modifier correctly', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -444,7 +522,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should handle "n" modifier correctly', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -466,7 +547,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Key sequence reset', () => {
 		it('should reset key sequence after executing action', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 			const handler = result.current;
 
 			// First sequence
@@ -488,7 +572,10 @@ describe('useKeyboardShortcutsForConv', () => {
 	describe('Unhandled shortcuts', () => {
 		it('should not execute any action for unrecognized shortcuts', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
@@ -502,7 +589,10 @@ describe('useKeyboardShortcutsForConv', () => {
 
 		it('should not execute any action for partial modifier sequences', () => {
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
-			const { result } = renderHook(() => useKeyboardShortcutsForConv(props));
+			const { result } = setupHook(useKeyboardShortcutsForConv, {
+				initialProps: [props],
+				initialEntries: [defaultLocation]
+			});
 
 			const handler = result.current;
 
