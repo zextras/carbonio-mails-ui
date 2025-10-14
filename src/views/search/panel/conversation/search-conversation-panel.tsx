@@ -14,7 +14,7 @@ import type {
 	SearchDetailPanelConversationRouteParams,
 	SearchDetailPanelRouteParams
 } from '../../../../types/routes';
-import { API_REQUEST_STATUS } from 'constants/index';
+import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
@@ -40,7 +40,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	);
 
 	if (!conversation) {
-		navigate('/search', { replace: true });
+		navigate(`/${SEARCH_ROUTE}`, { replace: true });
 		return <></>;
 	}
 
