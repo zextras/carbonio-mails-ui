@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
 	LOCAL_STORAGE_VIEW_SIZES,
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
-} from 'constants';
-
-import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+} from 'constants/index';
 import { Geometry } from 'hooks/use-resize';
 import { MailsListLayout, MailsSplitLayoutOrientation } from 'views/folder-view';
 

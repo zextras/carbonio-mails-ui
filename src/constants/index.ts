@@ -549,19 +549,6 @@ export const API_REQUEST_STATUS = {
 	error: 'error',
 	fulfilled: 'fulfilled'
 } as const;
-
-export const SEARCHED_FOLDER_STATE_STATUS = {
-	empty: 'empty',
-	pending: 'pending',
-	complete: 'complete',
-	hasMore: 'hasMore',
-	hasChange: 'hasChange',
-	error: 'error',
-	incomplete: 'incomplete'
-} as const;
-
-export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';
-
 export const BACKUP_SEARCH_STATUS = {
 	empty: 'empty',
 	loading: 'loading',
@@ -582,9 +569,11 @@ export const MAIL_VERIFICATION_HEADERS = {
 export const MAIL_SENSITIVITY_HEADER = {
 	personal: 'Personal',
 	private: 'Private',
+	// eslint-disable-next-line sonarjs/no-duplicate-string
 	companyConfidential: 'Company-Confidential'
 } as const;
 
+// noinspection JSUnusedGlobalSymbols
 export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
 
 export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
