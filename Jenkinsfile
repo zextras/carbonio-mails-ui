@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 library(
-	identifier: 'zapp-jenkins-lib@github-pipeline-v4',
+	identifier: 'zapp-jenkins-lib@feat/always-run-tests-except-when-false',
 	retriever: modernSCM([
 		$class: 'GitSCMSource',
    		remote: 'git@github.com:zextras/jenkins-zapp-lib.git',
