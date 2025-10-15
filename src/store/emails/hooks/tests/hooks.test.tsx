@@ -30,9 +30,9 @@ import {
 	useConversationStatus,
 	useMessageStatus
 } from 'store/emails/store';
-import { generateCompleteMessageFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateCompleteMessageFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import {
 	ConvMessage,
 	EmailsStoreState,

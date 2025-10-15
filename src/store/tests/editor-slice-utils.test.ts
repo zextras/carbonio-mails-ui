@@ -18,7 +18,7 @@ import {
 	retrieveCC,
 	retrieveReplyTo
 } from 'store/editor-slice-utils';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()

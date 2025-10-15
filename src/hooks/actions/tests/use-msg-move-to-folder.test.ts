@@ -12,12 +12,12 @@ import { times } from 'lodash';
 
 import { setupHook, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgMoveToFolderDescriptor,
 	useMsgMoveToFolderFn
 } from 'hooks/actions/use-msg-move-to-folder';
-import { TIMERS } from 'tests/constants';
 
 const settings = generateSettings({
 	prefs: {

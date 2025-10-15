@@ -10,12 +10,12 @@ import { screen, within } from '@testing-library/react';
 
 import { EditViewActions } from '../../../../../constants';
 import { generateEditor } from '../../../../../store/editor/editor-generators';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import type { MailsEditorV2 } from '../../../../../types';
 import { setupTest } from '@test-setup';
 import { addEditor } from 'store/editor/index';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { generateEditorV2Case } from 'tests/generators/editors';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateEditorV2Case } from '__test__/generators/editors';
 import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
 
 describe('Attachments visualization', () => {

@@ -14,7 +14,7 @@ import {
 	useMsgShowOriginalDescriptor,
 	useMsgShowOriginalFn
 } from 'hooks/actions/use-msg-show-original';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage } from 'types/index.d';
 
 describe('useMsgShowOriginal', () => {

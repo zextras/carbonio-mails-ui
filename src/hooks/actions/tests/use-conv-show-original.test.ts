@@ -13,7 +13,7 @@ import {
 	useConvShowOriginalDescriptor,
 	useConvShowOriginalFn
 } from 'hooks/actions/use-conv-show-original';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 
 describe('useConvShowOriginal', () => {
 	const conv = generateConversation({ messageGenerationCount: 3 });

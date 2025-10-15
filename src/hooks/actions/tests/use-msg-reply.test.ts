@@ -10,7 +10,7 @@ import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgReplyDescriptor, useMsgReplyFn } from 'hooks/actions/use-msg-reply';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useMsgReply', () => {
 	const msg = generateMessage();

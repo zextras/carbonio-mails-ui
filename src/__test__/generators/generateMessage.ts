@@ -9,7 +9,7 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { updateMessages } from 'store/emails/store';
-import { MailMessage, MailMessagePart, Participant, Sensitivity } from 'types/index.d';
+import { MailMessage, MailMessagePart, Participant, Sensitivity } from 'types';
 
 export type MessageGenerationParams = {
 	id?: string;

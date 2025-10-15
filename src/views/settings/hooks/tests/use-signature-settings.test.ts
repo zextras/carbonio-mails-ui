@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { setupHook } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import { buildSignature } from 'tests/generators/signatures';
+import { buildSignature } from '__test__/generators/signatures';
 import { SignItemType } from 'types/index.d';
 import {
 	getContentLengthErrorMessageKey,

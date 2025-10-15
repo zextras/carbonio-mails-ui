@@ -6,15 +6,16 @@
 import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { setupTest } from '@test-setup';
-import { generateFolder } from '@test-utils/folders/folders-generator';
-import { populateFoldersStore } from '@test-utils/store/folders';
-import { tags as mockTags } from '@test-utils/tags/tags';
 import { screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { getTags } from '@zextras/carbonio-ui-commons';
 import { format } from 'date-fns';
-import { TIMERS } from 'tests/constants';
+
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { TIMERS } from '__test__/constants';
 import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
 import {
 	defaultProps,

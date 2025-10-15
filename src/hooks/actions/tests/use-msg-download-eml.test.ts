@@ -12,7 +12,7 @@ import {
 	useMsgDownloadEmlDescriptor,
 	useMsgDownloadEmlFn
 } from 'hooks/actions/use-msg-download-eml';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useMsgDownloadEml', () => {
 	const msg = generateMessage({ isComplete: true });

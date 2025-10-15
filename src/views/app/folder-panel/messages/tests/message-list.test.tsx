@@ -20,15 +20,9 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { generateCompleteMessageFromAPI } from 'tests/generators/api';
-import {
-	FolderState,
-	MsgActionRequest,
-	MsgActionResponse,
-	SearchRequest,
-	SearchResponse
-} from 'types/index.d';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { generateCompleteMessageFromAPI } from '__test__/generators/api';
+import { FolderState, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 

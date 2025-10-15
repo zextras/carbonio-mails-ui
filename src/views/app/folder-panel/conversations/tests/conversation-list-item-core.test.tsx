@@ -12,7 +12,7 @@ import { useTags } from '@zextras/carbonio-ui-commons';
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
