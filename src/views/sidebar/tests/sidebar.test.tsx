@@ -18,7 +18,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
 import Sidebar from 'views/sidebar/sidebar';
 

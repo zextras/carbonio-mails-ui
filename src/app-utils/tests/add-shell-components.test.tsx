@@ -8,9 +8,9 @@ import { addBoardView, addRoute, addSettingsView, upsertApp } from '@zextras/car
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { mockAdvancedAccountAPI } from '__test__/utils';
 import { addComponentsToShell } from 'app-utils/add-shell-components';
 import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from 'constants/index';
-import { mockAdvancedAccountAPI } from 'tests/utils';
 
 beforeEach(() => {
 	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));

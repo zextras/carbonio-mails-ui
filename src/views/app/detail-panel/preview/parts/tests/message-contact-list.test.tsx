@@ -11,7 +11,7 @@ import { screen } from '@testing-library/react';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import MessageContactList from 'views/app/detail-panel/preview/parts/message-contact-list';
 
 describe('MessageContactList', () => {

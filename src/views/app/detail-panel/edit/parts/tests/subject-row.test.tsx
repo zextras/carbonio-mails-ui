@@ -12,8 +12,8 @@ import { setupTest } from '@test-setup';
 import { getIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { addEditor } from 'store/editor/index';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { SubjectRow } from 'views/app/detail-panel/edit/parts/subject-row';
 
 beforeEach(() => {

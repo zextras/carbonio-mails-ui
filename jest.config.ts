@@ -33,6 +33,7 @@ const config: Config = {
 			'<rootDir>/__mocks__/fileMock.js',
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js',
 		'^uuid$': require.resolve('uuid'),
+		'^@test-mocks/(.*)$': '<rootDir>/__mocks__/$1',
 		'^@test-utils/(.*)$': '<rootDir>/src/__test__/mocks/$1',
 		'^@test-setup$': '<rootDir>/src/__test__/test-setup.tsx',
 		'^@jest-setup$': '<rootDir>/jest-setup.ts'

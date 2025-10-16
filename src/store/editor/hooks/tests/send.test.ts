@@ -6,8 +6,8 @@
 import { act } from '@testing-library/react';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { createSoapAPIInterceptorWithError } from '../../../../tests/generators/api';
-import { setupEditorStore } from '../../../../tests/generators/editor-store';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { setupEditorStore } from '__test__/generators/editor-store';
 import { MailsEditorV2 } from '../../../../types';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { computeAndUpdateEditorStatus } from '../commons';

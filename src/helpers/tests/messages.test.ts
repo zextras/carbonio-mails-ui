@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { isConversation, isSingleMessageConversation } from 'helpers/messages';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('Messages helpers', () => {
 	describe('isConversation', () => {

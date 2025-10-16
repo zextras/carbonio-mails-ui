@@ -12,7 +12,7 @@ import {
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
 import { getOutgoingFiltersSoapApi } from 'api/get-outgoing-filters-soap-api';
-import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
 
 describe('getOutgoingFiltersSoapApi', () => {
 	it('should fetch filter rules using soapFetch', async () => {

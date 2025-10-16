@@ -23,7 +23,7 @@ import * as registerShellIntegrations from 'app-utils/register-shell-integration
 import * as useSearchRegisterer from 'app-utils/use-search-registerer';
 import { BACKUP_SEARCH_ROUTE } from 'constants/index';
 import { useBackupSearchStore } from 'store/backup-search/store';
-import { DeletedMessageFromAPI } from 'types/index.d';
+import { DeletedMessageFromAPI } from 'types';
 
 // Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
