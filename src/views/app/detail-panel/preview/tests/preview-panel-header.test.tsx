@@ -13,11 +13,11 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { mockLayoutStorage } from '__test__/layouts-utils';
 import { MAILS_VIEW_LAYOUTS } from 'constants/index';
 import { setConversationsInEmailStore } from 'store/emails/store';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { mockLayoutStorage } from 'tests/layouts-utils';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
 const mockNavigate = jest.fn();

@@ -3,8 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { generateMessage } from '../../tests/generators/generateMessage';
-import type { MailMessagePart } from '../../types';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import {
 	buildSavedAttachments,
@@ -13,6 +12,7 @@ import {
 	isContentIdEqual
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import type { MailMessagePart } from 'types';
 
 describe('attachments', () => {
 	describe('getFlattenedAttachmentParts', () => {

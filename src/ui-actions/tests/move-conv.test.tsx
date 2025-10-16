@@ -15,7 +15,7 @@ import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
 import { MoveConversation } from 'ui-actions/move-conv';
 

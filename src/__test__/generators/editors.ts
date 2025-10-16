@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types';
 
 const alignState = (editor: MailsEditorV2): void => {
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);

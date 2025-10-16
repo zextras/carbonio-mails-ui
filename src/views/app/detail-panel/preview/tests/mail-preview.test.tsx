@@ -12,7 +12,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { setupTest } from '@test-setup';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from 'views/app/detail-panel/preview/mail-preview';
 
 /**

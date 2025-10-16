@@ -14,7 +14,7 @@ import {
 	useUserSettings
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
+import { setupEditorStore } from '__test__/generators/editor-store';
 import { MailsEditorV2 } from 'types/index.d';
 import {
 	TextEditorContainer,
