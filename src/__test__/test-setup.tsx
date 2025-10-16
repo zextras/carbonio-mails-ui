@@ -23,7 +23,6 @@ import {
 } from '@testing-library/react';
 import userEvent, { UserEvent as RTLUserEvent } from '@testing-library/user-event';
 import { ModalManager, SnackbarManager, ThemeProvider } from '@zextras/carbonio-design-system';
-import { themeMuiExtension } from '@zextras/carbonio-ui-commons';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter, MemoryRouterProps, Route, RouteProps, Routes } from 'react-router-dom';
@@ -31,6 +30,7 @@ import { Store } from 'redux';
 
 import { getAppI18n } from './i18n/i18n-test-factory';
 import { previewContextMock, PreviewsManagerContext } from '@test-utils/carbonio-ui-preview';
+import { themeMuiExtension } from 'theme/theme-mui';
 
 type ByRoleWithIconOptions = ByRoleOptions & {
 	icon: string | RegExp;
