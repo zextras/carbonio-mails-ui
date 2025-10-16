@@ -5,8 +5,7 @@
  */
 import React from 'react';
 
-import { Icon, IconProps, Padding, Text } from '@zextras/carbonio-design-system';
-import { DefaultTheme } from 'styled-components';
+import { Icon, IconProps, Padding, Text, Theme } from '@zextras/carbonio-design-system';
 
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
@@ -14,7 +13,7 @@ type WarningBannerProps = {
 	text: string;
 	icon: IconProps['icon'];
 	iconColor: IconProps['color'];
-	bottomBorderColor: keyof DefaultTheme['palette'];
+	bottomBorderColor: keyof Theme['palette'];
 };
 
 export const WarningBanner = ({
