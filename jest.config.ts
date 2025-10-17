@@ -42,7 +42,7 @@ const config: Config = {
 	testEnvironmentOptions: {
 		customExportConditions: ['']
 	},
-	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons).+\\.js$'],
+	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons|until-async).+\\.js$'],
 	transform: {
 		'^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { configFile: './babel.config.jest.js' }]
 	}
