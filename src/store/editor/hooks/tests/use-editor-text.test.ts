@@ -11,8 +11,8 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorText } from 'store/editor/hooks/editor';
 import { addEditor, getEditor } from 'store/editor/hooks/editors';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { generateEditorV2Case } from 'tests/generators/editors';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateEditorV2Case } from '__test__/generators/editors';
 
 describe('useEditorText', () => {
 	test('get the editor text', async () => {

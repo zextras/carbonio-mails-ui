@@ -15,10 +15,10 @@ import { noop } from 'lodash';
 import { setupTest } from '@test-setup';
 import { generateFolders } from '@test-utils/folders/folders-generator';
 import { tags as mockTags } from '@test-utils/tags/tags';
+import { ASSERTIONS } from '__test__/constants';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { ASSERTIONS } from 'tests/constants';
-import { generateMessage } from 'tests/generators/generateMessage';
 import type { MessageListItemProps } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 

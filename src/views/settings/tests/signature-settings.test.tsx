@@ -9,9 +9,9 @@ import { within } from '@testing-library/react';
 import { times } from 'lodash';
 
 import { setupTest, screen } from '@test-setup';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { buildSignature } from 'tests/generators/signatures';
-import { handleGetSignaturesRequest } from 'tests/mocks/network/msw/handle-get-signatures';
+import { handleGetSignaturesRequest } from '@test-utils/network/msw/handle-get-signatures';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { buildSignature } from '__test__/generators/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
 

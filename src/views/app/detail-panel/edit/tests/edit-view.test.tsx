@@ -45,9 +45,9 @@ import {
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
+import { generateMessage } from '__test__/generators/generateMessage';
 import type {
 	MailsEditorV2,
 	SaveDraftRequest,

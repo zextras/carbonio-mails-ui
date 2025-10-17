@@ -20,8 +20,8 @@ import {
 	useMessageById,
 	useSearchResults
 } from 'store/emails/store';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { SearchRequest, SearchResponse } from 'types/index.d';
 import { useLoadMoreForSearchSlice, useRunSearch } from 'views/search/search-view-hooks';
 

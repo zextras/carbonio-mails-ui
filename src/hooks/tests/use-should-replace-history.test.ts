@@ -6,7 +6,7 @@
 
 import { waitFor } from '@testing-library/react';
 
-import { populateConversationInEmailStore } from '../../tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { setupHook } from '@test-setup';
 import { useShouldReplaceHistory } from 'hooks/use-should-replace-history';
 

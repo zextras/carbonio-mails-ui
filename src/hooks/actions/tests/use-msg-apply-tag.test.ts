@@ -15,7 +15,7 @@ import {
 	useMsgApplyTagDescriptor,
 	useMsgApplyTagSubDescriptors
 } from 'hooks/actions/use-msg-apply-tag';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useMsgApplyTag', () => {

@@ -9,9 +9,9 @@ import React from 'react';
 import { act, within } from '@testing-library/react';
 
 import { screen, setupTest } from '@test-setup';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { mockLayoutStorage } from '__test__/layouts-utils';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { mockLayoutStorage } from 'tests/layouts-utils';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';
 
 describe('LayoutComponent', () => {

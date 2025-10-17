@@ -10,7 +10,7 @@ import { act, screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
+import { setupEditorStore } from '__test__/generators/editor-store';
 import {
 	OptionsDropdown,
 	OptionsDropdownProps

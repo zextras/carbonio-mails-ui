@@ -15,7 +15,7 @@ import * as storeHooks from 'store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateCompleteMessageFromAPI
-} from 'tests/generators/api';
+} from '__test__/generators/api';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 
 describe('useLoadMoreForMessagesSlice', () => {

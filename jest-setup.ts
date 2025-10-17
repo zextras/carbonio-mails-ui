@@ -14,9 +14,9 @@ import { http } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
 
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
+import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
-import { handleGetConvRequest } from 'tests/mocks/network/msw/handle-get-conv';
-import { handleGetMsgRequest } from 'tests/mocks/network/msw/handle-get-msg';
 
 let server: SetupServer;
 

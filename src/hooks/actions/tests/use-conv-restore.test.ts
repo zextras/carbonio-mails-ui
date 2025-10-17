@@ -12,9 +12,9 @@ import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvRestoreDescriptor, useConvRestoreFn } from 'hooks/actions/use-conv-restore';
-import { TIMERS } from 'tests/constants';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 describe('useConvRestore', () => {

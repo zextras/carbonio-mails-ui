@@ -13,8 +13,8 @@ import { Folder, FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbo
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
-import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
 
 describe('ParticipantsName component', () => {

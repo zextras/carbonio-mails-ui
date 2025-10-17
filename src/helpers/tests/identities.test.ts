@@ -16,7 +16,7 @@ import {
 	getMessageSenderAccount,
 	getMessageSenderAddress
 } from 'helpers/identities';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('Message sender address', () => {
 	test('returns the address if sender is a participant of type FROM', () => {

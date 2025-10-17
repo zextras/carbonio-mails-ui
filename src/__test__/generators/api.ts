@@ -14,7 +14,7 @@ import {
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
-} from 'types/index.d';
+} from 'types';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}
