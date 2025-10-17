@@ -15,10 +15,10 @@ import {
 	getIntegratedFunction,
 	useIntegratedFunction
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/index';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { setupEditorStore } from 'tests/generators/editor-store';
 import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
 import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 

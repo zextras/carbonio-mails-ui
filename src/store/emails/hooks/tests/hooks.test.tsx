@@ -11,6 +11,12 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map } from 'lodash';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	generateCompleteMessageFromAPI,
+	generateConvMessageFromAPI
+} from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import * as getMsg from 'api/get-msg-soap-api';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import {
@@ -30,9 +36,6 @@ import {
 	useConversationStatus,
 	useMessageStatus
 } from 'store/emails/store';
-import { generateCompleteMessageFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
 import {
 	ConvMessage,
 	EmailsStoreState,

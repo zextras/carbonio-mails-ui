@@ -7,7 +7,7 @@ import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoap
 } from 'normalizations/normalize-message';
-import { generateMessageFromAPI } from 'tests/generators/api';
+import { generateMessageFromAPI } from '__test__/generators/api';
 import { MailMessagePart, SoapMailMessagePart } from 'types/index.d';
 
 describe('Normalize message', () => {

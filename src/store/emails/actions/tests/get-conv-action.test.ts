@@ -7,7 +7,7 @@
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { updateConversations, updateMessages } from 'store/emails/store';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { GetConvResponse } from 'types/soap/get-conv';
 
 jest.mock('../../store', () => ({

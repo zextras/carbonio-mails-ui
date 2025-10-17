@@ -11,7 +11,7 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgPrintDescriptor, useMsgPrintFn } from 'hooks/actions/use-msg-print';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage } from 'types/index.d';
 
 describe('useMsgPrintDescripto', () => {

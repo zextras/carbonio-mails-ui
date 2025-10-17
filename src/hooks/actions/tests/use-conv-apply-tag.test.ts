@@ -14,7 +14,7 @@ import {
 	useConvApplyTagDescriptor,
 	useConvApplyTagSubDescriptors
 } from 'hooks/actions/use-conv-apply-tag';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { ConvActionRequest } from 'types/index.d';
 
 const tagA = { id: '1', name: 'a', label: 'a', color: 3 };

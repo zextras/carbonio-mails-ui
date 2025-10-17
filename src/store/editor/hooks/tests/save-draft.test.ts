@@ -7,7 +7,7 @@
 import { setupHook } from '@test-setup';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorDraftSave } from 'store/editor/hooks/save-draft';
-import { setupEditorStore } from 'tests/generators/editor-store';
+import { setupEditorStore } from '__test__/generators/editor-store';
 
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {

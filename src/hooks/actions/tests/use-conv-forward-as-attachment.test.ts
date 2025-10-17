@@ -13,7 +13,7 @@ import {
 	useConvForwardAsAttachmentDescriptor,
 	useConvForwardAsAttachmentFn
 } from 'hooks/actions/use-conv-forward-as-attachment';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useConvForwardAsAttachment', () => {
 	const msg = generateMessage();

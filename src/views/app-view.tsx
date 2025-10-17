@@ -6,8 +6,9 @@
 import React, { Suspense, lazy, useRef } from 'react';
 
 import { ThemeProvider } from '@zextras/carbonio-design-system';
-import { themeMuiExtension, useUpdateView } from '@zextras/carbonio-ui-commons';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
 
+import { themeMuiExtension } from '../theme/theme-mui';
 import { Spinner } from 'assets/spinner';
 import { FolderView } from 'views/folder-view';
 import { LayoutSelector } from 'views/layout-selector';

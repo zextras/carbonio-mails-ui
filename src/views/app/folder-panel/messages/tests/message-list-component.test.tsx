@@ -12,7 +12,7 @@ import { noop, times } from 'lodash';
 
 import { setupTest } from '@test-setup';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import {
 	MessageListComponent,
 	MessageListComponentProps

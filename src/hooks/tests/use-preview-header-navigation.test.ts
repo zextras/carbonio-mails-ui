@@ -12,8 +12,8 @@ import * as convRequest from 'api/conv-action-soap-api';
 import * as searchSoapApi from 'api/search-soap-api';
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { setConversationsInEmailStore } from 'store/emails/store';
-import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);

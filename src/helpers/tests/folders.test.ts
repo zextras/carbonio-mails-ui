@@ -29,7 +29,7 @@ import {
 	isTrash,
 	isTrashed
 } from 'helpers/folders';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('Folder id', () => {
 	test('with zid', () => {

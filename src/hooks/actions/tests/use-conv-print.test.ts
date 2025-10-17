@@ -11,7 +11,7 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvPrintDescriptor, useConvPrintFn } from 'hooks/actions/use-conv-print';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { NormalizedConversation } from 'types/index.d';
 
 describe('useConvPrint', () => {

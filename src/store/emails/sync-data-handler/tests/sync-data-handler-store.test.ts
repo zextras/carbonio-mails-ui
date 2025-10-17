@@ -20,8 +20,8 @@ import { triggerNotification } from 'store/emails/sync-data-handler/trigger-noti
 import {
 	generateConversation,
 	populateConversationInEmailStore
-} from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
+} from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
