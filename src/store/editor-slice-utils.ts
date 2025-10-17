@@ -215,9 +215,8 @@ export const extractBody = (msg: MailMessage): ExtractedBody => {
 	if (html) {
 		try {
 			html = extractBodyWithInlinedStyles(html);
-		} catch (error) {
-			// If inlining fails, use the original HTML
-			console.warn('Failed to inline styles in extractBody:', error);
+		} catch {
+			// use original HTML if inlining fails
 		}
 	}
 

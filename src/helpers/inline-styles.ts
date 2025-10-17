@@ -18,23 +18,15 @@ export const inlineStyles = (html: string): string => {
 	}
 
 	try {
-		// juice will inline all styles from <style> tags and style attributes
 		return juice(html, {
-			// Preserve important declarations
 			preserveImportant: true,
-			// Remove style tags after inlining
 			removeStyleTags: true,
-			// Preserve media queries for responsive emails
 			preserveMediaQueries: false,
-			// Preserve font faces
 			preserveFontFaces: false,
-			// Apply width/height attributes
 			applyWidthAttributes: true,
 			applyHeightAttributes: true
 		});
-	} catch (error) {
-		// If inlining fails for any reason, return the original HTML
-		console.warn('Failed to inline CSS styles:', error);
+	} catch {
 		return html;
 	}
 };
@@ -52,17 +44,13 @@ export const extractBodyWithInlinedStyles = (html: string): string => {
 	}
 
 	try {
-		// First inline all styles
 		const inlinedHtml = inlineStyles(html);
 
-		// Then extract just the body content
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(inlinedHtml, 'text/html');
 
 		return doc.body ? doc.body.innerHTML : '';
-	} catch (error) {
-		console.warn('Failed to extract body with inlined styles:', error);
-		// Fallback to simple body extraction
+	} catch {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(html, 'text/html');
 		return doc.body ? doc.body.innerHTML : '';
