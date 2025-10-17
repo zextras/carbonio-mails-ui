@@ -59,12 +59,12 @@ export const extractBodyWithInlinedStyles = (html: string): string => {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(inlinedHtml, 'text/html');
 
-		return doc.body.innerHTML;
+		return doc.body ? doc.body.innerHTML : '';
 	} catch (error) {
 		console.warn('Failed to extract body with inlined styles:', error);
 		// Fallback to simple body extraction
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(html, 'text/html');
-		return doc.body.innerHTML;
+		return doc.body ? doc.body.innerHTML : '';
 	}
 };
