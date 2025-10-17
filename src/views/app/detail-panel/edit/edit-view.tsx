@@ -33,27 +33,6 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import {
-	useEditorAutoSendTime,
-	useEditorDraftSave,
-	useEditorDraftSaveProcessStatus,
-	useEditorSend,
-	useEditorAttachments,
-	deleteEditor,
-	useEditorDid,
-	useEditorsStore,
-	useEditorIsSmimeSign,
-	useEditorIdentityId,
-	useEditorIsSmimeEncrypt,
-	useEditorRecipients
-} from '../../../../store/editor';
-import {
-	EditorOperationAllowedStatus,
-	EditViewClosingReasons,
-	SaveDraftResponse
-} from '../../../../types';
-import { isValidEmail } from '../../../search/parts/utils';
-import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -67,6 +46,23 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+import {
+	useEditorAutoSendTime,
+	useEditorDraftSave,
+	useEditorDraftSaveProcessStatus,
+	useEditorSend,
+	useEditorAttachments,
+	deleteEditor,
+	useEditorDid,
+	useEditorsStore,
+	useEditorIsSmimeSign,
+	useEditorIdentityId,
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
+} from 'store/editor';
+import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
+import { isValidEmail } from 'views/search/parts/utils';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
 	editorId: string;
@@ -285,19 +281,29 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
-		const eventType = event?.dataTransfer?.types;
+	const processDragOver = (event: React.DragEvent): void => {
+		const eventType = event.dataTransfer?.types;
 		if (eventType?.includes('contact')) {
 			setDropZoneEnabled(false);
-
 			return;
 		}
+
 		event.preventDefault();
 		setDropZoneEnabled(true);
+	};
+
+	const handleDragOver = useCallback((event: React.DragEvent) => processDragOver(event), []);
+	const handleEditorDragOver = useCallback((event: DragEvent) => {
+		const reactEvent = {
+			...event,
+			preventDefault: () => event.preventDefault(),
+			dataTransfer: event.dataTransfer
+		} as unknown as React.DragEvent<HTMLElement>;
+		processDragOver(reactEvent);
 	}, []);
 
 	// TODO complete with new attachment management
-	const onDropEvent = useCallback(
+	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
@@ -312,7 +318,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[addStandardAttachments]
 	);
 
-	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
+	const handleDragLeave = useCallback((event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
 	}, []);
@@ -524,13 +530,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
-			onDragOver={onDragOverEvent}
+			onDragOver={handleDragOver}
 		>
 			{dropZoneEnabled && (
 				<DropZoneAttachment
-					onDragOverEvent={onDragOverEvent}
-					onDropEvent={onDropEvent}
-					onDragLeaveEvent={onDragLeaveEvent}
+					onDragOverEvent={handleDragOver}
+					onDropEvent={handleDrop}
+					onDragLeaveEvent={handleDragLeave}
 				/>
 			)}
 			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
@@ -595,7 +601,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
+					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>

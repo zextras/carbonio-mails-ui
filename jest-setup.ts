@@ -39,6 +39,17 @@ type DefaultBeforeAllTestsProps = {
 // Inject custom matchers for Jest
 expect.extend(matchers);
 
+// Global test mocks
+declare global {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const BASE_PATH: string;
+}
+
+// Set up BASE_PATH mock for TinyMCE asset loading in tests
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global as any).BASE_PATH = '/test-base-path/';
+
 export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }
 ): void => {
