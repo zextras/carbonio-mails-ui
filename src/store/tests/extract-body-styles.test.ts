@@ -1,10 +1,12 @@
+// noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement,HtmlUnknownTarget
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import type { MailMessage } from '../../types';
 import { extractBody } from '../editor-slice-utils';
-import type { MailMessage } from '../../types/index.d';
 
 describe('extractBody - style preservation', () => {
 	it('should preserve styles from head when extracting body for reply/forward', () => {
@@ -77,7 +79,7 @@ describe('extractBody - style preservation', () => {
 					]
 				}
 			]
-		} as any;
+		} as never;
 
 		const result = extractBody(mockMessage);
 
@@ -89,7 +91,7 @@ describe('extractBody - style preservation', () => {
 
 		// Verify that styles are inlined (preserved)
 		expect(result.richText).toContain('style=');
-		
+
 		// Check for some specific styles that should be inlined
 		// The exact format may vary, but styles should be present
 		expect(result.richText.toLowerCase()).toMatch(/font-family|background-color|border/);
@@ -137,7 +139,7 @@ describe('extractBody - style preservation', () => {
 					th {
 						background-color: #f8f8f8;
 						font-weight: bold;
-					}
+					} 
 					.footer {
 						margin-top: 20px;
 						font-size: 12px;
@@ -187,7 +189,7 @@ describe('extractBody - style preservation', () => {
 					]
 				}
 			]
-		} as any;
+		} as never;
 
 		const result = extractBody(mockMessage);
 
@@ -195,14 +197,13 @@ describe('extractBody - style preservation', () => {
 		expect(result.richText).toContain('Test Scientific Officer');
 		expect(result.richText).toContain('attendance regularisation');
 		expect(result.richText).toContain('Application Date');
-		
+
 		// Verify styles are inlined
 		expect(result.richText).toContain('style=');
-		
+
 		// The table and other elements should have inline styles now
 		// This ensures formatting is preserved when forwarding/replying
 		const hasInlineStyles = /style="[^"]*"/i.test(result.richText);
 		expect(hasInlineStyles).toBe(true);
 	});
 });
-
