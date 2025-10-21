@@ -6,12 +6,13 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -20,7 +21,7 @@ import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {
 	editor: TinyMCE;
-	files: FileList;
+	files: FileList | null | undefined;
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
@@ -29,8 +30,6 @@ export const RichTextEditorContainer = ({
 	editorId,
 	onDragOver
 }: TextEditorContainerProps): JSX.Element => {
-	const [Composer] = useIntegratedComponent('composer');
-
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 
@@ -62,7 +61,7 @@ export const RichTextEditorContainer = ({
 	}, []);
 
 	const onComposerInit = useCallback(
-		(evt: Event, composer: Editor) => {
+		(_evt: Event, composer: Editor) => {
 			composerRef.current = composer;
 			setTextProvider({
 				setCurrentText: onExternalTextChanges,
@@ -80,6 +79,7 @@ export const RichTextEditorContainer = ({
 		const richText = composerRef.current.getContent({ format: 'html' });
 		setText({ plainText, richText }, { syncTextProvider: false });
 	}, [setText]);
+
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
@@ -104,11 +104,12 @@ export const RichTextEditorContainer = ({
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
 			addInlineAttachments(files, {
 				onSaveComplete: (inlineAttachments) => {
 					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
+						const img = `&nbsp;<img alt="Inline attachment" data-pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
 						tinymce?.activeEditor?.insertContent(img);
 					});
 				}
@@ -126,6 +127,7 @@ export const RichTextEditorContainer = ({
 			(font: { label: string; value: string }) => `${font.label}=${font.value};`
 		);
 		return {
+			base_url: `${BASE_PATH}`,
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
@@ -177,6 +179,10 @@ export const RichTextEditorContainer = ({
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
 				if (!editor) return noop;
+
+				// Call the init handler
+				onComposerInit({} as Event, editor);
+
 				editor.on('paste', (event) => {
 					const editViewWrapper = document.querySelector(
 						'[data-testid="edit-view-editor"]'
@@ -190,6 +196,13 @@ export const RichTextEditorContainer = ({
 
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
+
+				// Handle drag over events
+				if (onDragOver) {
+					editor.on('dragover', (event: DragEvent) => {
+						onDragOver(event);
+					});
+				}
 
 				const mutationObserver = new MutationObserver(() => {
 					editor.dispatch('ResizeWindow');
@@ -210,6 +223,8 @@ export const RichTextEditorContainer = ({
 	}, [
 		editorId,
 		onComposerClose,
+		onComposerInit,
+		onDragOver,
 		onTextChange,
 		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
 		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
@@ -226,10 +241,13 @@ export const RichTextEditorContainer = ({
 				<Composer
 					initialValue={initialValue.current}
 					onFileSelect={onInlineAttachmentsSelected}
-					onDragOver={onDragOver}
 					customInitOptions={composerCustomOptions}
-					onInit={onComposerInit}
-					onDirty={onTextChange}
+					accountSettingsPrefs={{
+						zimbraPrefLocale: prefs?.zimbraPrefLocale,
+						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+					}}
 				/>
 			</StyledComp.EditorWrapper>
 		</Container>

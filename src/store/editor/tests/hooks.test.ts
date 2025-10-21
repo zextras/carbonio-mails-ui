@@ -22,8 +22,8 @@ import {
 	// useEditorSend
 	useEditorSubject
 } from 'store/editor/hooks';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { generateEditorV2Case } from 'tests/generators/editors';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateEditorV2Case } from '__test__/generators/editors';
 
 describe('all editor hooks', () => {
 	describe('adding, updating, removing editors', () => {

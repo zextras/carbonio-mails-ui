@@ -5,7 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 
-import type { SignItemType } from 'types/index.d';
+import type { SignItemType } from 'types';
 
 export const buildSignature = ({
 	id = faker.string.uuid(),

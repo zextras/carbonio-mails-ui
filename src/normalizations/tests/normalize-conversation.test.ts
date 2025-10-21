@@ -14,7 +14,7 @@ import {
 	generateCompleteMessageFromAPI,
 	generateConversationFromAPI,
 	generateSoapConversationMessage
-} from 'tests/generators/api';
+} from '__test__/generators/api';
 import { Participant, SoapConversation } from 'types/index.d';
 
 describe('Normalize conversation', () => {

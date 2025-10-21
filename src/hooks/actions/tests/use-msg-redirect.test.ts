@@ -8,10 +8,10 @@ import { act } from 'react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, screen } from '@test-setup';
+import { TIMERS } from '__test__/constants';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgRedirectDescriptor, useMsgRedirectFn } from 'hooks/actions/use-msg-redirect';
-import { TIMERS } from 'tests/constants';
-import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgRedirect', () => {
 	const msg = generateMessage();

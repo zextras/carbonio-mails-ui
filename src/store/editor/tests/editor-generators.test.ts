@@ -9,7 +9,7 @@ import { find } from 'lodash';
 import { EditViewActions } from 'constants/index';
 import { generateEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/hooks/editors';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActionsType, MailMessage } from 'types/index.d';
 
 jest.mock('store/editor/hooks/editors', () => ({

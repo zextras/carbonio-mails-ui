@@ -13,7 +13,7 @@ import { map } from 'lodash';
 import { setupTest } from '@test-setup';
 import { tags } from '@test-utils/tags/tags';
 import { updateConversations } from 'store/emails/store';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 
 describe('ConversationsMultipleSelectionActions', () => {

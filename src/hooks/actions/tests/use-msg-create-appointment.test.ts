@@ -16,7 +16,7 @@ import {
 	useMsgCreateAppointmentDescriptor,
 	useMsgCreateAppointmentFn
 } from 'hooks/actions/use-msg-create-appointment';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { GetMsgRequest } from 'types/index.d';
 
 describe('useMsgCreateAppointment', () => {

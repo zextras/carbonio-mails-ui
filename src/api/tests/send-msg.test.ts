@@ -14,7 +14,7 @@ import { sendMsg, sendMsgFromEditor } from 'api/send-msg';
 import { generateEditor } from 'store/editor/editor-generators';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MailsEditorV2 } from 'types/index.d';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 

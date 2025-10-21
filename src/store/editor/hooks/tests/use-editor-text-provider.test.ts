@@ -10,7 +10,7 @@ import { setupHook } from '@test-setup';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorTextProvider } from 'store/editor/hooks/editor';
 import { useEditorsStore } from 'store/editor/store';
-import { setupEditorStore } from 'tests/generators/editor-store';
+import { setupEditorStore } from '__test__/generators/editor-store';
 
 describe('useEditorTextProvider', () => {
 	it('should return an object with the current textProvider and its setter', () => {

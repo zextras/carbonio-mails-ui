@@ -13,7 +13,7 @@ import {
 	useMsgForwardAsAttachmentDescriptor,
 	useMsgForwardAsAttachmentFn
 } from 'hooks/actions/use-msg-forward-as-attachment';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useMsgForwardAsAttachment', () => {
 	const msg = generateMessage();

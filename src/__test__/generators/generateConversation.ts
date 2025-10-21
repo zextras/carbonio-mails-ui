@@ -9,8 +9,8 @@ import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio
 import { times } from 'lodash';
 
 import { updateConversations, updateMessages } from 'store/emails/store';
-import { generateMessage, MessageGenerationParams } from 'tests/generators/generateMessage';
-import type { MailMessage, NormalizedConversation, Participant } from 'types/index.d';
+import { generateMessage, MessageGenerationParams } from '__test__/generators/generateMessage';
+import type { MailMessage, NormalizedConversation, Participant } from 'types';
 
 /**
  *

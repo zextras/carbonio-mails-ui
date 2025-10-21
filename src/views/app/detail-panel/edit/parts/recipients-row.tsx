@@ -13,8 +13,29 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { Participant } from '../../../../../types';
+import { Participant } from 'types';
 import { isValidEmail } from 'views/search/parts/utils';
+
+/**
+ * Get the name for a contact based on available fields
+ * @param contact - The contact input item
+ * @returns The contact name or undefined
+ */
+const getContactName = (contact: ContactInputItem): string | undefined => {
+	if (contact.value.type !== CONTACT_TYPES.CONTACT) {
+		return undefined;
+	}
+
+	if (contact.value.fullName) {
+		return contact.value.fullName;
+	}
+
+	if (contact.value.firstName && contact.value.lastName) {
+		return `${contact.value.firstName} ${contact.value.lastName}`;
+	}
+
+	return contact.value.firstName;
+};
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;
@@ -64,7 +85,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 						type,
 						address: contact.value.email,
 						isGroup,
-						name: contact.value.type === CONTACT_TYPES.CONTACT ? contact.value.firstName : undefined
+						name: getContactName(contact)
 					}
 				);
 			});

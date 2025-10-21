@@ -11,12 +11,12 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
 import { setupHook, screen } from '@test-setup';
+import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvMoveToFolderDescriptor,
 	useConvMoveToFolderFn
 } from 'hooks/actions/use-conv-move-to-folder';
-import { TIMERS } from 'tests/constants';
 
 describe('useConvMoveToFolder', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>

@@ -13,7 +13,7 @@ import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 

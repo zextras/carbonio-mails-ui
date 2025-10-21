@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-unnecessary-act */
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -7,7 +8,7 @@
 import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
@@ -16,21 +17,7 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { addEditor } from '../../../../../store/editor';
-import type {
-	MailsEditorV2,
-	SaveDraftRequest,
-	SaveDraftResponse,
-	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from '../../../../../types';
-import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
@@ -46,18 +33,32 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { getDefaultIdentity } from 'helpers/identities';
+import { addEditor } from 'store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
-import { generateMessage } from 'tests/generators/generateMessage';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
+import { generateMessage } from '__test__/generators/generateMessage';
+import type {
+	MailsEditorV2,
+	SaveDraftRequest,
+	SaveDraftResponse,
+	SoapDraftMessageObj,
+	SoapEmailMessagePartObj,
+	SoapMailMessage,
+	SoapMailMessagePart
+} from 'types';
+import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -110,7 +111,7 @@ const getSoapMailBodyContent = (
 	 * present:
 	 * - a text/plain type content
 	 * - a text/html type content
-	 * The one who matches the gioven content type will be returned
+	 * The one who matches the given content type will be returned
 	 */
 	if (mp.ct === CT_MULTIPART_ALTERNATIVE) {
 		const part = find<SoapMailMessagePart | SoapEmailMessagePartObj>(mp.mp, ['ct', contentType]);
@@ -148,8 +149,8 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-jest.mock('../../../../../store/editor', () => ({
-	...jest.requireActual('../../../../../store/editor'),
+jest.mock('store/editor', () => ({
+	...jest.requireActual('store/editor'),
 	deleteEditor: jest.fn()
 }));
 
@@ -1219,6 +1220,129 @@ describe('Edit view', () => {
 					);
 				});
 			});
+		});
+	});
+
+	describe('Text Editor Drag Over functionality', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		beforeEach(() => {
+			aSuccessfullSaveDraft();
+		});
+
+		it('should enable drop zone when dragging files over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a mock file for the drag event
+			const file = new File(['test'], 'test.txt', { type: 'text/plain' });
+
+			// Use fireEvent.dragOver with proper dataTransfer mock
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Check if drop zone becomes visible (indicating it was enabled)
+			await waitFor(() => {
+				const dropZone = screen.queryByTestId('drop-zone-attachment');
+				expect(dropZone).toBeInTheDocument();
+			});
+		});
+
+		it('should disable drop zone when dragging contacts over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver with contact type
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['contact'],
+						getData: () => 'contact-data'
+					}
+				});
+			});
+
+			// Verify drop zone is not enabled/visible for contacts
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
+		it('should handle drag events without dataTransfer gracefully', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver without dataTransfer
+			await act(async () => {
+				expect(() => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: null
+					});
+				}).not.toThrow();
+			});
+		});
+
+		it('should prevent default behavior for file types other than contacts', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Test with various file types
+			const fileTypes = ['application/pdf', 'image/jpeg', 'text/html', 'application/zip'];
+
+			// eslint-disable-next-line no-restricted-syntax
+			for (const fileType of fileTypes) {
+				const file = new File(['test'], `test.${fileType.split('/')[1]}`, { type: fileType });
+
+				// Use fireEvent.dragOver for each file type
+				// eslint-disable-next-line no-await-in-loop
+				await act(async () => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: {
+							types: [fileType],
+							files: [file]
+						}
+					});
+				});
+
+				// Check if drop zone is enabled for file types
+				// eslint-disable-next-line no-await-in-loop
+				await waitFor(() => {
+					const dropZone = screen.queryByTestId('drop-zone-attachment');
+					expect(dropZone).toBeInTheDocument();
+				});
+			}
 		});
 	});
 });
