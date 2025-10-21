@@ -18,9 +18,9 @@ import { within, makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { tags } from '@test-utils/tags/tags';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { generateSoapConversationMessage } from '__test__/generators/api';
 import * as searchSoapApi from 'api/search-soap-api';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
 	ConvActionRequest,
 	ConvActionResponse,

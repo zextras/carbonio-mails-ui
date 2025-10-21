@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 import { setupTest, screen } from '@test-setup';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { setSearchResultsByMessage, updateMessageStatus } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
 jest.mock('react-router-dom', () => ({

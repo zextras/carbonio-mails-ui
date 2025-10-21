@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 
 describe('generateConversation', () => {
 	describe('populateMessagesInEmailStore', () => {

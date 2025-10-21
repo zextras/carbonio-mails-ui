@@ -5,8 +5,8 @@
  */
 
 import { useEditorsStore } from 'store/editor/store';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
 
 describe('store', () => {
 	test('setSize should set the editor size for the provided editor id', async () => {

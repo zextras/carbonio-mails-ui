@@ -13,7 +13,7 @@ import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { CONVACTIONS } from 'commons/utilities';
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 

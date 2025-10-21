@@ -9,7 +9,7 @@ import React from 'react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
 
 describe('MessagePreviewPanelContainer', () => {

@@ -33,6 +33,7 @@ const config: Config = {
 			'<rootDir>/__mocks__/fileMock.js',
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js',
 		'^uuid$': require.resolve('uuid'),
+		'^@test-mocks/(.*)$': '<rootDir>/__mocks__/$1',
 		'^@test-utils/(.*)$': '<rootDir>/src/__test__/mocks/$1',
 		'^@test-setup$': '<rootDir>/src/__test__/test-setup.tsx',
 		'^@jest-setup$': '<rootDir>/jest-setup.ts'
@@ -41,7 +42,7 @@ const config: Config = {
 	testEnvironmentOptions: {
 		customExportConditions: ['']
 	},
-	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons).+\\.js$'],
+	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons|until-async).+\\.js$'],
 	transform: {
 		'^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { configFile: './babel.config.jest.js' }]
 	}

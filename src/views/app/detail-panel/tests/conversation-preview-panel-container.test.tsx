@@ -11,7 +11,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
 import { updateConversationStatus } from 'store/emails/store';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 
 describe('ConversationPreviewPanelContainer', () => {

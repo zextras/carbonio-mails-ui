@@ -10,9 +10,9 @@ import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, screen } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgRestoreDescriptor, useMsgRestoreFn } from 'hooks/actions/use-msg-restore';
-import { TIMERS } from 'tests/constants';
 
 describe('useMsgRestore', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });

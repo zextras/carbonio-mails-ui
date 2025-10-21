@@ -4,6 +4,7 @@
 		"noUncheckedIndexedAccess": false,
 		"baseUrl": "./src",
 		"paths": {
+			"@test-mocks/*": ["../__mocks__/*"],
 			"@test-utils/*": ["__test__/mocks/*"],
 			"@test-setup": ["__test__/test-setup.tsx"],
 			"@jest-setup": ["../jest-setup.ts"]

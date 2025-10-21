@@ -14,7 +14,7 @@ import * as storeHooks from 'store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConversationFromAPI
-} from 'tests/generators/api';
+} from '__test__/generators/api';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 
 describe('ConversationListHooks', () => {

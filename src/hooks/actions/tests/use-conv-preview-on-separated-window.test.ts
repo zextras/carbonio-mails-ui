@@ -16,7 +16,7 @@ import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
 } from 'hooks/actions/use-conv-preview-on-separated-window';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 
 describe('useConvPreviewOnSeparatedWindow', () => {
 	const conv = generateConversation({ messageGenerationCount: faker.number.int({ max: 42 }) });

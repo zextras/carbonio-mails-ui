@@ -14,7 +14,7 @@ import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
 } from 'hooks/actions/use-msg-preview-on-separated-window';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useMsgPreviewOnSeparatedWindow', () => {
 	const msg = generateMessage({ isComplete: true });

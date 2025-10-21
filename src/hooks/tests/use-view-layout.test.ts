@@ -6,9 +6,9 @@
 import { faker } from '@faker-js/faker';
 
 import { setupHook } from '@test-setup';
+import { mockLayoutStorage } from '__test__/layouts-utils';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
 import { useViewLayout } from 'hooks/use-view-layout';
-import { mockLayoutStorage } from 'tests/layouts-utils';
 
 describe('useViewLayout', () => {
 	it('should return an object with proper fields', () => {

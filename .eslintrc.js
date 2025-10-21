@@ -90,5 +90,5 @@ module.exports = {
 			}
 		}
 	},
-	ignorePatterns: ['notice.template.ts']
+	ignorePatterns: ['notice.template.ts', 'carbonio.webpack.js']
 };

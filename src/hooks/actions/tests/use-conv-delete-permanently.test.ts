@@ -14,12 +14,12 @@ import { times } from 'lodash';
 
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
 } from 'hooks/actions/use-conv-delete-permanently';
-import { TIMERS } from 'tests/constants';
 import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvDeletePermanently', () => {
