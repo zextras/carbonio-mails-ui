@@ -11,7 +11,9 @@ import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-past
 jest.mock('lodash', () => ({
 	...jest.requireActual('lodash'),
 	debounce: (fn: (...args: any[]) => any): any => fn,
-	noop: (): void => {}
+	noop: (): void => {
+		// do nothing
+	}
 }));
 
 jest.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
