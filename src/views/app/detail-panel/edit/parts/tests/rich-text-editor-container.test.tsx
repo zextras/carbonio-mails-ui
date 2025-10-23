@@ -1,3 +1,5 @@
+// noinspection HtmlRequiredAltAttribute
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
