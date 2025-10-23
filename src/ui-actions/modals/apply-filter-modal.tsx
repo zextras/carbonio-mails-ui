@@ -179,10 +179,10 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 							<Trans
 								t={t}
 								i18nKey="modals.apply_filters.label_involved_messages"
-								involvedMessagesCount={involvedMessagesCount}
+								values={{ involvedMessagesCount }}
 							>
-								<TextStyler bold>{`animation: ${involvedMessagesCount} messages`}</TextStyler> will
-								be processed inside the selected folder.
+								<TextStyler bold>{involvedMessagesCount} messages</TextStyler> will be processed
+								inside the selected folder.
 							</Trans>
 						</Text>
 						<Text>
