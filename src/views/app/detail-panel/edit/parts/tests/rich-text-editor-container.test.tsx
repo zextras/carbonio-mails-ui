@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
 import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -115,7 +116,21 @@ describe('RichTextEditorContainer', () => {
 		parent.appendChild(editWrapper);
 		document.body.appendChild(parent);
 
-		const event = { preventDefault: jest.fn() } as unknown as ClipboardEvent;
+		// Create mock clipboard data with image items
+		const mockClipboardData = {
+			items: [
+				{
+					type: 'image/png',
+					getAsFile: (): File => new File([''], 'test.png', { type: 'image/png' })
+				}
+			],
+			getData: jest.fn(() => '')
+		};
+
+		const event = {
+			preventDefault: jest.fn(),
+			clipboardData: mockClipboardData
+		} as unknown as ClipboardEvent;
 
 		editorInstance.dispatch('paste', event);
 
