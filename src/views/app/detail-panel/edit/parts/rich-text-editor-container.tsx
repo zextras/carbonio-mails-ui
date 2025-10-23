@@ -125,13 +125,15 @@ export const RichTextEditorContainer = ({
 			)?.parentElement;
 			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
 
-			// Only prevent default if handleEditorPaste will handle image uploads
-			// For non-image content, allow default paste behavior
+			const html = event.clipboardData?.getData('text/html');
+			const hasTableContent = html && /<table/i.test(html);
 			const hasImageFiles = Array.from(event.clipboardData?.items ?? []).some((item) =>
 				item.type.includes('image')
 			);
 
-			if (hasImageFiles) {
+			// Only prevent default if we have images AND no table content
+			// If table content is present (Excel/Calc use case), allow default paste behavior
+			if (hasImageFiles && !hasTableContent) {
 				event.preventDefault();
 			}
 
