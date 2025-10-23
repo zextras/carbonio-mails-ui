@@ -80,6 +80,7 @@ type EditorAttachmentHook = {
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
+	removeInlineAttachments: (usedCids: string[]) => void;
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
@@ -299,7 +300,21 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 
 		return addAndSaveGenericAttachments(files, true, customizedCallbacks);
 	};
+	const removeInlineAttachments = (usedCids: string[]): void => {
+		const editor = getEditor({ id: editorId });
+		if (!editor) return;
 
+		editor.savedAttachments.forEach((att) => {
+			if (att.isInline && att.contentId) {
+				const cidUrl = composeCidUrlFromContentId(att.contentId);
+				if (cidUrl && !usedCids.includes(cidUrl)) {
+					useEditorsStore.getState().removeSavedAttachment(editorId, att.partName);
+				}
+			}
+		});
+		computeAndUpdateEditorStatus(editorId);
+		debouncedSaveDraft(editorId);
+	};
 	return {
 		hasStandardAttachments: unsavedStandardAttachments.length + savedStandardAttachments.length > 0,
 		unsavedStandardAttachments,
@@ -322,6 +337,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		},
 		addStandardAttachments,
 		addInlineAttachments,
-		addUploadedAttachment
+		addUploadedAttachment,
+		removeInlineAttachments
 	};
 };
