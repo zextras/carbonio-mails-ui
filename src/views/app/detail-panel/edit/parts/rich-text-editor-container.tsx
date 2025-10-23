@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';
@@ -39,7 +39,7 @@ export const RichTextEditorContainer = ({
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments } = useEditorAttachments(editorId);
+	const { addInlineAttachments, removeInlineAttachments } = useEditorAttachments(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -117,26 +117,76 @@ export const RichTextEditorContainer = ({
 		[addInlineAttachments]
 	);
 
+	function createPasteHandler(editor: Editor, _editorId: string) {
+		return (event: ClipboardEvent): void => {
+			const editViewWrapper = document.querySelector(
+				'[data-testid="edit-view-editor"]'
+			)?.parentElement;
+			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
+
+			event.preventDefault();
+			handleEditorPaste(editor, _editorId, event);
+
+			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+			if (editViewWrapper) {
+				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
+			}
+		};
+	}
+
+	function createAttachmentCleanupHandler(editor: Editor, removeFn: (usedCids: string[]) => void) {
+		return (): void => {
+			const content = editor.getContent({ format: 'html' });
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(content, 'text/html');
+			const usedCids = [
+				...Array.from(doc.querySelectorAll('img[pnsrc]')).map((img) => img.getAttribute('pnsrc')),
+				...Array.from(doc.querySelectorAll('img[src^="cid:"]')).map((img) =>
+					img.getAttribute('src')
+				)
+			].filter((cid): cid is string => Boolean(cid));
+
+			removeFn(usedCids);
+		};
+	}
+
+	function setupResizeObserver(editor: Editor): MutationObserver {
+		const mutationObserver = new MutationObserver(() => {
+			editor.dispatch('ResizeWindow');
+		});
+
+		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+		if (boardElement) {
+			mutationObserver.observe(boardElement, {
+				attributes: true,
+				attributeFilter: ['style']
+			});
+		}
+
+		return mutationObserver;
+	}
+
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
 		const fontFamilyOptions = getFonts();
 
-		const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
-		const fontsOptionsToString = fontFamilyOptions.map(
-			(font: { label: string; value: string }) => `${font.label}=${font.value};`
-		);
+		const fontSizesOptionsToString = fontSizesOptions.join(' ');
+		const fontsOptionsToString = fontFamilyOptions
+			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
+			.join('');
+
 		return {
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
 			content_style: `
-            p { margin: 0; }
-            body *:not(.signature-div):not(.signature-div *) {
-            color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
-            font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
-            font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
-            }`,
+			p { margin: 0; }
+			body *:not(.signature-div):not(.signature-div *) {
+				color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
+				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
+				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
+			}`,
 			plugins: [
 				'advlist',
 				'autolink',
@@ -177,31 +227,30 @@ export const RichTextEditorContainer = ({
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
 				if (!editor) return noop;
-				editor.on('paste', (event) => {
-					const editViewWrapper = document.querySelector(
-						'[data-testid="edit-view-editor"]'
-					)?.parentElement;
-					const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
-					event.preventDefault();
-					handleEditorPaste(editor, editorId, event);
-					// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-					if (editViewWrapper) editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
-				});
 
+				// Call the init handler
+				onComposerInit({} as Event, editor);
+
+				const handlePaste = createPasteHandler(editor, editorId);
+				const handleAttachmentCleanup = createAttachmentCleanupHandler(
+					editor,
+					removeInlineAttachments
+				);
+
+				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
-
-				const mutationObserver = new MutationObserver(() => {
-					editor.dispatch('ResizeWindow');
-				});
-				const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-				if (boardElement) {
-					mutationObserver.observe(boardElement, {
-						attributes: true,
-						attributeFilter: ['style']
+				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
+				editor.on('Change', debounce(handleAttachmentCleanup, 300));
+				if (onDragOver) {
+					editor.on('dragover', (tinyEvent: any) => {
+						const domEvent = tinyEvent?.raw ?? tinyEvent?.event ?? tinyEvent?.originalEvent ?? tinyEvent;
+						// forced cast — makes TypeScript quiet but it's not a real React SyntheticEvent
+						onDragOver(domEvent as unknown as React.DragEvent<HTMLElement>);
 					});
 				}
 
+				const mutationObserver = setupResizeObserver(editor);
 				return () => {
 					mutationObserver.disconnect();
 				};
@@ -213,7 +262,8 @@ export const RichTextEditorContainer = ({
 		onTextChange,
 		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
 		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize
+		prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		removeInlineAttachments
 	]);
 
 	return (
