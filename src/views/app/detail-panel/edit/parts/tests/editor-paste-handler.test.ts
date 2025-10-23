@@ -1,3 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+// noinspection HtmlRequiredLangAttribute
+
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -14,9 +17,9 @@ import {
 	handleEditorPaste
 } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-jest.mock('../../../../../../api/upload-file-api');
-jest.mock('../../../../../../store/emails/actions/save-draft-action');
-jest.mock('../../../../../../store/editor');
+jest.mock('api/upload-file-api');
+jest.mock('store/emails/actions/save-draft-action');
+jest.mock('store/editor');
 
 jest.mock('axios');
 
@@ -70,10 +73,58 @@ describe('handleEditorPaste', () => {
 						getAsFile: jest.fn(() => null)
 					}
 				],
-				getData: jest.fn(() => 'http://example.com/image.png')
+				getData: jest.fn(() => 'https://example.com/image.png')
 			}
 		} as unknown as ClipboardEvent;
 		handleEditorPaste(editor, 'editor-1', event);
+		expect(event.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('should allow default paste behavior for Excel tables (HTML without images)', () => {
+		const editor = createMockEditor();
+		const excelTableHtml = `<table><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></table>`;
+		const event = {
+			preventDefault: jest.fn(),
+			clipboardData: {
+				items: [
+					{
+						type: 'text/plain',
+						getAsFile: jest.fn(() => null)
+					}
+				],
+				getData: jest.fn((format: string) => {
+					if (format === 'text/html') return excelTableHtml;
+					if (format === 'text/plain') return 'Cell 1\tCell 2\nCell 3\tCell 4';
+					return '';
+				})
+			}
+		} as unknown as ClipboardEvent;
+		handleEditorPaste(editor, 'editor-1', event);
+		// Should not prevent default for HTML content without images
+		expect(event.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('should skip image upload when table content is present (Excel/Calc paste)', () => {
+		const editor = createMockEditor();
+		const excelTableHtml = `<table><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></table>`;
+		const event = {
+			preventDefault: jest.fn(),
+			clipboardData: {
+				items: [
+					{
+						type: 'image/png',
+						getAsFile: jest.fn(() => new File(['dummy'], 'screenshot.png', { type: 'image/png' }))
+					}
+				],
+				getData: jest.fn((format: string) => {
+					if (format === 'text/html') return excelTableHtml;
+					if (format === 'text/plain') return 'Cell 1\tCell 2\nCell 3\tCell 4';
+					return '';
+				})
+			}
+		} as unknown as ClipboardEvent;
+		handleEditorPaste(editor, 'editor-1', event);
+		// Should not prevent default when table content is present, even with images
 		expect(event.preventDefault).not.toHaveBeenCalled();
 	});
 
