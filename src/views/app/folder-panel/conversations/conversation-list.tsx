@@ -31,7 +31,15 @@ export const ConversationList = (): React.JSX.Element => {
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
+
+	const toggleExpandedConversation = React.useCallback((conversationId: string) => {
+		setExpandedConversations((prev) => ({
+			...prev,
+			[conversationId]: !prev[conversationId]
+		}));
+	}, []);
 
 	const {
 		deselectAll,
@@ -81,6 +89,7 @@ export const ConversationList = (): React.JSX.Element => {
 			map(conversationsIds, (id, index) => {
 				const active = itemId === id;
 				const isSelected = selectedItems.has(id);
+				const isConversationExpanded = expandedConversations[id];
 				return (
 					<ListItem
 						data-testid={`conversation-list-item-${id}`}
@@ -114,6 +123,8 @@ export const ConversationList = (): React.JSX.Element => {
 										folderId={folderId}
 										index={index}
 										onSelect={selectRange}
+										onToggleExpanded={toggleExpandedConversation}
+										isConversationExpanded={isConversationExpanded}
 									/>
 								</>
 							) : (
@@ -132,7 +143,9 @@ export const ConversationList = (): React.JSX.Element => {
 			keyboardShortcutsIds,
 			selectRange,
 			selectedItems,
-			selectedItemsMap
+			selectedItemsMap,
+			expandedConversations,
+			toggleExpandedConversation
 		]
 	);
 

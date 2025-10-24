@@ -26,6 +26,8 @@ type ConversationListItemComponentProps = {
 	visible?: boolean;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	onToggleExpanded: (conversationId: string) => void;
+	isConversationExpanded: boolean;
 };
 
 export const ConversationListItemComponent = ({
@@ -42,7 +44,9 @@ export const ConversationListItemComponent = ({
 	selectedIds = [],
 	folderId,
 	index,
-	onSelect
+	onSelect,
+	onToggleExpanded,
+	isConversationExpanded
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
 
@@ -69,6 +73,8 @@ export const ConversationListItemComponent = ({
 					folderId={folderId}
 					index={index}
 					onSelect={onSelect}
+					onToggleExpanded={onToggleExpanded}
+					isConversationExpanded={isConversationExpanded}
 				/>
 			</DragItemWrapper>
 		)

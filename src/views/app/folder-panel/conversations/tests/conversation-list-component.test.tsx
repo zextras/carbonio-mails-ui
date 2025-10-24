@@ -48,6 +48,8 @@ function setUpConversationList({
 			setDraggedIds={jest.fn()}
 			index={0}
 			onSelect={jest.fn()}
+			onToggleExpanded={jest.fn()}
+			isConversationExpanded={false}
 		/>
 	));
 

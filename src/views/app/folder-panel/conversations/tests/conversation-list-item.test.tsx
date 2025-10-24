@@ -26,6 +26,7 @@ import {
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const canExecuteCallback = jest.fn();
+const PARTICIPANTS_NAME_LABEL_TESTID = 'participants-name-label';
 
 jest.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
 	...jest.requireActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
@@ -61,7 +62,9 @@ describe('conversation-list-item component', () => {
 					isSearchModule,
 					folderId,
 					index: 0,
-					onSelect: noop
+					onSelect: noop,
+					onToggleExpanded: noop,
+					isConversationExpanded: false
 				};
 				setConversationsInEmailStore([conversation], false);
 
@@ -100,7 +103,9 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 					setupTest(<ConversationListItem {...props} />);
 					const avatar = await screen.findByTestId(
@@ -141,7 +146,9 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -189,7 +196,9 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -240,7 +249,9 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 
 					setupTest(<ConversationListItem {...props} />);
@@ -287,12 +298,14 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 
 					setupTest(<ConversationListItem {...props} />);
 
-					const senderLabel = screen.queryByTestId('participants-name-label');
+					const senderLabel = screen.queryByTestId(PARTICIPANTS_NAME_LABEL_TESTID);
 					if (assertion.value) {
 						await act(async () => {
 							expect(senderLabel).toBeVisible();
@@ -331,12 +344,14 @@ describe('conversation-list-item component', () => {
 						isSearchModule,
 						folderId: folder.id,
 						index: 0,
-						onSelect: noop
+						onSelect: noop,
+						onToggleExpanded: noop,
+						isConversationExpanded: false
 					};
 
 					setupTest(<ConversationListItem {...props} />);
 
-					const senderLabel = screen.queryByTestId('participants-name-label');
+					const senderLabel = screen.queryByTestId(PARTICIPANTS_NAME_LABEL_TESTID);
 					await act(async () => {
 						expect(senderLabel).toHaveTextContent(labelContent);
 					});
@@ -372,11 +387,13 @@ describe('conversation-list-item component', () => {
 					isSearchModule,
 					folderId: FOLDERS.INBOX,
 					index: 0,
-					onSelect: noop
+					onSelect: noop,
+					onToggleExpanded: noop,
+					isConversationExpanded: false
 				};
 
 				setupTest(<ConversationListItem {...props} />);
-				const senderLabel = screen.queryByTestId('participants-name-label');
+				const senderLabel = screen.queryByTestId(PARTICIPANTS_NAME_LABEL_TESTID);
 				await act(async () => {
 					expect(senderLabel).toHaveTextContent('mario');
 				});
@@ -405,7 +422,9 @@ describe('conversation-list-item component', () => {
 					isSearchModule,
 					folderId,
 					index: 0,
-					onSelect: noop
+					onSelect: noop,
+					onToggleExpanded: noop,
+					isConversationExpanded: false
 				};
 
 				setupTest(<ConversationListItem {...props} />);
@@ -428,7 +447,9 @@ describe('conversation-list-item component', () => {
 					isSearchModule,
 					folderId,
 					index: 0,
-					onSelect: noop
+					onSelect: noop,
+					onToggleExpanded: noop,
+					isConversationExpanded: false
 				};
 
 				setupTest(<ConversationListItem {...props} />);
@@ -453,7 +474,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule,
 				folderId,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -488,7 +511,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule: false,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
@@ -529,7 +554,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule: false,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -571,7 +598,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
@@ -612,7 +641,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			const { user } = setupTest(<ConversationListItem {...props} />);
@@ -652,7 +683,9 @@ describe('conversation-list-item component', () => {
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded: noop,
+				isConversationExpanded: false
 			};
 
 			setupTest(<ConversationListItem {...props} />);
@@ -670,6 +703,8 @@ describe('conversation-list-item component', () => {
 
 			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
 
+			const onToggleExpanded = jest.fn();
+
 			const props: ConversationListItemProps = {
 				conversation,
 				selected: false,
@@ -678,17 +713,12 @@ describe('conversation-list-item component', () => {
 				isSearchModule: true,
 				folderId: FOLDERS.INBOX,
 				index: 0,
-				onSelect: noop
+				onSelect: noop,
+				onToggleExpanded,
+				isConversationExpanded: true
 			};
 
 			setupTest(<ConversationListItem {...props} />);
-
-			const toggleButton = screen.getByTestId('ToggleExpand');
-			await waitFor(() => {
-				expect(toggleButton).toBeVisible();
-			});
-
-			fireEvent.click(toggleButton);
 
 			makeAllItemsVisible();
 
