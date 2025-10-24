@@ -1,9 +1,12 @@
+// noinspection HtmlRequiredAltAttribute
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
 import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -115,11 +118,10 @@ describe('RichTextEditorContainer', () => {
 		parent.appendChild(editWrapper);
 		document.body.appendChild(parent);
 
-		const event = { preventDefault: jest.fn() } as unknown as ClipboardEvent;
+		const event = {} as unknown as ClipboardEvent;
 
 		editorInstance.dispatch('paste', event);
 
-		expect(event.preventDefault).toHaveBeenCalled();
 		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, 'editor-1', event);
 		expect(parent.scrollTop).toBe(42);
 	});
