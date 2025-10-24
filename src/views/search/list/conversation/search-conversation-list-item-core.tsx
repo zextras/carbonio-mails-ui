@@ -29,7 +29,7 @@ type SearchConversationListItemCoreProps = {
 	selected: boolean;
 	selecting: boolean;
 	open: boolean;
-	setOpen: (
+	toggleCollapseElementCallback: (
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
 	) => void;
 	parent: string;
@@ -41,7 +41,7 @@ export const SearchConversationListItemCore = ({
 	selected,
 	selecting,
 	open,
-	setOpen,
+	toggleCollapseElementCallback,
 	parent,
 	index,
 	onSelect
@@ -83,13 +83,13 @@ export const SearchConversationListItemCore = ({
 	);
 
 	const conversationId = conversation.id;
-	const expandConversation = useCallback(
-		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
-			e.preventDefault();
-			setOpen(e);
-		},
-		[setOpen]
-	);
+	// const expandConversation = useCallback(
+	// 	(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
+	// 		e.preventDefault();
+	// 		setOpen(conversationId);
+	// 	},
+	// 	[setOpen]
+	// );
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
@@ -196,7 +196,7 @@ export const SearchConversationListItemCore = ({
 									labelColor="text"
 									backgroundColor="transparent"
 									icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
-									onClick={expandConversation}
+									onClick={toggleCollapseElementCallback}
 								/>
 							</Tooltip>
 						)}

@@ -95,10 +95,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		[previewOnSeparatedWindow]
 	);
 
-	const handleToggleExpanded = useCallback(
+	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-
 			if (
 				!isConversationExpanded &&
 				conversationStatus !== API_REQUEST_STATUS.fulfilled &&
@@ -129,7 +128,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						selected={selected}
 						selecting={selecting}
 						open={isConversationExpanded}
-						setOpen={handleToggleExpanded}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						parent={messages[0].parent}
 						index={index}
 						onSelect={onSelect}
@@ -142,7 +141,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						selected={selected}
 						selecting={selecting}
 						open={isConversationExpanded}
-						setOpen={handleToggleExpanded}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						parent={messages[0].parent}
 						index={index}
 						onSelect={onSelect}
