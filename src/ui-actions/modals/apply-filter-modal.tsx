@@ -179,9 +179,14 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 							<Trans
 								t={t}
 								i18nKey="modals.apply_filters.label_involved_messages"
-								defaults="<bold>{{involvedMessagesCount}} messages</bold> will be processed inside the selected folder."
-								values={{ involvedMessagesCount }}
+								count={involvedMessagesCount}
 								components={{ bold: <TextStyler bold /> }}
+								tOptions={{
+									defaultValue_one:
+										'<bold>{{count}} message</bold> will be processed inside the selected folder.',
+									defaultValue_other:
+										'<bold>{{count}} messages</bold> will be processed inside the selected folder.'
+								}}
 							/>
 						</Text>
 						<Text>
