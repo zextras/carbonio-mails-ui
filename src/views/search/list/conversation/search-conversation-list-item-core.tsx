@@ -83,13 +83,6 @@ export const SearchConversationListItemCore = ({
 	);
 
 	const conversationId = conversation.id;
-	// const expandConversation = useCallback(
-	// 	(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
-	// 		e.preventDefault();
-	// 		setOpen(conversationId);
-	// 	},
-	// 	[setOpen]
-	// );
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
