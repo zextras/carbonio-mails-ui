@@ -181,4 +181,199 @@ describe('SearchConversationListItem', () => {
 
 		expect(request.action).toStrictEqual({ id: conversationId, op: CONVACTIONS.DELETE });
 	});
+
+	describe('expand/collapse functionality', () => {
+		it('should show expand button when conversation has multiple messages', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded={false}
+				/>
+			);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+			expect(expandButton).toBeVisible();
+		});
+
+		it('should not show expand button when conversation has single message', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 1
+				})
+			);
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded={false}
+				/>
+			);
+
+			expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
+		});
+
+		it('should show collapsed state when isConversationExpanded is false', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded={false}
+				/>
+			);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+			expect(expandButton).toHaveAttribute('data-testid', 'ToggleExpand');
+
+			// Should not show message list when collapsed
+			expect(screen.queryByTestId('ConversationExpander')).not.toBeInTheDocument();
+		});
+
+		it('should show expanded state when isConversationExpanded is true', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded
+				/>
+			);
+
+			// Should show message list when expanded
+			const expanderElement = await screen.findByTestId('ConversationExpander');
+			expect(expanderElement).toBeVisible();
+		});
+
+		it('should display correct arrow icon direction based on expand state', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const { rerender } = setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded={false}
+				/>
+			);
+
+			// When collapsed, should show down arrow
+			let arrowIcon = screen.getByTestId('icon: ArrowIosDownward');
+			expect(arrowIcon).toBeInTheDocument();
+
+			// Rerender with expanded state
+			rerender(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={jest.fn()}
+					isConversationExpanded
+				/>
+			);
+
+			// When expanded, should show up arrow
+			arrowIcon = screen.getByTestId('icon: ArrowIosUpward');
+			expect(arrowIcon).toBeInTheDocument();
+		});
+	});
 });
