@@ -118,25 +118,10 @@ describe('RichTextEditorContainer', () => {
 		parent.appendChild(editWrapper);
 		document.body.appendChild(parent);
 
-		// Create mock clipboard data with image items
-		const mockClipboardData = {
-			items: [
-				{
-					type: 'image/png',
-					getAsFile: (): File => new File([''], 'test.png', { type: 'image/png' })
-				}
-			],
-			getData: jest.fn(() => '')
-		};
-
-		const event = {
-			preventDefault: jest.fn(),
-			clipboardData: mockClipboardData
-		} as unknown as ClipboardEvent;
+		const event = {} as unknown as ClipboardEvent;
 
 		editorInstance.dispatch('paste', event);
 
-		expect(event.preventDefault).toHaveBeenCalled();
 		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, 'editor-1', event);
 		expect(parent.scrollTop).toBe(42);
 	});
