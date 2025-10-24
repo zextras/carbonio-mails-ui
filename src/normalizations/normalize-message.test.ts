@@ -13,7 +13,7 @@ import {
 } from 'normalizations/normalize-message';
 import { MailMessagePart, SoapMailMessagePart } from 'types/index.d';
 
-describe('Normalize mail message from SOAP', () => {
+describe('normalize-message.ts', () => {
 	describe('Normalize message', () => {
 		describe('Truncated mail body part', () => {
 			const defaultBodyPart = {
