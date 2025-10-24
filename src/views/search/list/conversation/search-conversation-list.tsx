@@ -37,6 +37,14 @@ export const SearchConversationList = ({
 
 	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
+
+	const toggleExpandedConversation = React.useCallback((conversationId: string) => {
+		setExpandedConversations((prev) => ({
+			...prev,
+			[conversationId]: !prev[conversationId]
+		}));
+	}, []);
 
 	const {
 		deselectAll,
@@ -81,6 +89,7 @@ export const SearchConversationList = ({
 				const active = itemId === conversationId;
 
 				const isSelected = selectedItems.has(conversationId);
+				const isConversationExpanded = expandedConversations[conversationId];
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
 					<CustomListItem
@@ -108,6 +117,8 @@ export const SearchConversationList = ({
 										selected={isSelected}
 										index={index}
 										onSelect={selectRange}
+										onToggleExpanded={toggleExpandedConversation}
+										isConversationExpanded={isConversationExpanded}
 									/>
 								</>
 							) : (
@@ -120,7 +131,16 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, itemId, selectedItems, keyboardShortcutsIds, isSelectModeOn, selectRange]
+		[
+			conversationIds,
+			itemId,
+			selectedItems,
+			keyboardShortcutsIds,
+			isSelectModeOn,
+			selectRange,
+			expandedConversations,
+			toggleExpandedConversation
+		]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);

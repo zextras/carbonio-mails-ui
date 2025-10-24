@@ -19,9 +19,7 @@ import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commo
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { API_REQUEST_STATUS } from 'constants/index';
-import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
-import { NormalizedConversation, SearchRequestStatus, TextReadValuesProps } from 'types/index.d';
+import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
@@ -31,8 +29,9 @@ type SearchConversationListItemCoreProps = {
 	selected: boolean;
 	selecting: boolean;
 	open: boolean;
-	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	conversationStatus: SearchRequestStatus;
+	setOpen: (
+		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
+	) => void;
 	parent: string;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
@@ -41,7 +40,6 @@ export const SearchConversationListItemCore = ({
 	conversation,
 	selected,
 	selecting,
-	conversationStatus,
 	open,
 	setOpen,
 	parent,
@@ -88,18 +86,9 @@ export const SearchConversationListItemCore = ({
 	const expandConversation = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-			setOpen((currentlyOpen) => {
-				if (
-					!currentlyOpen &&
-					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-					conversationStatus !== API_REQUEST_STATUS.pending
-				) {
-					searchConvEmailStoreAction(conversationId);
-				}
-				return !currentlyOpen;
-			});
+			setOpen(e);
 		},
-		[conversationId, conversationStatus, setOpen]
+		[setOpen]
 	);
 
 	const toggleExpandButtonLabel = useMemo(

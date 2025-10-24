@@ -13,8 +13,8 @@ import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import { CONVACTIONS } from 'commons/utilities';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import { CONVACTIONS } from 'commons/utilities';
 import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
@@ -52,6 +52,8 @@ describe('SearchConversationListItem', () => {
 				selected={false}
 				index={0}
 				onSelect={jest.fn()}
+				onToggleExpanded={jest.fn()}
+				isConversationExpanded={false}
 			/>
 		);
 
@@ -101,6 +103,8 @@ describe('SearchConversationListItem', () => {
 				selected={false}
 				index={0}
 				onSelect={jest.fn()}
+				onToggleExpanded={jest.fn()}
+				isConversationExpanded={false}
 			/>
 		);
 
@@ -154,6 +158,8 @@ describe('SearchConversationListItem', () => {
 				selected={false}
 				index={0}
 				onSelect={jest.fn()}
+				onToggleExpanded={jest.fn()}
+				isConversationExpanded={false}
 			/>
 		);
 
