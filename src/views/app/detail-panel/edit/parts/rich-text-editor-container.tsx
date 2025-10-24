@@ -125,18 +125,6 @@ export const RichTextEditorContainer = ({
 			)?.parentElement;
 			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
 
-			const html = event.clipboardData?.getData('text/html');
-			const hasTableContent = html && /<table/i.test(html);
-			const hasImageFiles = Array.from(event.clipboardData?.items ?? []).some((item) =>
-				item.type.includes('image')
-			);
-
-			// Only prevent default if we have images AND no table content
-			// If table content is present (Excel/Calc use case), allow default paste behavior
-			if (hasImageFiles && !hasTableContent) {
-				event.preventDefault();
-			}
-
 			handleEditorPaste(editor, editorID, event);
 
 			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
@@ -200,10 +188,6 @@ export const RichTextEditorContainer = ({
 				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
 				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
 			}`,
-			paste_retain_style_properties: 'all',
-			paste_webkit_styles: 'all',
-			paste_merge_formats: true,
-			paste_strip_class_attributes: 'none',
 			plugins: [
 				'advlist',
 				'autolink',
