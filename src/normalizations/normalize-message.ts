@@ -82,9 +82,8 @@ const getAttachmentsAnchoredOnHtmlBody = (
 	return result;
 };
 
-// removes all charachters after "@" and the leading "<" character of a ci
-const cleanUpCi = (id: string): string => id.slice(1, id.indexOf('@'));
-
+// removes angle brackets and extracts the content ID
+const cleanUpCi = (id: string): string => id.replace(/^<|>$/g, '');
 const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 	if ((item && item.ct === 'multipart/appledouble') || item.ct === 'application/applefile') {
 		return true;
