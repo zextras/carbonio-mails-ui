@@ -16,7 +16,7 @@ import type {
 	DetailPanelRoutesParams
 } from '../../../types/routes';
 import { Spinner } from 'assets/spinner';
-import { API_REQUEST_STATUS } from 'constants/index';
+import {API_REQUEST_STATUS, MAILS_ROUTE} from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getFolderIdParts } from 'helpers/folders';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
@@ -56,10 +56,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	}, [conversation?.subject]);
 
 	const showPreviewPanel = useMemo(
-		(): boolean | undefined =>
-			getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? conversation && conversation?.messageIds?.length > 0
-				: filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0,
+		(): boolean | undefined => {
+            if (isFocusModeMailView() || getFolderIdParts(folderId).id === FOLDERS.TRASH) {
+                return conversation && conversation?.messageIds?.length > 0
+            }
+            return filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0
+        },
 		[conversation, folderId, messages]
 	);
 

@@ -28,6 +28,9 @@ export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	}, [message?.subject]);
 
     if (messageStatus === API_REQUEST_STATUS.error) {
+        if (isFocusModeMailView()) {
+            window.close();
+        }
         navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
     }
 
