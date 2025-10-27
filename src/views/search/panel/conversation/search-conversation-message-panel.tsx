@@ -6,11 +6,11 @@
 import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
+import { useNavigate } from 'react-router-dom';
 
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
-import {API_REQUEST_STATUS, MAILS_ROUTE} from "../../../../constants";
-import {useNavigate} from "react-router-dom";
 
 export type SearchConversationMessagePreviewProps = {
 	convMessageId: string;
@@ -23,12 +23,12 @@ export const SearchConversationMessagePanel = ({
 	isExpanded,
 	isAlone
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 	const { message, messageStatus } = useCompleteMessageOrFetch(convMessageId);
 
-    if (messageStatus === API_REQUEST_STATUS.error) {
-        navigate('/search', { replace: true });
-    }
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		navigate('/search', { replace: true });
+	}
 
 	if (!message) return <></>;
 	return (

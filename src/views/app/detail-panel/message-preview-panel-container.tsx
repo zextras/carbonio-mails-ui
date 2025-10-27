@@ -5,21 +5,20 @@
  */
 import React, { useEffect } from 'react';
 
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
-import {API_REQUEST_STATUS, MAILS_ROUTE} from 'constants/index';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { useMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	const { folderId, messageId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
-    const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
+	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {
@@ -27,12 +26,12 @@ export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 		}
 	}, [message?.subject]);
 
-    if (messageStatus === API_REQUEST_STATUS.error) {
-        if (isFocusModeMailView()) {
-            window.close();
-        }
-        navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-    }
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		if (isFocusModeMailView()) {
+			window.close();
+		}
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}
 
 	return (
 		<MessagePreviewPanel

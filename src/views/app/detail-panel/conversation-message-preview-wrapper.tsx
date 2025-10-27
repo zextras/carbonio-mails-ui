@@ -5,11 +5,12 @@
  */
 import React from 'react';
 
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
 import { Spinner } from 'assets/spinner';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
-import {API_REQUEST_STATUS, MAILS_ROUTE} from "../../../constants";
-import {useNavigate, useParams} from "react-router-dom";
 
 export const ConversationMessagePreviewWrapper = ({
 	convMessageId,
@@ -21,13 +22,13 @@ export const ConversationMessagePreviewWrapper = ({
 	isAlone: boolean;
 }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(convMessageId);
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 
-    const { folderId } = useParams();
+	const { folderId } = useParams();
 
-    if (messageStatus === API_REQUEST_STATUS.error) {
-        navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-    }
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}
 	return message ? (
 		<ConversationMessagePreview
 			key={message.id}
