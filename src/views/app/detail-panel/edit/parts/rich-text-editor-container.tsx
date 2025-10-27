@@ -118,15 +118,14 @@ export const RichTextEditorContainer = ({
 		[addInlineAttachments]
 	);
 
-	function createPasteHandler(editor: Editor, _editorId: string) {
+	function createPasteHandler(editor: Editor, editorID: string) {
 		return (event: ClipboardEvent): void => {
 			const editViewWrapper = document.querySelector(
 				'[data-testid="edit-view-editor"]'
 			)?.parentElement;
 			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
 
-			event.preventDefault();
-			handleEditorPaste(editor, _editorId, event);
+			handleEditorPaste(editor, editorID, event);
 
 			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
 			if (editViewWrapper) {

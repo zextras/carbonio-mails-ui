@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { composeAttachMpField } from 'store/editor/editor-transformations';
+import { composeAttachMpField } from '../editor-transformations';
 
 describe('composeAttachMpField', () => {
 	it('should correctly transform an array of SavedAttachment to an array of MailAttachmentParts', async () => {
