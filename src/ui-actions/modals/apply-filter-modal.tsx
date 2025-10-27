@@ -178,7 +178,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 						<Text>
 							<Trans
 								t={t}
-								i18nKey="modals.apply_filters.label_involved_messages"
+								i18nKey="modals.apply_filters.apply_folder"
 								count={involvedMessagesCount}
 								components={{ bold: <TextStyler bold /> }}
 								tOptions={{
