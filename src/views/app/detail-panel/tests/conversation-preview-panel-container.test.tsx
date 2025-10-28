@@ -10,8 +10,8 @@ import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
-import { updateConversationStatus } from 'store/emails/store';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import { updateConversationStatus } from 'store/emails/store';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 
 describe('ConversationPreviewPanelContainer', () => {
@@ -32,6 +32,43 @@ describe('ConversationPreviewPanelContainer', () => {
 		});
 
 		expect(screen.getByText(/Loading conversation, please wait.../i)).toBeVisible();
+	});
+
+	describe('should show panel if the conversation has messages', () => {
+		it('in focus mode', async () => {
+			jest.mocked(shell).IS_FOCUS_MODE = true;
+			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
+				populateConversationInEmailStore()
+			);
+			await act(() => updateConversationStatus(mockedConversation.id, 'pending'));
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: [
+					`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`
+				],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+
+			expect(
+				screen.getByTestId(`conversation-preview-panel-${mockedConversation.id}`)
+			).toBeVisible();
+		});
+		it('in trash with trash messages', async () => {
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
+				populateConversationInEmailStore({ conversationParams: { folderId: '3' } })
+			);
+			await act(() => updateConversationStatus(mockedConversation.id, 'fulfilled'));
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: [
+					`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`
+				],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+
+			expect(
+				screen.getByTestId(`ConversationMessagePreview-${mockedMessages[0].id}`)
+			).toBeVisible();
+		});
 	});
 
 	it('should not set the window title if the focus mode is disabled', async () => {
