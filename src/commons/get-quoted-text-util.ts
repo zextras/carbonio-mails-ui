@@ -282,11 +282,16 @@ export function getOriginalHtmlContent(text: string): string {
 	if (!text) {
 		return '';
 	}
-	const htmlNode = document.createElement('div');
-	htmlNode.innerHTML = text;
-	while (SCRIPT_REGEX.test(text)) {
-		text = text.replace(SCRIPT_REGEX, '');
+
+	let processedText = text;
+	while (SCRIPT_REGEX.test(processedText)) {
+		processedText = processedText.replace(SCRIPT_REGEX, '');
 	}
+
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(processedText, 'text/html');
+	const htmlNode = htmlDoc.body;
+
 	const nodeList: Array<ChildNode> = [];
 	flatten(htmlNode, nodeList);
 	const { done } = processNodeList(nodeList);
