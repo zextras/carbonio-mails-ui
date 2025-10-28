@@ -1,3 +1,5 @@
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
