@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/prefer-user-event */
 // noinspection DuplicatedCode
 
 /*
@@ -7,7 +8,7 @@
  */
 import React, { act } from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
@@ -378,6 +379,149 @@ describe('SearchConversationListItem', () => {
 			// When expanded, should show up arrow
 			arrowIcon = screen.getByTestId('icon: ArrowIosUpward');
 			expect(arrowIcon).toBeInTheDocument();
+		});
+
+		it('should trigger fetch when manually expanding a conversation', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const interceptor = createSoapAPIInterceptor('SearchConv');
+			const onToggleExpanded = jest.fn();
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={onToggleExpanded}
+					isConversationExpanded={false}
+				/>
+			);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to expand
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// Should trigger the SearchConv API call
+			await interceptor;
+		});
+
+		it('should not trigger fetch when conversation data is already loaded', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			// Mark conversation as already loaded
+			const { updateConversationStatus } = await import('store/emails/store');
+			const { API_REQUEST_STATUS } = await import('constants/index');
+			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+
+			const onToggleExpanded = jest.fn();
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={onToggleExpanded}
+					isConversationExpanded={false}
+				/>
+			);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to expand
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// No SearchConv API call should be triggered since data is already loaded
+			// This is verified by not setting up an interceptor - if a call happens, the test will fail
+		});
+
+		it('should not trigger fetch when toggling from expanded to collapsed', async () => {
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			useUserSettings.mockReturnValue(settings);
+
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const onToggleExpanded = jest.fn();
+
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={jest.fn()}
+					onToggleExpanded={onToggleExpanded}
+					isConversationExpanded
+				/>
+			);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to collapse (from expanded state)
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// No API call should be triggered when collapsing
 		});
 	});
 });
