@@ -767,10 +767,8 @@ describe('conversation-list-item component', () => {
 
 			const expandButton = await screen.findByTestId('ToggleExpand');
 
-			// Click to expand
 			fireEvent.click(expandButton);
 
-			// Should call onToggleExpanded
 			await waitFor(() => {
 				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
 			});
@@ -810,16 +808,13 @@ describe('conversation-list-item component', () => {
 
 			const expandButton = await screen.findByTestId('ToggleExpand');
 
-			// Click to expand
 			fireEvent.click(expandButton);
 
-			// Should call onToggleExpanded
 			await waitFor(() => {
 				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
 			});
 
 			// No SearchConv API call should be triggered since data is already loaded
-			// This is verified by not setting up an interceptor - if a call happens, the test will fail
 		});
 
 		it('should not trigger fetch when toggling from expanded to collapsed', async () => {
@@ -850,10 +845,8 @@ describe('conversation-list-item component', () => {
 
 			const expandButton = await screen.findByTestId('ToggleExpand');
 
-			// Click to collapse (from expanded state)
 			fireEvent.click(expandButton);
 
-			// Should call onToggleExpanded
 			await waitFor(() => {
 				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
 			});
