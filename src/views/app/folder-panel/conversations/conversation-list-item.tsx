@@ -79,20 +79,28 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
+	const shouldFetchConversation = useCallback(
+		(): boolean =>
+			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+			conversationStatus !== API_REQUEST_STATUS.pending,
+		[conversationStatus]
+	);
+
+	const fetchConversationIfNeeded = useCallback(() => {
+		if (shouldFetchConversation()) {
+			searchConvEmailStoreAction(conversationId);
+		}
+	}, [shouldFetchConversation, conversationId]);
+
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-
-			if (
-				!isConversationExpanded &&
-				conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-				conversationStatus !== API_REQUEST_STATUS.pending
-			) {
-				searchConvEmailStoreAction(conversationId);
+			if (!isConversationExpanded) {
+				fetchConversationIfNeeded();
 			}
 			onToggleExpanded(conversationId);
 		},
-		[conversationId, conversationStatus, onToggleExpanded, isConversationExpanded]
+		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
 
 	const debouncedPushHistory = useMemo(
