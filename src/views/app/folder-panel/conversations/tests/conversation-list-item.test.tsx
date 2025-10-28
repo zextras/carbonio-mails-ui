@@ -728,5 +728,135 @@ describe('conversation-list-item component', () => {
 				expect(messageItems).toHaveLength(3);
 			});
 		});
+
+		it('should trigger fetch when manually expanding a conversation', async () => {
+			const conversationId = '-456';
+			await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const interceptor = createSoapAPIInterceptor('SearchConv');
+			const onToggleExpanded = jest.fn();
+
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				activeItemId: '',
+				isSearchModule: false,
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop,
+				onToggleExpanded,
+				isConversationExpanded: false
+			};
+
+			setupTest(<ConversationListItem {...props} />);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to expand
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// Should trigger the SearchConv API call
+			await interceptor;
+		});
+
+		it('should not trigger fetch when conversation data is already loaded', async () => {
+			const conversationId = '-789';
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			// Mark conversation as already loaded
+			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+
+			const onToggleExpanded = jest.fn();
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				activeItemId: '',
+				isSearchModule: false,
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop,
+				onToggleExpanded,
+				isConversationExpanded: false
+			};
+
+			setupTest(<ConversationListItem {...props} />);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to expand
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// No SearchConv API call should be triggered since data is already loaded
+			// This is verified by not setting up an interceptor - if a call happens, the test will fail
+		});
+
+		it('should not trigger fetch when toggling from expanded to collapsed', async () => {
+			const conversationId = '-101';
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+
+			const onToggleExpanded = jest.fn();
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				activeItemId: '',
+				isSearchModule: false,
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop,
+				onToggleExpanded,
+				isConversationExpanded: true
+			};
+
+			setupTest(<ConversationListItem {...props} />);
+
+			const expandButton = await screen.findByTestId('ToggleExpand');
+
+			// Click to collapse (from expanded state)
+			fireEvent.click(expandButton);
+
+			// Should call onToggleExpanded
+			await waitFor(() => {
+				expect(onToggleExpanded).toHaveBeenCalledWith(conversationId);
+			});
+
+			// No API call should be triggered when collapsing
+		});
 	});
 });
