@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
@@ -95,20 +95,35 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		[previewOnSeparatedWindow]
 	);
 
+	const shouldFetchConversation = useCallback(
+		(): boolean =>
+			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+			conversationStatus !== API_REQUEST_STATUS.pending,
+		[conversationStatus]
+	);
+
+	const fetchConversationIfNeeded = useCallback(() => {
+		if (shouldFetchConversation()) {
+			searchConvEmailStoreAction(conversationId);
+		}
+	}, [shouldFetchConversation, conversationId]);
+
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-			if (
-				!isConversationExpanded &&
-				conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-				conversationStatus !== API_REQUEST_STATUS.pending
-			) {
-				searchConvEmailStoreAction(conversationId);
+			if (!isConversationExpanded) {
+				fetchConversationIfNeeded();
 			}
 			onToggleExpanded(conversationId);
 		},
-		[conversationId, conversationStatus, onToggleExpanded, isConversationExpanded]
+		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
+
+	useEffect(() => {
+		if (isConversationExpanded) {
+			fetchConversationIfNeeded();
+		}
+	}, [isConversationExpanded, fetchConversationIfNeeded]);
 
 	return (
 		<Container
