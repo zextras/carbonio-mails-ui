@@ -379,43 +379,5 @@ describe('SearchConversationListItem', () => {
 			arrowIcon = screen.getByTestId('icon: ArrowIosUpward');
 			expect(arrowIcon).toBeInTheDocument();
 		});
-
-		it('should automatically fetch conversation data when expanded and data is not loaded', async () => {
-			const customSettings: Partial<AccountSettings> = {
-				prefs: {
-					zimbraPrefGroupMailBy: 'conversation'
-				}
-			};
-			const settings = generateSettings(customSettings);
-			useUserSettings.mockReturnValue(settings);
-
-			await waitFor(() =>
-				populateConversationInEmailStore({
-					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
-					conversationMessagesNumber: 3
-				})
-			);
-
-			const interceptor = createSoapAPIInterceptor('SearchConv');
-
-			setupTest(
-				<SearchConversationListItem
-					conversationId={conversationId}
-					selecting={false}
-					active={false}
-					activeItemId={''}
-					selected={false}
-					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
-					isConversationExpanded
-				/>
-			);
-
-			await interceptor;
-
-			const expanderElement = await screen.findByTestId('ConversationExpander');
-			expect(expanderElement).toBeVisible();
-		});
 	});
 });

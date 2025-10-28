@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
@@ -118,12 +118,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		},
 		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
-
-	useEffect(() => {
-		if (isConversationExpanded) {
-			fetchConversationIfNeeded();
-		}
-	}, [isConversationExpanded, fetchConversationIfNeeded]);
 
 	return (
 		<Container
