@@ -17,6 +17,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
+import { SEARCH_ROUTE } from '../../../constants';
 import type { MailMessage, NormalizedConversation } from 'types/index.d';
 
 export const SearchPanelHeader: FC<{
@@ -24,7 +25,7 @@ export const SearchPanelHeader: FC<{
 }> = ({ item }) => {
 	const navigate = useNavigate();
 	const closePanelCallback = useCallback(() => {
-		navigate('/search', { replace: true });
+		navigate(`/${SEARCH_ROUTE}`, { replace: true });
 	}, [navigate]);
 	const subject = useMemo(
 		() => item?.subject ?? t('label.no_subject_with_tags', '<No Subject>'),

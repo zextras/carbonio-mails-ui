@@ -9,6 +9,8 @@ import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
 
+export const SEARCH_ROUTE = 'search';
+
 export const FOCUS_MODE_MAIL_VIEW_ROUTE = 'mail-view';
 
 export const EML_ROUTE = 'eml';
