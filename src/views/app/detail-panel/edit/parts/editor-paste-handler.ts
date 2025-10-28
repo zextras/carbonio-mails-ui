@@ -125,6 +125,7 @@ const IMAGE_URL_REGEX = new RegExp(
 );
 
 const IMG_TAG_REGEX = /<img[^>]+src=["'](http[^"']+)["']/i;
+const TABLE_TAG_REGEX = /<table/i;
 
 function isImageUrl(text: string): boolean {
 	return IMAGE_URL_REGEX.test(text.trim());
@@ -132,6 +133,10 @@ function isImageUrl(text: string): boolean {
 
 function containsExternalImages(html: string): boolean {
 	return IMG_TAG_REGEX.test(html);
+}
+
+function containsTableContent(html: string): boolean {
+	return TABLE_TAG_REGEX.test(html);
 }
 
 function getImageFilesFromClipboard(clipboardData: DataTransfer): File[] {
@@ -149,28 +154,33 @@ export const handleEditorPaste = (
 	const { clipboardData } = event;
 	if (!clipboardData) return;
 
-	// Check for external image URLs in plain text
-	const pastedText = clipboardData.getData('text/plain');
-	if (pastedText && isImageUrl(pastedText)) {
-		return;
-	}
-
-	// Check for external images in HTML content
 	const html = clipboardData.getData('text/html');
-	if (html && containsExternalImages(html)) {
-		return;
-	}
+	const hasTableContent = html && containsTableContent(html);
 
-	// Process local image files
+	// Process local image files (but skip if we have table content, Excel/Calc use case)
 	const imageFiles = getImageFilesFromClipboard(clipboardData);
-	if (imageFiles.length === 0) return;
+	if (imageFiles.length > 0 && !hasTableContent) {
+		// Check for external image URLs in plain text
+		const pastedText = clipboardData.getData('text/plain');
+		if (pastedText && isImageUrl(pastedText)) {
+			return;
+		}
 
-	event.preventDefault();
-	uploadQueue.push(...imageFiles);
+		// Check for external images in HTML content
+		if (html && containsExternalImages(html)) {
+			return;
+		}
 
-	if (!isUploading) {
-		processNextUpload(editor, editorId);
+		// Upload local image files
+		event.preventDefault();
+		uploadQueue.push(...imageFiles);
+
+		if (!isUploading) {
+			processNextUpload(editor, editorId);
+		}
 	}
+	// If there are no images, or we have table content, allow default paste
+	// behavior to handle HTML content
 };
 
 export const testingPurposeOnly = { uploadImage };
