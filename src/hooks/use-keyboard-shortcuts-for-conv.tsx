@@ -7,7 +7,8 @@ import { useCallback, useRef } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE } from 'constants/index';
+import { useInSearchModule } from '../ui-actions/utils';
+import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
@@ -41,13 +42,17 @@ export const useKeyboardShortcutsForConv = ({
 	conversationIds,
 	folderId
 }: UseKeyboardShortcutsForConvProps): ((event: KeyboardEvent) => void) => {
+	const isSearchContext = useInSearchModule();
 	const isConversationMessage = useLocation().pathname.includes('message');
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
 
 	const closePreviewPanel = useCallback(
-		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
-		[folderId, navigate]
+		() =>
+			isSearchContext
+				? navigate(`/${SEARCH_ROUTE}`, { replace: true })
+				: navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
+		[folderId, isSearchContext, navigate]
 	);
 	const markConvAsSpam = useConvSetSpamFn({
 		ids: conversationIds,
