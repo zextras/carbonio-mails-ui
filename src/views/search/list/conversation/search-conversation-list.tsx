@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -45,6 +45,10 @@ export const SearchConversationList = ({
 			[conversationId]: !prev[conversationId]
 		}));
 	}, []);
+
+	useEffect(() => {
+		setExpandedConversations({});
+	}, [query]);
 
 	const {
 		deselectAll,
