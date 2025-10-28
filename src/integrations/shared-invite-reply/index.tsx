@@ -16,8 +16,8 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { useTranslation } from 'react-i18next';
 
 import LabelRow from 'integrations/shared-invite-reply/parts/label-row';
 import ResponseActions from 'integrations/shared-invite-reply/parts/response-actions';
@@ -39,7 +39,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
 	mailMsg
 }): ReactElement => {
-	const [t] = useTranslation();
 	const rights = useMemo(
 		() => sharedContent?.split('<link ')[1].split('perm="')[1].split('" ')[0],
 		[sharedContent]
@@ -47,7 +46,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, rights?.includes('p')),
-		[rights, t]
+		[rights]
 	);
 
 	const role = useMemo(
@@ -88,7 +87,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 			default:
 				return [t('label.contact_folder', 'Contact Folder'), 'ContactsModOutline'];
 		}
-	}, [t, view]);
+	}, [view]);
 
 	const allowedActions = useMemo((): string => {
 		if (rights === 'rwidx' || rights === 'rwidxp') {
@@ -101,7 +100,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 			return t('message.admin_rights', 'View,Edit,Add,Remove,Administer');
 		}
 		return 'None';
-	}, [rights, t]);
+	}, [rights]);
 
 	const owner = useMemo(
 		() => sharedContent?.split('<grantor ')[1]?.split('name="')[1]?.split('"')[0],

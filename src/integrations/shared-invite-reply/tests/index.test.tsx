@@ -23,8 +23,9 @@ describe('SharedCalendarResponse component', () => {
 		const mailMsg = generateMessage({ id: '1' });
 
 		setupTest(<SharedCalendarResponse sharedContent={sharedContent} mailMsg={mailMsg} />);
-		const folderNameInput = await screen.findByRole('textbox', { name: /folder name/i });
-		expect(folderNameInput).toHaveValue('Inbox of who is sharing');
+
+		const folderNameInput = await screen.findByRole('textbox', { name: /label\.folder_name/i });
+		expect(folderNameInput).toHaveValue('Inbox label.of who is sharing'); // Inbox of who is sharing
 	});
 
 	it('should render the name of the sharer on calendar share', () => {
@@ -39,8 +40,8 @@ describe('SharedCalendarResponse component', () => {
 		const mailMsg = generateMessage({ id: '1' });
 		setupTest(<SharedCalendarResponse sharedContent={sharedContent} mailMsg={mailMsg} />);
 
-		const folderNameInput = screen.getByRole('textbox', { name: /calendar name/i });
-		expect(folderNameInput).toHaveValue(`${name} of ${grantorName}`);
+		const folderNameInput = screen.getByRole('textbox', { name: /label.calendar_name/i });
+		expect(folderNameInput).toHaveValue(`${name} label.of ${grantorName}`);
 	});
 
 	it('should render the name of the sharer on contact share', () => {
@@ -55,7 +56,7 @@ describe('SharedCalendarResponse component', () => {
 		const mailMsg = generateMessage({ id: '1' });
 		setupTest(<SharedCalendarResponse sharedContent={sharedContent} mailMsg={mailMsg} />);
 
-		const folderNameInput = screen.getByRole('textbox', { name: /address book name/i });
-		expect(folderNameInput).toHaveValue(`${name} of ${grantorName}`);
+		const folderNameInput = screen.getByRole('textbox', { name: /label.addressbook_name/i });
+		expect(folderNameInput).toHaveValue(`${name} label.of ${grantorName}`);
 	});
 });
