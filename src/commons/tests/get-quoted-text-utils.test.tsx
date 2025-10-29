@@ -67,6 +67,72 @@ describe('Get Quoted Test Utils', () => {
 			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test</div>');
 		});
 
+		it('should remove single script tag', () => {
+			const originalHTML = '<div>Test</div><script>alert("xss")</script><p>Content</p>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script>');
+			expect(result).not.toContain('alert');
+			expect(result).toContain('Test');
+			expect(result).toContain('Content');
+		});
+
+		it('should remove multiple script tags', () => {
+			const originalHTML =
+				'<div>Test</div><script>alert("xss1")</script><p>Content</p><script>alert("xss2")</script>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script>');
+			expect(result).not.toContain('alert');
+			expect(result).toContain('Test');
+			expect(result).toContain('Content');
+		});
+
+		it('should remove script tags with attributes', () => {
+			const originalHTML =
+				'<div>Test</div><script type="text/javascript" src="evil.js">alert("xss")</script>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script');
+			expect(result).not.toContain('alert');
+			expect(result).toContain('Test');
+		});
+
+		it('should remove script tags with multiline content', () => {
+			const originalHTML = `<div>Test</div><script>
+				function malicious() {
+					alert("xss");
+				}
+			</script><p>Content</p>`;
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script>');
+			expect(result).not.toContain('malicious');
+			expect(result).toContain('Test');
+			expect(result).toContain('Content');
+		});
+
+		it('should remove nested script-like content', () => {
+			const originalHTML = '<div>Test</div><script>var x = "<div>fake</div>";</script><p>Real</p>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script>');
+			expect(result).not.toContain('var x');
+			expect(result).toContain('Test');
+			expect(result).toContain('Real');
+		});
+
+		it('should handle case-insensitive script tags', () => {
+			const originalHTML = '<div>Test</div><SCRIPT>alert("xss")</SCRIPT><p>Content</p>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('SCRIPT');
+			expect(result).not.toContain('alert');
+			expect(result).toContain('Test');
+		});
+
+		it('should handle empty script tags', () => {
+			const originalHTML = '<div>Test</div><script></script><p>Content</p>';
+			const result = getOriginalHtmlContent(originalHTML);
+			expect(result).not.toContain('<script>');
+			expect(result).toContain('Test');
+			expect(result).toContain('Content');
+		});
+
 		it.each([
 			'Forwarded Message',
 			'Weitergeleitete Nachricht',
