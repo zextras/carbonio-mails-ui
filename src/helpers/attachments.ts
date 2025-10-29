@@ -102,37 +102,64 @@ const getCidFromReference = (cidReference: string): string | null => {
 };
 
 /**
- *
- * @param richText
+ * Extracts CID references from HTML content with proper HTML entity decoding.
+ * Handles CIDs with encoded characters like &#64; (@), &#39; ('), etc.
+ * @param richText - HTML content to extract CIDs from
  */
 const getCidReferences = (richText: string): Array<string> => {
 	const result: Array<string> = [];
-	const doc = new DOMParser().parseFromString(richText, MIMETYPE_RICHTEXT);
-	const escapedText = doc.documentElement.outerHTML;
-	if (!escapedText) {
+
+	// Match cid: followed by anything until quote, whitespace, or >
+	// This handles HTML entities like &#64; (encoded @) properly
+	const matches = richText.match(/cid:([^"\s>]+)/g);
+	if (!matches) {
 		return result;
 	}
 
-	const matches = escapedText.match(new RegExp(REFERRED_CIDURL_PATTERN, 'g'));
-	matches && result.push(...matches);
+	matches.forEach((match) => {
+		// Remove 'cid:' prefix
+		let cid = match.replace('cid:', '');
+
+		// Decode HTML entities using DOMParser for accurate decoding
+		// This handles &#64; -> @, &#39; -> ', &amp; -> &, etc.
+		try {
+			const doc = new DOMParser().parseFromString(
+				`<!DOCTYPE html><html><body>${cid}</body></html>`,
+				MIMETYPE_RICHTEXT
+			);
+			const decodedCid = doc.body.textContent;
+			if (decodedCid) {
+				cid = decodedCid;
+			}
+		} catch (e) {
+			// Fallback: decode common entities manually if DOMParser fails
+			cid = cid
+				.replace(/&#64;/g, '@')
+				.replace(/&#39;/g, "'")
+				.replace(/&#34;/g, '"')
+				.replace(/&amp;/g, '&')
+				.replace(/&lt;/g, '<')
+				.replace(/&gt;/g, '>');
+		}
+
+		result.push(cid);
+	});
 
 	return result;
 };
 
 /**
- *
- * @param parts
+ * Extracts all Content-IDs referenced in HTML parts of the message.
+ * Now properly handles HTML entity encoded CIDs.
+ * @param parts - Message parts to scan for CID references
  */
 export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<string> => {
 	const result: Array<string> = [];
 	parts?.forEach((part) => {
 		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
-			getCidReferences(part.content).forEach((cidReference) => {
-				const cid = getCidFromReference(cidReference);
-				if (cid) {
-					result.push(cid);
-				}
-			});
+			// getCidReferences now returns decoded CIDs directly
+			const cids = getCidReferences(part.content);
+			result.push(...cids);
 		}
 
 		if (part.parts) {
