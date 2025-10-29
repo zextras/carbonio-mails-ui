@@ -557,5 +557,401 @@ describe('normalize-message.ts', () => {
 				);
 			});
 		});
+
+		describe('HTML entity decoding in CID extraction', () => {
+			it('should extract CIDs with HTML entity encoded @ symbol (&#64;)', () => {
+				const contentId = 'image123@carbonio.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/related',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									// Using &#64; for @ symbol (HTML entity)
+									content: `<html><body><img src="cid:image123&#64;carbonio.com" alt="test"></body></html>`
+								},
+								{
+									ct: 'image/png',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'test.png',
+									ci: `<${contentId}>`,
+									s: 5000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toBeDefined();
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				// Should be inline because CID matches after HTML entity decoding
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+				expect(normalizedMessage.attachments?.[0].filename).toBe('test.png');
+			});
+
+			it('should extract CIDs with multiple HTML entities', () => {
+				const contentId = 'test"123@example.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/related',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									// Using &#34; for " and &#64; for @
+									content: `<html><body><img src="cid:test&#34;123&#64;example.com" alt="test"></body></html>`
+								},
+								{
+									ct: 'image/jpeg',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'photo.jpg',
+									ci: `<${contentId}>`,
+									s: 8000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toBeDefined();
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+			});
+
+			it('should handle &amp; entity in CIDs', () => {
+				const contentId = 'test&data@example.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/related',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: `<html><body><img src="cid:test&amp;data&#64;example.com"></body></html>`
+								},
+								{
+									ct: 'image/gif',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'animation.gif',
+									ci: `<${contentId}>`,
+									s: 3000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+			});
+
+			it('should extract CIDs that end with whitespace or tag closure', () => {
+				const contentId1 = 'img1@test.com';
+				const contentId2 = 'img2@test.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/related',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									// One ends with space, one ends with >
+									content: `<html><body><img src="cid:img1@test.com" /><img src="cid:img2@test.com"></body></html>`
+								},
+								{
+									ct: 'image/png',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'img1.png',
+									ci: `<${contentId1}>`,
+									s: 1000
+								},
+								{
+									ct: 'image/png',
+									part: '1.3',
+									cd: 'inline',
+									filename: 'img2.png',
+									ci: `<${contentId2}>`,
+									s: 2000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(2);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+				expect(normalizedMessage.attachments?.[1].cd).toBe('inline');
+			});
+		});
+
+		describe('Disposition logic with hasHtml flag', () => {
+			it('should preserve inline disposition when no HTML content exists (plain text email)', () => {
+				const contentId = 'image@example.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'This is a plain text email with no HTML'
+								},
+								{
+									ct: 'image/png',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'chart.png',
+									ci: `<${contentId}>`,
+									s: 15000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toBeDefined();
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				// Should preserve 'inline' because there's no HTML to check against
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+			});
+
+			it('should change inline to attachment when HTML exists but image not referenced', () => {
+				const contentId = 'unused@example.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body><p>Email with no embedded images</p></body></html>'
+								},
+								{
+									ct: 'image/png',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'unused.png',
+									ci: `<${contentId}>`,
+									s: 5000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toBeDefined();
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				// Should change to 'attachment' because HTML exists but doesn't reference it
+				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment');
+			});
+
+			it('should handle multipart/alternative with HTML and plain text correctly', () => {
+				const contentId = 'logo@company.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/alternative',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Plain text version'
+								},
+								{
+									ct: 'multipart/related',
+									part: '2',
+									mp: [
+										{
+											ct: 'text/html',
+											part: '2.1',
+											body: true,
+											content: `<html><body><img src="cid:${contentId}"></body></html>`
+										},
+										{
+											ct: 'image/png',
+											part: '2.2',
+											cd: 'inline',
+											filename: 'logo.png',
+											ci: `<${contentId}>`,
+											s: 4000
+										}
+									]
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+			});
+
+			it('should handle attachments without CIDs correctly', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body><p>Email body</p></body></html>'
+								},
+								{
+									ct: 'application/pdf',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'document.pdf',
+									s: 50000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment');
+				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
+			});
+
+			it('should handle items with no cd property by defaulting to attachment', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body>Test</body></html>'
+								},
+								{
+									ct: 'application/vnd.ms-excel',
+									part: '1.2',
+									// No cd property specified
+									filename: 'spreadsheet.xlsx',
+									s: 25000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment');
+			});
+
+			it('should correctly identify inline images in complex nested multipart structures', () => {
+				const inlineCid = 'signature-logo@company.com';
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'multipart/alternative',
+									part: '1.1',
+									mp: [
+										{
+											ct: 'text/plain',
+											part: '1.1.1',
+											body: true,
+											content: 'Plain text'
+										},
+										{
+											ct: 'multipart/related',
+											part: '1.1.2',
+											mp: [
+												{
+													ct: 'text/html',
+													part: '1.1.2.1',
+													body: true,
+													content: `<html><body><p>Email with signature</p><img src="cid:${inlineCid}"></body></html>`
+												},
+												{
+													ct: 'image/png',
+													part: '1.1.2.2',
+													cd: 'inline',
+													filename: 'signature.png',
+													ci: `<${inlineCid}>`,
+													s: 3000
+												}
+											]
+										}
+									]
+								},
+								{
+									ct: 'application/pdf',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'report.pdf',
+									s: 100000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(2);
+				const signatureImage = normalizedMessage.attachments?.find(
+					(a) => a.filename === 'signature.png'
+				);
+				const pdfAttachment = normalizedMessage.attachments?.find(
+					(a) => a.filename === 'report.pdf'
+				);
+
+				expect(signatureImage?.cd).toBe('inline');
+				expect(pdfAttachment?.cd).toBe('attachment');
+			});
+		});
 	});
 });

@@ -53,10 +53,33 @@ type Flags = {
 	isReplied?: boolean;
 };
 
-// extract ids of attachments from html content. the ids are preceded by "cid: and end with " or with &
+// extract ids of attachments from html content. the ids are preceded by "cid: and end with " or whitespace or >
 export const extractAttachmentIdsFromHtmlContent = (content: string): Array<string> => {
-	const matches = content.match(/cid:(.*?)(?="|&)/g);
-	return matches ? map(matches, (match) => match.replace('cid:', '')) : [];
+	// Match cid: followed by anything until quote, whitespace, or >
+	// This handles HTML entities like &#64; (encoded @) properly
+	const matches = content.match(/cid:([^"\s>]+)/g);
+	if (!matches) return [];
+
+	return map(matches, (match) => {
+		// Remove 'cid:' prefix
+		let cid = match.replace('cid:', '');
+		// Decode HTML entities (e.g., &#64; -> @, &#39; -> ')
+		const textarea = typeof document !== 'undefined' ? document.createElement('textarea') : null;
+		if (textarea) {
+			textarea.innerHTML = cid;
+			cid = textarea.value;
+		} else {
+			// Fallback for server-side: decode common entities manually
+			cid = cid
+				.replace(/&#64;/g, '@')
+				.replace(/&#39;/g, "'")
+				.replace(/&#34;/g, '"')
+				.replace(/&amp;/g, '&')
+				.replace(/&lt;/g, '<')
+				.replace(/&gt;/g, '>');
+		}
+		return cid;
+	});
 };
 
 // examine the multipart and return an array of ids referenced in the body of the html
@@ -97,16 +120,29 @@ const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 	if (item.ci && item.ci === 'text-body') {
 		return true;
 	}
-	if (item.ct === 'text/calendar' && !item.filename) {
-		return true;
-	}
-	return false;
+	return item.ct === 'text/calendar' && !item.filename;
 };
 
 export const getAttachmentsFromParts = (
 	mailParts: Array<AttachmentPart> | AttachmentPart
 ): Array<AttachmentPart> => {
 	const anchoredAttachmentsList = getAttachmentsAnchoredOnHtmlBody(mailParts);
+
+	// Check if we have any HTML content in the message
+	const hasHtmlContent = (mp: Array<AttachmentPart> | AttachmentPart): boolean => {
+		if (isArray(mp)) {
+			return mp.some((part) => hasHtmlContent(part));
+		}
+		if ((mp as AttachmentPart).ct === 'text/html' && (mp as AttachmentPart).body) {
+			return true;
+		}
+		if ((mp as AttachmentPart).mp) {
+			return hasHtmlContent((mp as AttachmentPart).mp!);
+		}
+		return false;
+	};
+	const hasHtml = hasHtmlContent(mailParts);
+
 	let results: Array<AttachmentPart> = [];
 	if (mailParts) {
 		if (isArray(mailParts)) {
@@ -126,24 +162,20 @@ export const getAttachmentsFromParts = (
 							item.filename ||
 							item.ci
 						) {
-							if (
-								item.cd &&
-								item.cd === 'inline' &&
-								item.ci &&
-								anchoredAttachmentsList.includes(cleanUpCi(item.ci))
-							) {
+							// Determine content disposition based on whether it's referenced in HTML body
+							if (item.ci && anchoredAttachmentsList.includes(cleanUpCi(item.ci))) {
+								// Has content-id and is referenced in HTML body -> inline
 								item.cd = 'inline';
-							} else if (
-								part.ct === 'multipart/related' &&
-								item.ci &&
-								item.cd &&
-								item.cd === 'attachment' &&
-								anchoredAttachmentsList.includes(cleanUpCi(item.ci))
-							) {
-								item.cd = 'inline';
-							} else {
+							} else if (item.ci && item.cd === 'inline' && hasHtml) {
+								// Has content-id, marked as inline, but NOT found in HTML content
+								// AND there is HTML content (so the lookup is reliable)
+								// This means it's a false inline or unused inline -> change to attachment
+								item.cd = 'attachment';
+							} else if (!item.cd) {
+								// No disposition specified -> default to attachment
 								item.cd = 'attachment';
 							}
+							// Otherwise preserve the original cd value
 							if (item.ct === 'message/rfc822' && !item.filename) {
 								item.filename = 'Unknown <message/rfc822>';
 							}
@@ -160,34 +192,45 @@ export const getAttachmentsFromParts = (
 				});
 			});
 		} else if (
-			(mailParts && mailParts.cd && mailParts.cd === 'attachment') ||
+			(mailParts.cd && mailParts.cd === 'attachment') ||
 			(mailParts.ct && (mailParts.ct === 'message/rfc822' || mailParts.ct === 'text/calendar')) ||
 			mailParts.filename ||
 			mailParts.ci
 		) {
-			const updatedMailPart: AttachmentPart = { ...mailParts };
-			if (isIgnoreAttachment(mailParts)) {
-				extractAttachmentIdsFromHtmlContent(updatedMailPart.content || '');
-				if (
-					updatedMailPart.cd &&
-					updatedMailPart.cd === 'inline' &&
-					updatedMailPart.ci &&
-					anchoredAttachmentsList.includes(cleanUpCi(updatedMailPart.ci))
-				) {
+			if (!isIgnoreAttachment(mailParts)) {
+				const updatedMailPart: AttachmentPart = {
+					...mailParts,
+					contentType: mailParts.ct,
+					name: mailParts?.part,
+					size: mailParts?.s
+				};
+
+				// Determine content disposition based on whether it's referenced in HTML body
+				if (updatedMailPart.ci && anchoredAttachmentsList.includes(cleanUpCi(updatedMailPart.ci))) {
+					// Has content-id and is referenced in HTML body -> inline
 					updatedMailPart.cd = 'inline';
-				} else if (
-					updatedMailPart.ct === 'multipart/related' &&
-					updatedMailPart.ci &&
-					updatedMailPart.cd &&
-					updatedMailPart.cd === 'attachment' &&
-					anchoredAttachmentsList.includes(cleanUpCi(updatedMailPart.ci))
-				) {
-					updatedMailPart.cd = 'inline';
-				} else {
+				} else if (updatedMailPart.ci && updatedMailPart.cd === 'inline' && hasHtml) {
+					// Has content-id, marked as inline, but NOT found in HTML content
+					// AND there is HTML content (so the lookup is reliable)
+					// This means it's a false inline or unused inline -> change to attachment
+					updatedMailPart.cd = 'attachment';
+				} else if (!updatedMailPart.cd) {
+					// No disposition specified -> default to attachment
 					updatedMailPart.cd = 'attachment';
 				}
+				// Otherwise preserve the original cd value
+
+				if (updatedMailPart.ct === 'message/rfc822' && !updatedMailPart.filename) {
+					updatedMailPart.filename = 'Unknown <message/rfc822>';
+				}
+				if (updatedMailPart.ct === 'text/html' && !updatedMailPart.filename) {
+					updatedMailPart.filename = 'Unknown <text/html>';
+				}
+
+				if (updatedMailPart.ct && updatedMailPart.ct !== 'application/pkcs7-signature') {
+					results.push(updatedMailPart);
+				}
 			}
-			results.push(updatedMailPart);
 		} else if (mailParts.mp) {
 			results = results.concat(getAttachmentsFromParts(mailParts.mp));
 		}
