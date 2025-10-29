@@ -282,16 +282,18 @@ export function getOriginalHtmlContent(text: string): string {
 	if (!text) {
 		return '';
 	}
-	const htmlNode = document.createElement('div');
-	htmlNode.innerHTML = text;
-	while (SCRIPT_REGEX.test(text)) {
-		text = text.replace(SCRIPT_REGEX, '');
-	}
+
+	const processedText = text.replace(SCRIPT_REGEX, '');
+
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(processedText, 'text/html');
+	const htmlNode = htmlDoc.body;
+
 	const nodeList: Array<ChildNode> = [];
 	flatten(htmlNode, nodeList);
 	const { done } = processNodeList(nodeList);
 
-	return done && htmlNode.textContent ? htmlNode.innerHTML : text;
+	return done && htmlNode.textContent ? htmlNode.innerHTML : processedText;
 }
 
 function getTextFromBlock(block: Array<string> | undefined): string | null {
