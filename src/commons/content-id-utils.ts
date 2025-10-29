@@ -50,7 +50,6 @@ export const isAttachmentDisposition = (disposition?: string): boolean =>
  * decodeHtmlEntities('test&amp;data') // returns 'test&data'
  */
 export const decodeHtmlEntities = (encodedString: string): string => {
-	// Try using DOMParser for accurate decoding (works in browser environment)
 	try {
 		if (typeof DOMParser !== 'undefined') {
 			const doc = new DOMParser().parseFromString(
@@ -62,7 +61,7 @@ export const decodeHtmlEntities = (encodedString: string): string => {
 				return decodedText;
 			}
 		}
-	} catch (e) {
+	} catch {
 		// DOMParser failed or not available, fall through to manual decoding
 	}
 
@@ -120,9 +119,7 @@ export const extractContentIdsFromHtml = (htmlContent: string): Array<string> =>
 	}
 
 	return matches.map((match) => {
-		// Remove 'cid:' prefix
 		const cidWithEntities = match.replace('cid:', '');
-		// Decode HTML entities to get the actual Content-ID
 		return decodeHtmlEntities(cidWithEntities);
 	});
 };
