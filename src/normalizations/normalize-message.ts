@@ -90,7 +90,7 @@ const getAttachmentsAnchoredOnHtmlBody = (
  * @param item - The attachment part to check
  * @returns True if the attachment should be ignored
  */
-const isIgnoreAttachment = (item: AttachmentPart): boolean => {
+const isIgnoredAttachment = (item: AttachmentPart): boolean => {
 	// Ignore Apple-specific attachment formats
 	if (item.ct === 'multipart/appledouble' || item.ct === 'application/applefile') {
 		return true;
@@ -159,7 +159,7 @@ export const getAttachmentsFromParts = (
 		forEach(mailParts, (part) => {
 			const attachmentParts = getAttachmentsFromParts(part);
 			forEach(attachmentParts, (attachmentPart: AttachmentPart) => {
-				if (!isIgnoreAttachment(attachmentPart)) {
+				if (!isIgnoredAttachment(attachmentPart)) {
 					const item = {
 						...attachmentPart,
 						contentType: attachmentPart.ct,
@@ -204,7 +204,7 @@ export const getAttachmentsFromParts = (
 		mailParts.filename ||
 		mailParts.ci
 	) {
-		if (!isIgnoreAttachment(mailParts)) {
+		if (!isIgnoredAttachment(mailParts)) {
 			const updatedMailPart: AttachmentPart = {
 				...mailParts,
 				contentType: mailParts.ct,
