@@ -6,12 +6,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { generateMessageFromAPI } from '__test__/generators/api';
+import { generateMessageFromAPI } from '../../__test__/generators/api';
+import { MailMessagePart, SoapMailMessagePart } from '../../types';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoap
-} from 'normalizations/normalize-message';
-import { MailMessagePart, SoapMailMessagePart } from 'types/index.d';
+} from '../normalize-message';
 
 describe('normalize-message.ts', () => {
 	describe('Normalize message', () => {
