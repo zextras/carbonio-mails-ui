@@ -7,6 +7,7 @@
 import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
+import { SEARCH_ROUTE } from '../constants';
 import type { MailsEditorV2, MessageAction } from 'types/index.d';
 
 /**
@@ -80,5 +81,5 @@ border-radius: 5px;'
 
 // returns if in search module or not based on path
 export function useInSearchModule(): boolean {
-	return useLocation().pathname.startsWith('/search');
+	return useLocation().pathname.startsWith(`/${SEARCH_ROUTE}`);
 }
