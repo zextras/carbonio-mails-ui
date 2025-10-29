@@ -56,7 +56,6 @@ const DragItems = ({
 					setDraggedIds={noop}
 					index={index}
 					onSelect={onSelect}
-					onToggleExpanded={noop}
 					isConversationExpanded={false}
 				/>
 			)

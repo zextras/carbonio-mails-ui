@@ -35,7 +35,7 @@ export type ConversationListItemProps = {
 	folderId?: string;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
-	onToggleExpanded: (conversationId: string) => void;
+	onToggleExpanded?: (conversationId: string) => void;
 	isConversationExpanded: boolean;
 };
 const CollapseElement = styled(Container)<{ $open: boolean }>`
@@ -98,7 +98,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			if (!isConversationExpanded) {
 				fetchConversationIfNeeded();
 			}
-			onToggleExpanded(conversationId);
+			onToggleExpanded?.(conversationId);
 		},
 		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);

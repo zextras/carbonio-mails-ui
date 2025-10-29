@@ -26,7 +26,7 @@ type ConversationListItemComponentProps = {
 	visible?: boolean;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
-	onToggleExpanded: (conversationId: string) => void;
+	onToggleExpanded?: (conversationId: string) => void;
 	isConversationExpanded: boolean;
 };
 
