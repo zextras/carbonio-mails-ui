@@ -25,18 +25,16 @@
  */
 export const decodeHtmlEntities = (encodedString: string): string => {
 	try {
-		if (typeof DOMParser !== 'undefined') {
-			const doc = new DOMParser().parseFromString(
-				`<!DOCTYPE html><html><body>${encodedString}</body></html>`,
-				'text/html'
-			);
-			const decodedText = doc.body.textContent;
-			if (decodedText) {
-				return decodedText;
-			}
+		const doc = new DOMParser().parseFromString(
+			`<!DOCTYPE html><html><body>${encodedString}</body></html>`,
+			'text/html'
+		);
+		const decodedText = doc.body.textContent;
+		if (decodedText) {
+			return decodedText;
 		}
 	} catch {
-		// DOMParser failed or not available, fall through to manual decoding
+		// DOMParser failed, fall through to manual decoding
 	}
 
 	// Fallback: manually decode common HTML entities
