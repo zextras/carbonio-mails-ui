@@ -34,8 +34,9 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 }): ReactElement => {
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
-	const niceFolderName =
-		view === 'message' ? getProposedFolderName(sharedFolderName, owner, t) : sharedFolderName;
+	const niceFolderName = ['message', 'appointment', 'contact'].includes(view)
+		? getProposedFolderName(sharedFolderName, owner, t)
+		: sharedFolderName;
 	const [folderName, setFolderName] = useState(niceFolderName);
 	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
