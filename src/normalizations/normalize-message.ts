@@ -178,8 +178,8 @@ export const getAttachmentsFromParts = (
 						} else if (item.ci && item.cd === 'inline' && hasHtml) {
 							// Not referenced in HTML but marked inline -> change to attachment
 							item.cd = 'attachment';
-						} else if (!item.cd) {
-							item.cd = 'attachment';
+						} else if (item.cd == null) {
+							item.cd ??= 'attachment';
 						}
 
 						// Add default filenames for known types
@@ -270,13 +270,13 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 		mp,
 		(found, part) => {
 			if (part.mp) return findBodyPart(part.mp, found, id);
-			if (part && part.body) {
+			if (part?.body) {
 				if (!found.contentType.length) {
 					return { contentType: part.ct, content: part.content ?? '', truncated: !!part.truncated };
 				}
 				if (
 					part.part &&
-					part.part.indexOf('.') === -1 &&
+					!part.part.includes('.') &&
 					part.cd &&
 					part.cd === 'inline' &&
 					!part.ci &&
