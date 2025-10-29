@@ -9,6 +9,11 @@ import { useMemo } from 'react';
 import { useTheme } from '@zextras/carbonio-design-system';
 import { isNil, reduce } from 'lodash';
 
+import {
+	areContentIdsEqual,
+	extractContentIdsFromHtml,
+	removeAngleBrackets
+} from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
 import {
 	AbstractAttachment,
@@ -51,37 +56,16 @@ const isEml = (part: MailMessagePart): boolean =>
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
 
 /**
- * Extract the inner part of the content id removing the
- * angle brackets (if present)
- * @param contentId
- */
-export const extractContentIdInnerPart = (contentId: string): string | null => {
-	const regex = /^<?([^<>]+)>?$/;
-	const tokens = regex.exec(contentId);
-	if (!tokens) {
-		return null;
-	}
-
-	return tokens[1];
-};
-
-/**
  * Tells if the 2 given content-id are the same, ignoring the
  * angle brackets. If any of the 2 given arguments is not a
  * valid content-id the result will be false
  *
  * @param contentId
  * @param otherContentId
+ * @deprecated Use areContentIdsEqual from commons/content-id-utils instead
  */
-export const isContentIdEqual = (contentId: string, otherContentId: string): boolean => {
-	const contentIdInnerPart = extractContentIdInnerPart(contentId);
-	const otherContentIdInnerPart = extractContentIdInnerPart(otherContentId);
-	if (!contentIdInnerPart || !otherContentIdInnerPart) {
-		return false;
-	}
-
-	return contentIdInnerPart === otherContentIdInnerPart;
-};
+export const isContentIdEqual = (contentId: string, otherContentId: string): boolean =>
+	areContentIdsEqual(contentId, otherContentId);
 
 export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
 
@@ -93,61 +77,6 @@ export const getCidFromCidUrl = (cidUrl: string): string | null => {
 	return cidUrlTokens[1];
 };
 
-const getCidFromReference = (cidReference: string): string | null => {
-	const cidReferenceTokens = new RegExp(REFERRED_CIDURL_PATTERN, 'gi').exec(cidReference);
-	if (!cidReferenceTokens) {
-		return null;
-	}
-	return cidReferenceTokens[1];
-};
-
-/**
- * Extracts CID references from HTML content with proper HTML entity decoding.
- * Handles CIDs with encoded characters like &#64; (@), &#39; ('), etc.
- * @param richText - HTML content to extract CIDs from
- */
-const getCidReferences = (richText: string): Array<string> => {
-	const result: Array<string> = [];
-
-	// Match cid: followed by anything until quote, whitespace, or >
-	// This handles HTML entities like &#64; (encoded @) properly
-	const matches = richText.match(/cid:([^"\s>]+)/g);
-	if (!matches) {
-		return result;
-	}
-
-	matches.forEach((match) => {
-		// Remove 'cid:' prefix
-		let cid = match.replace('cid:', '');
-
-		// Decode HTML entities using DOMParser for accurate decoding
-		// This handles &#64; -> @, &#39; -> ', &amp; -> &, etc.
-		try {
-			const doc = new DOMParser().parseFromString(
-				`<!DOCTYPE html><html><body>${cid}</body></html>`,
-				MIMETYPE_RICHTEXT
-			);
-			const decodedCid = doc.body.textContent;
-			if (decodedCid) {
-				cid = decodedCid;
-			}
-		} catch (e) {
-			// Fallback: decode common entities manually if DOMParser fails
-			cid = cid
-				.replace(/&#64;/g, '@')
-				.replace(/&#39;/g, "'")
-				.replace(/&#34;/g, '"')
-				.replace(/&amp;/g, '&')
-				.replace(/&lt;/g, '<')
-				.replace(/&gt;/g, '>');
-		}
-
-		result.push(cid);
-	});
-
-	return result;
-};
-
 /**
  * Extracts all Content-IDs referenced in HTML parts of the message.
  * Now properly handles HTML entity encoded CIDs.
@@ -157,8 +86,8 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	const result: Array<string> = [];
 	parts?.forEach((part) => {
 		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
-			// getCidReferences now returns decoded CIDs directly
-			const cids = getCidReferences(part.content);
+			// Use centralized CID extraction utility
+			const cids = extractContentIdsFromHtml(part.content);
 			result.push(...cids);
 		}
 
@@ -170,7 +99,10 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 };
 
 const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
-	referredCIDs.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
+	referredCIDs.reduce(
+		(result, referredCid) => areContentIdsEqual(cid, referredCid) || result,
+		false
+	);
 
 /**
  * Filters the message parts to collect body content and attachments and adds disposition.
@@ -477,7 +409,7 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		isInline: part.disposition === 'inline',
-		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
+		contentId: (part.ci && removeAngleBrackets(part.ci)) ?? undefined,
 		filename: part.filename ?? '',
 		partName: part.name,
 		contentType: part.contentType,

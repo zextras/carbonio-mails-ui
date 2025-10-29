@@ -7,9 +7,9 @@ import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carboni
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
+import { removeAngleBrackets } from 'commons/content-id-utils';
 import {
 	composeAttachmentDownloadUrl,
-	extractContentIdInnerPart,
 	getCidFromCidUrl,
 	isCidUrl,
 	isContentIdEqual,
@@ -36,7 +36,7 @@ import {
 } from 'types/index.d';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
-	const contentIdInnerPart = extractContentIdInnerPart(contentId);
+	const contentIdInnerPart = removeAngleBrackets(contentId);
 	return contentIdInnerPart ? `cid:${contentIdInnerPart}` : null;
 };
 
