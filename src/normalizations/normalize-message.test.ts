@@ -953,5 +953,659 @@ describe('normalize-message.ts', () => {
 				expect(pdfAttachment?.cd).toBe('attachment');
 			});
 		});
+
+		describe('Ignored attachment types', () => {
+			it('should ignore Apple-specific multipart/appledouble attachments', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body>Test</body></html>'
+								},
+								{
+									ct: 'multipart/appledouble',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'AppleDouble',
+									s: 5000
+								},
+								{
+									ct: 'application/pdf',
+									part: '1.3',
+									cd: 'attachment',
+									filename: 'document.pdf',
+									s: 10000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
+			});
+
+			it('should ignore application/applefile attachments', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Test email'
+								},
+								{
+									ct: 'application/applefile',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'AppleFile',
+									s: 2000
+								},
+								{
+									ct: 'image/jpeg',
+									part: '1.3',
+									cd: 'attachment',
+									filename: 'photo.jpg',
+									s: 8000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('photo.jpg');
+			});
+
+			it('should ignore HTML body parts marked as body: true', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/alternative',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Plain text version'
+								},
+								{
+									ct: 'text/html',
+									part: '1.2',
+									body: true,
+									content: '<html><body>HTML version</body></html>'
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				// Should have no attachments since both are body parts
+				expect(normalizedMessage.attachments).toHaveLength(0);
+			});
+
+			it('should ignore plain text body parts marked as body: true', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'text/plain',
+							part: '1',
+							body: true,
+							content: 'Email content'
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(0);
+			});
+
+			it('should ignore multipart/digest containers', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/digest',
+							part: '1',
+							filename: 'digest.eml',
+							s: 50000
+						},
+						{
+							ct: 'application/zip',
+							part: '2',
+							cd: 'attachment',
+							filename: 'archive.zip',
+							s: 10000
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('archive.zip');
+			});
+
+			it('should ignore parts with ci: "text-body"', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'text/html',
+							part: '1',
+							ci: 'text-body',
+							content: '<html><body>Body content</body></html>'
+						},
+						{
+							ct: 'application/pdf',
+							part: '2',
+							cd: 'attachment',
+							filename: 'document.pdf',
+							s: 20000
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
+			});
+
+			it('should ignore text/calendar without filename (embedded invites)', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/alternative',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Meeting invitation'
+								},
+								{
+									ct: 'text/calendar',
+									part: '1.2',
+									// No filename - this is an embedded calendar invite
+									content: 'BEGIN:VCALENDAR...'
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				// Should ignore the calendar part without filename
+				expect(normalizedMessage.attachments).toHaveLength(0);
+			});
+
+			it('should NOT ignore text/calendar WITH filename (attached .ics file)', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Please find the calendar invite attached'
+								},
+								{
+									ct: 'text/calendar',
+									part: '1.2',
+									filename: 'meeting.ics',
+									cd: 'attachment',
+									s: 3000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				// Should include calendar file when it has a filename
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('meeting.ics');
+			});
+
+			it('should filter out application/pkcs7-signature (S/MIME signatures)', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/signed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Signed email'
+								},
+								{
+									ct: 'application/pkcs7-signature',
+									part: '1.2',
+									filename: 'smime.p7s',
+									cd: 'attachment',
+									s: 2000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				// Should filter out the PKCS7 signature
+				expect(normalizedMessage.attachments).toHaveLength(0);
+			});
+		});
+
+		describe('Special attachment handling', () => {
+			it('should add default filename for message/rfc822 without filename', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'See forwarded message'
+								},
+								{
+									ct: 'message/rfc822',
+									part: '1.2',
+									cd: 'attachment',
+									// No filename specified
+									s: 15000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('Unknown <message/rfc822>');
+				expect(normalizedMessage.attachments?.[0].contentType).toBe('message/rfc822');
+			});
+
+			it('should preserve original filename for message/rfc822 when provided', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body>Forwarded message</body></html>'
+								},
+								{
+									ct: 'message/rfc822',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'Original Email.eml',
+									s: 20000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('Original Email.eml');
+			});
+
+			it('should add default filename for text/html without filename', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Email with HTML attachment'
+								},
+								{
+									ct: 'text/html',
+									part: '1.2',
+									cd: 'attachment',
+									// No filename and not marked as body
+									content: '<html><body>Detached HTML</body></html>',
+									s: 500
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('Unknown <text/html>');
+			});
+
+			it('should preserve original filename for text/html when provided', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Email content'
+								},
+								{
+									ct: 'text/html',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'webpage.html',
+									s: 800
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('webpage.html');
+			});
+		});
+
+		describe('Edge cases and complex scenarios', () => {
+			it('should handle deeply nested multipart structures', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'multipart/alternative',
+									part: '1.1',
+									mp: [
+										{
+											ct: 'text/plain',
+											part: '1.1.1',
+											body: true,
+											content: 'Plain'
+										},
+										{
+											ct: 'multipart/related',
+											part: '1.1.2',
+											mp: [
+												{
+													ct: 'text/html',
+													part: '1.1.2.1',
+													body: true,
+													content: '<html><body>HTML</body></html>'
+												},
+												{
+													ct: 'image/png',
+													part: '1.1.2.2',
+													cd: 'inline',
+													filename: 'embedded.png',
+													ci: '<unused@test.com>',
+													s: 3000
+												}
+											]
+										}
+									]
+								},
+								{
+									ct: 'application/pdf',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'document.pdf',
+									s: 50000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(2);
+				const imageAttachment = normalizedMessage.attachments?.find(
+					(a) => a.filename === 'embedded.png'
+				);
+				const pdfAttachment = normalizedMessage.attachments?.find(
+					(a) => a.filename === 'document.pdf'
+				);
+
+				expect(imageAttachment?.cd).toBe('attachment'); // Changed because not in HTML
+				expect(pdfAttachment?.cd).toBe('attachment');
+			});
+
+			it('should handle empty mp array', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: []
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(0);
+			});
+
+			it('should handle attachments with all normalized properties', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Email'
+								},
+								{
+									ct: 'application/vnd.ms-excel',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'spreadsheet.xls',
+									s: 45000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				const attachment = normalizedMessage.attachments?.[0];
+				expect(attachment).toEqual(
+					expect.objectContaining({
+						ct: 'application/vnd.ms-excel',
+						contentType: 'application/vnd.ms-excel',
+						part: '1.2',
+						name: '1.2',
+						s: 45000,
+						size: 45000,
+						cd: 'attachment',
+						filename: 'spreadsheet.xls'
+					})
+				);
+			});
+
+			it('should handle single part attachment (not in array)', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: {
+						ct: 'application/pdf',
+						part: '1',
+						cd: 'attachment',
+						filename: 'document.pdf',
+						s: 25000
+					} as never // Force single object instead of array
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
+			});
+
+			it('should handle attachments without Content-Disposition but with filename', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body>Test</body></html>'
+								},
+								{
+									ct: 'application/msword',
+									part: '1.2',
+									// No cd property
+									filename: 'report.doc',
+									s: 35000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment'); // Defaulted
+				expect(normalizedMessage.attachments?.[0].filename).toBe('report.doc');
+			});
+
+			it('should handle multiple attachments of various types', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '1.1',
+									body: true,
+									content: '<html><body>Email content</body></html>'
+								},
+								{
+									ct: 'application/pdf',
+									part: '1.2',
+									cd: 'attachment',
+									filename: 'document.pdf',
+									s: 50000
+								},
+								{
+									ct: 'image/jpeg',
+									part: '1.3',
+									cd: 'attachment',
+									filename: 'photo.jpg',
+									s: 150000
+								},
+								{
+									ct: 'application/zip',
+									part: '1.4',
+									cd: 'attachment',
+									filename: 'archive.zip',
+									s: 1000000
+								},
+								{
+									ct: 'message/rfc822',
+									part: '1.5',
+									cd: 'attachment',
+									filename: 'forwarded.eml',
+									s: 25000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(4);
+				const filenames = normalizedMessage.attachments?.map((a) => a.filename);
+				expect(filenames).toContain('document.pdf');
+				expect(filenames).toContain('photo.jpg');
+				expect(filenames).toContain('archive.zip');
+				expect(filenames).toContain('forwarded.eml');
+			});
+
+			it('should handle attachment with Content-ID but no HTML body', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'text/plain',
+									part: '1.1',
+									body: true,
+									content: 'Plain text email'
+								},
+								{
+									ct: 'image/png',
+									part: '1.2',
+									cd: 'inline',
+									filename: 'chart.png',
+									ci: '<chart@example.com>',
+									s: 10000
+								}
+							]
+						}
+					]
+				});
+
+				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalizedMessage.attachments).toHaveLength(1);
+				// Should preserve inline since there's no HTML to contradict it
+				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
+			});
+		});
 	});
 });
