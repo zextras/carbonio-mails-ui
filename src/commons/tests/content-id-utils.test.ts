@@ -10,13 +10,15 @@
 import {
 	areContentIdsEqual,
 	decodeHtmlEntities,
-	DISPOSITION_ATTACHMENT,
-	DISPOSITION_INLINE,
 	extractContentIdsFromHtml,
-	isAttachmentDisposition,
-	isInlineDisposition,
 	removeAngleBrackets
 } from '../content-id-utils';
+import {
+	DISPOSITION_ATTACHMENT,
+	DISPOSITION_INLINE,
+	isAttachmentDisposition,
+	isInlineDisposition
+} from 'helpers/attachments';
 
 describe('Content-ID Utilities', () => {
 	describe('Disposition Constants', () => {

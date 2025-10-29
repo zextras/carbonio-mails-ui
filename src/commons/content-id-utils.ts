@@ -13,30 +13,6 @@
  */
 
 /**
- * Content disposition types for email attachments
- */
-export const DISPOSITION_INLINE = 'inline' as const;
-export const DISPOSITION_ATTACHMENT = 'attachment' as const;
-
-/**
- * Checks if a content disposition indicates an inline attachment.
- *
- * @param disposition - The content disposition value
- * @returns True if the disposition is 'inline'
- */
-export const isInlineDisposition = (disposition?: string): boolean =>
-	disposition === DISPOSITION_INLINE;
-
-/**
- * Checks if a content disposition indicates a regular attachment.
- *
- * @param disposition - The content disposition value
- * @returns True if the disposition is 'attachment'
- */
-export const isAttachmentDisposition = (disposition?: string): boolean =>
-	disposition === DISPOSITION_ATTACHMENT;
-
-/**
  * Decodes HTML entities in a string to their actual characters.
  * Handles common entities like &#64; (@), &#39; ('), &amp; (&), etc.
  *
