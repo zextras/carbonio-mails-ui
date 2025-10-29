@@ -52,6 +52,7 @@ describe('ConversationPreviewPanelContainer', () => {
 				screen.getByTestId(`conversation-preview-panel-${mockedConversation.id}`)
 			).toBeVisible();
 		});
+
 		it('in trash with trash messages', async () => {
 			jest.mocked(shell).IS_FOCUS_MODE = false;
 			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
