@@ -273,7 +273,7 @@ export const getAttachmentExtension = (
 	// Fallback: extract extension from filename
 	if (fileName) {
 		const match = FileExtensionRegex.exec(fileName);
-		if (match && match[1]) {
+		if (match?.[1]) {
 			return { value: match[1] };
 		}
 	}
