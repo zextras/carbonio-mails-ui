@@ -6,8 +6,9 @@
 import type { Theme } from '@zextras/carbonio-design-system';
 import { includes, uniqBy } from 'lodash';
 
-import { calcColor, getFileExtension } from 'commons/utilities';
+import { calcColor } from 'commons/utilities';
 import { getUserLocale } from 'commons/utils';
+import { getAttachmentExtension } from 'helpers/attachments';
 import {
 	AttachmentPart,
 	EditorAttachmentFiles,
@@ -98,7 +99,7 @@ export const getAttachmentIconColors = ({
 }): IconColors =>
 	uniqBy(
 		attachments.map((att: AttachmentPart | EditorAttachmentFiles) => {
-			const fileExtn = getFileExtension(att).value;
+			const fileExtn = getAttachmentExtension(att.contentType, att.filename).value;
 			const color = calcColor(att.contentType ?? '', theme);
 
 			return {

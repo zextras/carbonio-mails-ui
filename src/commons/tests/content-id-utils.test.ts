@@ -1,3 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+// noinspection HtmlRequiredAltAttribute,HtmlUnknownTarget
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -7,11 +10,58 @@
 import {
 	areContentIdsEqual,
 	decodeHtmlEntities,
+	DISPOSITION_ATTACHMENT,
+	DISPOSITION_INLINE,
 	extractContentIdsFromHtml,
+	isAttachmentDisposition,
+	isInlineDisposition,
 	removeAngleBrackets
 } from '../content-id-utils';
 
 describe('Content-ID Utilities', () => {
+	describe('Disposition Constants', () => {
+		it('should have correct disposition values', () => {
+			expect(DISPOSITION_INLINE).toBe('inline');
+			expect(DISPOSITION_ATTACHMENT).toBe('attachment');
+		});
+	});
+
+	describe('isInlineDisposition', () => {
+		it('should return true for inline disposition', () => {
+			expect(isInlineDisposition('inline')).toBe(true);
+		});
+
+		it('should return false for attachment disposition', () => {
+			expect(isInlineDisposition('attachment')).toBe(false);
+		});
+
+		it('should return false for undefined', () => {
+			expect(isInlineDisposition(undefined)).toBe(false);
+		});
+
+		it('should return false for other values', () => {
+			expect(isInlineDisposition('other')).toBe(false);
+		});
+	});
+
+	describe('isAttachmentDisposition', () => {
+		it('should return true for attachment disposition', () => {
+			expect(isAttachmentDisposition('attachment')).toBe(true);
+		});
+
+		it('should return false for inline disposition', () => {
+			expect(isAttachmentDisposition('inline')).toBe(false);
+		});
+
+		it('should return false for undefined', () => {
+			expect(isAttachmentDisposition(undefined)).toBe(false);
+		});
+
+		it('should return false for other values', () => {
+			expect(isAttachmentDisposition('other')).toBe(false);
+		});
+	});
+
 	describe('decodeHtmlEntities', () => {
 		it('should decode &#64; to @', () => {
 			expect(decodeHtmlEntities('image&#64;domain.com')).toBe('image@domain.com');

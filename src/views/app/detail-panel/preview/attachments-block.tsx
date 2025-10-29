@@ -29,9 +29,14 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from './utils';
 import { AppContext } from 'app-utils/app-context-initializer';
-import { getFileExtension } from 'commons/utilities';
-import { useAttachmentIconColor } from 'helpers/attachments';
+import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
@@ -53,12 +58,6 @@ import {
 	isDocument,
 	previewType
 } from 'views/app/detail-panel/preview/file-preview';
-import {
-	getAttachmentIconColors,
-	getAttachmentsDownloadLink,
-	getAttachmentsLink,
-	getLocationOrigin
-} from 'views/app/detail-panel/preview/utils/index';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -130,7 +129,7 @@ const Attachment = ({
 }: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
-	const extension = getFileExtension(att).value;
+	const extension = getAttachmentExtension(att.contentType, att.filename).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
 
