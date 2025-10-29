@@ -122,11 +122,11 @@ const hasHtmlContent = (parts: Array<AttachmentPart> | AttachmentPart): boolean 
 	if (isArray(parts)) {
 		return parts.some((part) => hasHtmlContent(part));
 	}
-	if ((parts as AttachmentPart).ct === 'text/html' && (parts as AttachmentPart).body) {
+	if (parts.ct === 'text/html' && parts.body) {
 		return true;
 	}
-	if ((parts as AttachmentPart).mp) {
-		return hasHtmlContent((parts as AttachmentPart).mp!);
+	if (parts.mp) {
+		return hasHtmlContent(parts.mp);
 	}
 	return false;
 };
