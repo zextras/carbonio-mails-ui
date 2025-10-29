@@ -178,7 +178,7 @@ export const getAttachmentsFromParts = (
 						} else if (item.ci && item.cd === 'inline' && hasHtml) {
 							// Not referenced in HTML but marked inline -> change to attachment
 							item.cd = 'attachment';
-						} else if (item.cd == null) {
+						} else {
 							item.cd ??= 'attachment';
 						}
 
@@ -192,8 +192,6 @@ export const getAttachmentsFromParts = (
 
 						// Exclude PKCS7 signatures
 						if (item.ct && item.ct !== 'application/pkcs7-signature') {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							results.push(item);
 						}
 					}
@@ -223,8 +221,8 @@ export const getAttachmentsFromParts = (
 			} else if (updatedMailPart.ci && updatedMailPart.cd === 'inline' && hasHtml) {
 				// Not referenced in HTML but marked inline -> change to attachment
 				updatedMailPart.cd = 'attachment';
-			} else if (!updatedMailPart.cd) {
-				updatedMailPart.cd = 'attachment';
+			} else {
+				updatedMailPart.cd ??= 'attachment';
 			}
 
 			// Add default filenames for known types
