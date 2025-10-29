@@ -18,8 +18,6 @@
 export const DISPOSITION_INLINE = 'inline' as const;
 export const DISPOSITION_ATTACHMENT = 'attachment' as const;
 
-export type ContentDisposition = typeof DISPOSITION_INLINE | typeof DISPOSITION_ATTACHMENT;
-
 /**
  * Checks if a content disposition indicates an inline attachment.
  *

@@ -139,18 +139,6 @@ const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
 	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
 
-/**
- * Tells if the 2 given content-id are the same, ignoring the
- * angle brackets. If any of the 2 given arguments is not a
- * valid content-id the result will be false
- *
- * @param contentId
- * @param otherContentId
- * @deprecated Use areContentIdsEqual from commons/content-id-utils instead
- */
-export const isContentIdEqual = (contentId: string, otherContentId: string): boolean =>
-	areContentIdsEqual(contentId, otherContentId);
-
 export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
 
 export const getCidFromCidUrl = (cidUrl: string): string | null => {
@@ -170,9 +158,8 @@ export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<stri
 	const result: Array<string> = [];
 	parts?.forEach((part) => {
 		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
-			// Use centralized CID extraction utility
-			const cids = extractContentIdsFromHtml(part.content);
-			result.push(...cids);
+			const contentIdsFromHtml = extractContentIdsFromHtml(part.content);
+			result.push(...contentIdsFromHtml);
 		}
 
 		if (part.parts) {
