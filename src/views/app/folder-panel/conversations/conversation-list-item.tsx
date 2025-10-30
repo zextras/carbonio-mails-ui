@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
@@ -35,6 +35,8 @@ export type ConversationListItemProps = {
 	folderId?: string;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	onToggleExpanded?: (conversationId: string) => void;
+	isConversationExpanded: boolean;
 };
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -51,10 +53,11 @@ export const ConversationListItem = memo(function ConversationListItem({
 	folderId,
 	setDraggedIds,
 	index,
-	onSelect
+	onSelect,
+	onToggleExpanded,
+	isConversationExpanded
 }: ConversationListItemProps): React.JSX.Element {
 	const navigate = useNavigate();
-	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
 
@@ -76,21 +79,28 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
+	const shouldFetchConversation = useCallback(
+		(): boolean =>
+			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+			conversationStatus !== API_REQUEST_STATUS.pending,
+		[conversationStatus]
+	);
+
+	const fetchConversationIfNeeded = useCallback(() => {
+		if (shouldFetchConversation()) {
+			searchConvEmailStoreAction(conversationId);
+		}
+	}, [shouldFetchConversation, conversationId]);
+
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-			setOpen((currentlyOpen) => {
-				if (
-					!currentlyOpen &&
-					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-					conversationStatus !== API_REQUEST_STATUS.pending
-				) {
-					searchConvEmailStoreAction(conversationId);
-				}
-				return !currentlyOpen;
-			});
+			if (!isConversationExpanded) {
+				fetchConversationIfNeeded();
+			}
+			onToggleExpanded?.(conversationId);
 		},
-		[conversationId, conversationStatus]
+		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
 
 	const debouncedPushHistory = useMemo(
@@ -148,7 +158,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
-						open={open}
+						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						index={index}
 						onSelect={onSelect}
@@ -161,16 +171,16 @@ export const ConversationListItem = memo(function ConversationListItem({
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
-						open={open}
+						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						index={index}
 						onSelect={onSelect}
 					/>
 				</Container>
 			)}
-			{open && conversation.messagesInConversation > 1 && (
+			{isConversationExpanded && conversation.messagesInConversation > 1 && (
 				<CollapseElement
-					$open={open}
+					$open={isConversationExpanded}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"
