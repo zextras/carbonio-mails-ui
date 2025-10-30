@@ -6,8 +6,8 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, reduce, reject, some } from 'lodash';
 
+import { areContentIdsEqual } from '../../commons/content-id-utils';
 import { PROCESS_STATUS } from 'constants/index';
-import { isContentIdEqual } from 'helpers/attachments';
 import type {
 	EditorOperationAllowedStatus,
 	MailsEditorV2,
@@ -162,14 +162,14 @@ export const getSavedInlineAttachmentByContentId = (
 	reduce<SavedAttachment, SavedAttachment | null>(
 		savedAttachments,
 		(result, attachment) =>
-			attachment.isInline && isContentIdEqual(attachment.contentId ?? '', contentId)
+			attachment.isInline && areContentIdsEqual(attachment.contentId ?? '', contentId)
 				? attachment
 				: result,
 		null
 	);
 
 const isContentIdWithinIdList = (contentId: string, idList: Array<string>): boolean =>
-	reduce(idList, (result, id) => result || isContentIdEqual(contentId, id), false);
+	reduce(idList, (result, id) => result || areContentIdsEqual(contentId, id), false);
 
 export const getSavedInlineAttachmentsByContentId = (
 	contentIds: Array<string>,

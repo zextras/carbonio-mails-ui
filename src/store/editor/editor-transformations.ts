@@ -7,12 +7,11 @@ import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carboni
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
+import { areContentIdsEqual, removeAngleBrackets } from 'commons/content-id-utils';
 import {
 	composeAttachmentDownloadUrl,
-	extractContentIdInnerPart,
 	getCidFromCidUrl,
 	isCidUrl,
-	isContentIdEqual,
 	isDownloadServicedUrl
 } from 'helpers/attachments';
 import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
@@ -36,7 +35,7 @@ import {
 } from 'types/index.d';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
-	const contentIdInnerPart = extractContentIdInnerPart(contentId);
+	const contentIdInnerPart = removeAngleBrackets(contentId);
 	return contentIdInnerPart ? `cid:${contentIdInnerPart}` : null;
 };
 
@@ -51,7 +50,7 @@ export const convertCidUrlToServiceUrl = (
 	const referredAttachment = reduce<SavedAttachment, SavedAttachment | null>(
 		savedInlineAttachments,
 		(result, attachment) =>
-			isContentIdEqual(attachment.contentId ?? '', cid) ? attachment : result,
+			areContentIdsEqual(attachment.contentId ?? '', cid) ? attachment : result,
 		null
 	);
 
