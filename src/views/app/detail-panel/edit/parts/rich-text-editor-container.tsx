@@ -212,14 +212,16 @@ export const RichTextEditorContainer = ({
 				'emoticons'
 			],
 			toolbar: [
-				// Font and style controls
-				'fontfamily fontsize styles forecolor backcolor',
+				// Fonts
+				'fontfamily fontsize styles',
+				// Font Style controls
+				'forecolor backcolor',
 				// Text formatting
 				'bold italic underline strikethrough removeformat',
 				// Alignment and direction
-				'alignleft aligncenter alignright alignjustify ltr rtl',
+				'alignleft aligncenter alignright alignjustify outdent indent ltr rtl',
 				// Lists and indentation
-				'bullist numlist outdent indent',
+				'bullist numlist',
 				// Insert elements
 				'link table insertfile image imageSelector emoticons',
 				// View and blocks
