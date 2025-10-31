@@ -330,7 +330,7 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 				maxHeight="100%"
 				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
-				<ModalHeader title={modalTitle} onClose={onClose} />
+				<ModalHeader title={modalTitle} onClose={onClose} showCloseIcon />
 				<Input
 					label={`${t('settings.filter_name', 'Filter Name')}*`}
 					value={filterName}
