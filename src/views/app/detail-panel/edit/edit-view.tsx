@@ -14,7 +14,7 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, t, useIsCarbonioCE, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
@@ -67,6 +67,7 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+import { SmartlinkFromLocalModal } from './parts/smartlink-modal/smartlink-from-local-modal';
 
 export type EditViewProp = {
 	editorId: string;
@@ -137,6 +138,8 @@ const SendToYourselfWarningBanner = ({
 	) : null;
 };
 
+const BASE_64_CONVERSION_RATE = 1.33;
+
 export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function EditViewFn(
 	{ editorId, closeController },
 	ref
@@ -153,6 +156,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
+	const editor = useEditorsStore((state) => state.editors[editorId]);
+	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
+	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
 
 	const {
 		recipients: { to, cc, bcc }
@@ -307,9 +313,30 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			}
 
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files);
+			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
+			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const modalId = 'smartlink-from-local-modal';
+			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
+				addStandardAttachments(files, {});
+			} else {
+				createModal(
+					{
+						id: modalId,
+						maxHeight: '90vh',
+						size: 'medium',
+						children: (
+							<SmartlinkFromLocalModal
+								onClose={(): void => closeModal(modalId)}
+								files={files}
+								editorId={editorId}
+							/>
+						)
+					},
+					true
+				);
+			}
 		},
-		[addStandardAttachments]
+		[addStandardAttachments, closeModal, createModal, editor, editorId, maxAllowedMailSize]
 	);
 
 	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
