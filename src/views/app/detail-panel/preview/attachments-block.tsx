@@ -29,6 +29,7 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { useSaveFileToNextcloud } from './utils/use-save-file-to-nextcloud';
 import { AppContext } from 'app-utils/app-context-initializer';
 import { getFileExtension } from 'commons/utilities';
 import { useAttachmentIconColor } from 'helpers/attachments';
@@ -133,6 +134,8 @@ const Attachment = ({
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
+
+	const [saveFileToNextcloud, isSaveFileToNextcloudAvailable] = useSaveFileToNextcloud();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -363,6 +366,20 @@ const Attachment = ({
 	const attachItemColor = useAttachmentIconColor(att);
 	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
+	const saveToNextcloud = useCallback(async () => {
+		if (isSaveFileToNextcloudAvailable) {
+			const response = await fetch(downloadlink);
+
+			if (response.ok) {
+				const blob = await response.blob();
+
+				const file = new File([blob], filename || '');
+
+				saveFileToNextcloud(file);
+			}
+		}
+	}, [downloadlink, filename, isSaveFileToNextcloudAvailable, saveFileToNextcloud]);
+
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
@@ -399,6 +416,14 @@ const Attachment = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
+					{isSaveFileToNextcloudAvailable && (
+						<Tooltip
+							key={`${messageId}-NextcloudOutline`}
+							label={t('label.save_to_nextcloud', 'Save to Nextcoud')}
+						>
+							<IconButton size="medium" icon="CloudUploadOutline" onClick={saveToNextcloud} />
+						</Tooltip>
+					)}
 					{isUploadIntegrationAvailable && (
 						<Tooltip
 							key={`${messageId}-DriveOutline`}
