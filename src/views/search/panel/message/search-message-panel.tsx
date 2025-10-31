@@ -9,7 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
 import { SearchPanelHeader } from '../../parts/search-panel-header';
-import { API_REQUEST_STATUS } from 'constants/index';
+import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
@@ -18,7 +18,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 	const navigate = useNavigate();
 
 	if (messageStatus === API_REQUEST_STATUS.error) {
-		navigate('/search', { replace: true });
+		navigate(`/${SEARCH_ROUTE}`, { replace: true });
 	}
 
 	if (!message) {
