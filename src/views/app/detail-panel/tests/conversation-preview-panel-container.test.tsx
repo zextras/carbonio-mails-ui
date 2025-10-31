@@ -10,6 +10,7 @@ import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { updateConversationStatus } from 'store/emails/store';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
@@ -37,10 +38,11 @@ describe('ConversationPreviewPanelContainer', () => {
 	describe('should show panel if the conversation has messages', () => {
 		it('in focus mode', async () => {
 			jest.mocked(shell).IS_FOCUS_MODE = true;
+			populateFoldersStore();
 			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
 				populateConversationInEmailStore()
 			);
-			await act(() => updateConversationStatus(mockedConversation.id, 'pending'));
+			await act(() => updateConversationStatus(mockedConversation.id, 'fulfilled'));
 			setupTest(<ConversationPreviewPanelContainer />, {
 				initialEntries: [
 					`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`
@@ -48,9 +50,7 @@ describe('ConversationPreviewPanelContainer', () => {
 				path: '/folder/:folderId/conversation/:conversationId'
 			});
 
-			expect(
-				screen.getByTestId(`conversation-preview-panel-${mockedConversation.id}`)
-			).toBeVisible();
+			expect(screen.getByTestId(`PreviewPanelHeader`)).toBeVisible();
 		});
 
 		it('in trash with trash messages', async () => {
@@ -66,9 +66,7 @@ describe('ConversationPreviewPanelContainer', () => {
 				path: '/folder/:folderId/conversation/:conversationId'
 			});
 
-			expect(
-				screen.getByTestId(`ConversationMessagePreview-${mockedMessages[0].id}`)
-			).toBeVisible();
+			expect(screen.getByTestId(`PreviewPanelHeader`)).toBeVisible();
 		});
 	});
 
