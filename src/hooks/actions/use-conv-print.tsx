@@ -20,7 +20,7 @@ export const useConvPrintFn = (
 	folderId: string
 ): ActionFn => {
 	const canExecute = useCallback(
-		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		(): boolean => !isTrash(folderId),
 		[folderId]
 	);
 
