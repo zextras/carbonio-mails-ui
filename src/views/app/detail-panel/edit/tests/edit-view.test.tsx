@@ -1,4 +1,6 @@
-/* eslint-disable testing-library/no-unnecessary-act */
+/* eslint-disable testing-library/no-unnecessary-act,sonarjs/no-duplicate-string */
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -34,6 +36,9 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
@@ -45,9 +50,6 @@ import {
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import { setupEditorStore } from '__test__/generators/editor-store';
-import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
-import { generateMessage } from '__test__/generators/generateMessage';
 import type {
 	MailsEditorV2,
 	SaveDraftRequest,
@@ -1288,6 +1290,31 @@ describe('Edit view', () => {
 			expect(dropZone).not.toBeInTheDocument();
 		});
 
+		it('should disable drop zone when dragging text content over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver with text type (simulating text drag from editor)
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['text/plain', 'text/html'],
+						getData: () => 'some text content'
+					}
+				});
+			});
+
+			// Verify drop zone is not enabled/visible for text content
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
 		it('should handle drag events without dataTransfer gracefully', async () => {
 			setupEditorStore({ editors: [] });
 			const editor = generateNewMessageEditor();
@@ -1326,11 +1353,12 @@ describe('Edit view', () => {
 				const file = new File(['test'], `test.${fileType.split('/')[1]}`, { type: fileType });
 
 				// Use fireEvent.dragOver for each file type
+				// Note: dataTransfer.types should include 'Files' when dragging files, not MIME types
 				// eslint-disable-next-line no-await-in-loop
 				await act(async () => {
 					fireEvent.dragOver(textEditor, {
 						dataTransfer: {
-							types: [fileType],
+							types: ['Files'],
 							files: [file]
 						}
 					});

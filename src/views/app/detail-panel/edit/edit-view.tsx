@@ -283,7 +283,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const processDragOver = (event: React.DragEvent): void => {
 		const eventType = event.dataTransfer?.types;
-		if (eventType?.includes('contact')) {
+		// Only show drop zone for file attachments, not for text, contacts, or other content
+		if (eventType?.includes('contact') || !eventType?.includes('Files')) {
 			setDropZoneEnabled(false);
 			return;
 		}
