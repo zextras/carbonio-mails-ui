@@ -212,17 +212,20 @@ export const RichTextEditorContainer = ({
 				'emoticons'
 			],
 			toolbar: [
-				'fontfamily fontsize styles visualblocks',
-				'bold italic underline strikethrough',
-				'removeformat code',
-				'alignleft aligncenter alignright alignjustify',
+				// Fonts
+				'fontfamily fontsize styles',
+				// Font Style controls
 				'forecolor backcolor',
-				'bullist numlist outdent indent',
-				'ltr rtl',
-				'link table',
-				'insertfile image',
-				'imageSelector',
-				'emoticons'
+				// Text formatting
+				'bold italic underline strikethrough removeformat',
+				// Alignment and direction
+				'alignleft aligncenter alignright alignjustify outdent indent ltr rtl',
+				// Lists and indentation
+				'bullist numlist',
+				// Insert elements
+				'link table insertfile image imageSelector emoticons',
+				// View and blocks
+				'visualblocks code'
 			].join(' | '),
 
 			paste_data_images: false,
