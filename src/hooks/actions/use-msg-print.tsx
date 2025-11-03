@@ -16,7 +16,7 @@ import { errorPage } from 'ui-actions/error-page';
 
 export const useMsgPrintFn = (message: MailMessage, folderId: string): ActionFn => {
 	const canExecute = useCallback(
-		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		(): boolean => !isTrash(folderId),
 		[folderId]
 	);
 
