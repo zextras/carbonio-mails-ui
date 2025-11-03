@@ -16,6 +16,7 @@ import moment from 'moment';
 import { ChipType, Folder, Folders } from 'types/index.d';
 import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-query';
 import { findIconFromChip } from 'views/search/parts/use-find-icon';
+import FromToCondition from '../settings/filters/parts/create-filters-conditions/from-to';
 import {
 	AdvancedFilterModalFormValues,
 	KeywordState,
@@ -147,6 +148,15 @@ function dateToKeywordState({
 		}
 	];
 }
+
+function FromToQueryConv(key: string, value: string): string {
+	if (value.startsWith(key+":")) {
+		return value;
+	} else {
+		return key+":"+value;
+	}
+}
+
 export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 	const id = 'id';
 	const {
@@ -217,9 +227,9 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 		receivedFrom.map((item) => ({
 			...item,
 			id: item.value.email,
-			label: `from:${item.value.email}`,
+			label: FromToQueryConv('from', item.value.email),
 			actions: [],
-			value: item.value.email,
+			value: FromToQueryConv('from', item.value.email),
 			avatarBackground: item.background,
 			error: false,
 			isQueryFilter: true
@@ -227,8 +237,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 		sentTo.map((item) => ({
 			...item,
 			id: item.value.email,
-			label: `to:${item.value.email}`,
-			value: item.value.email,
+			label: FromToQueryConv('to', item.value.email),
+			value: FromToQueryConv('to', item.value.email),
 			actions: [],
 			avatarBackground: item.background,
 			error: false,
