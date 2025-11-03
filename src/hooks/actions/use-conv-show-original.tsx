@@ -13,7 +13,7 @@ import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useConvShowOriginalFn = (firstMessageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
-		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		(): boolean => !isDraft(folderId),
 		[folderId]
 	);
 

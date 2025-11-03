@@ -14,7 +14,7 @@ import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useMsgShowOriginalFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
-		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		(): boolean => !isDraft(folderId),
 		[folderId]
 	);
 
