@@ -20,6 +20,7 @@ import { filter, map, some } from 'lodash';
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { useAttachmentOrSmartlink } from './edit-utils-hooks/use-attachment-or-smartlink';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -166,7 +167,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments } = useEditorAttachments(editorId);
+	const { addFiles } = useAttachmentOrSmartlink({ editorId });
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -314,9 +315,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			}
 
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files);
+			addFiles(files);
 		},
-		[addStandardAttachments]
+		[addFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {
