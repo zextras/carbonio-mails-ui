@@ -43,7 +43,7 @@ import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { getDefaultIdentity } from 'helpers/identities';
-import { addEditor } from 'store/editor';
+import { addEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
@@ -1371,6 +1371,347 @@ describe('Edit view', () => {
 					expect(dropZone).toBeInTheDocument();
 				});
 			}
+		});
+	});
+
+	describe('Attachment processing and upload via drag and drop', () => {
+		const createFileWithSize = (name: string, size: number, type = 'text/plain'): File => {
+			const file = new File(['content'], name, { type });
+			Object.defineProperty(file, 'size', { value: size });
+			return file;
+		};
+
+		beforeEach(() => {
+			(hooks.useUserSettings as jest.Mock).mockReturnValue({
+				attrs: {
+					zimbraMtaMaxMessageSize: '10485760' // 10MB in bytes
+				}
+			});
+
+			// Mock Files integration functions for smartlink modal
+			(hooks.useIntegratedFunction as jest.Mock).mockImplementation((id: string) => {
+				if (id === 'get-link') {
+					return [jest.fn().mockResolvedValue({ url: 'http://example.com/link' }), true];
+				}
+				return [jest.fn(), false];
+			});
+
+			(hooks.getIntegratedFunction as jest.Mock).mockImplementation(() => [jest.fn(), false]);
+
+			createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+			aSuccessfullSaveDraft();
+		});
+
+		it('should add small files directly without showing smartlink modal when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create small files (100KB each)
+			const smallFile1 = createFileWithSize('small1.txt', 100000);
+			const smallFile2 = createFileWithSize('small2.pdf', 100000, 'application/pdf');
+
+			// Simulate drag over to enable drop zone
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [smallFile1, smallFile2]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+			expect(dropZone).toBeInTheDocument();
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [smallFile1, smallFile2]
+					}
+				});
+			});
+
+			// Modal should NOT appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+
+			// Files should be added to editor
+			await waitFor(() => {
+				const updatedEditor = useEditorsStore.getState().editors[editor.id];
+				expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
+			});
+		});
+
+		it('should show smartlink modal for large single file when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a large file (20MB)
+			const largeFile = createFileWithSize('large-video.mp4', 20000000, 'video/mp4');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [largeFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [largeFile]
+					}
+				});
+			});
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should show smartlink modal when combined file size exceeds limit after drop', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create multiple files that together exceed the limit
+			// 3MB each * 3 files = 9MB, with BASE64 conversion (1.33x) = ~12MB > 10MB
+			const file1 = createFileWithSize('doc1.pdf', 3000000, 'application/pdf');
+			const file2 = createFileWithSize('doc2.pdf', 3000000, 'application/pdf');
+			const file3 = createFileWithSize('doc3.pdf', 3000000, 'application/pdf');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file1, file2, file3]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file1, file2, file3]
+					}
+				});
+			});
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle different file types correctly when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create files of various types, all small
+			const textFile = createFileWithSize('document.txt', 50000, 'text/plain');
+			const pdfFile = createFileWithSize('report.pdf', 50000, 'application/pdf');
+			const imageFile = createFileWithSize('photo.jpg', 50000, 'image/jpeg');
+			const excelFile = createFileWithSize(
+				'data.xlsx',
+				50000,
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			);
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [textFile, pdfFile, imageFile, excelFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [textFile, pdfFile, imageFile, excelFile]
+					}
+				});
+			});
+
+			// No modal should appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+		});
+
+		it('should respect BASE_64_CONVERSION_RATE in size calculation when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a file that's just under the limit without conversion
+			// but exceeds it with BASE64 conversion (1.33x)
+			// 8MB * 1.33 = 10.64MB > 10MB limit
+			const file = createFileWithSize('borderline.zip', 8000000, 'application/zip');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file]
+					}
+				});
+			});
+
+			// Modal should appear because of BASE64 conversion
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle empty file drop gracefully', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a dummy file to trigger drop zone
+			const dummyFile = createFileWithSize('dummy.txt', 100);
+
+			// Simulate drag over to enable drop zone
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [dummyFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event with no files (empty FileList)
+			await act(async () => {
+				expect(() => {
+					fireEvent.drop(dropZone, {
+						dataTransfer: {
+							files: []
+						}
+					});
+				}).not.toThrow();
+			});
+
+			// No modal should appear
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+		});
+
+		it('should not show modal when combined size is just under the limit', async () => {
+			const baseEditor = generateNewMessageEditor();
+			const editor: MailsEditorV2 = {
+				...baseEditor,
+				size: 0
+			};
+
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create files that stay just under limit with BASE64 conversion
+			// 7.5MB * 1.33 = 9.975MB < 10MB
+			const file = createFileWithSize('just-under.pdf', 7500000, 'application/pdf');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file]
+					}
+				});
+			});
+
+			// Modal should NOT appear
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+
+			// Files should be added to editor
+			await waitFor(() => {
+				const updatedEditor = useEditorsStore.getState().editors[editor.id];
+				expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
+			});
 		});
 	});
 });
