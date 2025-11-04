@@ -16,12 +16,12 @@ import {
 	DropdownItem,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
 import { SmartlinkFromFilesModal } from './smartlink-modal/smartlink-from-files-modal';
-import { SmartlinkFromLocalModal } from './smartlink-modal/smartlink-from-local-modal';
+import { useAttachmentOrSmartlink } from '../edit-utils-hooks/use-attachment-or-smartlink';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorsStore, useEditorText } from 'store/editor/index';
@@ -45,7 +45,6 @@ const SelectorContainer = styled(Row)`
 	}
 `;
 
-const BASE_64_CONVERSION_RATE = 1.33;
 export type AddAttachmentsDropdownProps = {
 	editorId: MailsEditorV2['id'];
 };
@@ -55,44 +54,19 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const { getText, setText } = useEditorText(editorId);
-	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
-
+	const { addUploadedAttachment } = useEditorAttachments(editorId);
+	const { addFiles, BASE_64_CONVERSION_RATE, maxAllowedMailSize } = useAttachmentOrSmartlink({
+		editorId
+	});
 	const editor = useEditorsStore((state) => state.editors[editorId]);
-	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
-	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
 	const { createModal, closeModal } = useModal();
 
 	const addFilesFromLocal = useCallback(
 		async (fileList: FileList) => {
 			const files = buildArrayFromFileList(fileList);
-
-			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
-			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
-			const modalId = 'smartlink-from-local-modal';
-			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
-				addStandardAttachments(files, {});
-			} else {
-				createModal(
-					{
-						id: modalId,
-						maxHeight: '90vh',
-						size: 'medium',
-						onClose: (): void => {
-							closeModal(modalId);
-						},
-						children: (
-							<SmartlinkFromLocalModal
-								onClose={(): void => closeModal(modalId)}
-								files={files}
-								editorId={editorId}
-							/>
-						)
-					},
-					true
-				);
-			}
+			addFiles(files);
 		},
-		[addStandardAttachments, closeModal, createModal, editor, editorId, maxAllowedMailSize]
+		[addFiles]
 	);
 
 	const onUploadFromFilesComplete = useCallback(
@@ -159,7 +133,15 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			);
 			return null;
 		},
-		[closeModal, createModal, editor, editorId, maxAllowedMailSize, uploadFromFiles]
+		[
+			BASE_64_CONVERSION_RATE,
+			closeModal,
+			createModal,
+			editor,
+			editorId,
+			maxAllowedMailSize,
+			uploadFromFiles
+		]
 	);
 
 	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
