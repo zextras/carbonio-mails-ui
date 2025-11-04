@@ -8,7 +8,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { useAttachmentOrSmartlink } from '../use-attachment-or-smartlink';
+import { useLocalAttachmentOrSmartlink } from '../use-local-attachment-or-smartlink';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorAttachments } from 'store/editor/hooks';
 import { useEditorsStore } from 'store/editor/store';
@@ -63,12 +63,12 @@ describe('useAttachmentOrSmartlink', () => {
 
 	describe('addFiles', () => {
 		it('should add files directly when total size is below limit', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const smallFile = createFileWithSize('small.txt', 100000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([smallFile]);
+				result.current.addLocalFiles([smallFile]);
 			});
 
 			expect(mockAddStandardAttachments).toHaveBeenCalledWith([smallFile], {});
@@ -85,13 +85,13 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			// 5MB (editor) + 4.2MB * 1.33 = 10.586MB > 10.485MB limit
 			const largeFile = createFileWithSize('large.txt', 4200000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([largeFile]);
+				result.current.addLocalFiles([largeFile]);
 			});
 
 			expect(mockAddStandardAttachments).not.toHaveBeenCalled();
@@ -107,13 +107,13 @@ describe('useAttachmentOrSmartlink', () => {
 		});
 
 		it('should handle multiple files correctly', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const file1 = createFileWithSize('file1.txt', 50000, TEXT_PLAIN);
 			const file2 = createFileWithSize('file2.txt', 50000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([file1, file2]);
+				result.current.addLocalFiles([file1, file2]);
 			});
 
 			expect(mockAddStandardAttachments).toHaveBeenCalledWith([file1, file2], {});
@@ -121,12 +121,12 @@ describe('useAttachmentOrSmartlink', () => {
 		});
 
 		it('should calculate file size with BASE_64_CONVERSION_RATE', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const file = createFileWithSize('test.txt', 20000000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([file]);
+				result.current.addLocalFiles([file]);
 			});
 
 			expect(mockAddStandardAttachments).not.toHaveBeenCalled();
@@ -143,12 +143,12 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const largeFile = createFileWithSize('large.txt', 2000000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([largeFile]);
+				result.current.addLocalFiles([largeFile]);
 			});
 
 			expect(mockCreateModal).toHaveBeenCalledWith(
@@ -163,10 +163,10 @@ describe('useAttachmentOrSmartlink', () => {
 		});
 
 		it('should handle empty file array', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			act(() => {
-				result.current.addFiles([]);
+				result.current.addLocalFiles([]);
 			});
 
 			expect(mockAddStandardAttachments).toHaveBeenCalledWith([], {});
@@ -176,21 +176,21 @@ describe('useAttachmentOrSmartlink', () => {
 
 	describe('return values', () => {
 		it('should return maxAllowedMailSize', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			expect(result.current.maxAllowedMailSize).toBe(10485760);
 		});
 
 		it('should return BASE_64_CONVERSION_RATE', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			expect(result.current.BASE_64_CONVERSION_RATE).toBe(1.33);
 		});
 
 		it('should return addFiles function', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
-			expect(typeof result.current.addFiles).toBe('function');
+			expect(typeof result.current.addLocalFiles).toBe('function');
 		});
 	});
 
@@ -210,26 +210,26 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const file = createFileWithSize('exact.txt', fileSize, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([file]);
+				result.current.addLocalFiles([file]);
 			});
 
 			expect(mockAddStandardAttachments).toHaveBeenCalledWith([file], {});
 		});
 
 		it('should handle different file types', () => {
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const pdfFile = createFileWithSize('document.pdf', 50000, 'application/pdf');
 			const imageFile = createFileWithSize('photo.jpg', 50000, 'image/jpeg');
 			const videoFile = createFileWithSize('clip.mp4', 50000, 'video/mp4');
 
 			act(() => {
-				result.current.addFiles([pdfFile, imageFile, videoFile]);
+				result.current.addLocalFiles([pdfFile, imageFile, videoFile]);
 			});
 
 			expect(mockAddStandardAttachments).toHaveBeenCalledWith([pdfFile, imageFile, videoFile], {});
@@ -247,12 +247,12 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const largeFile = createFileWithSize('large.txt', 2000000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([largeFile]);
+				result.current.addLocalFiles([largeFile]);
 			});
 
 			const modalConfig = mockCreateModal.mock.calls[0][0];
@@ -274,13 +274,13 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const file1 = createFileWithSize('file1.txt', 3000000, TEXT_PLAIN);
 			const file2 = createFileWithSize('file2.txt', 3000000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([file1, file2]);
+				result.current.addLocalFiles([file1, file2]);
 			});
 
 			expect(mockCreateModal).toHaveBeenCalledTimes(1);
@@ -296,12 +296,12 @@ describe('useAttachmentOrSmartlink', () => {
 				};
 			}
 
-			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+			const { result } = renderHook(() => useLocalAttachmentOrSmartlink({ editorId }));
 
 			const largeFile = createFileWithSize('large.txt', 3000000, TEXT_PLAIN);
 
 			act(() => {
-				result.current.addFiles([largeFile]);
+				result.current.addLocalFiles([largeFile]);
 			});
 
 			expect(mockCreateModal).toHaveBeenCalledTimes(1);

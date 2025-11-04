@@ -20,8 +20,8 @@ import { filter, map, some } from 'lodash';
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
-import { useAttachmentOrSmartlink } from './edit-utils-hooks/use-attachment-or-smartlink';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
+import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -167,7 +167,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addFiles } = useAttachmentOrSmartlink({ editorId });
+	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -315,9 +315,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			}
 
 			const files = buildArrayFromFileList(fileList);
-			addFiles(files);
+			addLocalFiles(files);
 		},
-		[addFiles]
+		[addLocalFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {

@@ -14,12 +14,12 @@ import { useEditorAttachments, useEditorsStore } from 'store/editor';
 
 const BASE_64_CONVERSION_RATE = 1.33;
 
-type UseAttachmentOrSmartlinkArgs = {
+type UseLocalAttachmentOrSmartlinkArgs = {
 	editorId: string;
 };
 
-type UseAttachmentOrSmartlinkResult = {
-	addFiles: (files: File[]) => void;
+type UseLocalAttachmentOrSmartlinkResult = {
+	addLocalFiles: (files: File[]) => void;
 	maxAllowedMailSize: number;
 	BASE_64_CONVERSION_RATE: number;
 };
@@ -32,9 +32,9 @@ type UseAttachmentOrSmartlinkResult = {
  * @param editorId - The ID of the editor
  * @returns An object containing the addFiles function, maxAllowedMailSize, and BASE_64_CONVERSION_RATE
  */
-export const useAttachmentOrSmartlink = ({
+export const useLocalAttachmentOrSmartlink = ({
 	editorId
-}: UseAttachmentOrSmartlinkArgs): UseAttachmentOrSmartlinkResult => {
+}: UseLocalAttachmentOrSmartlinkArgs): UseLocalAttachmentOrSmartlinkResult => {
 	const { addStandardAttachments } = useEditorAttachments(editorId);
 	const editor = useEditorsStore((state) => state.editors[editorId]);
 	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
@@ -48,7 +48,7 @@ export const useAttachmentOrSmartlink = ({
 	 *
 	 * @param files - Array of File objects to be processed
 	 */
-	const addFiles = useCallback(
+	const addLocalFiles = useCallback(
 		(files: File[]): void => {
 			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
 			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
@@ -81,7 +81,7 @@ export const useAttachmentOrSmartlink = ({
 	);
 
 	return {
-		addFiles,
+		addLocalFiles,
 		maxAllowedMailSize,
 		BASE_64_CONVERSION_RATE
 	};

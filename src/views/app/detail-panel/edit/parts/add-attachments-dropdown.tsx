@@ -19,8 +19,8 @@ import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useAttachmentOrSmartlink } from '../edit-utils-hooks/use-attachment-or-smartlink';
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
+import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorText } from 'store/editor/index';
@@ -53,14 +53,14 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 
 	const { getText, setText } = useEditorText(editorId);
 	const { addUploadedAttachment } = useEditorAttachments(editorId);
-	const { addFiles } = useAttachmentOrSmartlink({ editorId });
+	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
 	const addFilesFromLocal = useCallback(
 		async (fileList: FileList) => {
 			const files = buildArrayFromFileList(fileList);
-			addFiles(files);
+			addLocalFiles(files);
 		},
-		[addFiles]
+		[addLocalFiles]
 	);
 
 	const onUploadFromFilesComplete = useCallback(
