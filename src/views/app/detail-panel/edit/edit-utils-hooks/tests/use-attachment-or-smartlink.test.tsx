@@ -285,5 +285,41 @@ describe('useAttachmentOrSmartlink', () => {
 
 			expect(mockCreateModal).toHaveBeenCalledTimes(1);
 		});
+
+		it('should configure SmartlinkFromLocalModal with onClose handler that closes modal', () => {
+			const state = useEditorsStore.getState();
+			const currentEditor = state.editors[editorId];
+			if (currentEditor) {
+				state.editors[editorId] = {
+					...currentEditor,
+					size: 8000000
+				};
+			}
+
+			const { result } = renderHook(() => useAttachmentOrSmartlink({ editorId }));
+
+			const largeFile = createFileWithSize('large.txt', 3000000, TEXT_PLAIN);
+
+			act(() => {
+				result.current.addFiles([largeFile]);
+			});
+
+			expect(mockCreateModal).toHaveBeenCalledTimes(1);
+
+			const modalConfig = mockCreateModal.mock.calls[0][0];
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const smartlinkModalProps = modalConfig.children.props;
+			expect(smartlinkModalProps.onClose).toBeDefined();
+			expect(smartlinkModalProps.editorId).toBe(editorId);
+			expect(smartlinkModalProps.files).toHaveLength(1);
+
+			act(() => {
+				smartlinkModalProps.onClose();
+			});
+
+			expect(mockCloseModal).toHaveBeenCalledWith(MODAL_ID);
+			expect(mockCloseModal).toHaveBeenCalledTimes(1);
+		});
 	});
 });
