@@ -9,11 +9,10 @@ import React, { useCallback } from 'react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
+import { BASE_64_CONVERSION_RATE } from './constants';
 import { FileNode } from './use-upload-from-files';
 import { SmartlinkFromFilesModal } from '../parts/smartlink-modal/smartlink-from-files-modal';
 import { useEditorsStore } from 'store/editor';
-
-const BASE_64_CONVERSION_RATE = 1.33;
 
 type UseFilesAttachmentOrSmartlinkArgs = {
 	editorId: string;

@@ -9,10 +9,9 @@ import React, { useCallback } from 'react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
+import { BASE_64_CONVERSION_RATE } from './constants';
 import { SmartlinkFromLocalModal } from '../parts/smartlink-modal/smartlink-from-local-modal';
 import { useEditorAttachments, useEditorsStore } from 'store/editor';
-
-const BASE_64_CONVERSION_RATE = 1.33;
 
 type UseLocalAttachmentOrSmartlinkArgs = {
 	editorId: string;
