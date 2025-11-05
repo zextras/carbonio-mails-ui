@@ -6,18 +6,13 @@
 
 import { cloneDeep, map } from 'lodash';
 
-import {
-	ConvMessage,
-	EmailsStoreState,
-	MailMessage,
-	NormalizedConversation
-} from '../../../../../types';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../conversations/conversations-index-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../../messages/messages-slice';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../search/search-slice';
 import { deleteMessagesFromConversation } from '../utils';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { ConvMessage, EmailsStoreState, MailMessage, NormalizedConversation } from 'types';
 
 function arrayToRecord<T extends { id: string }>(items: Array<T> | undefined): Record<string, T> {
 	if (!items) return {};
