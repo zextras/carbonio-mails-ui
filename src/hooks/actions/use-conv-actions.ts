@@ -106,7 +106,8 @@ export const useConvActions = ({
 	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
 		folderId,
-		isConversationRead: conversation.read
+		isConversationRead: conversation.read,
+		shouldReplaceHistory
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);

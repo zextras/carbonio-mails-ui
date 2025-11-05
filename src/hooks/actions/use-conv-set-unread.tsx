@@ -6,8 +6,9 @@
 import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors } from 'constants/index';
+import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
@@ -16,13 +17,16 @@ type ConvSetUnreadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isConversationRead: boolean;
+	shouldReplaceHistory?: boolean;
 };
 
 export const useConvSetUnreadFn = ({
 	ids,
 	folderId,
-	isConversationRead
+	isConversationRead,
+	shouldReplaceHistory
 }: ConvSetUnreadFunctionsParameter): ActionFn => {
+	const navigate = useNavigate();
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && isConversationRead,
 		[folderId, isConversationRead]
@@ -33,9 +37,13 @@ export const useConvSetUnreadFn = ({
 			convActionEmailStoreAction({
 				operation: '!read',
 				ids
+			}).then((res) => {
+				if (!('Fault' in res) && shouldReplaceHistory) {
+					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+				}
 			});
 		}
-	}, [canExecute, ids]);
+	}, [canExecute, folderId, ids, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -43,12 +51,14 @@ export const useConvSetUnreadFn = ({
 export const useConvSetUnreadDescriptor = ({
 	ids,
 	folderId,
-	isConversationRead
+	isConversationRead,
+	shouldReplaceHistory
 }: ConvSetUnreadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetUnreadFn({
 		ids,
 		folderId,
-		isConversationRead
+		isConversationRead,
+		shouldReplaceHistory
 	});
 	const [t] = useTranslation();
 	return {
