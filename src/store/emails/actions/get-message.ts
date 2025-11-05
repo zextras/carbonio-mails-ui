@@ -23,7 +23,8 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 
 async function handleRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	_read?: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -40,7 +41,8 @@ async function handleRetrieveMessage(
 
 async function handleDecryptRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	_read?: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -63,21 +65,30 @@ async function handleDecryptRetrieveMessage(
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
 
-export function getMessageEmailStoreAction(messageId: string): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
+export function getMessageEmailStoreAction(
+	messageId: string,
+	read?: boolean
+): Promise<MailMessage | undefined> {
+	return handleRetrieveMessage(
+		messageId,
+		(id) => getMsgSoapApi({ msgId: id, max: 250_000, read }),
+		read
+	);
 }
 
 export function getMessageDecryptEmailStoreAction(
 	messageId: string,
-	smimePassword: string
+	smimePassword: string,
+	read?: boolean
 ): Promise<MailMessage | undefined> {
 	return handleDecryptRetrieveMessage(messageId, (id) =>
-		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword })
+		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, read })
 	);
 }
 
 export function getFullMessageEmailStoreAction(
-	messageId: string
+	messageId: string,
+	read?: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, read }), read);
 }
