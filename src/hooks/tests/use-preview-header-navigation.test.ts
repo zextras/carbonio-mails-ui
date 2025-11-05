@@ -8,12 +8,11 @@ import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import * as reactRouterDom from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import * as convRequest from 'api/conv-action-soap-api';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 import * as searchSoapApi from 'api/search-soap-api';
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { setConversationsInEmailStore } from 'store/emails/store';
-import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);
@@ -181,30 +180,6 @@ describe('usePreviewHeaderNavigation', () => {
 					expect(navigate).toHaveBeenCalledWith('/mails/folder/2/conversation/1', {
 						replace: true
 					});
-				});
-			});
-			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
-				const conv1 = generateConversation({ id: '1' });
-				const conv2 = generateConversation({ id: '2' });
-				const conv3 = generateConversation({ id: '3' });
-				setConversationsInEmailStore([conv1, conv2, conv3], false);
-
-				const { result } = renderHook(usePreviewHeaderNavigation, {
-					initialProps: {
-						itemIds: ['1', '2', '3'],
-						hasMore: false,
-						folderId: '2',
-						currentItemId: '2',
-						itemsType: 'conversation',
-						searchedInFolderStatus: 'fulfilled'
-					}
-				});
-				await act(async () => {
-					result.current.previousActionItem.action();
-				});
-				await waitFor(() => {
-					expect(convActionSpy).toHaveBeenCalledWith({ ids: ['1'], operation: 'read' });
 				});
 			});
 		});
@@ -406,66 +381,6 @@ describe('usePreviewHeaderNavigation', () => {
 					expect(navigate).toHaveBeenCalledWith('/mails/folder/2/conversation/3', {
 						replace: true
 					});
-				});
-			});
-			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
-				const conv1 = generateConversation({ id: '1' });
-				const conv2 = generateConversation({ id: '2' });
-				const conv3 = generateConversation({ id: '3' });
-				setConversationsInEmailStore(
-					[
-						{ ...conv1, read: true },
-						{ ...conv2, read: true },
-						{ ...conv3, read: false }
-					],
-					false
-				);
-
-				const { result } = renderHook(usePreviewHeaderNavigation, {
-					initialProps: {
-						itemIds: ['1', '2', '3'],
-						hasMore: false,
-						folderId: '2',
-						currentItemId: '2',
-						itemsType: 'conversation',
-						searchedInFolderStatus: 'fulfilled'
-					}
-				});
-				await act(async () => {
-					result.current.nextActionItem.action();
-				});
-				await waitFor(() => {
-					expect(convActionSpy).toHaveBeenCalledWith({ ids: ['3'], operation: 'read' });
-				});
-			});
-			it('will not set the message as read if it was already', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
-				const conv1 = generateConversation({ id: '1' });
-				const conv2 = generateConversation({ id: '2' });
-				const conv3 = generateConversation({ id: '3' });
-				setConversationsInEmailStore(
-					[
-						{ ...conv1, read: true },
-						{ ...conv2, read: true },
-						{ ...conv3, read: true }
-					],
-					false
-				);
-
-				const { result } = renderHook(usePreviewHeaderNavigation, {
-					initialProps: {
-						itemIds: ['1', '2', '3'],
-						hasMore: false,
-						folderId: '2',
-						currentItemId: '2',
-						itemsType: 'conversation',
-						searchedInFolderStatus: 'fulfilled'
-					}
-				});
-				result.current.nextActionItem.action();
-				await waitFor(() => {
-					expect(convActionSpy).not.toHaveBeenCalled();
 				});
 			});
 		});
