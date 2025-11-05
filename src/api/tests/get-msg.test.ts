@@ -21,4 +21,35 @@ describe('GetMsg', () => {
 		const request = await interceptor;
 		expect(request.m.max).not.toBeDefined();
 	});
+
+	describe('read parameter', () => {
+		it('should include read=1 when read parameter is true', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgSoapApi({ msgId: '1', read: true });
+			const request = await interceptor;
+			expect(request.m.read).toBe(1);
+		});
+
+		it('should NOT include read parameter when read is false', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgSoapApi({ msgId: '1', read: false });
+			const request = await interceptor;
+			expect(request.m.read).toBeUndefined();
+		});
+
+		it('should NOT include read parameter when read is not provided', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgSoapApi({ msgId: '1' });
+			const request = await interceptor;
+			expect(request.m.read).toBeUndefined();
+		});
+
+		it('should work with both max and read parameters', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgSoapApi({ msgId: '1', max: 250000, read: true });
+			const request = await interceptor;
+			expect(request.m.max).toBe(250000);
+			expect(request.m.read).toBe(1);
+		});
+	});
 });
