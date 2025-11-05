@@ -193,7 +193,12 @@ function optimisticallyHandleMessageActions({
 					if (op.includes(CONVACTIONS.FLAG)) {
 						message.flagged = !op.startsWith('!');
 					} else if (op.includes(CONVACTIONS.MARK_READ)) {
-						message.read = !op.startsWith('!');
+						const isMarkingAsUnread = op.startsWith('!');
+						message.read = !isMarkingAsUnread;
+						if (isMarkingAsUnread) {
+							message.isComplete = false;
+							delete populatedItemsSlice.messagesStatus[id];
+						}
 					} else if (op === CONVACTIONS.TRASH) {
 						message.parent = FOLDERS.TRASH;
 					} else if (op === CONVACTIONS.DELETE) {
