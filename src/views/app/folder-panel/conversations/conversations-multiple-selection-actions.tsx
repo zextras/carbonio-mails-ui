@@ -45,7 +45,8 @@ export const ConversationsMultipleSelectionActions = ({
 	const setAsUnread = useConvSetUnreadDescriptor({
 		ids: selectedConversationsIds,
 		folderId,
-		isConversationRead: !atLeastOneConvIsUnread
+		isConversationRead: !atLeastOneConvIsUnread,
+		shouldReplaceHistory: true
 	});
 	const moveToTrash = useConvMoveToTrashDescriptor({
 		ids: selectedConversationsIds,
