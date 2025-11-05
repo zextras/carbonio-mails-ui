@@ -6,10 +6,13 @@
 
 import { useEffect, useMemo } from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
 	useConversationById,
@@ -39,19 +42,32 @@ export function useCompleteConversationOrFetch(
 ): ConversationWithStatus {
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
+	const settings = useUserSettings();
+	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const requestDebouncedConversation = useMemo(
 		() =>
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						searchConvEmailStoreAction(conversationId, folderId);
+						const shouldMarkAsRead = !conversation?.read && prefMarkMsgRead;
+						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
+					} else if (
+						conversation &&
+						conversationStatus === API_REQUEST_STATUS.fulfilled &&
+						!conversation.read &&
+						prefMarkMsgRead
+					) {
+						convActionEmailStoreAction({
+							operation: 'read',
+							ids: [conversationId]
+						});
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[conversation, conversationId, conversationStatus, folderId]
+		[conversation, conversationId, conversationStatus, folderId, prefMarkMsgRead]
 	);
 	useEffect(() => {
 		requestDebouncedConversation();
@@ -78,6 +94,8 @@ type MessageWithStatus = {
 export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
+	const settings = useUserSettings();
+	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const requestDebouncedMessage = useMemo(
 		() =>
@@ -87,13 +105,24 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						getMessageEmailStoreAction(messageId);
+						const shouldMarkAsRead = !message?.read && prefMarkMsgRead;
+						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
+					} else if (
+						message?.isComplete &&
+						messageStatus === API_REQUEST_STATUS.fulfilled &&
+						!message.read &&
+						prefMarkMsgRead
+					) {
+						msgActionEmailStoreAction({
+							operation: 'read',
+							ids: [messageId]
+						});
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[message?.isComplete, messageId, messageStatus]
+		[message, messageId, messageStatus, prefMarkMsgRead]
 	);
 
 	useEffect(() => {
