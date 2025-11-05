@@ -8,12 +8,10 @@ import React, { FC, useCallback } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
-import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
@@ -58,29 +56,18 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const { parent } = messages[0];
 	const navigate = useNavigate();
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
 		folderId: parent
 	});
 
-	const markAsRead = useConvSetReadFn({
-		ids: [conversation.id],
-		isConversationRead: conversation.read,
-		folderId: parent ?? ''
-	});
-
 	const _onClick = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
-				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					markAsRead.canExecute() && markAsRead.execute();
-				}
 				navigate(`../conversation/${conversationId}`);
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, navigate, conversationId, markAsRead]
+		[navigate, conversationId]
 	);
 
 	const _onDoubleClick = useCallback(
