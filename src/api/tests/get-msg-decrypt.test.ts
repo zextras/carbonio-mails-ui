@@ -21,4 +21,36 @@ describe('GetMsg', () => {
 		const request = await interceptor;
 		expect(request.m.max).not.toBeDefined();
 	});
+
+	describe('read parameter', () => {
+		it('should include read=1 when read parameter is true', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgDecryptSoapApi({ msgId: '1', smimePassword: 'password', read: true });
+			const request = await interceptor;
+			expect(request.m.read).toBe(1);
+		});
+
+		it('should NOT include read parameter when read is false', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgDecryptSoapApi({ msgId: '1', smimePassword: 'password', read: false });
+			const request = await interceptor;
+			expect(request.m.read).toBeUndefined();
+		});
+
+		it('should NOT include read parameter when read is not provided', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgDecryptSoapApi({ msgId: '1', smimePassword: 'password' });
+			const request = await interceptor;
+			expect(request.m.read).toBeUndefined();
+		});
+
+		it('should work with max, smimePassword, and read parameters together', async () => {
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+			getMsgDecryptSoapApi({ msgId: '1', max: 250000, smimePassword: 'password', read: true });
+			const request = await interceptor;
+			expect(request.m.max).toBe(250000);
+			expect(request.m.read).toBe(1);
+			expect(request.encryptionPassword).toBe('password');
+		});
+	});
 });
