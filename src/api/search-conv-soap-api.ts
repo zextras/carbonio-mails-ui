@@ -8,18 +8,13 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import type { SearchConvRequest, SearchConvResponse } from 'types/index.d';
-
-type SearchConvParameters = {
-	conversationId: string;
-	folderId?: string;
-	fetch: string;
-};
+import type { SearchConvRequest, SearchConvResponse, SearchConvParameters } from 'types/index.d';
 
 export async function searchConvSoapApi({
 	conversationId,
 	fetch = 'all',
-	folderId
+	folderId,
+	read
 }: SearchConvParameters): Promise<SearchConvResponse> {
 	const userSettings: AccountSettings = getUserSettings();
 	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as 'dateDesc' | 'dateAsc';
@@ -38,6 +33,9 @@ export async function searchConvSoapApi({
 	};
 	if (folderId) {
 		request.query = `inId: "${folderId}"`;
+	}
+	if (read) {
+		request.read = 1;
 	}
 	return legacySoapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
 }
