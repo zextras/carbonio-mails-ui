@@ -21,6 +21,7 @@ export type SearchConvRequest = ZimbraRequest & {
 	html: 1 | 0;
 	needExp: 1 | 0;
 	max?: number;
+	read?: 0 | 1;
 	recip: '0' | '1' | '2' | 'false' | 'true';
 	header: Array<{ n: MailVerificationHeader }>;
 };
@@ -36,6 +37,7 @@ export type SearchConvParameters = {
 	conversationId: string;
 	folderId?: string;
 	fetch: string;
+	read?: boolean;
 };
 
 export type SearchConvReturn = {

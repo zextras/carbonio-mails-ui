@@ -32,10 +32,16 @@ function handleSearchConvResponse(conversationId: string, response: SearchConvRe
 
 export async function searchConvEmailStoreAction(
 	conversationId: string,
-	folderId?: string
+	folderId?: string,
+	read?: boolean
 ): Promise<void> {
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-	const response = await searchConvSoapApi({ conversationId, fetch: 'all', folderId }).catch(() => {
+	const response = await searchConvSoapApi({
+		conversationId,
+		fetch: 'all',
+		folderId,
+		read
+	}).catch(() => {
 		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 	});
 	if (!response || 'Fault' in response) {
