@@ -287,6 +287,46 @@ describe('Searches store hooks', () => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
 		});
+
+		describe('Auto-mark-as-read functionality', () => {
+			it('should pass read=true when fetching unread message and user setting allows it', async () => {
+				const message = { ...generateMessage({ id: '1' }), read: false };
+				setMessagesInEmailStore([{ ...message, isComplete: false }], false);
+
+				const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+				renderHook(() => useCompleteMessageOrFetch('1'));
+
+				awaitDebounce();
+
+				await waitFor(() => {
+					expect(getMsgSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							msgId: '1',
+							read: true
+						})
+					);
+				});
+			});
+
+			it('should pass read=false when fetching already-read message', async () => {
+				const message = { ...generateMessage({ id: '1' }), read: true };
+				setMessagesInEmailStore([{ ...message, isComplete: false }], false);
+
+				const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+				renderHook(() => useCompleteMessageOrFetch('1'));
+
+				awaitDebounce();
+
+				await waitFor(() => {
+					expect(getMsgSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							msgId: '1',
+							read: false
+						})
+					);
+				});
+			});
+		});
 	});
 
 	function arrayToRecord<T extends { id: string }>(items: Array<T> | undefined): Record<string, T> {
