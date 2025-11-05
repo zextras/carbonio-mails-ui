@@ -51,7 +51,7 @@ export function useCompleteConversationOrFetch(
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						const shouldMarkAsRead = !conversation?.read && prefMarkMsgRead;
+						const shouldMarkAsRead = !conversation.read && prefMarkMsgRead;
 						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
 					} else if (
 						hasNavigated &&
