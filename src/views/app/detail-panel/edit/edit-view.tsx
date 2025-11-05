@@ -21,6 +21,7 @@ import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
+import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -166,7 +167,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments } = useEditorAttachments(editorId);
+	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -314,9 +315,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			}
 
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files);
+			addLocalFiles(files);
 		},
-		[addStandardAttachments]
+		[addLocalFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {
