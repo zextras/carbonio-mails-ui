@@ -12,8 +12,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from 'constants/index';
 import { parseMessageSortingOptions } from 'helpers/sorting';
-import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
@@ -54,7 +52,6 @@ export const usePreviewHeaderNavigation = ({
 	const navigate = useNavigate();
 	const [t] = useTranslation();
 	const settings = useUserSettings();
-	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const loadingMore = useRef(false);
 	const conversations = useConversationsByIds(itemIds);
 	const messages = useMessagesByIds(itemIds);
@@ -121,61 +118,21 @@ export const usePreviewHeaderNavigation = ({
 
 	const isPreviousActionDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
 
-	const setItemAsRead = useCallback(
-		(itemId: string) => {
-			if (itemsType === 'conversation') {
-				convActionEmailStoreAction({
-					operation: 'read',
-					ids: [itemId]
-				});
-			} else if (itemsType === 'message') {
-				msgActionEmailStoreAction({
-					operation: 'read',
-					ids: [itemId]
-				});
-			}
-		},
-		[itemsType]
-	);
 	const onNextAction = useCallback(() => {
 		if (isTheLastListItem) return;
 		const nextIndex = itemIndex + 1;
 		const nextItem = items[nextIndex];
-		if (!nextItem.read && prefMarkMsgRead) {
-			setItemAsRead(nextItem.id);
-		}
 		navigate(`/${MAILS_ROUTE}/folder/${folderId}/${itemsType}/${nextItem.id}`, { replace: true });
-	}, [
-		isTheLastListItem,
-		itemIndex,
-		items,
-		prefMarkMsgRead,
-		navigate,
-		folderId,
-		itemsType,
-		setItemAsRead
-	]);
+	}, [isTheLastListItem, itemIndex, items, navigate, folderId, itemsType]);
 
 	const onPreviousAction = useCallback(() => {
 		if (isTheFirstListItem) return;
 		const previousIndex = itemIndex - 1;
 		const previousItem = items[previousIndex];
-		if (!previousItem.read && prefMarkMsgRead) {
-			setItemAsRead(previousItem.id);
-		}
 		navigate(`/${MAILS_ROUTE}/folder/${folderId}/${itemsType}/${previousItem.id}`, {
 			replace: true
 		});
-	}, [
-		isTheFirstListItem,
-		itemIndex,
-		items,
-		prefMarkMsgRead,
-		navigate,
-		folderId,
-		itemsType,
-		setItemAsRead
-	]);
+	}, [isTheFirstListItem, itemIndex, items, navigate, folderId, itemsType]);
 
 	const loadMoreConversations = useLoadMoreForConversationList({
 		sortBy: sortOrder,
