@@ -80,7 +80,8 @@ export const useKeyboardShortcutsForConv = ({
 	const setConvAsUnread = useConvSetUnreadFn({
 		ids: conversationIds,
 		folderId,
-		isConversationRead: true
+		isConversationRead: true,
+		shouldReplaceHistory: true
 	});
 
 	const flagConv = useConvSetFlagFn(conversationIds, false);

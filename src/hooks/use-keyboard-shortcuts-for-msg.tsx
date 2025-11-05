@@ -79,7 +79,8 @@ export const useKeyboardShortcutsForMsg = ({
 	const setAsUnread = useMsgSetUnreadFn({
 		ids: messageIds,
 		folderId,
-		isMessageRead: true
+		isMessageRead: true,
+		shouldReplaceHistory: true
 	});
 
 	const flag = useMsgSetFlagFn(messageIds, false);
