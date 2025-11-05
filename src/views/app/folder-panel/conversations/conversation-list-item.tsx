@@ -8,13 +8,11 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
-import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
@@ -63,12 +61,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const { ref, hasBeenHovered } = useOnMouseHover();
 
-	const markAsRead = useConvSetReadFn({
-		ids: [conversation.id],
-		isConversationRead: conversation.read,
-		folderId: folderId ?? ''
-	});
-
 	const conversationId = conversation.id;
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
@@ -76,8 +68,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	});
 
 	const conversationStatus = useConversationStatus(conversationId);
-
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const shouldFetchConversation = useCallback(
 		(): boolean =>
@@ -119,13 +109,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const _onClick = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			if (!e.isDefaultPrevented()) {
-				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					markAsRead.canExecute() && markAsRead.execute();
-				}
 				debouncedPushHistory();
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
+		[debouncedPushHistory]
 	);
 
 	const _onDoubleClick = useCallback(
