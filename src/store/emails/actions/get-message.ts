@@ -23,8 +23,7 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 
 async function handleRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>,
-	_read?: boolean
+	apiCall: (id: string) => Promise<GetMsgResponse>
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -69,11 +68,7 @@ export function getMessageEmailStoreAction(
 	messageId: string,
 	read?: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(
-		messageId,
-		(id) => getMsgSoapApi({ msgId: id, max: 250_000, read }),
-		read
-	);
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000, read }));
 }
 
 export function getMessageDecryptEmailStoreAction(
@@ -90,5 +85,5 @@ export function getFullMessageEmailStoreAction(
 	messageId: string,
 	read?: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, read }), read);
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, read }));
 }
