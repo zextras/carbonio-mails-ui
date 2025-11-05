@@ -15,7 +15,7 @@ export async function getMsgSoapApi({
 	part,
 	read
 }: GetMsgParameters): Promise<GetMsgResponse> {
-	const mObject: GetMsgRequest['m'] = {
+	const message: GetMsgRequest['m'] = {
 		html: 1,
 		id: msgId,
 		needExp: 1,
@@ -24,11 +24,11 @@ export async function getMsgSoapApi({
 		...{ max }
 	};
 	if (read) {
-		mObject.read = 1;
+		message.read = 1;
 	}
 
 	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
-		m: mObject
+		m: message
 	});
 }
