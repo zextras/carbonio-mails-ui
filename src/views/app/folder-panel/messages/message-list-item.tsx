@@ -6,7 +6,6 @@
 import React, { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -14,7 +13,6 @@ import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-hi
 import { FolderPanelRouteParams } from '../../../../types/routes';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MessageListItemProps } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
@@ -36,17 +34,9 @@ export const MessageListItem = memo(function MessageListItem({
 	const navigate = useNavigate();
 	const firstChildFolderId = folderId ?? message?.parent;
 	const shouldReplaceHistory = useShouldReplaceHistory(message);
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
-		folderId: firstChildFolderId
-	});
-
-	const setAsRead = useMsgSetReadFn({
-		ids: [message.id],
-		shouldReplaceHistory,
-		isMessageRead: message.read,
 		folderId: firstChildFolderId
 	});
 
@@ -68,9 +58,6 @@ export const MessageListItem = memo(function MessageListItem({
 	const onClickCallback = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (!message.read && zimbraPrefMarkMsgRead) {
-					setAsRead.canExecute() && setAsRead.execute();
-				}
 				if (handleReplaceHistory) {
 					handleReplaceHistory();
 				} else {
@@ -78,7 +65,7 @@ export const MessageListItem = memo(function MessageListItem({
 				}
 			}
 		},
-		[message.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
+		[handleReplaceHistory, debouncedPushHistory]
 	);
 	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {
