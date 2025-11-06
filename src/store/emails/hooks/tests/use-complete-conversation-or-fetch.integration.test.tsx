@@ -9,16 +9,16 @@ import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { generateConvMessageFromAPI } from '../../../../__test__/generators/api';
-import { populateConversationInEmailStore } from '../../../../__test__/generators/generateConversation';
-import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
-import { ConvActionRequest, SearchConvRequest, SearchConvResponse } from '../../../../types';
-import { ConversationPreviewPanelContainer } from '../../../../views/app/detail-panel/conversation-preview-panel-container';
-import * as searchConvAction from '../../actions/search-conv-action';
-import { updateConversationStatus } from '../../store';
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateConvMessageFromAPI } from '__test__/generators/api';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import * as searchConvAction from 'store/emails/actions/search-conv-action';
+import { updateConversationStatus } from 'store/emails/store';
+import { ConvActionRequest, SearchConvRequest, SearchConvResponse } from 'types';
+import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 
 const CONVERSATION_ROUTE_PATH = '/folder/:folderId/conversation/:conversationId';
 
