@@ -126,11 +126,11 @@ describe('deleteMessagesFromConversation', () => {
 	describe('Performance and scalability', () => {
 		it('should handle a large number of conversations efficiently', () => {
 			const numberOfConversations = 1000;
-			const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
+			const conversationIds = Array.from({ length: numberOfConversations }, (_, index) =>
 				index.toString()
 			);
 
-			const conversations = conversaiontIds.map((id) => generateConversation({ id }));
+			const conversations = conversationIds.map((id) => generateConversation({ id }));
 			const state = generateEmailsStoreState(conversations);
 			const start = performance.now();
 			deleteMessagesFromConversation(['1', '2'], state);
@@ -141,11 +141,11 @@ describe('deleteMessagesFromConversation', () => {
 			const numberOfMessages = 1000;
 			const numberOfConversations = 1000;
 			const messageIds = Array.from({ length: numberOfMessages }, (_, index) => index.toString());
-			const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
+			const conversationIds = Array.from({ length: numberOfConversations }, (_, index) =>
 				index.toString()
 			);
 			const messages = map(messageIds, (id) => generateMessage({ id }));
-			const conversations = conversaiontIds.map((id) => generateConversation({ id }));
+			const conversations = conversationIds.map((id) => generateConversation({ id }));
 
 			const state = generateEmailsStoreState(conversations, messages);
 			const start = performance.now();
