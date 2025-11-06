@@ -1,0 +1,38 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React from 'react';
+
+import { act } from '@testing-library/react';
+import { NavigateFunction } from 'react-router-dom';
+
+import { populateMessagesInEmailStore } from '../../../../../__test__/generators/generateMessage';
+import { updateMessageStatus } from '../../../../../store/emails/store';
+import { SearchConversationMessagePanel } from '../search-conversation-message-panel';
+import { setupTest } from '@test-setup';
+
+const mockNavigateSpy = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: (): NavigateFunction => mockNavigateSpy
+}));
+
+describe('conversation-message-preview-wrapper', () => {
+	test('when messageStatus has an error it will redirect', async () => {
+		const messages = await act(() => populateMessagesInEmailStore());
+		await act(() => updateMessageStatus(messages[0].id, 'error'));
+
+		setupTest(
+			<SearchConversationMessagePanel convMessageId={messages[0].id} isExpanded={false} isAlone />,
+			{
+				initialEntries: [`/conversation/${messages[0].conversation}`],
+				path: '/conversation/:conversationId'
+			}
+		);
+
+		expect(mockNavigateSpy).toHaveBeenCalledWith('/search', { replace: true });
+	});
+});

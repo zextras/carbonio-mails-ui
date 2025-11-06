@@ -11,6 +11,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import { EmlPreviewPanelContainer } from 'views/app/detail-panel/eml-preview-panel-container';
 
 describe('EmlPreviewPanelContainer', () => {
@@ -77,7 +78,7 @@ describe('EmlPreviewPanelContainer', () => {
 
 	it('should set the window title to the message subject if the focus mode is enabled', async () => {
 		jest.mocked(shell).IS_FOCUS_MODE = true;
-
+		populateFoldersStore();
 		await act(async () => {
 			setupTest(<EmlPreviewPanelContainer />, {
 				initialEntries: [`/eml/${getMsgResponse.m[0].id}/1`],
