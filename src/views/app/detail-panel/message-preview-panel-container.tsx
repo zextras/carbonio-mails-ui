@@ -11,7 +11,6 @@ import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-compl
 import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
-import { useMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
