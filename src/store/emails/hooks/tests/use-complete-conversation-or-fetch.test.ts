@@ -6,18 +6,18 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { generateConvMessageFromAPI } from '../../../../__test__/generators/api';
-import { generateConversation } from '../../../../__test__/generators/generateConversation';
-import { generateMessage } from '../../../../__test__/generators/generateMessage';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { SearchConvRequest, SearchConvResponse } from '../../../../types';
+import { useCompleteConversationOrFetch } from '../use-complete-conversation-or-fetch';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateConvMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	useConversationStatus
-} from '../../store';
-import { useCompleteConversationOrFetch } from '../use-complete-conversation-or-fetch';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+} from 'store/emails/store';
+import { SearchConvRequest, SearchConvResponse } from 'types';
 
 describe('useCompleteConversationOrFetch', () => {
 	it('should retrieve the conversation if no data available', async () => {
