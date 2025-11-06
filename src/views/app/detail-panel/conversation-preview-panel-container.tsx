@@ -11,6 +11,7 @@ import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/use-complete-conversation-or-fetch';
 import type {
 	DetailPanelConversationRouteParams,
 	DetailPanelRoutesParams
@@ -20,7 +21,6 @@ import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getFolderIdParts } from 'helpers/folders';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
-import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import { useConversationMessages } from 'store/emails/store';
 import { ConversationPreviewPanel } from 'views/app/detail-panel/conversation-preview-panel';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';

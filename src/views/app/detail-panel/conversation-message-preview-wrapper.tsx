@@ -5,8 +5,8 @@
  */
 import React from 'react';
 
+import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-complete-message-or-fetch';
 import { Spinner } from 'assets/spinner';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
 
 export const ConversationMessagePreviewWrapper = ({

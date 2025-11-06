@@ -7,10 +7,10 @@ import React, { useEffect } from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-complete-message-or-fetch';
 import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { useMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 

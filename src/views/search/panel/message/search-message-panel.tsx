@@ -9,7 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/use-complete-message-or-fetch';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 

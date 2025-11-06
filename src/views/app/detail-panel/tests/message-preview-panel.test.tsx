@@ -9,13 +9,13 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
-import { API_REQUEST_STATUS } from 'constants/index';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { updateMessageStatus } from 'store/emails/store';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useCompleteMessageOrFetch } from 'store/emails/hooks/use-complete-message-or-fetch';
+import { updateMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
-jest.mock('../../../../store/emails/hooks/hooks');
+jest.mock('store/emails/hooks/use-complete-message-or-fetch');
 
 describe('MessagePreviewPanel', () => {
 	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;
