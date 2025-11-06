@@ -20,6 +20,7 @@ import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbon
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -268,7 +269,9 @@ export const MessageListItemCore = ({
 								</Text>
 							</Tooltip>
 						)}
-						{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
+						{((messageFolder && messageFolder.id !== firstChildFolderId) ||
+							isSearchModule ||
+							isFocusModeMailView()) && (
 							<Padding left="small">
 								<Badge
 									data-testid="FolderBadge"

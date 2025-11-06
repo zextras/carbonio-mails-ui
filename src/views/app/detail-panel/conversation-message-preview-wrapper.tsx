@@ -6,6 +6,9 @@
 import React from 'react';
 
 import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-complete-message-or-fetch';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
 import { Spinner } from 'assets/spinner';
 import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
 
@@ -18,7 +21,14 @@ export const ConversationMessagePreviewWrapper = ({
 	isExpanded: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
-	const { message } = useCompleteMessageOrFetch(convMessageId);
+	const { message, messageStatus } = useCompleteMessageOrFetch(convMessageId);
+	const navigate = useNavigate();
+
+	const { folderId } = useParams();
+
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}
 	return message ? (
 		<ConversationMessagePreview
 			key={message.id}

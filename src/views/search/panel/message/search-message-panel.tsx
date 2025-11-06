@@ -8,17 +8,20 @@ import React from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
+import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/use-complete-message-or-fetch';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
-import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
 	const navigate = useNavigate();
 
-	if (!message) {
+	if (messageStatus === API_REQUEST_STATUS.error) {
 		navigate(`/${SEARCH_ROUTE}`, { replace: true });
+	}
+
+	if (!message) {
 		return <></>;
 	}
 
