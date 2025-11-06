@@ -18,7 +18,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { SEARCH_ROUTE } from '../../../constants';
-import type { MailMessage, NormalizedConversation } from 'types/index.d';
+import type { MailMessage, NormalizedConversation } from '../../../types';
 
 export const SearchPanelHeader: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);

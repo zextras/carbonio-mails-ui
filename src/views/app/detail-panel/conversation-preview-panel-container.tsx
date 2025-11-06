@@ -55,13 +55,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		}
 	}, [conversation?.subject]);
 
-	const showPreviewPanel = useMemo(
-		(): boolean | undefined =>
-			getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? conversation && conversation?.messageIds?.length > 0
-				: filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0,
-		[conversation, folderId, messages]
-	);
+	const showPreviewPanel = useMemo((): boolean | undefined => {
+		if (isFocusModeMailView() || getFolderIdParts(folderId).id === FOLDERS.TRASH) {
+			return conversation && conversation?.messageIds?.length > 0;
+		}
+		return filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0;
+	}, [conversation, folderId, messages]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
