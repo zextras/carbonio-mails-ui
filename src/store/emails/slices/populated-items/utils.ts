@@ -195,11 +195,6 @@ function optimisticallyHandleMessageActions({
 					} else if (op.includes(CONVACTIONS.MARK_READ)) {
 						const isMarkingAsUnread = op.startsWith('!');
 						message.read = !isMarkingAsUnread;
-						if (isMarkingAsUnread) {
-							// Mark message as incomplete so it will be re-fetched with read=1 next time
-							message.isComplete = false;
-							delete populatedItemsSlice.messagesStatus[id];
-						}
 					} else if (op === CONVACTIONS.TRASH) {
 						message.parent = FOLDERS.TRASH;
 					} else if (op === CONVACTIONS.DELETE) {

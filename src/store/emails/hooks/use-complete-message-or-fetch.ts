@@ -41,9 +41,6 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 						const shouldMarkAsRead = !message?.read && prefMarkMsgRead;
 						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
 					}
-					// Note: For standalone messages marked as unread, we mark them as incomplete
-					// so they will be refetched above with read=1
-					// For conversation messages, the ConvAction handles marking as read
 					prevMessageIdRef.current = messageId;
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
