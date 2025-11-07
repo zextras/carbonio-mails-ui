@@ -30,6 +30,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isEml = false
 }) => {
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
+	const [isCollapsedDueToUnread, setIsCollapsedDueToUnread] = useState(false);
 	const settings = useUserSettings();
 	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const prevReadStatusRef = useRef<boolean | undefined>(message?.read);
@@ -47,21 +48,29 @@ const MailPreview: FC<MailPreviewProps> = ({
 		return 'fit-content';
 	}, [isOpen]);
 
-	const onClick = useCallback(() => setIsOpen((prevOpen) => !prevOpen), []);
+	const onClick = useCallback(() => {
+		setIsOpen((prevOpen) => !prevOpen);
+		// Reset collapse flag when user manually toggles
+		setIsCollapsedDueToUnread(false);
+	}, []);
 
-	const isMailPreviewOpen = useMemo(
-		() => isMessageView || isAlone || isOpen,
-		[isMessageView, isAlone, isOpen]
-	);
+	const isMailPreviewOpen = useMemo(() => {
+		// If collapsed due to marking as unread, stay collapsed even if isAlone is true
+		if (isCollapsedDueToUnread) {
+			return false;
+		}
+		return isMessageView || isAlone || isOpen;
+	}, [isMessageView, isAlone, isOpen, isCollapsedDueToUnread]);
 
-	// Handle message read status changes
 	useEffect(() => {
 		const wasRead = prevReadStatusRef.current;
 		const isNowUnread = message?.read === false;
 
 		// If the message was previously read and is now unread, collapse the preview
-		if (wasRead === true && isNowUnread && !isMessageView && !isAlone) {
+		// Only skip collapsing in message view mode (where navigation happens instead)
+		if (wasRead === true && isNowUnread && !isMessageView) {
 			setIsOpen(false);
+			setIsCollapsedDueToUnread(true);
 		} else if (
 			isMailPreviewOpen &&
 			message?.isComplete &&
@@ -87,6 +96,11 @@ const MailPreview: FC<MailPreviewProps> = ({
 		isMessageView,
 		isAlone
 	]);
+
+	// Reset collapse flag when message changes
+	useEffect(() => {
+		setIsCollapsedDueToUnread(false);
+	}, [message?.id]);
 
 	return (
 		<Container
