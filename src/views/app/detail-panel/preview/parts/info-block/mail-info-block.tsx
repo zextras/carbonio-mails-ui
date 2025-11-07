@@ -139,29 +139,14 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		[closeModal, createModal, createSnackbar, decryptMsgAction, msg.id, smimePassword, t]
 	);
 
-	const showInfoDetails =
-		!!messageIdFromHeaders ||
-		!!creationDateFromHeaders ||
-		signature ||
-		fromExternalDomain ||
-		sensitivityHeader ||
-		// authenticationMailsHeaders ||
-		fromDistributionList;
-
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			{signature && <SmimeIcon signature={signature} />}
-			{fromExternalDomain && <ExternalDomainIcon />}
 			{sensitivityHeader && <MailSensitivityIcon sensitivity={sensitivityHeader} />}
 			{/* {authenticationMailsHeaders && ( */}
 			{/* 	<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} /> */}
 			{/* )} */}
 			{fromDistributionList && <DistributionListIcon />}
-			{showInfoDetails && (
-				<Link size="medium" onClick={showMailDetailsModal}>
-					{t('label.show_details', 'Show Details')}
-				</Link>
-			)}
 			{msg.isEncrypted && isSmimeEnabled && !isCarbonioCE && (
 				<>
 					<Padding right="small" />
