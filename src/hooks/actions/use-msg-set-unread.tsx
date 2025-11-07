@@ -50,7 +50,7 @@ export const useMsgSetUnreadFn = ({
 				}
 			});
 		}
-	}, [canExecute, folderId, ids, navigate, shouldReplaceHistory]);
+	}, [canExecute, folderId, ids, isSearchContext, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
