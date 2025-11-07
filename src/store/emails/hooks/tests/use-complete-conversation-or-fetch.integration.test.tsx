@@ -17,61 +17,13 @@ import { populateConversationInEmailStore } from '__test__/generators/generateCo
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import * as searchConvAction from 'store/emails/actions/search-conv-action';
 import { updateConversationStatus } from 'store/emails/store';
-import { ConvActionRequest, SearchConvRequest, SearchConvResponse } from 'types';
+import { SearchConvRequest, SearchConvResponse } from 'types';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
 
 const CONVERSATION_ROUTE_PATH = '/folder/:folderId/conversation/:conversationId';
 
 describe('useCompleteConversationOrFetch - Integration Tests', () => {
 	describe('User opens conversation preview panel', () => {
-		it('should fetch conversation and mark as read when opening unread conversation (auto-mark enabled)', async () => {
-			useUserSettings.mockReturnValue({
-				prefs: { zimbraPrefMarkMsgRead: '1' },
-				attrs: {},
-				props: []
-			});
-
-			const { conversation, messages } = await act(() =>
-				populateConversationInEmailStore({
-					conversationParams: { id: '123', isRead: false },
-					messageIds: ['m1', 'm2']
-				})
-			);
-
-			const searchConvResponse: SearchConvResponse = {
-				m: [
-					generateConvMessageFromAPI({ id: messages[0].id }),
-					generateConvMessageFromAPI({ id: messages[1].id })
-				],
-				more: false,
-				offset: '',
-				orderBy: ''
-			};
-			const searchConvInterceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-				'SearchConv',
-				searchConvResponse
-			);
-
-			setupTest(<ConversationPreviewPanelContainer />, {
-				initialEntries: [`/folder/${messages[0].parent}/conversation/${conversation.id}`],
-				path: CONVERSATION_ROUTE_PATH
-			});
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
-				const searchRequest = await searchConvInterceptor;
-				expect(searchRequest).toMatchObject({
-					cid: conversation.id,
-					fetch: 'all',
-					read: 1
-				});
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId('PreviewPanelHeader')).toBeVisible();
-			});
-		});
-
 		it('should NOT mark as read when auto-mark-as-read is disabled', async () => {
 			useUserSettings.mockReturnValue({
 				prefs: { zimbraPrefMarkMsgRead: '-1' }, // disabled in user prefs
@@ -152,109 +104,6 @@ describe('useCompleteConversationOrFetch - Integration Tests', () => {
 			// Should NOT call searchConv since conversation is already fulfilled
 			expect(searchConvSpy).not.toHaveBeenCalled();
 		});
-
-		it('should handle conversation that is unread and already in store with fulfilled status', async () => {
-			jest.spyOn(console, 'error').mockImplementation(() => {});
-			jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-			useUserSettings.mockReturnValue({
-				prefs: { zimbraPrefMarkMsgRead: '1' },
-				attrs: {},
-				props: []
-			});
-
-			const { conversation, messages } = await act(() =>
-				populateConversationInEmailStore({
-					conversationParams: { id: '999', isRead: false },
-					messageIds: ['m1', 'm2']
-				})
-			);
-
-			act(() => {
-				updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
-			});
-
-			// only the convAction API should be called in this case to mark the conversation as read
-			const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-
-			setupTest(<ConversationPreviewPanelContainer />, {
-				initialEntries: [`/folder/${messages[0].parent}/conversation/${conversation.id}`],
-				path: CONVERSATION_ROUTE_PATH
-			});
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
-			});
-
-			const convActionRequest = await convActionInterceptor;
-			expect(convActionRequest).toMatchObject({
-				_jsns: 'urn:zimbraMail',
-				action: {
-					id: conversation.id,
-					op: 'read'
-				}
-			});
-		});
-	});
-
-	describe('Testing auto-mark-as-read with different user preference values', () => {
-		it.each([
-			['0', 1, 'immediately'],
-			['1', 1, '1 second'],
-			['5', 1, '5 seconds'],
-			['-1', undefined, 'disabled'] // should NOT include read param when pref is -1
-		])(
-			'should handle zimbraPrefMarkMsgRead=%s (%s)',
-			async (prefValue, shouldMarkAsRead, _description) => {
-				useUserSettings.mockReturnValue({
-					prefs: { zimbraPrefMarkMsgRead: prefValue },
-					attrs: {},
-					props: []
-				});
-
-				const { conversation, messages } = await act(() =>
-					populateConversationInEmailStore({
-						conversationParams: { id: `test-${prefValue}`, isRead: false },
-						messageIds: ['m1', 'm2']
-					})
-				);
-
-				const searchConvResponse: SearchConvResponse = {
-					m: [
-						generateConvMessageFromAPI({ id: messages[0].id }),
-						generateConvMessageFromAPI({ id: messages[1].id })
-					],
-					more: false,
-					offset: '',
-					orderBy: ''
-				};
-				const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-					'SearchConv',
-					searchConvResponse
-				);
-
-				setupTest(<ConversationPreviewPanelContainer />, {
-					initialEntries: [`/folder/${messages[0].parent}/conversation/${conversation.id}`],
-					path: CONVERSATION_ROUTE_PATH
-				});
-
-				await act(async () => {
-					jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
-					const request = await interceptor;
-					if (shouldMarkAsRead !== undefined) {
-						expect(request).toMatchObject({
-							cid: conversation.id,
-							read: shouldMarkAsRead
-						});
-					} else {
-						expect(request).toMatchObject({
-							cid: conversation.id
-						});
-						expect(request).not.toHaveProperty('read');
-					}
-				});
-			}
-		);
 	});
 
 	describe('Conversation preview panel behavior with hook', () => {

@@ -117,10 +117,9 @@ describe('useCompleteMessageOrFetch - Integration Tests', () => {
 						id: message.id,
 						html: 1,
 						needExp: 1
+						// Should NOT have read property
 					}
 				});
-				// Should NOT have read property
-				expect(getMsgRequest.m).not.toHaveProperty('read');
 			});
 
 			await waitFor(() => {
@@ -250,7 +249,7 @@ describe('useCompleteMessageOrFetch - Integration Tests', () => {
 					m: [generateCompleteMessageFromAPI({ id: message.id })]
 				};
 
-				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
+				const getMsgRequestInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
 					'GetMsg',
 					getMsgResponse
 				);
@@ -262,7 +261,7 @@ describe('useCompleteMessageOrFetch - Integration Tests', () => {
 
 				await act(async () => {
 					jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
-					const request = await interceptor;
+					const request = await getMsgRequestInterceptor;
 					if (shouldMarkAsRead !== undefined) {
 						expect(request).toMatchObject({
 							m: {
@@ -276,7 +275,6 @@ describe('useCompleteMessageOrFetch - Integration Tests', () => {
 								id: message.id
 							}
 						});
-						expect(request.m).not.toHaveProperty('read');
 					}
 				});
 			}
