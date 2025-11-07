@@ -56,6 +56,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() => [
 			SORTING_OPTIONS.date,
 			SORTING_OPTIONS.subject,
+			SORTING_OPTIONS.size,
 			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
 		],
 		[folderId]
