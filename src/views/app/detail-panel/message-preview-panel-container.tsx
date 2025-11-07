@@ -18,7 +18,10 @@ export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 
 	const { folderId, messageId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
-	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId,
+		shouldMarkAsRead: true
+	});
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {

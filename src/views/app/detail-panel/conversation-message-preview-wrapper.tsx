@@ -5,10 +5,10 @@
  */
 import React from 'react';
 
-import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-complete-message-or-fetch';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
+import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/use-complete-message-or-fetch';
 import { Spinner } from 'assets/spinner';
 import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
 
@@ -21,7 +21,10 @@ export const ConversationMessagePreviewWrapper = ({
 	isExpanded: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
-	const { message, messageStatus } = useCompleteMessageOrFetch(convMessageId);
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId: convMessageId,
+		shouldMarkAsRead: false // Do not mark as read when previewing in conversation, we do that when user opens the message
+	});
 	const navigate = useNavigate();
 
 	const { folderId } = useParams();

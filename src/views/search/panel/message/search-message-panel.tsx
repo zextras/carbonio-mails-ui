@@ -14,7 +14,10 @@ import { useCompleteMessageOrFetch } from 'store/emails/hooks/use-complete-messa
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
-	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId,
+		shouldMarkAsRead: true
+	});
 	const navigate = useNavigate();
 
 	if (messageStatus === API_REQUEST_STATUS.error) {
