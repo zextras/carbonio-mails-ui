@@ -10,6 +10,7 @@ import { act, waitFor } from '@testing-library/react';
 import { NavigateFunction, useParams } from 'react-router-dom';
 
 import { setupTest, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { setSearchResultsByMessage, updateMessageStatus } from 'store/emails/store';
@@ -42,6 +43,8 @@ describe('Message Panel', () => {
 			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 		});
 
+		createSoapAPIInterceptor('MsgAction', {});
+
 		setupTest(<SearchMessagePanel messageId="1" />);
 
 		expect(await screen.findByTestId('MessagePanel-1')).toBeVisible();
@@ -50,7 +53,9 @@ describe('Message Panel', () => {
 	});
 	it('should redirect when messageStatus is error', async () => {
 		const messages = await act(() => populateMessagesInEmailStore());
-		await act(() => updateMessageStatus(messages[0].id, 'error'));
+		act(() => updateMessageStatus(messages[0].id, API_REQUEST_STATUS.error));
+
+		createSoapAPIInterceptor('MsgAction', {});
 
 		setupTest(<SearchMessagePanel messageId={messages[0].id} />, {
 			initialEntries: [`/message/${messages[0].id}`],
