@@ -33,7 +33,7 @@ describe('useCompleteMessageOrFetch', () => {
 
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
-		renderHook(() => useCompleteMessageOrFetch('1'));
+		renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 		act(() => {
 			jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
@@ -50,7 +50,7 @@ describe('useCompleteMessageOrFetch', () => {
 		const message = generateMessage({ id: '1' });
 		setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 		const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-		renderHook(() => useCompleteMessageOrFetch('1'));
+		renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 		awaitDebounce();
 
@@ -71,7 +71,7 @@ describe('useCompleteMessageOrFetch', () => {
 		const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 		// eslint-disable-next-line testing-library/no-unnecessary-act
 		await act(async () => {
-			renderHook(() => useCompleteMessageOrFetch(message.id));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 		});
 
 		expect(getMsgSpy).not.toHaveBeenCalled();
@@ -90,7 +90,7 @@ describe('useCompleteMessageOrFetch', () => {
 
 		// eslint-disable-next-line testing-library/no-unnecessary-act
 		await act(async () => {
-			renderHook(() => useCompleteMessageOrFetch(message.id));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 		});
 
 		awaitDebounce();
@@ -105,7 +105,7 @@ describe('useCompleteMessageOrFetch', () => {
 		setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 		updateMessageStatus('1', API_REQUEST_STATUS.error);
 		const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-		renderHook(() => useCompleteMessageOrFetch('1'));
+		renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 		awaitDebounce();
 
@@ -123,7 +123,7 @@ describe('useCompleteMessageOrFetch', () => {
 		const { result } = renderHook(() => useMessageStatus('1'));
 		expect(result.current).toBe(API_REQUEST_STATUS.pending);
 		const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-		renderHook(() => useCompleteMessageOrFetch('1'));
+		renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 		await act(async () => {
 			expect(getMsgSpy).not.toHaveBeenCalled();
@@ -132,7 +132,7 @@ describe('useCompleteMessageOrFetch', () => {
 
 	it('should fetch a new message if messageId changes', async () => {
 		const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-		const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch(id), {
+		const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch({ messageId: id }), {
 			initialProps: { id: '1' }
 		});
 
@@ -171,20 +171,20 @@ describe('useCompleteMessageOrFetch', () => {
 		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 		const { result } = renderHook(() => useMessageStatus(message.id));
-		renderHook(() => useCompleteMessageOrFetch(message.id));
+		renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 
 		await waitFor(() => {
 			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 	});
 
-	describe('Auto-mark-as-read functionality', () => {
-		it('should pass read=true when fetching unread message and user setting allows it', async () => {
+	describe('shouldMarkAsRead param', () => {
+		it('should pass read=true when fetching message and shouldMarkAsRead is true', async () => {
 			const message = { ...generateMessage({ id: '1' }), read: false };
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1', shouldMarkAsRead: true }));
 
 			awaitDebounce();
 
@@ -198,12 +198,12 @@ describe('useCompleteMessageOrFetch', () => {
 			});
 		});
 
-		it('should pass read=false when fetching already-read message', async () => {
+		it('should pass read=false when fetching message and shouldMarkAsRead is false', async () => {
 			const message = { ...generateMessage({ id: '1' }), read: true };
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1', shouldMarkAsRead: false }));
 
 			awaitDebounce();
 

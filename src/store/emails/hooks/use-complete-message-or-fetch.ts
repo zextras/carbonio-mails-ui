@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
@@ -19,16 +18,24 @@ type MessageWithStatus = {
 	messageStatus: SearchRequestStatus;
 };
 
+type UseCompleteMessageOrFetchParams = {
+	messageId: string;
+	shouldMarkAsRead?: boolean;
+};
+
 /**
- * Get the message from the store or fetch it.
- * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
+ * Hook to ensure a complete message is fetched from the store or via an API call.
+ * If the message is incomplete or not present, it triggers a fetch action.
+ *
+ * @param messageId - the ID of the message to fetch
+ * @param shouldMarkAsRead - whether to mark the message as read when fetching
  */
-export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
+export function useCompleteMessageOrFetch({
+	messageId,
+	shouldMarkAsRead = false
+}: UseCompleteMessageOrFetchParams): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
-	const settings = useUserSettings();
-	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const prevMessageIdRef = useRef<string | null>(null);
 
 	const requestDebouncedMessage = useMemo(
 		() =>
@@ -38,15 +45,13 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						const shouldMarkAsRead = !message?.read && prefMarkMsgRead;
 						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
 					}
-					prevMessageIdRef.current = messageId;
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[message, messageId, messageStatus, prefMarkMsgRead]
+		[message, messageId, messageStatus, shouldMarkAsRead]
 	);
 
 	useEffect(() => {
