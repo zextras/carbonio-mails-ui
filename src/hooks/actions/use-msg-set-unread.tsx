@@ -8,7 +8,8 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
+import { useInSearchModule } from '../../ui-actions/utils';
+import { MAILS_ROUTE, MessageActionsDescriptors, SEARCH_ROUTE } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
@@ -32,6 +33,8 @@ export const useMsgSetUnreadFn = ({
 		[folderId, isMessageRead]
 	);
 
+	const isSearchContext = useInSearchModule();
+
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			msgActionEmailStoreAction({
@@ -39,6 +42,10 @@ export const useMsgSetUnreadFn = ({
 				ids
 			}).then((res) => {
 				if (!('Fault' in res) && shouldReplaceHistory) {
+					if (isSearchContext) {
+						navigate(`/${SEARCH_ROUTE}`, { replace: true });
+						return;
+					}
 					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
 			});
