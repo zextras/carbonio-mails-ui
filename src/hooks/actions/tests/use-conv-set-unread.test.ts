@@ -13,7 +13,18 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvSetUnreadDescriptor, useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
-import { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
+import * as uiActionsUtils from 'ui-actions/utils';
+
+const mockNavigate = jest.fn();
+const mockUseInSearchModule = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: (): jest.Mock => mockNavigate
+}));
+
+jest.spyOn(uiActionsUtils, 'useInSearchModule').mockImplementation(() => mockUseInSearchModule());
 
 describe('useConvSetUnread', () => {
 	describe('Descriptor', () => {
@@ -173,6 +184,163 @@ describe('useConvSetUnread', () => {
 				expect(requestParameter.action.op).toBe('!read');
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
+			});
+
+			describe('Navigation after execution', () => {
+				beforeEach(() => {
+					mockNavigate.mockClear();
+					mockUseInSearchModule.mockClear();
+				});
+
+				it('should navigate to search route when in search context and shouldReplaceHistory is true', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response: ConvActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useConvSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isConversationRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).toHaveBeenCalledWith('/search', { replace: true });
+				});
+
+				it('should navigate to folder route when not in search context and shouldReplaceHistory is true', async () => {
+					mockUseInSearchModule.mockReturnValue(false);
+
+					const response: ConvActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useConvSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isConversationRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
+				});
+
+				it('should not navigate when shouldReplaceHistory is false in search context', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response: ConvActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useConvSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isConversationRead: true,
+								shouldReplaceHistory: false
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
+
+				it('should not navigate when shouldReplaceHistory is false in folder context', async () => {
+					mockUseInSearchModule.mockReturnValue(false);
+
+					const response: ConvActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useConvSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isConversationRead: true,
+								shouldReplaceHistory: false
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
+
+				it('should not navigate when API returns a fault', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response = {
+						Fault: {
+							Code: { Value: 'soap:Sender' },
+							Reason: { Text: 'Error' }
+						}
+					};
+					createSoapAPIInterceptor<ConvActionRequest, typeof response>('ConvAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useConvSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isConversationRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});
