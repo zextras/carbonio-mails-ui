@@ -14,6 +14,17 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from 'hooks/actions/use-msg-set-unread';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import * as uiActionsUtils from 'ui-actions/utils';
+
+const mockNavigate = jest.fn();
+const mockUseInSearchModule = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: (): jest.Mock => mockNavigate
+}));
+
+jest.spyOn(uiActionsUtils, 'useInSearchModule').mockImplementation(() => mockUseInSearchModule());
 
 describe('useMsgSetUnread', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
@@ -157,14 +168,16 @@ describe('useMsgSetUnread', () => {
 					'MsgAction',
 					response
 				);
-				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
+				const testMessageIds = times(faker.number.int({ max: 20 }), () =>
+					faker.number.int().toString()
+				);
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
 					initialProps: [
 						{
-							ids,
+							ids: testMessageIds,
 							folderId: FOLDERS.INBOX,
 							isMessageRead: true
 						}
@@ -176,11 +189,168 @@ describe('useMsgSetUnread', () => {
 				});
 
 				const requestParameter = await apiInterceptor;
-				expect(requestParameter.action.id).toBe(ids.join(','));
+				expect(requestParameter.action.id).toBe(testMessageIds.join(','));
 				expect(requestParameter.action.op).toBe('!read');
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
+			});
+
+			describe('Navigation after execution', () => {
+				beforeEach(() => {
+					mockNavigate.mockClear();
+					mockUseInSearchModule.mockClear();
+				});
+
+				it('should navigate to search route when in search context and shouldReplaceHistory is true', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response: MsgActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useMsgSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isMessageRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).toHaveBeenCalledWith('/search', { replace: true });
+				});
+
+				it('should navigate to folder route when not in search context and shouldReplaceHistory is true', async () => {
+					mockUseInSearchModule.mockReturnValue(false);
+
+					const response: MsgActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useMsgSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isMessageRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
+				});
+
+				it('should not navigate when shouldReplaceHistory is false in search context', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response: MsgActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useMsgSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isMessageRead: true,
+								shouldReplaceHistory: false
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
+
+				it('should not navigate when shouldReplaceHistory is false in folder context', async () => {
+					mockUseInSearchModule.mockReturnValue(false);
+
+					const response: MsgActionResponse = {
+						action: {
+							id: '123',
+							op: '!read'
+						}
+					};
+					createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useMsgSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isMessageRead: true,
+								shouldReplaceHistory: false
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
+
+				it('should not navigate when API returns a fault', async () => {
+					mockUseInSearchModule.mockReturnValue(true);
+
+					const response = {
+						Fault: {
+							Code: { Value: 'soap:Sender' },
+							Reason: { Text: 'Error' }
+						}
+					};
+					createSoapAPIInterceptor<MsgActionRequest, typeof response>('MsgAction', response);
+
+					const testIds = ['1', '2'];
+					const { result } = setupHook(useMsgSetUnreadFn, {
+						initialProps: [
+							{
+								ids: testIds,
+								folderId: FOLDERS.INBOX,
+								isMessageRead: true,
+								shouldReplaceHistory: true
+							}
+						]
+					});
+
+					await act(async () => {
+						result.current.execute();
+					});
+
+					expect(mockNavigate).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});
