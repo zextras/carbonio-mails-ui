@@ -87,7 +87,6 @@ export const useMsgActions = ({
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],
-		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
 	});
