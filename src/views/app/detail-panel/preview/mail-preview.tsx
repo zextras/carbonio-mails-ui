@@ -29,6 +29,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isMessageView,
 	isEml = false
 }) => {
+	// Start expanded if explicitly expanded prop is true, or if message is alone
+	// But this can still be collapsed by user action or when marked as unread
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
 	const [isCollapsedDueToUnread, setIsCollapsedDueToUnread] = useState(false);
 	const settings = useUserSettings();
@@ -55,20 +57,20 @@ const MailPreview: FC<MailPreviewProps> = ({
 	}, []);
 
 	const isMailPreviewOpen = useMemo(() => {
-		// If collapsed due to marking as unread, stay collapsed even if isAlone is true
+		// If collapsed due to marking as unread, stay collapsed
 		if (isCollapsedDueToUnread) {
 			return false;
 		}
-		return isMessageView || isAlone || isOpen;
-	}, [isMessageView, isAlone, isOpen, isCollapsedDueToUnread]);
+		// Respect the open state in all contexts (conversation view and message view)
+		return isOpen;
+	}, [isOpen, isCollapsedDueToUnread]);
 
 	useEffect(() => {
 		const wasRead = prevReadStatusRef.current;
 		const isNowUnread = message?.read === false;
 
 		// If the message was previously read and is now unread, collapse the preview
-		// Only skip collapsing in message view mode (where navigation happens instead)
-		if (wasRead === true && isNowUnread && !isMessageView) {
+		if (wasRead === true && isNowUnread) {
 			setIsOpen(false);
 			setIsCollapsedDueToUnread(true);
 		} else if (
