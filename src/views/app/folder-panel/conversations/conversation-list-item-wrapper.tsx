@@ -1,9 +1,13 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
 import React, { ReactNode, useMemo } from 'react';
 
 import { ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useConvActions } from 'hooks/actions/use-conv-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
@@ -12,11 +16,6 @@ import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-contai
 import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 import { ListItemHoverActions } from 'views/app/folder-panel/parts/list-item-hover-actions';
 
-/*
- * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
- *
- * SPDX-License-Identifier: AGPL-3.0-only
- */
 export const ConversationListItemActionWrapper = ({
 	conversation,
 	active,
@@ -31,7 +30,6 @@ export const ConversationListItemActionWrapper = ({
 	conversation: NormalizedConversation;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	const shouldReplaceHistory = useShouldReplaceHistory(conversation);
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -52,8 +50,7 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation,
-		shouldReplaceHistory
+		conversation
 	});
 	const hoverActions = useMemo(
 		() => [

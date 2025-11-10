@@ -42,10 +42,10 @@ export const useConvSetUnreadFn = ({
 			}).then((res) => {
 				if (!('Fault' in res) && shouldReplaceHistory) {
 					if (isSearchContext) {
-						navigate(`/${SEARCH_ROUTE}`, { replace: true });
+						navigate(`/${SEARCH_ROUTE}`, { replace: false });
 						return;
 					}
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: false });
 				}
 			});
 		}
