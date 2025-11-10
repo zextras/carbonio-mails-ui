@@ -69,11 +69,7 @@ export const useMsgActions = ({
 	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
 	const folderId = getParentFolderId(message.parent);
-	const { folderId: routeFolderId, messageId: routeMessageId } = useParams();
-
-	// Only use shouldReplaceHistory for read/unread actions in message view mode
-	// In conversation view, marking as read/unread should not navigate away
-	const shouldReplaceHistoryForReadActions = routeMessageId ? shouldReplaceHistory : false;
+	const { folderId: routeFolderId } = useParams();
 
 	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useMsgReplyAllDescriptor(message.id, folderId);
@@ -91,13 +87,12 @@ export const useMsgActions = ({
 	});
 	const messageReadDescriptor = useMsgSetReadDescriptor({
 		ids: [message.id],
-		shouldReplaceHistory: shouldReplaceHistoryForReadActions,
+		shouldReplaceHistory,
 		folderId,
 		isMessageRead: message.read
 	});
 	const messageUnreadDescriptor = useMsgSetUnreadDescriptor({
 		ids: [message.id],
-		shouldReplaceHistory: shouldReplaceHistoryForReadActions,
 		folderId,
 		isMessageRead: message.read
 	});
