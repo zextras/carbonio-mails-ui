@@ -102,6 +102,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	// Reset collapse flag when message changes
 	useEffect(() => {
 		setIsCollapsedDueToUnread(false);
+		setIsOpen(true);
 	}, [message?.id]);
 
 	return (

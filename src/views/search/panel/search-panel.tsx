@@ -22,13 +22,21 @@ const withMessageId = <P extends WithMessageIdProps>(
 ): React.ComponentType<Omit<P, 'messageId'>> => {
 	const ComponentWithMessageId = (props: Omit<P, 'messageId'>): React.JSX.Element => {
 		const { messageId } = useParams<{ messageId: string }>();
-		return <WrappedComponent {...(props as P)} messageId={messageId!} />;
+		if (!messageId) {
+			return <></>;
+		}
+		return <WrappedComponent {...(props as P)} messageId={messageId} />;
 	};
 
-	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'})`;
+	ComponentWithMessageId.displayName = `withMessageId(${
+		WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'
+	})`;
 
-	return ComponentWithMessageId;
+	return React.memo(ComponentWithMessageId) as unknown as React.ComponentType<Omit<P, 'messageId'>>;
 };
+
+const MemoizedSearchMessagePanel = withMessageId(SearchMessagePanel);
+
 const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
 	const displayerMessage = useMemo(() => {
 		if (searchResults.conversationListIndex.length > 0 || searchResults.messageListIndex.length > 0)
@@ -56,7 +64,7 @@ const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => 
 	return (
 		<Routes>
 			<Route path={`conversation/:conversationId`} element={<SearchConversationPanel />} />
-			<Route path={`message/:messageId`} Component={withMessageId(SearchMessagePanel)}></Route>
+			<Route path={`message/:messageId`} Component={MemoizedSearchMessagePanel} />
 			<Route
 				path={'/'}
 				element={
