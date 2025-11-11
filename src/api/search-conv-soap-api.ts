@@ -14,12 +14,14 @@ type SearchConvParameters = {
 	conversationId: string;
 	folderId?: string;
 	fetch: string;
+	shouldMarkAsRead?: boolean;
 };
 
 export async function searchConvSoapApi({
 	conversationId,
 	fetch = 'all',
-	folderId
+	folderId,
+	shouldMarkAsRead
 }: SearchConvParameters): Promise<SearchConvResponse> {
 	const userSettings: AccountSettings = getUserSettings();
 	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as 'dateDesc' | 'dateAsc';
@@ -39,5 +41,9 @@ export async function searchConvSoapApi({
 	if (folderId) {
 		request.query = `inId: "${folderId}"`;
 	}
+	if (shouldMarkAsRead) {
+		request.read = 1;
+	}
+
 	return legacySoapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
 }

@@ -14,9 +14,9 @@ import type {
 	SearchDetailPanelConversationRouteParams,
 	SearchDetailPanelRouteParams
 } from '../../../../types/routes';
+import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
@@ -24,7 +24,12 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 		useParams<SearchDetailPanelRouteParams>() as SearchDetailPanelConversationRouteParams;
 	const navigate = useNavigate();
 
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
+		conversationId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;

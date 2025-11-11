@@ -72,7 +72,9 @@ describe('Searches store hooks', () => {
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
-			const { result } = renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			const { result } = renderHook(() =>
+				useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' })
+			);
 
 			expect(result.current.conversation).toMatchObject({ id: '123' });
 			await waitFor(() => {
@@ -98,7 +100,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' }));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
@@ -125,7 +127,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' }));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});

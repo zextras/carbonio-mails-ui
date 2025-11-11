@@ -28,15 +28,22 @@ type ConversationWithStatus = {
 	conversation: NormalizedConversation;
 	conversationStatus: SearchRequestStatus;
 };
+
+type UseCompleteConversationOrFetchParams = {
+	conversationId: string;
+	folderId?: string;
+	shouldMarkAsRead?: boolean;
+};
 /**
  * Provides a complete conversation with its status.
  * If the conversation is not in the store, it will be fetched.
  *
  */
-export function useCompleteConversationOrFetch(
-	conversationId: string,
-	folderId?: string
-): ConversationWithStatus {
+export function useCompleteConversationOrFetch({
+	conversationId,
+	folderId,
+	shouldMarkAsRead = false
+}: UseCompleteConversationOrFetchParams): ConversationWithStatus {
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 
@@ -45,13 +52,13 @@ export function useCompleteConversationOrFetch(
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						searchConvEmailStoreAction(conversationId, folderId);
+						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[conversation, conversationId, conversationStatus, folderId]
+		[conversation, conversationId, conversationStatus, folderId, shouldMarkAsRead]
 	);
 	useEffect(() => {
 		requestDebouncedConversation();
