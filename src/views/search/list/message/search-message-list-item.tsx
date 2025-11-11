@@ -112,14 +112,20 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					/>
 				</MessageListItemActionWrapper>
 			) : (
-				<SearchMessageListItemCore
-					completeMessage={completeMessage}
-					selected={selected}
-					selecting={selecting}
-					onSelect={onSelect}
-					index={index}
-					folderId={folderId}
-				/>
+				<Container
+					onClick={onClick}
+					onDoubleClick={onDoubleClick}
+					data-testid={`MessageListItemWithoutActions-${completeMessage.id}`}
+				>
+					<SearchMessageListItemCore
+						completeMessage={completeMessage}
+						selected={selected}
+						selecting={selecting}
+						onSelect={onSelect}
+						index={index}
+						folderId={folderId}
+					/>
+				</Container>
 			)}
 		</Container>
 	);

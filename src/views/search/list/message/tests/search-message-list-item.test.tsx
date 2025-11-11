@@ -5,15 +5,15 @@
  */
 import React, { act } from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import { CONVACTIONS } from 'commons/utilities';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
+import { CONVACTIONS } from 'commons/utilities';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
@@ -55,4 +55,133 @@ it('should delete the item when clicking on Delete action when in message mode',
 	});
 	const request = await interceptor;
 	expect(request.action).toStrictEqual({ id: '100', op: CONVACTIONS.TRASH });
+});
+
+describe('SearchMessageListItem mark-as-read behavior', () => {
+	it('should mark message as read on single click when unread, complete and preference enabled', async () => {
+		const settings = generateSettings({
+			prefs: {
+				zimbraPrefGroupMailBy: 'message',
+				zimbraPrefMarkMsgRead: '0' // mark as read on single click
+			}
+		});
+		useUserSettings.mockReturnValue(settings);
+
+		const generatedMessages = populateMessagesInEmailStore({
+			messageGeneratorParams: [
+				{ id: '201', isRead: false, isComplete: true } // unread & complete
+			]
+		});
+
+		const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+			action: { op: 'read', id: '201' }
+		});
+
+		setupTest(
+			<SearchMessageListItem
+				completeMessage={generatedMessages[0]}
+				selecting={false}
+				active={false}
+				index={0}
+				onSelect={jest.fn()}
+				selected={false}
+			/>
+		);
+
+		const wrapper = await screen.findByTestId('MessageListItemWithoutActions-201');
+
+		await waitFor(() => {
+			fireEvent.click(wrapper);
+		});
+		const request = await interceptor;
+		expect(request.action).toStrictEqual({ id: '201', op: 'read' });
+	});
+
+	it('should NOT mark as read when message already read', async () => {
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefGroupMailBy: 'message',
+				zimbraPrefMarkMsgRead: '0'
+			}
+		};
+		useUserSettings.mockReturnValue(generateSettings(customSettings));
+
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ id: '202', isRead: true, isComplete: true }]
+		});
+		const callFlag = jest.fn();
+		createSoapAPIInterceptor('MsgAction').then(callFlag);
+
+		const { user } = setupTest(
+			<SearchMessageListItem
+				completeMessage={messages[0]}
+				selecting={false}
+				active={false}
+				index={0}
+				onSelect={jest.fn()}
+				selected={false}
+			/>
+		);
+		const wrapper = await screen.findByTestId('MessageListItem-202');
+		act(() => {
+			user.click(wrapper);
+		});
+		await waitFor(() => expect(callFlag).not.toHaveBeenCalled());
+	});
+
+	it('should NOT mark as read when message incomplete', async () => {
+		useUserSettings.mockReturnValue(
+			generateSettings({
+				prefs: { zimbraPrefGroupMailBy: 'message', zimbraPrefMarkMsgRead: '0' }
+			})
+		);
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ id: '203', isRead: false, isComplete: false }]
+		});
+		const callFlag = jest.fn();
+		createSoapAPIInterceptor('MsgAction').then(callFlag);
+		const { user } = setupTest(
+			<SearchMessageListItem
+				completeMessage={messages[0]}
+				selecting={false}
+				active={false}
+				index={0}
+				onSelect={jest.fn()}
+				selected={false}
+			/>
+		);
+		const wrapper = await screen.findByTestId('MessageListItem-203');
+		act(() => {
+			user.click(wrapper);
+		});
+		await waitFor(() => expect(callFlag).not.toHaveBeenCalled());
+	});
+
+	it('should NOT mark as read when user preference disabled', async () => {
+		useUserSettings.mockReturnValue(
+			generateSettings({
+				prefs: { zimbraPrefGroupMailBy: 'message', zimbraPrefMarkMsgRead: '-1' }
+			})
+		);
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ id: '204', isRead: false, isComplete: true }]
+		});
+		const callFlag = jest.fn();
+		createSoapAPIInterceptor('MsgAction').then(callFlag);
+		const { user } = setupTest(
+			<SearchMessageListItem
+				completeMessage={messages[0]}
+				selecting={false}
+				active={false}
+				index={0}
+				onSelect={jest.fn()}
+				selected={false}
+			/>
+		);
+		const wrapper = await screen.findByTestId('MessageListItem-204');
+		act(() => {
+			user.click(wrapper);
+		});
+		await waitFor(() => expect(callFlag).not.toHaveBeenCalled());
+	});
 });
