@@ -6,7 +6,6 @@
 import React, { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -36,7 +35,6 @@ export const MessageListItem = memo(function MessageListItem({
 	const navigate = useNavigate();
 	const firstChildFolderId = folderId ?? message?.parent;
 	const shouldReplaceHistory = useShouldReplaceHistory(message);
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
@@ -68,9 +66,6 @@ export const MessageListItem = memo(function MessageListItem({
 	const onClickCallback = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (!message.read && zimbraPrefMarkMsgRead) {
-					setAsRead.canExecute() && setAsRead.execute();
-				}
 				if (handleReplaceHistory) {
 					handleReplaceHistory();
 				} else {
@@ -78,7 +73,7 @@ export const MessageListItem = memo(function MessageListItem({
 				}
 			}
 		},
-		[message.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
+		[handleReplaceHistory, debouncedPushHistory]
 	);
 	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {

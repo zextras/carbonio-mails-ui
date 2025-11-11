@@ -71,11 +71,19 @@ type MessageWithStatus = {
 	messageStatus: SearchRequestStatus;
 };
 
+type UseCompleteMessageOrFetchParams = {
+	messageId: string;
+	shouldMarkAsRead?: boolean;
+};
+
 /**
  * Get the message from the store or fetch it.
  * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
  */
-export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
+export function useCompleteMessageOrFetch({
+	messageId,
+	shouldMarkAsRead = false
+}: UseCompleteMessageOrFetchParams): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
@@ -87,13 +95,13 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						getMessageEmailStoreAction(messageId);
+						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[message?.isComplete, messageId, messageStatus]
+		[message?.isComplete, messageId, messageStatus, shouldMarkAsRead]
 	);
 
 	useEffect(() => {

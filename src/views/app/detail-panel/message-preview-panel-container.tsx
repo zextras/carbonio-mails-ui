@@ -5,6 +5,7 @@
  */
 import React, { useEffect } from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
@@ -16,9 +17,15 @@ import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-pane
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
 
+	const prefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
 	const { folderId, messageId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
-	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
+
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId,
+		shouldMarkAsRead: prefMarkMsgRead
+	});
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {
