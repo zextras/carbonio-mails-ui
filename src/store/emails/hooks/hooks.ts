@@ -34,10 +34,15 @@ type UseCompleteConversationOrFetchParams = {
 	folderId?: string;
 	shouldMarkAsRead?: boolean;
 };
+
 /**
- * Provides a complete conversation with its status.
- * If the conversation is not in the store, it will be fetched.
+ * Get the conversation from the store or fetch it.
+ * Ensures that conversations are fetched if their status indicates they are not yet fulfilled.
+ * Returns the conversation along with its fetch status.
  *
+ * @param conversationId
+ * @param folderId
+ * @param shouldMarkAsRead
  */
 export function useCompleteConversationOrFetch({
 	conversationId,
