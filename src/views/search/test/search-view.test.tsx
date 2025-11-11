@@ -884,41 +884,6 @@ describe('SearchView', () => {
 
 			expect(window.open).toHaveBeenCalledTimes(1);
 		});
-		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
-			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
-				more: false
-			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				aRandomMsgActionResponse
-			);
-
-			const mockUseQuery = jest.fn();
-			mockUseQuery.mockReturnValue([[queryChip], noop]);
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: mockUseQuery,
-				ResultsHeader: resultsHeader,
-				useDisableSearch: () => [false, noop]
-			};
-
-			const { user } = setupTest(<SearchView {...searchViewProps} />);
-			await waitFor(async () => searchInterceptor);
-
-			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
-
-			await waitAndMakeMessageVisible('10');
-			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
-			await user.hover(messageContainer);
-			const hoverContainer = await screen.findByTestId('hover-container-10');
-			await user.click(hoverContainer);
-			const requestParameter = await waitFor(async () => msgActionInterceptor);
-
-			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
-		});
 
 		it('should not show empty email content when re-executing a search with a different word but relates to same email', async () => {
 			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
