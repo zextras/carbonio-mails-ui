@@ -91,6 +91,7 @@ describe('SearchMessageListItem mark-as-read behavior', () => {
 		const wrapper = await screen.findByTestId('MessageListItemWithoutActions-201');
 
 		await waitFor(() => {
+			// eslint-disable-next-line testing-library/prefer-user-event,testing-library/no-wait-for-side-effects
 			fireEvent.click(wrapper);
 		});
 		const request = await interceptor;
