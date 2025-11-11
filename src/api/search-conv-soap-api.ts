@@ -8,14 +8,7 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import type { SearchConvRequest, SearchConvResponse } from 'types/index.d';
-
-type SearchConvParameters = {
-	conversationId: string;
-	folderId?: string;
-	fetch: string;
-	shouldMarkAsRead?: boolean;
-};
+import type { SearchConvRequest, SearchConvResponse, SearchConvParameters } from 'types/index.d';
 
 export async function searchConvSoapApi({
 	conversationId,
@@ -44,6 +37,5 @@ export async function searchConvSoapApi({
 	if (shouldMarkAsRead) {
 		request.read = 1;
 	}
-
 	return legacySoapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
 }

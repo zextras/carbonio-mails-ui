@@ -37,6 +37,7 @@ export type SearchConvParameters = {
 	conversationId: string;
 	folderId?: string;
 	fetch: string;
+	shouldMarkAsRead?: boolean;
 };
 
 export type SearchConvReturn = {
