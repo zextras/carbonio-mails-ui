@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,13 +10,11 @@ import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	...jest.requireActual('@zextras/carbonio-shell-ui'),
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	useUserSettings: () => ({
 		prefs: { zimbraPrefMarkMsgRead: '0' }
 	})
 }));
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const createActionMock = () => ({
 	canExecute: jest.fn(() => true),
 	execute: jest.fn()
@@ -62,5 +61,18 @@ describe('useMarkAsReadOnClick', () => {
 
 		expect(action.canExecute).not.toHaveBeenCalled();
 		expect(action.execute).not.toHaveBeenCalled();
+	});
+
+	it('should execute action when unread, preference enabled and no conditions provided', () => {
+		const action = createActionMock();
+		const { result } = renderHook(() =>
+			useMarkAsReadOnClick({ isRead: false, action, conditions: [] })
+		);
+		act(() => {
+			result.current();
+		});
+
+		expect(action.canExecute).toHaveBeenCalled();
+		expect(action.execute).toHaveBeenCalled();
 	});
 });
