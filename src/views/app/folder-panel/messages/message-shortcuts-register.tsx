@@ -5,6 +5,7 @@
  */
 import { useCallback, useEffect } from 'react';
 
+import { useIsFilePreviewOpen } from '../../../../hooks/use-is-file-preview-open';
 import { useKeyboardShortcutsForMsg } from 'hooks/use-keyboard-shortcuts-for-msg';
 import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
@@ -17,23 +18,29 @@ export const MessageShortcutsRegister = ({
 	messageIds,
 	folderId
 }: MessageShortcutsRegisterProps): null => {
+	const isFilePreviewOpen = useIsFilePreviewOpen();
 	const keyboardActions = useKeyboardShortcutsForMsg({
 		messageIds,
 		folderId
 	});
+
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent): void => {
+			console.count('MessageShortcutsRegister handleKeyDown');
 			const isInputField = isInputContext(event.target);
 
-			// Ignore shortcuts when typing in form fields
-			// or when a modal overlay is present
-			if (isInputField || hasModalOverlay()) {
+			/*
+			 * Ignore shortcuts when typing in form fields
+			 * or when a modal overlay is present
+			 * or when file preview is open
+			 */
+			if (isInputField || hasModalOverlay() || isFilePreviewOpen) {
 				return;
 			}
 
 			keyboardActions(event);
 		},
-		[keyboardActions]
+		[isFilePreviewOpen, keyboardActions]
 	);
 	useEffect(() => {
 		document.addEventListener('keydown', handleKeyDown);
