@@ -29,13 +29,16 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isMessageView,
 	isEml = false
 }) => {
-	// Start expanded if explicitly expanded prop is true, or if message is alone
-	// But this can still be collapsed by user action or when marked as unread
+	// Local state for tracking whether the preview is open
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
-	const [isCollapsedDueToUnread, setIsCollapsedDueToUnread] = useState(false);
+
+	// Track the previous read status to detect state transitions
+	const prevReadStatusRef = useRef<boolean | undefined>(message?.read);
+	// Track if we just marked a message as unread to prevent auto-read race condition
+	const justMarkedUnreadRef = useRef<boolean>(false);
+
 	const settings = useUserSettings();
 	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const prevReadStatusRef = useRef<boolean | undefined>(message?.read);
 
 	const setAsRead = useMsgSetReadFn({
 		ids: message?.id ? [message.id] : [],
@@ -52,58 +55,64 @@ const MailPreview: FC<MailPreviewProps> = ({
 
 	const onClick = useCallback(() => {
 		setIsOpen((prevOpen) => !prevOpen);
-		// Reset collapse flag when user manually toggles
-		setIsCollapsedDueToUnread(false);
 	}, []);
 
-	const isMailPreviewOpen = useMemo(() => {
-		// If collapsed due to marking as unread, stay collapsed
-		if (isCollapsedDueToUnread) {
-			return false;
-		}
-		// Respect the open state in all contexts (conversation view and message view)
-		return isOpen;
-	}, [isOpen, isCollapsedDueToUnread]);
-
+	// Effect 1: When message transitions from read to unread, collapse the preview
 	useEffect(() => {
 		const wasRead = prevReadStatusRef.current;
 		const isNowUnread = message?.read === false;
 
-		// If the message was previously read and is now unread, collapse the preview
 		if (wasRead === true && isNowUnread) {
 			setIsOpen(false);
-			setIsCollapsedDueToUnread(true);
-		} else if (
-			isMailPreviewOpen &&
-			message?.isComplete &&
-			isNowUnread &&
-			prefMarkMsgRead &&
-			!isEml &&
-			wasRead !== true
-		) {
-			// If the preview is open and message is unread and complete, mark as read
-			// BUT only if the message wasn't just marked as unread (transition from read to unread)
-			setAsRead.execute();
+			justMarkedUnreadRef.current = true;
 		}
 
 		prevReadStatusRef.current = message?.read;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		isMailPreviewOpen,
-		message?.isComplete,
-		message?.read,
-		message?.id,
-		prefMarkMsgRead,
-		isEml,
-		isMessageView,
-		isAlone
-	]);
+	}, [message?.read, message?.id]);
 
-	// Reset collapse flag when message changes
+	// Effect 2: When preview is opened and message is unread, auto-mark as read
+	// Skip auto-mark only if message was just transitioned to unread
 	useEffect(() => {
-		setIsCollapsedDueToUnread(false);
-		if (isMessageView) setIsOpen(true);
-	}, [isMessageView, message.id]);
+		const shouldSkipAutoRead = justMarkedUnreadRef.current;
+
+		if (
+			isOpen &&
+			message?.isComplete &&
+			message?.read === false &&
+			prefMarkMsgRead &&
+			!isEml &&
+			!shouldSkipAutoRead
+		) {
+			setAsRead.execute();
+		}
+
+		// Reset the flag only when we've opened the preview and skipped auto-read
+		// This ensures the flag doesn't interfere with subsequent opens
+		if (isOpen && justMarkedUnreadRef.current) {
+			justMarkedUnreadRef.current = false;
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isOpen, message?.isComplete, message?.read, message?.id, prefMarkMsgRead, isEml]);
+
+	// Effect 3: When expanded prop changes from parent, update isOpen
+	// Also collapse the message when navigating away
+	useEffect(() => {
+		setIsOpen(expanded || isAlone);
+		// Reset the flag when message changes
+		justMarkedUnreadRef.current = false;
+		// Collapse when navigating away from the message
+		return () => {
+			setIsOpen(false);
+		};
+	}, [expanded, isAlone, message.id]);
+
+	// Effect 4: In message view, always keep preview open
+	useEffect(() => {
+		if (isMessageView) {
+			setIsOpen(true);
+		}
+	}, [isMessageView]);
 
 	return (
 		<Container
@@ -112,12 +121,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 			padding={isFocusModeMailView() ? { all: 'large' } : undefined}
 			background="white"
 		>
-			<MailPreviewBlock
-				onClick={onClick}
-				message={message}
-				open={isMailPreviewOpen}
-				isEml={isEml}
-			/>
+			<MailPreviewBlock onClick={onClick} message={message} open={isOpen} isEml={isEml} />
 
 			<Container
 				width="fill"
@@ -127,12 +131,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 					overflow: 'auto'
 				}}
 			>
-				{isMailPreviewOpen && (
-					<MailPreviewContent
-						message={message}
-						isMailPreviewOpen={isMailPreviewOpen}
-						isEml={isEml}
-					/>
+				{isOpen && (
+					<MailPreviewContent message={message} isMailPreviewOpen={isOpen} isEml={isEml} />
 				)}
 			</Container>
 		</Container>
