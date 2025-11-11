@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
@@ -61,13 +63,27 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		folderId: parent
 	});
 
+	const markAsRead = useConvSetReadFn({
+		ids: [conversation.id],
+		isConversationRead: conversation.read,
+		folderId: parent ?? ''
+	});
+
+	// unified mark-as-read handler (preference + unread handled inside hook)
+	const markConvAsReadHandler = useMarkAsReadOnClick({
+		isRead: conversation.read,
+		action: markAsRead,
+		conditions: [Boolean(conversation)]
+	});
+
 	const _onClick = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
+				markConvAsReadHandler();
 				navigate(`../conversation/${conversationId}`);
 			}
 		},
-		[navigate, conversationId]
+		[markConvAsReadHandler, navigate, conversationId]
 	);
 
 	const _onDoubleClick = useCallback(
