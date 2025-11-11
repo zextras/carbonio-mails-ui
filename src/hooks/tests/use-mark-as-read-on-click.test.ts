@@ -75,4 +75,15 @@ describe('useMarkAsReadOnClick', () => {
 		expect(action.canExecute).toHaveBeenCalled();
 		expect(action.execute).toHaveBeenCalled();
 	});
+
+	it('should execute action when unread, preference enabled and conditions is undefined', () => {
+		const action = createActionMock();
+		const { result } = renderHook(() => useMarkAsReadOnClick({ isRead: false, action })); // missing conditions
+		act(() => {
+			result.current();
+		});
+
+		expect(action.canExecute).toHaveBeenCalled();
+		expect(action.execute).toHaveBeenCalled();
+	});
 });
