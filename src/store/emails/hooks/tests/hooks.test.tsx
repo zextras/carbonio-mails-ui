@@ -72,7 +72,9 @@ describe('Searches store hooks', () => {
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
-			const { result } = renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			const { result } = renderHook(() =>
+				useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' })
+			);
 
 			expect(result.current.conversation).toMatchObject({ id: '123' });
 			await waitFor(() => {
@@ -98,7 +100,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' }));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
@@ -125,7 +127,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversationOrFetch('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch({ conversationId: '123', folderId: '2' }));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});
@@ -143,7 +145,7 @@ describe('Searches store hooks', () => {
 				response
 			);
 
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			act(() => {
 				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
@@ -160,7 +162,7 @@ describe('Searches store hooks', () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			awaitDebounce();
 
@@ -181,7 +183,7 @@ describe('Searches store hooks', () => {
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
-				renderHook(() => useCompleteMessageOrFetch(message.id));
+				renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 			});
 
 			expect(getMsgSpy).not.toHaveBeenCalled();
@@ -200,7 +202,7 @@ describe('Searches store hooks', () => {
 
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
-				renderHook(() => useCompleteMessageOrFetch(message.id));
+				renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 			});
 
 			awaitDebounce();
@@ -215,7 +217,7 @@ describe('Searches store hooks', () => {
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			updateMessageStatus('1', API_REQUEST_STATUS.error);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			awaitDebounce();
 
@@ -233,7 +235,7 @@ describe('Searches store hooks', () => {
 			const { result } = renderHook(() => useMessageStatus('1'));
 			expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			await act(async () => {
 				expect(getMsgSpy).not.toHaveBeenCalled();
@@ -242,7 +244,7 @@ describe('Searches store hooks', () => {
 
 		it('should fetch a new message if messageId changes', async () => {
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch(id), {
+			const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch({ messageId: id }), {
 				initialProps: { id: '1' }
 			});
 
@@ -281,7 +283,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result } = renderHook(() => useMessageStatus(message.id));
-			renderHook(() => useCompleteMessageOrFetch(message.id));
+			renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
 
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);

@@ -10,21 +10,26 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import type {
-	SearchDetailPanelConversationRouteParams,
-	SearchDetailPanelRouteParams
-} from '../../../../types/routes';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import { SearchPanelHeader } from '../../parts/search-panel-header';
+import {
+	SearchDetailPanelConversationRouteParams,
+	SearchDetailPanelRouteParams
+} from 'types/routes';
 import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
+import { SearchPanelHeader } from 'views/search/parts/search-panel-header';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } =
 		useParams<SearchDetailPanelRouteParams>() as SearchDetailPanelConversationRouteParams;
 	const navigate = useNavigate();
 
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
+		conversationId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;

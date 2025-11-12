@@ -6,6 +6,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +31,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const { conversationId, folderId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
+		conversationId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
