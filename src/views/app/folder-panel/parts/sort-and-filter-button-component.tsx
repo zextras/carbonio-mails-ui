@@ -56,7 +56,8 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() => [
 			SORTING_OPTIONS.date,
 			SORTING_OPTIONS.subject,
-			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from
+			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from,
+			SORTING_OPTIONS.size
 		],
 		[folderId]
 	);
@@ -180,11 +181,11 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		() => [
 			toggleDirectionItem,
 			{ id: 'divider-1', type: 'divider' },
-			filterLabelItem,
-			...filterItems,
-			{ id: 'divider-2', type: 'divider' },
 			sortLabelItem,
-			...sortItems
+			...sortItems,
+			{ id: 'divider-2', type: 'divider' },
+			filterLabelItem,
+			...filterItems
 		],
 		[filterItems, filterLabelItem, sortItems, sortLabelItem, toggleDirectionItem]
 	);
