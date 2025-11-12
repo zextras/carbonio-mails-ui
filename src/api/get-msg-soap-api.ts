@@ -12,17 +12,23 @@ import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/inde
 export async function getMsgSoapApi({
 	msgId,
 	max,
-	part
+	part,
+	shouldMarkAsRead
 }: GetMsgParameters): Promise<GetMsgResponse> {
+	const message: GetMsgRequest['m'] = {
+		html: 1,
+		id: msgId,
+		needExp: 1,
+		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
+		part,
+		...{ max }
+	};
+	if (shouldMarkAsRead) {
+		message.read = 1;
+	}
+
 	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
-		m: {
-			html: 1,
-			id: msgId,
-			needExp: 1,
-			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
-			part,
-			...{ max }
-		}
+		m: message
 	});
 }
