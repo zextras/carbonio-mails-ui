@@ -22,12 +22,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, on
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	return (
-		<Container
-			height="fit"
-			padding={{ all: 'small' }}
-			background={'gray6'}
-			crossAlignment="flex-end"
-		>
+		<Container padding={{ all: 'small' }} background={'gray6'} crossAlignment="flex-end">
 			{isRichText ? (
 				<RichTextEditorContainer editorId={editorId} onDragOver={onDragOver} />
 			) : (

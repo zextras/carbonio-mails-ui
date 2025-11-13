@@ -85,7 +85,7 @@ export const PlainTextEditorContainer = ({
 	}, [setText, setTextProvider, textProviderValue]);
 
 	return (
-		<Container background={'gray6'} height="fit">
+		<Container background={'gray6'}>
 			<StyledComp.TextArea
 				data-testid="MailPlainTextEditor"
 				ref={textAreaRef}
