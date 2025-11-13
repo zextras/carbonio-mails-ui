@@ -10,6 +10,7 @@
 	"scripts": {
 		"build": "sdk build",
 		"deploy": "sdk deploy",
+		"install": "sdk install",
 		"start": "sdk watch",
 		"type-check": "tsc --noEmit",
 		"type-check:watch": "npm run type-check -- --watch",

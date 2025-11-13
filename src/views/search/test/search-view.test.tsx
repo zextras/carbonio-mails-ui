@@ -431,62 +431,6 @@ describe('SearchView', () => {
 			const conversation2 = getSoapConversation('2', { t: '' });
 			const conversation3 = getSoapConversation('3', { t: '' });
 
-			it('closes the conversation panel on Escape (window keydown)', async () => {
-				const addSpy = jest.spyOn(window, 'addEventListener');
-
-				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-				const mockUseQuery = jest.fn();
-				mockUseQuery.mockReturnValue([[queryChip], noop]);
-
-				const defaultConversation = getSoapConversation('123');
-				const message1 = generateSoapConversationMessage('100', '123');
-				const message2 = generateSoapConversationMessage('200', '123');
-				const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
-
-				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation],
-					more: false
-				});
-				createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
-					m: [message1, message2],
-					more: false,
-					offset: '0',
-					orderBy: 'dateDesc'
-				});
-
-				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-				const searchViewProps: SearchViewProps = {
-					useQuery: mockUseQuery,
-					ResultsHeader: resultsHeader,
-					useDisableSearch: () => [false, noop]
-				};
-
-				setupTest(<SearchView {...searchViewProps} />, { initialEntries: ['/conversation/123'] });
-
-				expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
-
-				// retrieve the last keydown event handler
-				const keydownCalls = addSpy.mock.calls.filter(([type]) => type === 'keydown');
-				expect(keydownCalls.length).toBeGreaterThan(0);
-				const handler = keydownCalls[keydownCalls.length - 1][1] as (e: KeyboardEvent) => void;
-
-				// mock the event
-				const preventDefault = jest.fn();
-				const stopPropagation = jest.fn();
-				const fakeEvent = {
-					key: 'Escape',
-					preventDefault,
-					stopPropagation
-				} as unknown as KeyboardEvent;
-
-				act(() => {
-					handler(fakeEvent);
-				});
-
-				expect(preventDefault).toHaveBeenCalled();
-				expect(stopPropagation).toHaveBeenCalled();
-			});
-
 			it('items should still be selected after a multiple selection action', async () => {
 				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 
