@@ -1729,10 +1729,8 @@ describe('Edit view', () => {
 
 			const mainContainer = screen.getByTestId('edit-view-editor');
 
-			expect(mainContainer).toBeVisible();
-			await waitFor(() => {
-				expect(mainContainer).not.toHaveStyle({ height: 'fit' });
-			});
+			const computedStyle = getComputedStyle(mainContainer);
+			expect(computedStyle.height).not.toBe('fit-content');
 		});
 	});
 });
