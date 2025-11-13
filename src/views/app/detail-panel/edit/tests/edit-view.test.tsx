@@ -1714,4 +1714,25 @@ describe('Edit view', () => {
 			});
 		});
 	});
+
+	describe('Container layout', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		test('main container should render without height constraints to allow dynamic growth', async () => {
+			const editor: MailsEditorV2 = generateNewEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const mainContainer = screen.getByTestId('edit-view-editor');
+
+			expect(mainContainer).toBeVisible();
+			await waitFor(() => {
+				expect(mainContainer).not.toHaveStyle({ height: 'fit' });
+			});
+		});
+	});
 });
