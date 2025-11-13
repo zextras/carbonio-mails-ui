@@ -26,7 +26,6 @@ export const MessageShortcutsRegister = ({
 
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent): void => {
-			console.count('MessageShortcutsRegister handleKeyDown');
 			const isInputField = isInputContext(event.target);
 
 			/*
