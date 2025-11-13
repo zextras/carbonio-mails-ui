@@ -21,10 +21,12 @@ export type TextEditorContainerProps = {
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
 	const { isRichText } = useEditorIsRichText(editorId);
 
+	const containerHeight = isRichText ? 'fit' : '100%';
+
 	return (
 		<Container
 			data-testid={'TextEditorContainer'}
-			height={'fit'}
+			height={containerHeight}
 			padding={{ all: 'small' }}
 			background={'gray6'}
 			crossAlignment="flex-end"
