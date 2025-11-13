@@ -8,13 +8,13 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
@@ -77,8 +77,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const conversationStatus = useConversationStatus(conversationId);
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const shouldFetchConversation = useCallback(
 		(): boolean =>
 			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
@@ -88,9 +86,9 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const fetchConversationIfNeeded = useCallback(() => {
 		if (shouldFetchConversation()) {
-			searchConvEmailStoreAction(conversationId);
+			searchConvEmailStoreAction(conversationId, folderParent);
 		}
-	}, [shouldFetchConversation, conversationId]);
+	}, [shouldFetchConversation, conversationId, folderParent]);
 
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
@@ -116,16 +114,20 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[navigate, folderParent, conversation.id]
 	);
 
+	const markConvAsReadHandler = useMarkAsReadOnClick({
+		isRead: conversation.read,
+		action: markAsRead,
+		conditions: [!shouldFetchConversation()]
+	});
+
 	const _onClick = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			if (!e.isDefaultPrevented()) {
-				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					markAsRead.canExecute() && markAsRead.execute();
-				}
+				markConvAsReadHandler();
 				debouncedPushHistory();
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
+		[markConvAsReadHandler, debouncedPushHistory]
 	);
 
 	const _onDoubleClick = useCallback(

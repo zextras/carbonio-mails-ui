@@ -28,15 +28,27 @@ type ConversationWithStatus = {
 	conversation: NormalizedConversation;
 	conversationStatus: SearchRequestStatus;
 };
+
+type UseCompleteConversationOrFetchParams = {
+	conversationId: string;
+	folderId?: string;
+	shouldMarkAsRead?: boolean;
+};
+
 /**
- * Provides a complete conversation with its status.
- * If the conversation is not in the store, it will be fetched.
+ * Get the conversation from the store or fetch it.
+ * Ensures that conversations are fetched if their status indicates they are not yet fulfilled.
+ * Returns the conversation along with its fetch status.
  *
+ * @param conversationId
+ * @param folderId
+ * @param shouldMarkAsRead
  */
-export function useCompleteConversationOrFetch(
-	conversationId: string,
-	folderId?: string
-): ConversationWithStatus {
+export function useCompleteConversationOrFetch({
+	conversationId,
+	folderId,
+	shouldMarkAsRead = false
+}: UseCompleteConversationOrFetchParams): ConversationWithStatus {
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 
@@ -45,13 +57,13 @@ export function useCompleteConversationOrFetch(
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						searchConvEmailStoreAction(conversationId, folderId);
+						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[conversation, conversationId, conversationStatus, folderId]
+		[conversation, conversationId, conversationStatus, folderId, shouldMarkAsRead]
 	);
 	useEffect(() => {
 		requestDebouncedConversation();
@@ -71,11 +83,19 @@ type MessageWithStatus = {
 	messageStatus: SearchRequestStatus;
 };
 
+type UseCompleteMessageOrFetchParams = {
+	messageId: string;
+	shouldMarkAsRead?: boolean;
+};
+
 /**
  * Get the message from the store or fetch it.
  * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
  */
-export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
+export function useCompleteMessageOrFetch({
+	messageId,
+	shouldMarkAsRead = false
+}: UseCompleteMessageOrFetchParams): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
@@ -87,13 +107,13 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						getMessageEmailStoreAction(messageId);
+						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[message?.isComplete, messageId, messageStatus]
+		[message?.isComplete, messageId, messageStatus, shouldMarkAsRead]
 	);
 
 	useEffect(() => {
