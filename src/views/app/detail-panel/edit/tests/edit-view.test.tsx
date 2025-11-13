@@ -1730,7 +1730,7 @@ describe('Edit view', () => {
 			const mainContainer = screen.getByTestId('edit-view-editor');
 
 			const computedStyle = getComputedStyle(mainContainer);
-			expect(computedStyle.height).not.toBe('fit-content');
+			expect(computedStyle.height).toBe('100%');
 		});
 	});
 });

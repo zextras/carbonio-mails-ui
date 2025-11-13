@@ -528,6 +528,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		<Container
 			data-testid={'edit-view-editor'}
 			mainAlignment={flexStart}
+			height={'100%'}
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
