@@ -24,7 +24,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, on
 	return (
 		<Container
 			data-testid={'TextEditorContainer'}
-			height="100%"
+			height={'fit'}
 			padding={{ all: 'small' }}
 			background={'gray6'}
 			crossAlignment="flex-end"

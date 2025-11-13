@@ -56,22 +56,6 @@ describe('TextEditorContainer', () => {
 		expect(screen.getByTestId('MailEditorWrapper')).toBeInTheDocument();
 		expect(screen.getByText(`Composer with RichText for ${editor.id}`)).toBeInTheDocument();
 	});
-
-	it('should render container with height 100% to allow dynamic growth', () => {
-		const editor = generateNewMessageEditor();
-		const editors = [{ ...editor, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }];
-		setupEditorStore({ editors });
-		setUpMocks();
-
-		setupTest(
-			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
-		);
-
-		const containerElement = screen.getByTestId('TextEditorContainer');
-		expect(containerElement).toBeVisible();
-		const computedStyle = getComputedStyle(containerElement);
-		expect(computedStyle.height).toBe('100%');
-	});
 });
 
 const createMockTextEditorContainerProps = (
