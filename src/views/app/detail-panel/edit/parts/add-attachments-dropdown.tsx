@@ -30,6 +30,7 @@ import {
 	useGetPublicUrl,
 	UseGetPublicUrlRespType
 } from 'views/app/detail-panel/edit/edit-utils-hooks/use-get-public-url';
+import { useSelectFilesFromNextcloud } from 'views/app/detail-panel/edit/edit-utils-hooks/use-select-files-from-nextcloud';
 import {
 	FileNode,
 	useUploadFromFiles,
@@ -61,6 +62,9 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
 	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
 	const { createModal, closeModal } = useModal();
+
+	const [selectFilesFromNextcloud, isSelectFilesFromNextcloudAvailable] =
+		useSelectFilesFromNextcloud();
 
 	const addFilesFromLocal = useCallback(
 		async (fileList: FileList) => {
@@ -226,15 +230,35 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 					}
 				: undefined;
 
-		return compact([localFileAction, filesNodeAction, filesLinkAction]);
+		const nextcloudFilesAction: DropdownItem | undefined = isSelectFilesFromNextcloudAvailable
+			? {
+					id: 'nextcloudFiles',
+					label: t('composer.attachment.nextcloud', 'Add from Nextcloud'),
+					icon: 'CloudDownloadOutline',
+					onClick: (): void => {
+						selectFilesFromNextcloud((files) => {
+							const dataTransfer = new DataTransfer();
+
+							files.forEach((file) => dataTransfer.items.add(file));
+
+							addFilesFromLocal(dataTransfer.files);
+						});
+					}
+				}
+			: undefined;
+
+		return compact([localFileAction, filesNodeAction, filesLinkAction, nextcloudFilesAction]);
 	}, [
 		onLocalFileClick,
-		isUploadFromFiles,
-		uploadFromFilesSelectionConfig,
 		isSelectNodesAvailable,
+		isUploadFromFiles,
 		isGetLinkAvailable,
+		isSelectFilesFromNextcloudAvailable,
 		selectNodes,
-		getPublicLinkSelectionConfig
+		uploadFromFilesSelectionConfig,
+		getPublicLinkSelectionConfig,
+		selectFilesFromNextcloud,
+		addFilesFromLocal
 	]);
 
 	return (
