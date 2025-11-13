@@ -90,7 +90,7 @@ export const PlainTextEditorContainer = ({
 				data-testid="MailPlainTextEditor"
 				ref={textAreaRef}
 				defaultValue={initialValueRef.current}
-				style={{ fontFamily: defaultFontFamily }}
+				style={{ fontFamily: defaultFontFamily, outline: 'none' }}
 				onFocus={(ev): void => {
 					ev.currentTarget.setSelectionRange(0, null);
 				}}

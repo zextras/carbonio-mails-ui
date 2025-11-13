@@ -78,4 +78,21 @@ describe('PlainTextEditorContainer', () => {
 		expect(textArea).toBeInTheDocument();
 		expect(textArea).toHaveStyle({ fontFamily: 'Courier New' });
 	});
+
+	it('should have no outline on focus for better UX', () => {
+		const editor = generateNewMessageEditor();
+		const editors = [
+			{ ...editor, isRichText: false, text: { plainText: 'Test', richText: '<p>Test</p>' } }
+		];
+		setupEditorStore({ editors });
+		setUpMocks();
+
+		setupTest(<PlainTextEditorContainer editorId={editor.id} />);
+
+		const textArea = screen.getByTestId('MailPlainTextEditor') as HTMLTextAreaElement;
+		expect(textArea).toBeInTheDocument();
+
+		textArea.focus();
+		expect(textArea).toHaveStyle({ outline: 'none' });
+	});
 });
