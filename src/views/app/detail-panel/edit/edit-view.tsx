@@ -21,7 +21,13 @@ import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
+import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
+import {
+	isFileNode,
+	useUploadFromFiles,
+	UseUploadFromFilesResult
+} from './edit-utils-hooks/use-upload-from-files';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -34,6 +40,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
+import { isFulfilled } from '../../../../helpers/promises';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -282,33 +289,87 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const processDragOver = (event: React.DragEvent): void => {
-		const eventType = event.dataTransfer?.types;
-		// Only show drop zone for file attachments, not for text, contacts, or other content
-		if (eventType?.includes('contact') || !eventType?.includes('Files')) {
-			setDropZoneEnabled(false);
-			return;
-		}
+	const { addUploadedAttachment, savedStandardAttachments } = useEditorAttachments(editorId);
 
-		event.preventDefault();
-		setDropZoneEnabled(true);
-	};
+	const onUploadFromFilesComplete = useCallback(
+		(filesNodes: UseUploadFromFilesResult) => {
+			filesNodes.forEach((filesNode) => {
+				isFulfilled(filesNode) &&
+					addUploadedAttachment({
+						attachmentId: filesNode.value.attachmentId,
+						fileName: filesNode.value.fileName,
+						contentType: filesNode.value.contentType,
+						size: filesNode.value.size
+					});
+			});
+		},
+		[addUploadedAttachment]
+	);
 
-	const handleDragOver = useCallback((event: React.DragEvent) => processDragOver(event), []);
-	const handleEditorDragOver = useCallback((event: DragEvent) => {
-		const reactEvent = {
-			...event,
-			preventDefault: () => event.preventDefault(),
-			dataTransfer: event.dataTransfer
-		} as unknown as React.DragEvent<HTMLElement>;
-		processDragOver(reactEvent);
-	}, []);
+	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
+		onComplete: onUploadFromFilesComplete
+	});
+
+	const processDragOver = useCallback(
+		(event: React.DragEvent): void => {
+			const eventType = event.dataTransfer?.types;
+			// Only show drop zone for file attachments, not for text, contacts, or other content
+			if (
+				eventType?.includes('contact') ||
+				(!eventType?.includes('Files') &&
+					(!eventType?.includes('mail-attachment') || !isUploadFromFiles))
+			) {
+				setDropZoneEnabled(false);
+				return;
+			}
+
+			event.preventDefault();
+			setDropZoneEnabled(true);
+		},
+		[isUploadFromFiles]
+	);
+
+	const handleDragOver = useCallback(
+		(event: React.DragEvent) => processDragOver(event),
+		[processDragOver]
+	);
+	const handleEditorDragOver = useCallback(
+		(event: DragEvent) => {
+			const reactEvent = {
+				...event,
+				preventDefault: () => event.preventDefault(),
+				dataTransfer: event.dataTransfer
+			} as unknown as React.DragEvent<HTMLElement>;
+			processDragOver(reactEvent);
+		},
+		[processDragOver]
+	);
+
+	const { addFilesFromFiles } = useFilesAttachmentOrSmartlink({
+		editorId,
+		onUploadFiles: uploadFromFiles
+	});
 
 	// TODO complete with new attachment management
 	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
+
+			if (isUploadFromFiles && event.dataTransfer?.types.includes('mail-attachment')) {
+				try {
+					const data = event.dataTransfer.getData('mail-attachment');
+					if (data) {
+						const files = JSON.parse(data);
+						if (Array.isArray(files) && files.length > 0) {
+							addFilesFromFiles(files.filter(isFileNode));
+							return;
+						}
+					}
+				} catch (error) {
+					console.error('Failed to parse mail-attachment data:', error);
+				}
+			}
 			const fileList = event?.dataTransfer?.files;
 			if (!fileList) {
 				return;
@@ -317,7 +378,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			const files = buildArrayFromFileList(fileList);
 			addLocalFiles(files);
 		},
-		[addLocalFiles]
+		[addFilesFromFiles, addLocalFiles, isUploadFromFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {
@@ -326,8 +387,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	}, []);
 
 	const flexStart = 'flex-start';
-
-	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {

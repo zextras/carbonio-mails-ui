@@ -11,6 +11,17 @@ import { filter, map } from 'lodash';
 
 export type FileNode = { id: string; name: string; size: number; mime_type: string };
 
+export function isFileNode(obj: unknown): obj is FileNode {
+	return (
+		typeof obj === 'object' &&
+		obj !== null &&
+		typeof (obj as FileNode).id === 'string' &&
+		typeof (obj as FileNode).name === 'string' &&
+		typeof (obj as FileNode).size === 'number' &&
+		typeof (obj as FileNode).mime_type === 'string'
+	);
+}
+
 export type UploadToTargetIntegratedFunction = (arg: {
 	nodeId: string;
 	targetModule: string;
