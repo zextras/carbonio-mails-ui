@@ -15,7 +15,7 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map, some } from 'lodash';
+import { filter, map, partition, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -24,7 +24,7 @@ import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
 import {
-	isFileNode,
+	isValidFileNode,
 	useUploadFromFiles,
 	UseUploadFromFilesResult
 } from './edit-utils-hooks/use-upload-from-files';
@@ -360,9 +360,25 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				try {
 					const data = event.dataTransfer.getData('mail-attachment');
 					if (data) {
-						const files = JSON.parse(data);
-						if (Array.isArray(files) && files.length > 0) {
-							addFilesFromFiles(files.filter(isFileNode));
+						const parsedData = JSON.parse(data);
+						if (Array.isArray(parsedData) && parsedData.length > 0) {
+							const validatedFileNodes = parsedData.filter(isValidFileNode);
+							const [files, folder] = partition(
+								validatedFileNodes,
+								(fileNode) => fileNode.__typename === 'File'
+							);
+							if (folder.length > 0) {
+								createSnackbar({
+									key: `warning-on-folder-attachment`,
+									severity: 'warning',
+									label: t(
+										'message.snackbar.folderAttachmentNotSupported',
+										'Folder attachments are not supported and were not added'
+									),
+									hideButton: true
+								});
+							}
+							addFilesFromFiles(files);
 							return;
 						}
 					}
@@ -378,7 +394,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			const files = buildArrayFromFileList(fileList);
 			addLocalFiles(files);
 		},
-		[addFilesFromFiles, addLocalFiles, isUploadFromFiles]
+		[addFilesFromFiles, addLocalFiles, createSnackbar, isUploadFromFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {

@@ -9,16 +9,24 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
-export type FileNode = { id: string; name: string; size: number; mime_type: string };
+export type FileNode = {
+	id: string;
+	name: string;
+	size: number;
+	mime_type: string;
+	__typename: 'File' | 'Folder';
+};
 
-export function isFileNode(obj: unknown): obj is FileNode {
+export function isValidFileNode(obj: unknown): obj is FileNode {
 	return (
 		typeof obj === 'object' &&
 		obj !== null &&
 		typeof (obj as FileNode).id === 'string' &&
 		typeof (obj as FileNode).name === 'string' &&
-		typeof (obj as FileNode).size === 'number' &&
-		typeof (obj as FileNode).mime_type === 'string'
+		(((obj as FileNode).__typename === 'File' &&
+			typeof (obj as FileNode).size === 'number' &&
+			typeof (obj as FileNode).mime_type === 'string') ||
+			(obj as FileNode).__typename === 'Folder')
 	);
 }
 
@@ -84,7 +92,7 @@ export const useUploadFromFiles = ({
 								);
 					createSnackbar({
 						key: `calendar-moved-root`,
-						replace: true,
+						replace: false,
 						severity,
 						hideButton: true,
 						label,

@@ -21,7 +21,8 @@ const createFileNode = (name: string, size: number): FileNode => ({
 	id: `node-${name}`,
 	name,
 	size,
-	mime_type: 'application/pdf'
+	mime_type: 'application/pdf',
+	__typename: 'File'
 });
 
 describe('useFilesAttachmentOrSmartlink', () => {
@@ -410,19 +411,22 @@ describe('useFilesAttachmentOrSmartlink', () => {
 				id: 'node-1',
 				name: 'document.pdf',
 				size: 50000,
-				mime_type: 'application/pdf'
+				mime_type: 'application/pdf',
+				__typename: 'File'
 			};
 			const imageFile: FileNode = {
 				id: 'node-2',
 				name: 'photo.jpg',
 				size: 50000,
-				mime_type: 'image/jpeg'
+				mime_type: 'image/jpeg',
+				__typename: 'File'
 			};
 			const videoFile: FileNode = {
 				id: 'node-3',
 				name: 'clip.mp4',
 				size: 50000,
-				mime_type: 'video/mp4'
+				mime_type: 'video/mp4',
+				__typename: 'File'
 			};
 
 			act(() => {
