@@ -44,7 +44,8 @@ describe('Sort and filter button component', () => {
 	const SORT_OPTION = [
 		{ label: 'Date', value: 'date' },
 		{ label: 'Subject', value: 'subj' },
-		{ label: 'From', value: 'name' }
+		{ label: 'From', value: 'name' },
+		{ label: 'Size', value: 'size' }
 	];
 	const DIRECTION_OPTION = [
 		{ label: 'sorting_dropdown.descendingOrder', value: 'Asc' },
