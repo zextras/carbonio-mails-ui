@@ -15,6 +15,7 @@ import { useMsgSetSpamFn } from './actions/use-msg-set-spam';
 import { useMsgSetUnflagFn } from './actions/use-msg-set-unflag';
 import { useMsgSetUnreadFn } from './actions/use-msg-set-unread';
 import { MAILS_ROUTE } from 'constants/index';
+import { useInSearchModule } from 'ui-actions/utils';
 
 const MSG_KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
@@ -43,10 +44,14 @@ export const useKeyboardShortcutsForMsg = ({
 }: UseKeyboardShortcutsForMsgProps): ((event: KeyboardEvent) => void) => {
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
+	const isSearchContext = useInSearchModule();
 
 	const closePreviewPanel = useCallback(
-		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
-		[folderId, navigate]
+		() => 
+			isSearchContext 
+				? undefined 
+				: navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
+		[folderId, navigate, isSearchContext]
 	);
 	const markAsSpam = useMsgSetSpamFn({
 		ids: messageIds,

@@ -15,6 +15,7 @@ import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useConvSetSpamFn } from 'hooks/actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
+import { useInSearchModule } from 'ui-actions/utils';
 
 const CONV_KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
@@ -44,11 +45,16 @@ export const useKeyboardShortcutsForConv = ({
 	const isConversationMessage = useLocation().pathname.includes('message');
 	const keySequence = useRef<string>('');
 	const navigate = useNavigate();
+	const isSearchContext = useInSearchModule();
 
 	const closePreviewPanel = useCallback(
-		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
-		[folderId, navigate]
+		() => 
+			isSearchContext 
+				? undefined 
+				: navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
+		[folderId, navigate, isSearchContext]
 	);
+
 	const markConvAsSpam = useConvSetSpamFn({
 		ids: conversationIds,
 		folderId,
