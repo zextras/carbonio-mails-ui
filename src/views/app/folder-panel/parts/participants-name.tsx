@@ -7,13 +7,12 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, getFolder, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { reduce, trimStart, uniqBy } from 'lodash';
+import { useParams } from 'react-router-dom';
 
+import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
 import { participantToString } from 'commons/utils';
-import { getFolderIdParts, isSentOrItsSubfolder } from 'helpers/folders';
-import { isConversation } from 'helpers/messages';
-import { getConversationMessages } from 'store/emails/store';
 import {
 	IncompleteMessage,
 	NormalizedConversation,
@@ -40,14 +39,11 @@ export const ParticipantsName = ({
 	isSearchModule = false
 }: ParticipantsNameProps): React.JSX.Element => {
 	const account = useUserAccount();
+	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
 
-	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
-
-	const folder = getFolder(parent);
-	const folderId = getFolderIdParts(parent).id;
 	const participantsWithoutReplyTo = removeReplyToParticipants(item.participants);
 
-	const participantsString = useMemo(() => {
+	/*	const participantsString = useMemo(() => {
 		const participants = participantsWithoutReplyTo.filter((p) => {
 			if (isConversation(item)) return true;
 			if (
@@ -75,7 +71,22 @@ export const ParticipantsName = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folder, folderId, isSearchModule, item, participantsWithoutReplyTo]);
+	}, [account, folder, folderId, isSearchModule, item, participantsWithoutReplyTo]); */
+
+	const participantsString = useMemo(() => {
+		const participants = participantsWithoutReplyTo.filter((p) => {
+			if (folderId === FOLDERS.SENT || folderId === FOLDERS.DRAFTS) {
+				return p.type === ParticipantRole.TO;
+			}
+			return p.type === ParticipantRole.FROM;
+		});
+		const participantsToReduce = uniqBy(participants, (em) => em.address);
+		return reduce(
+			participantsToReduce,
+			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
+			''
+		);
+	}, [account, folderId, participantsWithoutReplyTo]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
