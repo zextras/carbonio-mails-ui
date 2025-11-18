@@ -26,7 +26,6 @@ import { getEditor } from 'store/editor/index';
 import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
 import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 
-type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };
 
 type SelectNodesFunction = ({
@@ -37,12 +36,13 @@ type SelectNodesFunction = ({
 
 const generateFilesIntegrationMocks = (
 	filesCount: number
-): { nodes: Array<FilesNode>; attachments: Record<string, string> } => {
-	const nodes = times<FilesNode>(filesCount, () => ({
+): { nodes: Array<FileNode>; attachments: Record<string, string> } => {
+	const nodes = times<FileNode>(filesCount, () => ({
 		id: faker.string.uuid(),
 		name: faker.system.fileName(),
 		size: 1_000_000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	}));
 
 	const attachments = reduce<FileNode, Record<string, string>>(

@@ -25,13 +25,15 @@ describe('SmartlinkFromFilesModal', () => {
 		id: '1',
 		name: 'file1.txt',
 		size: 5000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	};
 	const fileNode2: FileNode = {
 		id: '2',
 		name: 'file2.txt',
 		size: 5000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	};
 
 	it('renders modal with header, text, and footer buttons', () => {
