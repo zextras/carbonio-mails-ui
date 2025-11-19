@@ -21,7 +21,7 @@ import {
 	useMessagesByIds,
 	useMessagesIdsByFolder
 } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
 

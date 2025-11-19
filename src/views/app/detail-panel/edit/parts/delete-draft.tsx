@@ -39,7 +39,7 @@ export const DeleteDraftModal = ({
 
 	const moveMsgToTrash = useMsgMoveToTrashFn({
 		ids,
-		folderId: FOLDERS.DRAFTS,
+		messageFolderId: FOLDERS.DRAFTS,
 		shouldReplaceHistory: false
 	});
 	const onDeleteAction = useCallback(() => {
@@ -88,6 +88,9 @@ export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) =>
 				createModal(
 					{
 						id,
+						onClose: (): void => {
+							closeModal(id);
+						},
 						children: (
 							<DeleteDraftModal
 								ids={[draftId]}

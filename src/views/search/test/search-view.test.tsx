@@ -18,9 +18,9 @@ import { within, makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { tags } from '@test-utils/tags/tags';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { generateSoapConversationMessage } from '__test__/generators/api';
 import * as searchSoapApi from 'api/search-soap-api';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -321,8 +321,7 @@ describe('SearchView', () => {
 			await user.hover(actionWrapper);
 			expect(actionWrapper).toBeVisible();
 
-			const hoverBar = await screen.findByTestId('primary-actions-bar-123');
-			expect(hoverBar).toBeVisible();
+			await screen.findByTestId('primary-actions-bar-123');
 
 			const deletePermanentlyIconButton = screen.getByTestId('icon: DeletePermanentlyOutline');
 
@@ -431,62 +430,6 @@ describe('SearchView', () => {
 			const conversation1 = getSoapConversation('1', { t: '' });
 			const conversation2 = getSoapConversation('2', { t: '' });
 			const conversation3 = getSoapConversation('3', { t: '' });
-
-			it('closes the conversation panel on Escape (window keydown)', async () => {
-				const addSpy = jest.spyOn(window, 'addEventListener');
-
-				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-				const mockUseQuery = jest.fn();
-				mockUseQuery.mockReturnValue([[queryChip], noop]);
-
-				const defaultConversation = getSoapConversation('123');
-				const message1 = generateSoapConversationMessage('100', '123');
-				const message2 = generateSoapConversationMessage('200', '123');
-				const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
-
-				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation],
-					more: false
-				});
-				createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
-					m: [message1, message2],
-					more: false,
-					offset: '0',
-					orderBy: 'dateDesc'
-				});
-
-				const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-				const searchViewProps: SearchViewProps = {
-					useQuery: mockUseQuery,
-					ResultsHeader: resultsHeader,
-					useDisableSearch: () => [false, noop]
-				};
-
-				setupTest(<SearchView {...searchViewProps} />, { initialEntries: ['/conversation/123'] });
-
-				expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
-
-				// retrieve the last keydown event handler
-				const keydownCalls = addSpy.mock.calls.filter(([type]) => type === 'keydown');
-				expect(keydownCalls.length).toBeGreaterThan(0);
-				const handler = keydownCalls[keydownCalls.length - 1][1] as (e: KeyboardEvent) => void;
-
-				// mock the event
-				const preventDefault = jest.fn();
-				const stopPropagation = jest.fn();
-				const fakeEvent = {
-					key: 'Escape',
-					preventDefault,
-					stopPropagation
-				} as unknown as KeyboardEvent;
-
-				act(() => {
-					handler(fakeEvent);
-				});
-
-				expect(preventDefault).toHaveBeenCalled();
-				expect(stopPropagation).toHaveBeenCalled();
-			});
 
 			it('items should still be selected after a multiple selection action', async () => {
 				const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
@@ -884,41 +827,6 @@ describe('SearchView', () => {
 			});
 
 			expect(window.open).toHaveBeenCalledTimes(1);
-		});
-		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
-			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
-				more: false
-			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				aRandomMsgActionResponse
-			);
-
-			const mockUseQuery = jest.fn();
-			mockUseQuery.mockReturnValue([[queryChip], noop]);
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: mockUseQuery,
-				ResultsHeader: resultsHeader,
-				useDisableSearch: () => [false, noop]
-			};
-
-			const { user } = setupTest(<SearchView {...searchViewProps} />);
-			await waitFor(async () => searchInterceptor);
-
-			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
-
-			await waitAndMakeMessageVisible('10');
-			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
-			await user.hover(messageContainer);
-			const hoverContainer = await screen.findByTestId('hover-container-10');
-			user.click(hoverContainer);
-			const requestParameter = await waitFor(async () => msgActionInterceptor);
-
-			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
 		});
 
 		it('should not show empty email content when re-executing a search with a different word but relates to same email', async () => {

@@ -6,14 +6,15 @@
 
 import React from 'react';
 
-import styled, { keyframes } from 'styled-components';
+import { keyframes } from '@emotion/react';
+import styled from '@emotion/styled';
 
 const rotate = keyframes`
 	from {
-    transform: rotate(0deg);
+	transform: rotate(0deg);
   }
   to {
-    transform: rotate(360deg);
+	transform: rotate(360deg);
   }
 `;
 

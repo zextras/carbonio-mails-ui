@@ -6,6 +6,7 @@
 
 import '@testing-library/jest-dom';
 
+import { matchers } from '@emotion/jest';
 import failOnConsole from 'jest-fail-on-console';
 import fetchMock from 'jest-fetch-mock';
 import { noop } from 'lodash';
@@ -13,9 +14,9 @@ import { http } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
 
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
+import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
-import { handleGetConvRequest } from 'tests/mocks/network/msw/handle-get-conv';
-import { handleGetMsgRequest } from 'tests/mocks/network/msw/handle-get-msg';
 
 let server: SetupServer;
 
@@ -34,6 +35,20 @@ failOnConsole({
 type DefaultBeforeAllTestsProps = {
 	onUnhandledRequest: 'warn' | 'error';
 };
+
+// Inject custom matchers for Jest
+expect.extend(matchers);
+
+// Global test mocks
+declare global {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const BASE_PATH: string;
+}
+
+// Set up BASE_PATH mock for TinyMCE asset loading in tests
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global as any).BASE_PATH = '/test-base-path/';
 
 export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }

@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { SearchRequest, SearchResponse } from 'types/index.d';
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';

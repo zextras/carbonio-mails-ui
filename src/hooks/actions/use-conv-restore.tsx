@@ -31,6 +31,9 @@ export const useConvRestoreFn = ({
 					id: modalId,
 					maxHeight: '90vh',
 					size: 'medium',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
 					children: (
 						<MoveConversation
 							folderId={folderId}

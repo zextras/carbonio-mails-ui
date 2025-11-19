@@ -5,6 +5,10 @@
  */
 import React from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
 import { Spinner } from 'assets/spinner';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
@@ -18,7 +22,19 @@ export const ConversationMessagePreviewWrapper = ({
 	isExpanded: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
-	const { message } = useCompleteMessageOrFetch(convMessageId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId: convMessageId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
+	const navigate = useNavigate();
+
+	const { folderId } = useParams();
+
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}
 	return message ? (
 		<ConversationMessagePreview
 			key={message.id}

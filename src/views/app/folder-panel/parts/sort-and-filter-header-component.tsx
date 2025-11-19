@@ -93,9 +93,7 @@ export const SortAndFilterHeaderComponent = ({
 
 	const currentFilterLabel = useMemo(
 		() =>
-			filterType
-				? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(filterType, t)} - `
-				: '',
+			filterType ? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(filterType, t)}` : '',
 		[filterType, t]
 	);
 
@@ -107,16 +105,33 @@ export const SortAndFilterHeaderComponent = ({
 	if (!hasModifiedState) return null;
 	return (
 		<Container
-			background={'gray5'}
+			background="gray5"
 			mainAlignment="flex-center"
 			crossAlignment="flex-end"
-			height="3rem"
 			data-testid="sorting-options-container"
+			height="auto"
 		>
 			<Divider />
-			<Row padding={{ all: 'small' }}>
-				<Text size="medium" color="gray1" overflow="ellipsis">
-					{`${currentFilterLabel}${currentSortLabel}`}
+			<Row
+				padding={{ all: 'small' }}
+				width="fill"
+				mainAlignment="space-between"
+				crossAlignment="center"
+			>
+				<Text
+					size="medium"
+					color="gray1"
+					overflow="ellipsis"
+					style={{
+						flex: 1,
+						minWidth: 0
+					}}
+				>
+					<>
+						{currentSortLabel}
+						{currentSortLabel && currentFilterLabel && ' - '}
+						{currentFilterLabel}
+					</>
 				</Text>
 				<Padding right="medium" />
 				<Tooltip

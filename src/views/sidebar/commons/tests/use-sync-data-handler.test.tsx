@@ -45,9 +45,9 @@ import {
 	useMessageById
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
-import { generateConversationFromAPI, generateMessageFromAPI } from 'tests/generators/api';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 

@@ -12,7 +12,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { setupTest } from '@test-setup';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from 'views/app/detail-panel/preview/mail-preview';
 
 /**
@@ -56,7 +56,6 @@ describe('Mail preview', () => {
 			isMessageView: true
 		};
 
-		// Render the component
 		setupTest(<MailPreview {...props} />);
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId(shadowDomWrapperTestId);
 		const content = shadowRoot?.innerHTML.toString();
@@ -98,6 +97,33 @@ describe('Mail preview', () => {
 			const actionsContainer = screen.getByTestId(/MailMsgPreviewActions/);
 			const actions = within(actionsContainer).getAllByTestId(/icon:/);
 			expect(actions[0]).toHaveAttribute('data-testid', 'icon: Edit2Outline');
+		});
+
+		it('should not propagate click event when clicking on action button', async () => {
+			const message = generateMessage({
+				isDraft: true,
+				folderId: FOLDERS.DRAFTS,
+				isComplete: true,
+				body: 'Test body'
+			});
+
+			const { user } = setupTest(
+				<MailPreview
+					{...{
+						message,
+						expanded: true,
+						isAlone: false,
+						isMessageView: false
+					}}
+				/>
+			);
+
+			const textMessageRendererContainer = screen.queryByTestId('text-message-renderer-container');
+			expect(textMessageRendererContainer).toBeInTheDocument(); // expanded is true, so the preview should be open
+
+			// clicking the action should not close(toggle the visibility) the preview
+			await user.click(screen.getByTestId('icon: Edit2Outline'));
+			expect(textMessageRendererContainer).toBeVisible();
 		});
 	});
 });

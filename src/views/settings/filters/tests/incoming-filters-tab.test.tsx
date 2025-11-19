@@ -162,6 +162,60 @@ describe('Incoming Filters', () => {
 				});
 			});
 		});
+
+		it('should render message "N messages will be processed inside the selected folder" when folder is selected', async () => {
+			const MESSAGE_COUNT = 42;
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`,
+						n: MESSAGE_COUNT
+					})
+				])
+			);
+
+			const filters = [mockFilter({ name: 'Filter 1', active: true })];
+			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
+
+			const { user } = setupTest(<IncomingFiltersTab />);
+			await getIncomingFiltersInterceptor;
+			await user.click(await screen.findByText('Filter 1'));
+			await user.click(screen.getByText('Apply'));
+			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
+			makeAllItemsVisible();
+			await user.click(screen.getByText(TEST_FOLDER_NAME));
+			await user.click(screen.getByRole('button', { name: /label\.select_folder/i }));
+			expect(screen.getByText(`${MESSAGE_COUNT} messages`)).toBeVisible();
+			expect(screen.getByText(/will be processed inside the selected folder./i)).toBeVisible();
+		});
+
+		it('should render message with singular form for 1 message', async () => {
+			const MESSAGE_COUNT = 1;
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`,
+						n: MESSAGE_COUNT
+					})
+				])
+			);
+
+			const filters = [mockFilter({ name: 'Filter 1', active: true })];
+			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
+
+			const { user } = setupTest(<IncomingFiltersTab />);
+			await getIncomingFiltersInterceptor;
+			await user.click(await screen.findByText('Filter 1'));
+			await user.click(screen.getByText('Apply'));
+			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
+			makeAllItemsVisible();
+			await user.click(screen.getByText(TEST_FOLDER_NAME));
+			await user.click(screen.getByRole('button', { name: /label\.select_folder/i }));
+			expect(screen.getByText(`${MESSAGE_COUNT} message`)).toBeVisible();
+			expect(screen.getByText(/will be processed inside the selected folder./i)).toBeVisible();
+		});
 	});
 });
 

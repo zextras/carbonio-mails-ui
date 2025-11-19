@@ -5,7 +5,9 @@
  */
 import React, { useEffect, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
+	AnyColor,
 	Container,
 	ContainerProps,
 	getColor,
@@ -16,7 +18,6 @@ import {
 	useKeyboard
 } from '@zextras/carbonio-design-system';
 import { map, some } from 'lodash';
-import styled, { DefaultTheme } from 'styled-components';
 
 const StyledContainer = styled(Container)`
 	overflow-y: auto;
@@ -37,9 +38,9 @@ const StyledContainer = styled(Container)`
 `;
 
 const StyledDiv = styled.div<{
-	$background: keyof DefaultTheme['palette'];
-	$selectedBackground: keyof DefaultTheme['palette'];
-	$activeBackground: keyof DefaultTheme['palette'];
+	$background: AnyColor;
+	$selectedBackground: AnyColor;
+	$activeBackground: AnyColor;
 	$selected: boolean;
 	$active: boolean;
 }>`
@@ -80,9 +81,9 @@ interface ItemComponentProps<T extends ItemType> {
 	visible: boolean;
 	active: boolean;
 	selected: boolean;
-	background: keyof DefaultTheme['palette'];
-	selectedBackground: keyof DefaultTheme['palette'];
-	activeBackground: keyof DefaultTheme['palette'];
+	background: AnyColor;
+	selectedBackground: AnyColor;
+	activeBackground: AnyColor;
 }
 
 interface LIWrapperProps<T extends ItemType> {
@@ -90,9 +91,9 @@ interface LIWrapperProps<T extends ItemType> {
 	item: T;
 	ItemComponent: React.ComponentType<ItemComponentProps<T>>;
 	itemProps: Record<string, unknown>;
-	background: keyof DefaultTheme['palette'];
-	selectedBackground: keyof DefaultTheme['palette'];
-	activeBackground: keyof DefaultTheme['palette'];
+	background: AnyColor;
+	selectedBackground: AnyColor;
+	activeBackground: AnyColor;
 	active: boolean;
 	selecting: boolean;
 	selected: boolean;
@@ -169,11 +170,11 @@ interface ListProps<T extends ItemType> extends ContainerProps {
 	/** callback to be executed when the bottom element is rendered */
 	onListBottom?: () => void;
 	/** List background color */
-	background?: keyof DefaultTheme['palette'];
+	background?: AnyColor;
 	/** Selected list item background color */
-	selectedBackground?: keyof DefaultTheme['palette'];
+	selectedBackground?: AnyColor;
 	/** Active List item background color */
-	activeBackground?: keyof DefaultTheme['palette'];
+	activeBackground?: AnyColor;
 	/** Disable keyboard shortcuts */
 	keyboardShortcutsIsDisabled?: boolean;
 }

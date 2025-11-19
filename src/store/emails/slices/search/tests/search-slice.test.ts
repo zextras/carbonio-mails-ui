@@ -21,8 +21,8 @@ import {
 	setConversationsInEmailStore,
 	resetSearchAndPopulatedItems
 } from 'store/emails/store';
-import { generateConversation } from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 describe('emails store search slice', () => {

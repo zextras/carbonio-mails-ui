@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useNavigate, useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
@@ -35,6 +35,8 @@ export type ConversationListItemProps = {
 	folderId?: string;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	onToggleExpanded?: (conversationId: string) => void;
+	isConversationExpanded: boolean;
 };
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -51,11 +53,11 @@ export const ConversationListItem = memo(function ConversationListItem({
 	folderId,
 	setDraggedIds,
 	index,
-	onSelect
+	onSelect,
+	onToggleExpanded,
+	isConversationExpanded
 }: ConversationListItemProps): React.JSX.Element {
-	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
-	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
 
@@ -75,23 +77,28 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const conversationStatus = useConversationStatus(conversationId);
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const shouldFetchConversation = useCallback(
+		(): boolean =>
+			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+			conversationStatus !== API_REQUEST_STATUS.pending,
+		[conversationStatus]
+	);
+
+	const fetchConversationIfNeeded = useCallback(() => {
+		if (shouldFetchConversation()) {
+			searchConvEmailStoreAction(conversationId, folderParent);
+		}
+	}, [shouldFetchConversation, conversationId, folderParent]);
 
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
-			setOpen((currentlyOpen) => {
-				if (
-					!currentlyOpen &&
-					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-					conversationStatus !== API_REQUEST_STATUS.pending
-				) {
-					searchConvEmailStoreAction(conversationId);
-				}
-				return !currentlyOpen;
-			});
+			if (!isConversationExpanded) {
+				fetchConversationIfNeeded();
+			}
+			onToggleExpanded?.(conversationId);
 		},
-		[conversationId, conversationStatus]
+		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
 
 	const debouncedPushHistory = useMemo(
@@ -107,16 +114,20 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[navigate, folderParent, conversation.id]
 	);
 
+	const markConvAsReadHandler = useMarkAsReadOnClick({
+		isRead: conversation.read,
+		action: markAsRead,
+		conditions: [!shouldFetchConversation()]
+	});
+
 	const _onClick = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			if (!e.isDefaultPrevented()) {
-				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					markAsRead.canExecute() && markAsRead.execute();
-				}
+				markConvAsReadHandler();
 				debouncedPushHistory();
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
+		[markConvAsReadHandler, debouncedPushHistory]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -131,8 +142,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[debouncedPushHistory, previewOnSeparatedWindow]
 	);
 
-	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
-
 	return (
 		<Container
 			ref={ref}
@@ -145,14 +154,13 @@ export const ConversationListItem = memo(function ConversationListItem({
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
-					shouldReplaceHistory={shouldReplaceHistory}
 				>
 					<ConversationListItemCore
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
-						open={open}
+						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						index={index}
 						onSelect={onSelect}
@@ -165,16 +173,16 @@ export const ConversationListItem = memo(function ConversationListItem({
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
-						open={open}
+						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						index={index}
 						onSelect={onSelect}
 					/>
 				</Container>
 			)}
-			{open && conversation.messagesInConversation > 1 && (
+			{isConversationExpanded && conversation.messagesInConversation > 1 && (
 				<CollapseElement
-					$open={open}
+					$open={isConversationExpanded}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"

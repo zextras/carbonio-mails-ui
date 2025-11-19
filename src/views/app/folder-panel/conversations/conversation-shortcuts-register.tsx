@@ -5,6 +5,7 @@
  */
 import { useCallback, useEffect } from 'react';
 
+import { useIsFilePreviewOpen } from '../../../../hooks/use-is-file-preview-open';
 import { useKeyboardShortcutsForConv } from 'hooks/use-keyboard-shortcuts-for-conv';
 import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
@@ -21,6 +22,7 @@ export const ConversationShortcutsRegister = ({
 	conversationIds,
 	folderId
 }: ConversationShortcutsRegisterProps): null => {
+	const isFilePreviewOpen = useIsFilePreviewOpen();
 	const keyboardActions = useKeyboardShortcutsForConv({
 		conversationIds,
 		folderId
@@ -30,15 +32,18 @@ export const ConversationShortcutsRegister = ({
 		(event: KeyboardEvent): void => {
 			const isInputField = isInputContext(event.target);
 
-			// Ignore shortcuts when typing in form fields
-			// or when a modal overlay is present
-			if (isInputField || hasModalOverlay()) {
+			/*
+			 * Ignore shortcuts when typing in form fields
+			 * or when a modal overlay is present
+			 * or when file preview is open
+			 */
+			if (isInputField || hasModalOverlay() || isFilePreviewOpen) {
 				return;
 			}
 
 			keyboardActions(event);
 		},
-		[keyboardActions]
+		[isFilePreviewOpen, keyboardActions]
 	);
 
 	useEffect(() => {

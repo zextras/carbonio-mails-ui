@@ -15,12 +15,12 @@ import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { generateCompleteMessageFromAPI } from 'tests/generators/api';
+import { generateCompleteMessageFromAPI } from '__test__/generators/api';
 import {
 	generateConversation,
 	populateConversationInEmailStore
-} from 'tests/generators/generateConversation';
-import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+} from '__test__/generators/generateConversation';
+import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,

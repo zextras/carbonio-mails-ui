@@ -5,9 +5,9 @@
  */
 import React from 'react';
 
-import { Button, Container, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import styled from '@emotion/styled';
+import { Button, Container, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import type { AdvancedFilterButtonProps } from 'types/index.d';
 import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
@@ -42,6 +42,9 @@ export const AdvancedFilterButton = ({
 							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
+							onClose: (): void => {
+								closeModal(modalId);
+							},
 							children: (
 								<AdvancedFilterModal
 									query={query}

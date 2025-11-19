@@ -5,15 +5,15 @@
  */
 import React, { FC } from 'react';
 
+import styled from '@emotion/styled';
 import { Container, Icon, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 const BackDropLayout = styled(Container)`
 	width: 100%;
 	position: absolute;
 	height: 100%;
-	z-index: 2;
+	z-index: 10000;
 	top: 0;
 	left: 0;
 `;
@@ -61,58 +61,51 @@ const DropZoneAttachment: FC<DropZoneAttachmentType> = ({
 	onDropEvent,
 	onDragLeaveEvent
 }) => (
-	<>
-		<BackDropLayout
-			onDragOver={onDragOverEvent}
-			onDrop={onDropEvent}
-			onDragLeave={onDragLeaveEvent}
-			borderRadius="half"
-		>
-			<DropBackground>
-				<BackDropLayoutInnerBox>
-					<Padding all="medium">
-						<BackDropLayoutContentBox>
-							<Container mainAlignment="center">
-								<DropBoxIconGroup mainAlignment="center" orientation="horizontal">
-									<Padding right="small" left="small">
-										<Icon
-											icon="ImageOutline"
-											height="2.1875rem"
-											width="2.1875rem"
-											color="primary"
-										/>
-									</Padding>
-									<Padding right="small" left="small">
-										<Icon
-											icon="FileAddOutline"
-											height="2.1875rem"
-											width="2.1875rem"
-											color="primary"
-										/>
-									</Padding>
-									<Padding right="small" left="small">
-										<Icon icon="FilmOutline" height="2.1875rem" width="2.1875rem" color="primary" />
-									</Padding>
-								</DropBoxIconGroup>
-								<Container mainAlignment="center" height="auto">
-									<Text color="primary" weight="bold">
-										{t('composer.attachment.drag_and_drop.title', 'Drag&Drop Mode')}
-									</Text>
-									<Padding top="small" />
-									<DetailText size="medium" weight="regular" color="primary" overflow="break-word">
-										{t(
-											'composer.attachment.drag_and_drop.content',
-											'Drop here your attachments to quickly add them to this e-mail'
-										)}
-									</DetailText>
-								</Container>
+	<BackDropLayout
+		onDragOver={onDragOverEvent}
+		onDrop={onDropEvent}
+		onDragLeave={onDragLeaveEvent}
+		borderRadius="half"
+	>
+		<DropBackground>
+			<BackDropLayoutInnerBox>
+				<Padding all="medium">
+					<BackDropLayoutContentBox>
+						<Container mainAlignment="center" data-testid="drop-zone-attachment">
+							<DropBoxIconGroup mainAlignment="center" orientation="horizontal">
+								<Padding right="small" left="small">
+									<Icon icon="ImageOutline" height="2.1875rem" width="2.1875rem" color="primary" />
+								</Padding>
+								<Padding right="small" left="small">
+									<Icon
+										icon="FileAddOutline"
+										height="2.1875rem"
+										width="2.1875rem"
+										color="primary"
+									/>
+								</Padding>
+								<Padding right="small" left="small">
+									<Icon icon="FilmOutline" height="2.1875rem" width="2.1875rem" color="primary" />
+								</Padding>
+							</DropBoxIconGroup>
+							<Container mainAlignment="center" height="auto">
+								<Text color="primary" weight="bold">
+									{t('composer.attachment.drag_and_drop.title', 'Drag&Drop Mode')}
+								</Text>
+								<Padding top="small" />
+								<DetailText size="medium" weight="regular" color="primary" overflow="break-word">
+									{t(
+										'composer.attachment.drag_and_drop.content',
+										'Drop here your attachments to quickly add them to this e-mail'
+									)}
+								</DetailText>
 							</Container>
-						</BackDropLayoutContentBox>
-					</Padding>
-				</BackDropLayoutInnerBox>
-			</DropBackground>
-		</BackDropLayout>
-	</>
+						</Container>
+					</BackDropLayoutContentBox>
+				</Padding>
+			</BackDropLayoutInnerBox>
+		</DropBackground>
+	</BackDropLayout>
 );
 
 export default DropZoneAttachment;

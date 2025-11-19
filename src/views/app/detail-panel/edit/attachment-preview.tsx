@@ -5,6 +5,7 @@
  */
 import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,
@@ -15,8 +16,8 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
+import { getAttachmentsLink } from '../preview/utils';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
@@ -33,7 +34,6 @@ import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/
 import StyledWrapper from 'styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/attachment-upload-status';
-import { getAttachmentsLink } from 'views/app/detail-panel/preview/utils/index';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -100,7 +100,7 @@ type AttachmentCardProps = {
 };
 
 export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
-	const extension = getAttachmentExtension(attachment).value;
+	const extension = getAttachmentExtension(attachment.contentType, attachment.filename).value;
 
 	const attachmentExtensionContent = useMemo(() => extension, [extension]);
 

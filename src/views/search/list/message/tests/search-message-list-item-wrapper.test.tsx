@@ -9,8 +9,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import * as storeModule from 'store/emails/store';
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
 import { MailMessage } from 'types/index.d';
 import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 

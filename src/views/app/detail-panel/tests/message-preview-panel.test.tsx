@@ -6,13 +6,13 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { updateMessageStatus } from 'store/emails/store';
-import { generateMessage } from 'tests/generators/generateMessage';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 jest.mock('../../../../store/emails/hooks/hooks');
@@ -42,9 +42,11 @@ describe('MessagePreviewPanel', () => {
 		expect(screen.getByText(/Loading message, please wait.../i)).toBeVisible();
 	});
 
-	it('renders message preview when message is complete', () => {
+	it('renders message preview when message is complete', async () => {
 		const message = generateMessage();
-		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+		await act(async () => {
+			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+		});
 		mockUseCompleteMessageOrFetch.mockReturnValue({ message });
 
 		setupTest(<MessagePreviewPanel folderId="1" message={message} isMessageLoaded />);

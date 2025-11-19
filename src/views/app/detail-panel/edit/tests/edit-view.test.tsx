@@ -1,3 +1,6 @@
+/* eslint-disable testing-library/no-unnecessary-act,sonarjs/no-duplicate-string */
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -7,7 +10,7 @@
 import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
@@ -16,21 +19,7 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { addEditor } from '../../../../../store/editor';
-import type {
-	MailsEditorV2,
-	SaveDraftRequest,
-	SaveDraftResponse,
-	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from '../../../../../types';
-import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { EditView, EditViewProp } from '../edit-view';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
@@ -46,18 +35,32 @@ import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { getDefaultIdentity } from 'helpers/identities';
+import { addEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import { setupEditorStore } from 'tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
-import { generateMessage } from 'tests/generators/generateMessage';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import type {
+	MailsEditorV2,
+	SaveDraftRequest,
+	SaveDraftResponse,
+	SoapDraftMessageObj,
+	SoapEmailMessagePartObj,
+	SoapMailMessage,
+	SoapMailMessagePart
+} from 'types';
+import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -110,7 +113,7 @@ const getSoapMailBodyContent = (
 	 * present:
 	 * - a text/plain type content
 	 * - a text/html type content
-	 * The one who matches the gioven content type will be returned
+	 * The one who matches the given content type will be returned
 	 */
 	if (mp.ct === CT_MULTIPART_ALTERNATIVE) {
 		const part = find<SoapMailMessagePart | SoapEmailMessagePartObj>(mp.mp, ['ct', contentType]);
@@ -148,8 +151,8 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-jest.mock('../../../../../store/editor', () => ({
-	...jest.requireActual('../../../../../store/editor'),
+jest.mock('store/editor', () => ({
+	...jest.requireActual('store/editor'),
 	deleteEditor: jest.fn()
 }));
 
@@ -1219,6 +1222,515 @@ describe('Edit view', () => {
 					);
 				});
 			});
+		});
+	});
+
+	describe('Text Editor Drag Over functionality', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		beforeEach(() => {
+			aSuccessfullSaveDraft();
+		});
+
+		it('should enable drop zone when dragging files over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a mock file for the drag event
+			const file = new File(['test'], 'test.txt', { type: 'text/plain' });
+
+			// Use fireEvent.dragOver with proper dataTransfer mock
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Check if drop zone becomes visible (indicating it was enabled)
+			await waitFor(() => {
+				const dropZone = screen.queryByTestId('drop-zone-attachment');
+				expect(dropZone).toBeInTheDocument();
+			});
+		});
+
+		it('should disable drop zone when dragging contacts over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver with contact type
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['contact'],
+						getData: () => 'contact-data'
+					}
+				});
+			});
+
+			// Verify drop zone is not enabled/visible for contacts
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
+		it('should disable drop zone when dragging text content over text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver with text type (simulating text drag from editor)
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['text/plain', 'text/html'],
+						getData: () => 'some text content'
+					}
+				});
+			});
+
+			// Verify drop zone is not enabled/visible for text content
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
+		it('should handle drag events without dataTransfer gracefully', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Use fireEvent.dragOver without dataTransfer
+			await act(async () => {
+				expect(() => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: null
+					});
+				}).not.toThrow();
+			});
+		});
+
+		it('should prevent default behavior for file types other than contacts', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Test with various file types
+			const fileTypes = ['application/pdf', 'image/jpeg', 'text/html', 'application/zip'];
+
+			// eslint-disable-next-line no-restricted-syntax
+			for (const fileType of fileTypes) {
+				const file = new File(['test'], `test.${fileType.split('/')[1]}`, { type: fileType });
+
+				// Use fireEvent.dragOver for each file type
+				// Note: dataTransfer.types should include 'Files' when dragging files, not MIME types
+				// eslint-disable-next-line no-await-in-loop
+				await act(async () => {
+					fireEvent.dragOver(textEditor, {
+						dataTransfer: {
+							types: ['Files'],
+							files: [file]
+						}
+					});
+				});
+
+				// Check if drop zone is enabled for file types
+				// eslint-disable-next-line no-await-in-loop
+				await waitFor(() => {
+					const dropZone = screen.queryByTestId('drop-zone-attachment');
+					expect(dropZone).toBeInTheDocument();
+				});
+			}
+		});
+	});
+
+	describe('Attachment processing and upload via drag and drop', () => {
+		const createFileWithSize = (name: string, size: number, type = 'text/plain'): File => {
+			const file = new File(['content'], name, { type });
+			Object.defineProperty(file, 'size', { value: size });
+			return file;
+		};
+
+		beforeEach(() => {
+			(hooks.useUserSettings as jest.Mock).mockReturnValue({
+				attrs: {
+					zimbraMtaMaxMessageSize: '10485760' // 10MB in bytes
+				}
+			});
+
+			// Mock Files integration functions for smartlink modal
+			(hooks.useIntegratedFunction as jest.Mock).mockImplementation((id: string) => {
+				if (id === 'get-link') {
+					return [jest.fn().mockResolvedValue({ url: 'http://example.com/link' }), true];
+				}
+				return [jest.fn(), false];
+			});
+
+			(hooks.getIntegratedFunction as jest.Mock).mockImplementation(() => [jest.fn(), false]);
+
+			createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+			aSuccessfullSaveDraft();
+		});
+
+		it('should add small files directly without showing smartlink modal when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create small files (100KB each)
+			const smallFile1 = createFileWithSize('small1.txt', 100000);
+			const smallFile2 = createFileWithSize('small2.pdf', 100000, 'application/pdf');
+
+			// Simulate drag over to enable drop zone
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [smallFile1, smallFile2]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+			expect(dropZone).toBeInTheDocument();
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [smallFile1, smallFile2]
+					}
+				});
+			});
+
+			// Modal should NOT appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+
+			// Files should be added to editor
+			await waitFor(() => {
+				const updatedEditor = useEditorsStore.getState().editors[editor.id];
+				expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
+			});
+		});
+
+		it('should show smartlink modal for large single file when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a large file (20MB)
+			const largeFile = createFileWithSize('large-video.mp4', 20000000, 'video/mp4');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [largeFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [largeFile]
+					}
+				});
+			});
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should show smartlink modal when combined file size exceeds limit after drop', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create multiple files that together exceed the limit
+			// 3MB each * 3 files = 9MB, with BASE64 conversion (1.33x) = ~12MB > 10MB
+			const file1 = createFileWithSize('doc1.pdf', 3000000, 'application/pdf');
+			const file2 = createFileWithSize('doc2.pdf', 3000000, 'application/pdf');
+			const file3 = createFileWithSize('doc3.pdf', 3000000, 'application/pdf');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file1, file2, file3]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file1, file2, file3]
+					}
+				});
+			});
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle different file types correctly when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create files of various types, all small
+			const textFile = createFileWithSize('document.txt', 50000, 'text/plain');
+			const pdfFile = createFileWithSize('report.pdf', 50000, 'application/pdf');
+			const imageFile = createFileWithSize('photo.jpg', 50000, 'image/jpeg');
+			const excelFile = createFileWithSize(
+				'data.xlsx',
+				50000,
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			);
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [textFile, pdfFile, imageFile, excelFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [textFile, pdfFile, imageFile, excelFile]
+					}
+				});
+			});
+
+			// No modal should appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+		});
+
+		it('should respect BASE_64_CONVERSION_RATE in size calculation when dropped', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a file that's just under the limit without conversion
+			// but exceeds it with BASE64 conversion (1.33x)
+			// 8MB * 1.33 = 10.64MB > 10MB limit
+			const file = createFileWithSize('borderline.zip', 8000000, 'application/zip');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file]
+					}
+				});
+			});
+
+			// Modal should appear because of BASE64 conversion
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle empty file drop gracefully', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create a dummy file to trigger drop zone
+			const dummyFile = createFileWithSize('dummy.txt', 100);
+
+			// Simulate drag over to enable drop zone
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [dummyFile]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event with no files (empty FileList)
+			await act(async () => {
+				expect(() => {
+					fireEvent.drop(dropZone, {
+						dataTransfer: {
+							files: []
+						}
+					});
+				}).not.toThrow();
+			});
+
+			// No modal should appear
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+		});
+
+		it('should not show modal when combined size is just under the limit', async () => {
+			const baseEditor = generateNewMessageEditor();
+			const editor: MailsEditorV2 = {
+				...baseEditor,
+				size: 0
+			};
+
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Create files that stay just under limit with BASE64 conversion
+			// 7.5MB * 1.33 = 9.975MB < 10MB
+			const file = createFileWithSize('just-under.pdf', 7500000, 'application/pdf');
+
+			// Simulate drag over
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files'],
+						files: [file]
+					}
+				});
+			});
+
+			// Drop zone should appear
+			const dropZone = await screen.findByTestId('drop-zone-attachment');
+
+			// Simulate drop event on the drop zone
+			await act(async () => {
+				fireEvent.drop(dropZone, {
+					dataTransfer: {
+						files: [file]
+					}
+				});
+			});
+
+			// Modal should NOT appear
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+
+			// Files should be added to editor
+			await waitFor(() => {
+				const updatedEditor = useEditorsStore.getState().editors[editor.id];
+				expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
+			});
+		});
+	});
+
+	describe('Container layout', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		test('main container should render without height constraints to allow dynamic growth', async () => {
+			const editor: MailsEditorV2 = generateNewEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const mainContainer = screen.getByTestId('edit-view-editor');
+
+			const computedStyle = getComputedStyle(mainContainer);
+			expect(computedStyle.height).toBe('100%');
 		});
 	});
 });

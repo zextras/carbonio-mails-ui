@@ -10,8 +10,8 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 
 import { updateMessages } from '../../../../store/emails/store';
-import { generateCompleteMessageFromAPI } from '../../../../tests/generators/api';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
+import { generateCompleteMessageFromAPI } from '__test__/generators/api';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
 import { setupTest } from '@test-setup';

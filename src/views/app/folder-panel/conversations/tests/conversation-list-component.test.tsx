@@ -11,7 +11,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest, triggerLoadMore } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
@@ -48,6 +48,8 @@ function setUpConversationList({
 			setDraggedIds={jest.fn()}
 			index={0}
 			onSelect={jest.fn()}
+			onToggleExpanded={jest.fn()}
+			isConversationExpanded={false}
 		/>
 	));
 

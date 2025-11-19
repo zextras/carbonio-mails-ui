@@ -6,16 +6,16 @@
  */
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
-import { ThemeProvider } from '@mui/material';
-import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
+import { Button, Container, Input, Padding, ThemeProvider } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import { FOLDERS, getFolder, themeMui } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
 import { useFolders } from 'hooks/use-folders';
 import { FlatFolders } from 'views/sidebar/commons/flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from 'views/sidebar/commons/folder-accordions-custom-component';
 import { FoldersAccordion } from 'views/sidebar/commons/folders-accordion';
+import { themeMuiExtension } from 'theme/theme-mui';
 
 export type FolderSelectorProps = {
 	inputLabel?: string;
@@ -77,7 +77,12 @@ export const FolderSelector = ({
 						showTrashFolder={showTrashFolder}
 					/>
 				) : (
-					<ThemeProvider theme={themeMui}>
+					/*
+					 * The ThemeProvider here is necessary because the modals components
+					 * belong to a hierarchy branch that is not wrapped by the
+					 * ThemeProvider (the one with the extension) in the AppView
+					 */
+					<ThemeProvider extension={themeMuiExtension}>
 						<Padding vertical="medium" />
 						<FoldersAccordion
 							folders={rootFolders}

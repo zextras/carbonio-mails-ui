@@ -148,6 +148,9 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 								{
 									id: index.toString(),
 									size: 'small',
+									onClose: (): void => {
+										closeModal?.(index.toString());
+									},
 									children: (
 										<CertificateDeleteModal
 											onClose={(): void => closeModal?.(index.toString())}
@@ -211,6 +214,9 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			{
 				id,
 				size: 'medium',
+				onClose: (): void => {
+					closeModal?.(id);
+				},
 				children: (
 					<Container crossAlignment="baseline">
 						<RecipientsCertificateUploadModal

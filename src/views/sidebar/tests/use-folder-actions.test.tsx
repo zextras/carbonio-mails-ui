@@ -13,7 +13,7 @@ import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { FolderActionsProps } from 'types/sidebar/index.d';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 import { DeleteModal } from 'views/sidebar/delete-modal';
@@ -272,6 +272,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -295,6 +296,7 @@ describe('useFolderActions', () => {
 			{
 				id: expect.any(String),
 				maxHeight: '90vh',
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -317,6 +319,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true
@@ -395,6 +398,7 @@ describe('useFolderActions', () => {
 		expect(createModalSpy).toHaveBeenCalledWith(
 			{
 				id: expect.any(String),
+				onClose: expect.any(Function),
 				children: modal
 			},
 			true

@@ -3,14 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
+import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -207,7 +208,17 @@ export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
-	const html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
+	let html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
+
+	// Inline CSS styles from <head> <style> tags to preserve formatting
+	// when forwarding or replying to emails
+	if (html) {
+		try {
+			html = extractBodyWithInlinedStyles(html);
+		} catch {
+			// use original HTML if inlining fails
+		}
+	}
 
 	return { richText: html ?? text ?? '', plainText: text ?? html ?? '' };
 };

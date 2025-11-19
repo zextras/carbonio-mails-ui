@@ -6,23 +6,20 @@
 import React, { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
+import { FolderPanelRouteParams } from '../../../../types/routes';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MessageListItemProps } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
-
-type RouteParams = {
-	folderId: string;
-	itemId: string;
-};
 
 export const MessageListItem = memo(function MessageListItem({
 	message,
@@ -35,11 +32,10 @@ export const MessageListItem = memo(function MessageListItem({
 	index,
 	onSelect
 }: MessageListItemProps): React.JSX.Element {
-	const { folderId, itemId } = useParams<RouteParams>();
+	const { folderId } = useParams<FolderPanelRouteParams>();
 	const navigate = useNavigate();
 	const firstChildFolderId = folderId ?? message?.parent;
-	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const shouldReplaceHistory = useShouldReplaceHistory(message);
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
@@ -68,12 +64,17 @@ export const MessageListItem = memo(function MessageListItem({
 			),
 		[firstChildFolderId, message.id, navigate]
 	);
+
+	const markAsReadHandler = useMarkAsReadOnClick({
+		isRead: message.read,
+		action: setAsRead,
+		conditions: [message.isComplete]
+	});
+
 	const onClickCallback = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (!message.read && zimbraPrefMarkMsgRead) {
-					setAsRead.canExecute() && setAsRead.execute();
-				}
+				markAsReadHandler();
 				if (handleReplaceHistory) {
 					handleReplaceHistory();
 				} else {
@@ -81,7 +82,7 @@ export const MessageListItem = memo(function MessageListItem({
 				}
 			}
 		},
-		[message.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
+		[markAsReadHandler, handleReplaceHistory, debouncedPushHistory]
 	);
 	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {

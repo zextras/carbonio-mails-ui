@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
+import { API_REQUEST_STATUS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import {
 	useConversationById,
 	useConversationMessages,
@@ -34,6 +36,8 @@ type SearchConversationListItemProps = {
 	selected: boolean;
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	onToggleExpanded: (conversationId: string) => void;
+	isConversationExpanded: boolean;
 };
 
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
@@ -43,17 +47,16 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	activeItemId,
 	selected,
 	index,
-	onSelect
+	onSelect,
+	onToggleExpanded,
+	isConversationExpanded
 }) => {
 	const conversation = useConversationById(conversationId);
 	const { ref, hasBeenHovered } = useOnMouseHover();
-	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	const { parent } = messages[0];
 	const navigate = useNavigate();
-
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
@@ -66,16 +69,21 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		folderId: parent ?? ''
 	});
 
+	// unified mark-as-read handler (preference + unread handled inside hook)
+	const markConvAsReadHandler = useMarkAsReadOnClick({
+		isRead: conversation.read,
+		action: markAsRead,
+		conditions: [Boolean(conversation)]
+	});
+
 	const _onClick = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
-				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					markAsRead.canExecute() && markAsRead.execute();
-				}
+				markConvAsReadHandler();
 				navigate(`../conversation/${conversationId}`);
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, navigate, conversationId, markAsRead]
+		[markConvAsReadHandler, navigate, conversationId]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -88,6 +96,30 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		},
 
 		[previewOnSeparatedWindow]
+	);
+
+	const shouldFetchConversation = useCallback(
+		(): boolean =>
+			conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+			conversationStatus !== API_REQUEST_STATUS.pending,
+		[conversationStatus]
+	);
+
+	const fetchConversationIfNeeded = useCallback(() => {
+		if (shouldFetchConversation()) {
+			searchConvEmailStoreAction(conversationId);
+		}
+	}, [shouldFetchConversation, conversationId]);
+
+	const toggleCollapseElementCallback = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
+			e.preventDefault();
+			if (!isConversationExpanded) {
+				fetchConversationIfNeeded();
+			}
+			onToggleExpanded(conversationId);
+		},
+		[conversationId, onToggleExpanded, isConversationExpanded, fetchConversationIfNeeded]
 	);
 
 	return (
@@ -107,30 +139,30 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						open={open}
-						setOpen={setOpen}
-						conversationStatus={conversationStatus}
+						open={isConversationExpanded}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
 						parent={messages[0].parent}
 						index={index}
 						onSelect={onSelect}
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
-				<SearchConversationListItemCore
-					conversation={conversation}
-					selected={selected}
-					selecting={selecting}
-					open={open}
-					setOpen={setOpen}
-					conversationStatus={conversationStatus}
-					parent={messages[0].parent}
-					index={index}
-					onSelect={onSelect}
-				/>
+				<Container onClick={_onClick}>
+					<SearchConversationListItemCore
+						conversation={conversation}
+						selected={selected}
+						selecting={selecting}
+						open={isConversationExpanded}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
+						parent={messages[0].parent}
+						index={index}
+						onSelect={onSelect}
+					/>
+				</Container>
 			)}
-			{open && (
+			{isConversationExpanded && (
 				<CollapseElement
-					$open={open}
+					$open={isConversationExpanded}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"

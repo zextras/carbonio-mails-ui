@@ -10,7 +10,7 @@ import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvForwardDescriptor, useConvForwardFn } from 'hooks/actions/use-conv-forward';
-import { generateConversation } from 'tests/generators/generateConversation';
+import { generateConversation } from '__test__/generators/generateConversation';
 
 describe('useConvForward', () => {
 	describe('Descriptor', () => {

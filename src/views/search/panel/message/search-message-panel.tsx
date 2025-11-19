@@ -6,19 +6,28 @@
 import React from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
-import { API_REQUEST_STATUS } from 'constants/index';
+import { SearchPanelHeader } from '../../parts/search-panel-header';
+import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
-import { SearchPanelHeader } from 'views/search/extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
-	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 	const navigate = useNavigate();
 
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		navigate(`/${SEARCH_ROUTE}`, { replace: true });
+	}
+
 	if (!message) {
-		navigate('/search', { replace: true });
 		return <></>;
 	}
 

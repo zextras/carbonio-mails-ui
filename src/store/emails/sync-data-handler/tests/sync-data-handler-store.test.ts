@@ -7,6 +7,11 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
 	handleNotifyMessagesCreated,
@@ -17,11 +22,6 @@ import {
 	useMessageIndexSlice
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
-import {
-	generateConversation,
-	populateConversationInEmailStore
-} from 'tests/generators/generateConversation';
-import { generateMessage } from 'tests/generators/generateMessage';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
@@ -63,7 +63,9 @@ describe('handleNotifyMessagesCreated', () => {
 
 			const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
 			handleNotifyMessagesCreated([newMessage]);
-			const { result } = renderHook(() => useCompleteConversationOrFetch('123'));
+			const { result } = renderHook(() =>
+				useCompleteConversationOrFetch({ conversationId: '123' })
+			);
 			await waitFor(async () => {
 				expect(result.current.conversation.messageIds).toEqual(['2']);
 			});

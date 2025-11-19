@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,6 +12,7 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
+import type { FolderPanelRouteParams } from '../../../../types/routes';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { parseMessageSortingOptions } from 'helpers/sorting';
@@ -22,7 +23,7 @@ import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversat
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
 
 export const ConversationList = (): React.JSX.Element => {
-	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
+	const { folderId, itemId } = useParams<FolderPanelRouteParams>() as FolderPanelRouteParams;
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
@@ -30,7 +31,19 @@ export const ConversationList = (): React.JSX.Element => {
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
+
+	const toggleExpandedConversation = React.useCallback((conversationId: string) => {
+		setExpandedConversations((prev) => ({
+			...prev,
+			[conversationId]: !prev[conversationId]
+		}));
+	}, []);
+
+	useEffect(() => {
+		setExpandedConversations({});
+	}, [folderId]);
 
 	const {
 		deselectAll,
@@ -80,6 +93,7 @@ export const ConversationList = (): React.JSX.Element => {
 			map(conversationsIds, (id, index) => {
 				const active = itemId === id;
 				const isSelected = selectedItems.has(id);
+				const isConversationExpanded = expandedConversations[id];
 				return (
 					<ListItem
 						data-testid={`conversation-list-item-${id}`}
@@ -113,6 +127,8 @@ export const ConversationList = (): React.JSX.Element => {
 										folderId={folderId}
 										index={index}
 										onSelect={selectRange}
+										onToggleExpanded={toggleExpandedConversation}
+										isConversationExpanded={isConversationExpanded}
 									/>
 								</>
 							) : (
@@ -131,7 +147,9 @@ export const ConversationList = (): React.JSX.Element => {
 			keyboardShortcutsIds,
 			selectRange,
 			selectedItems,
-			selectedItemsMap
+			selectedItemsMap,
+			expandedConversations,
+			toggleExpandedConversation
 		]
 	);
 

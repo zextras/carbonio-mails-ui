@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,6 +11,7 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import type { SearchListPanelRouteParams } from '../../../../types/routes';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
@@ -29,13 +30,25 @@ export const SearchConversationList = ({
 	hasMore,
 	searchResultsStatus
 }: SearchListProps): React.JSX.Element => {
-	const { itemId } = useParams() as { itemId?: string };
+	const { itemId } = useParams<SearchListPanelRouteParams>() as SearchListPanelRouteParams;
 	const loadingMore = useRef<boolean>(false);
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
 	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
+
+	const toggleExpandedConversation = React.useCallback((conversationId: string) => {
+		setExpandedConversations((prev) => ({
+			...prev,
+			[conversationId]: !prev[conversationId]
+		}));
+	}, []);
+
+	useEffect(() => {
+		setExpandedConversations({});
+	}, [query]);
 
 	const {
 		deselectAll,
@@ -80,6 +93,7 @@ export const SearchConversationList = ({
 				const active = itemId === conversationId;
 
 				const isSelected = selectedItems.has(conversationId);
+				const isConversationExpanded = expandedConversations[conversationId];
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
 					<CustomListItem
@@ -107,6 +121,8 @@ export const SearchConversationList = ({
 										selected={isSelected}
 										index={index}
 										onSelect={selectRange}
+										onToggleExpanded={toggleExpandedConversation}
+										isConversationExpanded={isConversationExpanded}
 									/>
 								</>
 							) : (
@@ -119,7 +135,16 @@ export const SearchConversationList = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationIds, itemId, selectedItems, keyboardShortcutsIds, isSelectModeOn, selectRange]
+		[
+			conversationIds,
+			itemId,
+			selectedItems,
+			keyboardShortcutsIds,
+			isSelectModeOn,
+			selectRange,
+			expandedConversations,
+			toggleExpandedConversation
+		]
 	);
 
 	const selectedIds = useMemo(() => Array.from(selectedItems), [selectedItems]);

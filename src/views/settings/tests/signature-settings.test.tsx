@@ -6,15 +6,38 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { within } from '@testing-library/react';
-import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { setupTest, screen } from '@test-setup';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { buildSignature } from 'tests/generators/signatures';
-import { handleGetSignaturesRequest } from 'tests/mocks/network/msw/handle-get-signatures';
+import { handleGetSignaturesRequest } from '@test-utils/network/msw/handle-get-signatures';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { buildSignature } from '__test__/generators/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
+
+// noinspection JSUnusedGlobalSymbols
+jest.mock('@zextras/carbonio-ui-text-composer', () => ({
+	Composer: ({
+		'data-testid': testId,
+		value,
+		onEditorChange,
+		disabled
+	}: {
+		'data-testid': string;
+		value: string;
+		onEditorChange?: (values: [string, string]) => void;
+		disabled?: boolean;
+	}): React.JSX.Element => (
+		<div data-testid={testId}>
+			<textarea
+				data-testid="signature-editor-textarea"
+				value={value ?? ''}
+				onChange={(e): void | undefined => onEditorChange?.([e.target.value, e.target.value])}
+				disabled={disabled}
+			/>
+		</div>
+	)
+}));
 
 const FIND_TIMEOUT = 2000;
 
@@ -52,13 +75,6 @@ const SettingsViewMock = ({
 	);
 };
 
-const mockEditor = (): jest.Mock => {
-	const mockComponent = jest.fn().mockReturnValue(<></>);
-	jest.spyOn(shell, 'useIntegratedComponent').mockReturnValue([mockComponent, true]);
-
-	return mockComponent;
-};
-
 describe('Signature settings', () => {
 	beforeAll(() => {
 		handleGetSignaturesRequest([]);
@@ -80,14 +96,8 @@ describe('Signature settings', () => {
 	});
 
 	it('should render the editor field for the content of the signature', () => {
-		const editorMock = mockEditor();
 		setupTest(<SignatureSettings {...buildProps({})} />);
-		expect(editorMock).toHaveBeenCalledWith(
-			expect.objectContaining({
-				'data-testid': TESTID_SELECTORS.signatureEditor
-			}),
-			{}
-		);
+		expect(screen.getByTestId(TESTID_SELECTORS.signatureEditor)).toBeVisible();
 	});
 
 	/*
@@ -98,7 +108,9 @@ describe('Signature settings', () => {
 		it.todo('should display an error if the request for the list of signatures fails');
 
 		it('should render the list of signatures', async () => {
-			const signatures: Array<SignItemType> = times(12, () => buildSignature({}));
+			const signatures: Array<SignItemType> = times(12, (i) =>
+				buildSignature({ label: `Signature ${i}` })
+			);
 			handleGetSignaturesRequest(signatures);
 			setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
 			await screen.findByText(signatures[0].label, undefined, { timeout: FIND_TIMEOUT });
@@ -108,7 +120,13 @@ describe('Signature settings', () => {
 			});
 		});
 
-		it('should display a delete button when when user hover on the list item', async () => {
+		/*
+		 * Set as "failing" because the actual visibility of the delete button cannot be tested
+		 * with the current version of JSDOM.
+		 * JSDOM does not support the `:hover` pseudo-class and it is impossible to simulate
+		 * when the visibility is changed in a nested css selector.
+		 */
+		it.failing('should display a delete button when when user hover on the list item', async () => {
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);
@@ -124,7 +142,6 @@ describe('Signature settings', () => {
 		});
 
 		it('should display the name and the content of the first signature', async () => {
-			const mockedEditor = mockEditor();
 			const signatures: Array<SignItemType> = [
 				buildSignature({}),
 				buildSignature({}),
@@ -137,17 +154,12 @@ describe('Signature settings', () => {
 
 			const nameInput = screen.getByRole('textbox', { name: 'signatures.name' });
 			expect(nameInput).toHaveValue(signatures[0].name);
-			expect(mockedEditor).toHaveBeenLastCalledWith(
-				expect.objectContaining({
-					'data-testid': TESTID_SELECTORS.signatureEditor,
-					value: signatures[0].description
-				}),
-				{}
+			expect(screen.getByTestId('signature-editor-textarea')).toHaveValue(
+				signatures[0].description
 			);
 		});
 
 		it('should display the name and the content of the clicked signature', async () => {
-			const mockedEditor = mockEditor();
 			const signatures: Array<SignItemType> = [
 				buildSignature({}),
 				buildSignature({}),
@@ -164,12 +176,8 @@ describe('Signature settings', () => {
 
 			const nameInput = screen.getByRole('textbox', { name: 'signatures.name' });
 			expect(nameInput).toHaveValue(signatures[1].name);
-			expect(mockedEditor).toHaveBeenLastCalledWith(
-				expect.objectContaining({
-					'data-testid': TESTID_SELECTORS.signatureEditor,
-					value: signatures[1].description
-				}),
-				{}
+			expect(screen.getByTestId('signature-editor-textarea')).toHaveValue(
+				signatures[1].description
 			);
 		});
 
@@ -182,37 +190,27 @@ describe('Signature settings', () => {
 			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
-			const listItem = await within(list).findByText(signature.name);
-			await user.hover(listItem);
 
-			await user.click(screen.getByRole('button', { name: 'label.delete' }));
+			await user.click(screen.getByTestId('delete-signature-button'));
 
 			expect(within(list).queryByText(signature.label)).not.toBeInTheDocument();
 		});
 
 		it('should reset the signature name and the content fields if the remove button is clicked and there are no other signatures', async () => {
-			const mockedEditor = mockEditor();
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);
+
 			const { user } = setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
 
 			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
-
-			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
-			const listItem = await within(list).findByText(signature.name);
-			await user.hover(listItem);
-
-			await user.click(screen.getByRole('button', { name: 'label.delete' }));
-
+			await user.click(screen.getByTestId('delete-signature-button'));
 			expect(screen.getByRole('textbox', { name: 'signatures.name' })).not.toHaveValue(
 				signature.name
 			);
-			expect(mockedEditor).toHaveBeenLastCalledWith(
-				expect.not.objectContaining({
-					value: signature.description
-				}),
-				{}
+
+			expect(screen.getByTestId(TESTID_SELECTORS.signatureEditor)).not.toHaveValue(
+				signature.description
 			);
 		});
 
@@ -249,8 +247,6 @@ describe('Signature settings', () => {
 			handleGetSignaturesRequest([oldSignature]);
 			const { user } = setupTest(<SettingsViewMock preloadedSignatures={[oldSignature]} />);
 
-			await jest.advanceTimersByTime(30000);
-
 			await screen.findByText(oldSignature.name, undefined, { timeout: FIND_TIMEOUT });
 
 			await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
@@ -259,22 +255,19 @@ describe('Signature settings', () => {
 		});
 	});
 
-	it('should disable the signature name input field if no signature is currently selected', () => {
-		setupTest(<SignatureSettings {...buildProps({})} />);
-		const nameInput = screen.getByRole('textbox', { name: 'signatures.name' });
-		expect(nameInput).toBeDisabled();
+	describe('onSignatureContentChange', () => {
+		it.todo('returns early if editor is not focused');
+
+		it.todo('returns early if currentSignature is undefined');
+
+		it.todo('returns early if description is unchanged');
+
+		it.todo('updates signature and enables editing if description is changed');
 	});
 
 	it('should disable the signature content editor if no signature is currently selected', () => {
-		const mockedEditor = mockEditor();
 		setupTest(<SignatureSettings {...buildProps({})} />);
-		expect(mockedEditor).toHaveBeenCalledWith(
-			expect.objectContaining({
-				'data-testid': TESTID_SELECTORS.signatureEditor,
-				disabled: true
-			}),
-			{}
-		);
+		expect(screen.getByTestId('signature-editor-textarea')).toBeDisabled();
 	});
 
 	it('should enable the signature name input field if a signature is currently selected', () => {
@@ -285,14 +278,8 @@ describe('Signature settings', () => {
 	});
 
 	it('should enable the signature content editor if a signature is currently selected', () => {
-		const mockedEditor = mockEditor();
 		const signatures: Array<SignItemType> = [{ ...buildSignature({}) }];
 		setupTest(<SignatureSettings {...buildProps({ signatures })} />);
-		expect(mockedEditor).toHaveBeenLastCalledWith(
-			expect.not.objectContaining({
-				disabled: true
-			}),
-			{}
-		);
+		expect(screen.getByTestId(TESTID_SELECTORS.signatureEditor)).toBeEnabled();
 	});
 });

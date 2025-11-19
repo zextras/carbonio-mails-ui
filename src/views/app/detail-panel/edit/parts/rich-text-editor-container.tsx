@@ -6,12 +6,13 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Composer } from '@zextras/carbonio-ui-text-composer';
+import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -20,7 +21,7 @@ import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {
 	editor: TinyMCE;
-	files: FileList;
+	files: FileList | null | undefined;
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
@@ -29,8 +30,6 @@ export const RichTextEditorContainer = ({
 	editorId,
 	onDragOver
 }: TextEditorContainerProps): JSX.Element => {
-	const [Composer] = useIntegratedComponent('composer');
-
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 
@@ -39,7 +38,7 @@ export const RichTextEditorContainer = ({
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments } = useEditorAttachments(editorId);
+	const { addInlineAttachments, removeInlineAttachments } = useEditorAttachments(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -62,7 +61,7 @@ export const RichTextEditorContainer = ({
 	}, []);
 
 	const onComposerInit = useCallback(
-		(evt: Event, composer: Editor) => {
+		(_evt: Event, composer: Editor) => {
 			composerRef.current = composer;
 			setTextProvider({
 				setCurrentText: onExternalTextChanges,
@@ -80,6 +79,7 @@ export const RichTextEditorContainer = ({
 		const richText = composerRef.current.getContent({ format: 'html' });
 		setText({ plainText, richText }, { syncTextProvider: false });
 	}, [setText]);
+
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
@@ -104,11 +104,12 @@ export const RichTextEditorContainer = ({
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
 			addInlineAttachments(files, {
 				onSaveComplete: (inlineAttachments) => {
 					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
+						const img = `&nbsp;<img alt="Inline attachment" data-pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
 						tinymce?.activeEditor?.insertContent(img);
 					});
 				}
@@ -117,26 +118,76 @@ export const RichTextEditorContainer = ({
 		[addInlineAttachments]
 	);
 
+	function createPasteHandler(editor: Editor, editorID: string) {
+		return (event: ClipboardEvent): void => {
+			const editViewWrapper = document.querySelector(
+				'[data-testid="edit-view-editor"]'
+			)?.parentElement;
+			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
+
+			handleEditorPaste(editor, editorID, event);
+
+			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+			if (editViewWrapper) {
+				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
+			}
+		};
+	}
+
+	function createAttachmentCleanupHandler(editor: Editor, removeFn: (usedCids: string[]) => void) {
+		return (): void => {
+			const content = editor.getContent({ format: 'html' });
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(content, 'text/html');
+			const usedCids = [
+				...Array.from(doc.querySelectorAll('img[pnsrc]')).map((img) => img.getAttribute('pnsrc')),
+				...Array.from(doc.querySelectorAll('img[src^="cid:"]')).map((img) =>
+					img.getAttribute('src')
+				)
+			].filter((cid): cid is string => Boolean(cid));
+
+			removeFn(usedCids);
+		};
+	}
+
+	function setupResizeObserver(editor: Editor): MutationObserver {
+		const mutationObserver = new MutationObserver(() => {
+			editor.dispatch('ResizeWindow');
+		});
+
+		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+		if (boardElement) {
+			mutationObserver.observe(boardElement, {
+				attributes: true,
+				attributeFilter: ['style']
+			});
+		}
+
+		return mutationObserver;
+	}
+
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
 		const fontFamilyOptions = getFonts();
 
-		const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
-		const fontsOptionsToString = fontFamilyOptions.map(
-			(font: { label: string; value: string }) => `${font.label}=${font.value};`
-		);
+		const fontSizesOptionsToString = fontSizesOptions.join(' ');
+		const fontsOptionsToString = fontFamilyOptions
+			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
+			.join('');
+
 		return {
+			base_url: `${BASE_PATH}`,
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
 			content_style: `
-            p { margin: 0; }
-            body *:not(.signature-div):not(.signature-div *) {
-            color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
-            font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
-            font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
-            }`,
+			p { margin: 0; }
+			body *:not(.signature-div):not(.signature-div *) {
+				color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
+				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
+				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
+			}`,
 			plugins: [
 				'advlist',
 				'autolink',
@@ -161,47 +212,49 @@ export const RichTextEditorContainer = ({
 				'emoticons'
 			],
 			toolbar: [
-				'fontfamily fontsize styles visualblocks',
-				'bold italic underline strikethrough',
-				'removeformat code',
-				'alignleft aligncenter alignright alignjustify',
+				// Fonts
+				'fontfamily fontsize styles',
+				// Font Style controls
 				'forecolor backcolor',
-				'bullist numlist outdent indent',
-				'ltr rtl',
-				'link table',
-				'insertfile image',
-				'imageSelector',
-				'emoticons'
+				// Text formatting
+				'bold italic underline strikethrough removeformat',
+				// Alignment and direction
+				'alignleft aligncenter alignright alignjustify outdent indent ltr rtl',
+				// Lists and indentation
+				'bullist numlist',
+				// Insert elements
+				'link table insertfile image imageSelector emoticons',
+				// View and blocks
+				'visualblocks code'
 			].join(' | '),
 
 			paste_data_images: false,
 			init_instance_callback: (editor: Editor): (() => void) => {
 				if (!editor) return noop;
-				editor.on('paste', (event) => {
-					const editViewWrapper = document.querySelector(
-						'[data-testid="edit-view-editor"]'
-					)?.parentElement;
-					const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
-					event.preventDefault();
-					handleEditorPaste(editor, editorId, event);
-					// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-					if (editViewWrapper) editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
-				});
 
+				// Call the init handler
+				onComposerInit({} as Event, editor);
+
+				const handlePaste = createPasteHandler(editor, editorId);
+				const handleAttachmentCleanup = createAttachmentCleanupHandler(
+					editor,
+					removeInlineAttachments
+				);
+
+				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
+				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
+				editor.on('Change', debounce(handleAttachmentCleanup, 300));
 
-				const mutationObserver = new MutationObserver(() => {
-					editor.dispatch('ResizeWindow');
-				});
-				const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-				if (boardElement) {
-					mutationObserver.observe(boardElement, {
-						attributes: true,
-						attributeFilter: ['style']
+				// Handle drag over events
+				if (onDragOver) {
+					editor.on('dragover', (event: DragEvent) => {
+						onDragOver(event);
 					});
 				}
 
+				const mutationObserver = setupResizeObserver(editor);
 				return () => {
 					mutationObserver.disconnect();
 				};
@@ -210,10 +263,13 @@ export const RichTextEditorContainer = ({
 	}, [
 		editorId,
 		onComposerClose,
+		onComposerInit,
+		onDragOver,
 		onTextChange,
 		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
 		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize
+		prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		removeInlineAttachments
 	]);
 
 	return (
@@ -226,10 +282,13 @@ export const RichTextEditorContainer = ({
 				<Composer
 					initialValue={initialValue.current}
 					onFileSelect={onInlineAttachmentsSelected}
-					onDragOver={onDragOver}
 					customInitOptions={composerCustomOptions}
-					onInit={onComposerInit}
-					onDirty={onTextChange}
+					accountSettingsPrefs={{
+						zimbraPrefLocale: prefs?.zimbraPrefLocale,
+						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+					}}
 				/>
 			</StyledComp.EditorWrapper>
 		</Container>

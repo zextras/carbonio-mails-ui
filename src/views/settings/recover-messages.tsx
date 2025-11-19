@@ -106,6 +106,9 @@ export const RecoverMessages = (): React.JSX.Element => {
 		createModal(
 			{
 				id: modalId,
+				onClose: (): void => {
+					closeModal(modalId);
+				},
 				children: (
 					<RecoverMessagesModal
 						onClose={(): void => closeModal(modalId)}

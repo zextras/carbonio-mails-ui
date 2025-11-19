@@ -5,6 +5,7 @@
  */
 import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	getColor,
@@ -20,18 +21,22 @@ import {
 import {
 	ErrorSoapBodyResponse,
 	getIntegratedFunction,
-	soapFetch,
 	useAppContext,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from './utils';
 import { AppContext } from 'app-utils/app-context-initializer';
-import { getFileExtension } from 'commons/utilities';
-import { useAttachmentIconColor } from 'helpers/attachments';
+import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
@@ -53,12 +58,6 @@ import {
 	isDocument,
 	previewType
 } from 'views/app/detail-panel/preview/file-preview';
-import {
-	getAttachmentIconColors,
-	getAttachmentsDownloadLink,
-	getAttachmentsLink,
-	getLocationOrigin
-} from 'views/app/detail-panel/preview/utils/index';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -130,7 +129,7 @@ const Attachment = ({
 }: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
-	const extension = getFileExtension(att).value;
+	const extension = getAttachmentExtension(att.contentType, att.filename).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
 
@@ -172,6 +171,9 @@ const Attachment = ({
 			{
 				id,
 				maxHeight: '90vh',
+				onClose: (): void => {
+					closeModal(id);
+				},
 				children: (
 					<DeleteAttachmentModal
 						onClose={(): void => closeModal(id)}
@@ -186,12 +188,15 @@ const Attachment = ({
 
 	const confirmAction = useCallback(
 		(nodes: { id: string }[]) => {
-			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
-				_jsns: 'urn:zimbraMail',
-				mid: messageId,
-				part: att.name,
-				destinationFolderId: nodes[0].id
-			})
+			legacySoapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>(
+				'CopyToFiles',
+				{
+					_jsns: 'urn:zimbraMail',
+					mid: messageId,
+					part: att.name,
+					destinationFolderId: nodes[0].id
+				}
+			)
 				.then((res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
@@ -248,8 +253,8 @@ const Attachment = ({
 			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 			allowFiles: false,
 			allowFolders: true,
+			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
-			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
 		[confirmAction, isAValidDestination, t]
@@ -472,7 +477,7 @@ const copyToFiles = (
 	messageId: string,
 	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>
-	soapFetch('CopyToFiles', {
+	legacySoapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: messageId,
 		part: att.name,
@@ -570,8 +575,8 @@ const AttachmentsBlock = ({
 			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 			allowFiles: false,
 			allowFolders: true,
+			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
-			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
 		[confirmAction, isAValidDestination, t]

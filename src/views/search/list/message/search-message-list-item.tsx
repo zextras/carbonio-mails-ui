@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
+import React, { FC, memo, MouseEventHandler, useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
+import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { EditViewActions } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
@@ -37,12 +38,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
-	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 	const navigate = useNavigate();
 
-	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
-
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const shouldReplaceHistory = useShouldReplaceHistory(completeMessage);
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
@@ -56,17 +54,21 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		folderId
 	});
 
+	const markAsReadHandler = useMarkAsReadOnClick({
+		isRead: completeMessage.read,
+		action: setAsRead,
+		conditions: [completeMessage.isComplete ?? true]
+	});
+
 	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
-				setAsRead.canExecute() && setAsRead.execute();
-			}
+			markAsReadHandler();
 			navigate(`../message/${completeMessage.id}`, { replace: true });
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, navigate, setAsRead]
+		[completeMessage.id, markAsReadHandler, navigate]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {
@@ -110,14 +112,20 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					/>
 				</MessageListItemActionWrapper>
 			) : (
-				<SearchMessageListItemCore
-					completeMessage={completeMessage}
-					selected={selected}
-					selecting={selecting}
-					onSelect={onSelect}
-					index={index}
-					folderId={folderId}
-				/>
+				<Container
+					onClick={onClick}
+					onDoubleClick={onDoubleClick}
+					data-testid={`MessageListItemWithoutActions-${completeMessage.id}`}
+				>
+					<SearchMessageListItemCore
+						completeMessage={completeMessage}
+						selected={selected}
+						selecting={selecting}
+						onSelect={onSelect}
+						index={index}
+						folderId={folderId}
+					/>
+				</Container>
 			)}
 		</Container>
 	);

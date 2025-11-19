@@ -6,8 +6,8 @@
 import React from 'react';
 
 import { setupTest, screen } from '@test-setup';
+import { mockLayoutStorage } from '__test__/layouts-utils';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
-import { mockLayoutStorage } from 'tests/layouts-utils';
 import { LayoutSelector } from 'views/layout-selector';
 
 const MockedView = ({ id = '0' }: { id?: string }): React.JSX.Element => (
@@ -140,7 +140,7 @@ describe('LayoutSelector', () => {
 		);
 		const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveStyle({ minWidth: '22.5rem' });
+		expect(component).toHaveStyle({ minWidth: '27.5rem' });
 	});
 
 	test('The inner container has a minHeight set', async () => {

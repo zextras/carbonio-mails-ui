@@ -5,6 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	IconCheckbox,
@@ -15,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { SortAndFilterButtonComponent } from './sort-and-filter-button-component';
 import { SortAndFilterHeaderComponent } from './sort-and-filter-header-component';

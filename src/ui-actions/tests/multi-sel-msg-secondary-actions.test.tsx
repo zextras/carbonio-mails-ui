@@ -10,9 +10,9 @@ import { screen } from '@testing-library/react';
 import { forEach, noop, reduce } from 'lodash';
 
 import { setupTest } from '@test-setup';
+import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '__test__/constants';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from 'constants/index';
-import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from 'tests/constants';
-import { generateMessage } from 'tests/generators/generateMessage';
 import type { MailMessage } from 'types/index.d';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';

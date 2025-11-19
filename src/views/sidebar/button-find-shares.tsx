@@ -32,6 +32,9 @@ export const ButtonFindShares = (): React.JSX.Element => {
 					createModal(
 						{
 							id,
+							onClose: (): void => {
+								closeModal(id);
+							},
 							children: <SharesModal folders={resFolders} onClose={(): void => closeModal(id)} />
 						},
 						true

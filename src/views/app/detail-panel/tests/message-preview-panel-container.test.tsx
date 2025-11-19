@@ -6,17 +6,42 @@
 
 import React from 'react';
 
+import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
+import { NavigateFunction } from 'react-router-dom';
 
+import { updateMessageStatus } from '../../../../store/emails/store';
 import { setupTest } from '@test-setup';
-import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
+
+const mockNavigateSpy = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: (): NavigateFunction => mockNavigateSpy
+}));
 
 describe('MessagePreviewPanelContainer', () => {
 	const defaultTitle = 'test title';
 
 	beforeEach(() => {
 		document.title = defaultTitle;
+	});
+
+	it('should close the tab if message has an error', async () => {
+		const mockedMessage = populateMessagesInEmailStore()[0];
+		await act(() => updateMessageStatus(mockedMessage.id, 'error'));
+
+		window.close = jest.fn();
+		jest.mocked(shell).IS_FOCUS_MODE = true;
+		const closeWindowSpy = jest.spyOn(window, 'close');
+		setupTest(<MessagePreviewPanelContainer />, {
+			initialEntries: [`/folder/${mockedMessage.parent}/message/${mockedMessage.id}`],
+			path: '/folder/:folderId/message/:messageId'
+		});
+
+		expect(closeWindowSpy).toHaveBeenCalled();
 	});
 
 	it('should not set the window title if the focus mode is disabled', () => {

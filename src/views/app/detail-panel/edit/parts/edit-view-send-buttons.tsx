@@ -32,6 +32,9 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 			{
 				id: modalId,
 				maxHeight: '90vh',
+				onClose: (): void => {
+					closeModal(modalId);
+				},
 				children: (
 					<SendLaterModal
 						onAutoSendTimeSelected={(autoSendTime): void => {

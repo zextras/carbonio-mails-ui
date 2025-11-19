@@ -9,7 +9,9 @@ export const previewContextMock = {
 	createPreview: jest.fn(),
 	initPreview: jest.fn(),
 	openPreview: jest.fn(),
-	emptyPreview: jest.fn()
+	emptyPreview: jest.fn(),
+	currentIndex: -1,
+	previews: []
 };
 
 export const PreviewsManagerContext = React.createContext(previewContextMock);

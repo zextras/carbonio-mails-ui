@@ -6,6 +6,7 @@
 
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Breadcrumbs,
 	Container,
@@ -16,7 +17,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import { useSmimePasswordStore } from 'store/certificates/store';
@@ -61,6 +61,9 @@ const CertificatesView: FC = () => {
 				{
 					id,
 					size: 'medium',
+					onClose: (): void => {
+						closeModal?.(id);
+					},
 					children: (
 						<Container crossAlignment="baseline">
 							<CertificatePasswordModal isReset={isReset} onClose={(): void => closeModal?.(id)} />
@@ -79,6 +82,9 @@ const CertificatesView: FC = () => {
 			{
 				id,
 				size: 'medium',
+				onClose: (): void => {
+					closeModal?.(id);
+				},
 				children: (
 					<Container crossAlignment="baseline">
 						<EnterPasswordModal

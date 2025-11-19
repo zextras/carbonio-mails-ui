@@ -12,8 +12,7 @@ import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
-import { API_REQUEST_STATUS } from 'constants/index';
-import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 
@@ -25,7 +24,6 @@ jest.mock('../../../../../ui-actions/tag-actions', () => ({
 	useTagExist: jest.fn()
 }));
 
-const mockToggle = jest.fn();
 const tagsArray = Object.values(tags);
 
 describe('SearchConversationListItemCore', () => {
@@ -47,8 +45,7 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				toggleCollapseElementCallback={jest.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
 				onSelect={jest.fn()}
@@ -74,8 +71,7 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				toggleCollapseElementCallback={jest.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
 				onSelect={jest.fn()}
@@ -101,8 +97,7 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				setOpen={mockSetOpen}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				toggleCollapseElementCallback={mockSetOpen}
 				parent={FOLDERS.INBOX}
 				index={0}
 				onSelect={jest.fn()}
@@ -132,8 +127,7 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				toggleCollapseElementCallback={jest.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
 				onSelect={jest.fn()}
@@ -158,8 +152,7 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				toggleCollapseElementCallback={jest.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
 				onSelect={jest.fn()}
@@ -192,8 +185,7 @@ describe('SearchConversationListItemCore', () => {
 					selected={false}
 					selecting={false}
 					open={false}
-					setOpen={jest.fn()}
-					conversationStatus={API_REQUEST_STATUS.fulfilled}
+					toggleCollapseElementCallback={jest.fn()}
 					parent={FOLDERS.INBOX}
 					index={0}
 					onSelect={jest.fn()}
@@ -222,8 +214,7 @@ describe('SearchConversationListItemCore', () => {
 					selected={false}
 					selecting={false}
 					open={false}
-					setOpen={jest.fn()}
-					conversationStatus={API_REQUEST_STATUS.fulfilled}
+					toggleCollapseElementCallback={jest.fn()}
 					parent={FOLDERS.INBOX}
 					index={0}
 					onSelect={jest.fn()}

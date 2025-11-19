@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -10,6 +11,7 @@ import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui
 import { LineType } from '../../commons/utils';
 import { MailMessage } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
 import {
 	extractBody,
@@ -18,7 +20,6 @@ import {
 	retrieveCC,
 	retrieveReplyTo
 } from 'store/editor-slice-utils';
-import { generateMessage } from 'tests/generators/generateMessage';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()

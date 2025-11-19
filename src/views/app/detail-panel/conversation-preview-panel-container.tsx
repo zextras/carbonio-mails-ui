@@ -6,11 +6,16 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import type {
+	DetailPanelConversationRouteParams,
+	DetailPanelRoutesParams
+} from '../../../types/routes';
 import { Spinner } from 'assets/spinner';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
@@ -24,11 +29,14 @@ import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const navigate = useNavigate();
-	const { conversationId, folderId } = useParams() as {
-		conversationId: string;
-		folderId: string;
-	};
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
+	const { conversationId, folderId } =
+		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
+		conversationId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
@@ -53,13 +61,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		}
 	}, [conversation?.subject]);
 
-	const showPreviewPanel = useMemo(
-		(): boolean | undefined =>
-			getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? conversation && conversation?.messageIds?.length > 0
-				: filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0,
-		[conversation, folderId, messages]
-	);
+	const showPreviewPanel = useMemo((): boolean | undefined => {
+		if (isFocusModeMailView() || getFolderIdParts(folderId).id === FOLDERS.TRASH) {
+			return conversation && conversation?.messageIds?.length > 0;
+		}
+		return filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0;
+	}, [conversation, folderId, messages]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

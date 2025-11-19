@@ -15,12 +15,19 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map, some } from 'lodash';
+import { filter, map, partition, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
+import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
+import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
+import {
+	isValidFileNode,
+	useUploadFromFiles,
+	UseUploadFromFilesResult
+} from './edit-utils-hooks/use-upload-from-files';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
@@ -33,27 +40,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import {
-	useEditorAutoSendTime,
-	useEditorDraftSave,
-	useEditorDraftSaveProcessStatus,
-	useEditorSend,
-	useEditorAttachments,
-	deleteEditor,
-	useEditorDid,
-	useEditorsStore,
-	useEditorIsSmimeSign,
-	useEditorIdentityId,
-	useEditorIsSmimeEncrypt,
-	useEditorRecipients
-} from '../../../../store/editor';
-import {
-	EditorOperationAllowedStatus,
-	EditViewClosingReasons,
-	SaveDraftResponse
-} from '../../../../types';
-import { isValidEmail } from '../../../search/parts/utils';
-import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
+import { isFulfilled } from '../../../../helpers/promises';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -67,6 +54,23 @@ import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from 'store/certificates/store';
+import {
+	useEditorAutoSendTime,
+	useEditorDraftSave,
+	useEditorDraftSaveProcessStatus,
+	useEditorSend,
+	useEditorAttachments,
+	deleteEditor,
+	useEditorDid,
+	useEditorsStore,
+	useEditorIsSmimeSign,
+	useEditorIdentityId,
+	useEditorIsSmimeEncrypt,
+	useEditorRecipients
+} from 'store/editor';
+import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
+import { isValidEmail } from 'views/search/parts/utils';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
 	editorId: string;
@@ -170,7 +174,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments } = useEditorAttachments(editorId);
+	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -285,41 +289,120 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
-		const eventType = event?.dataTransfer?.types;
-		if (eventType?.includes('contact')) {
-			setDropZoneEnabled(false);
+	const { addUploadedAttachment, savedStandardAttachments } = useEditorAttachments(editorId);
 
-			return;
-		}
-		event.preventDefault();
-		setDropZoneEnabled(true);
-	}, []);
+	const onUploadFromFilesComplete = useCallback(
+		(filesNodes: UseUploadFromFilesResult) => {
+			filesNodes.forEach((filesNode) => {
+				isFulfilled(filesNode) &&
+					addUploadedAttachment({
+						attachmentId: filesNode.value.attachmentId,
+						fileName: filesNode.value.fileName,
+						contentType: filesNode.value.contentType,
+						size: filesNode.value.size
+					});
+			});
+		},
+		[addUploadedAttachment]
+	);
+
+	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
+		onComplete: onUploadFromFilesComplete
+	});
+
+	const processDragOver = useCallback(
+		(event: React.DragEvent): void => {
+			const eventType = event.dataTransfer?.types;
+			// Only show drop zone for file attachments, not for text, contacts, or other content
+			if (
+				eventType?.includes('contact') ||
+				(!eventType?.includes('Files') &&
+					(!eventType?.includes('mail-attachment') || !isUploadFromFiles))
+			) {
+				setDropZoneEnabled(false);
+				return;
+			}
+
+			event.preventDefault();
+			setDropZoneEnabled(true);
+		},
+		[isUploadFromFiles]
+	);
+
+	const handleDragOver = useCallback(
+		(event: React.DragEvent) => processDragOver(event),
+		[processDragOver]
+	);
+	const handleEditorDragOver = useCallback(
+		(event: DragEvent) => {
+			const reactEvent = {
+				...event,
+				preventDefault: () => event.preventDefault(),
+				dataTransfer: event.dataTransfer
+			} as unknown as React.DragEvent<HTMLElement>;
+			processDragOver(reactEvent);
+		},
+		[processDragOver]
+	);
+
+	const { addFilesFromFiles } = useFilesAttachmentOrSmartlink({
+		editorId,
+		onUploadFiles: uploadFromFiles
+	});
 
 	// TODO complete with new attachment management
-	const onDropEvent = useCallback(
+	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
+
+			if (isUploadFromFiles && event.dataTransfer?.types.includes('mail-attachment')) {
+				try {
+					const data = event.dataTransfer.getData('mail-attachment');
+					if (data) {
+						const parsedData = JSON.parse(data);
+						if (Array.isArray(parsedData) && parsedData.length > 0) {
+							const validatedFileNodes = parsedData.filter(isValidFileNode);
+							const [files, folder] = partition(
+								validatedFileNodes,
+								(fileNode) => fileNode.__typename === 'File'
+							);
+							if (folder.length > 0) {
+								createSnackbar({
+									key: `warning-on-folder-attachment`,
+									severity: 'warning',
+									label: t(
+										'message.snackbar.folderAttachmentNotSupported',
+										'Folder attachments are not supported and were not added'
+									),
+									hideButton: true
+								});
+							}
+							addFilesFromFiles(files);
+							return;
+						}
+					}
+				} catch (error) {
+					console.error('Failed to parse mail-attachment data:', error);
+				}
+			}
 			const fileList = event?.dataTransfer?.files;
 			if (!fileList) {
 				return;
 			}
 
 			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files);
+			addLocalFiles(files);
 		},
-		[addStandardAttachments]
+		[addFilesFromFiles, addLocalFiles, createSnackbar, isUploadFromFiles]
 	);
 
-	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
+	const handleDragLeave = useCallback((event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
 	}, []);
 
 	const flexStart = 'flex-start';
-
-	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
@@ -399,6 +482,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						{
 							id,
 							size: 'medium',
+							onClose: (): void => {
+								closeModal?.(id);
+							},
 							children: (
 								<Container crossAlignment="baseline">
 									<EnterPasswordModal
@@ -517,17 +603,17 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		<Container
 			data-testid={'edit-view-editor'}
 			mainAlignment={flexStart}
-			height={'fit'}
+			height={'100%'}
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
-			onDragOver={onDragOverEvent}
+			onDragOver={handleDragOver}
 		>
 			{dropZoneEnabled && (
 				<DropZoneAttachment
-					onDragOverEvent={onDragOverEvent}
-					onDropEvent={onDropEvent}
-					onDragLeaveEvent={onDragLeaveEvent}
+					onDragOverEvent={handleDragOver}
+					onDropEvent={handleDrop}
+					onDragLeaveEvent={handleDragLeave}
 				/>
 			)}
 			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
@@ -592,7 +678,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
+					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>

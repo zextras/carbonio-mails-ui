@@ -5,22 +5,27 @@
  */
 import React, { useEffect } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { API_REQUEST_STATUS } from 'constants/index';
+import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { useMessageStatus } from 'store/emails/store';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
-	const { folderId, messageId } = useParams() as {
-		folderId: string;
-		messageId: string;
-	};
+	const navigate = useNavigate();
 
-	const { message } = useCompleteMessageOrFetch(messageId);
-	const messageLoadingStatus = useMessageStatus(messageId);
+	const prefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { folderId, messageId } =
+		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId,
+		shouldMarkAsRead: prefMarkMsgRead
+	});
 
 	useEffect(() => {
 		if (isFocusModeMailView() && message?.subject) {
@@ -28,11 +33,18 @@ export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 		}
 	}, [message?.subject]);
 
+	if (messageStatus === API_REQUEST_STATUS.error) {
+		if (isFocusModeMailView()) {
+			window.close();
+		}
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}
+
 	return (
 		<MessagePreviewPanel
 			message={message}
 			folderId={folderId}
-			isMessageLoaded={messageLoadingStatus === API_REQUEST_STATUS.fulfilled}
+			isMessageLoaded={messageStatus === API_REQUEST_STATUS.fulfilled}
 		/>
 	);
 };

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -9,20 +10,22 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
 import { forEach, reduce, times } from 'lodash';
+import { HttpResponse } from 'msw';
 
 import { setupTest, screen } from '@test-setup';
 import {
 	getIntegratedFunction,
-	useIntegratedFunction
+	useIntegratedFunction,
+	useUserSettings
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/index';
-import { TESTID_SELECTORS } from 'tests/constants';
-import { setupEditorStore } from 'tests/generators/editor-store';
 import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
 import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 
-type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };
 
 type SelectNodesFunction = ({
@@ -33,12 +36,13 @@ type SelectNodesFunction = ({
 
 const generateFilesIntegrationMocks = (
 	filesCount: number
-): { nodes: Array<FilesNode>; attachments: Record<string, string> } => {
-	const nodes = times<FilesNode>(filesCount, () => ({
+): { nodes: Array<FileNode>; attachments: Record<string, string> } => {
+	const nodes = times<FileNode>(filesCount, () => ({
 		id: faker.string.uuid(),
 		name: faker.system.fileName(),
 		size: 1_000_000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	}));
 
 	const attachments = reduce<FileNode, Record<string, string>>(
@@ -228,6 +232,199 @@ describe('AddAttachmentsDropdown', () => {
 
 				await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
 			});
+		});
+	});
+
+	describe('Attachment processing and upload', () => {
+		const createFileWithSize = (name: string, size: number, type = 'text/plain'): File => {
+			const file = new File(['content'], name, { type });
+			Object.defineProperty(file, 'size', { value: size });
+			return file;
+		};
+
+		beforeEach(() => {
+			(useUserSettings as jest.Mock).mockReturnValue({
+				attrs: {
+					zimbraMtaMaxMessageSize: '10485760' // 10MB in bytes
+				}
+			});
+
+			createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
+		});
+
+		it('should add small files directly without showing smartlink modal', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			// Create small files (100KB each)
+			const smallFile1 = createFileWithSize('small1.txt', 100000);
+			const smallFile2 = createFileWithSize('small2.pdf', 100000, 'application/pdf');
+
+			const fileList = {
+				0: smallFile1,
+				1: smallFile2,
+				length: 2,
+				item: (index: number): File | null => [smallFile1, smallFile2][index] || null
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: fileList });
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.change(fileInput);
+
+			// Modal should NOT appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+
+			// Files should be added to editor
+			const updatedEditor = getEditor({ id: editor.id });
+			expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
+		});
+
+		it('should show smartlink modal for large single file', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			// Create a large file (20MB)
+			const largeFile = createFileWithSize('large-video.mp4', 20000000, 'video/mp4');
+
+			const fileList = {
+				0: largeFile,
+				length: 1,
+				item: (): File => largeFile
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: fileList });
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.change(fileInput);
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should show smartlink modal when combined file size exceeds limit', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			// Create multiple files that together exceed the limit
+			// 3MB each * 3 files = 9MB, with BASE64 conversion (1.33x) = ~12MB > 10MB
+			const file1 = createFileWithSize('doc1.pdf', 3000000, 'application/pdf');
+			const file2 = createFileWithSize('doc2.pdf', 3000000, 'application/pdf');
+			const file3 = createFileWithSize('doc3.pdf', 3000000, 'application/pdf');
+
+			const fileList = {
+				0: file1,
+				1: file2,
+				2: file3,
+				length: 3,
+				item: (index: number): File | null => [file1, file2, file3][index] || null
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: fileList });
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.change(fileInput);
+
+			// Modal should appear
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle different file types correctly', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			// Create files of various types, all small
+			const textFile = createFileWithSize('document.txt', 50000, 'text/plain');
+			const pdfFile = createFileWithSize('report.pdf', 50000, 'application/pdf');
+			const imageFile = createFileWithSize('photo.jpg', 50000, 'image/jpeg');
+			const excelFile = createFileWithSize(
+				'data.xlsx',
+				50000,
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			);
+
+			const fileList = {
+				0: textFile,
+				1: pdfFile,
+				2: imageFile,
+				3: excelFile,
+				length: 4,
+				item: (index: number): File | null =>
+					[textFile, pdfFile, imageFile, excelFile][index] || null
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: fileList });
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.change(fileInput);
+
+			// No modal should appear for small files
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
+		});
+
+		it('should respect BASE_64_CONVERSION_RATE in size calculation', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			// Create a file that's just under the limit without conversion
+			// but exceeds it with BASE64 conversion (1.33x)
+			// 8MB * 1.33 = 10.64MB > 10MB limit
+			const file = createFileWithSize('borderline.zip', 8000000, 'application/zip');
+
+			const fileList = {
+				0: file,
+				length: 1,
+				item: (): File => file
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: fileList });
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.change(fileInput);
+
+			// Modal should appear because of BASE64 conversion
+			await screen.findByTestId('convert-to-smartlink-modal');
+		});
+
+		it('should handle empty file selection gracefully', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const fileInput = screen.getByTestId('file-input');
+
+			const emptyFileList = {
+				length: 0,
+				item: (): File | null => null
+			};
+
+			Object.defineProperty(fileInput, 'files', { value: emptyFileList });
+
+			expect(() => {
+				// eslint-disable-next-line testing-library/prefer-user-event
+				fireEvent.change(fileInput);
+			}).not.toThrow();
+
+			// No modal should appear
+			const modal = screen.queryByTestId('convert-to-smartlink-modal');
+			expect(modal).not.toBeInTheDocument();
 		});
 	});
 });

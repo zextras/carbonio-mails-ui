@@ -5,6 +5,7 @@
  */
 import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Container,
 	FormSubSection,
@@ -17,9 +18,9 @@ import {
 	FormSection,
 	Input
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
+import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { reject, concat, map } from 'lodash';
-import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
@@ -69,7 +70,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	setSignatures
 }): ReactElement => {
 	const [currentSignature, setCurrentSignature] = useState<SignItemType | undefined>(undefined);
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const editorRef = useRef<{ editor: EditorType | undefined }>({
@@ -172,6 +172,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Text weight="bold">{item.label}</Text>
 						</Tooltip>
 						<DeleteButton
+							data-testid={'delete-signature-button'}
 							label={t('label.delete', 'Delete')}
 							type="outlined"
 							color="error"
@@ -226,7 +227,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const onSignatureContentChange = useCallback(
-		(ev: [string, string]): void => {
+		(values: [string, string]): void => {
 			if (!getEditor()?.hasFocus()) {
 				return;
 			}
@@ -235,8 +236,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				return;
 			}
 
-			// Rich text signature
-			const newDescription = ev[1];
+			// Rich text signature - values[1] contains the HTML content
+			const newDescription = values[1];
 
 			if (currentSignature?.description === newDescription) {
 				return;
@@ -277,6 +278,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const composerCustomOptions = {
+		base_url: `${BASE_PATH}`,
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
 		auto_focus: false,
@@ -320,17 +322,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								backgroundColor="gray5"
 								onChange={onSignatureNameChange}
 							/>
-							{composerIsAvailable && (
-								<EditorWrapper>
-									<Composer
-										data-testid={'signature-editor'}
-										value={currentSignature?.description ?? ''}
-										customInitOptions={composerCustomOptions}
-										disabled={editingDisabled}
-										onEditorChange={onSignatureContentChange}
-									/>
-								</EditorWrapper>
-							)}
+							<EditorWrapper>
+								<Composer
+									data-testid={'signature-editor'}
+									value={currentSignature?.description ?? ''}
+									customInitOptions={composerCustomOptions}
+									onEditorChange={onSignatureContentChange}
+									disabled={editingDisabled}
+								/>
+							</EditorWrapper>
 						</Container>
 					</Container>
 				</FormSubSection>
