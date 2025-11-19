@@ -85,12 +85,12 @@ export const PlainTextEditorContainer = ({
 	}, [setText, setTextProvider, textProviderValue]);
 
 	return (
-		<Container background={'gray6'} height="fit">
+		<Container data-testid={'PlainTextEditorContainer'} background={'gray6'} height="100%">
 			<StyledComp.TextArea
 				data-testid="MailPlainTextEditor"
 				ref={textAreaRef}
 				defaultValue={initialValueRef.current}
-				style={{ fontFamily: defaultFontFamily }}
+				style={{ fontFamily: defaultFontFamily, outline: 'none' }}
 				onFocus={(ev): void => {
 					ev.currentTarget.setSelectionRange(0, null);
 				}}

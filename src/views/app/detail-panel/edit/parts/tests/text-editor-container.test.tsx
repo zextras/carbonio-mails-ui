@@ -10,8 +10,8 @@ import { screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/index.d';
 import {
 	TextEditorContainer,
@@ -55,6 +55,45 @@ describe('TextEditorContainer', () => {
 
 		expect(screen.getByTestId('MailEditorWrapper')).toBeInTheDocument();
 		expect(screen.getByText(`Composer with RichText for ${editor.id}`)).toBeInTheDocument();
+	});
+
+	it('should set container height to "fit" when in rich text mode', () => {
+		const editor = generateNewMessageEditor();
+		const editors: Array<MailsEditorV2> = [
+			{ ...editor, isRichText: true, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }
+		];
+		setupEditorStore({ editors });
+		setUpMocks();
+
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
+
+		const containerElement = screen.getByTestId('TextEditorContainer');
+		expect(containerElement).toBeInTheDocument();
+
+		expect(containerElement).toHaveStyle({ height: 'fit' });
+	});
+
+	it('should set container height to "100%" when in plain text mode', () => {
+		const editor = generateNewMessageEditor();
+		const editors = [
+			{
+				...editor,
+				isRichText: false,
+				text: { plainText: 'PlainText', richText: '<p>RichText</p>' }
+			}
+		];
+		setupEditorStore({ editors });
+		setUpMocks();
+
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
+
+		const containerElement = screen.getByTestId('TextEditorContainer');
+		expect(containerElement).toBeInTheDocument();
+		expect(containerElement).toHaveStyle({ height: '100%' });
 	});
 });
 
