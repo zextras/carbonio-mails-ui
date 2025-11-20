@@ -125,12 +125,25 @@ export const RichTextEditorContainer = ({
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
+
 			addInlineAttachments(files, {
 				onSaveComplete: (inlineAttachments) => {
-					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img alt="Inline attachment" data-pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
+					const insertPromises = inlineAttachments.map(async (inlineAttachment) => {
+						const url = inlineAttachment.downloadServiceUrl;
+						if (!url) return;
+						// get the updated image in ordeer to avoid TinyMCE caching issues
+						const blob = await fetch(url).then((r) => r.blob());
+						const objectUrl = URL.createObjectURL(blob);
+
+						const img = `&nbsp;<img alt="Inline attachment"
+                            data-pnsrc="${inlineAttachment.cidUrl}"
+                            data-mce-src="${inlineAttachment.cidUrl}"
+                            src="${objectUrl}" /><br/>`;
+
 						tinymce?.activeEditor?.insertContent(img);
 					});
+
+					Promise.all(insertPromises).catch(console.error);
 				}
 			});
 		},
