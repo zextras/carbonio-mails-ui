@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
-import { debounce, noop } from 'lodash';
+import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { buildArrayFromFileList } from 'helpers/files';

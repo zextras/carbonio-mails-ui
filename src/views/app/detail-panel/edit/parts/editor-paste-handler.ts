@@ -107,8 +107,7 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 		const blob = await fetch(uploadImageResult.downloadServiceUrl).then((r) => r.blob());
 		const objectUrl = URL.createObjectURL(blob);
 		editor.insertContent(
-			`<img id="img-${uuid()}" alt="${uploadImageResult.fileName}" src="${objectUrl}"
-    data-mce-src="${uploadImageResult.cidUrl}"/>`
+			`<img alt="${uploadImageResult.fileName}" src="${objectUrl}" data-mce-src="${uploadImageResult.cidUrl}"/>`
 		);
 	}
 
