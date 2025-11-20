@@ -89,6 +89,7 @@ describe('RichTextEditorContainer', () => {
 	});
 
 	test('cleans up inline attachments that are no longer in content', async () => {
+		jest.useFakeTimers();
 		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
 		await screen.findByTestId('mock-composer');
 
@@ -98,13 +99,11 @@ describe('RichTextEditorContainer', () => {
 				'<img src="https://test.test/image.png" /></p>'
 		);
 
-		editorInstance?.dispatch('Change');
+		editorInstance?.dispatch('input');
+		// fast-forward debounce timer
+		jest.runAllTimers();
 
-		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith([
-			'cid:first',
-			'cid:first',
-			'cid:second'
-		]);
+		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith(['cid:first', 'cid:second']);
 	});
 
 	test('handles paste event and restores scroll position', async () => {
