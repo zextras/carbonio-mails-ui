@@ -372,9 +372,6 @@ const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNulla
 	if (isNil(m?.f)) {
 		return {};
 	}
-	if (m.f === '') {
-		return { read: true };
-	}
 	const flags = m.f;
 	return {
 		read: !/u/.test(flags),
