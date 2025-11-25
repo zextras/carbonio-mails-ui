@@ -5,6 +5,7 @@
  */
 
 import '@testing-library/jest-dom';
+import { matchers } from '@emotion/jest';
 import { noop } from 'lodash';
 import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
@@ -29,6 +30,8 @@ declare global {
 // Set up BASE_PATH mock for TinyMCE asset loading in tests
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).BASE_PATH = '/test-base-path/';
+
+expect.extend({ toHaveStyleRule: matchers.toHaveStyleRule });
 
 export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' } = { onUnhandledRequest: 'warn' }
