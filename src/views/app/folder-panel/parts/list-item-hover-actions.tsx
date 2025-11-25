@@ -21,14 +21,7 @@ const ListItemHoverAction = ({ action }: { action: UIActionDescriptor }): ReactE
 	);
 	return (
 		<Tooltip label={action.label}>
-			<Button
-				key={action.id}
-				icon={action.icon}
-				onClick={onClick}
-				size="small"
-				type="ghost"
-				color="text"
-			/>
+			<Button key={action.id} icon={action.icon} onClick={onClick} type="ghost" color="text" />
 		</Tooltip>
 	);
 };
