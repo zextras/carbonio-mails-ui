@@ -27,8 +27,8 @@ import { FolderState, MsgActionRequest, MsgActionResponse } from 'types/index.d'
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 

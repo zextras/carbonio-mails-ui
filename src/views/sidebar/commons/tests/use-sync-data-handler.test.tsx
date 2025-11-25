@@ -58,8 +58,8 @@ const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	getTags: vi.fn(),
 	folderWorker: {
 		postMessage: vi.fn()

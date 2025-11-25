@@ -24,8 +24,8 @@ vi.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
 	copyEmailToClipboard: vi.fn()
 }));
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'), // This line preserves other exports from the module
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')), // This line preserves other exports from the module
 	useSnackbar: vi.fn()
 }));
 

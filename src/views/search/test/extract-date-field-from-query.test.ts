@@ -11,8 +11,8 @@ import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-
 import { Query } from 'views/search/types/types';
 
 // Mock the getUserLocale function
-vi.mock('commons/utils', () => ({
-	...vi.importActual('commons/utils'),
+vi.mock('commons/utils', async () => ({
+	...(await vi.importActual('commons/utils')),
 	getUserLocale: vi.fn()
 }));
 

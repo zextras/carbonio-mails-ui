@@ -20,13 +20,13 @@ import { ConversationList } from 'views/app/folder-panel/conversations/conversat
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	folderWorker: {
 		postMessage: vi.fn()
 	},

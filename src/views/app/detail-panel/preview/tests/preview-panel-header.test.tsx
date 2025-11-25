@@ -23,8 +23,8 @@ import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel
 
 const mockNavigate = vi.fn();
 
-vi.mock('react-router-dom', () => {
-	const actual = vi.importActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+	const actual = await vi.importActual('react-router-dom');
 	return {
 		...actual,
 		useNavigate: (): Mock => mockNavigate

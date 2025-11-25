@@ -18,13 +18,13 @@ import { Filter, type Folder } from 'types/index.d';
 import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	useRootsArray: vi.fn()
 }));
 

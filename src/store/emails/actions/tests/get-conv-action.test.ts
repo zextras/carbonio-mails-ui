@@ -5,13 +5,13 @@
  */
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { updateConversations, updateMessages } from 'store/emails/store';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { GetConvResponse } from 'types/soap/get-conv';
 
-vi.mock('../../store', () => ({
-	...vi.importActual('../../store'),
+vi.mock('../../store', async () => ({
+	...(await vi.importActual('../../store')),
 	updateMessages: vi.fn(),
 	updateConversations: vi.fn()
 }));

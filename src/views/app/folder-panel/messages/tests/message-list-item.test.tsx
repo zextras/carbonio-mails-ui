@@ -19,14 +19,14 @@ import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-
 import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 
 const canExecuteCallback = vi.fn();
-vi.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
-	...vi.importActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
+vi.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', async () => ({
+	...(await vi.importActual('../../../../../hooks/actions/use-msg-preview-on-separated-window')),
 	useMsgPreviewOnSeparatedWindowFn: vi.fn()
 }));
 

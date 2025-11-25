@@ -18,8 +18,8 @@ import { SearchMessagePanel } from 'views/search/panel/message/search-message-pa
 
 const mockNavigateSpy = vi.fn();
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn(),
 	useNavigate: (): NavigateFunction => mockNavigateSpy
 }));

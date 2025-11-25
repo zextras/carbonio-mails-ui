@@ -23,8 +23,8 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 

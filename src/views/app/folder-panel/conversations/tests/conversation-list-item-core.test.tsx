@@ -16,8 +16,8 @@ import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	useTags: vi.fn()
 }));
 

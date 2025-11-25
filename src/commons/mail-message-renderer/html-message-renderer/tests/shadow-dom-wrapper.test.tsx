@@ -17,8 +17,8 @@ import * as darkReader from 'darkreader';
 
 import { ShadowDomWrapper } from '../shadow-dom-wrapper';
 
-vi.mock('darkreader', () => ({
-	...vi.importActual('darkreader'),
+vi.mock('darkreader', async () => ({
+	...(await vi.importActual('darkreader')),
 	enable: vi.fn()
 }));
 

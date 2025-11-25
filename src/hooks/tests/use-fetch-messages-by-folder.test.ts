@@ -23,16 +23,16 @@ import {
 import { SearchRequest, SearchResponse } from 'types/index.d';
 
 const folder = generateFolder({ id: '2' });
-vi.mock('../../store/emails/store', () => ({
-	...vi.importActual('../../store/emails/store'),
+vi.mock('../../store/emails/store', async () => ({
+	...(await vi.importActual('../../store/emails/store')),
 	setMessagesInEmailStore: vi.fn(),
 	resetMessagesAndPopulatedItems: vi.fn(),
 	updateMessagesResultsLoadingStatus: vi.fn(),
 	useMessagesIdsByFolder: vi.fn(),
 	useMessagesSlice: vi.fn()
 }));
-vi.mock('../../helpers/sorting', () => ({
-	...vi.importActual('../../helpers/sorting'),
+vi.mock('../../helpers/sorting', async () => ({
+	...(await vi.importActual('../../helpers/sorting')),
 	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('inId:"2"')
 }));

@@ -12,8 +12,8 @@ import { generateEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/hooks/editors';
 import { EditViewActionsType, MailMessage } from 'types/index.d';
 
-vi.mock('store/editor/hooks/editors', () => ({
-	...vi.importActual('store/editor/hooks/editors'),
+vi.mock('store/editor/hooks/editors', async () => ({
+	...(await vi.importActual('store/editor/hooks/editors')),
 	getEditor: vi.fn()
 }));
 

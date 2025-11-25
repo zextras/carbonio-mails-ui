@@ -15,8 +15,8 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	getFolder: vi.fn()
 }));
 

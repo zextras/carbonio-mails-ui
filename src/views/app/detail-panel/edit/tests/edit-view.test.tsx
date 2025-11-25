@@ -152,8 +152,8 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-vi.mock('store/editor', () => ({
-	...vi.importActual('store/editor'),
+vi.mock('store/editor', async () => ({
+	...(await vi.importActual('store/editor')),
 	deleteEditor: vi.fn()
 }));
 

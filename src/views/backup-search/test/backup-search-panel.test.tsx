@@ -17,13 +17,13 @@ import { useBackupSearchStore } from 'store/backup-search/store';
 import { DeletedMessageFromAPI } from 'types/index.d';
 import { BackupSearchPanel } from 'views/backup-search/parts/backup-search-panel';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	getFolder: vi.fn()
 }));
 

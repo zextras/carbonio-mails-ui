@@ -18,8 +18,8 @@ import { IncompleteMessage } from 'types/index.d';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 
 // Mock useModal hook
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useModal: vi.fn()
 }));
 

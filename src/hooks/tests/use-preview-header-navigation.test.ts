@@ -19,8 +19,8 @@ import { setConversationsInEmailStore } from 'store/emails/store';
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-vi.mock('react-i18next', () => ({
-	...vi.importActual('react-i18next'),
+vi.mock('react-i18next', async () => ({
+	...(await vi.importActual('react-i18next')),
 	useTranslation: (): Array<(key: string) => string> => [
 		(key: string): string => key // Return the translation key as the translation
 	],
@@ -28,13 +28,13 @@ vi.mock('react-i18next', () => ({
 	I18nextProvider: ({ children }: { children: React.ReactNode }): React.ReactNode => children
 }));
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn().mockReturnValue(vi.fn())
 }));
 

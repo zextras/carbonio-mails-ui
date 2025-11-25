@@ -24,10 +24,13 @@ import { NewModal } from 'views/sidebar/new-modal';
 import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
-	useModal: vi.fn()
-}));
+vi.mock('@zextras/carbonio-design-system', async () => {
+	const actual = vi.importActual('@zextras/carbonio-design-system');
+	return {
+		...actual,
+		useModal: vi.fn()
+	};
+});
 
 vi.mock('../delete-modal');
 vi.mock('../edit-modal');

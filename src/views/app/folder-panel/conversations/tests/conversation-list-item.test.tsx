@@ -31,12 +31,12 @@ import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 const canExecuteCallback = vi.fn();
 const PARTICIPANTS_NAME_LABEL_TESTID = 'participants-name-label';
 
-vi.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
-	...vi.importActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
+vi.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', async () => ({
+	...(await vi.importActual('../../../../../hooks/actions/use-conv-preview-on-separated-window')),
 	useConvPreviewOnSeparatedWindowFn: vi.fn()
 }));
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn()
 }));
 

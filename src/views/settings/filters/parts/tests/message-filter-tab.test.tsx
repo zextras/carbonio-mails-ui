@@ -18,8 +18,8 @@ import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 const createSnackbarSpy = vi.fn((arg) => arg);

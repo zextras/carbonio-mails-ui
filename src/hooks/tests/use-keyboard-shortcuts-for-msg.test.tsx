@@ -20,8 +20,8 @@ import { useKeyboardShortcutsForMsg } from 'hooks/use-keyboard-shortcuts-for-msg
 import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 // Mock all dependencies
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn()
 }));
 

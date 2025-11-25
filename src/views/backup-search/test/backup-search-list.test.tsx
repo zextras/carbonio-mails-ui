@@ -32,16 +32,16 @@ const LABEL_SELECT_ALL = 'label.select_all';
 const LABEL_DESELECT_ALL = 'label.deselect_all';
 const LABEL_RECOVER_EMAILS = 'label.recover_selected_emails';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 

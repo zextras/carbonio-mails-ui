@@ -39,8 +39,8 @@ import {
 } from 'types/index.d';
 import SearchView from 'views/search/search-view';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn()
 }));
 

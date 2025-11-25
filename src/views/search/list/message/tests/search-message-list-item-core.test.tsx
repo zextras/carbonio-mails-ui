@@ -14,8 +14,8 @@ import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	useTags: vi.fn()
 }));
 

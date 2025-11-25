@@ -15,8 +15,8 @@ import { setupTest } from '@test-setup';
 
 const mockNavigateSpy = vi.fn();
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: (): NavigateFunction => mockNavigateSpy
 }));
 

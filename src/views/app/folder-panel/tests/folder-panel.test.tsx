@@ -16,8 +16,8 @@ import FolderPanel from 'views/app/folder-panel';
 import { useIsMessageView } from 'views/search/search-view-hooks';
 
 vi.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: vi.fn() }));
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useParams: vi.fn()
 }));
 vi.mock('../messages/message-list', () => ({

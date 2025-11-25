@@ -20,8 +20,8 @@ import { generateConversation } from '__test__/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
 import { MoveConversation } from 'ui-actions/move-conv';
 
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn()
 }));
 

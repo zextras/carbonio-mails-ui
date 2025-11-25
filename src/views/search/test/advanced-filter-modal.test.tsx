@@ -27,8 +27,8 @@ import {
 import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
 import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	getTags: vi.fn()
 }));
 

@@ -11,8 +11,8 @@ import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-vi.mock('lodash', () => ({
-	...vi.importActual('lodash'),
+vi.mock('lodash', async () => ({
+	...(await vi.importActual('lodash')),
 	debounce: (fn: (...args: any[]) => any): any => fn,
 	noop: (): void => {
 		// do nothing
@@ -61,8 +61,8 @@ const MockComposer: React.FC<any> = (props) => {
 	return <div data-testid="mock-composer" />;
 };
 
-vi.mock('@zextras/carbonio-ui-text-composer', () => ({
-	...vi.importActual('@zextras/carbonio-ui-text-composer'),
+vi.mock('@zextras/carbonio-ui-text-composer', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-text-composer')),
 	Composer: (props: any): any => <MockComposer {...props} />
 }));
 

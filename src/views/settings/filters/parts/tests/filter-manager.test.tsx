@@ -15,8 +15,8 @@ import { Filter } from 'types/index.d';
 import { ListType } from 'views/settings/filters/parts/actions';
 import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 

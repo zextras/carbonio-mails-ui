@@ -21,8 +21,8 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MoveMessage } from 'ui-actions/move-msg';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 

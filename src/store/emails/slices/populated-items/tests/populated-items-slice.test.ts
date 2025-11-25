@@ -53,8 +53,8 @@ import {
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-vi.mock('@zextras/carbonio-ui-commons', () => ({
-	...vi.importActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	useTags: vi.fn()
 }));
 

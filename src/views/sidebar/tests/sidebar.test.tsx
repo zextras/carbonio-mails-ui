@@ -23,8 +23,8 @@ import { setMessagesInEmailStore } from 'store/emails/store';
 import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
 import Sidebar from 'views/sidebar/sidebar';
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 function fakeCounter(): { count: number; setCount: (value: number) => void } {

@@ -22,8 +22,8 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 const defaultLocation = `/${MAILS_ROUTE}/folder/2/conversation/1`;
 
 // Mock all dependencies
-vi.mock('react-router-dom', () => ({
-	...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: vi.fn()
 }));
 

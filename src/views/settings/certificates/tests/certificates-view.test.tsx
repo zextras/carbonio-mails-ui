@@ -18,8 +18,8 @@ import {
 	createAPIInterceptorToGetRecipientsCertificates
 } from 'views/settings/certificates/tests/utils/utils';
 
-vi.mock('../../../../store/certificates/store', () => {
-	const actual = vi.importActual('../../../../store/certificates/store');
+vi.mock('../../../../store/certificates/store', async () => {
+	const actual = await vi.importActual('../../../../store/certificates/store');
 	return {
 		...actual,
 		useSmimePasswordStore: vi.fn(() => ({

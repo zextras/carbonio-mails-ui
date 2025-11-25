@@ -23,8 +23,8 @@ import RedirectMessageAction from 'ui-actions/redirect-message-action';
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-vi.mock('@zextras/carbonio-design-system', () => ({
-	...vi.importActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', async () => ({
+	...(await vi.importActual('@zextras/carbonio-design-system')),
 	useSnackbar: vi.fn()
 }));
 
