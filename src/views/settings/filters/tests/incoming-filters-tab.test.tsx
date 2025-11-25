@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -17,13 +18,13 @@ import { Filter, type Folder } from 'types/index.d';
 import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	useRootsArray: vi.fn()
 }));
 

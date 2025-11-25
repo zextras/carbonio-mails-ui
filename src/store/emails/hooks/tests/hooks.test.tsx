@@ -49,7 +49,7 @@ import {
 
 function awaitDebounce(): void {
 	act(() => {
-		jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+		vi.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
 	});
 }
 
@@ -148,7 +148,7 @@ describe('Searches store hooks', () => {
 			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			act(() => {
-				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+				vi.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
 			});
 
 			const getMsgRequest = await interceptor;

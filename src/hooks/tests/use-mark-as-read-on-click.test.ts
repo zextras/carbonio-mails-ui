@@ -8,8 +8,8 @@ import { renderHook, act } from '@testing-library/react';
 
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	...jest.requireActual('@zextras/carbonio-shell-ui'),
+vi.mock('@zextras/carbonio-shell-ui', () => ({
+	...vi.importActual('@zextras/carbonio-shell-ui'),
 	useUserSettings: () => ({
 		prefs: { zimbraPrefMarkMsgRead: '0' }
 	})

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -14,9 +15,9 @@ import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
 import { GetMsgResponse } from 'types/index.d';
 
-jest.mock('../../../../api/get-msg-soap-api');
-jest.mock('../../store');
-jest.mock('../../../../normalizations/normalize-message');
+vi.mock('../../../../api/get-msg-soap-api');
+vi.mock('../../store');
+vi.mock('../../../../normalizations/normalize-message');
 
 describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 	const messageId = '123';

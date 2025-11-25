@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -18,14 +19,14 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
 
 const canExecuteCallback = vi.fn();
-jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
-	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
+vi.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
+	...vi.importActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
 	useMsgPreviewOnSeparatedWindowFn: vi.fn()
 }));
 

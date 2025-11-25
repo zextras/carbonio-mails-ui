@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -22,14 +23,14 @@ import RedirectMessageAction from 'ui-actions/redirect-message-action';
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 
 describe('RedirectMessageAction', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 	});
 

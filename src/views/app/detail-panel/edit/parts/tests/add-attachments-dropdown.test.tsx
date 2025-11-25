@@ -11,6 +11,7 @@ import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
 import { forEach, reduce, times } from 'lodash';
 import { HttpResponse } from 'msw';
+import { Mock } from 'vitest';
 
 import { setupTest, screen } from '@test-setup';
 import {

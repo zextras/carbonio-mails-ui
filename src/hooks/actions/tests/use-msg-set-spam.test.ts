@@ -108,7 +108,7 @@ describe('useMsgSetSpam', () => {
 
 				act(() => {
 					functions.execute();
-					jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				const requestParameter = await apiInterceptor;

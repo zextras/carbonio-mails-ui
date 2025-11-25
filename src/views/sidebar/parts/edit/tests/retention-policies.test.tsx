@@ -27,7 +27,7 @@ const defaultProps = {
 };
 describe('RetentionPolicies Component', () => {
 	afterEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders the header and toggle button', () => {

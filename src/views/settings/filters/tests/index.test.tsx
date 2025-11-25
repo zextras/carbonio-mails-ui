@@ -9,7 +9,7 @@ import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import FilterModule from 'views/settings/filters';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	t: (key: string, fallback?: string): string => fallback || key
 }));
 

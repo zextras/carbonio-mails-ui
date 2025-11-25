@@ -8,6 +8,7 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import { Mock } from 'vitest';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -17,8 +18,8 @@ import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 const mockNavigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: (): Mock => mockNavigate
 }));
 

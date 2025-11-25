@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -7,14 +8,14 @@ import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import { handleDeleteAttachments } from 'store/emails/store';
 
-jest.mock('../../../../api/delete-all-attachments-soap-api');
-jest.mock('../../store');
+vi.mock('../../../../api/delete-all-attachments-soap-api');
+vi.mock('../../store');
 
 describe('deleteAttachmentsEmailStoreAction', () => {
 	const mockResponse = { success: true };
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('handles successful attachment deletion', async () => {

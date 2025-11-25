@@ -11,7 +11,6 @@ import { SetupServer, setupServer } from 'msw/node';
 import { vi, beforeAll, beforeEach, afterEach, afterAll } from 'vitest';
 
 import * as shell from '../../__mocks__/@zextras/carbonio-shell-ui';
-import { useDistributionListsStore } from '../store/distribution-lists';
 import { getRestHandlers } from '@test-utils/network/msw/handlers';
 
 vi.mock('@zextras/carbonio-shell-ui', () => shell);
@@ -47,7 +46,6 @@ beforeAll(() => {
 
 beforeEach(() => {
 	vi.useFakeTimers({ shouldAdvanceTime: true });
-	useDistributionListsStore.getState().reset();
 });
 
 afterEach(() => {

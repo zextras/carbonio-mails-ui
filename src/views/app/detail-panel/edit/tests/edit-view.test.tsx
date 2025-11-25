@@ -17,6 +17,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
+import { Mock } from 'vitest';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
@@ -78,7 +79,7 @@ const extractPartContent = (content: string | { _content: string } | undefined):
 	return content._content;
 };
 async function awaitDebouncedSaveDraft(time = 2_000): Promise<void> {
-	jest.advanceTimersByTime(time);
+	vi.advanceTimersByTime(time);
 }
 
 /**
@@ -151,8 +152,8 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-jest.mock('store/editor', () => ({
-	...jest.requireActual('store/editor'),
+vi.mock('store/editor', () => ({
+	...vi.importActual('store/editor'),
 	deleteEditor: vi.fn()
 }));
 
@@ -553,7 +554,7 @@ describe('Edit view', () => {
 
 	describe('send email', () => {
 		beforeEach(() => {
-			jest.clearAllTimers();
+			vi.clearAllTimers();
 		});
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
@@ -592,7 +593,7 @@ describe('Edit view', () => {
 			});
 
 			await act(async () => {
-				jest.runOnlyPendingTimers();
+				vi.runOnlyPendingTimers();
 			});
 
 			const sendMsgRequest = await sendMsgInterceptor;
@@ -636,7 +637,7 @@ describe('Edit view', () => {
 			});
 
 			await act(async () => {
-				jest.advanceTimersByTime(4000);
+				vi.advanceTimersByTime(4000);
 			});
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
@@ -663,7 +664,7 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await act(async () => {
-				jest.advanceTimersByTime(5_000);
+				vi.advanceTimersByTime(5_000);
 			});
 			expect(mockedSaveDraft).not.toHaveBeenCalled();
 		});

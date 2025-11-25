@@ -34,6 +34,9 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import {
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
@@ -45,9 +48,6 @@ import {
 	useMessageById
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
-import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
@@ -58,15 +58,15 @@ const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	getTags: vi.fn(),
 	folderWorker: {
 		postMessage: vi.fn()
 	}
 }));
 
-jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
+vi.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
 	triggerNotification: vi.fn()
 }));
 
@@ -432,9 +432,9 @@ describe('sync data handler', () => {
 
 		it('should trigger a notification when a new message is received', async () => {
 			const triggerNotificationSpy = vi.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
+			vi.spyOn(triggerNotification, 'triggerNotification').mockImplementation(
+				triggerNotificationSpy
+			);
 			const messageSubject = 'Message subject';
 			const completeMessage1 = generateMessageFromAPI({
 				id: '1',

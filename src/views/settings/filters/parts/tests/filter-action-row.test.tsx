@@ -395,7 +395,7 @@ describe('FilterActionsRows', () => {
 			await user.click(browseFolder);
 			makeListItemsVisible();
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				vi.advanceTimersByTime(1000);
 			});
 			await user.click(screen.getByTestId(`folder-accordion-item-${folder.id}`));
 			const chooseFolder = screen.getByRole('button', { name: 'Choose' });

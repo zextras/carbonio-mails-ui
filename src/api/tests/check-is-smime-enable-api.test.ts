@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -10,7 +11,7 @@ const apiURL = '/service/extension/encryption/password/enabled';
 
 describe('checkIsSmimeEnabled', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {

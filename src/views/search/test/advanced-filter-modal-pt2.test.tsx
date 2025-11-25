@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -23,8 +24,8 @@ import {
 import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
 import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	useContactInput: vi.fn()
 }));
 

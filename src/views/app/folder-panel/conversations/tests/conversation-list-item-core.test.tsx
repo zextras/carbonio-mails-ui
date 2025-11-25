@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -15,8 +16,8 @@ import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	useTags: vi.fn()
 }));
 

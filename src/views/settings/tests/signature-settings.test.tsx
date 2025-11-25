@@ -16,7 +16,7 @@ import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
 
 // noinspection JSUnusedGlobalSymbols
-jest.mock('@zextras/carbonio-ui-text-composer', () => ({
+vi.mock('@zextras/carbonio-ui-text-composer', () => ({
 	Composer: ({
 		'data-testid': testId,
 		value,
@@ -126,7 +126,7 @@ describe('Signature settings', () => {
 		 * JSDOM does not support the `:hover` pseudo-class and it is impossible to simulate
 		 * when the visibility is changed in a nested css selector.
 		 */
-		it.failing('should display a delete button when when user hover on the list item', async () => {
+		it.fails('should display a delete button when when user hover on the list item', async () => {
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);

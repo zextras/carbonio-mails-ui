@@ -14,7 +14,7 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { FolderActionWrapper } from 'views/sidebar/folder-action-wrapper';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
-jest.mock('../use-folder-actions', () => ({
+vi.mock('../use-folder-actions', () => ({
 	useFolderActions: vi.fn()
 }));
 describe('FolderActionWrapper', () => {

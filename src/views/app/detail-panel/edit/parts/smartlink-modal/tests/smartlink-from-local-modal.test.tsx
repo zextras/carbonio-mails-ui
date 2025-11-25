@@ -8,6 +8,7 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { SmartlinkFromLocalModal } from '../smartlink-from-local-modal';
 import { setupTest } from '@test-setup';
@@ -34,7 +35,7 @@ function createDeferredPromise<T>(): {
 	return { promise, resolve: resolve!, reject: reject! };
 }
 
-jest.mock('api/upload-file-to-files');
+vi.mock('api/upload-file-to-files');
 
 describe('SmartlinkFromLocalModal', () => {
 	const mockOnClose = vi.fn();
@@ -89,7 +90,7 @@ describe('SmartlinkFromLocalModal', () => {
 		});
 
 		const getLinkSpy = vi.fn().mockReturnValue(publicLinkDeferred.promise);
-		useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+		useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 			if (integratedFunctionId === 'get-link') {
 				return [getLinkSpy, true];
 			}
@@ -135,7 +136,7 @@ describe('SmartlinkFromLocalModal', () => {
 			});
 
 			const getLinkSpy = vi.fn().mockResolvedValueOnce({ url: 'url1' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -199,11 +200,11 @@ describe('SmartlinkFromLocalModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -279,11 +280,11 @@ describe('SmartlinkFromLocalModal', () => {
 					upload: Promise.resolve('uploadResult2'),
 					abortController: new AbortController()
 				});
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -365,7 +366,7 @@ describe('SmartlinkFromLocalModal', () => {
 			}));
 
 			const getLinkSpy = vi.fn().mockResolvedValue(null);
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}

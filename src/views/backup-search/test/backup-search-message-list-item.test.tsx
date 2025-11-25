@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -15,8 +16,8 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	getFolder: vi.fn()
 }));
 
@@ -34,7 +35,7 @@ const deletedMessage = {
 
 describe('Backup search list', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should display To when sender is the owner', async () => {

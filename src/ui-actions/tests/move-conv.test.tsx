@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -19,8 +20,8 @@ import { generateConversation } from '__test__/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
 import { MoveConversation } from 'ui-actions/move-conv';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn()
 }));
 
@@ -34,12 +35,7 @@ describe('MoveConversation', () => {
 
 	it('renders expected title when in restore Mode', () => {
 		setupTest(
-			<MoveConversation
-				folderId={sourceFolder}
-				selectedIDs={convIds}
-				onClose={vi.fn()}
-				isRestore
-			/>
+			<MoveConversation folderId={sourceFolder} selectedIDs={convIds} onClose={vi.fn()} isRestore />
 		);
 		expect(screen.getByText('Restore')).toBeVisible();
 	});

@@ -11,12 +11,12 @@ import { setupHook } from '@test-setup';
 import { useIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgCreateAppointmentDescriptor,
 	useMsgCreateAppointmentFn
 } from 'hooks/actions/use-msg-create-appointment';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { GetMsgRequest } from 'types/index.d';
 
 describe('useMsgCreateAppointment', () => {
@@ -76,7 +76,7 @@ describe('useMsgCreateAppointment', () => {
 			it('should not call the integrated function if the action cannot be executed', async () => {
 				populateFoldersStore();
 				const openComposerSpy = vi.fn();
-				useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 					if (integratedFunctionId === 'create_appointment') {
 						return [openComposerSpy, true];
 					}
@@ -98,7 +98,7 @@ describe('useMsgCreateAppointment', () => {
 			it('should call the API with the proper params if the action can be executed', async () => {
 				populateFoldersStore();
 				const openComposerSpy = vi.fn();
-				useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+				useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 					if (integratedFunctionId === 'create_appointment') {
 						return [openComposerSpy, true];
 					}

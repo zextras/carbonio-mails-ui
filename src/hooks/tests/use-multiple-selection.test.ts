@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,7 +9,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useAppContext: vi.fn()
 }));
 

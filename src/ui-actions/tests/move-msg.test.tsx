@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -20,8 +21,8 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MoveMessage } from 'ui-actions/move-msg';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 

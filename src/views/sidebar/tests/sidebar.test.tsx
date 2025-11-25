@@ -10,20 +10,21 @@ import { act, screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { FolderActionsType, FOLDERS } from '@zextras/carbonio-ui-commons';
+import { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
 import Sidebar from 'views/sidebar/sidebar';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
@@ -208,7 +209,7 @@ describe('Sidebar', () => {
 			const destinationFolder = screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
 
 			act(() => {
-				jest.advanceTimersByTime(1_000);
+				vi.advanceTimersByTime(1_000);
 			});
 
 			await user.click(destinationFolder);

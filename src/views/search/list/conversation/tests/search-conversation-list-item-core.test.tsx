@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -16,11 +17,11 @@ import { populateConversationInEmailStore } from '__test__/generators/generateCo
 import { useTagExist } from 'ui-actions/tag-actions';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	useTags: vi.fn()
 }));
-jest.mock('../../../../../ui-actions/tag-actions', () => ({
+vi.mock('../../../../../ui-actions/tag-actions', () => ({
 	useTagExist: vi.fn()
 }));
 
@@ -28,7 +29,7 @@ const tagsArray = Object.values(tags);
 
 describe('SearchConversationListItemCore', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders conversation details correctly', async () => {

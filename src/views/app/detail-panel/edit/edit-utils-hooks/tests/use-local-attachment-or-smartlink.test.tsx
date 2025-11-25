@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -13,9 +14,9 @@ import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorAttachments } from 'store/editor/hooks';
 import { useEditorsStore } from 'store/editor/store';
 
-jest.mock('@zextras/carbonio-shell-ui');
-jest.mock('@zextras/carbonio-design-system');
-jest.mock('store/editor/hooks');
+vi.mock('@zextras/carbonio-shell-ui');
+vi.mock('@zextras/carbonio-design-system');
+vi.mock('store/editor/hooks');
 
 const createFileWithSize = (name: string, size: number, type = 'text/plain'): File => {
 	const file = new File(['content'], name, { type });

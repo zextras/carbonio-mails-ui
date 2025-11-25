@@ -16,7 +16,7 @@ import { SearchMessageListItemWrapper } from 'views/search/list/message/search-m
 
 describe('SearchMessageListItemWrapper', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders nothing when message is not found', () => {

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -38,8 +39,8 @@ import {
 } from 'types/index.d';
 import SearchView from 'views/search/search-view';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn()
 }));
 

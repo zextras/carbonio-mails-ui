@@ -96,7 +96,7 @@ describe('send', () => {
 		});
 
 		await act(async () => {
-			await jest.advanceTimersByTimeAsync(5000);
+			await vi.advanceTimersByTimeAsync(5000);
 		});
 
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
@@ -129,7 +129,7 @@ describe('send', () => {
 		});
 
 		await act(async () => {
-			await jest.advanceTimersByTimeAsync(5000);
+			await vi.advanceTimersByTimeAsync(5000);
 		});
 
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
@@ -162,7 +162,7 @@ describe('send', () => {
 		});
 
 		await act(async () => {
-			await jest.advanceTimersByTimeAsync(5000);
+			await vi.advanceTimersByTimeAsync(5000);
 		});
 
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));

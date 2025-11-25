@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -15,13 +16,13 @@ import { updateMessageStatus } from 'store/emails/store';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
-jest.mock('../../../../store/emails/hooks/hooks');
+vi.mock('../../../../store/emails/hooks/hooks');
 
 describe('MessagePreviewPanel', () => {
 	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as Mock;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders spinner when message is loading', () => {

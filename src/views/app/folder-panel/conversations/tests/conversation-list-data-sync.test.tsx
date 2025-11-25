@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -19,13 +20,13 @@ import { ConversationList } from 'views/app/folder-panel/conversations/conversat
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
 		postMessage: vi.fn()
 	},

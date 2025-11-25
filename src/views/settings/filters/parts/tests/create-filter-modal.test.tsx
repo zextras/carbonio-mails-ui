@@ -101,7 +101,7 @@ describe('create filter modal', () => {
 
 		makeListItemsVisible();
 		act(() => {
-			jest.advanceTimersByTime(500);
+			vi.advanceTimersByTime(500);
 		});
 		expect(screen.getByText(/junk/i)).toBeVisible();
 	});

@@ -82,7 +82,7 @@ describe('SmartlinkFromFilesModal', () => {
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
 			const getLinkSpy = vi.fn().mockResolvedValue({ url: 'url1' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -135,11 +135,11 @@ describe('SmartlinkFromFilesModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -202,11 +202,11 @@ describe('SmartlinkFromFilesModal', () => {
 	});
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -249,7 +249,7 @@ describe('SmartlinkFromFilesModal', () => {
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
 			const getLinkSpy = vi.fn().mockRejectedValue(new Error('API failure'));
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
@@ -281,7 +281,7 @@ describe('SmartlinkFromFilesModal', () => {
 
 		it('handles missing public link URL', async () => {
 			const getLinkSpy = vi.fn().mockResolvedValue(null);
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -26,8 +27,8 @@ import {
 import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
 import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	getTags: vi.fn()
 }));
 
@@ -568,7 +569,7 @@ describe('Advanced filter modal', () => {
 			await user.click(openFolderDialogButton);
 
 			act(() => {
-				jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				vi.advanceTimersByTime(TIMERS.modal_open_delay);
 			});
 
 			const folderOption = screen.getByText(folderName);

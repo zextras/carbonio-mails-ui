@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,7 +9,7 @@ import { uploadPersonalCertificate } from 'api/upload-personal-certificate-api';
 
 describe('uploadPersonalCertificate', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	const certificate = {

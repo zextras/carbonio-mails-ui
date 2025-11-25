@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
@@ -14,8 +15,8 @@ import { Filter } from 'types/index.d';
 import { ListType } from 'views/settings/filters/parts/actions';
 import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 
@@ -235,6 +236,6 @@ function activeIncomingFilter(name: string): Filter {
 function makeAllItemsVisible(): void {
 	makeListItemsVisible();
 	act(() => {
-		jest.advanceTimersByTime(1000);
+		vi.advanceTimersByTime(1000);
 	});
 }

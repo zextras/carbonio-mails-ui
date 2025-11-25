@@ -24,17 +24,17 @@ import { NewModal } from 'views/sidebar/new-modal';
 import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useModal: vi.fn()
 }));
 
-jest.mock('../delete-modal');
-jest.mock('../edit-modal');
-jest.mock('../empty-modal');
-jest.mock('../new-modal');
-jest.mock('../shares-info-modal');
-jest.mock('../../../api/folder-action-soap-api');
+vi.mock('../delete-modal');
+vi.mock('../edit-modal');
+vi.mock('../empty-modal');
+vi.mock('../new-modal');
+vi.mock('../shares-info-modal');
+vi.mock('../../../api/folder-action-soap-api');
 
 const useAppContextMock = useAppContext as Mock;
 

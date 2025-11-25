@@ -456,10 +456,7 @@ describe('edit-modal', () => {
 		it('should display the error message "Special characters not allowed" when folder name uses special chars', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-			const { user } = setupTest(
-				<EditModal onClose={(): void => vi.fn()()} folder={folder} />,
-				{}
-			);
+			const { user } = setupTest(<EditModal onClose={(): void => vi.fn()()} folder={folder} />, {});
 
 			expect(screen.getByTestId('folder-name')).toBeInTheDocument();
 			const newFolder = screen.getByTestId('folder-name');

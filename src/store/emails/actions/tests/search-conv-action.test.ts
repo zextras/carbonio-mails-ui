@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -14,9 +15,9 @@ import {
 	updateConversationStatus
 } from 'store/emails/store';
 
-jest.mock('../../../../api/search-conv-soap-api');
-jest.mock('../../../../normalizations/normalize-message');
-jest.mock('../../store');
+vi.mock('../../../../api/search-conv-soap-api');
+vi.mock('../../../../normalizations/normalize-message');
+vi.mock('../../store');
 
 describe('searchConvEmailStoreAction', () => {
 	const mockConversationId = 'conv123';
@@ -25,7 +26,7 @@ describe('searchConvEmailStoreAction', () => {
 	};
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('handles successful conversation search response', async () => {

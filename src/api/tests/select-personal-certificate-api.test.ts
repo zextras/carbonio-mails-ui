@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,7 +10,7 @@ import { selectPersonalCertificate } from 'api/select-personal-certificate-api';
 describe('selectPersonalCertificate', () => {
 	const apiURL = '/service/extension/encryption/smime/personal/select';
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {

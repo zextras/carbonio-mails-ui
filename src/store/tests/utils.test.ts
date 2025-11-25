@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -17,7 +18,7 @@ describe('extractIdsFromMessagesAndConversations', () => {
 
 describe('getCompleteMessageId', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return the same messageId if it already contains a colon', () => {

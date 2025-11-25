@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -52,7 +53,7 @@ describe('encodeBase64', () => {
 	});
 });
 
-jest.mock('axios');
+vi.mock('axios');
 const mockedAxios = axios as Mocked<typeof axios>;
 
 describe('uploadToFiles', () => {

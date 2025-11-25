@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,7 +9,7 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 
-jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
 	legacySoapFetch: vi.fn()
 }));
 

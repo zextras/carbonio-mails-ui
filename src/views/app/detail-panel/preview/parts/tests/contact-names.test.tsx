@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -13,7 +14,7 @@ import { setupTest } from '@test-setup';
 import { Participant } from 'types/index.d';
 import ContactName from 'views/app/detail-panel/preview/parts/contact-names';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserAccounts: vi.fn()
 }));
 

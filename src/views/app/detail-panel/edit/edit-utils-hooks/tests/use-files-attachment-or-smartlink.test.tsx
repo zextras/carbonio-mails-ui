@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -14,8 +15,8 @@ import { FileNode } from '../use-upload-from-files';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 
-jest.mock('@zextras/carbonio-shell-ui');
-jest.mock('@zextras/carbonio-design-system');
+vi.mock('@zextras/carbonio-shell-ui');
+vi.mock('@zextras/carbonio-design-system');
 
 const createFileNode = (name: string, size: number): FileNode => ({
 	id: `node-${name}`,
@@ -33,7 +34,7 @@ describe('useFilesAttachmentOrSmartlink', () => {
 	const MODAL_ID = 'smartlink-from-files-modal';
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 
 		(useUserSettings as Mock).mockReturnValue({
 			attrs: {

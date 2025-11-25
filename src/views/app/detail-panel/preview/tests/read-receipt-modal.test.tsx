@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -19,12 +20,12 @@ const baseMessageWithReadReadReceiptRequested = generateMessage({
 	isReadReceiptRequested: true
 });
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	t: vi.fn((key, defaultValue) => defaultValue),
 	useUserSettings: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
 	legacySoapFetch: vi.fn()
 }));
 

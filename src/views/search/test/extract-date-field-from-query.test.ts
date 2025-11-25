@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -11,8 +12,8 @@ import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-
 import { Query } from 'views/search/types/types';
 
 // Mock the getUserLocale function
-jest.mock('commons/utils', () => ({
-	...jest.requireActual('commons/utils'),
+vi.mock('commons/utils', () => ({
+	...vi.importActual('commons/utils'),
 	getUserLocale: vi.fn()
 }));
 
@@ -20,7 +21,7 @@ const mockedGetUserLocale = utils.getUserLocale as MockedFunction<typeof utils.g
 
 describe('extractDateFieldFromQuery', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	afterEach(() => {

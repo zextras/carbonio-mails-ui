@@ -8,6 +8,7 @@ import React, { FC, ReactNode } from 'react';
 
 import * as shell from '@zextras/carbonio-shell-ui';
 import { useActions as realUseActions } from '@zextras/carbonio-shell-ui';
+import { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateSettings } from '@test-utils/settings/settings-generator';
@@ -49,9 +50,7 @@ export const useBoardHooks = vi.fn().mockReturnValue({
 });
 export const minimizeBoards = vi.fn();
 export const getCurrentRoute = vi.fn();
-export const useIsCarbonioCE: Mock<ReturnType<typeof shell.useIsCarbonioCE>> = vi.fn(
-	() => false
-);
+export const useIsCarbonioCE: Mock<ReturnType<typeof shell.useIsCarbonioCE>> = vi.fn(() => false);
 
 export const useLocalStorage = vi.fn();
 export const AppLink: FC<{ children: ReactNode }> = ({ children }) => <>{children}</>;

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -22,16 +23,16 @@ import {
 import { SearchRequest, SearchResponse } from 'types/index.d';
 
 const folder = generateFolder({ id: '2' });
-jest.mock('../../store/emails/store', () => ({
-	...jest.requireActual('../../store/emails/store'),
+vi.mock('../../store/emails/store', () => ({
+	...vi.importActual('../../store/emails/store'),
 	setMessagesInEmailStore: vi.fn(),
 	resetMessagesAndPopulatedItems: vi.fn(),
 	updateMessagesResultsLoadingStatus: vi.fn(),
 	useMessagesIdsByFolder: vi.fn(),
 	useMessagesSlice: vi.fn()
 }));
-jest.mock('../../helpers/sorting', () => ({
-	...jest.requireActual('../../helpers/sorting'),
+vi.mock('../../helpers/sorting', () => ({
+	...vi.importActual('../../helpers/sorting'),
 	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('inId:"2"')
 }));

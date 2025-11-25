@@ -10,7 +10,7 @@ import { ApiManager, legacyXmlSoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { saveSettings } from 'views/settings/save-settings';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	updateAccount: vi.fn(),
 	updateSettings: vi.fn()
 }));
@@ -45,7 +45,7 @@ const mockSoapResponse = {
 
 describe('saveSettings', () => {
 	it('should generate the correct XML requests and call update functions', async () => {
-		jest.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
+		vi.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
 
 		await saveSettings(settingsToUpdate, APP_ID);
 
@@ -97,7 +97,7 @@ describe('saveSettings', () => {
 	});
 
 	it('should call the ApiManager to set the polling interval if its value is not undefined', async () => {
-		jest.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
+		vi.mocked(legacyXmlSoapFetch).mockResolvedValue(mockSoapResponse);
 
 		const pollingSetting = '60s';
 		const settings = {
@@ -111,8 +111,6 @@ describe('saveSettings', () => {
 		const apiManagerInstance = ApiManager.getApiManager();
 
 		await saveSettings(settings, APP_ID);
-		expect(jest.mocked(apiManagerInstance.setPollingPreference)).toHaveBeenCalledWith(
-			pollingSetting
-		);
+		expect(vi.mocked(apiManagerInstance.setPollingPreference)).toHaveBeenCalledWith(pollingSetting);
 	});
 });

@@ -16,7 +16,7 @@ import { SORTING_OPTIONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 
-jest.mock('../../../../../helpers/folders', () => ({
+vi.mock('../../../../../helpers/folders', () => ({
 	getFolderPathForBreadcrumb: vi.fn()
 }));
 

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -12,17 +13,17 @@ import { screen, setupTest } from '@test-setup';
 import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
 import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
-jest.mock('helpers/sorting', () => ({
+vi.mock('helpers/sorting', () => ({
 	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
 
 describe('Sort and Filter Header Component', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		(useUserSettings as Mock).mockReturnValue({
 			prefs: { zimbraPrefSortOrder: '' }
 		});

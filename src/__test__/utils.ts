@@ -9,7 +9,7 @@ import { noop } from 'lodash';
 import * as advancedAccount from 'api/advanced-account-api';
 
 export function mockAdvancedAccountAPI(store: { backupSelfUndeleteAllowed: boolean }): void {
-	jest
-		.spyOn(advancedAccount, 'advancedAccountApi')
-		.mockImplementation(() => Promise.resolve({ ...store, updateBackupSelfUndeleteAllowed: noop }));
+	vi.spyOn(advancedAccount, 'advancedAccountApi').mockImplementation(() =>
+		Promise.resolve({ ...store, updateBackupSelfUndeleteAllowed: noop })
+	);
 }

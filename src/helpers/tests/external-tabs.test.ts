@@ -18,13 +18,13 @@ import {
 describe('External tabs', () => {
 	describe('isStandalonePreview', () => {
 		it('Should return true if the focus-mode is active and the location url matches the preview url pattern', () => {
-			jest.mocked(shell).IS_FOCUS_MODE = true;
+			vi.mocked(shell).IS_FOCUS_MODE = true;
 
 			expect(isFocusModeMailView()).toBe(true);
 		});
 
 		it('should return false if the focus-mode is not active', () => {
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 
 			expect(isFocusModeMailView()).toBe(false);
 		});

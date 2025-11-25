@@ -18,7 +18,7 @@ describe('NameInputRow', () => {
 	const inpDisable = false;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should render correctly', () => {

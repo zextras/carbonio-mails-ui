@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
@@ -14,7 +15,7 @@ import {
 	getSignedIconColor
 } from 'views/app/detail-panel/preview/utils/index';
 
-jest.mock('lodash', () => ({
+vi.mock('lodash', () => ({
 	includes: vi.fn()
 }));
 

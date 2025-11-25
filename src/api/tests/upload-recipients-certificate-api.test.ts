@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,7 +9,7 @@ import { uploadRecipientCertificate } from 'api/upload-recipients-certificate-ap
 
 describe('uploadRecipientCertificate', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {

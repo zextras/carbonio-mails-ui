@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable testing-library/no-node-access */
 /* eslint-disable testing-library/no-container */
 /* IMPORTANT on this test we used querySelector because Shadow DOM elements won't be found by getByTestId() or getByRole() because they're encapsulated */
@@ -15,12 +16,12 @@ import * as darkReader from 'darkreader';
 
 import { ShadowDomWrapper } from '../shadow-dom-wrapper';
 
-jest.mock('darkreader', () => ({
-	...jest.requireActual('darkreader'),
+vi.mock('darkreader', () => ({
+	...vi.importActual('darkreader'),
 	enable: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
 

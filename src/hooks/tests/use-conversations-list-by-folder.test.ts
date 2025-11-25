@@ -17,19 +17,19 @@ import {
 	useConversationsIdsByFolder
 } from 'store/emails/store';
 
-jest.mock('store/emails/actions/search-action', () => ({
+vi.mock('store/emails/actions/search-action', () => ({
 	searchEmailStoreAction: vi.fn()
 }));
-jest.mock('store/emails/store', () => ({
+vi.mock('store/emails/store', () => ({
 	updateConversationsResultsLoadingStatus: vi.fn(),
 	useConversationIndexSlice: vi.fn(),
 	useConversationsIdsByFolder: vi.fn()
 }));
-jest.mock('helpers/sorting', () => ({
+vi.mock('helpers/sorting', () => ({
 	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('mockQuery')
 }));
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
 
@@ -48,8 +48,8 @@ describe('useConversationListByFolder', () => {
 	});
 
 	afterEach(() => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('fetches conversations on mount with correct parameters', async () => {

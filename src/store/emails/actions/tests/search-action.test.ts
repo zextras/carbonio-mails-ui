@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -20,8 +21,8 @@ import {
 	updateConversationsResultsLoadingStatus
 } from 'store/emails/store';
 
-jest.mock('../../../../api/search-soap-api');
-jest.mock('../../store');
+vi.mock('../../../../api/search-soap-api');
+vi.mock('../../store');
 
 describe('searchEmailStoreAction', () => {
 	const mockSearchResponseTypeMessage = {
@@ -47,7 +48,7 @@ describe('searchEmailStoreAction', () => {
 	};
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it(

@@ -14,7 +14,7 @@ import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
 import { SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	t: vi.fn((key, defaultValue) => defaultValue)
 }));
 
@@ -53,7 +53,7 @@ describe('SelectIdentitySignature', () => {
 	];
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders with default signatures selected', () => {

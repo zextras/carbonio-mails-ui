@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable testing-library/prefer-user-event */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -22,14 +23,14 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
 
 describe('ConversationList Component', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 
 		const folderId = '2';
 		(useParams as Mock).mockReturnValue({

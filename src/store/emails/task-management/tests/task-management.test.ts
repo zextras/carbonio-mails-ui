@@ -140,7 +140,7 @@ describe('useEmailsStore', () => {
 		useEmailsStore.getState().addTask(task1);
 		useEmailsStore.getState().addTask(task2);
 
-		jest.advanceTimersByTimeAsync(1000);
+		vi.advanceTimersByTimeAsync(1000);
 
 		expect(results).toEqual([]);
 		expect(task1).not.toHaveBeenCalled();

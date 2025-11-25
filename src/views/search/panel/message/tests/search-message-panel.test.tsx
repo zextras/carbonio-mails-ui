@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -17,8 +18,8 @@ import { SearchMessagePanel } from 'views/search/panel/message/search-message-pa
 
 const mockNavigateSpy = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn(),
 	useNavigate: (): NavigateFunction => mockNavigateSpy
 }));

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -11,7 +12,7 @@ describe('createEncryptionPassword', () => {
 	const apiURLReset = '/service/extension/encryption/password/reset';
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {

@@ -27,7 +27,7 @@ describe('handleCertificateFileUpload', () => {
 		]);
 
 		file = new File([dummyP12Content], 'certificate.p12', { type: 'application/x-pkcs12' });
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should throw error as certificate not parsed', async () => {

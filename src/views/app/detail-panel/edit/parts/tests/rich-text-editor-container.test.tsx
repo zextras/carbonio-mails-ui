@@ -11,15 +11,15 @@ import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-jest.mock('lodash', () => ({
-	...jest.requireActual('lodash'),
+vi.mock('lodash', () => ({
+	...vi.importActual('lodash'),
 	debounce: (fn: (...args: any[]) => any): any => fn,
 	noop: (): void => {
 		// do nothing
 	}
 }));
 
-jest.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
+vi.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
 	handleEditorPaste: vi.fn()
 }));
 
@@ -61,8 +61,8 @@ const MockComposer: React.FC<any> = (props) => {
 	return <div data-testid="mock-composer" />;
 };
 
-jest.mock('@zextras/carbonio-ui-text-composer', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-text-composer'),
+vi.mock('@zextras/carbonio-ui-text-composer', () => ({
+	...vi.importActual('@zextras/carbonio-ui-text-composer'),
 	Composer: (props: any): any => <MockComposer {...props} />
 }));
 
@@ -70,7 +70,7 @@ const mockRemoveInlineAttachments = vi.fn();
 const mockSetText = vi.fn();
 const mockSetTextProvider = vi.fn();
 
-jest.mock('store/editor/index', () => ({
+vi.mock('store/editor/index', () => ({
 	useEditorText: vi.fn(() => ({
 		getText: vi.fn(() => ({ plainText: '', richText: '' })),
 		setText: mockSetText
@@ -84,7 +84,7 @@ jest.mock('store/editor/index', () => ({
 
 describe('RichTextEditorContainer', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		editorInstance = null;
 	});
 

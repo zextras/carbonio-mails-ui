@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -17,8 +18,8 @@ import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 const createSnackbarSpy = vi.fn((arg) => arg);

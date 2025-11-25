@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -31,22 +32,22 @@ const LABEL_SELECT_ALL = 'label.select_all';
 const LABEL_DESELECT_ALL = 'label.deselect_all';
 const LABEL_RECOVER_EMAILS = 'label.recover_selected_emails';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 
 describe('Backup search list', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		(useParams as Mock).mockReturnValue({ itemId: message1.messageId });
 	});

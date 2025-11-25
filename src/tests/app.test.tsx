@@ -29,8 +29,8 @@ import { DeletedMessageFromAPI } from 'types';
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
 // It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
 // I think we should consider removing that mock or redefine it or make it configurable
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
 		postMessage: vi.fn()
 	},
@@ -70,7 +70,7 @@ describe('App', () => {
 			folder: [generateFolder({ name: 'Inbox' })]
 		});
 		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {

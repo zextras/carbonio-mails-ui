@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -11,7 +12,7 @@ import {
 	modifyOutgoingFilterRulesSoapApi
 } from 'api/modify-filter-rules-soap-api';
 
-jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
 	legacySoapFetch: vi.fn()
 }));
 

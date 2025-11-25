@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -19,41 +20,41 @@ import { useKeyboardShortcutsForMsg } from 'hooks/use-keyboard-shortcuts-for-msg
 import { hasModalOverlay, isInputContext } from 'hooks/utils';
 
 // Mock all dependencies
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn()
 }));
 
-jest.mock('hooks/utils', () => ({
+vi.mock('hooks/utils', () => ({
 	hasModalOverlay: vi.fn().mockReturnValue(false),
 	isInputContext: vi.fn().mockReturnValue(false)
 }));
 
-jest.mock('hooks/actions/use-msg-move-to-trash', () => ({
+vi.mock('hooks/actions/use-msg-move-to-trash', () => ({
 	useMsgMoveToTrashFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-flag', () => ({
+vi.mock('hooks/actions/use-msg-set-flag', () => ({
 	useMsgSetFlagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-not-spam', () => ({
+vi.mock('hooks/actions/use-msg-set-not-spam', () => ({
 	useMsgSetNotSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-read', () => ({
+vi.mock('hooks/actions/use-msg-set-read', () => ({
 	useMsgSetReadFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-spam', () => ({
+vi.mock('hooks/actions/use-msg-set-spam', () => ({
 	useMsgSetSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-unflag', () => ({
+vi.mock('hooks/actions/use-msg-set-unflag', () => ({
 	useMsgSetUnflagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-msg-set-unread', () => ({
+vi.mock('hooks/actions/use-msg-set-unread', () => ({
 	useMsgSetUnreadFn: vi.fn()
 }));
 
@@ -388,7 +389,7 @@ describe('useKeyboardShortcutsForMsg', () => {
 			expect(mockExecute).not.toHaveBeenCalled();
 
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				vi.advanceTimersByTime(1000);
 			});
 
 			// After timeout, key sequence should be reset (no matching action for 'm' alone)

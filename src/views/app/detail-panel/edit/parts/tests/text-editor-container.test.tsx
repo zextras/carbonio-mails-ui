@@ -20,7 +20,7 @@ import {
 
 // Mock the RichTextEditorContainer component
 // noinspection JSUnusedGlobalSymbols
-jest.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => ({
+vi.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => ({
 	RichTextEditorContainer: ({ editorId }: { editorId: string }): React.JSX.Element => (
 		<div data-testid="MailEditorWrapper">Composer with RichText for {editorId}</div>
 	)

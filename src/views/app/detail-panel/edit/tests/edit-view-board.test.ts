@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -9,7 +10,7 @@ import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carboni
 import { EditViewActions } from '../../../../../constants';
 import { createEditBoard } from '../edit-view-board';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	addBoard: vi.fn(),
 	getBoardById: vi.fn(),
 	setCurrentBoard: vi.fn()
@@ -21,7 +22,7 @@ const mockSetCurrentBoard = setCurrentBoard as MockedFunction<typeof setCurrentB
 
 describe('createEditBoard', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should create a new board when no existing board exists for draft editing', () => {

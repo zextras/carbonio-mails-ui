@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,9 +10,9 @@ import { parse } from 'api/upload-attachments-api';
 import { uploadFileApi } from 'api/upload-file-api';
 import { convertToDecimal } from 'commons/utilities';
 
-jest.mock('axios');
-jest.mock('../upload-attachments-api');
-jest.mock('../../commons/utilities');
+vi.mock('axios');
+vi.mock('../upload-attachments-api');
+vi.mock('../../commons/utilities');
 
 describe('uploadFileApi', () => {
 	it('returns attachment ID when upload is successful', async () => {

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,7 +10,7 @@ import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	getUserAccount: vi.fn(),
 	getUserSettings: vi.fn()
 }));

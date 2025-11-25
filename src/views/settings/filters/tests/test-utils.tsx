@@ -37,6 +37,6 @@ export function mockFilter({
 export function makeAllItemsVisible(): void {
 	makeListItemsVisible();
 	act(() => {
-		jest.advanceTimersByTime(10_000);
+		vi.advanceTimersByTime(10_000);
 	});
 }

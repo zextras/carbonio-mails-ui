@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -170,7 +171,7 @@ export function setupTest(
 	ui: ReactElement,
 	{ setupOptions, ...customRenderOptions }: SetupOptions = {}
 ): { user: UserEvent } & ReturnType<typeof render> {
-	const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime, ...setupOptions });
+	const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime, ...setupOptions });
 	const rightClick = (target: Element): Promise<void> =>
 		user.pointer({ target, keys: '[MouseRight]' });
 	return {
@@ -204,7 +205,7 @@ export function setupHook<TProps extends unknown[], TResult>(
 		result,
 		unmount,
 		rerender,
-		user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime, ...setupOptions })
+		user: userEvent.setup({ advanceTimers: vi.advanceTimersByTime, ...setupOptions })
 	};
 }
 
@@ -233,8 +234,7 @@ export function makeListItemsVisible(): void {
 }
 
 export function triggerLoadMore(): void {
-	const { calls, instances } = (window.IntersectionObserver as Mock<IntersectionObserver>)
-		.mock;
+	const { calls, instances } = (window.IntersectionObserver as Mock<IntersectionObserver>).mock;
 
 	const [onChange] = calls[calls.length - 1];
 	const instance = instances[instances.length - 1];

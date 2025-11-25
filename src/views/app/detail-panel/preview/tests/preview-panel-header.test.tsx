@@ -9,6 +9,7 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { Mock } from 'vitest';
 
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -22,8 +23,8 @@ import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel
 
 const mockNavigate = vi.fn();
 
-jest.mock('react-router-dom', () => {
-	const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', () => {
+	const actual = vi.importActual('react-router-dom');
 	return {
 		...actual,
 		useNavigate: (): Mock => mockNavigate

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -18,8 +19,8 @@ import { generateConversation } from '__test__/generators/generateConversation';
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);
 
-jest.mock('react-i18next', () => ({
-	...jest.requireActual('react-i18next'),
+vi.mock('react-i18next', () => ({
+	...vi.importActual('react-i18next'),
 	useTranslation: (): Array<(key: string) => string> => [
 		(key: string): string => key // Return the translation key as the translation
 	],
@@ -27,13 +28,13 @@ jest.mock('react-i18next', () => ({
 	I18nextProvider: ({ children }: { children: React.ReactNode }): React.ReactNode => children
 }));
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'),
 	useSnackbar: vi.fn()
 }));
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn().mockReturnValue(vi.fn())
 }));
 

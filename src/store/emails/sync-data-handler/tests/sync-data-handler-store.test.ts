@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -23,8 +24,8 @@ import {
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	getTags: vi.fn()
 }));
 describe('handleNotifyMessagesCreated', () => {
@@ -113,7 +114,7 @@ let mockIsFocusMode = false;
 
 const mockedMultipleNotify = vi.fn();
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	get IS_FOCUS_MODE(): boolean {
 		return mockIsFocusMode;
 	},

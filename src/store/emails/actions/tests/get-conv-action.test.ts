@@ -10,8 +10,8 @@ import { updateConversations, updateMessages } from 'store/emails/store';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { GetConvResponse } from 'types/soap/get-conv';
 
-jest.mock('../../store', () => ({
-	...jest.requireActual('../../store'),
+vi.mock('../../store', () => ({
+	...vi.importActual('../../store'),
 	updateMessages: vi.fn(),
 	updateConversations: vi.fn()
 }));

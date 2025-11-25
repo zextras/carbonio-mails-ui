@@ -19,13 +19,13 @@ import {
 	generateChipName
 } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 
-jest.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
+vi.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
 	sendMsg: vi.fn(),
 	copyEmailToClipboard: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'), // This line preserves other exports from the module
+vi.mock('@zextras/carbonio-design-system', () => ({
+	...vi.importActual('@zextras/carbonio-design-system'), // This line preserves other exports from the module
 	useSnackbar: vi.fn()
 }));
 

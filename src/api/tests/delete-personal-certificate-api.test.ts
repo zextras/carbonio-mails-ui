@@ -10,7 +10,7 @@ import { deletePersonalCertificate } from 'api/delete-personal-certificate-api';
 
 describe('deletePersonalCertificate', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 	const apiURL = '/service/extension/encryption/smime/personal';
 	it('should return data when the API call is successful and response is ok', async () => {

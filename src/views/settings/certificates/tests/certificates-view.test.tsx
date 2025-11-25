@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -17,8 +18,8 @@ import {
 	createAPIInterceptorToGetRecipientsCertificates
 } from 'views/settings/certificates/tests/utils/utils';
 
-jest.mock('../../../../store/certificates/store', () => {
-	const actual = jest.requireActual('../../../../store/certificates/store');
+vi.mock('../../../../store/certificates/store', () => {
+	const actual = vi.importActual('../../../../store/certificates/store');
 	return {
 		...actual,
 		useSmimePasswordStore: vi.fn(() => ({
@@ -28,7 +29,7 @@ jest.mock('../../../../store/certificates/store', () => {
 	};
 });
 
-jest.mock('../../../../api/check-exist-password-api', () => ({
+vi.mock('../../../../api/check-exist-password-api', () => ({
 	checkExistEncryptionPassword: vi.fn()
 }));
 

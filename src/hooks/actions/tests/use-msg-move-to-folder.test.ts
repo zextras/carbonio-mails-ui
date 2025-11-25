@@ -98,7 +98,7 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Move Message`)).toBeVisible();
@@ -117,7 +117,7 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Move Message`)).not.toBeInTheDocument();

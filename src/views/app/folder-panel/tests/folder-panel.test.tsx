@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -14,20 +15,20 @@ import { setupTest } from '@test-setup';
 import FolderPanel from 'views/app/folder-panel';
 import { useIsMessageView } from 'views/search/search-view-hooks';
 
-jest.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: vi.fn() }));
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: vi.fn() }));
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
-jest.mock('../messages/message-list', () => ({
+vi.mock('../messages/message-list', () => ({
 	MessageList: vi.fn(() => <div data-testid="message-list" />)
 }));
 
-jest.mock('../conversations/conversation-list', () => ({
+vi.mock('../conversations/conversation-list', () => ({
 	ConversationList: vi.fn(() => <div data-testid="conversation-list" />)
 }));
 
-jest.mock('../../../search/shimmer-list', () => vi.fn(() => <div data-testid="shimmer-list" />));
+vi.mock('../../../search/shimmer-list', () => vi.fn(() => <div data-testid="shimmer-list" />));
 
 describe('FolderPanel', () => {
 	it('renders MessageList when isMessageView is true', () => {

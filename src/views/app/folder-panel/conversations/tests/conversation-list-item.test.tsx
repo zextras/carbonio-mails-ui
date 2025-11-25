@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 // noinspection DuplicatedCode
 
 /*
@@ -30,12 +31,12 @@ import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 const canExecuteCallback = vi.fn();
 const PARTICIPANTS_NAME_LABEL_TESTID = 'participants-name-label';
 
-jest.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
-	...jest.requireActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
+vi.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
+	...vi.importActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
 	useConvPreviewOnSeparatedWindowFn: vi.fn()
 }));
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn()
 }));
 

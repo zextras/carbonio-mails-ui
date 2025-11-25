@@ -7,7 +7,7 @@
 import { act } from '@testing-library/react';
 import { StateCreator, UseBoundStore, StoreApi } from 'zustand';
 
-const { create: actualCreate } = jest.requireActual<typeof import('zustand')>('zustand');
+const { create: actualCreate } = vi.importActual<typeof import('zustand')>('zustand');
 
 // a variable to hold reset functions for all stores declared in the app
 const storeResetFns = new Set<() => void>();

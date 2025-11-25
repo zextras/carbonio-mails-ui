@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -16,27 +17,27 @@ import {
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 
-jest.mock('store/editor/store', () => ({ useEditorsStore: vi.fn() }));
-jest.mock('store/editor/hooks/editors', () => ({ getEditor: vi.fn() }));
-jest.mock('store/editor/editor-transformations', () => ({ composeCidUrlFromContentId: vi.fn() }));
-jest.mock('api/upload-attachments-api', () => ({ uploadAttachmentsApi: vi.fn() }));
-jest.mock('store/editor/hooks/commons', () => ({ computeAndUpdateEditorStatus: vi.fn() }));
-jest.mock('store/editor/hooks/save-draft', () => ({
+vi.mock('store/editor/store', () => ({ useEditorsStore: vi.fn() }));
+vi.mock('store/editor/hooks/editors', () => ({ getEditor: vi.fn() }));
+vi.mock('store/editor/editor-transformations', () => ({ composeCidUrlFromContentId: vi.fn() }));
+vi.mock('api/upload-attachments-api', () => ({ uploadAttachmentsApi: vi.fn() }));
+vi.mock('store/editor/hooks/commons', () => ({ computeAndUpdateEditorStatus: vi.fn() }));
+vi.mock('store/editor/hooks/save-draft', () => ({
 	useSaveDraftFromEditor: (): any => ({
 		debouncedSaveDraft: vi.fn((_id, opts?: any) => {
 			opts?.onComplete && opts.onComplete();
 		})
 	})
 }));
-jest.mock('helpers/attachments', () => ({ composeAttachmentDownloadUrl: vi.fn(() => 'url') }));
-jest.mock('store/editor/editor-utils', () => ({
+vi.mock('helpers/attachments', () => ({ composeAttachmentDownloadUrl: vi.fn(() => 'url') }));
+vi.mock('store/editor/editor-utils', () => ({
 	filterUnsavedAttachmentsByUploadId: vi.fn(),
 	getSavedInlineAttachmentsByContentId: vi.fn()
 }));
-jest.mock('hooks/use-ui-utilities', () => ({
+vi.mock('hooks/use-ui-utilities', () => ({
 	useUiUtilities: (): any => ({ createSnackbar: vi.fn() })
 }));
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	t: (_: string, o: any): string => `Upload failed for the file "${o.filename}"`
 }));
 
@@ -50,7 +51,7 @@ describe('useEditorAttachments', () => {
 	const setAttachmentUploadCompletedMock = vi.fn();
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		(useEditorsStore as unknown as Mock).mockImplementation((sel) =>
 			sel({
 				editors: {

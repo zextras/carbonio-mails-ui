@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -13,12 +14,12 @@ import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', () => ({
+	...vi.importActual('@zextras/carbonio-ui-commons'),
 	useTags: vi.fn()
 }));
 
-jest.mock('../../../../../ui-actions/tag-actions', () => ({
+vi.mock('../../../../../ui-actions/tag-actions', () => ({
 	useTagExist: vi.fn().mockReturnValue(true)
 }));
 
@@ -28,7 +29,7 @@ describe('SearchMessageListItemCore', () => {
 	const subject = 'Test Subject';
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe('render test', () => {

@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -26,8 +27,8 @@ import { FolderState, MsgActionRequest, MsgActionResponse } from 'types/index.d'
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useParams: vi.fn()
 }));
 

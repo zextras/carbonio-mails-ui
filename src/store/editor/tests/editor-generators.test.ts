@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -12,23 +13,23 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActionsType, MailMessage } from 'types/index.d';
 
-jest.mock('store/editor/hooks/editors', () => ({
-	...jest.requireActual('store/editor/hooks/editors'),
+vi.mock('store/editor/hooks/editors', () => ({
+	...vi.importActual('store/editor/hooks/editors'),
 	getEditor: vi.fn()
 }));
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
 	v4: vi.fn(() => 'test-editor-id')
 }));
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
 	getUserSettings: vi.fn(() => ({
 		prefs: { zimbraPrefComposeFormat: 'html' }
 	})),
 	t: vi.fn((_key: string, fallback: string) => fallback)
 }));
 
-jest.mock('../../../helpers/identities', () => ({
+vi.mock('../../../helpers/identities', () => ({
 	getIdentityFromParticipant: vi.fn(() => ({ id: 'test-identity-id' })),
 	getDefaultIdentity: vi.fn(() => ({ id: 'default-identity-id' })),
 	getRecipientReplyIdentity: vi.fn(() => ({ id: 'recipient-reply-id' })),

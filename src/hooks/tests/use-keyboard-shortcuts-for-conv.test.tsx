@@ -1,3 +1,4 @@
+import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -21,41 +22,41 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 const defaultLocation = `/${MAILS_ROUTE}/folder/2/conversation/1`;
 
 // Mock all dependencies
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+	...vi.importActual('react-router-dom'),
 	useNavigate: vi.fn()
 }));
 
-jest.mock('hooks/utils', () => ({
+vi.mock('hooks/utils', () => ({
 	hasModalOverlay: vi.fn().mockReturnValue(false),
 	isInputContext: vi.fn().mockReturnValue(false)
 }));
 
-jest.mock('hooks/actions/use-conv-move-to-trash', () => ({
+vi.mock('hooks/actions/use-conv-move-to-trash', () => ({
 	useConvMoveToTrashFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-flag', () => ({
+vi.mock('hooks/actions/use-conv-set-flag', () => ({
 	useConvSetFlagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-not-spam', () => ({
+vi.mock('hooks/actions/use-conv-set-not-spam', () => ({
 	useConvSetNotSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-read', () => ({
+vi.mock('hooks/actions/use-conv-set-read', () => ({
 	useConvSetReadFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-spam', () => ({
+vi.mock('hooks/actions/use-conv-set-spam', () => ({
 	useConvSetSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-unflag', () => ({
+vi.mock('hooks/actions/use-conv-set-unflag', () => ({
 	useConvSetUnflagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-unread', () => ({
+vi.mock('hooks/actions/use-conv-set-unread', () => ({
 	useConvSetUnreadFn: vi.fn()
 }));
 
@@ -473,7 +474,7 @@ describe('useKeyboardShortcutsForConv', () => {
 			expect(mockExecute).not.toHaveBeenCalled();
 
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				vi.advanceTimersByTime(1000);
 			});
 
 			// After timeout, key sequence should be reset (no matching action for 'm' alone)

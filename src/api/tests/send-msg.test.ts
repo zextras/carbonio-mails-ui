@@ -18,11 +18,11 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MailsEditorV2 } from 'types/index.d';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
-jest.mock('../../store/emails/actions/get-conv-action', () => ({
+vi.mock('../../store/emails/actions/get-conv-action', () => ({
 	getConvEmailStoreAction: vi.fn()
 }));
 
-jest.mock('../../store/emails/actions/get-message-with-existing-participants', () => ({
+vi.mock('../../store/emails/actions/get-message-with-existing-participants', () => ({
 	getMessageWithExistingParticipantsEmailStoreAction: vi.fn()
 }));
 
