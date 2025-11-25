@@ -23,9 +23,14 @@ export default defineConfig({
 		environment: 'jsdom',
 		setupFiles: ['./src/__test__/vitest-setup.tsx', './src/__test__/setup-browser-env.ts'],
 		clearMocks: true,
+		environmentOptions: {
+			jsdom: {
+				url: 'http://localhost'
+			}
+		},
 		mockReset: true,
 		testTimeout: 20000,
-		reporters: ['default', 'junit'],
+		reporters: ['default'],
 		coverage: {
 			enabled: true,
 			provider: 'v8',

@@ -4,9 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 import type * as shell from '@zextras/carbonio-shell-ui';
+import {
+	AudioNotificationConfig,
+	INotificationManager,
+	NotificationConfig,
+	PopupNotificationConfig
+} from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
@@ -36,13 +43,14 @@ export const getBridgedFunctions = vi.fn();
 export const addBoard = vi.fn();
 export const closeBoard = vi.fn();
 export const updateBoardContext = vi.fn();
-export const useBoardHooks = vi.fn().mockReturnValue({
-	closeBoard: vi.fn(),
-	updateBoard: vi.fn(),
+export const updateBoard = vi.fn();
+export const useBoardHooks = vi.fn(() => ({
+	closeBoard,
+	updateBoard,
 	setCurrentBoard: vi.fn(),
 	getBoardContext: vi.fn(),
 	getBoard: vi.fn()
-});
+}));
 export const minimizeBoards = vi.fn();
 export const getCurrentRoute = vi.fn();
 export const useIsCarbonioCE = vi.fn(() => false);
@@ -112,3 +120,26 @@ export const JSNS = {
 };
 
 export const IS_FOCUS_MODE = false;
+
+const mockNotificationManager: INotificationManager = {
+	multipleNotify(config: NotificationConfig[]): void {
+		// notified! x3
+	},
+	notify(config: NotificationConfig): void {
+		// notified!
+	},
+	playSound(config: AudioNotificationConfig): void {
+		// beep
+	},
+	showPopup(config: PopupNotificationConfig): void {
+		// pop
+	}
+};
+
+export const getNotificationManager: Mock<typeof shell.getNotificationManager> = vi.fn(
+	() => mockNotificationManager
+);
+
+export const report: Mock<typeof shell.report> = vi.fn(() => {
+	noop();
+});

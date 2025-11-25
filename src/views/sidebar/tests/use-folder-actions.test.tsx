@@ -25,7 +25,7 @@ import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 vi.mock('@zextras/carbonio-design-system', async () => {
-	const actual = vi.importActual('@zextras/carbonio-design-system');
+	const actual = await vi.importActual('@zextras/carbonio-design-system');
 	return {
 		...actual,
 		useModal: vi.fn()

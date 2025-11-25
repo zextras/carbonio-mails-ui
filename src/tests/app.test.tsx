@@ -29,15 +29,18 @@ import { DeletedMessageFromAPI } from 'types';
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
 // It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
 // I think we should consider removing that mock or redefine it or make it configurable
-vi.mock('@zextras/carbonio-ui-commons', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	folderWorker: {
-		postMessage: vi.fn()
-	},
-	tagsWorker: {
-		postMessage: vi.fn()
-	}
-}));
+// vi.mock('@zextras/carbonio-ui-commons', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+// 	folderWorker: {
+// 		postMessage: vi.fn()
+// 	},
+// 	tagsWorker: {
+// 		postMessage: vi.fn()
+// 	}
+// }));
+// vi.mock('@zextras/carbonio-shell-ui', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-shell-ui'))
+// }));
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -70,7 +73,6 @@ describe('App', () => {
 			folder: [generateFolder({ name: 'Inbox' })]
 		});
 		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
-		vi.clearAllMocks();
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {

@@ -3,13 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
-import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -17,19 +15,6 @@ import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/
 import { IncompleteMessage } from 'types/index.d';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 
-// Mock useModal hook
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useModal: vi.fn()
-}));
-
-const mockCreateModal = vi.fn();
-const mockCloseModal = vi.fn();
-
-(useModal as Mock).mockReturnValue({
-	createModal: mockCreateModal,
-	closeModal: mockCloseModal
-});
 const validSignature = {
 	type: 'S/MIME',
 	trusted: true,
@@ -40,11 +25,6 @@ const validSignature = {
 	message: 'valid issuer certificate',
 	messageCode: 'VALID',
 	valid: true
-};
-const authenticationHeaders = {
-	spf: { value: 'spf-value', pass: true },
-	dkim: { value: 'dkim-value', pass: true },
-	dmarc: { value: 'dmarc-value', pass: true }
 };
 
 const mockMsg: IncompleteMessage = {
@@ -74,20 +54,6 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText(showDetailLbl)).toBeInTheDocument();
 	});
 
-	// it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
-	// 	const mockMsg_: IncompleteMessage = {
-	// 		authenticationHeaders: {}
-	// 	} as IncompleteMessage;
-	//
-	// 	const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
-	//
-	// 	const icon = screen.getByTestId('mail-authentication-header-icon');
-	// 	expect(icon).toBeInTheDocument();
-	//
-	// 	await user.hover(icon);
-	// 	expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
-	// });
-
 	it('renders SmimeIcon when signature is present', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId('smime-icon')).toBeInTheDocument();
@@ -116,10 +82,8 @@ describe('MailInfoBlock', () => {
 	it('opens modal when "Show Details" link is clicked', async () => {
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
 
-		await act(async () => {
-			await user.click(screen.getByText(showDetailLbl));
-		});
-		expect(mockCreateModal).toHaveBeenCalled();
+		await user.click(screen.getByText(showDetailLbl));
+		expect(await screen.findByTestId('modal')).toBeInTheDocument();
 	});
 
 	it('does not render the show details link when no valid value is passed', () => {
@@ -160,13 +124,12 @@ describe('MailInfoBlock', () => {
 			HttpResponse.json({ status: 200 })
 		);
 		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimePasswordStore.getState().updateSmimePassword('');
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
 		const decryptMsg = screen.getByTestId(decryptMsgId);
-		await act(async () => {
-			await user.click(decryptMsg);
-		});
-		expect(mockCreateModal).toHaveBeenCalled();
+		await user.click(decryptMsg);
+		expect(await screen.findByTestId('modal')).toBeInTheDocument();
 	});
 });

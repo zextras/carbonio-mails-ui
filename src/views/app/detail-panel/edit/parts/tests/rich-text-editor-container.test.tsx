@@ -11,13 +11,13 @@ import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-vi.mock('lodash', async () => ({
-	...(await vi.importActual('lodash')),
-	debounce: (fn: (...args: any[]) => any): any => fn,
-	noop: (): void => {
-		// do nothing
-	}
-}));
+// vi.mock('lodash', async () => ({
+// 	...(await vi.importActual('lodash')),
+// 	debounce: (fn: (...args: any[]) => any): any => fn,
+// 	noop: (): void => {
+// 		// do nothing
+// 	}
+// }));
 
 vi.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
 	handleEditorPaste: vi.fn()

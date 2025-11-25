@@ -11,25 +11,13 @@ import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 
-import * as shell from './mocks/carbonio-shell-ui/carbonio-shell-ui';
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
-vi.mock('@zextras/carbonio-shell-ui', () => shell);
+vi.mock('@zextras/carbonio-shell-ui');
 let server: SetupServer;
-
-// Global test mocks
-declare global {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const BASE_PATH: string;
-}
-
-// Set up BASE_PATH mock for TinyMCE asset loading in tests
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global as any).BASE_PATH = '/test-base-path/';
 
 expect.extend({ toHaveStyleRule: matchers.toHaveStyleRule });
 
@@ -37,22 +25,22 @@ export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' } = { onUnhandledRequest: 'warn' }
 ): void => {
 	// mock a simplified IntersectionObserver
-	Object.defineProperty(window, 'IntersectionObserver', {
-		writable: true,
-		value: vi.fn(function intersectionObserverMock(
-			callback: IntersectionObserverCallback,
-			options: IntersectionObserverInit
-		) {
-			return {
-				thresholds: options.threshold,
-				root: options.root,
-				rootMargin: options.rootMargin,
-				observe: vi.fn(),
-				unobserve: vi.fn(),
-				disconnect: vi.fn()
-			};
-		})
-	});
+	// Object.defineProperty(window, 'IntersectionObserver', {
+	// 	writable: true,
+	// 	value: vi.fn(function intersectionObserverMock(
+	// 		callback: IntersectionObserverCallback,
+	// 		options: IntersectionObserverInit
+	// 	) {
+	// 		return {
+	// 			thresholds: options.threshold,
+	// 			root: options.root,
+	// 			rootMargin: options.rootMargin,
+	// 			observe: vi.fn(),
+	// 			unobserve: vi.fn(),
+	// 			disconnect: vi.fn()
+	// 		};
+	// 	})
+	// });
 
 	server = setupServer(...getRestHandlers());
 	server.listen({ onUnhandledRequest });
@@ -137,12 +125,35 @@ Object.defineProperty(window, 'Worker', {
 	value: Worker
 });
 
-// ResizeObserver mock
-window.ResizeObserver = vi.fn().mockImplementation(() => ({
-	observe: vi.fn(),
-	unobserve: vi.fn(),
-	disconnect: vi.fn()
-}));
+// Mock ResizeObserver
+Object.defineProperty(window, 'ResizeObserver', {
+	writable: true,
+	value: function ResizeObserverMock(): ResizeObserver {
+		return {
+			observe: (): undefined => undefined,
+			unobserve: (): undefined => undefined,
+			disconnect: (): undefined => undefined
+		};
+	}
+});
+
+// mock a simplified Intersection Observer
+Object.defineProperty(window, 'IntersectionObserver', {
+	writable: true,
+	value: vi.fn(function intersectionObserverMock(
+		callback: IntersectionObserverCallback,
+		options: IntersectionObserverInit
+	) {
+		return {
+			thresholds: options.threshold,
+			root: options.root,
+			rootMargin: options.rootMargin,
+			observe: vi.fn(),
+			unobserve: vi.fn(),
+			disconnect: vi.fn()
+		};
+	})
+});
 
 // ------------------ EXPORTS ------------------
 export const getSetupServer = (): SetupServer => server;
