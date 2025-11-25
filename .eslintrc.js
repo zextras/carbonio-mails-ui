@@ -5,12 +5,12 @@
  */
 module.exports = {
 	extends: [require.resolve('@zextras/carbonio-ui-configs/rules/eslint')],
-	plugins: ['unused-imports', 'testing-library', 'notice'],
+	plugins: ['unused-imports', 'jest-dom', 'testing-library', 'notice'],
 	overrides: [
 		{
 			// enable eslint-plugin-testing-library rules or preset only for test files
 			files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)', '**/test-setup.tsx'],
-			extends: ['plugin:testing-library/react'],
+			extends: ['plugin:jest-dom/recommended', 'plugin:testing-library/react'],
 			rules: {
 				'testing-library/no-global-regexp-flag-in-query': 'error',
 				'testing-library/prefer-user-event': 'error',

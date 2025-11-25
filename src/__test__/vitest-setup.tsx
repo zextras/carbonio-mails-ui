@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import '@testing-library/jest-dom';
 import { noop } from 'lodash';
 import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
