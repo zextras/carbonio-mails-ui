@@ -10,11 +10,13 @@ import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 
+import * as shell from './mocks/carbonio-shell-ui/carbonio-shell-ui';
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
+vi.mock('@zextras/carbonio-shell-ui', () => shell);
 let server: SetupServer;
 
 // Global test mocks
