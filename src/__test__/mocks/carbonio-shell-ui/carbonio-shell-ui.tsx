@@ -7,7 +7,6 @@
 import React, { FC, ReactNode } from 'react';
 
 import * as shell from '@zextras/carbonio-shell-ui';
-import { useActions as realUseActions } from '@zextras/carbonio-shell-ui';
 import { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
@@ -17,15 +16,9 @@ export const mockedAccount = generateAccount();
 const mockedAccounts = [mockedAccount];
 const mockedSettings = generateSettings();
 
-export const getUserAccount: Mock<ReturnType<typeof shell.getUserAccount>> = vi.fn(
-	() => mockedAccount
-);
-export const useUserAccount: Mock<ReturnType<typeof shell.useUserAccount>> = vi.fn(
-	() => mockedAccount
-);
-export const useUserAccounts: Mock<ReturnType<typeof shell.useUserAccounts>> = vi.fn(
-	() => mockedAccounts
-);
+export const getUserAccount = vi.fn(() => mockedAccount);
+export const useUserAccount = vi.fn(() => mockedAccount);
+export const useUserAccounts = vi.fn(() => mockedAccounts);
 
 export const useUserSettings = vi.fn(() => mockedSettings);
 export const getUserSettings = vi.fn(() => mockedSettings);
@@ -35,7 +28,7 @@ export const pushHistory = vi.fn();
 
 export const useBoard = vi.fn();
 
-export const useAppContext = vi.fn<unknown, []>(() => mockedAccounts);
+export const useAppContext: Mock<typeof shell.useAppContext> = vi.fn(() => mockedAccounts);
 export const setAppContext = vi.fn();
 export const getBridgedFunctions = vi.fn();
 export const addBoard = vi.fn();
@@ -50,7 +43,7 @@ export const useBoardHooks = vi.fn().mockReturnValue({
 });
 export const minimizeBoards = vi.fn();
 export const getCurrentRoute = vi.fn();
-export const useIsCarbonioCE: Mock<ReturnType<typeof shell.useIsCarbonioCE>> = vi.fn(() => false);
+export const useIsCarbonioCE = vi.fn(() => false);
 
 export const useLocalStorage = vi.fn();
 export const AppLink: FC<{ children: ReactNode }> = ({ children }) => <>{children}</>;
@@ -85,32 +78,27 @@ export const getIntegratedComponent = vi.fn((id: string) => [
 ]);
 
 // Integrated actions
-export const getAction = vi.fn<
-	ReturnType<typeof shell.getAction>,
-	Parameters<typeof shell.getAction>
->((type, id) => [undefined, false]);
+export const getAction = vi.fn((type, id) => [undefined, false]);
 
-export const useActions = jest
-	.fn<ReturnType<typeof realUseActions>, Parameters<typeof realUseActions>>()
-	.mockImplementation(() => []);
+export const useActions = vi.fn(() => []);
 
 // Integrated functions
-export const getIntegratedFunction: Mock<
-	ReturnType<typeof shell.getIntegratedFunction>,
-	Parameters<typeof shell.getIntegratedFunction>,
-	any
-> = vi.fn<
-	ReturnType<typeof shell.getIntegratedFunction>,
-	Parameters<typeof shell.getIntegratedFunction>
->((id) => [vi.fn(), false]);
+export const getIntegratedFunction: Mock<typeof shell.getIntegratedFunction> = vi.fn(
+	<TFunction extends (...args: any[]) => any = (...args: any[]) => any>(
+		_id: string
+	): [TFunction, boolean] => {
+		const fn: TFunction = ((..._args: any[]) => undefined) as TFunction;
+		return [fn, false];
+	}
+);
 
-export const useIntegratedFunction: Mock<
-	ReturnType<typeof shell.useIntegratedFunction>,
-	Parameters<typeof shell.useIntegratedFunction>,
-	any
-> = vi.fn<
-	ReturnType<typeof shell.useIntegratedFunction>,
-	Parameters<typeof shell.useIntegratedFunction>
->((id) => [vi.fn(), false]);
+export const useIntegratedFunction: Mock<typeof shell.useIntegratedFunction> = vi.fn(
+	<TFunction extends (...args: any[]) => any = (...args: any[]) => any>(
+		_id: string
+	): [TFunction, boolean] => {
+		const fn: TFunction = ((..._args: any[]) => undefined) as TFunction;
+		return [fn, false];
+	}
+);
 
 export const JSNS = { ...shell.JSNS };

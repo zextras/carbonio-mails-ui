@@ -1,11 +1,10 @@
+import moment from 'moment';
 import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import moment from 'moment';
 
 import * as utils from 'commons/utils';
 import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-query';
@@ -17,7 +16,7 @@ vi.mock('commons/utils', () => ({
 	getUserLocale: vi.fn()
 }));
 
-const mockedGetUserLocale = utils.getUserLocale as MockedFunction<typeof utils.getUserLocale>;
+const mockedGetUserLocale = utils.getUserLocale as Mock<typeof utils.getUserLocale>;
 
 describe('extractDateFieldFromQuery', () => {
 	beforeEach(() => {

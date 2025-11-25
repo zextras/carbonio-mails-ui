@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -6,6 +5,7 @@ import { Mock } from 'vitest';
  */
 
 import axios, { AxiosResponse } from 'axios';
+import { Mock } from 'vitest';
 
 import { encodeBase64, uploadToFiles } from 'api/upload-file-to-files';
 
@@ -54,7 +54,7 @@ describe('encodeBase64', () => {
 });
 
 vi.mock('axios');
-const mockedAxios = axios as Mocked<typeof axios>;
+const mockedAxios = axios as Mock<typeof axios>;
 
 describe('uploadToFiles', () => {
 	const file = new File(['content'], 'myfile.txt', { type: 'text/plain' });

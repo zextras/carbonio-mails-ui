@@ -1,11 +1,10 @@
+import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
 import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
 
 import { EditViewActions } from '../../../../../constants';
 import { createEditBoard } from '../edit-view-board';
@@ -16,9 +15,9 @@ vi.mock('@zextras/carbonio-shell-ui', () => ({
 	setCurrentBoard: vi.fn()
 }));
 
-const mockAddBoard = addBoard as MockedFunction<typeof addBoard>;
-const mockGetBoardById = getBoardById as MockedFunction<typeof getBoardById>;
-const mockSetCurrentBoard = setCurrentBoard as MockedFunction<typeof setCurrentBoard>;
+const mockAddBoard = addBoard as Mock<typeof addBoard>;
+const mockGetBoardById = getBoardById as Mock<typeof getBoardById>;
+const mockSetCurrentBoard = setCurrentBoard as Mock<typeof setCurrentBoard>;
 
 describe('createEditBoard', () => {
 	beforeEach(() => {

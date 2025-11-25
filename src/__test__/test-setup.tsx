@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -210,12 +209,7 @@ export function setupHook<TProps extends unknown[], TResult>(
 }
 
 export function makeListItemsVisible(): void {
-	const { calls, instances } = (
-		window.IntersectionObserver as Mock<
-			IntersectionObserver,
-			[callback: IntersectionObserverCallback, options?: IntersectionObserverInit]
-		>
-	).mock;
+	const { calls, instances } = (window.IntersectionObserver as ReturnType<typeof vi.fn>).mock;
 	calls.forEach((call, index) => {
 		const [onChange] = call;
 		// trigger the intersection on the observed element
@@ -234,7 +228,7 @@ export function makeListItemsVisible(): void {
 }
 
 export function triggerLoadMore(): void {
-	const { calls, instances } = (window.IntersectionObserver as Mock<IntersectionObserver>).mock;
+	const { calls, instances } = (window.IntersectionObserver as ReturnType<typeof vi.fn>).mock;
 
 	const [onChange] = calls[calls.length - 1];
 	const instance = instances[instances.length - 1];

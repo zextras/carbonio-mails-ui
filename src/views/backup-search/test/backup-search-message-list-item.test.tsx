@@ -1,14 +1,13 @@
+import React from 'react';
+
+import { screen } from '@testing-library/react';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import React from 'react';
-
-import { screen } from '@testing-library/react';
-import { getFolder } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
