@@ -9,13 +9,13 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 
 jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
-	legacySoapFetch: jest.fn()
+	legacySoapFetch: vi.fn()
 }));
 
 describe('deleteAttachmentsSoapApi', () => {
 	it('should call soapFetch with correct params ', async () => {
 		const mockResponse = { m: [{ id: '1', subject: 'Test Message' }] };
-		(legacySoapFetch as jest.Mock).mockResolvedValueOnce({ json: async () => mockResponse });
+		(legacySoapFetch as Mock).mockResolvedValueOnce({ json: async () => mockResponse });
 		deleteAttachmentsSoapApi({ id: '123', attachments: ['att1', 'att2'] });
 		expect(legacySoapFetch).toHaveBeenCalledWith('RemoveAttachments', {
 			_jsns: 'urn:zimbraMail',
@@ -27,7 +27,7 @@ describe('deleteAttachmentsSoapApi', () => {
 	});
 
 	it('handles error during attachment deletion', async () => {
-		(legacySoapFetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(legacySoapFetch as Mock).mockRejectedValueOnce(new Error('Error'));
 		await expect(deleteAttachmentsSoapApi({ id: '123', attachments: ['att1'] })).rejects.toThrow(
 			'Error'
 		);

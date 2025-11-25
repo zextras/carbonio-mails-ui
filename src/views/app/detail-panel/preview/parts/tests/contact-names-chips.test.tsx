@@ -20,13 +20,13 @@ import {
 } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 
 jest.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
-	sendMsg: jest.fn(),
-	copyEmailToClipboard: jest.fn()
+	sendMsg: vi.fn(),
+	copyEmailToClipboard: vi.fn()
 }));
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'), // This line preserves other exports from the module
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 const firstName1 = faker.person.firstName();

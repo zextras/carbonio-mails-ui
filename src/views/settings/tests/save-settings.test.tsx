@@ -11,8 +11,8 @@ import { ApiManager, legacyXmlSoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { saveSettings } from 'views/settings/save-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	updateAccount: jest.fn(),
-	updateSettings: jest.fn()
+	updateAccount: vi.fn(),
+	updateSettings: vi.fn()
 }));
 
 const APP_ID = 'appId';

@@ -18,7 +18,7 @@ describe('deleteAttachmentsEmailStoreAction', () => {
 	});
 
 	it('handles successful attachment deletion', async () => {
-		(deleteAttachmentsSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
+		(deleteAttachmentsSoapApi as Mock).mockResolvedValueOnce(mockResponse);
 		const result = await deleteAttachmentsEmailStoreAction({
 			id: '123',
 			attachments: ['att1', 'att2']
@@ -33,7 +33,7 @@ describe('deleteAttachmentsEmailStoreAction', () => {
 
 	it('handles error during attachment deletion', async () => {
 		const error = new Error('Error');
-		(deleteAttachmentsSoapApi as jest.Mock).mockRejectedValueOnce(error);
+		(deleteAttachmentsSoapApi as Mock).mockRejectedValueOnce(error);
 		await expect(
 			deleteAttachmentsEmailStoreAction({ id: '123', attachments: ['att1', 'att2'] })
 		).rejects.toThrow('Error');
@@ -54,7 +54,7 @@ describe('deleteAttachmentsEmailStoreAction', () => {
 	});
 
 	it('handles null response from API', async () => {
-		(deleteAttachmentsSoapApi as jest.Mock).mockResolvedValueOnce(null);
+		(deleteAttachmentsSoapApi as Mock).mockResolvedValueOnce(null);
 		const result = await deleteAttachmentsEmailStoreAction({
 			id: '123',
 			attachments: ['att1', 'att2']

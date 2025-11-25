@@ -14,11 +14,11 @@ describe('checkIsSmimeEnabled', () => {
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await checkIsSmimeEnabled();
 		expect(result).toEqual({ data: {} });
@@ -28,11 +28,11 @@ describe('checkIsSmimeEnabled', () => {
 	});
 
 	it('should return error when the API call is successful but response is not ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: false
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await checkIsSmimeEnabled();
 		expect(result).toEqual({ error: '' });
@@ -43,7 +43,7 @@ describe('checkIsSmimeEnabled', () => {
 
 	it('should return error when the API call fails', async () => {
 		const errorMessage = 'Network error';
-		global.fetch = jest.fn(() => Promise.reject(new Error(errorMessage))) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.reject(new Error(errorMessage))) as Mock;
 
 		const result = await checkIsSmimeEnabled();
 		expect(result).toEqual({ error: new Error(errorMessage) });

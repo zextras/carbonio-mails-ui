@@ -15,13 +15,13 @@ const BLACK = '#000000';
 const COLOR_2 = '#29B6F6';
 describe('Show Tag', () => {
 	it('should render the tag input', async () => {
-		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={jest.fn()} />);
+		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={vi.fn()} />);
 
 		expect(screen.getByText('Tag')).toBeVisible();
 	});
 
 	it('should call onChange with the chosen value', async () => {
-		const onChangeFn = jest.fn();
+		const onChangeFn = vi.fn();
 		const tagOptions = [
 			{
 				label: 'tag option 1',
@@ -54,7 +54,7 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={vi.fn()} />
 		);
 
 		await user.click(screen.getByText('Tag'));
@@ -71,7 +71,7 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={vi.fn()} />
 		);
 
 		await user.click(screen.getByText('Tag'));
@@ -85,7 +85,7 @@ describe('Show Tag', () => {
 		const value = {
 			label: tagName
 		};
-		setupTest(<ShowTag value={[value]} tagOptions={[]} onTagChange={jest.fn()} />);
+		setupTest(<ShowTag value={[value]} tagOptions={[]} onTagChange={vi.fn()} />);
 
 		expect(
 			within(screen.getByTestId(`tag-${tagName}-${BLACK}`)).getByTestId('icon: Tag')
@@ -103,7 +103,7 @@ describe('Show Tag', () => {
 					}
 				]}
 				value={[{ label: tagName }]}
-				onTagChange={jest.fn()}
+				onTagChange={vi.fn()}
 			/>,
 			{}
 		);

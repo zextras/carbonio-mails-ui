@@ -56,8 +56,8 @@ describe('get-message', () => {
 		});
 
 		it('handles successful message retrieval', async () => {
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-			(normalizeMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+			(normalizeMailMessageFromSoap as Mock).mockReturnValueOnce({
 				id: '1',
 				subject: 'message 1 Subject'
 			});
@@ -72,7 +72,7 @@ describe('get-message', () => {
 		});
 
 		it('handles error during message retrieval', async () => {
-			(getMsgSoapApi as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+			(getMsgSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
 			const result = await getMessageEmailStoreAction(mockMessageId);
 
@@ -83,7 +83,7 @@ describe('get-message', () => {
 
 		it('handles response with fault', async () => {
 			const faultResponse = { Fault: {} };
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 			const result = await getMessageEmailStoreAction(mockMessageId);
 
@@ -94,7 +94,7 @@ describe('get-message', () => {
 
 		it('handles empty response', async () => {
 			const emptyResponse = { m: [] };
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 
 			const result = await getMessageEmailStoreAction(mockMessageId);
 
@@ -105,8 +105,8 @@ describe('get-message', () => {
 		});
 
 		it('handles successful decrypt message retrieval', async () => {
-			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-			(normalizeMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+			(getMsgDecryptSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+			(normalizeMailMessageFromSoap as Mock).mockReturnValueOnce({
 				id: '1',
 				subject: 'message 1 Subject'
 			});
@@ -126,7 +126,7 @@ describe('get-message', () => {
 
 		it('handles decrypt response with fault', async () => {
 			const faultResponse = { Fault: {} };
-			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+			(getMsgDecryptSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
 
@@ -137,7 +137,7 @@ describe('get-message', () => {
 
 		it('handles decrypt message empty response', async () => {
 			const emptyResponse = { m: [] };
-			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+			(getMsgDecryptSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 
 			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
 
@@ -148,7 +148,7 @@ describe('get-message', () => {
 		});
 
 		it('handles enable to decrypt message response', async () => {
-			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(mockResponseEncryptMessage);
+			(getMsgDecryptSoapApi as Mock).mockResolvedValueOnce(mockResponseEncryptMessage);
 
 			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
 
@@ -173,8 +173,8 @@ describe('get-message', () => {
 		});
 
 		it('handles successful full message retrieval', async () => {
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-			(normalizeMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+			(normalizeMailMessageFromSoap as Mock).mockReturnValueOnce({
 				id: '1',
 				subject: 'message 1 Subject'
 			});
@@ -189,7 +189,7 @@ describe('get-message', () => {
 		});
 
 		it('handles error during full message retrieval', async () => {
-			(getMsgSoapApi as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+			(getMsgSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
 			const result = await getFullMessageEmailStoreAction(mockMessageId);
 
@@ -200,7 +200,7 @@ describe('get-message', () => {
 
 		it('handles response with fault for full message', async () => {
 			const faultResponse = { Fault: {} };
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 			const result = await getFullMessageEmailStoreAction(mockMessageId);
 
@@ -211,7 +211,7 @@ describe('get-message', () => {
 
 		it('handles empty response for full message', async () => {
 			const emptyResponse = { m: [] };
-			(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+			(getMsgSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 
 			const result = await getFullMessageEmailStoreAction(mockMessageId);
 

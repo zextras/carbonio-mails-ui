@@ -7,22 +7,22 @@ import * as soapLib from '@zextras/carbonio-ui-soap-lib';
 
 import { getSoapFetch } from '@test-utils/network/fetch';
 
-export const useSync: jest.Mock<ReturnType<typeof soapLib.useSync>> = jest.fn();
-export const useInfoRefresh: jest.Mock<ReturnType<typeof soapLib.useInfoRefresh>> = jest.fn();
+export const useSync: Mock<ReturnType<typeof soapLib.useSync>> = vi.fn();
+export const useInfoRefresh: Mock<ReturnType<typeof soapLib.useInfoRefresh>> = vi.fn();
 
 const apiManagerInstance: Omit<soapLib.ApiManager, 'sessionInfo'> = {
-	getSessionInfo: jest.fn(),
-	setSessionInfo: jest.fn(),
-	setPollingPreference: jest.fn(),
-	resetPolling: jest.fn(),
-	stopPolling: jest.fn()
+	getSessionInfo: vi.fn(),
+	setSessionInfo: vi.fn(),
+	setPollingPreference: vi.fn(),
+	resetPolling: vi.fn(),
+	stopPolling: vi.fn()
 };
 
 export const ApiManager = {
 	getApiManager: (): Omit<soapLib.ApiManager, 'sessionInfo'> => apiManagerInstance
 };
 
-export const legacyXmlSoapFetch: jest.Mock = jest.fn<
+export const legacyXmlSoapFetch: Mock = vi.fn<
 	ReturnType<typeof legacyXmlSoapFetch>,
 	Parameters<typeof legacyXmlSoapFetch>
 >();

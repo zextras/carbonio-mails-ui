@@ -79,7 +79,7 @@ describe('useConvSetNotSpam', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('ConvAction').then(callFlag);
 
 				const {

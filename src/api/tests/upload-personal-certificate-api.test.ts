@@ -18,12 +18,12 @@ describe('uploadPersonalCertificate', () => {
 	};
 
 	it('should return data when the API call is successful and response is ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true,
 				json: () => Promise.resolve({})
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await uploadPersonalCertificate(certificate, 'password', true);
 		expect(result).toEqual({ data: expect.any(Object) });
@@ -42,15 +42,15 @@ describe('uploadPersonalCertificate', () => {
 
 	it('should return data when the API call is successful and response is not ok', async () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 		const statusText = 'Bad Request';
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: false,
 				status: 400,
 				statusText
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await uploadPersonalCertificate(certificate, 'password', true);
 		expect(result).toEqual({ error: statusText });

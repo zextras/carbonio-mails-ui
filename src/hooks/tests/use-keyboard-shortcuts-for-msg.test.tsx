@@ -21,50 +21,50 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 // Mock all dependencies
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn()
+	useNavigate: vi.fn()
 }));
 
 jest.mock('hooks/utils', () => ({
-	hasModalOverlay: jest.fn().mockReturnValue(false),
-	isInputContext: jest.fn().mockReturnValue(false)
+	hasModalOverlay: vi.fn().mockReturnValue(false),
+	isInputContext: vi.fn().mockReturnValue(false)
 }));
 
 jest.mock('hooks/actions/use-msg-move-to-trash', () => ({
-	useMsgMoveToTrashFn: jest.fn()
+	useMsgMoveToTrashFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-flag', () => ({
-	useMsgSetFlagFn: jest.fn()
+	useMsgSetFlagFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-not-spam', () => ({
-	useMsgSetNotSpamFn: jest.fn()
+	useMsgSetNotSpamFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-read', () => ({
-	useMsgSetReadFn: jest.fn()
+	useMsgSetReadFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-spam', () => ({
-	useMsgSetSpamFn: jest.fn()
+	useMsgSetSpamFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-unflag', () => ({
-	useMsgSetUnflagFn: jest.fn()
+	useMsgSetUnflagFn: vi.fn()
 }));
 
 jest.mock('hooks/actions/use-msg-set-unread', () => ({
-	useMsgSetUnreadFn: jest.fn()
+	useMsgSetUnreadFn: vi.fn()
 }));
 
 describe('useKeyboardShortcutsForMsg', () => {
-	const mockNavigate = jest.fn();
-	const mockExecute = jest.fn();
-	const mockCanExecute = jest.fn();
+	const mockNavigate = vi.fn();
+	const mockExecute = vi.fn();
+	const mockCanExecute = vi.fn();
 
 	const createMockAction = (): {
-		execute: jest.Mock;
-		canExecute: jest.Mock;
+		execute: Mock;
+		canExecute: Mock;
 	} => ({
 		execute: mockExecute,
 		canExecute: mockCanExecute
@@ -75,26 +75,26 @@ describe('useKeyboardShortcutsForMsg', () => {
 		if (target) {
 			Object.defineProperty(event, 'target', { value: target, writable: false });
 		}
-		event.preventDefault = jest.fn();
-		event.stopImmediatePropagation = jest.fn();
+		event.preventDefault = vi.fn();
+		event.stopImmediatePropagation = vi.fn();
 		return event;
 	};
 
 	beforeEach(() => {
-		(useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-		(hasModalOverlay as jest.Mock).mockReturnValue(false);
-		(isInputContext as jest.Mock).mockReturnValue(false);
+		(useNavigate as Mock).mockReturnValue(mockNavigate);
+		(hasModalOverlay as Mock).mockReturnValue(false);
+		(isInputContext as Mock).mockReturnValue(false);
 
 		// Setup default mock implementations
 		mockCanExecute.mockReturnValue(true);
 
-		(useMsgMoveToTrashFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetFlagFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetNotSpamFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetReadFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetSpamFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetUnflagFn as jest.Mock).mockReturnValue(createMockAction());
-		(useMsgSetUnreadFn as jest.Mock).mockReturnValue(createMockAction());
+		(useMsgMoveToTrashFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetFlagFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetNotSpamFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetReadFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetSpamFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetUnflagFn as Mock).mockReturnValue(createMockAction());
+		(useMsgSetUnreadFn as Mock).mockReturnValue(createMockAction());
 	});
 
 	describe('Hook initialization', () => {
@@ -193,11 +193,11 @@ describe('useKeyboardShortcutsForMsg', () => {
 		});
 
 		it('should call unflag when flag cannot execute', () => {
-			const flagAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
-			const unflagAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
+			const flagAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
+			const unflagAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
 
-			(useMsgSetFlagFn as jest.Mock).mockReturnValue(flagAction);
-			(useMsgSetUnflagFn as jest.Mock).mockReturnValue(unflagAction);
+			(useMsgSetFlagFn as Mock).mockReturnValue(flagAction);
+			(useMsgSetUnflagFn as Mock).mockReturnValue(unflagAction);
 
 			const props = { messageIds: ['msg1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForMsg, { initialProps: [props] });
@@ -218,11 +218,11 @@ describe('useKeyboardShortcutsForMsg', () => {
 
 	describe('Spam toggle shortcut', () => {
 		it('should mark as spam when "ms" is pressed and message is not spam', () => {
-			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
-			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
+			const spamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
+			const notSpamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
 
-			(useMsgSetSpamFn as jest.Mock).mockReturnValue(spamAction);
-			(useMsgSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
+			(useMsgSetSpamFn as Mock).mockReturnValue(spamAction);
+			(useMsgSetNotSpamFn as Mock).mockReturnValue(notSpamAction);
 
 			const props = { messageIds: ['msg1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForMsg, { initialProps: [props] });
@@ -239,11 +239,11 @@ describe('useKeyboardShortcutsForMsg', () => {
 		});
 
 		it('should mark not spam when "ms" is pressed and message is spam', () => {
-			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
-			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
+			const spamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
+			const notSpamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
 
-			(useMsgSetSpamFn as jest.Mock).mockReturnValue(spamAction);
-			(useMsgSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
+			(useMsgSetSpamFn as Mock).mockReturnValue(spamAction);
+			(useMsgSetNotSpamFn as Mock).mockReturnValue(notSpamAction);
 
 			const props = { messageIds: ['msg1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForMsg, { initialProps: [props] });

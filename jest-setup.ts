@@ -59,7 +59,7 @@ export const defaultBeforeAllTests = (
 	// mock a simplified Intersection Observer
 	Object.defineProperty(window, 'IntersectionObserver', {
 		writable: true,
-		value: jest.fn(function intersectionObserverMock(
+		value: vi.fn(function intersectionObserverMock(
 			callback: IntersectionObserverCallback,
 			options: IntersectionObserverInit
 		) {
@@ -67,9 +67,9 @@ export const defaultBeforeAllTests = (
 				thresholds: options.threshold,
 				root: options.root,
 				rootMargin: options.rootMargin,
-				observe: jest.fn(),
-				unobserve: jest.fn(),
-				disconnect: jest.fn()
+				observe: vi.fn(),
+				unobserve: vi.fn(),
+				disconnect: vi.fn()
 			};
 		})
 	});
@@ -85,7 +85,7 @@ beforeAll(() => {
 	registerRestHandler(h);
 	registerRestHandler(j);
 	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
-	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
+	useLocalStorage.mockReturnValue([vi.fn(), vi.fn()]);
 });
 
 afterEach(() => {
@@ -101,27 +101,27 @@ afterAll(() => {
 // see: https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,
-	value: jest.fn().mockImplementation((query) => ({
+	value: vi.fn().mockImplementation((query) => ({
 		matches: false,
 		media: query,
 		onchange: null,
-		addListener: jest.fn(), // deprecated
-		removeListener: jest.fn(), // deprecated
-		addEventListener: jest.fn(),
-		removeEventListener: jest.fn()
+		addListener: vi.fn(), // deprecated
+		removeListener: vi.fn(), // deprecated
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn()
 	}))
 });
 
 // Mock implementation of window.open
 Object.defineProperty(window, 'open', {
 	writable: true,
-	value: jest.fn()
+	value: vi.fn()
 });
 
 // mock a simplified crypto
 Object.defineProperty(window.crypto, 'randomUUID', {
 	writable: true,
-	value: jest.fn(() => Math.random().toString())
+	value: vi.fn(() => Math.random().toString())
 });
 
 /**
@@ -152,8 +152,8 @@ Object.defineProperty(window, 'Worker', {
 
 export const getSetupServer = (): SetupServer => server;
 
-window.ResizeObserver = jest.fn().mockImplementation(() => ({
-	observe: jest.fn(),
-	unobserve: jest.fn(),
-	disconnect: jest.fn()
+window.ResizeObserver = vi.fn().mockImplementation(() => ({
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn()
 }));

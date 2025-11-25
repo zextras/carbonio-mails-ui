@@ -10,14 +10,14 @@ import { EditViewActions } from '../../../../../constants';
 import { createEditBoard } from '../edit-view-board';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	addBoard: jest.fn(),
-	getBoardById: jest.fn(),
-	setCurrentBoard: jest.fn()
+	addBoard: vi.fn(),
+	getBoardById: vi.fn(),
+	setCurrentBoard: vi.fn()
 }));
 
-const mockAddBoard = addBoard as jest.MockedFunction<typeof addBoard>;
-const mockGetBoardById = getBoardById as jest.MockedFunction<typeof getBoardById>;
-const mockSetCurrentBoard = setCurrentBoard as jest.MockedFunction<typeof setCurrentBoard>;
+const mockAddBoard = addBoard as MockedFunction<typeof addBoard>;
+const mockGetBoardById = getBoardById as MockedFunction<typeof getBoardById>;
+const mockSetCurrentBoard = setCurrentBoard as MockedFunction<typeof setCurrentBoard>;
 
 describe('createEditBoard', () => {
 	beforeEach(() => {

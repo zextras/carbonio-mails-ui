@@ -24,22 +24,22 @@ import { SearchRequest, SearchResponse } from 'types/index.d';
 const folder = generateFolder({ id: '2' });
 jest.mock('../../store/emails/store', () => ({
 	...jest.requireActual('../../store/emails/store'),
-	setMessagesInEmailStore: jest.fn(),
-	resetMessagesAndPopulatedItems: jest.fn(),
-	updateMessagesResultsLoadingStatus: jest.fn(),
-	useMessagesIdsByFolder: jest.fn(),
-	useMessagesSlice: jest.fn()
+	setMessagesInEmailStore: vi.fn(),
+	resetMessagesAndPopulatedItems: vi.fn(),
+	updateMessagesResultsLoadingStatus: vi.fn(),
+	useMessagesIdsByFolder: vi.fn(),
+	useMessagesSlice: vi.fn()
 }));
 jest.mock('../../helpers/sorting', () => ({
 	...jest.requireActual('../../helpers/sorting'),
-	parseMessageSortingOptions: jest.fn(),
-	getFilterQuery: jest.fn().mockReturnValue('inId:"2"')
+	parseMessageSortingOptions: vi.fn(),
+	getFilterQuery: vi.fn().mockReturnValue('inId:"2"')
 }));
 
 describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'Desc'
 		});
@@ -100,14 +100,14 @@ describe('useMessageListByFolder', () => {
 	});
 
 	it('should abort previous requests on folder change', async () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'Desc'
 		});
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', { more: false });
 
-		const mockAbort = jest.fn();
+		const mockAbort = vi.fn();
 		const mockSignal = {} as AbortSignal;
 
 		const controller = {
@@ -115,7 +115,7 @@ describe('useMessageListByFolder', () => {
 			signal: mockSignal
 		} as unknown as AbortController;
 
-		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
+		vi.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
 		const { rerender } = renderHook(useFetchMessagesByFolder, {
 			initialProps: folder.id

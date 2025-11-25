@@ -12,8 +12,8 @@ import { GetConvResponse } from 'types/soap/get-conv';
 
 jest.mock('../../store', () => ({
 	...jest.requireActual('../../store'),
-	updateMessages: jest.fn(),
-	updateConversations: jest.fn()
+	updateMessages: vi.fn(),
+	updateConversations: vi.fn()
 }));
 
 describe('getConvEmailStoreAction', () => {

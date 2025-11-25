@@ -27,21 +27,21 @@ const createFileNode = (name: string, size: number): FileNode => ({
 
 describe('useFilesAttachmentOrSmartlink', () => {
 	const editorId = 'test-editor-id';
-	const mockOnUploadFiles = jest.fn();
-	const mockCreateModal = jest.fn();
-	const mockCloseModal = jest.fn();
+	const mockOnUploadFiles = vi.fn();
+	const mockCreateModal = vi.fn();
+	const mockCloseModal = vi.fn();
 	const MODAL_ID = 'smartlink-from-files-modal';
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 
-		(useUserSettings as jest.Mock).mockReturnValue({
+		(useUserSettings as Mock).mockReturnValue({
 			attrs: {
 				zimbraMtaMaxMessageSize: '10485760'
 			}
 		});
 
-		(useModal as jest.Mock).mockReturnValue({
+		(useModal as Mock).mockReturnValue({
 			createModal: mockCreateModal,
 			closeModal: mockCloseModal
 		});

@@ -20,13 +20,13 @@ import { MAILS_VIEW_LAYOUTS } from 'constants/index';
 import { setConversationsInEmailStore } from 'store/emails/store';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
 jest.mock('react-router-dom', () => {
 	const actual = jest.requireActual('react-router-dom');
 	return {
 		...actual,
-		useNavigate: (): jest.Mock => mockNavigate
+		useNavigate: (): Mock => mockNavigate
 	};
 });
 

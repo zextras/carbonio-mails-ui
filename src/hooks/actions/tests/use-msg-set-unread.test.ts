@@ -15,11 +15,11 @@ import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from 'hooks/actions/use-msg-set-unread';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: (): jest.Mock => mockNavigate
+	useNavigate: (): Mock => mockNavigate
 }));
 
 describe('useMsgSetUnread', () => {
@@ -131,7 +131,7 @@ describe('useMsgSetUnread', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {

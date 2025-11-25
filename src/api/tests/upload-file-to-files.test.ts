@@ -53,7 +53,7 @@ describe('encodeBase64', () => {
 });
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 describe('uploadToFiles', () => {
 	const file = new File(['content'], 'myfile.txt', { type: 'text/plain' });

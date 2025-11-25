@@ -22,7 +22,7 @@ import { MoveMessage } from 'ui-actions/move-msg';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 describe('MoveMsg', () => {
@@ -37,7 +37,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -49,7 +49,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={vi.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -64,7 +64,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -86,7 +86,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -109,8 +109,8 @@ describe('MoveMsg', () => {
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
 
-			const mockCreateSnackbar = jest.fn((arg) => arg);
-			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
+			const mockCreateSnackbar = vi.fn((arg) => arg);
+			(useSnackbar as Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -127,7 +127,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -162,9 +162,9 @@ describe('MoveMsg', () => {
 		it('should show an error snackbar when the API call fails ', async () => {
 			populateFoldersStore();
 
-			const mockCreateSnackbar = jest.fn((arg) => arg);
+			const mockCreateSnackbar = vi.fn((arg) => arg);
 
-			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
+			(useSnackbar as Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			createSoapAPIInterceptor<MsgActionRequest, ErrorSoapBodyResponse>(
@@ -176,7 +176,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);

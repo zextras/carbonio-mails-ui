@@ -14,25 +14,25 @@ import { EditViewActionsType, MailMessage } from 'types/index.d';
 
 jest.mock('store/editor/hooks/editors', () => ({
 	...jest.requireActual('store/editor/hooks/editors'),
-	getEditor: jest.fn()
+	getEditor: vi.fn()
 }));
 
 jest.mock('uuid', () => ({
-	v4: jest.fn(() => 'test-editor-id')
+	v4: vi.fn(() => 'test-editor-id')
 }));
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserSettings: jest.fn(() => ({
+	getUserSettings: vi.fn(() => ({
 		prefs: { zimbraPrefComposeFormat: 'html' }
 	})),
-	t: jest.fn((_key: string, fallback: string) => fallback)
+	t: vi.fn((_key: string, fallback: string) => fallback)
 }));
 
 jest.mock('../../../helpers/identities', () => ({
-	getIdentityFromParticipant: jest.fn(() => ({ id: 'test-identity-id' })),
-	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' })),
-	getRecipientReplyIdentity: jest.fn(() => ({ id: 'recipient-reply-id' })),
-	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
+	getIdentityFromParticipant: vi.fn(() => ({ id: 'test-identity-id' })),
+	getDefaultIdentity: vi.fn(() => ({ id: 'default-identity-id' })),
+	getRecipientReplyIdentity: vi.fn(() => ({ id: 'recipient-reply-id' })),
+	getAddressOwnerAccount: vi.fn(() => ({ id: 'address-owner-id' }))
 }));
 
 describe('generateEditor', () => {
@@ -252,7 +252,7 @@ describe('generateEditor', () => {
 					message: urgentMessage
 				});
 
-				(getEditor as jest.Mock).mockReturnValueOnce(draftEditor);
+				(getEditor as Mock).mockReturnValueOnce(draftEditor);
 
 				const resumedEditor = generateEditor({
 					action: EditViewActions.RESUME,

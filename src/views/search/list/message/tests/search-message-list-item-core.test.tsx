@@ -15,14 +15,14 @@ import { SearchMessageListItemCore } from 'views/search/list/message/search-mess
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+	useTags: vi.fn()
 }));
 
 jest.mock('../../../../../ui-actions/tag-actions', () => ({
-	useTagExist: jest.fn().mockReturnValue(true)
+	useTagExist: vi.fn().mockReturnValue(true)
 }));
 
-const mockToggle = jest.fn();
+const mockToggle = vi.fn();
 
 describe('SearchMessageListItemCore', () => {
 	const subject = 'Test Subject';
@@ -39,7 +39,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -63,7 +63,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -85,7 +85,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore: { color: number; name: string; id: string }[] = [];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -107,7 +107,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -133,7 +133,7 @@ describe('SearchMessageListItemCore', () => {
 				{ id: 'tag1', name: 'Tag 1', color: 0 },
 				{ id: 'tag2', name: 'Tag 2', color: 1 }
 			];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore

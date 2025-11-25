@@ -33,22 +33,22 @@ const LABEL_RECOVER_EMAILS = 'label.recover_selected_emails';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+	useParams: vi.fn()
 }));
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
+const createSnackbarSpy = vi.fn(createSnackbar);
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 describe('Backup search list', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-		(useParams as jest.Mock).mockReturnValue({ itemId: message1.messageId });
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
+		(useParams as Mock).mockReturnValue({ itemId: message1.messageId });
 	});
 
 	it('should selects and deselects all messages pressing select / deselect all', async () => {

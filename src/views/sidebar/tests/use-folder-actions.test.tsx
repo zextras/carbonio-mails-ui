@@ -9,11 +9,12 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
+import { Mock } from 'vitest';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { FolderActionsProps } from 'types/sidebar/index.d';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 import { DeleteModal } from 'views/sidebar/delete-modal';
@@ -25,7 +26,7 @@ import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useModal: jest.fn()
+	useModal: vi.fn()
 }));
 
 jest.mock('../delete-modal');
@@ -35,11 +36,11 @@ jest.mock('../new-modal');
 jest.mock('../shares-info-modal');
 jest.mock('../../../api/folder-action-soap-api');
 
-const useAppContextMock = useAppContext as jest.Mock;
+const useAppContextMock = useAppContext as Mock;
 
-const folderActionSoapApiMock = folderActionSoapApi as jest.Mock;
+const folderActionSoapApiMock = folderActionSoapApi as Mock;
 
-const setCountMock = jest.fn();
+const setCountMock = vi.fn();
 useAppContextMock.mockReturnValue({
 	setCount: setCountMock
 });
@@ -47,16 +48,16 @@ useAppContextMock.mockReturnValue({
 const defaultFolder = generateFolder({ id: FOLDERS.INBOX });
 
 async function setUpCreateModalTest(): Promise<{
-	createModalSpy: jest.Mock;
+	createModalSpy: Mock;
 	event: React.SyntheticEvent<HTMLElement>;
 	actions: { current: Array<FolderActionsProps> };
 }> {
-	const createModalSpy = jest.fn();
-	(useModal as jest.Mock).mockImplementation(() => ({
+	const createModalSpy = vi.fn();
+	(useModal as Mock).mockImplementation(() => ({
 		createModal: createModalSpy
 	}));
 	const event = {
-		stopPropagation: jest.fn
+		stopPropagation: vi.fn
 	} as unknown as React.SyntheticEvent<HTMLElement>;
 
 	const messages = await waitFor(() =>
@@ -72,8 +73,8 @@ async function setUpCreateModalTest(): Promise<{
 
 describe('useFolderActions', () => {
 	it('should return the correct actions for the inbox folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const messages = await waitFor(() =>
@@ -137,8 +138,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should return the correct actions for a shared folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const messages = await waitFor(() =>
@@ -181,8 +182,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new action if the user does not have permission', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const folderWithReadPermissionsOnly = { ...defaultFolder, perm: 'r' };
@@ -327,9 +328,9 @@ describe('useFolderActions', () => {
 	});
 
 	it('should call the folderActionSoapApi function when the REMOVE_FROM_LIST action is clicked', async () => {
-		(folderActionSoapApiMock as jest.Mock).mockImplementation(jest.fn());
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(folderActionSoapApiMock as Mock).mockImplementation(vi.fn());
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const folder = {
@@ -339,7 +340,7 @@ describe('useFolderActions', () => {
 		} as Folder;
 
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const messages = await waitFor(() =>
@@ -367,13 +368,13 @@ describe('useFolderActions', () => {
 	});
 
 	it('should call the createModal function with the correct parameters when the SHARES_INFO action is clicked', () => {
-		const createModalSpy = jest.fn();
-		(useModal as jest.Mock).mockImplementation(() => ({
+		const createModalSpy = vi.fn();
+		(useModal as Mock).mockImplementation(() => ({
 			createModal: createModalSpy
 		}));
 
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const folder = {
@@ -406,13 +407,13 @@ describe('useFolderActions', () => {
 	});
 
 	it('should call the folderActionSoapApi function when the MARK_ALL_READ action is clicked', () => {
-		(folderActionSoapApiMock as jest.Mock).mockImplementation(jest.fn());
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(folderActionSoapApiMock as Mock).mockImplementation(vi.fn());
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
@@ -434,8 +435,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move and delete actions for the inbox and sent folders', () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 		const folders = [FOLDERS.INBOX, FOLDERS.SENT];
 		folders.forEach(async (folderId) => {
@@ -461,8 +462,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move, delete and mark all read actions for the drafts folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const messages = populateMessagesInEmailStore({
@@ -494,8 +495,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new, move and delete actions for the spam folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const messages = populateMessagesInEmailStore({
@@ -528,8 +529,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move, delete and edit actions for the trash folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const messages = populateMessagesInEmailStore({
@@ -563,8 +564,8 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new and edit actions for folders inside the trash folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
+		(useModal as Mock).mockImplementation(() => ({
+			createModal: vi.fn()
 		}));
 
 		const subFolder = generateFolder({ absFolderPath: '/Trash', id: '23476283478' });

@@ -13,10 +13,10 @@ import { Query } from 'views/search/types/types';
 // Mock the getUserLocale function
 jest.mock('commons/utils', () => ({
 	...jest.requireActual('commons/utils'),
-	getUserLocale: jest.fn()
+	getUserLocale: vi.fn()
 }));
 
-const mockedGetUserLocale = utils.getUserLocale as jest.MockedFunction<typeof utils.getUserLocale>;
+const mockedGetUserLocale = utils.getUserLocale as MockedFunction<typeof utils.getUserLocale>;
 
 describe('extractDateFieldFromQuery', () => {
 	beforeEach(() => {
@@ -123,7 +123,7 @@ describe('extractDateFieldFromQuery', () => {
 
 	it('should handle invalid date gracefully', () => {
 		// Mock console.warn to suppress moment deprecation warnings
-		const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+		const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(vi.fn());
 
 		mockedGetUserLocale.mockReturnValue('en-US');
 		const query: Query = [{ id: '1', label: 'before:invalid-date' }];

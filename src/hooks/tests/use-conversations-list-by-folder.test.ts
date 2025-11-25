@@ -5,9 +5,10 @@
  */
 import { renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Mock } from 'vitest';
 
-import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
-import { parseMessageSortingOptions, getFilterQuery } from 'helpers/sorting';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
@@ -17,33 +18,33 @@ import {
 } from 'store/emails/store';
 
 jest.mock('store/emails/actions/search-action', () => ({
-	searchEmailStoreAction: jest.fn()
+	searchEmailStoreAction: vi.fn()
 }));
 jest.mock('store/emails/store', () => ({
-	updateConversationsResultsLoadingStatus: jest.fn(),
-	useConversationIndexSlice: jest.fn(),
-	useConversationsIdsByFolder: jest.fn()
+	updateConversationsResultsLoadingStatus: vi.fn(),
+	useConversationIndexSlice: vi.fn(),
+	useConversationsIdsByFolder: vi.fn()
 }));
 jest.mock('helpers/sorting', () => ({
-	parseMessageSortingOptions: jest.fn(),
-	getFilterQuery: jest.fn().mockReturnValue('mockQuery')
+	parseMessageSortingOptions: vi.fn(),
+	getFilterQuery: vi.fn().mockReturnValue('mockQuery')
 }));
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserSettings: jest.fn()
+	useUserSettings: vi.fn()
 }));
 
 describe('useConversationListByFolder', () => {
 	const mockPrefs = { zimbraPrefLocale: 'en_US', zimbraPrefSortOrder: 'dateDesc' };
 
 	beforeEach(() => {
-		(useUserSettings as jest.Mock).mockReturnValue({ prefs: mockPrefs });
-		(useConversationIndexSlice as jest.Mock).mockReturnValue({});
-		(useConversationsIdsByFolder as jest.Mock).mockReturnValue([]);
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(useUserSettings as Mock).mockReturnValue({ prefs: mockPrefs });
+		(useConversationIndexSlice as Mock).mockReturnValue({});
+		(useConversationsIdsByFolder as Mock).mockReturnValue([]);
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'DESC'
 		});
-		(searchEmailStoreAction as jest.Mock).mockResolvedValue({});
+		(searchEmailStoreAction as Mock).mockResolvedValue({});
 	});
 
 	afterEach(() => {
@@ -90,8 +91,8 @@ describe('useConversationListByFolder', () => {
 
 	it('aborts previous request when folderId changes', () => {
 		const controller = new AbortController();
-		const abortSpy = jest.spyOn(controller, 'abort');
-		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
+		const abortSpy = vi.spyOn(controller, 'abort');
+		vi.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
 		const { rerender } = renderHook((id: string) => useConversationListByFolder(id), {
 			initialProps: '123'
@@ -102,7 +103,7 @@ describe('useConversationListByFolder', () => {
 	});
 
 	it('handles search errors correctly', async () => {
-		(searchEmailStoreAction as jest.Mock).mockRejectedValue(new Error('Test error'));
+		(searchEmailStoreAction as Mock).mockRejectedValue(new Error('Test error'));
 
 		renderHook(() => useConversationListByFolder('123'));
 
@@ -120,8 +121,8 @@ describe('useConversationListByFolder', () => {
 	it('returns correct conversationIndexSlice', () => {
 		const mockIndexSlice = { some: 'data' };
 		const mockListIndex = [1, 2, 3];
-		(useConversationIndexSlice as jest.Mock).mockReturnValue(mockIndexSlice);
-		(useConversationsIdsByFolder as jest.Mock).mockReturnValue(mockListIndex);
+		(useConversationIndexSlice as Mock).mockReturnValue(mockIndexSlice);
+		(useConversationsIdsByFolder as Mock).mockReturnValue(mockListIndex);
 
 		const { result } = renderHook(() => useConversationListByFolder('123'));
 
@@ -141,11 +142,11 @@ describe('useConversationListByFolder', () => {
 			expect.objectContaining({ sortBy: 'dateDESC' })
 		);
 
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'subject',
 			sortDirection: 'ASC'
 		});
-		(useUserSettings as jest.Mock).mockReturnValue({
+		(useUserSettings as Mock).mockReturnValue({
 			prefs: { ...mockPrefs, zimbraPrefSortOrder: 'subjectAsc' }
 		});
 

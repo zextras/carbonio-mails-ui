@@ -15,7 +15,7 @@ import { FolderActionWrapper } from 'views/sidebar/folder-action-wrapper';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 jest.mock('../use-folder-actions', () => ({
-	useFolderActions: jest.fn()
+	useFolderActions: vi.fn()
 }));
 describe('FolderActionWrapper', () => {
 	it('renders correctly with given folder and children', () => {

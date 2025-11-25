@@ -20,12 +20,12 @@ const baseMessageWithReadReadReceiptRequested = generateMessage({
 });
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key, defaultValue) => defaultValue),
-	useUserSettings: jest.fn()
+	t: vi.fn((key, defaultValue) => defaultValue),
+	useUserSettings: vi.fn()
 }));
 
 jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
-	legacySoapFetch: jest.fn()
+	legacySoapFetch: vi.fn()
 }));
 
 describe('ReadReceiptModal', () => {
@@ -33,7 +33,7 @@ describe('ReadReceiptModal', () => {
 		setupTest(
 			<ReadReceiptModal
 				open
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				message={baseMessageWithReadReadReceiptRequested}
 				readReceiptSetting="ask"
 			/>
@@ -47,7 +47,7 @@ describe('ReadReceiptModal', () => {
 	});
 
 	it('should call onClose when "do not notify" action is triggered', async () => {
-		const mockOnClose = jest.fn();
+		const mockOnClose = vi.fn();
 		const { user } = setupTest(
 			<ReadReceiptModal
 				open
@@ -64,7 +64,7 @@ describe('ReadReceiptModal', () => {
 	});
 
 	it('should call onClose when "notify" action is triggered', async () => {
-		const mockOnClose = jest.fn();
+		const mockOnClose = vi.fn();
 		const { user } = setupTest(
 			<ReadReceiptModal
 				open
@@ -84,7 +84,7 @@ describe('ReadReceiptModal', () => {
 		setupTest(
 			<ReadReceiptModal
 				open={false}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				message={baseMessageWithReadReadReceiptRequested}
 				readReceiptSetting="ask"
 			/>
@@ -93,13 +93,13 @@ describe('ReadReceiptModal', () => {
 	});
 
 	it('should always trigger notify when read receipt setting is set to "always"', async () => {
-		(useUserSettings as jest.Mock).mockReturnValue({
+		(useUserSettings as Mock).mockReturnValue({
 			prefs: { zimbraPrefMailSendReadReceipts: 'always' }
 		});
 
-		const onCloseMock = jest.fn();
+		const onCloseMock = vi.fn();
 
-		const sendDeliveryReportSoapApiSpy = jest.spyOn(
+		const sendDeliveryReportSoapApiSpy = vi.spyOn(
 			sendDeliveryReportSoapApiMock,
 			'sendDeliveryReportSoapApi'
 		);

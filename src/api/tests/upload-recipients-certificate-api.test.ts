@@ -12,12 +12,12 @@ describe('uploadRecipientCertificate', () => {
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true,
 				json: () => Promise.resolve({})
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const certificateContent = 'sampleCertificateContent';
 		const result = await uploadRecipientCertificate(certificateContent);
@@ -33,9 +33,9 @@ describe('uploadRecipientCertificate', () => {
 		const certificateContent = 'sampleCertificateContent';
 		const statusText = 'Bad Request';
 		const mockResponse = { ok: false, status: 404, statusText };
-		global.fetch = jest.fn(() => Promise.resolve(mockResponse)) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.resolve(mockResponse)) as Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
 			/* mock implementation */
 		});
 

@@ -14,12 +14,12 @@ import { Participant } from 'types/index.d';
 import ContactName from 'views/app/detail-panel/preview/parts/contact-names';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserAccounts: jest.fn()
+	useUserAccounts: vi.fn()
 }));
 
 describe('ContactName component', () => {
 	beforeEach(() => {
-		(useUserAccounts as jest.Mock).mockReturnValue([{ address: 'user@example.com' }]);
+		(useUserAccounts as Mock).mockReturnValue([{ address: 'user@example.com' }]);
 	});
 
 	it('renders contact names without overflow', () => {

@@ -32,10 +32,10 @@ import { DeletedMessageFromAPI } from 'types';
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	},
 	tagsWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	}
 }));
 
@@ -60,8 +60,8 @@ function updateBackupSearchStoreWith(messages: DeletedMessageFromAPI[]): void {
 }
 
 describe('App', () => {
-	const removeRouteSpy = jest.spyOn(shellUi, 'removeRoute');
-	const addRouteSpy = jest.spyOn(shellUi, 'addRoute');
+	const removeRouteSpy = vi.spyOn(shellUi, 'removeRoute');
+	const addRouteSpy = vi.spyOn(shellUi, 'addRoute');
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
@@ -74,9 +74,9 @@ describe('App', () => {
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
-		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
-		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
-		const registerShellIntegrationsSpy = jest.spyOn(
+		const addComponentsToShellSpy = vi.spyOn(addComponentsToShell, 'addComponentsToShell');
+		const registerShellActionSpy = vi.spyOn(registerShellActions, 'registerShellActions');
+		const registerShellIntegrationsSpy = vi.spyOn(
 			registerShellIntegrations,
 			'registerShellIntegrations'
 		);
@@ -87,7 +87,7 @@ describe('App', () => {
 	});
 
 	it('should register the search', () => {
-		const useSearchRegistererSpy = jest.spyOn(useSearchRegisterer, 'useSearchRegisterer');
+		const useSearchRegistererSpy = vi.spyOn(useSearchRegisterer, 'useSearchRegisterer');
 		setupTest(<App />);
 		expect(useSearchRegistererSpy).toHaveBeenCalled();
 	});

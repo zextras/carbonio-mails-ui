@@ -15,12 +15,12 @@ describe('createEncryptionPassword', () => {
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true,
 				json: () => Promise.resolve({})
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await createEncryptionPassword('testPassword');
 		expect(result).toEqual({ data: expect.any(Object) });
@@ -32,12 +32,12 @@ describe('createEncryptionPassword', () => {
 	});
 
 	it('should return data when the API call is successful and response is ok with reset', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true,
 				json: () => Promise.resolve({})
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await createEncryptionPassword('testPassword', true);
 		expect(result).toEqual({ data: expect.any(Object) });
@@ -49,17 +49,17 @@ describe('createEncryptionPassword', () => {
 	});
 
 	it('should return error when the API call is successful but response is not ok', async () => {
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
 			// Log the error message for debugging purposes
 		});
 		const statusText = 'Bad Request';
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: false,
 				status: 400,
 				statusText
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await createEncryptionPassword('testPassword');
 		expect(result).toEqual({ error: statusText });
@@ -73,11 +73,11 @@ describe('createEncryptionPassword', () => {
 	});
 
 	it('should return error when the API call fails', async () => {
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
 			// Log the error message for debugging purposes
 		});
 		const errorMessage = 'Network error';
-		global.fetch = jest.fn(() => Promise.reject(new Error(errorMessage))) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.reject(new Error(errorMessage))) as Mock;
 
 		const result = await createEncryptionPassword('testPassword');
 		expect(result).toEqual({ error: new Error(errorMessage) });

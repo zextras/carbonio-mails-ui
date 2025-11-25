@@ -9,15 +9,15 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useAppContext: jest.fn()
+	useAppContext: vi.fn()
 }));
 
 describe('useMultipleSelection', () => {
-	const setMultipleSelectionCount = jest.fn();
+	const setMultipleSelectionCount = vi.fn();
 	const allItems = ['item1', 'item2', 'item3', 'item4', 'item5'];
 
 	beforeEach(() => {
-		(useAppContext as jest.Mock).mockReturnValue({
+		(useAppContext as Mock).mockReturnValue({
 			setMultipleSelectionCount
 		});
 		setMultipleSelectionCount.mockClear();
@@ -28,22 +28,22 @@ describe('useMultipleSelection', () => {
 		lastSelectedIndexInit: number | null = null
 	): {
 		result: { current: ReturnType<typeof useMultipleSelection> };
-		setSelectedItems: jest.Mock;
-		setLastSelectedIndex: jest.Mock;
+		setSelectedItems: Mock;
+		setLastSelectedIndex: Mock;
 		rerender: () => void;
 	} => {
 		let selectedItems = selectedItemsInit;
 		let lastSelectedIndex = lastSelectedIndexInit;
 
-		const setSelectedItems = jest.fn((updater: (prev: Set<string>) => Set<string>) => {
+		const setSelectedItems = vi.fn((updater: (prev: Set<string>) => Set<string>) => {
 			if (typeof updater === 'function') {
 				selectedItems = updater(selectedItems);
 			}
-		}) as jest.Mock;
+		}) as Mock;
 
-		const setLastSelectedIndex = jest.fn((index: number | null) => {
+		const setLastSelectedIndex = vi.fn((index: number | null) => {
 			lastSelectedIndex = index;
-		}) as jest.Mock;
+		}) as Mock;
 
 		const { result, rerender } = renderHook(() =>
 			useMultipleSelection({
@@ -225,8 +225,8 @@ describe('useMultipleSelection', () => {
 		const createMockEvent = (shiftKey: boolean): React.MouseEvent =>
 			({
 				shiftKey,
-				preventDefault: jest.fn(),
-				stopPropagation: jest.fn()
+				preventDefault: vi.fn(),
+				stopPropagation: vi.fn()
 			}) as unknown as React.MouseEvent;
 
 		describe('when shift key is pressed and selection mode is ON', () => {
@@ -413,9 +413,9 @@ describe('useMultipleSelection', () => {
 					useMultipleSelection({
 						allAvailableItems: [],
 						selectedItems: new Set(),
-						setSelectedItems: jest.fn(),
+						setSelectedItems: vi.fn(),
 						lastSelectedIndex: null,
-						setLastSelectedIndex: jest.fn()
+						setLastSelectedIndex: vi.fn()
 					})
 				);
 

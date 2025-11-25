@@ -15,11 +15,11 @@ import { SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key, defaultValue) => defaultValue)
+	t: vi.fn((key, defaultValue) => defaultValue)
 }));
 
 describe('SelectIdentitySignature', () => {
-	const mockUpdateIdentities = jest.fn();
+	const mockUpdateIdentities = vi.fn();
 	const mockDefaultAccount = {
 		id: '0',
 		name: PRIMARY_IDENTITY_NAME,

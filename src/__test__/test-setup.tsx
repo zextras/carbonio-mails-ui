@@ -210,7 +210,7 @@ export function setupHook<TProps extends unknown[], TResult>(
 
 export function makeListItemsVisible(): void {
 	const { calls, instances } = (
-		window.IntersectionObserver as jest.Mock<
+		window.IntersectionObserver as Mock<
 			IntersectionObserver,
 			[callback: IntersectionObserverCallback, options?: IntersectionObserverInit]
 		>
@@ -233,7 +233,7 @@ export function makeListItemsVisible(): void {
 }
 
 export function triggerLoadMore(): void {
-	const { calls, instances } = (window.IntersectionObserver as jest.Mock<IntersectionObserver>)
+	const { calls, instances } = (window.IntersectionObserver as Mock<IntersectionObserver>)
 		.mock;
 
 	const [onChange] = calls[calls.length - 1];

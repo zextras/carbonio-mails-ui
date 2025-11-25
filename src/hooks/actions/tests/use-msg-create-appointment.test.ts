@@ -75,13 +75,13 @@ describe('useMsgCreateAppointment', () => {
 		describe('execute', () => {
 			it('should not call the integrated function if the action cannot be executed', async () => {
 				populateFoldersStore();
-				const openComposerSpy = jest.fn();
+				const openComposerSpy = vi.fn();
 				useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 					if (integratedFunctionId === 'create_appointment') {
 						return [openComposerSpy, true];
 					}
 
-					return [jest.fn(), true];
+					return [vi.fn(), true];
 				});
 
 				const {
@@ -97,13 +97,13 @@ describe('useMsgCreateAppointment', () => {
 
 			it('should call the API with the proper params if the action can be executed', async () => {
 				populateFoldersStore();
-				const openComposerSpy = jest.fn();
+				const openComposerSpy = vi.fn();
 				useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 					if (integratedFunctionId === 'create_appointment') {
 						return [openComposerSpy, true];
 					}
 
-					return [jest.fn(), true];
+					return [vi.fn(), true];
 				});
 
 				const {

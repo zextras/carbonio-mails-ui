@@ -161,7 +161,7 @@ describe('Searches store hooks', () => {
 		it('should fetch if the message is not complete', async () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			awaitDebounce();
@@ -180,7 +180,7 @@ describe('Searches store hooks', () => {
 			await act(async () => {
 				updateMessageStatus(message.id, API_REQUEST_STATUS.fulfilled);
 			});
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
 				renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
@@ -198,7 +198,7 @@ describe('Searches store hooks', () => {
 			await act(async () => {
 				updateMessageStatus(message.id, undefined as never);
 			});
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
@@ -216,7 +216,7 @@ describe('Searches store hooks', () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			updateMessageStatus('1', API_REQUEST_STATUS.error);
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			awaitDebounce();
@@ -234,7 +234,7 @@ describe('Searches store hooks', () => {
 			});
 			const { result } = renderHook(() => useMessageStatus('1'));
 			expect(result.current).toBe(API_REQUEST_STATUS.pending);
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
 			await act(async () => {
@@ -243,7 +243,7 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should fetch a new message if messageId changes', async () => {
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch({ messageId: id }), {
 				initialProps: { id: '1' }
 			});

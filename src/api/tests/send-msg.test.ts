@@ -19,11 +19,11 @@ import { MailsEditorV2 } from 'types/index.d';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
 jest.mock('../../store/emails/actions/get-conv-action', () => ({
-	getConvEmailStoreAction: jest.fn()
+	getConvEmailStoreAction: vi.fn()
 }));
 
 jest.mock('../../store/emails/actions/get-message-with-existing-participants', () => ({
-	getMessageWithExistingParticipantsEmailStoreAction: jest.fn()
+	getMessageWithExistingParticipantsEmailStoreAction: vi.fn()
 }));
 
 describe('sendMsg', () => {
@@ -92,7 +92,7 @@ describe('sendMsg', () => {
 			rights: [] as never // cannot import AccountRights from carbonio-shell-ui
 		};
 		beforeEach(() => {
-			jest.spyOn(shellHooks, 'getUserAccount').mockReturnValue(mainAccount);
+			vi.spyOn(shellHooks, 'getUserAccount').mockReturnValue(mainAccount);
 		});
 
 		describe('sendMsgFromEditor', () => {

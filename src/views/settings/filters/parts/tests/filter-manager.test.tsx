@@ -16,15 +16,15 @@ import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
-const createSnackbarSpy = jest.fn((arg) => arg);
+const createSnackbarSpy = vi.fn((arg) => arg);
 const IncomingFilterActions = getFiltermanager(true);
 
 describe('incoming filters actions', () => {
 	it('should close the create filter modal', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [myFilter];
@@ -33,7 +33,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn()
+			onFiltersSave: vi.fn()
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />);
@@ -46,13 +46,13 @@ describe('incoming filters actions', () => {
 	});
 
 	test('modify filter should save filters with all incoming filters', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
-		const mockSave = jest.fn(() => Promise.resolve());
+		const mockSave = vi.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
@@ -107,13 +107,13 @@ describe('incoming filters actions', () => {
 	});
 
 	test('delete filter should save filters without the deleted filter', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
-		const mockSave = jest.fn(() => Promise.resolve());
+		const mockSave = vi.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
@@ -140,13 +140,13 @@ describe('incoming filters actions', () => {
 	});
 
 	test('remove filter should save filters without the removed filter', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
-		const mockSave = jest.fn(() => Promise.resolve());
+		const mockSave = vi.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
@@ -162,7 +162,7 @@ describe('incoming filters actions', () => {
 		expect(mockSave).toHaveBeenCalledWith([otherFilter, { ...myFilter, active: false }]);
 	});
 	test('add filter should save filters with the added filter', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const firstFilter = { ...activeIncomingFilter('First filter'), active: false };
 		const secondFilter = { ...activeIncomingFilter('Second filter'), active: false };
 		const availableList = createList([firstFilter, secondFilter], 'First filter');
@@ -171,7 +171,7 @@ describe('incoming filters actions', () => {
 		const fourthFilter = { ...activeIncomingFilter('Third filter'), active: true };
 		const activeList = createList([thirdFilter, fourthFilter]);
 		const filters = [firstFilter, secondFilter, thirdFilter, fourthFilter];
-		const mockSave = jest.fn(() => Promise.resolve());
+		const mockSave = vi.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
@@ -199,11 +199,11 @@ function createList(filterList: Filter[], selectedName?: string): ListType {
 	return {
 		isSelecting: false,
 		list: filterList,
-		moveDown: jest.fn(),
-		moveUp: jest.fn(),
+		moveDown: vi.fn(),
+		moveUp: vi.fn(),
 		selected,
-		toggle: jest.fn(),
-		unSelect: jest.fn()
+		toggle: vi.fn(),
+		unSelect: vi.fn()
 	};
 }
 

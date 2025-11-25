@@ -25,7 +25,7 @@ import { triggerNotification } from 'store/emails/sync-data-handler/trigger-noti
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn()
+	getTags: vi.fn()
 }));
 describe('handleNotifyMessagesCreated', () => {
 	describe('addMessagesToMessageSlice', () => {
@@ -72,7 +72,7 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should return messages in descending order when sortOrder is dateDesc', async () => {
-			(getUserSettings as jest.Mock).mockReturnValue({
+			(getUserSettings as Mock).mockReturnValue({
 				prefs: { zimbraPrefConversationOrder: 'dateDesc' }
 			});
 			const message = generateMessage({ id: '1' });
@@ -89,7 +89,7 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should return messages in ascending order when sortOrder is not dateDesc', async () => {
-			(getUserSettings as jest.Mock).mockReturnValue({
+			(getUserSettings as Mock).mockReturnValue({
 				prefs: { zimbraPrefConversationOrder: 'dateAsc' }
 			});
 
@@ -111,16 +111,16 @@ describe('handleNotifyMessagesCreated', () => {
 
 let mockIsFocusMode = false;
 
-const mockedMultipleNotify = jest.fn();
+const mockedMultipleNotify = vi.fn();
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	get IS_FOCUS_MODE(): boolean {
 		return mockIsFocusMode;
 	},
-	getNotificationManager: jest.fn(() => ({
+	getNotificationManager: vi.fn(() => ({
 		multipleNotify: mockedMultipleNotify
 	})),
-	getUserSettings: jest.fn(() => ({
+	getUserSettings: vi.fn(() => ({
 		props: [],
 		prefs: {
 			zimbraPrefMailToasterEnabled: 'TRUE',
@@ -132,13 +132,13 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 describe('triggerNotification', () => {
 	it('multipleNotify is not called if IS_FOCUS_MODE is true', () => {
 		mockIsFocusMode = true;
-		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).not.toHaveBeenCalled();
 	});
 
 	it('multipleNotify is called if IS_FOCUS_MODE is false', () => {
 		mockIsFocusMode = false;
-		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).toHaveBeenCalled();
 	});
 });

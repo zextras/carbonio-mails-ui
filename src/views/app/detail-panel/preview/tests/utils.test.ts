@@ -15,13 +15,13 @@ import {
 } from 'views/app/detail-panel/preview/utils/index';
 
 jest.mock('lodash', () => ({
-	includes: jest.fn()
+	includes: vi.fn()
 }));
 
 describe('getAttachmentsLink', () => {
 	const messageId = '12345';
 	const messageSubject = 'testSubject';
-	const getLocationOrigin = jest.fn().mockReturnValue('http://localhost');
+	const getLocationOrigin = vi.fn().mockReturnValue('http://localhost');
 
 	beforeEach(() => {
 		getLocationOrigin.mockClear();
@@ -41,7 +41,7 @@ describe('getAttachmentsLink', () => {
 	});
 
 	it('should return an image preview link for image attachment types', () => {
-		(includes as unknown as jest.Mock).mockReturnValueOnce(true); // Simulating image type
+		(includes as unknown as Mock).mockReturnValueOnce(true); // Simulating image type
 
 		const attachments = ['image1'];
 		const result = getAttachmentsLink({
@@ -58,7 +58,7 @@ describe('getAttachmentsLink', () => {
 	});
 
 	it('should return a pdf preview link for pdf attachment type', () => {
-		(includes as unknown as jest.Mock).mockReturnValueOnce(false).mockReturnValueOnce(true); // Simulating pdf type
+		(includes as unknown as Mock).mockReturnValueOnce(false).mockReturnValueOnce(true); // Simulating pdf type
 
 		const attachments = ['pdf1'];
 		const result = getAttachmentsLink({
@@ -72,7 +72,7 @@ describe('getAttachmentsLink', () => {
 	});
 
 	it('should return a document preview link for document attachment types', () => {
-		(includes as unknown as jest.Mock)
+		(includes as unknown as Mock)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(true); // Simulating document type
@@ -104,7 +104,7 @@ describe('getAttachmentsLink', () => {
 	});
 
 	it('document preview link should have the lang_tag query param with hyphen (-)', () => {
-		jest.spyOn(shellHooks, 'getUserSettings').mockReturnValue({
+		vi.spyOn(shellHooks, 'getUserSettings').mockReturnValue({
 			attrs: {
 				zimbraFeatureOptionsEnabled: undefined,
 				zimbraIdentityMaxNumEntries: undefined,
@@ -115,7 +115,7 @@ describe('getAttachmentsLink', () => {
 			props: []
 		});
 
-		(includes as unknown as jest.Mock)
+		(includes as unknown as Mock)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(true); // Simulating document type
@@ -131,7 +131,7 @@ describe('getAttachmentsLink', () => {
 	});
 
 	it('should return a default attachment link for unrecognized attachment types', () => {
-		(includes as unknown as jest.Mock)
+		(includes as unknown as Mock)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(false); // No match for any type

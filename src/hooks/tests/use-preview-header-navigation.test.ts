@@ -16,7 +16,7 @@ import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
 import { generateConversation } from '__test__/generators/generateConversation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
+const createSnackbarSpy = vi.fn(createSnackbar);
 
 jest.mock('react-i18next', () => ({
 	...jest.requireActual('react-i18next'),
@@ -29,18 +29,18 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn().mockReturnValue(jest.fn())
+	useNavigate: vi.fn().mockReturnValue(vi.fn())
 }));
 
 beforeEach(() => {
 	createSoapAPIInterceptor('ConvAction');
 	createSoapAPIInterceptor('Search');
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+	(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('usePreviewHeaderNavigation', () => {
@@ -157,8 +157,8 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the previous message id', async () => {
-				const navigate = jest.fn();
-				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+				const navigate = vi.fn();
+				(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -184,7 +184,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -365,7 +365,7 @@ describe('usePreviewHeaderNavigation', () => {
 			const conv1 = generateConversation({ id: '1' });
 			setConversationsInEmailStore([conv1], false);
 
-			const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+			const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 			renderHook(usePreviewHeaderNavigation, {
 				initialProps: {
 					itemIds: ['1'],
@@ -383,8 +383,8 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the next message id', async () => {
-				const navigate = jest.fn();
-				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+				const navigate = vi.fn();
+				(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -409,7 +409,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -440,7 +440,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will not set the message as read if it was already', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });

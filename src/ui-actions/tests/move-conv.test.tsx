@@ -21,7 +21,7 @@ import { MoveConversation } from 'ui-actions/move-conv';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn()
+	useNavigate: vi.fn()
 }));
 
 describe('MoveConversation', () => {
@@ -37,7 +37,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore
 			/>
 		);
@@ -49,7 +49,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
@@ -62,7 +62,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -78,7 +78,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -97,7 +97,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -117,7 +117,7 @@ describe('MoveConversation', () => {
 	});
 
 	it('calls onClose when "Cancel" button is clicked', async () => {
-		const onCloseFn = jest.fn();
+		const onCloseFn = vi.fn();
 		const { user } = setupTest(
 			<MoveConversation
 				folderId={sourceFolder}
@@ -146,7 +146,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
@@ -178,7 +178,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
@@ -202,8 +202,8 @@ describe('MoveConversation', () => {
 	});
 
 	it('navigates to folder on success', async () => {
-		const navigate = jest.fn();
-		(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+		const navigate = vi.fn();
+		(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 		populateFoldersStore();
 
 		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
@@ -217,7 +217,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);

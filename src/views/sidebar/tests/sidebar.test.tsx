@@ -24,7 +24,7 @@ import Sidebar from 'views/sidebar/sidebar';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
@@ -41,7 +41,7 @@ describe('Sidebar', () => {
 	});
 	describe('actions', () => {
 		beforeEach(() => {
-			useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
+			useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], vi.fn()]);
 		});
 		it('Marks all messages as read in the inbox folder', async () => {
 			const folderId = FOLDERS.INBOX;
@@ -85,7 +85,7 @@ describe('Sidebar', () => {
 		});
 
 		it('Creates a new folder when the NEW action is clicked', async () => {
-			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = FOLDERS.INBOX;
 
 			createSoapAPIInterceptor('Search');
@@ -128,7 +128,7 @@ describe('Sidebar', () => {
 		});
 
 		it('delete all the folder messages when the EMPTY action is clicked', async () => {
-			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = FOLDERS.TRASH;
 
 			createSoapAPIInterceptor('Search');
@@ -171,9 +171,9 @@ describe('Sidebar', () => {
 		});
 
 		it('moves the folder messages when the RESTORE action is clicked', async () => {
-			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			(useSnackbar as Mock).mockReturnValue(vi.fn());
 
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			vi.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const folderId = FOLDERS.TRASH;
 
 			populateFoldersStore();
@@ -223,7 +223,7 @@ describe('Sidebar', () => {
 		});
 
 		it('delete the folder when the DELETE action is clicked', async () => {
-			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = '666';
 
 			const folderToDelete = generateFolder({

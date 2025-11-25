@@ -54,14 +54,14 @@ describe('searchEmailStoreAction', () => {
 		'calls resetMessagesAndPopulatedItems to reset Messages And PopulatedItems slice' +
 			' before handling searchSoapApi response',
 		async () => {
-			(searchSoapApi as jest.Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
+			(searchSoapApi as Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
 			await searchEmailStoreAction(searchParams);
 			expect(resetMessagesAndPopulatedItems).toHaveBeenCalledTimes(1);
 		}
 	);
 
 	it('handles successful message search response', async () => {
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
+		(searchSoapApi as Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
 		await searchEmailStoreAction(searchParams);
 		expect(setMessagesInEmailStore).toHaveBeenCalledWith(
 			expect.any(Array),
@@ -71,7 +71,7 @@ describe('searchEmailStoreAction', () => {
 	});
 
 	it('handles successful conversation search response', async () => {
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(mockSearchResponseTypeConversations);
+		(searchSoapApi as Mock).mockResolvedValueOnce(mockSearchResponseTypeConversations);
 		await searchEmailStoreAction({ ...searchParams, types: 'conversation' });
 		expect(setConversationsInEmailStore).toHaveBeenCalledWith(
 			expect.any(Array),
@@ -84,21 +84,21 @@ describe('searchEmailStoreAction', () => {
 
 	it('updates message loading status when error response and type is message', async () => {
 		const errorResponse = { Fault: {} };
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
+		(searchSoapApi as Mock).mockResolvedValueOnce(errorResponse);
 		await searchEmailStoreAction({ ...searchParams, types: 'message' });
 		expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
 	});
 
 	it('updates conversation loading status when error response and type is conversation', async () => {
 		const errorResponse = { Fault: {} };
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
+		(searchSoapApi as Mock).mockResolvedValueOnce(errorResponse);
 		await searchEmailStoreAction({ ...searchParams, types: 'conversation' });
 		expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
 	});
 
 	it('handles empty message response', async () => {
 		const emptyResponse = { m: [], more: false };
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+		(searchSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 		await searchEmailStoreAction(searchParams);
 		expect(resetMessagesAndPopulatedItems).toHaveBeenCalled();
 		expect(updateMessagesResultsLoadingStatus).not.toHaveBeenCalledWith(
@@ -108,7 +108,7 @@ describe('searchEmailStoreAction', () => {
 
 	it('handles empty conversation response', async () => {
 		const emptyResponse = { m: [], c: [], more: false };
-		(searchSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+		(searchSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 		await searchEmailStoreAction({ ...searchParams, types: 'conversation' });
 		expect(resetMessagesAndPopulatedItems).toHaveBeenCalled();
 		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalledWith(

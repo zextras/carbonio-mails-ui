@@ -35,7 +35,7 @@ const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => 
 
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: '106',
@@ -92,7 +92,7 @@ describe('edit-modal', () => {
 	});
 
 	test('edit the system folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -147,7 +147,7 @@ describe('edit-modal', () => {
 	});
 
 	test('edit the folder with default retention policy is collapse', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: '106',
@@ -187,7 +187,7 @@ describe('edit-modal', () => {
 	});
 
 	test('Enable message retention and enable message disposal are uncheck by default', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: '106',
@@ -232,7 +232,7 @@ describe('edit-modal', () => {
 	});
 
 	test('API is called with the proper parameters', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);
@@ -262,7 +262,7 @@ describe('edit-modal', () => {
 	});
 
 	test('edited folder name should be pass in parameter', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
 
 		const folder: Folder = {
 			id: '106',
@@ -329,7 +329,7 @@ describe('edit-modal', () => {
 	});
 
 	test('folder name disable when edit system folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -395,7 +395,7 @@ describe('edit-modal', () => {
 				acl
 			};
 
-			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 
 			expect(await screen.findByText('label.shares_folder_edit')).toBeVisible();
 			expect(await screen.findByText('label.revoke')).toBeVisible();
@@ -410,7 +410,7 @@ describe('edit-modal', () => {
 		it('should disable the submit button when folder name input is empty', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 
 			const newFolder = screen.getByTestId('folder-name');
 			const folderInputElement = within(newFolder).getByRole('textbox');
@@ -427,7 +427,7 @@ describe('edit-modal', () => {
 		it('should enable the edit submit button when folder name input is not empty', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 
 			const newFolder = screen.getByTestId('folder-name');
 			const folderInputElement = within(newFolder).getByRole('textbox');
@@ -442,7 +442,7 @@ describe('edit-modal', () => {
 		it('should display the "Cannot use a system folder name" error when folder name input is equal to a system folder', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 
 			const newFolder = screen.getByTestId('folder-name');
 			const folderInputElement = within(newFolder).getByRole('textbox');
@@ -457,7 +457,7 @@ describe('edit-modal', () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
 			const { user } = setupTest(
-				<EditModal onClose={(): void => jest.fn()()} folder={folder} />,
+				<EditModal onClose={(): void => vi.fn()()} folder={folder} />,
 				{}
 			);
 
@@ -482,7 +482,7 @@ describe('edit-modal', () => {
 		it('should disable the submit button and show error message when system folder name is used', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 
 			const newFolder = screen.getByTestId('folder-name');
 			const folderInputElement = within(newFolder).getByRole('textbox');
@@ -504,7 +504,7 @@ describe('edit-modal', () => {
 		test('is displayed in years if divisible by 365, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
-			const closeModal = jest.fn();
+			const closeModal = vi.fn();
 			const folder: Folder = {
 				...aFolderWithoutSharePermission(),
 				retentionPolicy: [
@@ -560,7 +560,7 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
@@ -602,7 +602,7 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
@@ -643,7 +643,7 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
@@ -683,7 +683,7 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
@@ -720,7 +720,7 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });

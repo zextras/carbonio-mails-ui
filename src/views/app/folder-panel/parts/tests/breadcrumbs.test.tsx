@@ -7,20 +7,21 @@
 import React, { act } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { capitalize, forEach, noop, without } from 'lodash';
+import { Mock } from 'vitest';
 
 import { setupHook, within, setupTest, screen } from '@test-setup';
 import { SORTING_OPTIONS } from 'constants/index';
 import { getFolderPathForBreadcrumb } from 'helpers/folders';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 jest.mock('../../../../../helpers/folders', () => ({
-	getFolderPathForBreadcrumb: jest.fn()
+	getFolderPathForBreadcrumb: vi.fn()
 }));
 
 describe('Breadcrumbs Component', () => {
-	const setIsSelectModeOnMock = jest.fn();
+	const setIsSelectModeOnMock = vi.fn();
 	const defaultProps = {
 		itemsCount: 5,
 		isSelectModeOn: false,
@@ -31,7 +32,7 @@ describe('Breadcrumbs Component', () => {
 	};
 
 	beforeEach(() => {
-		(getFolderPathForBreadcrumb as jest.Mock).mockReturnValue({
+		(getFolderPathForBreadcrumb as Mock).mockReturnValue({
 			folderPathFirstPart: 'root/folder/',
 			folderPathLastPart: 'subfolder'
 		});

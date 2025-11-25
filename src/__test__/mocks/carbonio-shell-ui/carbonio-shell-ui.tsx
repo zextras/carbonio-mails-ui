@@ -16,57 +16,57 @@ export const mockedAccount = generateAccount();
 const mockedAccounts = [mockedAccount];
 const mockedSettings = generateSettings();
 
-export const getUserAccount: jest.Mock<ReturnType<typeof shell.getUserAccount>> = jest.fn(
+export const getUserAccount: Mock<ReturnType<typeof shell.getUserAccount>> = vi.fn(
 	() => mockedAccount
 );
-export const useUserAccount: jest.Mock<ReturnType<typeof shell.useUserAccount>> = jest.fn(
+export const useUserAccount: Mock<ReturnType<typeof shell.useUserAccount>> = vi.fn(
 	() => mockedAccount
 );
-export const useUserAccounts: jest.Mock<ReturnType<typeof shell.useUserAccounts>> = jest.fn(
+export const useUserAccounts: Mock<ReturnType<typeof shell.useUserAccounts>> = vi.fn(
 	() => mockedAccounts
 );
 
-export const useUserSettings = jest.fn(() => mockedSettings);
-export const getUserSettings = jest.fn(() => mockedSettings);
-export const t = jest.fn((key: string) => key);
-export const replaceHistory = jest.fn();
-export const pushHistory = jest.fn();
+export const useUserSettings = vi.fn(() => mockedSettings);
+export const getUserSettings = vi.fn(() => mockedSettings);
+export const t = vi.fn((key: string) => key);
+export const replaceHistory = vi.fn();
+export const pushHistory = vi.fn();
 
-export const useBoard = jest.fn();
+export const useBoard = vi.fn();
 
-export const useAppContext = jest.fn<unknown, []>(() => mockedAccounts);
-export const setAppContext = jest.fn();
-export const getBridgedFunctions = jest.fn();
-export const addBoard = jest.fn();
-export const closeBoard = jest.fn();
-export const updateBoardContext = jest.fn();
-export const useBoardHooks = jest.fn().mockReturnValue({
-	closeBoard: jest.fn(),
-	updateBoard: jest.fn(),
-	setCurrentBoard: jest.fn(),
-	getBoardContext: jest.fn(),
-	getBoard: jest.fn()
+export const useAppContext = vi.fn<unknown, []>(() => mockedAccounts);
+export const setAppContext = vi.fn();
+export const getBridgedFunctions = vi.fn();
+export const addBoard = vi.fn();
+export const closeBoard = vi.fn();
+export const updateBoardContext = vi.fn();
+export const useBoardHooks = vi.fn().mockReturnValue({
+	closeBoard: vi.fn(),
+	updateBoard: vi.fn(),
+	setCurrentBoard: vi.fn(),
+	getBoardContext: vi.fn(),
+	getBoard: vi.fn()
 });
-export const minimizeBoards = jest.fn();
-export const getCurrentRoute = jest.fn();
-export const useIsCarbonioCE: jest.Mock<ReturnType<typeof shell.useIsCarbonioCE>> = jest.fn(
+export const minimizeBoards = vi.fn();
+export const getCurrentRoute = vi.fn();
+export const useIsCarbonioCE: Mock<ReturnType<typeof shell.useIsCarbonioCE>> = vi.fn(
 	() => false
 );
 
-export const useLocalStorage = jest.fn();
+export const useLocalStorage = vi.fn();
 export const AppLink: FC<{ children: ReactNode }> = ({ children }) => <>{children}</>;
-export const editSettings = jest.fn(() => Promise.resolve({ data: {} }));
-export const registerComponents: typeof shell.registerComponents = jest.fn();
-export const registerActions: typeof shell.registerActions = jest.fn();
-export const addRoute: typeof shell.addRoute = jest.fn();
-export const removeRoute: typeof shell.removeRoute = jest.fn();
-export const addSettingsView: typeof shell.addSettingsView = jest.fn();
-export const addBoardView: typeof shell.addBoardView = jest.fn();
-export const getBoardById: typeof shell.getBoardById = jest.fn();
-export const setCurrentBoard: typeof shell.setCurrentBoard = jest.fn();
-export const reopenBoards: typeof shell.reopenBoards = jest.fn();
-export const registerFunctions: typeof shell.registerFunctions = jest.fn();
-export const upsertApp: typeof shell.upsertApp = jest.fn();
+export const editSettings = vi.fn(() => Promise.resolve({ data: {} }));
+export const registerComponents: typeof shell.registerComponents = vi.fn();
+export const registerActions: typeof shell.registerActions = vi.fn();
+export const addRoute: typeof shell.addRoute = vi.fn();
+export const removeRoute: typeof shell.removeRoute = vi.fn();
+export const addSettingsView: typeof shell.addSettingsView = vi.fn();
+export const addBoardView: typeof shell.addBoardView = vi.fn();
+export const getBoardById: typeof shell.getBoardById = vi.fn();
+export const setCurrentBoard: typeof shell.setCurrentBoard = vi.fn();
+export const reopenBoards: typeof shell.reopenBoards = vi.fn();
+export const registerFunctions: typeof shell.registerFunctions = vi.fn();
+export const upsertApp: typeof shell.upsertApp = vi.fn();
 
 /*
  * Integration mocks
@@ -74,19 +74,19 @@ export const upsertApp: typeof shell.upsertApp = jest.fn();
 
 // Integrated components
 const FakeIntegrationComponent = (): React.JSX.Element => <div data-testid="fake-component" />;
-const IntegrationComponent = jest.fn(FakeIntegrationComponent);
+const IntegrationComponent = vi.fn(FakeIntegrationComponent);
 const isIntegrationAvailable = false;
-export const useIntegratedComponent = jest.fn((id: string) => [
+export const useIntegratedComponent = vi.fn((id: string) => [
 	IntegrationComponent,
 	isIntegrationAvailable
 ]);
-export const getIntegratedComponent = jest.fn((id: string) => [
+export const getIntegratedComponent = vi.fn((id: string) => [
 	IntegrationComponent,
 	isIntegrationAvailable
 ]);
 
 // Integrated actions
-export const getAction = jest.fn<
+export const getAction = vi.fn<
 	ReturnType<typeof shell.getAction>,
 	Parameters<typeof shell.getAction>
 >((type, id) => [undefined, false]);
@@ -96,22 +96,22 @@ export const useActions = jest
 	.mockImplementation(() => []);
 
 // Integrated functions
-export const getIntegratedFunction: jest.Mock<
+export const getIntegratedFunction: Mock<
 	ReturnType<typeof shell.getIntegratedFunction>,
 	Parameters<typeof shell.getIntegratedFunction>,
 	any
-> = jest.fn<
+> = vi.fn<
 	ReturnType<typeof shell.getIntegratedFunction>,
 	Parameters<typeof shell.getIntegratedFunction>
->((id) => [jest.fn(), false]);
+>((id) => [vi.fn(), false]);
 
-export const useIntegratedFunction: jest.Mock<
+export const useIntegratedFunction: Mock<
 	ReturnType<typeof shell.useIntegratedFunction>,
 	Parameters<typeof shell.useIntegratedFunction>,
 	any
-> = jest.fn<
+> = vi.fn<
 	ReturnType<typeof shell.useIntegratedFunction>,
 	Parameters<typeof shell.useIntegratedFunction>
->((id) => [jest.fn(), false]);
+>((id) => [vi.fn(), false]);
 
 export const JSNS = { ...shell.JSNS };

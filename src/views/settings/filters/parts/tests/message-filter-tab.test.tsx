@@ -19,16 +19,16 @@ import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/te
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
-const createSnackbarSpy = jest.fn((arg) => arg);
+const createSnackbarSpy = vi.fn((arg) => arg);
 
 describe('Message filters tab', () => {
 	it('should call getFilters only once', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const filters = [mockFilter({ name: 'Filter 1' })];
 
-		const getFilters = jest.fn();
+		const getFilters = vi.fn();
 		getFilters.mockReturnValue(
 			Promise.resolve({
 				filterRules: [
@@ -40,7 +40,7 @@ describe('Message filters tab', () => {
 		);
 		setupTest(
 			<MessageFilterTab
-				saveFilters={jest.fn()}
+				saveFilters={vi.fn()}
 				getFilters={getFilters}
 				FiltersManagerComponent={getFiltermanager(true)}
 			/>
@@ -49,9 +49,9 @@ describe('Message filters tab', () => {
 		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
 	});
 	it('should call onConfirm with filters as declared in initial order when saving an edited filter', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const filters = [mockFilter({ name: 'Test filter 1' }), mockFilter({ name: 'Test filter 2' })];
-		const mockSave = jest.fn();
+		const mockSave = vi.fn();
 		mockSave.mockReturnValue(Promise.resolve());
 
 		const user = setupTestWithFilters({ filters, onSave: mockSave });
@@ -69,11 +69,11 @@ describe('Message filters tab', () => {
 	});
 
 	it('should display snackbar with error if not able to retrieve filters', async () => {
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 
 		setupTest(
 			<MessageFilterTab
-				saveFilters={jest.fn()}
+				saveFilters={vi.fn()}
 				getFilters={() => Promise.reject()}
 				FiltersManagerComponent={getFiltermanager(true)}
 			/>
@@ -102,7 +102,7 @@ describe('Message filters tab', () => {
 	});
 
 	it('should call on save with all existing filters when saving modified filter', async () => {
-		const onSave = jest.fn();
+		const onSave = vi.fn();
 		onSave.mockReturnValue(Promise.resolve({}));
 		const filter1 = mockFilter({ name: 'Filter 1' });
 		const otherFilters = [mockFilter({ name: 'Filter 2' }), mockFilter({ name: 'Filter 3' })];
@@ -131,7 +131,7 @@ describe('Message filters tab', () => {
 	});
 
 	it('should call on save with existing filters and new created filter after creating a new filter', async () => {
-		const onSave = jest.fn();
+		const onSave = vi.fn();
 		onSave.mockReturnValue(Promise.resolve({}));
 		const existingFilters = [mockFilter({ name: 'Filter 1' }), mockFilter({ name: 'Filter 2' })];
 
@@ -161,7 +161,7 @@ describe('Message filters tab', () => {
 	});
 
 	it('should call on save with new filter when creating a new filter and no initial filters', async () => {
-		const onSave = jest.fn();
+		const onSave = vi.fn();
 		onSave.mockReturnValue(Promise.resolve({}));
 
 		const user = setupTestWithFilters({ filters: [], onSave });
@@ -187,7 +187,7 @@ describe('Message filters tab', () => {
 
 	describe('Move selected filter', () => {
 		it('should move filter up when clicking move up button', async () => {
-			const onSave = jest.fn();
+			const onSave = vi.fn();
 			onSave.mockReturnValue(Promise.resolve());
 			const filter1 = mockFilter({ name: 'Filter 1' });
 			const filter2 = mockFilter({ name: 'Filter 2' });
@@ -206,7 +206,7 @@ describe('Message filters tab', () => {
 			expect(onSave).toHaveBeenCalledWith([filter2, filter1]);
 		});
 		it('should move filter down when clicking move down button', async () => {
-			const onSave = jest.fn(() => Promise.resolve());
+			const onSave = vi.fn(() => Promise.resolve());
 			const filter1 = mockFilter({ name: 'Filter 1' });
 			const filter2 = mockFilter({ name: 'Filter 2' });
 			const existingFilters = [filter1, filter2];
@@ -228,12 +228,12 @@ describe('Message filters tab', () => {
 
 function setupTestWithFilters({
 	filters,
-	onSave = jest.fn()
+	onSave = vi.fn()
 }: {
 	filters: Filter[];
 	onSave?: (filters: Filter[]) => Promise<void>;
 }): UserEvent {
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+	(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 	const filtersFromAPI: FilterRulesAPIResponse = {
 		filterRules: [
 			{

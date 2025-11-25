@@ -23,7 +23,7 @@ const defaultRetentionState = {
 
 const defaultProps = {
 	retentionState: defaultRetentionState,
-	setRetentionState: jest.fn()
+	setRetentionState: vi.fn()
 };
 describe('RetentionPolicies Component', () => {
 	afterEach(() => {
@@ -44,7 +44,7 @@ describe('RetentionPolicies Component', () => {
 	});
 
 	it('calls setRetentionState when checkbox is toggled', async () => {
-		const setRetentionState = jest.fn();
+		const setRetentionState = vi.fn();
 		const { user } = setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
@@ -60,7 +60,7 @@ describe('RetentionPolicies Component', () => {
 		setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, emptyDisValue: true }}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 		expect(
@@ -72,7 +72,7 @@ describe('RetentionPolicies Component', () => {
 		setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dspYear: null }}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 		expect(screen.queryByLabelText('Select')).not.toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('RetentionPolicies Component', () => {
 		setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 		const input = screen.getByLabelText('Disposal Threshold');
@@ -93,7 +93,7 @@ describe('RetentionPolicies Component', () => {
 		setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 		const input = screen.getByLabelText('Disposal Threshold');
@@ -101,7 +101,7 @@ describe('RetentionPolicies Component', () => {
 	});
 
 	it('updates purgeValue when input is changed', async () => {
-		const setRetentionState = jest.fn();
+		const setRetentionState = vi.fn();
 		const { user } = setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
@@ -115,7 +115,7 @@ describe('RetentionPolicies Component', () => {
 	});
 
 	it('resets emptyDisValue when typing into the input', async () => {
-		const setRetentionState = jest.fn();
+		const setRetentionState = vi.fn();
 		const { user } = setupTest(
 			<RetentionPolicies
 				retentionState={{
@@ -138,14 +138,14 @@ describe('RetentionPolicies Component', () => {
 		setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 		expect(screen.getByText(/days/i)).toBeVisible();
 	});
 
 	it('calls setRetentionState when selecting a new retention period', async () => {
-		const setRetentionState = jest.fn();
+		const setRetentionState = vi.fn();
 		const { user } = setupTest(
 			<RetentionPolicies
 				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
@@ -164,7 +164,7 @@ describe('RetentionPolicies Component', () => {
 	});
 
 	test('uses default values when retentionState is undefined', () => {
-		setupTest(<RetentionPolicies setRetentionState={jest.fn()} />);
+		setupTest(<RetentionPolicies setRetentionState={vi.fn()} />);
 
 		expect(screen.getByTestId('retention_policy-icon')).toBeInTheDocument();
 		const input = screen.getByLabelText(/disposal threshold/i);
@@ -183,7 +183,7 @@ describe('RetentionPolicies Component', () => {
 					dspYear: 'd',
 					dspRange: 'Days'
 				}}
-				setRetentionState={jest.fn()}
+				setRetentionState={vi.fn()}
 			/>
 		);
 

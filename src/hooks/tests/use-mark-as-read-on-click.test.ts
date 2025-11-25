@@ -16,8 +16,8 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 }));
 
 const createActionMock = () => ({
-	canExecute: jest.fn(() => true),
-	execute: jest.fn()
+	canExecute: vi.fn(() => true),
+	execute: vi.fn()
 });
 
 describe('useMarkAsReadOnClick', () => {

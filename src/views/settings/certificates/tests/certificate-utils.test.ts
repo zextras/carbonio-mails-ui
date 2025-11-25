@@ -42,14 +42,14 @@ describe('handleCertificateFileUpload', () => {
 		mockCertificate.serialNumber = '01';
 
 		// Mock the necessary forge functions
-		jest.spyOn(forge.pki, 'privateKeyToAsn1').mockReturnValue({} as any);
-		jest.spyOn(forge.pki, 'wrapRsaPrivateKey').mockReturnValue({} as any);
-		jest.spyOn(forge.pki, 'privateKeyInfoToPem').mockReturnValue(mockPrivateKey);
-		jest.spyOn(forge.pki, 'certificateToPem').mockReturnValue('mock-cert-pem');
+		vi.spyOn(forge.pki, 'privateKeyToAsn1').mockReturnValue({} as any);
+		vi.spyOn(forge.pki, 'wrapRsaPrivateKey').mockReturnValue({} as any);
+		vi.spyOn(forge.pki, 'privateKeyInfoToPem').mockReturnValue(mockPrivateKey);
+		vi.spyOn(forge.pki, 'certificateToPem').mockReturnValue('mock-cert-pem');
 
 		// ✅ Fix: Properly mock `pkcs12FromAsn1`
-		jest.spyOn(forge.pkcs12, 'pkcs12FromAsn1').mockReturnValue({
-			getBags: jest.fn().mockImplementation(({ bagType }) => {
+		vi.spyOn(forge.pkcs12, 'pkcs12FromAsn1').mockReturnValue({
+			getBags: vi.fn().mockImplementation(({ bagType }) => {
 				if (bagType === forge.pki.oids.pkcs8ShroudedKeyBag) {
 					return { [bagType]: [{ key: {} }] };
 				}
@@ -60,7 +60,7 @@ describe('handleCertificateFileUpload', () => {
 			})
 		} as any);
 
-		jest.spyOn(pkijs, 'Certificate').mockImplementation(
+		vi.spyOn(pkijs, 'Certificate').mockImplementation(
 			() =>
 				({
 					subject: {
@@ -70,7 +70,7 @@ describe('handleCertificateFileUpload', () => {
 		);
 
 		// Mock FileReader behavior
-		jest.spyOn(FileReader.prototype, 'readAsArrayBuffer').mockImplementation(function (
+		vi.spyOn(FileReader.prototype, 'readAsArrayBuffer').mockImplementation(function (
 			this: FileReader
 		) {
 			this.onload?.({

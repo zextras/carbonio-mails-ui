@@ -37,7 +37,7 @@ function createDeferredPromise<T>(): {
 jest.mock('api/upload-file-to-files');
 
 describe('SmartlinkFromLocalModal', () => {
-	const mockOnClose = jest.fn();
+	const mockOnClose = vi.fn();
 
 	const sampleFiles = [
 		new File(['file1 content'], 'file1.txt'),
@@ -83,18 +83,18 @@ describe('SmartlinkFromLocalModal', () => {
 		const publicLinkDeferred = createDeferredPromise<string>();
 
 		// Mock uploadToFiles
-		(uploadToFiles as jest.Mock).mockReturnValue({
+		(uploadToFiles as Mock).mockReturnValue({
 			upload: uploadDeferred.promise,
 			abortController: new AbortController()
 		});
 
-		const getLinkSpy = jest.fn().mockReturnValue(publicLinkDeferred.promise);
+		const getLinkSpy = vi.fn().mockReturnValue(publicLinkDeferred.promise);
 		useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 			if (integratedFunctionId === 'get-link') {
 				return [getLinkSpy, true];
 			}
 
-			return [jest.fn(), true];
+			return [vi.fn(), true];
 		});
 
 		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
@@ -129,18 +129,18 @@ describe('SmartlinkFromLocalModal', () => {
 
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
-			(uploadToFiles as jest.Mock).mockReturnValueOnce({
+			(uploadToFiles as Mock).mockReturnValueOnce({
 				upload: Promise.resolve('uploadResult1'),
 				abortController: new AbortController()
 			});
 
-			const getLinkSpy = jest.fn().mockResolvedValueOnce({ url: 'url1' });
+			const getLinkSpy = vi.fn().mockResolvedValueOnce({ url: 'url1' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -190,7 +190,7 @@ describe('SmartlinkFromLocalModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
-			(uploadToFiles as jest.Mock)
+			(uploadToFiles as Mock)
 				.mockReturnValueOnce({
 					upload: Promise.resolve('uploadResult1'),
 					abortController: new AbortController()
@@ -208,7 +208,7 @@ describe('SmartlinkFromLocalModal', () => {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -270,7 +270,7 @@ describe('SmartlinkFromLocalModal', () => {
 	});
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
-			(uploadToFiles as jest.Mock)
+			(uploadToFiles as Mock)
 				.mockReturnValueOnce({
 					upload: Promise.resolve('uploadResult1'),
 					abortController: new AbortController()
@@ -288,7 +288,7 @@ describe('SmartlinkFromLocalModal', () => {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -329,7 +329,7 @@ describe('SmartlinkFromLocalModal', () => {
 
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
-			(uploadToFiles as jest.Mock).mockImplementation(() => ({
+			(uploadToFiles as Mock).mockImplementation(() => ({
 				upload: Promise.reject(new Error('Upload failed')),
 				abortController: new AbortController()
 			}));
@@ -359,18 +359,18 @@ describe('SmartlinkFromLocalModal', () => {
 		});
 
 		it('handles missing public link URL', async () => {
-			(uploadToFiles as jest.Mock).mockImplementation(() => ({
+			(uploadToFiles as Mock).mockImplementation(() => ({
 				upload: Promise.resolve('uploadResult'),
 				abortController: new AbortController()
 			}));
 
-			const getLinkSpy = jest.fn().mockResolvedValue(null);
+			const getLinkSpy = vi.fn().mockResolvedValue(null);
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -402,7 +402,7 @@ describe('SmartlinkFromLocalModal', () => {
 
 			const abortController = new AbortController();
 
-			(uploadToFiles as jest.Mock).mockReturnValue({
+			(uploadToFiles as Mock).mockReturnValue({
 				upload: uploadDeferred.promise,
 				abortController
 			});

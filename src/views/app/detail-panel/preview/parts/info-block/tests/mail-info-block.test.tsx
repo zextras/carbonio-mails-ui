@@ -19,13 +19,13 @@ import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/m
 // Mock useModal hook
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useModal: jest.fn()
+	useModal: vi.fn()
 }));
 
-const mockCreateModal = jest.fn();
-const mockCloseModal = jest.fn();
+const mockCreateModal = vi.fn();
+const mockCloseModal = vi.fn();
 
-(useModal as jest.Mock).mockReturnValue({
+(useModal as Mock).mockReturnValue({
 	createModal: mockCreateModal,
 	closeModal: mockCloseModal
 });
@@ -132,21 +132,21 @@ describe('MailInfoBlock', () => {
 	});
 
 	it('render the Decrypt Message link when valid value is passed', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId(decryptMsgId)).toBeInTheDocument();
 	});
 
 	it('does not render the Decrypt Message link when CarbonioCE', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(true);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(true);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
 	});
 
 	it('does not render the Decrypt Message link when isSmimeEnabled is false', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
@@ -158,7 +158,7 @@ describe('MailInfoBlock', () => {
 			'/service/extension/encryption/password/exist',
 			HttpResponse.json({ status: 200 })
 		);
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimePasswordStore.getState().updateSmimePassword('');
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);

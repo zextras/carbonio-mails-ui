@@ -42,7 +42,7 @@ describe('send', () => {
 		});
 	});
 	it('should add beforeunload event listener when send is called', () => {
-		const addListenerSpy = jest.spyOn(window, 'addEventListener');
+		const addListenerSpy = vi.spyOn(window, 'addEventListener');
 
 		const editor = generateNewMessageEditor();
 		const composedEditor: MailsEditorV2 = {
@@ -69,7 +69,7 @@ describe('send', () => {
 		expect(addListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 	});
 	it('should remove beforeunload event listener when send is successful', async () => {
-		const removeListenerSpy = jest.spyOn(window, 'removeEventListener');
+		const removeListenerSpy = vi.spyOn(window, 'removeEventListener');
 
 		createSoapAPIInterceptor('SendMsg');
 
@@ -102,7 +102,7 @@ describe('send', () => {
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 	});
 	it('should remove beforeunload event listener when API return Fault', async () => {
-		const removeListenerSpy = jest.spyOn(window, 'removeEventListener');
+		const removeListenerSpy = vi.spyOn(window, 'removeEventListener');
 
 		createSoapAPIInterceptor('SendMsg', buildSoapErrorResponseBody());
 
@@ -135,7 +135,7 @@ describe('send', () => {
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 	});
 	it('should remove beforeunload event listener on error', async () => {
-		const removeListenerSpy = jest.spyOn(window, 'removeEventListener');
+		const removeListenerSpy = vi.spyOn(window, 'removeEventListener');
 
 		createSoapAPIInterceptorWithError('SendMsg');
 

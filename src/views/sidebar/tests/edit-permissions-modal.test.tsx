@@ -18,23 +18,23 @@ import * as shareFolderModule from 'api/share-folder-soap-api';
 import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
+const createSnackbarSpy = vi.fn(createSnackbar);
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 beforeEach(() => {
 	createSoapAPIInterceptor('Batch');
 	createSoapAPIInterceptor('SendShareNotification');
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+	(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('edit-permissions-modal', () => {
 	test('role field has 4 options, viewer role is set by default ', async () => {
-		const closeFn = jest.fn();
-		const goBack = jest.fn();
+		const closeFn = vi.fn();
+		const goBack = vi.fn();
 		const grant = [
 			{
 				zid: '1',
@@ -110,8 +110,8 @@ describe('edit-permissions-modal', () => {
 	});
 
 	test('message field empty and enable/disable as per send notification is unchecked and checked', async () => {
-		const closeFn = jest.fn();
-		const goBack = jest.fn();
+		const closeFn = vi.fn();
+		const goBack = vi.fn();
 		const grant = [
 			{
 				zid: '1',
@@ -180,8 +180,8 @@ describe('edit-permissions-modal', () => {
 	});
 	test.todo('when chips inside chipInput have errors, the confirm button is disabled');
 	test('when at least a chip is inserted without errors, the confirm button is enabled', async () => {
-		const closeFn = jest.fn();
-		const goBack = jest.fn();
+		const closeFn = vi.fn();
+		const goBack = vi.fn();
 		const grant = [
 			{
 				zid: '1',
@@ -244,8 +244,8 @@ describe('edit-permissions-modal', () => {
 	describe('API is called with the proper parameters to share the folder', () => {
 		test('Share the inbox folder with a user giving the viewer role', async () => {
 			const folderId = FOLDERS.INBOX;
-			const closeFn = jest.fn();
-			const goBack = jest.fn();
+			const closeFn = vi.fn();
+			const goBack = vi.fn();
 
 			populateFoldersStore();
 			const folder = getFolder(folderId);
@@ -278,7 +278,7 @@ describe('edit-permissions-modal', () => {
 			await user.tab();
 			await user.click(roleItem);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -291,8 +291,8 @@ describe('edit-permissions-modal', () => {
 		});
 		test('Share the inbox folder with a user giving the admin role', async () => {
 			const folderId = FOLDERS.INBOX;
-			const closeFn = jest.fn();
-			const goBack = jest.fn();
+			const closeFn = vi.fn();
+			const goBack = vi.fn();
 
 			populateFoldersStore();
 			const folder = getFolder(folderId);
@@ -327,7 +327,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
@@ -339,8 +339,8 @@ describe('edit-permissions-modal', () => {
 		});
 		test('Share the inbox folder with a user giving the manager role', async () => {
 			const folderId = FOLDERS.INBOX;
-			const closeFn = jest.fn();
-			const goBack = jest.fn();
+			const closeFn = vi.fn();
+			const goBack = vi.fn();
 
 			populateFoldersStore();
 			const folder = getFolder(folderId);
@@ -374,7 +374,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -388,8 +388,8 @@ describe('edit-permissions-modal', () => {
 		});
 		test('Share the inbox folder with a user giving the manager role and note to the standard message', async () => {
 			const folderId = FOLDERS.INBOX;
-			const closeFn = jest.fn();
-			const goBack = jest.fn();
+			const closeFn = vi.fn();
+			const goBack = vi.fn();
 
 			populateFoldersStore();
 			const folder = getFolder(folderId);
@@ -439,7 +439,7 @@ describe('edit-permissions-modal', () => {
 			await user.click(standardMessage);
 			await user.type(standardMessage, note);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toHaveBeenCalled();
@@ -450,8 +450,8 @@ describe('edit-permissions-modal', () => {
 		});
 		test('Share the inbox folder with a user giving the manager role and without send notification message', async () => {
 			const folderId = FOLDERS.INBOX;
-			const closeFn = jest.fn();
-			const goBack = jest.fn();
+			const closeFn = vi.fn();
+			const goBack = vi.fn();
 
 			populateFoldersStore();
 			const folder = act(() => {
@@ -509,7 +509,7 @@ describe('edit-permissions-modal', () => {
 
 			expect(standardMessage).toBeDisabled();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await act(async () => {
 				await user.click(confirmButton);
 			});

@@ -22,7 +22,7 @@ import {
 } from 'store/editor-slice-utils';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
-	getAvailableAddresses: jest.fn()
+	getAvailableAddresses: vi.fn()
 }));
 const mailMessage: MailMessage = {
 	attachments: undefined,
@@ -107,7 +107,7 @@ const mailMessage: MailMessage = {
 };
 describe('retrieveCC', () => {
 	beforeEach(() => {
-		(getAvailableAddresses as jest.Mock).mockReturnValue([]);
+		(getAvailableAddresses as Mock).mockReturnValue([]);
 	});
 
 	const defaultIdentity = {
@@ -321,7 +321,7 @@ describe('retrieveALL', () => {
 			ownerAccount: sharedAccount
 		};
 
-		(getAvailableAddresses as jest.Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
+		(getAvailableAddresses as Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
 	});
 	it('should return "someone@test.com" when replying as Me to a message sent to me from "someone@test.com"', () => {
 		const receivedMessage = {
@@ -452,7 +452,7 @@ describe('retrieveReplyTo', () => {
 			ownerAccount: sharedAccount
 		};
 
-		(getAvailableAddresses as jest.Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
+		(getAvailableAddresses as Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
 	});
 	it('should return "me@test.com" when replying as Me to a message sent to myself', () => {
 		const receivedMessage = {

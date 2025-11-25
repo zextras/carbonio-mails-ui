@@ -16,25 +16,25 @@ import {
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 
-jest.mock('store/editor/store', () => ({ useEditorsStore: jest.fn() }));
-jest.mock('store/editor/hooks/editors', () => ({ getEditor: jest.fn() }));
-jest.mock('store/editor/editor-transformations', () => ({ composeCidUrlFromContentId: jest.fn() }));
-jest.mock('api/upload-attachments-api', () => ({ uploadAttachmentsApi: jest.fn() }));
-jest.mock('store/editor/hooks/commons', () => ({ computeAndUpdateEditorStatus: jest.fn() }));
+jest.mock('store/editor/store', () => ({ useEditorsStore: vi.fn() }));
+jest.mock('store/editor/hooks/editors', () => ({ getEditor: vi.fn() }));
+jest.mock('store/editor/editor-transformations', () => ({ composeCidUrlFromContentId: vi.fn() }));
+jest.mock('api/upload-attachments-api', () => ({ uploadAttachmentsApi: vi.fn() }));
+jest.mock('store/editor/hooks/commons', () => ({ computeAndUpdateEditorStatus: vi.fn() }));
 jest.mock('store/editor/hooks/save-draft', () => ({
 	useSaveDraftFromEditor: (): any => ({
-		debouncedSaveDraft: jest.fn((_id, opts?: any) => {
+		debouncedSaveDraft: vi.fn((_id, opts?: any) => {
 			opts?.onComplete && opts.onComplete();
 		})
 	})
 }));
-jest.mock('helpers/attachments', () => ({ composeAttachmentDownloadUrl: jest.fn(() => 'url') }));
+jest.mock('helpers/attachments', () => ({ composeAttachmentDownloadUrl: vi.fn(() => 'url') }));
 jest.mock('store/editor/editor-utils', () => ({
-	filterUnsavedAttachmentsByUploadId: jest.fn(),
-	getSavedInlineAttachmentsByContentId: jest.fn()
+	filterUnsavedAttachmentsByUploadId: vi.fn(),
+	getSavedInlineAttachmentsByContentId: vi.fn()
 }));
 jest.mock('hooks/use-ui-utilities', () => ({
-	useUiUtilities: (): any => ({ createSnackbar: jest.fn() })
+	useUiUtilities: (): any => ({ createSnackbar: vi.fn() })
 }));
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	t: (_: string, o: any): string => `Upload failed for the file "${o.filename}"`
@@ -42,16 +42,16 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 
 describe('useEditorAttachments', () => {
 	const editorId = 'e1';
-	const removeSavedAttachmentMock = jest.fn();
-	const removeUnsavedAttachmentMock = jest.fn();
-	const clearStandardAttachmentsMock = jest.fn();
-	const addUnsavedAttachmentsMock = jest.fn();
-	const setAttachmentUploadStatusMock = jest.fn();
-	const setAttachmentUploadCompletedMock = jest.fn();
+	const removeSavedAttachmentMock = vi.fn();
+	const removeUnsavedAttachmentMock = vi.fn();
+	const clearStandardAttachmentsMock = vi.fn();
+	const addUnsavedAttachmentsMock = vi.fn();
+	const setAttachmentUploadStatusMock = vi.fn();
+	const setAttachmentUploadCompletedMock = vi.fn();
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useEditorsStore as unknown as jest.Mock).mockImplementation((sel) =>
+		(useEditorsStore as unknown as Mock).mockImplementation((sel) =>
 			sel({
 				editors: {
 					[editorId]: {
@@ -102,7 +102,7 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('addStandardAttachments', () => {
-		(uploadAttachmentsApi as jest.Mock).mockReturnValue([
+		(uploadAttachmentsApi as Mock).mockReturnValue([
 			{ file: new File([''], 'f'), uploadId: 'u2', abortController: {} }
 		]);
 		const { result } = renderHook(() => useEditorAttachments(editorId));
@@ -111,23 +111,23 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('addInlineAttachments with save complete', () => {
-		(uploadAttachmentsApi as jest.Mock).mockImplementation((_files, options) => {
+		(uploadAttachmentsApi as Mock).mockImplementation((_files, options) => {
 			options.onUploadsEnd(['u3'], []);
 			return [{ file: new File([''], 'f.png'), uploadId: 'u3', abortController: {} }];
 		});
 
-		(getEditor as jest.Mock).mockReturnValue({
+		(getEditor as Mock).mockReturnValue({
 			unsavedAttachments: [{ uploadId: 'u3', isInline: true, contentId: 'c1' }],
 			savedAttachments: [{ contentId: 'c1' }]
 		});
 
-		(filterUnsavedAttachmentsByUploadId as jest.Mock).mockReturnValue([
+		(filterUnsavedAttachmentsByUploadId as Mock).mockReturnValue([
 			{ isInline: true, contentId: 'c1' }
 		]);
-		(getSavedInlineAttachmentsByContentId as jest.Mock).mockReturnValue([{ contentId: 'c1' }]);
-		(composeCidUrlFromContentId as jest.Mock).mockReturnValue('cid:c1');
+		(getSavedInlineAttachmentsByContentId as Mock).mockReturnValue([{ contentId: 'c1' }]);
+		(composeCidUrlFromContentId as Mock).mockReturnValue('cid:c1');
 
-		const cb: any = { onSaveComplete: jest.fn() };
+		const cb: any = { onSaveComplete: vi.fn() };
 		const { result } = renderHook(() => useEditorAttachments(editorId));
 
 		act(() => {
@@ -140,19 +140,19 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('removeInlineAttachments removes unused', () => {
-		(getEditor as jest.Mock).mockReturnValue({
+		(getEditor as Mock).mockReturnValue({
 			savedAttachments: [
 				{ isInline: true, contentId: 'c1', partName: 'p1' },
 				{ isInline: true, contentId: 'c2', partName: 'p2' }
 			]
 		});
-		(composeCidUrlFromContentId as jest.Mock).mockImplementation((c) => `cid:${c}`);
+		(composeCidUrlFromContentId as Mock).mockImplementation((c) => `cid:${c}`);
 		const { result } = renderHook(() => useEditorAttachments(editorId));
 		act(() => result.current.removeInlineAttachments(['cid:c1']));
 		expect(removeSavedAttachmentMock).toHaveBeenCalledWith(editorId, 'p2');
 	});
 	it('upload error sets aborted', () => {
-		(uploadAttachmentsApi as jest.Mock).mockImplementation((_f, o) => {
+		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
 			o.onUploadError(new File([''], 'f'), 'u5', 'err');
 			return [{ file: new File([''], 'f'), uploadId: 'u5', abortController: {} }];
 		});
@@ -165,7 +165,7 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('upload progress sets running', () => {
-		(uploadAttachmentsApi as jest.Mock).mockImplementation((_f, o) => {
+		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
 			o.onUploadProgress(new File([''], 'f'), 'u6', 30);
 			return [{ file: new File([''], 'f'), uploadId: 'u6', abortController: {} }];
 		});
@@ -178,7 +178,7 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('upload complete sets completed', () => {
-		(uploadAttachmentsApi as jest.Mock).mockImplementation((_f, o) => {
+		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
 			o.onUploadComplete(new File([''], 'f'), 'u7', 'a7');
 			return [{ file: new File([''], 'f'), uploadId: 'u7', abortController: {} }];
 		});
@@ -188,18 +188,18 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('uploads end calls callback', () => {
-		(uploadAttachmentsApi as jest.Mock).mockImplementation((_f, o) => {
+		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
 			o.onUploadsEnd(['u8'], []);
 			return [{ file: new File([''], 'f'), uploadId: 'u8', abortController: {} }];
 		});
-		(getEditor as jest.Mock).mockReturnValue({
+		(getEditor as Mock).mockReturnValue({
 			unsavedAttachments: [{ uploadId: 'u8', isInline: false }],
 			savedAttachments: []
 		});
-		(filterUnsavedAttachmentsByUploadId as jest.Mock).mockReturnValue([
+		(filterUnsavedAttachmentsByUploadId as Mock).mockReturnValue([
 			{ isInline: false, contentId: 'cidx' }
 		]);
-		const cb: any = { onUploadsEnd: jest.fn() };
+		const cb: any = { onUploadsEnd: vi.fn() };
 		const { result } = renderHook(() => useEditorAttachments(editorId));
 		result.current.addStandardAttachments([new File([''], 'f')], cb);
 		expect(cb.onUploadsEnd).toHaveBeenCalledWith(['u8'], []);

@@ -101,7 +101,7 @@ const createMockTextEditorContainerProps = (
 	overrides: Partial<TextEditorContainerProps> = {}
 ): TextEditorContainerProps => ({
 	editorId: 'editor-123',
-	onDragOver: jest.fn(),
+	onDragOver: vi.fn(),
 	...overrides
 });
 

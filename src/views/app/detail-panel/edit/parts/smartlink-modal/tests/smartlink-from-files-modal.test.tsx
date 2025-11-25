@@ -20,7 +20,7 @@ import { generateEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 
 describe('SmartlinkFromFilesModal', () => {
-	const mockOnClose = jest.fn();
+	const mockOnClose = vi.fn();
 	const fileNode1: FileNode = {
 		id: '1',
 		name: 'file1.txt',
@@ -81,13 +81,13 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue({ url: 'url1' });
+			const getLinkSpy = vi.fn().mockResolvedValue({ url: 'url1' });
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 
@@ -144,7 +144,7 @@ describe('SmartlinkFromFilesModal', () => {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -211,7 +211,7 @@ describe('SmartlinkFromFilesModal', () => {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -248,13 +248,13 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
-			const getLinkSpy = jest.fn().mockRejectedValue(new Error('API failure'));
+			const getLinkSpy = vi.fn().mockRejectedValue(new Error('API failure'));
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 
@@ -280,13 +280,13 @@ describe('SmartlinkFromFilesModal', () => {
 		});
 
 		it('handles missing public link URL', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue(null);
+			const getLinkSpy = vi.fn().mockResolvedValue(null);
 			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 

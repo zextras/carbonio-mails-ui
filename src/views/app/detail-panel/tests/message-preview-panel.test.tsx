@@ -18,7 +18,7 @@ import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-pane
 jest.mock('../../../../store/emails/hooks/hooks');
 
 describe('MessagePreviewPanel', () => {
-	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;
+	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as Mock;
 
 	beforeEach(() => {
 		jest.clearAllMocks();

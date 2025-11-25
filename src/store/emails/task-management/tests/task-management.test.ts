@@ -16,8 +16,8 @@ describe('useEmailsStore', () => {
 	});
 
 	it('should add tasks to the queue', async () => {
-		const task1 = jest.fn(() => Promise.resolve());
-		const task2 = jest.fn(() => Promise.resolve());
+		const task1 = vi.fn(() => Promise.resolve());
+		const task2 = vi.fn(() => Promise.resolve());
 
 		useEmailsStore.setState((state) => ({ ...state, isExecuting: true }));
 		useEmailsStore.getState().addTask(task1);
@@ -31,15 +31,15 @@ describe('useEmailsStore', () => {
 
 	it('should execute tasks in sequence', async () => {
 		const results: string[] = [];
-		const task1 = jest.fn(() => {
+		const task1 = vi.fn(() => {
 			results.push('task1');
 			return Promise.resolve(); // Explicitly return a Promise<void>
 		});
-		const task2 = jest.fn(() => {
+		const task2 = vi.fn(() => {
 			results.push('task2');
 			return Promise.resolve(); // Explicitly return a Promise<void>
 		});
-		const task3 = jest.fn(() => {
+		const task3 = vi.fn(() => {
 			results.push('task3');
 			return Promise.resolve(); // Explicitly return a Promise<void>
 		});
@@ -58,7 +58,7 @@ describe('useEmailsStore', () => {
 
 	it('should not execute tasks concurrently', async () => {
 		const results: string[] = [];
-		const task1 = jest.fn(
+		const task1 = vi.fn(
 			() =>
 				new Promise<void>((resolve) => {
 					setTimeout(() => {
@@ -68,7 +68,7 @@ describe('useEmailsStore', () => {
 				})
 		);
 
-		const task2 = jest.fn(
+		const task2 = vi.fn(
 			() =>
 				new Promise<void>((resolve) => {
 					setTimeout(() => {
@@ -89,14 +89,14 @@ describe('useEmailsStore', () => {
 	});
 
 	it('should handle task execution errors gracefully', async () => {
-		const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+		const consoleWarnMock = vi.spyOn(console, 'warn').mockImplementation(vi.fn());
 		const results: string[] = [];
-		const task1 = jest.fn(() => {
+		const task1 = vi.fn(() => {
 			results.push('task1');
 			return Promise.resolve();
 		});
-		const failingTask = jest.fn(() => Promise.reject(new Error('Task failed')));
-		const task3 = jest.fn(() => {
+		const failingTask = vi.fn(() => Promise.reject(new Error('Task failed')));
+		const task3 = vi.fn(() => {
 			results.push('task3');
 			return Promise.resolve();
 		});
@@ -119,7 +119,7 @@ describe('useEmailsStore', () => {
 
 	test('should not re-trigger execution if already running', async () => {
 		const results: string[] = [];
-		const task1 = jest.fn(
+		const task1 = vi.fn(
 			() =>
 				new Promise<void>((resolve) => {
 					setTimeout(() => {
@@ -128,7 +128,7 @@ describe('useEmailsStore', () => {
 					}, 100);
 				})
 		);
-		const task2 = jest.fn(() => {
+		const task2 = vi.fn(() => {
 			results.push('task2');
 			return Promise.resolve(); // Explicitly return a Promise<void>
 		});

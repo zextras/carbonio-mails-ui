@@ -21,7 +21,7 @@ const TRUSTEE_LIST = 'trustee-list';
 
 const buildProps = ({
 	settingsObj = {},
-	updateSettings = jest.fn()
+	updateSettings = vi.fn()
 }: Partial<InputProps>): InputProps => ({
 	settingsObj,
 	updateSettings
@@ -48,7 +48,7 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should render the list of trustee addresses', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const trusteeAddressArray: Array<string> = times(3, () => faker.internet.email());
 		const customSettings: Partial<AccountSettings> = {
@@ -66,7 +66,7 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should display a delete button when user hover on the trustee address item', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const trusteeAddressArray: Array<string> = times(1, () => faker.internet.email());
 		const customSettings: Partial<AccountSettings> = {
@@ -95,7 +95,7 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should remove the trustee address from the list if the remove button is clicked', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 		const trusteeAddressArray: Array<string> = times(1, () => faker.internet.email());
 		const customSettings: Partial<AccountSettings> = {
 			prefs: {
@@ -122,7 +122,7 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should add new trustee address in the list of trustee addresses', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 		const newTrusteeAddress = faker.internet.email();
 
 		const trusteeAddressArray: Array<string> = times(3, () => faker.internet.email());

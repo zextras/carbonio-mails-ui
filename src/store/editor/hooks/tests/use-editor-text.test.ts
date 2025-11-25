@@ -67,8 +67,8 @@ describe('useEditorText', () => {
 				plainText: faker.lorem.paragraph()
 			};
 			const textProvider = {
-				setCurrentText: jest.fn(),
-				getCurrentText: jest.fn().mockReturnValue(providerTextValue)
+				setCurrentText: vi.fn(),
+				getCurrentText: vi.fn().mockReturnValue(providerTextValue)
 			};
 			const editor = generateNewMessageEditor();
 			editor.textProvider = textProvider;
@@ -106,8 +106,8 @@ describe('useEditorText', () => {
 			};
 			const editor = generateNewMessageEditor();
 			editor.textProvider = {
-				setCurrentText: jest.fn(),
-				getCurrentText: jest.fn()
+				setCurrentText: vi.fn(),
+				getCurrentText: vi.fn()
 			};
 			setupEditorStore({ editors: [editor] });
 

@@ -18,16 +18,16 @@ import { BackupSearchPanel } from 'views/backup-search/parts/backup-search-panel
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+	useParams: vi.fn()
 }));
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getFolder: jest.fn()
+	getFolder: vi.fn()
 }));
 
 function mockItemIdParam(itemId: string | undefined): void {
-	(useParams as jest.Mock).mockReturnValue({ itemId });
+	(useParams as Mock).mockReturnValue({ itemId });
 }
 
 function setStoredMessages(storedMessages: DeletedMessageFromAPI[]): void {
@@ -77,7 +77,7 @@ describe('Backup search panel', () => {
 		mockItemIdParam(testMessageId);
 		const generateFolder1 = generateFolder({ name: 'Inbox' });
 
-		(getFolder as jest.Mock).mockReturnValue(generateFolder1);
+		(getFolder as Mock).mockReturnValue(generateFolder1);
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,
@@ -108,7 +108,7 @@ describe('Backup search panel', () => {
 	it('handle message details renders with unknown folder id', () => {
 		const testMessageId = '1';
 		mockItemIdParam(testMessageId);
-		(getFolder as jest.Mock).mockReturnValue(undefined);
+		(getFolder as Mock).mockReturnValue(undefined);
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,

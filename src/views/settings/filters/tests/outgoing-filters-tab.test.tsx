@@ -15,7 +15,7 @@ import { mockFilter } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 describe('Outgoing Filters', () => {

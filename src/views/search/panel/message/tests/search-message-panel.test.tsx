@@ -15,17 +15,17 @@ import { API_REQUEST_STATUS } from 'constants/index';
 import { setSearchResultsByMessage, updateMessageStatus } from 'store/emails/store';
 import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
-const mockNavigateSpy = jest.fn();
+const mockNavigateSpy = vi.fn();
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn(),
+	useParams: vi.fn(),
 	useNavigate: (): NavigateFunction => mockNavigateSpy
 }));
 
 describe('Message Panel', () => {
 	it('should render a message when status fulfilled', async () => {
-		(useParams as jest.Mock).mockReturnValue({ messageId: '1' });
+		(useParams as Mock).mockReturnValue({ messageId: '1' });
 		setSearchResultsByMessage(
 			[
 				generateMessage({

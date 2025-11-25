@@ -19,12 +19,12 @@ import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/te
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useRootsArray: jest.fn()
+	useRootsArray: vi.fn()
 }));
 
 describe('Incoming Filters', () => {
@@ -33,7 +33,7 @@ describe('Incoming Filters', () => {
 		const OPEN_SELECT_FOLDER_ICON = 'icon: FolderOutline';
 
 		beforeEach(() => {
-			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+			(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 			createSoapAPIInterceptor('ApplyFilterRules');
 		});
 		it('should display "Apply" filter button', async () => {
@@ -98,7 +98,7 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should add folder chip when a folder is selected', async () => {
-			(useRootsArray as jest.Mock).mockReturnValue(
+			(useRootsArray as Mock).mockReturnValue(
 				rootFolderWith([
 					generateFolder({
 						name: TEST_FOLDER_NAME,
@@ -128,7 +128,7 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should "apply" filters and show the snackbar related to the process started when confirming folder', async () => {
-			(useRootsArray as jest.Mock).mockReturnValue(
+			(useRootsArray as Mock).mockReturnValue(
 				rootFolderWith([
 					generateFolder({
 						name: TEST_FOLDER_NAME,
@@ -165,7 +165,7 @@ describe('Incoming Filters', () => {
 
 		it('should render message "N messages will be processed inside the selected folder" when folder is selected', async () => {
 			const MESSAGE_COUNT = 42;
-			(useRootsArray as jest.Mock).mockReturnValue(
+			(useRootsArray as Mock).mockReturnValue(
 				rootFolderWith([
 					generateFolder({
 						name: TEST_FOLDER_NAME,
@@ -192,7 +192,7 @@ describe('Incoming Filters', () => {
 
 		it('should render message with singular form for 1 message', async () => {
 			const MESSAGE_COUNT = 1;
-			(useRootsArray as jest.Mock).mockReturnValue(
+			(useRootsArray as Mock).mockReturnValue(
 				rootFolderWith([
 					generateFolder({
 						name: TEST_FOLDER_NAME,
@@ -219,7 +219,7 @@ describe('Incoming Filters', () => {
 	});
 });
 
-const createSnackbarSpy = jest.fn((arg) => arg);
+const createSnackbarSpy = vi.fn((arg) => arg);
 
 const createGetIncomingFiltersInterceptor = (
 	filters: Array<Filter>

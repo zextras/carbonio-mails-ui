@@ -43,10 +43,10 @@ const FIND_TIMEOUT = 2000;
 
 const buildProps = ({
 	updatedIdentities = [],
-	updateIdentities = jest.fn(),
-	setDisabled = jest.fn(),
+	updateIdentities = vi.fn(),
+	setDisabled = vi.fn(),
 	signatures = [],
-	setSignatures = jest.fn()
+	setSignatures = vi.fn()
 }: Partial<SignatureSettingsPropsType>): SignatureSettingsPropsType => ({
 	updatedIdentities,
 	updateIdentities,
@@ -61,8 +61,8 @@ const SettingsViewMock = ({
 	preloadedSignatures?: Array<SignItemType>;
 }): React.JSX.Element => {
 	const updatedIdentities = useMemo(() => [], []);
-	const updateIdentities = useCallback(() => jest.fn(), []);
-	const setDisabled = useCallback(() => jest.fn(), []);
+	const updateIdentities = useCallback(() => vi.fn(), []);
+	const setDisabled = useCallback(() => vi.fn(), []);
 	const [signatures, setSignatures] = useState<Array<SignItemType>>(preloadedSignatures);
 	return (
 		<SignatureSettings

@@ -21,16 +21,16 @@ import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler'
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+	useParams: vi.fn()
 }));
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	},
 	tagsWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	}
 }));
 
@@ -45,7 +45,7 @@ const MessageListDataSyncTest: () => React.JSX.Element = () => {
 
 describe('message-list data-sync', () => {
 	it('should not remove participants names from message that is being replied', async () => {
-		(useParams as jest.Mock).mockReturnValue({
+		(useParams as Mock).mockReturnValue({
 			folderId: FOLDERS.INBOX
 		});
 		populateFoldersStore();

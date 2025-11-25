@@ -28,7 +28,7 @@ import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn()
+	getTags: vi.fn()
 }));
 
 async function selectOption(
@@ -44,10 +44,10 @@ async function selectOption(
 }
 
 async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>): Promise<void> {
-	const updateQueryMock = jest.fn();
+	const updateQueryMock = vi.fn();
 	const properties: AdvancedFilterModalProps = {
 		isSharedFolderIncluded: false,
-		onClose: jest.fn(),
+		onClose: vi.fn(),
 		onSearchConfirm: updateQueryMock,
 		query: emptyQuery
 	};
@@ -153,8 +153,8 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should call updateQuery with correct args when confirm button is clicked', async () => {
-		const updateQueryMock = jest.fn();
-		const onCloseMock = jest.fn();
+		const updateQueryMock = vi.fn();
+		const onCloseMock = vi.fn();
 
 		const { user } = await renderWithUseForm(
 			<AdvancedFilterModal
@@ -197,7 +197,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should add from suffix to query label but not to query value', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
@@ -227,7 +227,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should add to suffix to query label but not to value', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
@@ -258,7 +258,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const query: SearchQueryItem = {
 			id: 'query1',
@@ -333,7 +333,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should disable search button when reset filters button is clicked', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const query = [
 			{
@@ -366,7 +366,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should include attachment type in the query', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
 			onSearchConfirm: updateQueryMock
@@ -403,9 +403,9 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should include email status in the query', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const properties: AdvancedFilterModalProps = {
-			onClose: jest.fn(),
+			onClose: vi.fn(),
 			isSharedFolderIncluded: false,
 			query: [],
 			onSearchConfirm: updateQueryMock
@@ -545,7 +545,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it(`should reset 'tags' when reset button is pressed`, async () => {
-		(getTags as jest.Mock).mockReturnValue(mockTags);
+		(getTags as Mock).mockReturnValue(mockTags);
 		await checkResetAndSearchButton(async (user) => {
 			const selectElement = screen.getByTestId('tagInput');
 			expect(selectElement).toBeInTheDocument();
@@ -582,11 +582,11 @@ describe('Advanced filter modal', () => {
 	});
 
 	it(`should reset 'include shared folder' toggle when reset button is pressed`, async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const properties: AdvancedFilterModalProps = {
 			isSharedFolderIncluded: false,
 			onSearchConfirm: updateQueryMock,
-			onClose: jest.fn(),
+			onClose: vi.fn(),
 			query: []
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
@@ -618,11 +618,11 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should reset shared folder toggle to initial state when modal is closed without search confirmation', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const propertiesInitialSearch: AdvancedFilterModalProps = {
 			isSharedFolderIncluded: false,
 			onSearchConfirm: updateQueryMock,
-			onClose: jest.fn(),
+			onClose: vi.fn(),
 			query: []
 		};
 
@@ -654,11 +654,11 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should preserve shared folder toggle after a search', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const propertiesInitialSearch: AdvancedFilterModalProps = {
 			isSharedFolderIncluded: false,
 			onSearchConfirm: updateQueryMock,
-			onClose: jest.fn(),
+			onClose: vi.fn(),
 			query: [
 				{
 					id: 'query1',
@@ -707,7 +707,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should prevent adding duplicated values for keywords', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
 			onSearchConfirm: updateQueryMock
@@ -751,7 +751,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should forbid the user from entering the same attachment type twice', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
@@ -790,7 +790,7 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should forbid the user from entering the same email status twice', async () => {
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
@@ -829,9 +829,9 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should forbid the user from entering the same tag twice', async () => {
-		(getTags as jest.Mock).mockReturnValue(mockTags);
+		(getTags as Mock).mockReturnValue(mockTags);
 
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,

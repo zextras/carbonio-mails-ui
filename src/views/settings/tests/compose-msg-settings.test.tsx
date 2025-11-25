@@ -13,7 +13,7 @@ import { UpdateSettingsProps } from 'types/settings/index.d';
 import ComposeMessage from 'views/settings/compose-msg-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key) => key)
+	t: vi.fn((key) => key)
 }));
 
 describe('compose-msg-settings', () => {
@@ -153,8 +153,8 @@ describe('compose-msg-settings', () => {
 
 	function getMockUpdateSettings(
 		settingObject: Record<string, string>
-	): jest.Mock<void, [changedKeyValue: UpdateSettingsProps]> {
-		return jest.fn((changedKeyValue) => {
+	): Mock<void, [changedKeyValue: UpdateSettingsProps]> {
+		return vi.fn((changedKeyValue) => {
 			const { name, value } = changedKeyValue.target;
 			const updatedSettings = { ...settingObject, [name]: value as string };
 			Object.assign(settingObject, updatedSettings);

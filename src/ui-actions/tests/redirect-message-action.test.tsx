@@ -20,24 +20,24 @@ import { RedirectMessageActionRequest } from 'types/index.d';
 import RedirectMessageAction from 'ui-actions/redirect-message-action';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
+const createSnackbarSpy = vi.fn(createSnackbar);
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+	useSnackbar: vi.fn()
 }));
 
 describe('RedirectMessageAction', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 	});
 
 	it('should enable the "redirect" button when at least one recipient address is set', async () => {
 		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
 
-		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+		const component = <RedirectMessageAction id={msg.id} onClose={vi.fn()} />;
 		const { user } = setupTest(component);
 
 		const recipient = createFakeIdentity().email;
@@ -64,7 +64,7 @@ describe('RedirectMessageAction', () => {
 
 		const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
-		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+		const component = <RedirectMessageAction id={msg.id} onClose={vi.fn()} />;
 		const { user } = setupTest(component);
 
 		const recipient = createFakeIdentity().email;
@@ -92,7 +92,7 @@ describe('RedirectMessageAction', () => {
 
 		const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
-		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+		const component = <RedirectMessageAction id={msg.id} onClose={vi.fn()} />;
 		const { user } = setupTest(component);
 		const recipients = times(5, () => createFakeIdentity().email);
 		const recipientsInputElement = within(

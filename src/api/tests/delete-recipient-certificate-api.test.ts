@@ -14,7 +14,7 @@ describe('deleteRecipientCertificate', () => {
 
 	it('should return data when the API call is successful', async () => {
 		const mockResponse = { ok: true, status: 200, statusText: 'OK' };
-		global.fetch = jest.fn(() => Promise.resolve(mockResponse)) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.resolve(mockResponse)) as Mock;
 
 		const result = await deleteRecipientCertificate(email);
 		expect(result).toEqual({ data: mockResponse });
@@ -22,9 +22,9 @@ describe('deleteRecipientCertificate', () => {
 
 	it('should return error when the API call returns a non-OK response', async () => {
 		const mockResponse = { ok: false, status: 404, statusText: 'Not Found' };
-		global.fetch = jest.fn(() => Promise.resolve(mockResponse)) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.resolve(mockResponse)) as Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
 			/* mock implementation */
 		});
 
@@ -37,9 +37,9 @@ describe('deleteRecipientCertificate', () => {
 
 	it('should return error when the API call fails', async () => {
 		const errorMessage = 'Network error';
-		global.fetch = jest.fn(() => Promise.reject(new Error(errorMessage))) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.reject(new Error(errorMessage))) as Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
 			/* mock implementation */
 		});
 

@@ -87,7 +87,7 @@ describe('Signatures', () => {
 		};
 
 		beforeEach(() => {
-			(getUserAccount as jest.Mock).mockReturnValue({
+			(getUserAccount as Mock).mockReturnValue({
 				...account,
 				signatures: { signature: [signature1, signature2] }
 			});

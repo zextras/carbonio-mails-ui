@@ -21,22 +21,22 @@ jest.mock('../../../../store/certificates/store', () => {
 	const actual = jest.requireActual('../../../../store/certificates/store');
 	return {
 		...actual,
-		useSmimePasswordStore: jest.fn(() => ({
+		useSmimePasswordStore: vi.fn(() => ({
 			smimePassword: '',
-			updateSmimePassword: jest.fn()
+			updateSmimePassword: vi.fn()
 		}))
 	};
 });
 
 jest.mock('../../../../api/check-exist-password-api', () => ({
-	checkExistEncryptionPassword: jest.fn()
+	checkExistEncryptionPassword: vi.fn()
 }));
 
 describe('CertificatesView', () => {
-	const mockCheckExistEncryptionPassword = checkExistEncryptionPassword as jest.Mock;
+	const mockCheckExistEncryptionPassword = checkExistEncryptionPassword as Mock;
 
 	it('calls checkExistEncryptionPassword API when password is empty', async () => {
-		(useSmimePasswordStore as unknown as jest.Mock).mockReturnValue({ smimePassword: '' });
+		(useSmimePasswordStore as unknown as Mock).mockReturnValue({ smimePassword: '' });
 		mockCheckExistEncryptionPassword.mockResolvedValue({ data: {} });
 
 		setupTest(<CertificatesView />);
@@ -60,7 +60,7 @@ describe('CertificatesView', () => {
 	});
 
 	it('renders personal and recipient certificates sections when password exists', () => {
-		(useSmimePasswordStore as unknown as jest.Mock).mockReturnValue({
+		(useSmimePasswordStore as unknown as Mock).mockReturnValue({
 			smimePassword: 'mockPassword'
 		});
 

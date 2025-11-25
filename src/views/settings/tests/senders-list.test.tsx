@@ -22,7 +22,7 @@ const SENDERS_LIST_ITEM = 'senders-list-item';
 
 const buildProps = ({
 	settingsObj = { attrs: {}, prefs: {} },
-	updateSettings = jest.fn(),
+	updateSettings = vi.fn(),
 	listType = 'Allowed'
 }: Partial<SendersListProps>): SendersListProps => ({
 	settingsObj,
@@ -90,7 +90,7 @@ describe.each`
 			const newSenderAddress = faker.internet.email();
 
 			const { user } = setupTest(
-				<SendersList updateSettings={jest.fn()} settingsObj={setupSettings()} listType={listType} />
+				<SendersList updateSettings={vi.fn()} settingsObj={setupSettings()} listType={listType} />
 			);
 			await addAddress(user, newSenderAddress);
 
@@ -100,7 +100,7 @@ describe.each`
 		});
 
 		it('should update settings when new sender address is added and list is empty', async () => {
-			const updateSettings = jest.fn();
+			const updateSettings = vi.fn();
 			const newSenderAddress = faker.internet.email();
 
 			const { user } = setupTest(
@@ -122,7 +122,7 @@ describe.each`
 
 			setupTest(
 				<SendersList
-					updateSettings={jest.fn()}
+					updateSettings={vi.fn()}
 					settingsObj={setupSettings({ [settingsBuilderParam]: senderAddressArray })}
 					listType={listType}
 				/>
@@ -134,7 +134,7 @@ describe.each`
 		});
 
 		it('should update settings when new sender address is added and list is NOT empty', async () => {
-			const updateSettings = jest.fn();
+			const updateSettings = vi.fn();
 			const newSenderAddress = faker.internet.email();
 			const senderAddressArray = buildAddresses(3);
 
@@ -156,7 +156,7 @@ describe.each`
 			const newSenderAddress = faker.internet.email();
 
 			const { user } = setupTest(
-				<SendersList updateSettings={jest.fn()} settingsObj={setupSettings()} listType={listType} />
+				<SendersList updateSettings={vi.fn()} settingsObj={setupSettings()} listType={listType} />
 			);
 			await addAddress(user, newSenderAddress);
 
@@ -166,7 +166,7 @@ describe.each`
 
 		it('add button disabled with empty address', () => {
 			setupTest(
-				<SendersList updateSettings={jest.fn()} settingsObj={setupSettings()} listType={listType} />
+				<SendersList updateSettings={vi.fn()} settingsObj={setupSettings()} listType={listType} />
 			);
 
 			expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
@@ -176,7 +176,7 @@ describe.each`
 			const newSenderAddress = 'invalid';
 
 			const { user } = setupTest(
-				<SendersList updateSettings={jest.fn()} settingsObj={setupSettings()} listType={listType} />
+				<SendersList updateSettings={vi.fn()} settingsObj={setupSettings()} listType={listType} />
 			);
 			const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
 			await user.type(nameInput, newSenderAddress);
@@ -190,7 +190,7 @@ describe.each`
 
 			setupTest(
 				<SendersList
-					updateSettings={jest.fn()}
+					updateSettings={vi.fn()}
 					settingsObj={attrsWithoutAddresses}
 					listType={listType}
 				/>
@@ -200,7 +200,7 @@ describe.each`
 		});
 
 		it('should remove sender address from the list', async () => {
-			const updateSettings = jest.fn();
+			const updateSettings = vi.fn();
 			const senderAddressArray = buildAddresses(3);
 
 			const { user } = setupTest(

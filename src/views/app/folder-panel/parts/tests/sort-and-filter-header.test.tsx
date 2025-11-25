@@ -13,17 +13,17 @@ import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/in
 import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserSettings: jest.fn()
+	useUserSettings: vi.fn()
 }));
 jest.mock('helpers/sorting', () => ({
-	parseMessageSortingOptions: jest.fn(),
-	updateSortAndFilterSettings: jest.fn()
+	parseMessageSortingOptions: vi.fn(),
+	updateSortAndFilterSettings: vi.fn()
 }));
 
 describe('Sort and Filter Header Component', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useUserSettings as jest.Mock).mockReturnValue({
+		(useUserSettings as Mock).mockReturnValue({
 			prefs: { zimbraPrefSortOrder: '' }
 		});
 	});
@@ -31,7 +31,7 @@ describe('Sort and Filter Header Component', () => {
 	const FOLDER_ID = 'test-folder';
 
 	it('should not render if state is default', () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.date.value,
 			filterType: undefined
 		});
@@ -41,7 +41,7 @@ describe('Sort and Filter Header Component', () => {
 	});
 
 	it('should render with modified state', () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.subject.value,
 			filterType: FILTER_OPTIONS.unread.value
 		});
@@ -53,7 +53,7 @@ describe('Sort and Filter Header Component', () => {
 	});
 
 	it('should call updateSortAndFilterSettings when Reset is clicked', async () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: SORTING_OPTIONS.subject.value,
 			filterType: FILTER_OPTIONS.unread.value
 		});
@@ -73,7 +73,7 @@ describe('Sort and Filter Header Component', () => {
 	});
 
 	it('should not render when invalid legacy values are normalized to defaults', () => {
-		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'legacy_sort',
 			filterType: 'legacy_filter'
 		});

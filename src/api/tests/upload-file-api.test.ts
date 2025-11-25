@@ -17,9 +17,9 @@ describe('uploadFileApi', () => {
 	it('returns attachment ID when upload is successful', async () => {
 		const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 		const response = { data: 'some response data' };
-		(axios.post as jest.Mock).mockResolvedValue(response);
-		(parse as jest.Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
-		(convertToDecimal as jest.Mock).mockReturnValue('test.txt');
+		(axios.post as Mock).mockResolvedValue(response);
+		(parse as Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
+		(convertToDecimal as Mock).mockReturnValue('test.txt');
 
 		const result = await uploadFileApi(file);
 
@@ -28,7 +28,7 @@ describe('uploadFileApi', () => {
 
 	it('returns default attachment ID when response is empty', async () => {
 		const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-		(axios.post as jest.Mock).mockResolvedValue(null);
+		(axios.post as Mock).mockResolvedValue(null);
 
 		const result = await uploadFileApi(file);
 
@@ -38,9 +38,9 @@ describe('uploadFileApi', () => {
 	it('handles file with no type', async () => {
 		const file = new File(['content'], 'test.txt');
 		const response = { data: 'some response data' };
-		(axios.post as jest.Mock).mockResolvedValue(response);
-		(parse as jest.Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
-		(convertToDecimal as jest.Mock).mockReturnValue('test.txt');
+		(axios.post as Mock).mockResolvedValue(response);
+		(parse as Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
+		(convertToDecimal as Mock).mockReturnValue('test.txt');
 
 		const result = await uploadFileApi(file);
 
@@ -50,9 +50,9 @@ describe('uploadFileApi', () => {
 	it('handles file with special characters in name', async () => {
 		const file = new File(['content'], 'test@#$.txt', { type: 'text/plain' });
 		const response = { data: 'some response data' };
-		(axios.post as jest.Mock).mockResolvedValue(response);
-		(parse as jest.Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
-		(convertToDecimal as jest.Mock).mockReturnValue('test@#$.txt');
+		(axios.post as Mock).mockResolvedValue(response);
+		(parse as Mock).mockReturnValue([[], [], [{ aid: '12345' }]]);
+		(convertToDecimal as Mock).mockReturnValue('test@#$.txt');
 
 		const result = await uploadFileApi(file);
 

@@ -54,8 +54,8 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				selected={false}
 				index={0}
-				onSelect={jest.fn()}
-				onToggleExpanded={jest.fn()}
+				onSelect={vi.fn()}
+				onToggleExpanded={vi.fn()}
 				isConversationExpanded={false}
 			/>
 		);
@@ -105,8 +105,8 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				selected={false}
 				index={0}
-				onSelect={jest.fn()}
-				onToggleExpanded={jest.fn()}
+				onSelect={vi.fn()}
+				onToggleExpanded={vi.fn()}
 				isConversationExpanded={false}
 			/>
 		);
@@ -160,8 +160,8 @@ describe('SearchConversationListItem', () => {
 				activeItemId={''}
 				selected={false}
 				index={0}
-				onSelect={jest.fn()}
-				onToggleExpanded={jest.fn()}
+				onSelect={vi.fn()}
+				onToggleExpanded={vi.fn()}
 				isConversationExpanded={false}
 			/>
 		);
@@ -210,8 +210,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded={false}
 				/>
 			);
@@ -244,8 +244,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded={false}
 				/>
 			);
@@ -277,8 +277,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded={false}
 				/>
 			);
@@ -316,8 +316,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded
 				/>
 			);
@@ -351,8 +351,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded={false}
 				/>
 			);
@@ -370,8 +370,8 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
-					onToggleExpanded={jest.fn()}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
 					isConversationExpanded
 				/>
 			);
@@ -398,7 +398,7 @@ describe('SearchConversationListItem', () => {
 			);
 
 			const interceptor = createSoapAPIInterceptor('SearchConv');
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			setupTest(
 				<SearchConversationListItem
@@ -408,7 +408,7 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					onToggleExpanded={onToggleExpanded}
 					isConversationExpanded={false}
 				/>
@@ -447,7 +447,7 @@ describe('SearchConversationListItem', () => {
 			const { API_REQUEST_STATUS } = await import('constants/index');
 			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			setupTest(
 				<SearchConversationListItem
@@ -457,7 +457,7 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					onToggleExpanded={onToggleExpanded}
 					isConversationExpanded={false}
 				/>
@@ -490,7 +490,7 @@ describe('SearchConversationListItem', () => {
 				})
 			);
 
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			setupTest(
 				<SearchConversationListItem
@@ -500,7 +500,7 @@ describe('SearchConversationListItem', () => {
 					activeItemId={''}
 					selected={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					onToggleExpanded={onToggleExpanded}
 					isConversationExpanded
 				/>

@@ -20,13 +20,13 @@ import { MessageListItem } from 'views/app/folder-panel/messages/message-list-it
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+	useParams: vi.fn()
 }));
 
-const canExecuteCallback = jest.fn();
+const canExecuteCallback = vi.fn();
 jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
 	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
-	useMsgPreviewOnSeparatedWindowFn: jest.fn()
+	useMsgPreviewOnSeparatedWindowFn: vi.fn()
 }));
 
 describe('MessageListItem Component', () => {
@@ -39,13 +39,13 @@ describe('MessageListItem Component', () => {
 		visible: true,
 		active: false,
 		isSearchModule: false,
-		handleReplaceHistory: jest.fn(),
+		handleReplaceHistory: vi.fn(),
 		index: 0,
-		onSelect: jest.fn()
+		onSelect: vi.fn()
 	};
 
 	beforeEach(() => {
-		(useParams as jest.Mock).mockReturnValue({
+		(useParams as Mock).mockReturnValue({
 			folderId: '2',
 			itemId: '1'
 		});
@@ -156,7 +156,7 @@ describe('MessageListItem Component', () => {
 	it('should call the onClick handler when the message is clicked', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
-		const handleReplaceHistory = jest.fn();
+		const handleReplaceHistory = vi.fn();
 		const props = { ...defaultProps, handleReplaceHistory };
 		const { user } = setupTest(<MessageListItem {...props} />);
 
@@ -176,9 +176,9 @@ describe('MessageListItem Component', () => {
 	});
 
 	it('should call the doubleClick handler when the message is doubleClicked', async () => {
-		(useMsgPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+		(useMsgPreviewOnSeparatedWindowFn as Mock).mockReturnValue({
 			canExecute: canExecuteCallback,
-			execute: jest.fn()
+			execute: vi.fn()
 		});
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const { user } = setupTest(<MessageListItem {...defaultProps} />);

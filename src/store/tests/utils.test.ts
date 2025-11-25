@@ -28,7 +28,7 @@ describe('getCompleteMessageId', () => {
 
 	it('should return the complete messageId with account id if it does not contain a colon', () => {
 		const messageId = '456';
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			id: '7ed9fffc-cb18-4ee6-817b-e2479b58eae2'
 		});
 		const result = getCompleteMessageId(messageId);
@@ -42,7 +42,7 @@ describe('getCompleteMessageId', () => {
 
 	it('should return the same messageId if getUserAccount returns undefined', () => {
 		const messageId = '456';
-		(getUserAccount as jest.Mock).mockReturnValue(undefined);
+		(getUserAccount as Mock).mockReturnValue(undefined);
 		const result = getCompleteMessageId(messageId);
 		expect(result).toBe(messageId);
 	});

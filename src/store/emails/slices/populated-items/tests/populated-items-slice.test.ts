@@ -54,7 +54,7 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+	useTags: vi.fn()
 }));
 
 describe('store-populated-items-slice', () => {
@@ -735,7 +735,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should tag a message when operation is TAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1' });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -749,7 +749,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should untag a message when operation is UNTAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -763,7 +763,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should not untag a message when operation is UNTAG but tagName is not provided or is undefined', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({

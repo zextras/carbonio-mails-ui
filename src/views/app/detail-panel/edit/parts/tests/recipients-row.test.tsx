@@ -27,7 +27,7 @@ const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 };
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useContactInput: jest.fn()
+	useContactInput: vi.fn()
 }));
 
 const ContactInputWithError = ({ defaultValue }: ContactInputProps): React.JSX.Element => (
@@ -41,7 +41,7 @@ describe('recipients-row', () => {
 	describe('when contact input integration available', () => {
 		it('should call onChange with value of given type when adding a new value in input', async () => {
 			mockContactInput({ valueToAdd: { ...generateMockContactInputItem() } });
-			const mockOnChange = jest.fn();
+			const mockOnChange = vi.fn();
 			const type = 'f';
 
 			const { user } = setupTest(
@@ -61,7 +61,7 @@ describe('recipients-row', () => {
 			const valueToAdd = { ...generateMockContactInputItem() };
 			valueToAdd.value.type = CONTACT_TYPES.CONTACT;
 			mockContactInput({ valueToAdd });
-			const mockOnChange = jest.fn();
+			const mockOnChange = vi.fn();
 
 			const { user } = setupTest(
 				<RecipientsRow
@@ -80,7 +80,7 @@ describe('recipients-row', () => {
 			const valueToAdd = { ...generateMockContactInputItem() };
 			valueToAdd.value.type = CONTACT_TYPES.DISTRIBUTION_LIST;
 			mockContactInput({ valueToAdd });
-			const mockOnChange = jest.fn();
+			const mockOnChange = vi.fn();
 
 			const { user } = setupTest(
 				<RecipientsRow
@@ -99,7 +99,7 @@ describe('recipients-row', () => {
 			const valueToAdd = { ...generateMockContactInputItem() };
 			valueToAdd.value.email = 'test@test.com';
 			mockContactInput({ valueToAdd });
-			const mockOnChange = jest.fn();
+			const mockOnChange = vi.fn();
 
 			const { user } = setupTest(
 				<RecipientsRow
@@ -129,7 +129,7 @@ describe('recipients-row', () => {
 		it('should display a distribution list when initial recipient has isGroup true', async () => {
 			const address = 'someone@test.com';
 			mockContactInput();
-			const mockOnChange = jest.fn();
+			const mockOnChange = vi.fn();
 			const initialRecipients = [
 				{
 					address,
@@ -167,7 +167,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -195,7 +195,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -222,7 +222,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -251,7 +251,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -282,7 +282,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -308,7 +308,7 @@ describe('recipients-row', () => {
 					}
 				};
 				mockContactInput({ valueToAdd });
-				const mockOnChange = jest.fn();
+				const mockOnChange = vi.fn();
 
 				const { user } = setupTest(
 					<RecipientsRow
@@ -347,7 +347,7 @@ describe('recipients-row', () => {
 
 describe('RecipientsRow', () => {
 	beforeEach(() => {
-		(useContactInput as jest.Mock).mockReturnValue(ContactInputWithError);
+		(useContactInput as Mock).mockReturnValue(ContactInputWithError);
 	});
 	test('should display error when email is invalid and error true', async () => {
 		setupTest(
@@ -361,7 +361,7 @@ describe('RecipientsRow', () => {
 						error: true
 					}
 				]}
-				onRecipientsChange={jest.fn()}
+				onRecipientsChange={vi.fn()}
 			/>
 		);
 		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
@@ -378,7 +378,7 @@ describe('RecipientsRow', () => {
 						address: 'invalid-email'
 					}
 				]}
-				onRecipientsChange={jest.fn()}
+				onRecipientsChange={vi.fn()}
 			/>
 		);
 		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
@@ -396,7 +396,7 @@ describe('RecipientsRow', () => {
 						error: false
 					}
 				]}
-				onRecipientsChange={jest.fn()}
+				onRecipientsChange={vi.fn()}
 			/>
 		);
 		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();

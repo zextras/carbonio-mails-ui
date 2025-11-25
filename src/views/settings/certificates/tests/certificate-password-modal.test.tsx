@@ -12,11 +12,11 @@ import { setupTest } from '@test-setup';
 import { CertificatePasswordModal } from 'views/settings/certificates/certificate-password-modal';
 
 jest.mock('../../../../api/create-password-api', () => ({
-	createEncryptionPassword: jest.fn()
+	createEncryptionPassword: vi.fn()
 }));
 
 describe('CertificatePasswordModal', () => {
-	const onClose = jest.fn();
+	const onClose = vi.fn();
 	describe('Create Password', () => {
 		const headetTitle = 'Create a Password for S/MIME Operations';
 		it('should render the modal with the correct title', async () => {

@@ -10,12 +10,12 @@ import { getTagIds } from 'normalizations/utils';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn()
+	getTags: vi.fn()
 }));
 
 describe('getTagIds utility function', () => {
 	beforeEach(() => {
-		(getTags as jest.Mock).mockReturnValue([
+		(getTags as Mock).mockReturnValue([
 			{ id: '1', name: 'tag1' },
 			{ id: '2', name: 'tag2' }
 		]);

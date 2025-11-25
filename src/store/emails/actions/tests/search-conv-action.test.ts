@@ -29,12 +29,12 @@ describe('searchConvEmailStoreAction', () => {
 	});
 
 	it('handles successful conversation search response', async () => {
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-		(normalizeCompleteMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+		(normalizeCompleteMailMessageFromSoap as Mock).mockReturnValueOnce({
 			id: '1',
 			subject: 'Test Message'
 		});
-		(getConversationById as jest.Mock).mockReturnValueOnce({
+		(getConversationById as Mock).mockReturnValueOnce({
 			id: mockConversationId,
 			messages: []
 		});
@@ -58,7 +58,7 @@ describe('searchConvEmailStoreAction', () => {
 	});
 
 	it('handles error during conversation search', async () => {
-		(searchConvSoapApi as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(searchConvSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
 		await searchConvEmailStoreAction(mockConversationId);
 
@@ -74,7 +74,7 @@ describe('searchConvEmailStoreAction', () => {
 
 	it('handles response with fault', async () => {
 		const faultResponse = { Fault: {} };
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 		await searchConvEmailStoreAction(mockConversationId);
 
@@ -90,8 +90,8 @@ describe('searchConvEmailStoreAction', () => {
 
 	it('handles empty response', async () => {
 		const emptyResponse = { m: [] };
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
-		(getConversationById as jest.Mock).mockReturnValueOnce({
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
+		(getConversationById as Mock).mockReturnValueOnce({
 			id: mockConversationId,
 			messages: []
 		});

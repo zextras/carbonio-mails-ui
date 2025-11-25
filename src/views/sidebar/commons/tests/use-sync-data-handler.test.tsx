@@ -60,14 +60,14 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn(),
+	getTags: vi.fn(),
 	folderWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	}
 }));
 
 jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
-	triggerNotification: jest.fn()
+	triggerNotification: vi.fn()
 }));
 
 function getSoapMessage(
@@ -431,7 +431,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should trigger a notification when a new message is received', async () => {
-			const triggerNotificationSpy = jest.fn();
+			const triggerNotificationSpy = vi.fn();
 			jest
 				.spyOn(triggerNotification, 'triggerNotification')
 				.mockImplementation(triggerNotificationSpy);
@@ -510,7 +510,7 @@ describe('sync data handler', () => {
 			const folder = generateFolder({ id: '1' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const notify = { deleted: ['1'], seq: 0 };
-			const workerSpy = jest.spyOn(folderWorker, 'postMessage');
+			const workerSpy = vi.spyOn(folderWorker, 'postMessage');
 			mockSoapDelete(mailboxNumber, ['1']);
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			getSetupServer().use(
@@ -532,7 +532,7 @@ describe('sync data handler', () => {
 			useTagStore.setState({ tags: {} });
 			const notify = { deleted: ['1'], seq: 0 };
 			mockSoapDelete(mailboxNumber, ['1']);
-			const workerSpy = jest.spyOn(tagsWorker, 'postMessage');
+			const workerSpy = vi.spyOn(tagsWorker, 'postMessage');
 			mockSoapRefresh(mailboxNumber);
 			setupHook(() => useSyncDataHandler());
 
@@ -550,7 +550,7 @@ describe('sync data handler', () => {
 			 * and it causes a call to the "onMessage" event listener of the worker without a proper payload.
 			 * This results in a reset of the stores (the tags store in this case) which leads to errors in the test execution
 			 */
-			jest.spyOn(tagsWorker, 'postMessage').mockImplementation(jest.fn());
+			vi.spyOn(tagsWorker, 'postMessage').mockImplementation(vi.fn());
 		});
 
 		it('should not process notify if seq is less than or equal to current seq (but not 1)', async () => {

@@ -27,16 +27,16 @@ import {
 } from 'views/app/folder-panel/conversations/conversation-list-item';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-const canExecuteCallback = jest.fn();
+const canExecuteCallback = vi.fn();
 const PARTICIPANTS_NAME_LABEL_TESTID = 'participants-name-label';
 
 jest.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
 	...jest.requireActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
-	useConvPreviewOnSeparatedWindowFn: jest.fn()
+	useConvPreviewOnSeparatedWindowFn: vi.fn()
 }));
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn()
+	useNavigate: vi.fn()
 }));
 
 describe('conversation-list-item component', () => {
@@ -499,8 +499,8 @@ describe('conversation-list-item component', () => {
 
 	describe('conversation-list-item not in search module', () => {
 		it('should call the onClick handler when the message is clicked', async () => {
-			const navigate = jest.fn();
-			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+			const navigate = vi.fn();
+			(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -541,9 +541,9 @@ describe('conversation-list-item component', () => {
 		});
 
 		it('should call the doubleClick handler when the message is doubleClicked', async () => {
-			(useConvPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+			(useConvPreviewOnSeparatedWindowFn as Mock).mockReturnValue({
 				canExecute: canExecuteCallback,
-				execute: jest.fn()
+				execute: vi.fn()
 			});
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -586,8 +586,8 @@ describe('conversation-list-item component', () => {
 
 	describe('conversation-list-item in search module', () => {
 		it('should call the onClick handler when the message is clicked', async () => {
-			const navigate = jest.fn();
-			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+			const navigate = vi.fn();
+			(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -628,9 +628,9 @@ describe('conversation-list-item component', () => {
 		});
 
 		it('should call the doubleClick handler when the message is doubleClicked', async () => {
-			(useConvPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+			(useConvPreviewOnSeparatedWindowFn as Mock).mockReturnValue({
 				canExecute: canExecuteCallback,
-				execute: jest.fn()
+				execute: vi.fn()
 			});
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -705,7 +705,7 @@ describe('conversation-list-item component', () => {
 
 			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
 
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			const props: ConversationListItemProps = {
 				conversation,
@@ -741,7 +741,7 @@ describe('conversation-list-item component', () => {
 			);
 
 			const interceptor = createSoapAPIInterceptor('SearchConv');
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			const { conversation } = await waitFor(() =>
 				populateConversationInEmailStore({
@@ -789,7 +789,7 @@ describe('conversation-list-item component', () => {
 			// Mark conversation as already loaded
 			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			const props: ConversationListItemProps = {
 				conversation,
@@ -826,7 +826,7 @@ describe('conversation-list-item component', () => {
 				})
 			);
 
-			const onToggleExpanded = jest.fn();
+			const onToggleExpanded = vi.fn();
 
 			const props: ConversationListItemProps = {
 				conversation,
