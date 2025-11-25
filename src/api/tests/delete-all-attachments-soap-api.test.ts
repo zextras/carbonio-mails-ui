@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 

@@ -9,7 +9,7 @@ import React, { act } from 'react';
 import { useTheme } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { capitalize, forEach, noop, without } from 'lodash';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { setupHook, within, setupTest, screen } from '@test-setup';
 import { SORTING_OPTIONS } from 'constants/index';

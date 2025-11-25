@@ -17,7 +17,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import * as useQueryParam from '../../../../../hooks/use-query-param';

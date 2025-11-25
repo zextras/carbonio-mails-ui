@@ -1,5 +1,5 @@
 import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *

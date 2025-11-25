@@ -5,7 +5,7 @@
  */
 import { renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { parseMessageSortingOptions } from 'helpers/sorting';

@@ -1,10 +1,10 @@
-import { Mock } from 'vitest';
+import axios from 'axios';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import axios from 'axios';
 
 import { parse } from 'api/upload-attachments-api';
 import { uploadFileApi } from 'api/upload-file-api';

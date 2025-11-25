@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { getTags } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { getTags } from '@zextras/carbonio-ui-commons';
 
 import { getTagIds } from 'normalizations/utils';
 

@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';

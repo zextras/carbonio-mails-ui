@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
@@ -14,6 +13,7 @@ import {
 	ParticipantRole,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import { UserEvent, setupTest } from '@test-setup';
 import {

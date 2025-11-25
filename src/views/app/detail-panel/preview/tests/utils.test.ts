@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
@@ -8,6 +7,7 @@ import { Mock } from 'vitest';
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
+import type { Mock } from 'vitest';
 
 import {
 	ErrorMessageCode,

@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -16,6 +15,7 @@ import {
 	EDIT_ACTION_ID,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 export function generateMockedContactInput(
 	valueToAdd?: ContactInputItem

@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable testing-library/prefer-user-event */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -10,6 +9,7 @@ import React from 'react';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';

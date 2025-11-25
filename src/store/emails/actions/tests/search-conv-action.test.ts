@@ -1,4 +1,5 @@
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *

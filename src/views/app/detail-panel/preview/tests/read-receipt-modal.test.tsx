@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,11 +8,12 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import * as sendDeliveryReportSoapApiMock from '../../../../../api/send-delivery-request-soap-api';
-import { generateMessage } from '__test__/generators/generateMessage';
 import ReadReceiptModal from '../read-receipt-modal';
 import { setupTest } from '@test-setup';
+import { generateMessage } from '__test__/generators/generateMessage';
 
 const baseMessageWithReadReadReceiptRequested = generateMessage({
 	id: '12345',

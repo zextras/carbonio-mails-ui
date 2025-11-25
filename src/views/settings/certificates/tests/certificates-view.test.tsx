@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,6 +7,7 @@ import { Mock } from 'vitest';
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';

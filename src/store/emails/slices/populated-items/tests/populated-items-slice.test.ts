@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
@@ -14,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
+import type { Mock } from 'vitest';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';

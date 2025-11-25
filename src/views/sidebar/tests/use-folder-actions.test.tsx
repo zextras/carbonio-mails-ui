@@ -9,7 +9,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';

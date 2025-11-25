@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -11,6 +10,7 @@ import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDER_VIEW, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';

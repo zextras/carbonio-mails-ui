@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 // noinspection DuplicatedCode
 
 /*
@@ -13,6 +12,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';

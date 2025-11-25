@@ -1,16 +1,15 @@
-import { Mock } from 'vitest';
+import { find } from 'lodash';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { find } from 'lodash';
-
+import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions } from 'constants/index';
 import { generateEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/hooks/editors';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActionsType, MailMessage } from 'types/index.d';
 
 vi.mock('store/editor/hooks/editors', () => ({

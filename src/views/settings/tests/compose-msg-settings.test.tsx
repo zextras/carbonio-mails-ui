@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import ComposeMessage from 'views/settings/compose-msg-settings';

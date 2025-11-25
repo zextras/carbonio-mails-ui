@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -9,6 +8,7 @@ import { Mock } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import { useFilesAttachmentOrSmartlink } from '../use-files-attachment-or-smartlink';
 import { FileNode } from '../use-upload-from-files';

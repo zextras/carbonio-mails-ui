@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -12,6 +11,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

@@ -7,7 +7,7 @@
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
 import { MailMessage } from '../../types';

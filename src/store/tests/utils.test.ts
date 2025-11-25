@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { extractIdsFromMessagesAndConversations, getCompleteMessageId } from 'store/utils';
 

@@ -1,20 +1,20 @@
-import { Mock } from 'vitest';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import * as reactRouterDom from 'react-router-dom';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
-import * as reactRouterDom from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 import * as convRequest from 'api/conv-action-soap-api';
 import * as searchSoapApi from 'api/search-soap-api';
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { setConversationsInEmailStore } from 'store/emails/store';
-import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = vi.fn(createSnackbar);

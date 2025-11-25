@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -10,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';

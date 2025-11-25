@@ -9,7 +9,7 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

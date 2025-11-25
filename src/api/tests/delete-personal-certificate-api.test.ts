@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { deletePersonalCertificate } from 'api/delete-personal-certificate-api';
 

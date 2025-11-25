@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -10,6 +9,7 @@ import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { FilterRulesAPIResponse } from 'api/get-filters';

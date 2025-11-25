@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import * as soapLib from '@zextras/carbonio-ui-soap-lib';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { getSoapFetch } from '@test-utils/network/fetch';
 

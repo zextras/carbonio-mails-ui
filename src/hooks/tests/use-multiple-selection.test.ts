@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -6,6 +5,7 @@ import { Mock } from 'vitest';
  */
 import { act, renderHook } from '@testing-library/react';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 

@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,6 +8,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useContactInput } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import {
 	EDIT_ACTION,

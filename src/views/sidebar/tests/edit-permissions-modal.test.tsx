@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -11,6 +10,7 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

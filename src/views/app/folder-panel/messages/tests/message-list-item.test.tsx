@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,13 +8,14 @@ import React, { act } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags as mockTags } from '@test-utils/tags/tags';
-import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 

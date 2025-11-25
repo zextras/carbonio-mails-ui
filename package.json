@@ -63,7 +63,7 @@
 		"@types/react-redux": "^7.1.25",
 		"@types/uuid": "^10.0.0",
 		"@vitejs/plugin-react": "^5.0.4",
-		"@vitest/coverage-v8": "^4.0.8",
+		"@vitest/coverage-v8": "^4.0.14",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#e99cda51ad3a0dc1f775837c6e7971e8046eb4f2",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "2.2.0-devel.5",
@@ -84,7 +84,7 @@
 		"ts-node": "^10.9.1",
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.8"
+		"vitest": "^4.0.14"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",

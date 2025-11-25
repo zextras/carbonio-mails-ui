@@ -5,7 +5,7 @@
  */
 
 import axios, { AxiosResponse } from 'axios';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { encodeBase64, uploadToFiles } from 'api/upload-file-to-files';
 

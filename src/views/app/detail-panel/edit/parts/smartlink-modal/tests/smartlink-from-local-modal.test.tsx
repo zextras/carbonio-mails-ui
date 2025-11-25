@@ -8,7 +8,7 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { SmartlinkFromLocalModal } from '../smartlink-from-local-modal';
 import { setupTest } from '@test-setup';

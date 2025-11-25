@@ -7,7 +7,7 @@
 import React, { FC, ReactNode } from 'react';
 
 import * as shell from '@zextras/carbonio-shell-ui';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateSettings } from '@test-utils/settings/settings-generator';

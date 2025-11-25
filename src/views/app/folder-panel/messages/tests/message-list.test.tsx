@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -15,6 +14,7 @@ import {
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { within, setupTest, triggerLoadMore, makeListItemsVisible } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';

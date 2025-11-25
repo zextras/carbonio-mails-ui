@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -7,6 +6,7 @@ import { Mock } from 'vitest';
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import {
 	generateConversation,

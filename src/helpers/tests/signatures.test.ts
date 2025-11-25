@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -6,6 +5,7 @@ import { Mock } from 'vitest';
  */
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
 import { Signature } from '../../types';

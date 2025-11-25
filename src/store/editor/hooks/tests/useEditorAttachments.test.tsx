@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { renderHook, act } from '@testing-library/react';
 
 import { useEditorAttachments } from '../attachments';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';

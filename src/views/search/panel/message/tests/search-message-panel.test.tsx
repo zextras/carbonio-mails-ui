@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -9,6 +8,7 @@ import React from 'react';
 
 import { act, waitFor } from '@testing-library/react';
 import { NavigateFunction, useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest, screen } from '@test-setup';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';

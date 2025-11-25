@@ -1,11 +1,10 @@
-import { Mock } from 'vitest';
+import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';

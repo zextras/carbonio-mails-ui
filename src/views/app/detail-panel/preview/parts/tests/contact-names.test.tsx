@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,6 +8,7 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { Participant } from 'types/index.d';

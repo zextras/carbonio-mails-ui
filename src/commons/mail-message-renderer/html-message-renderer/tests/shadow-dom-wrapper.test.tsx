@@ -1,4 +1,5 @@
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
+
 /* eslint-disable testing-library/no-node-access */
 /* eslint-disable testing-library/no-container */
 /* IMPORTANT on this test we used querySelector because Shadow DOM elements won't be found by getByTestId() or getByRole() because they're encapsulated */

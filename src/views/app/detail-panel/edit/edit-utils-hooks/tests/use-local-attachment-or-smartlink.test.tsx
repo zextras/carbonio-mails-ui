@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,6 +7,7 @@ import { Mock } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import { useLocalAttachmentOrSmartlink } from '../use-local-attachment-or-smartlink';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';

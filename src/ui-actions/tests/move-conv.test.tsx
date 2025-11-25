@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -11,6 +10,7 @@ import { act, screen } from '@testing-library/react';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

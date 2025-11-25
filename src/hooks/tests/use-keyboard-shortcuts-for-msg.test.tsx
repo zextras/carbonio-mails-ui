@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
@@ -6,6 +5,7 @@ import { Mock } from 'vitest';
  */
 import { act } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '../../__test__/test-setup';
 import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';

@@ -1,4 +1,3 @@
-import { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -10,6 +9,7 @@ import { screen } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

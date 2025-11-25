@@ -10,7 +10,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { FolderActionsType, FOLDERS } from '@zextras/carbonio-ui-commons';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';

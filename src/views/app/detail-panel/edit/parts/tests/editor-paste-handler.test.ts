@@ -1,4 +1,5 @@
-import { Mock } from 'vitest';
+import { type Editor } from 'tinymce';
+import type { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 // noinspection HtmlRequiredLangAttribute
 
@@ -7,8 +8,6 @@ import { Mock } from 'vitest';
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { type Editor } from 'tinymce';
 
 import { uploadFileApi } from 'api/upload-file-api';
 import { getEditor, useEditorsStore } from 'store/editor/index';
