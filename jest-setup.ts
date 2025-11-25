@@ -89,7 +89,7 @@ beforeAll(() => {
 });
 
 afterEach(() => {
-	jest.clearAllTimers();
+	vi.clearAllTimers();
 });
 
 afterAll(() => {
