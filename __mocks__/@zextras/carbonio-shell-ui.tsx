@@ -110,3 +110,5 @@ export const JSNS = {
 	all: 'urn:zimbra',
 	sync: 'urn:zimbraSync'
 };
+
+export const IS_FOCUS_MODE = false;
