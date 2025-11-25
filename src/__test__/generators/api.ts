@@ -7,7 +7,7 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '@jest-setup';
+import { getSetupServer } from '../vitest-setup';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,

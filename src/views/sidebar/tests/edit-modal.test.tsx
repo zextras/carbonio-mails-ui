@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
-import { getSetupServer } from '@jest-setup';
+import { getSetupServer } from '../../../__test__/vitest-setup';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

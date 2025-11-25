@@ -4,53 +4,72 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import '@testing-library/jest-dom';
-import { configure } from '@testing-library/react';
 import { noop } from 'lodash';
-import { SetupServer, setupServer } from 'msw/node';
-import { vi, beforeAll, beforeEach, afterEach, afterAll } from 'vitest';
+import { http } from 'msw';
+import { setupServer, SetupServer } from 'msw/node';
+import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 
-import * as shell from './mocks/carbonio-shell-ui/carbonio-shell-ui';
-import { getRestHandlers } from '@test-utils/network/msw/handlers';
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
+import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
+import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
-vi.mock('@zextras/carbonio-shell-ui', () => shell);
+let server: SetupServer;
 
-// Setup MSW mock server
-let server = setupServer();
+// Global test mocks
+declare global {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const BASE_PATH: string;
+}
 
-configure({
-	asyncUtilTimeout: 2000
-});
+// Set up BASE_PATH mock for TinyMCE asset loading in tests
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global as any).BASE_PATH = '/test-base-path/';
 
-/**
- * Default logic to execute before all the tests
- */
-type DefaultBeforeAllTestsProps = {
-	onUnhandledRequest: 'warn' | 'error';
-};
-
-const defaultBeforeAllTests = (
-	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }
+export const defaultBeforeAllTests = (
+	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' } = { onUnhandledRequest: 'warn' }
 ): void => {
-	// Do not useFakeTimers with `whatwg-fetch` if using mocked server
-	// https://github.com/mswjs/msw/issues/448
+	// mock a simplified IntersectionObserver
+	Object.defineProperty(window, 'IntersectionObserver', {
+		writable: true,
+		value: vi.fn(function intersectionObserverMock(
+			callback: IntersectionObserverCallback,
+			options: IntersectionObserverInit
+		) {
+			return {
+				thresholds: options.threshold,
+				root: options.root,
+				rootMargin: options.rootMargin,
+				observe: vi.fn(),
+				unobserve: vi.fn(),
+				disconnect: vi.fn()
+			};
+		})
+	});
 
-	server?.close();
 	server = setupServer(...getRestHandlers());
 	server.listen({ onUnhandledRequest });
 };
 
-beforeAll(() => {
-	defaultBeforeAllTests();
-});
+// ------------------ TEST LIFECYCLE ------------------
 
-beforeEach(() => {
-	vi.useFakeTimers({ shouldAdvanceTime: true });
+beforeAll(() => {
+	// Register additional handlers
+	const h = http.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
+	registerRestHandler(h);
+	registerRestHandler(j);
+
+	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+
+	// Mock localStorage hooks
+	useLocalStorage.mockReturnValue([vi.fn(), vi.fn()]);
 });
 
 afterEach(() => {
 	vi.clearAllTimers();
-	vi.useRealTimers();
+	vi.clearAllMocks();
 });
 
 afterAll(() => {
@@ -58,22 +77,41 @@ afterAll(() => {
 	server.close();
 });
 
-// mock a simplified crypto
+// ------------------ GLOBAL MOCKS ------------------
+
+// matchMedia
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn()
+	}))
+});
+
+// window.open
+Object.defineProperty(window, 'open', {
+	writable: true,
+	value: vi.fn()
+});
+
+// crypto.randomUUID
 Object.defineProperty(window.crypto, 'randomUUID', {
 	writable: true,
 	value: vi.fn(() => Math.random().toString())
 });
 
-Object.defineProperty(window.URL, 'createObjectURL', {
-	writable: true,
-	value: vi.fn()
-});
+// Worker mock
+type MessageHandler = (msg: string) => void;
 
-// Mock Worker
 class Worker {
 	url: string;
 
-	onmessage: (msg: string) => void;
+	onmessage: MessageHandler;
 
 	constructor(stringUrl: string) {
 		this.url = stringUrl;
@@ -90,34 +128,12 @@ Object.defineProperty(window, 'Worker', {
 	value: Worker
 });
 
-// Mock ResizeObserver
-Object.defineProperty(window, 'ResizeObserver', {
-	writable: true,
-	value: function ResizeObserverMock(): ResizeObserver {
-		return {
-			observe: (): undefined => undefined,
-			unobserve: (): undefined => undefined,
-			disconnect: (): undefined => undefined
-		};
-	}
-});
+// ResizeObserver mock
+window.ResizeObserver = vi.fn().mockImplementation(() => ({
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn()
+}));
 
-// mock a simplified Intersection Observer
-Object.defineProperty(window, 'IntersectionObserver', {
-	writable: true,
-	value: vi.fn(function intersectionObserverMock(
-		callback: IntersectionObserverCallback,
-		options: IntersectionObserverInit
-	) {
-		return {
-			thresholds: options.threshold,
-			root: options.root,
-			rootMargin: options.rootMargin,
-			observe: vi.fn(),
-			unobserve: vi.fn(),
-			disconnect: vi.fn()
-		};
-	})
-});
-
+// ------------------ EXPORTS ------------------
 export const getSetupServer = (): SetupServer => server;

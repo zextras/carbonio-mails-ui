@@ -14,6 +14,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
+import { getSetupServer } from '../../../../__test__/vitest-setup';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	mockShellSoapNotify,
@@ -28,7 +29,6 @@ import {
 	mockSoapRefresh,
 	mockSoapSync
 } from '../../tests/test-helpers';
-import { getSetupServer } from '@jest-setup';
 import { setupHook } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
