@@ -10,7 +10,7 @@ import { noop } from 'lodash';
 import { SetupServer, setupServer } from 'msw/node';
 import { vi, beforeAll, beforeEach, afterEach, afterAll } from 'vitest';
 
-import * as shell from '../../__mocks__/@zextras/carbonio-shell-ui';
+import * as shell from './mocks/carbonio-shell-ui/carbonio-shell-ui';
 import { getRestHandlers } from '@test-utils/network/msw/handlers';
 
 vi.mock('@zextras/carbonio-shell-ui', () => shell);
