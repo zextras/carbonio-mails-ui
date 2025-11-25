@@ -77,6 +77,9 @@ afterEach(() => {
 	vi.clearAllTimers();
 	vi.clearAllMocks();
 });
+beforeEach(() => {
+	vi.useFakeTimers({ shouldAdvanceTime: true });
+});
 
 afterAll(() => {
 	server.resetHandlers();
