@@ -129,12 +129,11 @@ describe('handleEditorPaste', () => {
 	});
 
 	describe('uploadImage', () => {
+		const mockFile = new File(['content'], '1.jpg', { type: 'image/jpeg' });
+		const mockAid = '12345';
+		const mockContentId = `${mockAid}@carbonio`;
+		const mockEditorId = 'test-editor';
 		it('should upload an image and return the correct result', async () => {
-			const mockFile = new File(['content'], '1.jpg', { type: 'image/jpeg' });
-			const mockAid = '12345';
-			const mockContentId = `${mockAid}@carbonio`;
-			const mockEditorId = 'test-editor';
-
 			(useEditorsStore.getState as jest.Mock).mockReturnValue({
 				setDid: jest.fn(),
 				setSize: jest.fn(),
@@ -189,6 +188,83 @@ describe('handleEditorPaste', () => {
 			expect(result.fileName).toBe(mockFile.name);
 			expect(result.downloadServiceUrl).toBeDefined();
 			expect(result.cidUrl).toBeDefined();
+		});
+
+		it('should fetch the uploaded image, create object URL, and insert it into the editor', async () => {
+			const setDid = jest.fn();
+			const setSize = jest.fn();
+			const removeUnsavedAttachments = jest.fn();
+			const setSavedAttachments = jest.fn();
+			(useEditorsStore.getState as jest.Mock).mockReturnValue({
+				setDid,
+				setSize,
+				removeUnsavedAttachments,
+				setSavedAttachments
+			});
+
+			(saveDraftEmailStoreAction as jest.Mock).mockResolvedValue({
+				m: [
+					{
+						id: 'msg456',
+						s: 2048,
+						mp: [
+							{
+								part: '2.2',
+								ct: 'image/jpeg',
+								s: 1000,
+								cd: 'inline',
+								filename: mockFile.name,
+								ci: mockContentId
+							}
+						]
+					}
+				]
+			});
+
+			(getEditor as jest.Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
+				savedAttachments: [
+					{
+						messageId: 'msg456',
+						isInline: true,
+						contentId: mockContentId,
+						filename: mockFile.name,
+						partName: '2.2',
+						contentType: 'image/jpeg',
+						size: 1000
+					}
+				]
+			});
+
+			(uploadFileApi as jest.Mock).mockResolvedValue({ aid: mockAid });
+
+			const fakeBlob = new Blob(['xxx'], { type: 'image/jpeg' });
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					blob: () => Promise.resolve(fakeBlob)
+				})
+			) as jest.Mock;
+
+			const fakeObjectUrl = 'blob://test-url-2';
+			global.URL.createObjectURL = jest.fn(() => fakeObjectUrl);
+
+			const editor = {
+				insertContent: jest.fn(),
+				setProgressState: jest.fn()
+			};
+
+			// call uploadImage first
+			const uploadResult = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
+
+			// then simulate processNextUpload inserting the image
+			const blob = await fetch(uploadResult.downloadServiceUrl).then((r) => r.blob());
+			const objectUrl = URL.createObjectURL(blob);
+			editor.insertContent(
+				`<img alt="${uploadResult.fileName}" src="${objectUrl}" data-mce-src="${uploadResult.cidUrl}"/>`
+			);
+
+			expect(editor.insertContent).toHaveBeenCalledWith(
+				`<img alt="${mockFile.name}" src="${fakeObjectUrl}" data-mce-src="cid:${mockContentId}"/>`
+			);
 		});
 	});
 });
