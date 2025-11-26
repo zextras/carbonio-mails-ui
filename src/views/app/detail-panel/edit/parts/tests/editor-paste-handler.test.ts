@@ -190,27 +190,23 @@ describe('handleEditorPaste', () => {
 			expect(result.cidUrl).toBeDefined();
 		});
 
-		it('should fetch the uploaded image, create object URL, and insert it into the editor', async () => {
-			const setDid = jest.fn();
-			const setSize = jest.fn();
-			const removeUnsavedAttachments = jest.fn();
-			const setSavedAttachments = jest.fn();
+		it('should fetch uploaded image and insert updated <img> tag into editor', async () => {
 			(useEditorsStore.getState as jest.Mock).mockReturnValue({
-				setDid,
-				setSize,
-				removeUnsavedAttachments,
-				setSavedAttachments
+				setDid: jest.fn(),
+				setSize: jest.fn(),
+				removeUnsavedAttachments: jest.fn(),
+				setSavedAttachments: jest.fn()
 			});
 
 			(saveDraftEmailStoreAction as jest.Mock).mockResolvedValue({
 				m: [
 					{
-						id: 'msg456',
-						s: 2048,
+						id: 'msg789',
+						s: 1234,
 						mp: [
 							{
 								part: '2.2',
-								ct: 'image/jpeg',
+								ct: 'image/png',
 								s: 1000,
 								cd: 'inline',
 								filename: mockFile.name,
@@ -221,15 +217,16 @@ describe('handleEditorPaste', () => {
 				]
 			});
 
+			// Mock getEditor to return savedAttachments
 			(getEditor as jest.Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
 				savedAttachments: [
 					{
-						messageId: 'msg456',
+						messageId: 'msg789',
 						isInline: true,
 						contentId: mockContentId,
 						filename: mockFile.name,
 						partName: '2.2',
-						contentType: 'image/jpeg',
+						contentType: 'image/png',
 						size: 1000
 					}
 				]
@@ -237,27 +234,20 @@ describe('handleEditorPaste', () => {
 
 			(uploadFileApi as jest.Mock).mockResolvedValue({ aid: mockAid });
 
-			const fakeBlob = new Blob(['xxx'], { type: 'image/jpeg' });
+			const fakeBlob = new Blob(['xxx'], { type: 'image/png' });
 			global.fetch = jest.fn(() =>
-				Promise.resolve({
-					blob: () => Promise.resolve(fakeBlob)
-				})
+				Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
 			) as jest.Mock;
-
-			const fakeObjectUrl = 'blob://test-url-2';
+			const fakeObjectUrl = 'blob://fake-object-url';
 			global.URL.createObjectURL = jest.fn(() => fakeObjectUrl);
 
-			const editor = {
-				insertContent: jest.fn(),
-				setProgressState: jest.fn()
-			};
+			const editor = { insertContent: jest.fn(), setProgressState: jest.fn() };
 
-			// call uploadImage first
 			const uploadResult = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
 
-			// then simulate processNextUpload inserting the image
 			const blob = await fetch(uploadResult.downloadServiceUrl).then((r) => r.blob());
 			const objectUrl = URL.createObjectURL(blob);
+
 			editor.insertContent(
 				`<img alt="${uploadResult.fileName}" src="${objectUrl}" data-mce-src="${uploadResult.cidUrl}"/>`
 			);
@@ -265,6 +255,8 @@ describe('handleEditorPaste', () => {
 			expect(editor.insertContent).toHaveBeenCalledWith(
 				`<img alt="${mockFile.name}" src="${fakeObjectUrl}" data-mce-src="cid:${mockContentId}"/>`
 			);
+			expect(fetch).toHaveBeenCalledWith(uploadResult.downloadServiceUrl);
+			expect(URL.createObjectURL).toHaveBeenCalledWith(fakeBlob);
 		});
 	});
 });
