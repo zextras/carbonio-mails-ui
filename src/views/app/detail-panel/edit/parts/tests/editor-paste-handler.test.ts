@@ -245,6 +245,7 @@ describe('handleEditorPaste', () => {
 
 			const uploadResult = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
 
+			// **This is the part you actually want to test: fetch → blob → object URL → insert**
 			const blob = await fetch(uploadResult.downloadServiceUrl).then((r) => r.blob());
 			const objectUrl = URL.createObjectURL(blob);
 
