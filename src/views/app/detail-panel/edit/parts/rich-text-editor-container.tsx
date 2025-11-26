@@ -24,6 +24,12 @@ type FileSelectProps = {
 	files: FileList | null | undefined;
 };
 
+type InlineAttachment = {
+	contentId: string | undefined;
+	cidUrl: string | undefined;
+	downloadServiceUrl: string | undefined;
+};
+
 export const SAVE_EDITOR_DELAY = 2000;
 
 export const RichTextEditorContainer = ({
@@ -126,25 +132,35 @@ export const RichTextEditorContainer = ({
 			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
 
+			const insertSingleInlineAttachment = async (
+				editor: TinyMCE,
+				inlineAttachment: InlineAttachment
+			): Promise<void> => {
+				const url = inlineAttachment.downloadServiceUrl;
+				if (!url) return;
+				// get the updated image in order to avoid TinyMCE caching issues
+				const blob = await fetch(url).then((r) => r.blob());
+				const objectUrl = URL.createObjectURL(blob);
+
+				const img = `&nbsp;<img alt="Inline attachment"
+                data-pnsrc="${inlineAttachment.cidUrl}"
+                data-mce-src="${inlineAttachment.cidUrl}"
+                src="${objectUrl}" /><br/>`;
+
+				editor?.activeEditor?.insertContent(img);
+			};
+
+			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
+				const editor = tinymce;
+				const insertPromises = inlineAttachments.map((inlineAttachment) =>
+					insertSingleInlineAttachment(editor, inlineAttachment)
+				);
+
+				Promise.all(insertPromises).catch(console.error);
+			};
+
 			addInlineAttachments(files, {
-				onSaveComplete: (inlineAttachments) => {
-					const insertPromises = inlineAttachments.map(async (inlineAttachment) => {
-						const url = inlineAttachment.downloadServiceUrl;
-						if (!url) return;
-						// get the updated image in ordeer to avoid TinyMCE caching issues
-						const blob = await fetch(url).then((r) => r.blob());
-						const objectUrl = URL.createObjectURL(blob);
-
-						const img = `&nbsp;<img alt="Inline attachment"
-                            data-pnsrc="${inlineAttachment.cidUrl}"
-                            data-mce-src="${inlineAttachment.cidUrl}"
-                            src="${objectUrl}" /><br/>`;
-
-						tinymce?.activeEditor?.insertContent(img);
-					});
-
-					Promise.all(insertPromises).catch(console.error);
-				}
+				onSaveComplete: handleSaveComplete
 			});
 		},
 		[addInlineAttachments]
