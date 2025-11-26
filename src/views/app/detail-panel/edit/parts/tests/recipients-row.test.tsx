@@ -18,6 +18,7 @@ import type { Mock } from 'vitest';
 import { UserEvent, setupTest } from '@test-setup';
 import {
 	generateMockContactInputItem,
+	generateMockedContactInput,
 	mockContactInput
 } from '@test-utils/integrations/mock-contact-input';
 import { Participant } from 'types/index.d';
@@ -328,6 +329,9 @@ describe('recipients-row', () => {
 	});
 
 	describe('when ContactInput is available', () => {
+		beforeEach(() => {
+			(useContactInput as Mock).mockReturnValue(generateMockedContactInput());
+		});
 		it('create a chip rendering the entire text when invalid', async () => {
 			const { user } = setupTest(<TestableRecipientsRow />);
 
