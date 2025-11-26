@@ -6,12 +6,19 @@
 
 import React from 'react';
 
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
+
 import { SortAndFilterButtonComponent } from '../sort-and-filter-button-component';
 import { screen, setupTest } from '@test-setup';
-import { editSettings, useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
+
+jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-soap-lib'),
+	soapFetchV2: jest.fn().mockResolvedValue({ Body: {} })
+}));
 
 describe('Sort and filter button component', () => {
 	it('should render a dropdown wrapper with a visible button', async () => {
@@ -76,13 +83,16 @@ describe('Sort and filter button component', () => {
 			await user.click(screen.getByTestId(icon));
 			await user.click(screen.getByText(filterLabel));
 
-			expect(editSettings).toHaveBeenCalledWith({
-				prefs: {
-					zimbraPrefSortOrder: expect.stringContaining(
-						`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
-					)
-				}
-			});
+			expect(soapFetchV2).toHaveBeenCalledWith(
+				'ModifyPrefs',
+				expect.objectContaining({
+					_attrs: {
+						zimbraPrefSortOrder: expect.stringContaining(
+							`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
+						)
+					}
+				})
+			);
 		}
 	);
 });

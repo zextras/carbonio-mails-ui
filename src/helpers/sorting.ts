@@ -3,7 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { editSettings } from '@zextras/carbonio-shell-ui';
+import { updateSettings } from '@zextras/carbonio-shell-ui';
+import { JSNS } from '@zextras/carbonio-ui-commons';
+import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 /**
  * Returns sortType, sortDirection and sortOrder for the given folder
@@ -86,13 +88,13 @@ function modifySettingString(
 	zimbraPrefSortOrder: string,
 	prefToUpdate: string,
 	folderId?: string
-): string | undefined {
+): string {
 	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId ?? '');
 	if (!currentFolder) {
 		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
 		return replacedString.concat(`,${prefToUpdate},BDLV`);
 	}
-	return currentFolder && zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
+	return zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
 }
 
 export function updateSortAndFilterSettings({
@@ -111,18 +113,19 @@ export function updateSortAndFilterSettings({
 	const sortingAndFilteringString = `${folderId}:${sortType}-${sortDirection}`.concat(
 		filter ? `-${filter}` : ''
 	);
-	if (!prefSortOrder) {
-		editSettings({
-			prefs: {
-				zimbraPrefSortOrder: `${sortingAndFilteringString},BDLV`
-			}
-		});
-		return;
-	}
-	const newPref = modifySettingString(prefSortOrder, sortingAndFilteringString, folderId);
-	editSettings({
-		prefs: {
-			zimbraPrefSortOrder: newPref
+	const zimbraPrefSortOrder = !prefSortOrder
+		? `${sortingAndFilteringString},BDLV`
+		: modifySettingString(prefSortOrder, sortingAndFilteringString, folderId);
+
+	soapFetchV2<
+		{ _attrs: AccountSettingsPrefs; _jsns: JSNS },
+		{ ModifyPrefsResponse: Record<string, unknown> }
+	>('ModifyPrefs', {
+		_jsns: JSNS.ACCOUNT,
+		_attrs: { zimbraPrefSortOrder }
+	}).then((rawSoapResponse) => {
+		if (!('Fault' in rawSoapResponse.Body)) {
+			updateSettings({ prefs: { zimbraPrefSortOrder } });
 		}
 	});
 }
