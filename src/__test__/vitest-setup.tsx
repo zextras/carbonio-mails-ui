@@ -16,7 +16,11 @@ import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
+vi.mock('@zextras/carbonio-ui-soap-lib');
 vi.mock('@zextras/carbonio-shell-ui');
+vi.mock('@zextras/carbonio-ui-preview');
+
+(globalThis as any).BASE_PATH = '/';
 let server: SetupServer;
 
 expect.extend({ toHaveStyleRule: matchers.toHaveStyleRule });
@@ -25,22 +29,22 @@ export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' } = { onUnhandledRequest: 'warn' }
 ): void => {
 	// mock a simplified IntersectionObserver
-	// Object.defineProperty(window, 'IntersectionObserver', {
-	// 	writable: true,
-	// 	value: vi.fn(function intersectionObserverMock(
-	// 		callback: IntersectionObserverCallback,
-	// 		options: IntersectionObserverInit
-	// 	) {
-	// 		return {
-	// 			thresholds: options.threshold,
-	// 			root: options.root,
-	// 			rootMargin: options.rootMargin,
-	// 			observe: vi.fn(),
-	// 			unobserve: vi.fn(),
-	// 			disconnect: vi.fn()
-	// 		};
-	// 	})
-	// });
+	Object.defineProperty(window, 'IntersectionObserver', {
+		writable: true,
+		value: vi.fn(function intersectionObserverMock(
+			callback: IntersectionObserverCallback,
+			options: IntersectionObserverInit
+		) {
+			return {
+				thresholds: options.threshold,
+				root: options.root,
+				rootMargin: options.rootMargin,
+				observe: vi.fn(),
+				unobserve: vi.fn(),
+				disconnect: vi.fn()
+			};
+		})
+	});
 
 	server = setupServer(...getRestHandlers());
 	server.listen({ onUnhandledRequest });

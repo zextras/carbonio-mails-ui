@@ -22,22 +22,15 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		setupFiles: ['./src/__test__/vitest-setup.tsx', './src/__test__/setup-browser-env.ts'],
-		clearMocks: true,
+		clearMocks: false,
+		maxWorkers: '50%',
 		environmentOptions: {
 			jsdom: {
 				url: 'http://localhost'
 			}
 		},
-		mockReset: true,
+		mockReset: false,
 		testTimeout: 20000,
-		reporters: ['default'],
-		coverage: {
-			enabled: true,
-			provider: 'v8',
-			reporter: ['text', 'cobertura', 'lcov'],
-			reportsDirectory: 'coverage',
-			include: ['src/**/*.{ts,tsx}'],
-			exclude: ['**/__test__/**', '**/tests/**', '**/mocks/**', '**/*.test.{js,jsx,ts,tsx}']
-		}
+		reporters: ['default']
 	}
 });
