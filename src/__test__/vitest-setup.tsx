@@ -11,13 +11,17 @@ import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 
+import * as shell from '../../__mocks__/@zextras/carbonio-shell-ui';
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
 vi.mock('@zextras/carbonio-ui-soap-lib');
-vi.mock('@zextras/carbonio-shell-ui');
+vi.mock('@zextras/carbonio-shell-ui', async () => ({
+	...(await vi.importActual('@zextras/carbonio-shell-ui')),
+	...shell
+}));
 vi.mock('@zextras/carbonio-ui-preview');
 
 (globalThis as any).BASE_PATH = '/';

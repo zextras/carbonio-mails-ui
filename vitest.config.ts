@@ -23,14 +23,14 @@ export default defineConfig({
 		environment: 'jsdom',
 		setupFiles: ['./src/__test__/vitest-setup.tsx', './src/__test__/setup-browser-env.ts'],
 		clearMocks: false,
-		maxWorkers: '50%',
+		maxWorkers: '80%',
 		environmentOptions: {
 			jsdom: {
 				url: 'http://localhost'
 			}
 		},
 		mockReset: false,
-		testTimeout: 20000,
+		testTimeout: 10000,
 		reporters: ['default']
 	}
 });
