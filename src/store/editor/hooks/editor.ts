@@ -5,8 +5,8 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { computeAndUpdateEditorStatus, useEditorIsModified } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -35,16 +35,18 @@ export const useEditorSubject = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].subject);
 	const setter = useEditorsStore((state) => state.setSubject);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			subject: value,
 			setSubject: (val: string): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -90,6 +92,7 @@ export const useEditorText = (
 	const { immediateSaveDraft } = useSaveDraftFromEditor();
 	const setter = useEditorsStore((state) => state.setText);
 	const { textProvider } = useEditorTextProvider(id);
+	const { setIsModified } = useEditorIsModified(id);
 
 	const getText = useCallback(
 		(): MailsEditorV2['text'] =>
@@ -106,9 +109,10 @@ export const useEditorText = (
 				textProvider.setCurrentText(val);
 			}
 			setter(id, val);
+			setIsModified();
 			immediateSaveDraft(id);
 		},
-		[id, immediateSaveDraft, setter, textProvider]
+		[id, immediateSaveDraft, setter, textProvider, setIsModified]
 	);
 
 	return useMemo(
@@ -133,16 +137,18 @@ export const useEditorAutoSendTime = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].autoSendTime);
 	const setter = useEditorsStore((state) => state.setAutoSendTime);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			autoSendTime: value,
 			setAutoSendTime: (val: MailsEditorV2['autoSendTime']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -159,16 +165,18 @@ export const useEditorDid = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].did);
 	const setter = useEditorsStore((state) => state.setDid);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			did: value,
 			setDid: (val: MailsEditorV2['did']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -185,16 +193,18 @@ export const useEditorIsRichText = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isRichText);
 	const setter = useEditorsStore((state) => state.setIsRichText);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			isRichText: value,
 			setIsRichText: (val: MailsEditorV2['isRichText']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -211,17 +221,19 @@ export const useEditorRecipients = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients);
 	const setter = useEditorsStore((state) => state.setRecipients);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			recipients: value,
 			setRecipients: (val: MailsEditorV2['recipients']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -238,17 +250,19 @@ export const useEditorToRecipients = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
 	const setter = useEditorsStore((state) => state.setToRecipients);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			toRecipients: value,
 			setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -265,17 +279,19 @@ export const useEditorCcRecipients = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
 	const setter = useEditorsStore((state) => state.setCcRecipients);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			ccRecipients: value,
 			setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -292,17 +308,19 @@ export const useEditorBccRecipients = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
 	const setter = useEditorsStore((state) => state.setBccRecipients);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			bccRecipients: value,
 			setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -319,17 +337,19 @@ export const useEditorIdentityId = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].identityId);
 	const setter = useEditorsStore((state) => state.setIdentityId);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			identityId: value,
 			setIdentityId: (val: MailsEditorV2['identityId']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -346,16 +366,18 @@ export const useEditorIsUrgent = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
 	const setter = useEditorsStore((state) => state.setIsUrgent);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			isUrgent: value,
 			setIsUrgent: (val: MailsEditorV2['isUrgent']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -372,16 +394,18 @@ export const useEditorRequestReadReceipt = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
 	const setter = useEditorsStore((state) => state.setRequestReadReceipt);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			requestReadReceipt: value,
 			setRequestReadReceipt: (val: MailsEditorV2['requestReadReceipt']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -398,17 +422,19 @@ export const useEditorSignatureId = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].signatureId);
 	const setter = useEditorsStore((state) => state.setSignatureId);
+	const { setIsModified } = useEditorIsModified(editorId);
 
 	return useMemo(
 		() => ({
 			signatureId: value,
 			setSignatureId: (val: MailsEditorV2['signatureId']): void => {
 				setter(editorId, val);
+				setIsModified();
 				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value]
+		[editorId, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -425,16 +451,18 @@ export const useEditorIsSmimeSign = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isSmimeSign);
 	const setter = useEditorsStore((state) => state.setIsSmimeSign);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			isSmimeSign: value,
 			setIsSmimeSign: (val: MailsEditorV2['isSmimeSign']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };
 
@@ -451,15 +479,17 @@ export const useEditorIsSmimeEncrypt = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isSmimeEncrypt);
 	const setter = useEditorsStore((state) => state.setIsSmimeEncrypt);
+	const { setIsModified } = useEditorIsModified(id);
 
 	return useMemo(
 		() => ({
 			isSmimeEncrypt: value,
 			setIsSmimeEncrypt: (val: MailsEditorV2['isSmimeEncrypt']): void => {
 				setter(id, val);
+				setIsModified();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value]
+		[id, debouncedSaveDraft, setter, value, setIsModified]
 	);
 };

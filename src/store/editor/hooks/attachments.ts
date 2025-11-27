@@ -21,9 +21,9 @@ import {
 	filterUnsavedAttachmentsByUploadId,
 	getSavedInlineAttachmentsByContentId
 } from 'store/editor/editor-utils';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
 import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { computeAndUpdateEditorStatus, useEditorIsModified } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
@@ -85,6 +85,7 @@ type EditorAttachmentHook = {
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { setIsModified } = useEditorIsModified(editorId);
 	const notifyUploadError = useNotifyUploadError();
 
 	const unsavedStandardAttachments = reject(
@@ -200,6 +201,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
+					setIsModified();
 					debouncedSaveDraft(editorId, saveDraftOptions);
 				}
 
@@ -236,7 +238,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		} satisfies UnsavedAttachment;
 		addUnsavedAttachments(editorId, [unsavedAttachment]);
 		computeAndUpdateEditorStatus(editorId);
-
+		setIsModified();
 		debouncedSaveDraft(editorId);
 
 		return unsavedAttachment;
@@ -313,6 +315,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		});
 		computeAndUpdateEditorStatus(editorId);
+		setIsModified();
 		debouncedSaveDraft(editorId);
 	};
 	return {
@@ -322,17 +325,20 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
+			setIsModified();
 			debouncedSaveDraft(editorId);
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
+			setIsModified();
 			debouncedSaveDraft(editorId);
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
+			setIsModified();
 			debouncedSaveDraft(editorId);
 		},
 		addStandardAttachments,

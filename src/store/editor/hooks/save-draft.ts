@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { getDraftSaveDelay } from 'store/editor/store-utils';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
@@ -144,10 +144,13 @@ export const useEditorDraftSave = (
 } => {
 	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor();
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const immediateInvoker = useCallback((): void => {
-		debouncedSaveDraft.cancel();
-		immediateSaveDraft(editorId);
-	}, [debouncedSaveDraft, editorId, immediateSaveDraft]);
+	const immediateInvoker = useCallback(
+		(options?: SaveDraftOptions): void => {
+			debouncedSaveDraft.cancel();
+			immediateSaveDraft(editorId, options);
+		},
+		[debouncedSaveDraft, editorId, immediateSaveDraft]
+	);
 
 	return useMemo(
 		() => ({
