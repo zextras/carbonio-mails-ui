@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.0...v1.28.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* update message flags from sync properly ([18da921](https://github.com/zextras/carbonio-mails-ui/commit/18da9218179f800643c6777c0a2814c317a615a7))
+* update message flags from sync properly ([#1054](https://github.com/zextras/carbonio-mails-ui/issues/1054)) ([7a99751](https://github.com/zextras/carbonio-mails-ui/commit/7a99751fe0068ab1e79adcaf607e2818f10ccdf6))
+
 ## [1.28.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.27.0...v1.28.0) (2025-11-19)
 
 

@@ -23,6 +23,7 @@ import {
 	mockSoapDelete,
 	mockSoapMessageActionAndConversationModified,
 	mockSoapModifyConversationAction,
+	mockSoapModifyMessage,
 	mockSoapModifyMessageAction,
 	mockSoapModifyMessageFolder,
 	mockSoapRefresh,
@@ -34,7 +35,11 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import {
+	getMessageById,
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
 	setSearchResultsByConversation,
@@ -45,9 +50,6 @@ import {
 	useMessageById
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
-import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
@@ -283,30 +285,57 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [READ]);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.read).toBe(true);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+
+			const message = getMessageById('1');
+			expect(message.read).toBe(true);
 		});
+
 		it('should mark messages as unread', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: true })]);
-			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD]);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD], 2);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.read).toBe(false);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+
+			const message = getMessageById('1');
+			expect(message.read).toBe(false);
+		});
+
+		it('should not change flag read to true when f is undefined', async () => {
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockSoapModifyMessage(mailboxNumber, '1', { t: '', tn: '' }, 2);
+
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
+			});
+
+			const message = getMessageById('1');
+			expect(message.read).toBe(false);
+		});
+
+		it('should not change flag read to false when f is undefined', async () => {
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: true })]);
+			mockSoapModifyMessage(mailboxNumber, '1', { t: '', tn: '' }, 2);
+
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
+			});
+
+			const message = getMessageById('1');
+			expect(message.read).toBe(true);
 		});
 
 		it('should mark messages as flagged', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isFlagged: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [FLAGGED]);
 
-			setupHook(() => useSyncDataHandler());
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
+			});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -315,73 +344,70 @@ describe('sync data handler', () => {
 		});
 		it('should mark messages as not flagged', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isFlagged: true })]);
-			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED]);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED], 2);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.flagged).toBe(false);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+
+			const message = getMessageById('1');
+			expect(message.flagged).toBe(false);
 		});
 
 		it('should mark message as spam', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.SPAM);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.parent).toBe(FOLDERS.SPAM);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+
+			const message = getMessageById('1');
+			expect(message.parent).toBe(FOLDERS.SPAM);
 		});
 		it('should mark message as not spam', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.SPAM })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.parent).toBe(FOLDERS.INBOX);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+
+			const message = getMessageById('1');
+			expect(message.parent).toBe(FOLDERS.INBOX);
 		});
 
 		it('should move message to trash', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.TRASH);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.parent).toBe(FOLDERS.TRASH);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+			const message = getMessageById('1');
+			expect(message.parent).toBe(FOLDERS.TRASH);
 		});
 
 		it('should restore message', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.TRASH })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.parent).toBe(FOLDERS.INBOX);
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+			const message = getMessageById('1');
+			expect(message.parent).toBe(FOLDERS.INBOX);
 		});
 
 		it('should move message to a folder', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: 'aaa' })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', 'bbb');
 
-			setupHook(() => useSyncDataHandler());
-
-			const { result } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current?.parent).toBe('bbb');
+			await act(async () => {
+				await setupHook(() => useSyncDataHandler());
 			});
+			const message = getMessageById('1');
+			expect(message.parent).toBe('bbb');
 		});
 
 		it('should remove messages from store when permanently deleted', async () => {

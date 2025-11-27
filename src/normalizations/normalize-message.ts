@@ -368,11 +368,9 @@ export const haveReadReceipt = (
 /**
  * Extracts and maps flags from a SOAP message to a Flags object.
  * */
-const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
-	const defaultFlag = { read: true };
-
-	if (isNil(m?.f) || m.f === '') {
-		return defaultFlag;
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNullable<unknown> => {
+	if (isNil(m?.f)) {
+		return {};
 	}
 	const flags = m.f;
 	return {

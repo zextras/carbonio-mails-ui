@@ -238,17 +238,33 @@ describe('normalize-message.ts', () => {
 
 			const result = normalizePartialIncompleteMessageFromSoap(input);
 
-			expect(result).toEqual({ id: '111', read: true }); // read flag, since it has a default fallback
+			expect(result).toEqual({ id: '111' }); // read flag, since it has a default fallback
+		});
+
+		it('should return flag read: true when the flag is empty', () => {
+			const result = normalizePartialIncompleteMessageFromSoap({ id: '111', f: '' });
+			expect(result).toEqual({
+				id: '111',
+				flagged: false,
+				hasAttachment: false,
+				isDeleted: false,
+				isDraft: false,
+				isForwarded: false,
+				isInvite: false,
+				isReplied: false,
+				isSentByMe: false,
+				read: true,
+				urgent: false
+			});
 		});
 
 		describe.each([
-			['should return flag read: true when the flag is empty', { id: '111', f: '' }],
-			['should return flag read: true when the flag is undefined', { id: '111', f: undefined }],
-			['should return flag read: true when the flag is missing', { id: '111' }]
+			['should not return flag read when the flag is undefined', { id: '111', f: undefined }],
+			['should not return flag read when the flag is missing', { id: '111' }]
 		])('%s', (_desc, input) => {
-			it('returns { id, read: true }', () => {
+			it('returns { id }', () => {
 				const result = normalizePartialIncompleteMessageFromSoap(input);
-				expect(result).toEqual({ id: '111', read: true });
+				expect(result).toEqual({ id: '111' });
 			});
 		});
 	});
