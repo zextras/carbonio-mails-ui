@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useMemo } from 'react';
+
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
@@ -25,4 +27,29 @@ export const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): voi
 		.setDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));
 
 	useEditorsStore.getState().setSendAllowedStatus(editorId, computeSendAllowedStatus(editor));
+};
+
+/**
+ * Returns reactive reference to the isModified value and to its setter
+ * @param id
+ * @returns
+ */
+export const useEditorIsModified = (
+	id: MailsEditorV2['id']
+): {
+	isModified: MailsEditorV2['isModified'];
+	setIsModified: () => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].isModified);
+	const setter = useEditorsStore((state) => state.setIsModified);
+
+	return useMemo(
+		() => ({
+			isModified: value,
+			setIsModified: (): void => {
+				setter(id, true);
+			}
+		}),
+		[id, setter, value]
+	);
 };
