@@ -217,9 +217,9 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 		receivedFrom.map((item) => ({
 			...item,
 			id: item.value.email,
-			label: `from:${item.value.email}`,
+			label: item.value.email.startsWith('from:') ? item.value.email : `from:${item.value.email}`,
 			actions: [],
-			value: item.value.email,
+			value: item.value.email.startsWith('from:') ? item.value.email : `from:${item.value.email}`,
 			avatarBackground: item.background,
 			error: false,
 			isQueryFilter: true
@@ -227,8 +227,8 @@ export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 		sentTo.map((item) => ({
 			...item,
 			id: item.value.email,
-			label: `to:${item.value.email}`,
-			value: item.value.email,
+			label: item.value.email.startsWith('to:') ? item.value.email : `to:${item.value.email}`,
+			value: item.value.email.startsWith('to:') ? item.value.email : `to:${item.value.email}`,
 			actions: [],
 			avatarBackground: item.background,
 			error: false,
@@ -260,11 +260,11 @@ function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 	);
 }
 
-function toContactInput(item: SearchQueryItem): ContactInputItem {
+function toContactInput(item: SearchQueryItem, prefix: 'to:' | 'from:'): ContactInputItem {
 	const email = item.value ?? '';
 	return {
 		id: email,
-		label: email,
+		label: item.label.startsWith(prefix) ? item.label : `${prefix}${item.label}`,
 		value: {
 			id: email,
 			email,
@@ -276,13 +276,13 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => queryItem.label.startsWith('to:'))
-		.map((item) => toContactInput(item));
+		.map((item) => toContactInput(item, 'to:'));
 }
 
 function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => queryItem.label.startsWith('from:'))
-		.map((item) => toContactInput(item));
+		.map((item) => toContactInput(item, 'from:'));
 }
 
 function getSizeSmallerDefaultValue(query: Query): Array<SearchQueryItem> {
