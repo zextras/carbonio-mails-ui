@@ -83,6 +83,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	setIsModified: (id: MailsEditorV2['id'], value: MailsEditorV2['isModified']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].isModified = value;
+				}
+			})
+		);
+	},
 	setIsRichText: (id: MailsEditorV2['id'], value: MailsEditorV2['isRichText']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
