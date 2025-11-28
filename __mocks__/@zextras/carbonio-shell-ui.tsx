@@ -7,19 +7,13 @@
 import React, { FC, ReactNode } from 'react';
 
 import type * as shell from '@zextras/carbonio-shell-ui';
-import {
-	AudioNotificationConfig,
-	INotificationManager,
-	NotificationConfig,
-	PopupNotificationConfig
-} from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 
-export const useAuthenticated = vi.fn<typeof shell.useAuthenticated>().mockReturnValue(true);
+export const useAuthenticated: Mock<typeof shell.useAuthenticated> = vi.fn(() => true);
 
 export const mockedAccount = generateAccount();
 const mockedAccounts = [mockedAccount];
@@ -120,25 +114,6 @@ export const JSNS = {
 };
 
 export const IS_FOCUS_MODE = false;
-
-const mockNotificationManager: INotificationManager = {
-	multipleNotify(config: NotificationConfig[]): void {
-		// notified! x3
-	},
-	notify(config: NotificationConfig): void {
-		// notified!
-	},
-	playSound(config: AudioNotificationConfig): void {
-		// beep
-	},
-	showPopup(config: PopupNotificationConfig): void {
-		// pop
-	}
-};
-
-export const getNotificationManager: Mock<typeof shell.getNotificationManager> = vi.fn(
-	() => mockNotificationManager
-);
 
 export const report: Mock<typeof shell.report> = vi.fn(() => {
 	noop();
