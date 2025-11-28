@@ -9,10 +9,6 @@ import type { Mock } from 'vitest';
 
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	useAppContext: vi.fn()
-}));
-
 describe('useMultipleSelection', () => {
 	const setMultipleSelectionCount = vi.fn();
 	const allItems = ['item1', 'item2', 'item3', 'item4', 'item5'];

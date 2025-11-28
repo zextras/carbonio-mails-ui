@@ -9,11 +9,6 @@ import type { Mock } from 'vitest';
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserAccount: vi.fn(),
-	getUserSettings: vi.fn()
-}));
-
 describe('getAvailableAddresses', () => {
 	const primaryAccountAddress = 'primary@example.com';
 	it('should return primary account address when defined', () => {
