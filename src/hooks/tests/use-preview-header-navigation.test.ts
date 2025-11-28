@@ -1,5 +1,4 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import * as reactRouterDom from 'react-router-dom';
 import type { Mock } from 'vitest';
 /*
@@ -16,9 +15,6 @@ import * as searchSoapApi from 'api/search-soap-api';
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { setConversationsInEmailStore } from 'store/emails/store';
 
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = vi.fn(createSnackbar);
-
 vi.mock('react-i18next', async () => ({
 	...(await vi.importActual('react-i18next')),
 	useTranslation: (): Array<(key: string) => string> => [
@@ -26,11 +22,6 @@ vi.mock('react-i18next', async () => ({
 	],
 	Trans: ({ children }: { children: React.ReactNode }): React.ReactNode => children,
 	I18nextProvider: ({ children }: { children: React.ReactNode }): React.ReactNode => children
-}));
-
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
 }));
 
 vi.mock('react-router-dom', async () => ({
@@ -41,7 +32,6 @@ vi.mock('react-router-dom', async () => ({
 beforeEach(() => {
 	createSoapAPIInterceptor('ConvAction');
 	createSoapAPIInterceptor('Search');
-	(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('usePreviewHeaderNavigation', () => {

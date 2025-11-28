@@ -14,10 +14,6 @@ import { setupTest } from '@test-setup';
 import { Participant } from 'types/index.d';
 import ContactName from 'views/app/detail-panel/preview/parts/contact-names';
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserAccounts: vi.fn()
-}));
-
 describe('ContactName component', () => {
 	beforeEach(() => {
 		(useUserAccounts as Mock).mockReturnValue([{ address: 'user@example.com' }]);
