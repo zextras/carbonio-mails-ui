@@ -7,11 +7,9 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
-import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -21,10 +19,9 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MoveMessage } from 'ui-actions/move-msg';
 
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
+const expectErrorSnackbar = async (): Promise<void> => {
+	expect(await screen.findByText('Something went wrong, please try again'));
+};
 
 describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -109,9 +106,6 @@ describe('MoveMsg', () => {
 
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
-
-			const mockCreateSnackbar = vi.fn((arg) => arg);
-			(useSnackbar as Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -162,10 +156,6 @@ describe('MoveMsg', () => {
 		});
 		it('should show an error snackbar when the API call fails ', async () => {
 			populateFoldersStore();
-
-			const mockCreateSnackbar = vi.fn((arg) => arg);
-
-			(useSnackbar as Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			createSoapAPIInterceptor<MsgActionRequest, ErrorSoapBodyResponse>(
@@ -202,11 +192,7 @@ describe('MoveMsg', () => {
 				await user.click(button);
 			});
 
-			expect(mockCreateSnackbar).toHaveBeenCalledWith(
-				expect.objectContaining({
-					label: 'Something went wrong, please try again'
-				})
-			);
+			await expectErrorSnackbar();
 		});
 	});
 });
