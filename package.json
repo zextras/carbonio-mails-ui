@@ -81,8 +81,7 @@
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.0.14",
-		"web-streams-polyfill": "^4.2.0",
-		"whatwg-fetch": "^3.6.20"
+		"vitest-mock-commonjs": "^1.0.2"
 	},
 	"dependencies": {
 		"@emotion/jest": "^11.13.0",
