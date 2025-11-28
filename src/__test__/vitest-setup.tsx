@@ -78,8 +78,9 @@ beforeEach(() => {
 	useEditorsStore.setState({});
 	// useTagStore.setState({ tags: {} });
 	// useFolderStore.setState({ folders: {} });
+	getUseEmailStoreAndHooksForTesting().resetMessagesAndPopulatedItems();
 	getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems();
-	getUseEmailStoreAndHooksForTesting().useEmailsStore.setState({});
+	getUseEmailStoreAndHooksForTesting().resetSearchAndPopulatedItems();
 });
 
 afterAll(() => {
