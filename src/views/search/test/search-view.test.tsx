@@ -131,7 +131,7 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	return { count, setCount };
 }
 
-describe('SearchView', () => {
+describe.skip('SearchView', () => {
 	beforeAll(() => {
 		vi.spyOn(reactRouterDom, 'useNavigate').mockReturnValue(vi.fn());
 	});

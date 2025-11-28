@@ -6,21 +6,16 @@
 
 import '@testing-library/jest-dom';
 import { matchers } from '@emotion/jest';
-import { noop } from 'lodash';
 import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 
-import * as soapUiLib from '@test-mocks/@zextras/carbonio-ui-soap-lib';
+import { useEditorsStore } from '../store/editor';
+import { getUseEmailStoreAndHooksForTesting } from '../store/emails/store';
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
-
-vi.mock('@zextras/carbonio-ui-soap-lib', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-soap-lib')),
-	...soapUiLib
-}));
 
 vi.mock('@zextras/carbonio-ui-preview');
 
@@ -55,6 +50,8 @@ export const defaultBeforeAllTests = (
 	server.listen({ onUnhandledRequest });
 };
 
+// eslint-disable-next-line global-require
+// const { useFolderStore, useTagStore } = await require('@zextras/carbonio-ui-commons');
 // ------------------ TEST LIFECYCLE ------------------
 
 beforeAll(() => {
@@ -73,9 +70,16 @@ beforeAll(() => {
 afterEach(() => {
 	vi.clearAllTimers();
 	vi.clearAllMocks();
+	vi.useRealTimers();
 });
+
 beforeEach(() => {
 	vi.useFakeTimers({ shouldAdvanceTime: true });
+	useEditorsStore.setState({});
+	// useTagStore.setState({ tags: {} });
+	// useFolderStore.setState({ folders: {} });
+	getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems();
+	getUseEmailStoreAndHooksForTesting().useEmailsStore.setState({});
 });
 
 afterAll(() => {
@@ -83,30 +87,11 @@ afterAll(() => {
 	server.close();
 });
 
-// ------------------ GLOBAL MOCKS ------------------
-
-// Worker mock
-type MessageHandler = (msg: string) => void;
-
-class Worker {
-	url: string;
-
-	onmessage: MessageHandler;
-
-	constructor(stringUrl: string) {
-		this.url = stringUrl;
-		this.onmessage = noop;
-	}
-
-	postMessage(msg: string): void {
-		this.onmessage(msg);
-	}
-}
-
-Object.defineProperty(window, 'Worker', {
-	writable: true,
-	value: Worker
+beforeEach(() => {
+	vi.useFakeTimers({ shouldAdvanceTime: true });
 });
+
+// ------------------ GLOBAL MOCKS ------------------
 
 // Mock ResizeObserver
 Object.defineProperty(window, 'ResizeObserver', {

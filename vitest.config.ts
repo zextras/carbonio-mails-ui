@@ -23,10 +23,11 @@ export default defineConfig({
 		environment: 'jsdom',
 		setupFiles: [
 			'./src/__test__/globals.ts',
+			'./src/__test__/worker.ts',
 			'./src/__test__/vitest-setup.tsx',
 			'./src/__test__/setup-browser-env.ts'
 		],
-		clearMocks: false,
+		clearMocks: true,
 		maxWorkers: '80%',
 		environmentOptions: {
 			jsdom: {
@@ -35,6 +36,7 @@ export default defineConfig({
 		},
 		mockReset: false,
 		testTimeout: 10000,
+		hookTimeout: 10000,
 		reporters: ['default']
 	}
 });
