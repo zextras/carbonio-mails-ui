@@ -1,5 +1,4 @@
-import { getTags } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,17 +7,14 @@ import type { Mock } from 'vitest';
 
 import { getTagIds } from 'normalizations/utils';
 
-vi.mock('@zextras/carbonio-ui-commons', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	getTags: vi.fn()
-}));
-
 describe('getTagIds utility function', () => {
 	beforeEach(() => {
-		(getTags as Mock).mockReturnValue([
-			{ id: '1', name: 'tag1' },
-			{ id: '2', name: 'tag2' }
-		]);
+		useTagStore.setState({
+			tags: {
+				1: { id: '1', name: 'tag1' },
+				2: { id: '2', name: 'tag2' }
+			}
+		});
 	});
 
 	it('returns undefined when both t and tn are undefined', () => {
