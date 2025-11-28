@@ -80,7 +80,9 @@
 		"ts-node": "^10.9.1",
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.14"
+		"vitest": "^4.0.14",
+		"web-streams-polyfill": "^4.2.0",
+		"whatwg-fetch": "^3.6.20"
 	},
 	"dependencies": {
 		"@emotion/jest": "^11.13.0",
