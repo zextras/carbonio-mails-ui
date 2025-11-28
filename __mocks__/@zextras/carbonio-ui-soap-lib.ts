@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import * as soapLib from '@zextras/carbonio-ui-soap-lib';
+import type {
+	useSync as syncType,
+	useInfoRefresh as infoRefresh,
+	ApiManager as ApiManagerType
+} from '@zextras/carbonio-ui-soap-lib';
 import type { Mock } from 'vitest';
 
-import { getSoapFetch } from '@test-utils/network/fetch';
+export const useSync: Mock<typeof syncType> = vi.fn();
+export const useInfoRefresh: Mock<typeof infoRefresh> = vi.fn();
 
-export const useSync: Mock<typeof soapLib.useSync> = vi.fn();
-export const useInfoRefresh: Mock<typeof soapLib.useInfoRefresh> = vi.fn();
-
-const apiManagerInstance: Omit<soapLib.ApiManager, 'sessionInfo'> = {
+const apiManagerInstance: Omit<ApiManagerType, 'sessionInfo'> = {
 	getSessionInfo: vi.fn(),
 	setSessionInfo: vi.fn(),
 	setPollingPreference: vi.fn(),
@@ -20,9 +22,9 @@ const apiManagerInstance: Omit<soapLib.ApiManager, 'sessionInfo'> = {
 };
 
 export const ApiManager = {
-	getApiManager: (): Omit<soapLib.ApiManager, 'sessionInfo'> => apiManagerInstance
+	getApiManager: (): Omit<ApiManagerType, 'sessionInfo'> => apiManagerInstance
 };
 
-export const legacyXmlSoapFetch = vi.fn();
+// export const legacyXmlSoapFetch = vi.fn();
 
-export const legacySoapFetch = getSoapFetch('test-environment');
+// export const legacySoapFetch = getSoapFetch('test-environment');

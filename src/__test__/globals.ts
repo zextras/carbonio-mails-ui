@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { vi } from 'vitest';
+import { mockForNodeRequire } from 'vitest-mock-commonjs';
+
+import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
 
 class AbortController {
 	public signal: {
@@ -35,3 +38,38 @@ Object.defineProperty(window, 'AbortController', {
 	writable: true,
 	value: AbortController
 });
+(globalThis as any).BASE_PATH = '/';
+
+// matchMedia
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn()
+	}))
+});
+
+// window.open
+Object.defineProperty(window, 'open', {
+	writable: true,
+	value: vi.fn()
+});
+
+// crypto.randomUUID
+Object.defineProperty(window.crypto, 'randomUUID', {
+	writable: true,
+	value: vi.fn(() => Math.random().toString())
+});
+
+mockForNodeRequire('../../assets/notification.mp3', () => ({}));
+mockForNodeRequire('../../../assets/carbonio.svg', () => ({}));
+// vi.mock('@zextras/carbonio-ui-soap-lib');
+vi.mock('@zextras/carbonio-shell-ui', async () => ({
+	...(await vi.importActual('@zextras/carbonio-shell-ui')),
+	...shell
+}));

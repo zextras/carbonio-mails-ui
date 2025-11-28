@@ -10,35 +10,28 @@ import { noop } from 'lodash';
 import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
-import { mockForNodeRequire } from 'vitest-mock-commonjs';
 
-import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
+import * as soapUiLib from '@test-mocks/@zextras/carbonio-ui-soap-lib';
 import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetConvRequest } from '@test-utils/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from '@test-utils/network/msw/handle-get-msg';
 import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
-mockForNodeRequire('../../assets/notification.mp3', () => ({}));
-mockForNodeRequire('../../../assets/carbonio.svg', () => ({}));
-vi.mock('@zextras/carbonio-ui-soap-lib');
-vi.mock('@zextras/carbonio-shell-ui', async () => ({
-	...(await vi.importActual('@zextras/carbonio-shell-ui')),
-	...shell
+vi.mock('@zextras/carbonio-ui-soap-lib', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-soap-lib')),
+	...soapUiLib
 }));
-// vi.mock('@zextras/carbonio-ui-soap-lib', async () => ({
-// 	...(await vi.importActual('@zextras/carbonio-ui-soap-lib')),
-// 	...soapUiLib
-// }));
 
 vi.mock('@zextras/carbonio-ui-preview');
 
-(globalThis as any).BASE_PATH = '/';
 let server: SetupServer;
 
 expect.extend({ toHaveStyleRule: matchers.toHaveStyleRule });
 
 export const defaultBeforeAllTests = (
-	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' } = { onUnhandledRequest: 'warn' }
+	{ onUnhandledRequest }: { onUnhandledRequest: 'warn' | 'error' | 'bypass' } = {
+		onUnhandledRequest: 'bypass'
+	}
 ): void => {
 	// mock a simplified IntersectionObserver
 	Object.defineProperty(window, 'IntersectionObserver', {
@@ -71,7 +64,7 @@ beforeAll(() => {
 	registerRestHandler(h);
 	registerRestHandler(j);
 
-	defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+	defaultBeforeAllTests({ onUnhandledRequest: 'bypass' });
 
 	// Mock localStorage hooks
 	useLocalStorage.mockReturnValue([vi.fn(), vi.fn()]);
@@ -91,32 +84,6 @@ afterAll(() => {
 });
 
 // ------------------ GLOBAL MOCKS ------------------
-
-// matchMedia
-Object.defineProperty(window, 'matchMedia', {
-	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: vi.fn(),
-		removeListener: vi.fn(),
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn()
-	}))
-});
-
-// window.open
-Object.defineProperty(window, 'open', {
-	writable: true,
-	value: vi.fn()
-});
-
-// crypto.randomUUID
-Object.defineProperty(window.crypto, 'randomUUID', {
-	writable: true,
-	value: vi.fn(() => Math.random().toString())
-});
 
 // Worker mock
 type MessageHandler = (msg: string) => void;
