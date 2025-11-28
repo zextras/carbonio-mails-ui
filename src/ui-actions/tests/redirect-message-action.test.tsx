@@ -7,10 +7,8 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDER_VIEW, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
-import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
@@ -20,18 +18,9 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { RedirectMessageActionRequest } from 'types/index.d';
 import RedirectMessageAction from 'ui-actions/redirect-message-action';
 
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = vi.fn(createSnackbar);
-
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
-
 describe('RedirectMessageAction', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 	});
 
 	it('should enable the "redirect" button when at least one recipient address is set', async () => {

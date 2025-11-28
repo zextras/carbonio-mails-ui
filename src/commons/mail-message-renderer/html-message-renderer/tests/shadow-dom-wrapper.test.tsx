@@ -22,10 +22,6 @@ vi.mock('darkreader', async () => ({
 	enable: vi.fn()
 }));
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserSettings: vi.fn()
-}));
-
 describe('ShadowDomWrapper', () => {
 	it('renders children inside shadow DOM when dark mode is disabled', () => {
 		const children = <div data-testid="child">Hello, Shadow DOM!</div>;
