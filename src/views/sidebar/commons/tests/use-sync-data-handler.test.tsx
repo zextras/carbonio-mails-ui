@@ -13,6 +13,7 @@ import {
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
+import { vi } from 'vitest';
 
 import { getSetupServer } from '../../../../__test__/vitest-setup';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
@@ -57,15 +58,15 @@ const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
-
 vi.mock('@zextras/carbonio-ui-commons', async () => ({
 	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	getTags: vi.fn(),
 	folderWorker: {
+		postMessage: vi.fn()
+	},
+	tagsWorker: {
 		postMessage: vi.fn()
 	}
 }));
-
 vi.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
 	triggerNotification: vi.fn()
 }));

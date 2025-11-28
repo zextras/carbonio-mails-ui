@@ -76,8 +76,6 @@ afterEach(() => {
 beforeEach(() => {
 	vi.useFakeTimers({ shouldAdvanceTime: true });
 	useEditorsStore.setState({});
-	// useTagStore.setState({ tags: {} });
-	// useFolderStore.setState({ folders: {} });
 	getUseEmailStoreAndHooksForTesting().resetMessagesAndPopulatedItems();
 	getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems();
 	getUseEmailStoreAndHooksForTesting().resetSearchAndPopulatedItems();

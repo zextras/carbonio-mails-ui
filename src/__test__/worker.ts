@@ -18,7 +18,7 @@ class Worker {
 
 	onmessage: MessageHandler;
 
-	constructor(stringUrl: string) {
+	constructor(stringUrl: string, metaUrl: string) {
 		this.url = stringUrl;
 		this.onmessage = noop;
 	}
