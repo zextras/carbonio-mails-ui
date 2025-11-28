@@ -33,6 +33,7 @@ vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
 
+// TODO: refactor this test and remove all mocks
 describe('useConversationListByFolder', () => {
 	const mockPrefs = { zimbraPrefLocale: 'en_US', zimbraPrefSortOrder: 'dateDesc' };
 

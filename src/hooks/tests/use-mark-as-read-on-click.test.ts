@@ -8,13 +8,6 @@ import { renderHook, act } from '@testing-library/react';
 
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 
-vi.mock('@zextras/carbonio-shell-ui', async () => ({
-	...(await vi.importActual('@zextras/carbonio-shell-ui')),
-	useUserSettings: () => ({
-		prefs: { zimbraPrefMarkMsgRead: '0' }
-	})
-}));
-
 const createActionMock = () => ({
 	canExecute: vi.fn(() => true),
 	execute: vi.fn()
