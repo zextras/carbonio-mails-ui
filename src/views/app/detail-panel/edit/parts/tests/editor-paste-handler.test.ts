@@ -21,8 +21,6 @@ vi.mock('api/upload-file-api');
 vi.mock('store/emails/actions/save-draft-action');
 vi.mock('store/editor');
 
-vi.mock('axios');
-
 const createMockEditor = (): Editor =>
 	({
 		insertContent: vi.fn(),
