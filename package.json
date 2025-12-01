@@ -19,9 +19,9 @@
 		"lint-errors": "eslint --ext .js,.jsx,.ts,.tsx --quiet --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-check": "npm run lint-errors; npm run type-check",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"coverage": "vitest run --coverage",
+		"test": "TZ=Europe/Rome vitest run",
+		"test:watch": "TZ=Europe/Rome vitest",
+		"coverage": "TZ=Europe/Rome vitest run --coverage",
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
 		"dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy"
 	},
