@@ -13,11 +13,6 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { OutgoingFiltersTab } from 'views/settings/filters/outgoing-filters-tab';
 import { mockFilter } from 'views/settings/filters/tests/test-utils';
 
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
-
 describe('Outgoing Filters', () => {
 	it('should not contain "Apply" filter action', async () => {
 		createSoapAPIInterceptor('GetOutgoingFilterRules', {
