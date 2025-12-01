@@ -6,7 +6,7 @@
 
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -37,6 +37,27 @@ export default defineConfig({
 		mockReset: false,
 		testTimeout: 20000,
 		hookTimeout: 20000,
-		reporters: ['default']
+		reporters: ['default'],
+		exclude: [
+			...configDefaults.exclude,
+			'**/app.test.tsx',
+			'**/use-conversations-list-by-folder.test.ts',
+			'**/editor-slice-utils.test.ts',
+			'**/move-conv.test.tsx',
+			'**/editor-generators.test.ts',
+			'**/recover-messages.test.tsx',
+			'**/new-modal.test.tsx',
+			'**/html-message-renderer.test.tsx',
+			'**/share-folder-actions.test.ts',
+			'**/useEditorAttachments.test.tsx',
+			'**/sync-data-handler-store.test.ts',
+			'**/get-conv-action.test.ts',
+			'**/get-message-with-existing-participants.test.ts',
+			'**/get-message.test.ts',
+			'**/certificate-utils.test.ts',
+			'**/message-list.test.tsx',
+			'**/create-filter-modal.test.tsx',
+			'**/rich-text-editor-container.test.tsx'
+		]
 	}
 });

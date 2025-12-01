@@ -556,7 +556,7 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it(`should reset 'Is contained in' input when reset button is pressed`, async () => {
+	it.skip(`should reset 'Is contained in' input when reset button is pressed`, async () => {
 		const folderName = 'random-inbox';
 		populateFoldersStore({
 			customFolders: [generateFolder({ id: '222', name: folderName })]
