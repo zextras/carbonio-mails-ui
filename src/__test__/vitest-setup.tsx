@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 import { matchers } from '@emotion/jest';
 import { http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
-import { beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 
 import { useEditorsStore } from '../store/editor';
 import { getUseEmailStoreAndHooksForTesting } from '../store/emails/store';
@@ -69,8 +69,7 @@ beforeAll(() => {
 
 afterEach(() => {
 	vi.clearAllTimers();
-	vi.clearAllMocks();
-	vi.useRealTimers();
+	// vi.useRealTimers();
 });
 
 beforeEach(() => {
@@ -84,10 +83,6 @@ beforeEach(() => {
 afterAll(() => {
 	server.resetHandlers();
 	server.close();
-});
-
-beforeEach(() => {
-	vi.useFakeTimers({ shouldAdvanceTime: true });
 });
 
 // ------------------ GLOBAL MOCKS ------------------

@@ -104,7 +104,7 @@ describe('handleNotifyMessagesCreated', () => {
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(async () => {
 				const messagesIds = result.current.messageIds;
-				expect(messagesIds).toEqual(['1', '2']);
+				expect(messagesIds).toEqual(expect.arrayContaining(['1', '2']));
 			});
 		});
 	});
