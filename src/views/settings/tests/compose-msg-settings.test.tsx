@@ -12,10 +12,6 @@ import type { Mock } from 'vitest';
 import { setupTest } from '@test-setup';
 import ComposeMessage from 'views/settings/compose-msg-settings';
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	t: vi.fn((key) => key)
-}));
-
 describe('compose-msg-settings', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
