@@ -34,20 +34,24 @@ export const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): voi
  * @param id
  * @returns
  */
-export const useEditorIsModified = (
+export const useEditorIsDirty = (
 	id: MailsEditorV2['id']
 ): {
-	isModified: MailsEditorV2['isModified'];
-	setIsModified: () => void;
+	isDirty: MailsEditorV2['isDirty'];
+	setDirty: () => void;
+	resetDirty: () => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].isModified);
-	const setter = useEditorsStore((state) => state.setIsModified);
+	const value = useEditorsStore((state) => state.editors[id].isDirty);
+	const setter = useEditorsStore((state) => state.setIsDirty);
 
 	return useMemo(
 		() => ({
-			isModified: value,
-			setIsModified: (): void => {
+			isDirty: value,
+			setDirty: (): void => {
 				setter(id, true);
+			},
+			resetDirty: (): void => {
+				setter(id, false);
 			}
 		}),
 		[id, setter, value]

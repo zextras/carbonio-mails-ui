@@ -3,49 +3,73 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from '@testing-library/react';
+
 import { setupEditorStore } from '../../../../__test__/generators/editor-store';
 import { setupHook } from '../../../../__test__/test-setup';
 import { generateNewMessageEditor } from '../../editor-generators';
-import { useEditorIsModified } from '../statuses';
+import { useEditorIsDirty } from '../statuses';
 
-describe('useEditorIsModified', () => {
-	describe('isModified value', () => {
-		it('returns true when the editor is modified', () => {
+describe('useEditorIsDirty', () => {
+	describe('isDirty value', () => {
+		it('returns true when the editor has unsaved changes', () => {
 			const editor = generateNewMessageEditor();
-			editor.isModified = true;
+			editor.isDirty = true;
 
 			setupEditorStore({ editors: [editor] });
-			const { result } = setupHook(useEditorIsModified, { initialProps: [editor.id] });
+			const { result } = setupHook(useEditorIsDirty, { initialProps: [editor.id] });
 
-			expect(result.current.isModified).toBe(true);
+			expect(result.current.isDirty).toBe(true);
 		});
 
-		it('returns false when the editor is not modified', () => {
+		it('returns false when the editor has no unsaved changes', () => {
 			const editor = generateNewMessageEditor();
-			editor.isModified = false;
+			editor.isDirty = false;
 
 			setupEditorStore({ editors: [editor] });
-			const { result } = setupHook(useEditorIsModified, { initialProps: [editor.id] });
+			const { result } = setupHook(useEditorIsDirty, { initialProps: [editor.id] });
 
-			expect(result.current.isModified).toBe(false);
+			expect(result.current.isDirty).toBe(false);
 		});
 	});
 
-	describe('setIsModified function', () => {
-		it('sets the isModified value to true', () => {
+	describe('setIsDirty function', () => {
+		it('sets the isDirty value to true', () => {
 			const editor = generateNewMessageEditor();
-			editor.isModified = false;
+			editor.isDirty = false;
 			setupEditorStore({ editors: [editor] });
-			const { result } = setupHook(useEditorIsModified, { initialProps: [editor.id] });
+			const { result } = setupHook(useEditorIsDirty, { initialProps: [editor.id] });
 
-			expect(result.current.isModified).toBe(false);
+			expect(result.current.isDirty).toBe(false);
 
-			result.current.setIsModified();
+			act(() => {
+				result.current.setDirty();
+			});
 
-			const { result: updatedResult } = setupHook(useEditorIsModified, {
+			const { result: updatedResult } = setupHook(useEditorIsDirty, {
 				initialProps: [editor.id]
 			});
-			expect(updatedResult.current.isModified).toBe(true);
+			expect(updatedResult.current.isDirty).toBe(true);
+		});
+	});
+
+	describe('resetIsDirty function', () => {
+		it('sets the isDirty value to false', () => {
+			const editor = generateNewMessageEditor();
+			editor.isDirty = true;
+			setupEditorStore({ editors: [editor] });
+			const { result } = setupHook(useEditorIsDirty, { initialProps: [editor.id] });
+
+			expect(result.current.isDirty).toBe(true);
+
+			act(() => {
+				result.current.resetDirty();
+			});
+
+			const { result: updatedResult } = setupHook(useEditorIsDirty, {
+				initialProps: [editor.id]
+			});
+			expect(updatedResult.current.isDirty).toBe(false);
 		});
 	});
 });

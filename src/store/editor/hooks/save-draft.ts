@@ -12,7 +12,7 @@ import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { getEditor } from 'store/editor/hooks/editors';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { getDraftSaveDelay } from 'store/editor/store-utils';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
@@ -23,22 +23,25 @@ export type SaveDraftOptions = {
 	onError?: (error: string) => void;
 };
 
-export type SaveDraftFunction = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions) => void;
+export type SaveDraftFunction = (options?: SaveDraftOptions) => void;
 
 /**
  *
  * @param editorId
  * @param options
  */
-export const useSaveDraftFromEditor = (): {
+export const useSaveDraftFromEditor = (
+	editorId: MailsEditorV2['id']
+): {
 	debouncedSaveDraft: ReturnType<typeof debounce<SaveDraftFunction>>;
 	immediateSaveDraft: SaveDraftFunction;
 } => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
+	const { resetDirty } = useEditorIsDirty(editorId);
 
 	const saveDraftFromEditor = useCallback(
-		(editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+		(options?: SaveDraftOptions): void => {
 			const editor = getEditor({ id: editorId });
 			if (!editor) {
 				console.warn('Cannot find the editor', editorId);
@@ -93,7 +96,7 @@ export const useSaveDraftFromEditor = (): {
 						lastSaveTimestamp: new Date()
 					});
 					computeAndUpdateEditorStatus(editorId);
-
+					resetDirty();
 					options?.onComplete?.();
 				})
 				.catch((err) => {
@@ -113,7 +116,7 @@ export const useSaveDraftFromEditor = (): {
 			// FIXME use a subscription to the store update
 			computeAndUpdateEditorStatus(editorId);
 		},
-		[createSnackbar, t]
+		[createSnackbar, editorId, resetDirty, t]
 	);
 
 	const delay = getDraftSaveDelay();
@@ -140,16 +143,25 @@ export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
 ): {
 	status: MailsEditorV2['draftSaveAllowedStatus'];
-	saveDraft: () => void;
+	saveDraft: (options?: SaveDraftOptions) => void;
 } => {
-	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const { resetDirty } = useEditorIsDirty(editorId);
+
 	const immediateInvoker = useCallback(
 		(options?: SaveDraftOptions): void => {
 			debouncedSaveDraft.cancel();
-			immediateSaveDraft(editorId, options);
+			const finalOptions = {
+				...options,
+				onComplete: (): void => {
+					resetDirty();
+					options?.onComplete?.();
+				}
+			};
+			immediateSaveDraft(finalOptions);
 		},
-		[debouncedSaveDraft, editorId, immediateSaveDraft]
+		[debouncedSaveDraft, immediateSaveDraft, resetDirty]
 	);
 
 	return useMemo(

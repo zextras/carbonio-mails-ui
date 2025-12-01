@@ -11,6 +11,7 @@ import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
 import { buildArrayFromFileList } from 'helpers/files';
 import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
@@ -32,6 +33,7 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): JSX.Element => {
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
+	const { setDirty, isDirty } = useEditorIsDirty(editorId);
 
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
@@ -53,12 +55,16 @@ export const RichTextEditorContainer = ({
 		return { plainText, richText };
 	}, []);
 
-	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
-		if (!composerRef.current) {
-			return;
-		}
-		composerRef.current.setContent(value.richText);
-	}, []);
+	const onExternalTextChanges = useCallback(
+		(value: MailsEditorV2['text']): void => {
+			if (!composerRef.current) {
+				return;
+			}
+			setDirty();
+			composerRef.current.setContent(value.richText);
+		},
+		[setDirty]
+	);
 
 	const onComposerInit = useCallback(
 		(_evt: Event, composer: Editor) => {
@@ -81,6 +87,7 @@ export const RichTextEditorContainer = ({
 	}, [setText]);
 
 	const onTextChange = useCallback(() => {
+		setDirty();
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
@@ -94,13 +101,15 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [saveEditor]);
+	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		saveEditor();
+		if (isDirty) {
+			saveEditor();
+		}
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider]);
+	}, [saveEditor, setTextProvider, isDirty]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {

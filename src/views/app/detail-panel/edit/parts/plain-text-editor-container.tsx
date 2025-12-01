@@ -9,6 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
+import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
 import { plainTextToHTML } from 'commons/utils';
 import { useEditorText, useEditorTextProvider } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
@@ -24,6 +25,7 @@ export const PlainTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const { prefs } = useUserSettings();
 	const { setTextProvider } = useEditorTextProvider(editorId);
+	const { setDirty, isDirty } = useEditorIsDirty(editorId);
 	const text = useMemo(() => getText().plainText, [getText]);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const initialValueRef = useRef(text);
@@ -40,14 +42,18 @@ export const PlainTextEditorContainer = ({
 		return { plainText, richText };
 	}, []);
 
-	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
-		if (!textAreaRef.current) {
-			return;
-		}
-		textAreaRef.current.value = value.plainText;
-	}, []);
+	const onExternalTextChanges = useCallback(
+		(value: MailsEditorV2['text']): void => {
+			if (!textAreaRef.current) {
+				return;
+			}
+			setDirty();
+			textAreaRef.current.value = value.plainText;
+		},
+		[setDirty]
+	);
 
-	const onTextChange = useMemo(
+	const debouncedSetText = useMemo(
 		() =>
 			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
 				setText(
@@ -56,6 +62,14 @@ export const PlainTextEditorContainer = ({
 				);
 			}, SAVE_EDITOR_DELAY),
 		[setText]
+	);
+
+	const onTextChange = useCallback(
+		(ev: ChangeEvent<HTMLTextAreaElement>): void => {
+			setDirty();
+			debouncedSetText(ev);
+		},
+		[debouncedSetText, setDirty]
 	);
 
 	const textProviderValue = useMemo(

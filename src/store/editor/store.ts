@@ -83,11 +83,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	setIsModified: (id: MailsEditorV2['id'], value: MailsEditorV2['isModified']): void => {
+	setIsDirty: (id: MailsEditorV2['id'], value: MailsEditorV2['isDirty']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].isModified = value;
+					state.editors[id].isDirty = value;
 				}
 			})
 		);

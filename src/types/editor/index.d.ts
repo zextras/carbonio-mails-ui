@@ -149,8 +149,8 @@ export type MailsEditorV2 = {
 	savedAttachments: Array<SavedAttachment>;
 	// user defined delayed send timer
 	autoSendTime?: number;
-	// flag to indicate if the editor has been modified
-	isModified: boolean;
+	// flag to indicate if the editor has unsaved changes
+	isDirty: boolean;
 	// the saved draft id
 	did?: string;
 	// true if the message is rich text

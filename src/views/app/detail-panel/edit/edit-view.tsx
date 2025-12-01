@@ -41,6 +41,7 @@ import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
 import { isFulfilled } from '../../../../helpers/promises';
+import { useEditorIsDirty } from '../../../../store/editor/hooks/statuses';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -61,7 +62,6 @@ import {
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
-	useEditorDid,
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
@@ -148,7 +148,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	const { did: draftId } = useEditorDid(editorId);
+	const { isDirty } = useEditorIsDirty(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
@@ -165,10 +165,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
 		[bcc, cc, to]
 	);
-
-	useEffect(() => {
-		if (!draftId) saveDraft();
-	}, [draftId, saveDraft]);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -210,22 +206,24 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		ref,
 		() => ({
 			closeEditView: (): void => {
-				if (!draftId) {
-					return;
+				/**
+				 * If the editor is modified, we need to save the draft before closing the editor
+				 * Otherwise, we can just delete the editor
+				 */
+				if (isDirty) {
+					saveDraft({
+						onComplete: () => {
+							deleteEditor({ id: editorId });
+						}
+					});
+				} else {
+					deleteEditor({ id: editorId });
 				}
 
-				keepOrDiscardDraft({
-					onConfirm: (): void => {
-						saveDraft();
-						deleteEditor({ id: editorId });
-						close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
-					},
-					draftId,
-					editorId
-				});
+				close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
 			}
 		}),
-		[close, draftId, editorId, keepOrDiscardDraft, saveDraft]
+		[close, editorId, isDirty, saveDraft]
 	);
 
 	const onSendCountdownTick = useCallback(
@@ -592,7 +590,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
-	const sendDisabled = !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
+	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,

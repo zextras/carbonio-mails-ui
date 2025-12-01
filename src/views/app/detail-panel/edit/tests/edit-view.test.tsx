@@ -160,7 +160,7 @@ function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditor
 	return {
 		recipients: { to: [], cc: [], bcc: [] },
 		id: '',
-		isModified: false,
+		isDirty: false,
 		isRichText: false,
 		isUrgent: false,
 		sendAllowedStatus: {

@@ -6,7 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorIsModified } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -32,21 +32,21 @@ import { MailsEditorV2 } from 'types/index.d';
 export const useEditorSubject = (
 	id: MailsEditorV2['id']
 ): { subject: string; setSubject: (subject: string) => void } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].subject);
 	const setter = useEditorsStore((state) => state.setSubject);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			subject: value,
 			setSubject: (val: string): void => {
 				setter(id, val);
-				setIsModified();
+				setDirty();
 				debouncedSaveDraft(id);
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -89,10 +89,10 @@ export const useEditorText = (
 	getText: () => MailsEditorV2['text'];
 	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
-	const { immediateSaveDraft } = useSaveDraftFromEditor();
+	const { immediateSaveDraft } = useSaveDraftFromEditor(id);
 	const setter = useEditorsStore((state) => state.setText);
 	const { textProvider } = useEditorTextProvider(id);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	const getText = useCallback(
 		(): MailsEditorV2['text'] =>
@@ -109,10 +109,10 @@ export const useEditorText = (
 				textProvider.setCurrentText(val);
 			}
 			setter(id, val);
-			setIsModified();
-			immediateSaveDraft(id);
+			setDirty();
+			immediateSaveDraft();
 		},
-		[id, immediateSaveDraft, setter, textProvider, setIsModified]
+		[id, immediateSaveDraft, setter, textProvider, setDirty]
 	);
 
 	return useMemo(
@@ -134,21 +134,21 @@ export const useEditorAutoSendTime = (
 	autoSendTime: MailsEditorV2['autoSendTime'];
 	setAutoSendTime: (autoSendTime: MailsEditorV2['autoSendTime']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].autoSendTime);
 	const setter = useEditorsStore((state) => state.setAutoSendTime);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			autoSendTime: value,
 			setAutoSendTime: (val: MailsEditorV2['autoSendTime']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -162,21 +162,21 @@ export const useEditorDid = (
 	did: MailsEditorV2['did'];
 	setDid: (did: MailsEditorV2['did']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].did);
 	const setter = useEditorsStore((state) => state.setDid);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			did: value,
 			setDid: (val: MailsEditorV2['did']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -190,21 +190,21 @@ export const useEditorIsRichText = (
 	isRichText: MailsEditorV2['isRichText'];
 	setIsRichText: (isRichText: MailsEditorV2['isRichText']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isRichText);
 	const setter = useEditorsStore((state) => state.setIsRichText);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			isRichText: value,
 			setIsRichText: (val: MailsEditorV2['isRichText']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -218,22 +218,22 @@ export const useEditorRecipients = (
 	recipients: MailsEditorV2['recipients'];
 	setRecipients: (recipient: MailsEditorV2['recipients']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients);
 	const setter = useEditorsStore((state) => state.setRecipients);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			recipients: value,
 			setRecipients: (val: MailsEditorV2['recipients']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -247,22 +247,22 @@ export const useEditorToRecipients = (
 	toRecipients: MailsEditorV2['recipients']['to'];
 	setToRecipients: (recipient: MailsEditorV2['recipients']['to']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
 	const setter = useEditorsStore((state) => state.setToRecipients);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			toRecipients: value,
 			setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -276,22 +276,22 @@ export const useEditorCcRecipients = (
 	ccRecipients: MailsEditorV2['recipients']['cc'];
 	setCcRecipients: (recipient: MailsEditorV2['recipients']['cc']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
 	const setter = useEditorsStore((state) => state.setCcRecipients);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			ccRecipients: value,
 			setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -305,22 +305,22 @@ export const useEditorBccRecipients = (
 	bccRecipients: MailsEditorV2['recipients']['bcc'];
 	setBccRecipients: (recipient: MailsEditorV2['recipients']['bcc']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
 	const setter = useEditorsStore((state) => state.setBccRecipients);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			bccRecipients: value,
 			setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -334,22 +334,22 @@ export const useEditorIdentityId = (
 	identityId: MailsEditorV2['identityId'];
 	setIdentityId: (from: MailsEditorV2['identityId']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].identityId);
 	const setter = useEditorsStore((state) => state.setIdentityId);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			identityId: value,
 			setIdentityId: (val: MailsEditorV2['identityId']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -363,21 +363,21 @@ export const useEditorIsUrgent = (
 	isUrgent: MailsEditorV2['isUrgent'];
 	setIsUrgent: (isUrgent: MailsEditorV2['isUrgent']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
 	const setter = useEditorsStore((state) => state.setIsUrgent);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			isUrgent: value,
 			setIsUrgent: (val: MailsEditorV2['isUrgent']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -391,21 +391,21 @@ export const useEditorRequestReadReceipt = (
 	requestReadReceipt: MailsEditorV2['requestReadReceipt'];
 	setRequestReadReceipt: (requestReadReceipt: MailsEditorV2['requestReadReceipt']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
 	const setter = useEditorsStore((state) => state.setRequestReadReceipt);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			requestReadReceipt: value,
 			setRequestReadReceipt: (val: MailsEditorV2['requestReadReceipt']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -419,22 +419,22 @@ export const useEditorSignatureId = (
 	signatureId: MailsEditorV2['signatureId'];
 	setSignatureId: (from: MailsEditorV2['signatureId']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].signatureId);
 	const setter = useEditorsStore((state) => state.setSignatureId);
-	const { setIsModified } = useEditorIsModified(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 
 	return useMemo(
 		() => ({
 			signatureId: value,
 			setSignatureId: (val: MailsEditorV2['signatureId']): void => {
 				setter(editorId, val);
-				setIsModified();
+				setDirty();
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				debouncedSaveDraft();
 			}
 		}),
-		[editorId, debouncedSaveDraft, setter, value, setIsModified]
+		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -448,21 +448,21 @@ export const useEditorIsSmimeSign = (
 	isSmimeSign: MailsEditorV2['isSmimeSign'];
 	setIsSmimeSign: (isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isSmimeSign);
 	const setter = useEditorsStore((state) => state.setIsSmimeSign);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			isSmimeSign: value,
 			setIsSmimeSign: (val: MailsEditorV2['isSmimeSign']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 
@@ -476,20 +476,20 @@ export const useEditorIsSmimeEncrypt = (
 	isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt'];
 	setIsSmimeEncrypt: (isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isSmimeEncrypt);
 	const setter = useEditorsStore((state) => state.setIsSmimeEncrypt);
-	const { setIsModified } = useEditorIsModified(id);
+	const { setDirty } = useEditorIsDirty(id);
 
 	return useMemo(
 		() => ({
 			isSmimeEncrypt: value,
 			setIsSmimeEncrypt: (val: MailsEditorV2['isSmimeEncrypt']): void => {
 				setter(id, val);
-				setIsModified();
-				debouncedSaveDraft(id);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		}),
-		[id, debouncedSaveDraft, setter, value, setIsModified]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
