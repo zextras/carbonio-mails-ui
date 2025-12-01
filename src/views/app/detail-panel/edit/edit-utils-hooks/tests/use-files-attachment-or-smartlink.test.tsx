@@ -15,9 +15,6 @@ import { FileNode } from '../use-upload-from-files';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 
-vi.mock('@zextras/carbonio-shell-ui');
-vi.mock('@zextras/carbonio-design-system');
-
 const createFileNode = (name: string, size: number): FileNode => ({
 	id: `node-${name}`,
 	name,

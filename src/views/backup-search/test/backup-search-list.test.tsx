@@ -7,7 +7,6 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { HttpResponse } from 'msw';
 import { useParams } from 'react-router-dom';
 import type { Mock } from 'vitest';
@@ -37,18 +36,9 @@ vi.mock('react-router-dom', async () => ({
 	useParams: vi.fn()
 }));
 
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = vi.fn(createSnackbar);
-
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
-
 describe('Backup search list', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		(useParams as Mock).mockReturnValue({ itemId: message1.messageId });
 	});
 
@@ -95,15 +85,7 @@ describe('Backup search list', () => {
 			expect(modalRecoveryButton).not.toBeInTheDocument();
 		});
 
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'info',
-				label: 'label.recover_emails',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
+		await screen.findByText('label.recover_emails');
 	});
 	it('shows error snackbar on recovery failure', async () => {
 		const apiInterceptor = createAPIInterceptor(
@@ -116,18 +98,8 @@ describe('Backup search list', () => {
 		const { user } = setupTest(<BackupSearchList />, {});
 
 		const selectAllButton = screen.getByText(LABEL_SELECT_ALL);
-		user.click(selectAllButton);
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'info',
-				label: 'label.all_items_selected',
-				key: 'selected-all-backupMessages',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
-		createSnackbarSpy.mockClear();
+		await user.click(selectAllButton);
+		await screen.findByText('label.all_items_selected');
 		await waitFor(() => {
 			expect(screen.getByText(LABEL_DESELECT_ALL)).toBeInTheDocument();
 		});
@@ -137,14 +109,6 @@ describe('Backup search list', () => {
 		expect(modalRecoveryButton).toBeInTheDocument();
 		await user.click(modalRecoveryButton);
 		expect(apiInterceptor.getCalledTimes()).toEqual(1);
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'error',
-				label: 'label.error_recovering_emails',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
+		await screen.findByText('label.error_recovering_emails');
 	});
 });
