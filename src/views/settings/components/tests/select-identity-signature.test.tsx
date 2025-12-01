@@ -14,10 +14,6 @@ import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
 import { SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	t: vi.fn((key, defaultValue) => defaultValue)
-}));
-
 describe('SelectIdentitySignature', () => {
 	const mockUpdateIdentities = vi.fn();
 	const mockDefaultAccount = {
@@ -68,7 +64,7 @@ describe('SelectIdentitySignature', () => {
 
 		// Assert that the translated string was called for default accounts
 		expect(mockT).toHaveBeenCalledWith('settings.label.default', PRIMARY_IDENTITY_NAME);
-		expect(screen.getByText(PRIMARY_IDENTITY_NAME)).toBeInTheDocument(); // DEFAULT
+		expect(screen.getByText('settings.label.default')).toBeInTheDocument(); // DEFAULT
 		expect(screen.getByText('Signature 1 Label')).toBeInTheDocument();
 	});
 
