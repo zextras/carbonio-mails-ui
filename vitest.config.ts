@@ -37,7 +37,15 @@ export default defineConfig({
 		mockReset: false,
 		testTimeout: 20000,
 		hookTimeout: 20000,
-		reporters: ['default'],
+		reporters: ['default', 'junit'],
+		coverage: {
+			enabled: true,
+			provider: 'v8',
+			reporter: ['text', 'cobertura', 'lcov'],
+			reportsDirectory: 'coverage',
+			include: ['src/**/*.{ts,tsx}'],
+			exclude: ['**/__test__/**', '**/tests/**', '**/mocks/**', '**/*.test.{js,jsx,ts,tsx}']
+		},
 		exclude: [
 			...configDefaults.exclude,
 			'**/app.test.tsx',
