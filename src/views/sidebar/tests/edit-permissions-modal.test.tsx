@@ -8,9 +8,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -18,18 +16,9 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import * as shareFolderModule from 'api/share-folder-soap-api';
 import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
 
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = vi.fn(createSnackbar);
-
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
-
 beforeEach(() => {
 	createSoapAPIInterceptor('Batch');
 	createSoapAPIInterceptor('SendShareNotification');
-	(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('edit-permissions-modal', () => {
