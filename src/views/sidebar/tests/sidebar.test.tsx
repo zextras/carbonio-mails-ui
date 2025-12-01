@@ -6,11 +6,9 @@
 
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
-import { useSnackbar } from '@zextras/carbonio-design-system';
+import { screen, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { FolderActionsType, FOLDERS } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
@@ -23,10 +21,6 @@ import { setMessagesInEmailStore } from 'store/emails/store';
 import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
 import Sidebar from 'views/sidebar/sidebar';
 
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
 	const setCount = (value: number): void => {
@@ -86,10 +80,7 @@ describe('Sidebar', () => {
 		});
 
 		it('Creates a new folder when the NEW action is clicked', async () => {
-			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = FOLDERS.INBOX;
-
-			createSoapAPIInterceptor('Search');
 			const message = generateMessage();
 			setMessagesInEmailStore([message], false);
 
@@ -129,7 +120,6 @@ describe('Sidebar', () => {
 		});
 
 		it('delete all the folder messages when the EMPTY action is clicked', async () => {
-			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = FOLDERS.TRASH;
 
 			createSoapAPIInterceptor('Search');
@@ -172,8 +162,6 @@ describe('Sidebar', () => {
 		});
 
 		it('moves the folder messages when the RESTORE action is clicked', async () => {
-			(useSnackbar as Mock).mockReturnValue(vi.fn());
-
 			vi.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const folderId = FOLDERS.TRASH;
 
@@ -208,10 +196,6 @@ describe('Sidebar', () => {
 
 			const destinationFolder = screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
 
-			act(() => {
-				vi.advanceTimersByTime(1_000);
-			});
-
 			await user.click(destinationFolder);
 
 			const confirmButton = screen.getByRole('button', { name: /move/i });
@@ -224,7 +208,6 @@ describe('Sidebar', () => {
 		});
 
 		it('delete the folder when the DELETE action is clicked', async () => {
-			(useSnackbar as Mock).mockReturnValue(vi.fn());
 			const folderId = '666';
 
 			const folderToDelete = generateFolder({

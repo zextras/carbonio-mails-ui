@@ -35,8 +35,8 @@ export default defineConfig({
 			}
 		},
 		mockReset: false,
-		testTimeout: 10000,
-		hookTimeout: 10000,
+		testTimeout: 20000,
+		hookTimeout: 20000,
 		reporters: ['default']
 	}
 });
