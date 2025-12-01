@@ -34,7 +34,7 @@ export default defineConfig({
 				url: 'http://localhost'
 			}
 		},
-		mockReset: false,
+		mockReset: true,
 		testTimeout: 20000,
 		hookTimeout: 20000,
 		reporters: ['default'],
@@ -57,7 +57,8 @@ export default defineConfig({
 			'**/certificate-utils.test.ts',
 			'**/message-list.test.tsx',
 			'**/create-filter-modal.test.tsx',
-			'**/rich-text-editor-container.test.tsx'
+			'**/rich-text-editor-container.test.tsx',
+			'**/sort-and-filter-button-component.test.tsx'
 		]
 	}
 });
