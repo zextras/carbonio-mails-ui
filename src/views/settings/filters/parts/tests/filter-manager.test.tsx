@@ -7,25 +7,16 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
-import { useSnackbar } from '@zextras/carbonio-design-system';
-import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { Filter } from 'types/index.d';
 import { ListType } from 'views/settings/filters/parts/actions';
 import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 
-vi.mock('@zextras/carbonio-design-system', async () => ({
-	...(await vi.importActual('@zextras/carbonio-design-system')),
-	useSnackbar: vi.fn()
-}));
-
-const createSnackbarSpy = vi.fn((arg) => arg);
 const IncomingFilterActions = getFiltermanager(true);
 
 describe('incoming filters actions', () => {
 	it('should close the create filter modal', async () => {
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [myFilter];
@@ -47,7 +38,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('modify filter should save filters with all incoming filters', async () => {
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
@@ -108,7 +98,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('delete filter should save filters without the deleted filter', async () => {
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
@@ -141,7 +130,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('remove filter should save filters without the removed filter', async () => {
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
 		const myFilter = activeIncomingFilter('My filter');
@@ -163,7 +151,6 @@ describe('incoming filters actions', () => {
 		expect(mockSave).toHaveBeenCalledWith([otherFilter, { ...myFilter, active: false }]);
 	});
 	test('add filter should save filters with the added filter', async () => {
-		(useSnackbar as Mock).mockReturnValue(createSnackbarSpy);
 		const firstFilter = { ...activeIncomingFilter('First filter'), active: false };
 		const secondFilter = { ...activeIncomingFilter('Second filter'), active: false };
 		const availableList = createList([firstFilter, secondFilter], 'First filter');
