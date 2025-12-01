@@ -404,12 +404,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
 				onError: onSendError
 			});
+			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 		};
 		checkSubjectAndAttachment({
 			editorId,
