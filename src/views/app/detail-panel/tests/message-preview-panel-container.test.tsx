@@ -8,19 +8,11 @@ import React from 'react';
 
 import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
-import { NavigateFunction } from 'react-router-dom';
 
 import { updateMessageStatus } from '../../../../store/emails/store';
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
-
-const mockNavigateSpy = vi.fn();
-
-vi.mock('react-router-dom', async () => ({
-	...(await vi.importActual('react-router-dom')),
-	useNavigate: (): NavigateFunction => mockNavigateSpy
-}));
 
 describe('MessagePreviewPanelContainer', () => {
 	const defaultTitle = 'test title';
