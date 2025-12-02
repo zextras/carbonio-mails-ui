@@ -32,7 +32,7 @@ import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
-import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
+import { EditViewFooter } from './parts/edit-view-footer';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { OptionsDropdown } from './parts/options-dropdown';
@@ -95,6 +95,7 @@ function evaluateSendDisabledReason(
 	return sendDisabledReason;
 }
 
+const MemoizedFooter = memo(EditViewFooter);
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -677,7 +678,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
 					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
-					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
+					<MemoizedFooter editorId={editorId} />
 				</GapContainer>
 			</GapContainer>
 		</Container>
