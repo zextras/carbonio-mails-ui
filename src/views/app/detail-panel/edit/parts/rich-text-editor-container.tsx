@@ -259,9 +259,6 @@ export const RichTextEditorContainer = ({
 		onComposerInit,
 		onDragOver,
 		onTextChange,
-		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
-		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize,
 		removeInlineAttachments
 	]);
 
