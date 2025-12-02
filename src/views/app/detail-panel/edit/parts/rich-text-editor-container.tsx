@@ -181,13 +181,6 @@ export const RichTextEditorContainer = ({
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
-			content_style: `
-			p { margin: 0; }
-			body *:not(.signature-div):not(.signature-div *) {
-				color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
-				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
-				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
-			}`,
 			plugins: [
 				'advlist',
 				'autolink',
