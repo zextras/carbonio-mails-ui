@@ -12,6 +12,7 @@ import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
@@ -193,40 +194,40 @@ describe('useFolderActions', () => {
 		expect(result.current[0].disabled).toBe(true);
 	});
 
-	// FIXME: avoid spy
-	it.skip('should call the createModal function with the correct parameters when the NEW action is clicked', async () => {
+	it('should call the createModal function with the correct parameters when the NEW action is clicked', async () => {
 		await setUpCreateModalTest();
 		const { user } = setupTest(<OpenFolderModalComponent />);
 		const button = await screen.findByTestId('newFolder');
 		await user.click(button);
 
-		expect(await screen.findByText('folder_panel.modal.new.title'));
+		expect(await screen.findByText('folder_panel.modal.new.title')).toBeVisible();
 	});
 
-	it.skip('should call the createModal function with the correct parameters when the MOVE action is clicked', async () => {
+	it('should call the createModal function with the correct parameters when the MOVE action is clicked', async () => {
 		await setUpCreateModalTest();
 		const { user } = setupTest(<OpenFolderModalComponent />);
 		const button = await screen.findByTestId('moveFolder');
 		await user.click(button);
 
-		expect(await screen.findByText('label.choose_folder'));
+		expect(await screen.findByText('label.move')).toBeVisible();
 	});
 
-	it.skip('should call the createModal function with the correct parameters when the EMPTY action is clicked', async () => {
+	it('should call the createModal function with the correct parameters when the EMPTY action is clicked', async () => {
 		const { user } = setupTest(<OpenFolderModalComponent />);
 		const button = await screen.findByTestId('emptyFolder');
 		await user.click(button);
 
-		expect(await screen.findByText('label.empty'));
+		expect(await screen.findByText('label.wipe')).toBeVisible();
 	});
 
-	it.skip('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
+	it('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
+		createSoapAPIInterceptor('GetFolder');
 		const { user } = setupTest(<OpenFolderModalComponent />);
 		const button = await screen.findByTestId('editFolder');
 
 		await user.click(button);
 
-		expect(await screen.findByText('label.edit_folder_properties'));
+		expect(await screen.findByText('label.edit_folder_properties')).toBeVisible();
 	});
 
 	it.skip('should call the createModal function with the correct parameters when the DELETE action is clicked', async () => {
@@ -235,7 +236,7 @@ describe('useFolderActions', () => {
 
 		await user.click(button);
 
-		expect(await screen.findByText('label.delete'));
+		expect(await screen.findByText('label.delete')).toBeVisible();
 	});
 
 	it('should call the folderActionSoapApi function when the REMOVE_FROM_LIST action is clicked', async () => {
