@@ -19,10 +19,6 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MoveMessage } from 'ui-actions/move-msg';
 
-const expectErrorSnackbar = async (): Promise<void> => {
-	expect(await screen.findByText('Something went wrong, please try again'));
-};
-
 describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
@@ -192,7 +188,7 @@ describe('MoveMsg', () => {
 				await user.click(button);
 			});
 
-			await expectErrorSnackbar();
+			await expect(await screen.findByText('Something went wrong, please try again')).toBeVisible();
 		});
 	});
 });

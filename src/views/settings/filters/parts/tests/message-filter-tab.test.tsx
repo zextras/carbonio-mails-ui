@@ -68,7 +68,7 @@ describe('Message filters tab', () => {
 				FiltersManagerComponent={getFiltermanager(true)}
 			/>
 		);
-		expect(await screen.findByText('Something went wrong, please try again'));
+		expect(await screen.findByText('Something went wrong, please try again')).toBeVisible();
 	});
 
 	it('should display retrieved filters', async () => {
