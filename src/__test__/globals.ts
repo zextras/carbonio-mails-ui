@@ -68,7 +68,7 @@ Object.defineProperty(window.crypto, 'randomUUID', {
 
 mockForNodeRequire('../../assets/notification.mp3', () => ({}));
 mockForNodeRequire('../../../assets/carbonio.svg', () => ({}));
-// vi.mock('@zextras/carbonio-ui-soap-lib');
+
 vi.mock('@zextras/carbonio-shell-ui', async () => ({
 	...(await vi.importActual('@zextras/carbonio-shell-ui')),
 	...shell
