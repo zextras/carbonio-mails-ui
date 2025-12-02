@@ -32,7 +32,7 @@ describe('useMsgMoveToFolder', () => {
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgMoveToFolderDescriptor, {
@@ -50,7 +50,7 @@ describe('useMsgMoveToFolder', () => {
 	});
 	describe('useMsgMoveToFolderFn', () => {
 		it('Should return an object with execute and canExecute functions', () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToFolderFn, {
@@ -73,7 +73,7 @@ describe('useMsgMoveToFolder', () => {
 				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
 			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -86,7 +86,7 @@ describe('useMsgMoveToFolder', () => {
 
 		describe('execute', () => {
 			it('should open the move modal', async () => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -98,14 +98,14 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Move Message`)).toBeVisible();
 			});
 
 			it('should not open the move modal with if the action cannot be executed', async () => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -117,7 +117,7 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Move Message`)).not.toBeInTheDocument();

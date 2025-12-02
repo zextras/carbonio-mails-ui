@@ -38,14 +38,14 @@ describe('getTimeLabel', () => {
 		});
 	});
 	test('if the date is today it will shows only the hours', () => {
-		jest.setSystemTime(new Date('2022-01-01'));
+		vi.setSystemTime(new Date('2022-01-01'));
 		const date = Date.now();
 		const expected = '1:00 AM';
 		const timeLabel = getTimeLabel(date);
 		expect(timeLabel).toBe(expected);
 	});
 	test('if the date is not today it will shows date and hours', () => {
-		jest.setSystemTime(new Date('2022-01-01'));
+		vi.setSystemTime(new Date('2022-01-01'));
 		const date = new Date('2021-01-01');
 		const expected = '01/01/2021 1:00 AM';
 		const timeLabel = getTimeLabel(date.getTime());
@@ -230,7 +230,7 @@ describe('buildImageMap', () => {
 
 describe('participantToString', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return "Me" if the participant address matches an account', () => {

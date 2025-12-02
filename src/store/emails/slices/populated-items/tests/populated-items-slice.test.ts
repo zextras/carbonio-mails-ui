@@ -13,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
+import type { Mock } from 'vitest';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
@@ -52,9 +53,9 @@ import {
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useTags: vi.fn()
 }));
 
 describe('store-populated-items-slice', () => {
@@ -735,7 +736,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should tag a message when operation is TAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1' });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -749,7 +750,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should untag a message when operation is UNTAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -763,7 +764,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should not untag a message when operation is UNTAG but tagName is not provided or is undefined', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({

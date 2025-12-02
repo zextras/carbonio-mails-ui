@@ -5,6 +5,7 @@
  */
 import { act } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '../../__test__/test-setup';
 import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
@@ -21,52 +22,52 @@ import { hasModalOverlay, isInputContext } from 'hooks/utils';
 const defaultLocation = `/${MAILS_ROUTE}/folder/2/conversation/1`;
 
 // Mock all dependencies
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: vi.fn()
 }));
 
-jest.mock('hooks/utils', () => ({
-	hasModalOverlay: jest.fn().mockReturnValue(false),
-	isInputContext: jest.fn().mockReturnValue(false)
+vi.mock('hooks/utils', () => ({
+	hasModalOverlay: vi.fn().mockReturnValue(false),
+	isInputContext: vi.fn().mockReturnValue(false)
 }));
 
-jest.mock('hooks/actions/use-conv-move-to-trash', () => ({
-	useConvMoveToTrashFn: jest.fn()
+vi.mock('hooks/actions/use-conv-move-to-trash', () => ({
+	useConvMoveToTrashFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-flag', () => ({
-	useConvSetFlagFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-flag', () => ({
+	useConvSetFlagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-not-spam', () => ({
-	useConvSetNotSpamFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-not-spam', () => ({
+	useConvSetNotSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-read', () => ({
-	useConvSetReadFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-read', () => ({
+	useConvSetReadFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-spam', () => ({
-	useConvSetSpamFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-spam', () => ({
+	useConvSetSpamFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-unflag', () => ({
-	useConvSetUnflagFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-unflag', () => ({
+	useConvSetUnflagFn: vi.fn()
 }));
 
-jest.mock('hooks/actions/use-conv-set-unread', () => ({
-	useConvSetUnreadFn: jest.fn()
+vi.mock('hooks/actions/use-conv-set-unread', () => ({
+	useConvSetUnreadFn: vi.fn()
 }));
 
 describe('useKeyboardShortcutsForConv', () => {
-	const mockNavigate = jest.fn();
-	const mockExecute = jest.fn();
-	const mockCanExecute = jest.fn();
+	const mockNavigate = vi.fn();
+	const mockExecute = vi.fn();
+	const mockCanExecute = vi.fn();
 
 	const createMockAction = (): {
-		execute: jest.Mock;
-		canExecute: jest.Mock;
+		execute: Mock;
+		canExecute: Mock;
 	} => ({
 		execute: mockExecute,
 		canExecute: mockCanExecute
@@ -77,26 +78,26 @@ describe('useKeyboardShortcutsForConv', () => {
 		if (target) {
 			Object.defineProperty(event, 'target', { value: target, writable: false });
 		}
-		event.preventDefault = jest.fn();
-		event.stopImmediatePropagation = jest.fn();
+		event.preventDefault = vi.fn();
+		event.stopImmediatePropagation = vi.fn();
 		return event;
 	};
 
 	beforeEach(() => {
-		(useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-		(hasModalOverlay as jest.Mock).mockReturnValue(false);
-		(isInputContext as jest.Mock).mockReturnValue(false);
+		(useNavigate as Mock).mockReturnValue(mockNavigate);
+		(hasModalOverlay as Mock).mockReturnValue(false);
+		(isInputContext as Mock).mockReturnValue(false);
 
 		// Setup default mock implementations
 		mockCanExecute.mockReturnValue(true);
 
-		(useConvMoveToTrashFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetFlagFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetNotSpamFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetReadFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetSpamFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetUnflagFn as jest.Mock).mockReturnValue(createMockAction());
-		(useConvSetUnreadFn as jest.Mock).mockReturnValue(createMockAction());
+		(useConvMoveToTrashFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetFlagFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetNotSpamFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetReadFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetSpamFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetUnflagFn as Mock).mockReturnValue(createMockAction());
+		(useConvSetUnreadFn as Mock).mockReturnValue(createMockAction());
 	});
 
 	describe('Hook initialization', () => {
@@ -213,11 +214,11 @@ describe('useKeyboardShortcutsForConv', () => {
 		});
 
 		it('should call unflag when flag cannot execute', () => {
-			const flagAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
-			const unflagAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
+			const flagAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
+			const unflagAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
 
-			(useConvSetFlagFn as jest.Mock).mockReturnValue(flagAction);
-			(useConvSetUnflagFn as jest.Mock).mockReturnValue(unflagAction);
+			(useConvSetFlagFn as Mock).mockReturnValue(flagAction);
+			(useConvSetUnflagFn as Mock).mockReturnValue(unflagAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForConv, {
@@ -241,11 +242,11 @@ describe('useKeyboardShortcutsForConv', () => {
 
 	describe('Spam toggle shortcut', () => {
 		it('should mark as spam when "ms" is pressed and conversation is not spam', () => {
-			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
-			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
+			const spamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
+			const notSpamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
 
-			(useConvSetSpamFn as jest.Mock).mockReturnValue(spamAction);
-			(useConvSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
+			(useConvSetSpamFn as Mock).mockReturnValue(spamAction);
+			(useConvSetNotSpamFn as Mock).mockReturnValue(notSpamAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForConv, {
@@ -264,11 +265,11 @@ describe('useKeyboardShortcutsForConv', () => {
 			expect(notSpamAction.execute).not.toHaveBeenCalled();
 		});
 		it('should mark as not spam when "ms" is pressed and conversation is spam', () => {
-			const spamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(false) };
-			const notSpamAction = { execute: jest.fn(), canExecute: jest.fn().mockReturnValue(true) };
+			const spamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(false) };
+			const notSpamAction = { execute: vi.fn(), canExecute: vi.fn().mockReturnValue(true) };
 
-			(useConvSetSpamFn as jest.Mock).mockReturnValue(spamAction);
-			(useConvSetNotSpamFn as jest.Mock).mockReturnValue(notSpamAction);
+			(useConvSetSpamFn as Mock).mockReturnValue(spamAction);
+			(useConvSetNotSpamFn as Mock).mockReturnValue(notSpamAction);
 
 			const props = { conversationIds: ['1'], folderId: 'folder1' };
 			const { result } = setupHook(useKeyboardShortcutsForConv, {
@@ -473,7 +474,7 @@ describe('useKeyboardShortcutsForConv', () => {
 			expect(mockExecute).not.toHaveBeenCalled();
 
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				vi.advanceTimersByTime(1000);
 			});
 
 			// After timeout, key sequence should be reset (no matching action for 'm' alone)

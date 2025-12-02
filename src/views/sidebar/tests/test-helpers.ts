@@ -13,11 +13,11 @@ export function mockSoapRefresh(mailbox: number): void {
 	const result = {
 		mbx: [{ s: mailbox }] satisfies [{ s: number }]
 	};
-	jest.mocked(useInfoRefresh).mockReturnValue(result);
+	vi.mocked(useInfoRefresh).mockReturnValue(result);
 }
 
 export function mockSoapSync(notify: Array<SoapNotify>): void {
-	jest.mocked(useSync).mockReturnValue(notify);
+	vi.mocked(useSync).mockReturnValue(notify);
 }
 
 function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {

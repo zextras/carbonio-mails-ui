@@ -12,8 +12,8 @@ import { setupTest } from '@test-setup';
 import { RecipientsCertificateUploadModal } from 'views/settings/certificates/recipients-certificate-upload-modal';
 
 describe('RecipientsCertificateUploadModal', () => {
-	const onConfirm = jest.fn();
-	const onClose = jest.fn();
+	const onConfirm = vi.fn();
+	const onClose = vi.fn();
 
 	it('should render the modal with the correct title', async () => {
 		setupTest(

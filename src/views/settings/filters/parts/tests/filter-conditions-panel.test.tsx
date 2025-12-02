@@ -15,7 +15,7 @@ describe('Filter Condition Panel', () => {
 	const compProps = {
 		t: (key: string, value: string): string => value,
 		newFilters: [],
-		setCondition: jest.fn(),
+		setCondition: vi.fn(),
 		selectedFilter: { filterTests: [{ condition: '' }] }
 	};
 	it('should render correctly', () => {

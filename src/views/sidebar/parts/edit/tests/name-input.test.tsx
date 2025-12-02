@@ -18,18 +18,18 @@ describe('NameInputRow', () => {
 	const inpDisable = false;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should render correctly', () => {
 		setupTest(
 			<NameInputRow
-				setInputValue={jest.fn()}
+				setInputValue={vi.fn()}
 				inpDisable={inpDisable}
 				showWarning={showWarning}
 				inputValue={inputValue}
 				folderColor={folderColor}
-				setFolderColor={jest.fn()}
+				setFolderColor={vi.fn()}
 			/>
 		);
 
@@ -42,10 +42,10 @@ describe('NameInputRow', () => {
 		expect(folderName).toHaveValue(inputValue);
 	});
 	it('should call colorPicker onChange with the new color', async () => {
-		const setFolderColor = jest.fn();
+		const setFolderColor = vi.fn();
 		const { user } = setupTest(
 			<NameInputRow
-				setInputValue={jest.fn()}
+				setInputValue={vi.fn()}
 				inpDisable={inpDisable}
 				showWarning={showWarning}
 				inputValue={inputValue}

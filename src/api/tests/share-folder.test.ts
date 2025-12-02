@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '@jest-setup';
+import { getSetupServer } from '../../__test__/vitest-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { ShareFolderDataType, shareFolderSoapApi } from 'api/share-folder-soap-api';
 import { FolderActionGrant } from 'types/index.d';

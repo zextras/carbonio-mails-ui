@@ -18,7 +18,7 @@ describe('modify filter modal', () => {
 		setupTest(
 			<ModifyFilterModal
 				isIncoming
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				selectedFilter={{
 					name: 'Test Filter',
 					active: true,
@@ -31,7 +31,7 @@ describe('modify filter modal', () => {
 						}
 					]
 				}}
-				onModifyConfirm={jest.fn()}
+				onModifyConfirm={vi.fn()}
 			/>
 		);
 
@@ -46,20 +46,20 @@ describe('modify filter modal', () => {
 		setupTest(
 			<ModifyFilterModal
 				isIncoming
-				onClose={jest.fn()}
-				onModifyConfirm={jest.fn()}
+				onClose={vi.fn()}
+				onModifyConfirm={vi.fn()}
 				selectedFilter={mockFilter({ name: 'Test Filter' })}
 			/>
 		);
 		expect(screen.getByRole('textbox', { name: 'Filter Name*' })).toHaveValue('Test Filter');
 	});
 	it('should call onConfirm with old data if there are no changes', async () => {
-		const onConfirm = jest.fn();
+		const onConfirm = vi.fn();
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
 				isIncoming
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}
 			/>
@@ -75,12 +75,12 @@ describe('modify filter modal', () => {
 	});
 
 	it('should call onConfirm with updated filter name after clicking save button', async () => {
-		const onConfirm = jest.fn();
+		const onConfirm = vi.fn();
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
 				isIncoming
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}
 			/>

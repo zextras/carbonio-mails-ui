@@ -1,3 +1,5 @@
+import type { Mock } from 'vitest';
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -14,9 +16,9 @@ import {
 	updateConversationStatus
 } from 'store/emails/store';
 
-jest.mock('../../../../api/search-conv-soap-api');
-jest.mock('../../../../normalizations/normalize-message');
-jest.mock('../../store');
+vi.mock('../../../../api/search-conv-soap-api');
+vi.mock('../../../../normalizations/normalize-message');
+vi.mock('../../store');
 
 describe('searchConvEmailStoreAction', () => {
 	const mockConversationId = 'conv123';
@@ -25,16 +27,16 @@ describe('searchConvEmailStoreAction', () => {
 	};
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('handles successful conversation search response', async () => {
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-		(normalizeCompleteMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+		(normalizeCompleteMailMessageFromSoap as Mock).mockReturnValueOnce({
 			id: '1',
 			subject: 'Test Message'
 		});
-		(getConversationById as jest.Mock).mockReturnValueOnce({
+		(getConversationById as Mock).mockReturnValueOnce({
 			id: mockConversationId,
 			messages: []
 		});
@@ -58,7 +60,7 @@ describe('searchConvEmailStoreAction', () => {
 	});
 
 	it('handles error during conversation search', async () => {
-		(searchConvSoapApi as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(searchConvSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
 		await searchConvEmailStoreAction(mockConversationId);
 
@@ -74,7 +76,7 @@ describe('searchConvEmailStoreAction', () => {
 
 	it('handles response with fault', async () => {
 		const faultResponse = { Fault: {} };
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 		await searchConvEmailStoreAction(mockConversationId);
 
@@ -90,8 +92,8 @@ describe('searchConvEmailStoreAction', () => {
 
 	it('handles empty response', async () => {
 		const emptyResponse = { m: [] };
-		(searchConvSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
-		(getConversationById as jest.Mock).mockReturnValueOnce({
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
+		(getConversationById as Mock).mockReturnValueOnce({
 			id: mockConversationId,
 			messages: []
 		});

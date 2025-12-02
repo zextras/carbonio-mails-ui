@@ -13,14 +13,14 @@ import { ApplyFilterModal } from 'ui-actions/modals/apply-filter-modal';
 
 describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {
-		setupTest(<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={jest.fn()} />);
+		setupTest(<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={vi.fn()} />);
 
 		expect(await screen.findByText('Application filter My filter')).toBeInTheDocument();
 	});
 
 	test('should open folder selection modal when folder icon is clicked', async () => {
 		const { user } = setupTest(
-			<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={jest.fn()} />
+			<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={vi.fn()} />
 		);
 
 		expect(await screen.findByText('Application filter My filter')).toBeInTheDocument();

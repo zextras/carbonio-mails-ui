@@ -7,6 +7,7 @@
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
 import { MailMessage } from '../../types';
@@ -21,8 +22,8 @@ import {
 	retrieveReplyTo
 } from 'store/editor-slice-utils';
 
-jest.mock('../../helpers/get-available-addresses', () => ({
-	getAvailableAddresses: jest.fn()
+vi.mock('../../helpers/get-available-addresses', () => ({
+	getAvailableAddresses: vi.fn()
 }));
 const mailMessage: MailMessage = {
 	attachments: undefined,
@@ -107,7 +108,7 @@ const mailMessage: MailMessage = {
 };
 describe('retrieveCC', () => {
 	beforeEach(() => {
-		(getAvailableAddresses as jest.Mock).mockReturnValue([]);
+		(getAvailableAddresses as Mock).mockReturnValue([]);
 	});
 
 	const defaultIdentity = {
@@ -177,14 +178,13 @@ describe('retrieveCC', () => {
 	const anotherUser = 'userC@test.com';
 
 	beforeEach(() => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	// Scenario: The main account (who has "Send As" rights) starts a conversation and adds the delegator in CC.
 	// Expected Behavior: On "Reply All," the delegator remains in CC.
 	it('TC1: Main account sends an email, Delegator in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => mainAccount)
 			.mockImplementationOnce(() => delegatorAccount);
 
@@ -202,8 +202,7 @@ describe('retrieveCC', () => {
 	// Scenario: The delegator starts the conversation and includes the main account in CC.
 	// Expected Behavior: On "Reply All," the main account remains in CC.
 	it('TC2: Delegator sends an email, Main Account in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => delegatorAccount)
 			.mockImplementationOnce(() => mainAccount);
 
@@ -221,8 +220,7 @@ describe('retrieveCC', () => {
 	// Scenario: The main account sends an email using "Send As" permissions for the delegator, while also including the delegator in CC.
 	// Expected Behavior: On "Reply All," only Main account remains in CC.
 	it('TC3: Main Account sends as Delegator, Delegator in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => mainAccount)
 			.mockImplementationOnce(() => delegatorAccount);
 
@@ -243,8 +241,7 @@ describe('retrieveCC', () => {
 	// Scenario: The main account sends an email on behalf of the delegator but does not include the delegator in CC.
 	// Expected Behavior: On "Reply All," the delegator should not be automatically added to CC.
 	it('TC4: Main Account sends as Delegator, Delegator NOT in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => mainAccount)
 			.mockImplementationOnce(() => delegatorAccount);
 
@@ -260,8 +257,7 @@ describe('retrieveCC', () => {
 	// Scenario: An external user replies to the email thread where both the main account and delegator were in CC.
 	// Expected Behavior: On "Reply All," both remain in CC.
 	it('TC5: External user replies to conversation with Main Account & Delegator in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => mainAccount)
 			.mockImplementationOnce(() => delegatorAccount);
 
@@ -283,8 +279,7 @@ describe('retrieveCC', () => {
 	// Scenario: The main account sends an email using "Send As" for the delegator and includes a third party (User C) in CC.
 	// Expected Behavior: On "Reply All," Main Account, User C remain in CC.
 	it('TC6: Main Account sends as Delegator, Another Account in CC', () => {
-		jest
-			.spyOn(shellHooks, 'getUserAccount')
+		vi.spyOn(shellHooks, 'getUserAccount')
 			.mockImplementationOnce(() => mainAccount)
 			.mockImplementationOnce(() => delegatorAccount);
 
@@ -321,7 +316,7 @@ describe('retrieveALL', () => {
 			ownerAccount: sharedAccount
 		};
 
-		(getAvailableAddresses as jest.Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
+		(getAvailableAddresses as Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
 	});
 	it('should return "someone@test.com" when replying as Me to a message sent to me from "someone@test.com"', () => {
 		const receivedMessage = {
@@ -452,7 +447,7 @@ describe('retrieveReplyTo', () => {
 			ownerAccount: sharedAccount
 		};
 
-		(getAvailableAddresses as jest.Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
+		(getAvailableAddresses as Mock).mockReturnValue([primaryAddress, sharedAccountAddress]);
 	});
 	it('should return "me@test.com" when replying as Me to a message sent to myself', () => {
 		const receivedMessage = {

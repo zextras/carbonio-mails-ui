@@ -1,25 +1,22 @@
+import { act, renderHook, waitFor } from '@testing-library/react';
+import * as reactRouterDom from 'react-router-dom';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
-import * as reactRouterDom from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 import * as convRequest from 'api/conv-action-soap-api';
 import * as searchSoapApi from 'api/search-soap-api';
 import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
 import { setConversationsInEmailStore } from 'store/emails/store';
-import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
 
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
-
-jest.mock('react-i18next', () => ({
-	...jest.requireActual('react-i18next'),
+vi.mock('react-i18next', async () => ({
+	...(await vi.importActual('react-i18next')),
 	useTranslation: (): Array<(key: string) => string> => [
 		(key: string): string => key // Return the translation key as the translation
 	],
@@ -27,20 +24,14 @@ jest.mock('react-i18next', () => ({
 	I18nextProvider: ({ children }: { children: React.ReactNode }): React.ReactNode => children
 }));
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
-}));
-
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn().mockReturnValue(jest.fn())
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: vi.fn().mockReturnValue(vi.fn())
 }));
 
 beforeEach(() => {
 	createSoapAPIInterceptor('ConvAction');
 	createSoapAPIInterceptor('Search');
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('usePreviewHeaderNavigation', () => {
@@ -157,8 +148,8 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the previous message id', async () => {
-				const navigate = jest.fn();
-				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+				const navigate = vi.fn();
+				(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -184,7 +175,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -365,7 +356,7 @@ describe('usePreviewHeaderNavigation', () => {
 			const conv1 = generateConversation({ id: '1' });
 			setConversationsInEmailStore([conv1], false);
 
-			const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+			const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 			renderHook(usePreviewHeaderNavigation, {
 				initialProps: {
 					itemIds: ['1'],
@@ -383,8 +374,8 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the next message id', async () => {
-				const navigate = jest.fn();
-				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+				const navigate = vi.fn();
+				(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -409,7 +400,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -440,7 +431,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will not set the message as read if it was already', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
+				const convActionSpy = vi.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });

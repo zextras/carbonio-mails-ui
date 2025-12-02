@@ -46,7 +46,7 @@ describe.each`
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
 	};
 	const mockedFolders = generateFolders();
-	const useFolder = jest.fn((id: string) => mockedFolders[id]);
+	const useFolder = vi.fn((id: string) => mockedFolders[id]);
 	useFolder.mockImplementation((folderId) => folders[folderId]);
 
 	describe('in any folders', () => {

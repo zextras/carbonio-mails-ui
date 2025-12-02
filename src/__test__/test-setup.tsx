@@ -170,7 +170,7 @@ export function setupTest(
 	ui: ReactElement,
 	{ setupOptions, ...customRenderOptions }: SetupOptions = {}
 ): { user: UserEvent } & ReturnType<typeof render> {
-	const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime, ...setupOptions });
+	const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime, ...setupOptions });
 	const rightClick = (target: Element): Promise<void> =>
 		user.pointer({ target, keys: '[MouseRight]' });
 	return {
@@ -204,17 +204,12 @@ export function setupHook<TProps extends unknown[], TResult>(
 		result,
 		unmount,
 		rerender,
-		user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime, ...setupOptions })
+		user: userEvent.setup({ advanceTimers: vi.advanceTimersByTime, ...setupOptions })
 	};
 }
 
 export function makeListItemsVisible(): void {
-	const { calls, instances } = (
-		window.IntersectionObserver as jest.Mock<
-			IntersectionObserver,
-			[callback: IntersectionObserverCallback, options?: IntersectionObserverInit]
-		>
-	).mock;
+	const { calls, instances } = (window.IntersectionObserver as ReturnType<typeof vi.fn>).mock;
 	calls.forEach((call, index) => {
 		const [onChange] = call;
 		// trigger the intersection on the observed element
@@ -233,8 +228,7 @@ export function makeListItemsVisible(): void {
 }
 
 export function triggerLoadMore(): void {
-	const { calls, instances } = (window.IntersectionObserver as jest.Mock<IntersectionObserver>)
-		.mock;
+	const { calls, instances } = (window.IntersectionObserver as ReturnType<typeof vi.fn>).mock;
 
 	const [onChange] = calls[calls.length - 1];
 	const instance = instances[instances.length - 1];

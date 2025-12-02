@@ -17,6 +17,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
+import type { Mock } from 'vitest';
 
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
@@ -78,7 +79,7 @@ const extractPartContent = (content: string | { _content: string } | undefined):
 	return content._content;
 };
 async function awaitDebouncedSaveDraft(time = 2_000): Promise<void> {
-	jest.advanceTimersByTime(time);
+	vi.advanceTimersByTime(time);
 }
 
 /**
@@ -151,9 +152,9 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-jest.mock('store/editor', () => ({
-	...jest.requireActual('store/editor'),
-	deleteEditor: jest.fn()
+vi.mock('store/editor', async () => ({
+	...(await vi.importActual('store/editor')),
+	deleteEditor: vi.fn()
 }));
 
 function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
@@ -334,7 +335,7 @@ describe('Edit view', () => {
 				]
 			});
 
-			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
 			const { user } = setupTest(<EditView {...props} />);
 
@@ -449,7 +450,7 @@ describe('Edit view', () => {
 				]
 			});
 
-			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
 			const { user } = setupTest(<EditView {...props} />);
 
@@ -506,7 +507,7 @@ describe('Edit view', () => {
 				]
 			});
 
-			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
 			const { user } = setupTest(<EditView {...props} />);
 
@@ -553,7 +554,7 @@ describe('Edit view', () => {
 
 	describe('send email', () => {
 		beforeEach(() => {
-			jest.clearAllTimers();
+			vi.clearAllTimers();
 		});
 		it('should send the entire text', async () => {
 			createAPIInterceptor(
@@ -592,7 +593,7 @@ describe('Edit view', () => {
 			});
 
 			await act(async () => {
-				jest.runOnlyPendingTimers();
+				vi.runOnlyPendingTimers();
 			});
 
 			const sendMsgRequest = await sendMsgInterceptor;
@@ -636,7 +637,7 @@ describe('Edit view', () => {
 			});
 
 			await act(async () => {
-				jest.advanceTimersByTime(4000);
+				vi.advanceTimersByTime(4000);
 			});
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
@@ -653,7 +654,7 @@ describe('Edit view', () => {
 			createCheckSmimeEnabledAPIInterceptor();
 		});
 		it('is not autosaved on initialization if draft id is present', async () => {
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
+			const mockedSaveDraft = vi.spyOn(saveDraftAction, 'saveDraftSoapApi');
 
 			aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
@@ -663,7 +664,7 @@ describe('Edit view', () => {
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await act(async () => {
-				jest.advanceTimersByTime(5_000);
+				vi.advanceTimersByTime(5_000);
 			});
 			expect(mockedSaveDraft).not.toHaveBeenCalled();
 		});
@@ -682,7 +683,7 @@ describe('Edit view', () => {
 
 		describe('it saves the draft when the user', () => {
 			beforeEach(() => {
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 					if (param === 'action') {
 						return 'new';
 					}
@@ -874,7 +875,7 @@ describe('Edit view', () => {
 					editorId: editor.id,
 					closeController: noop
 				};
-				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
+				const saveDraftSpy = vi.spyOn(saveDraftAction, 'saveDraftSoapApi');
 				const firstSaveDraft = aSuccessfullSaveDraft();
 
 				const { user } = setupTest(<EditView {...props} />);
@@ -1006,7 +1007,7 @@ describe('Edit view', () => {
 	describe.skip('Identities selection', () => {
 		test.skip('identity selector must be visible when multiple identities are present', async () => {
 			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+			vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
 					return 'new';
 				}
@@ -1040,7 +1041,7 @@ describe('Edit view', () => {
 				const defaultIdentityAddress = mocksContext.identities.primary.identity.email;
 
 				// Mock the "action" query param
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 					if (param === 'action') {
 						return 'new';
 					}
@@ -1079,7 +1080,7 @@ describe('Edit view', () => {
 					const msg = generateMessage({ isComplete: true });
 
 					// Mock the "action" query param
-					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
 							return EditViewActions.REPLY;
 						}
@@ -1138,7 +1139,7 @@ describe('Edit view', () => {
 					const msg = generateMessage({ to, folderId: FOLDERS.INBOX, isComplete: true });
 
 					// Mock the "action" query param
-					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
 							return EditViewActions.REPLY;
 						}
@@ -1193,7 +1194,7 @@ describe('Edit view', () => {
 					populateFoldersStore();
 
 					// Mock the "action" query param
-					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
 							return EditViewActions.REPLY;
 						}
@@ -1382,21 +1383,21 @@ describe('Edit view', () => {
 		};
 
 		beforeEach(() => {
-			(hooks.useUserSettings as jest.Mock).mockReturnValue({
+			(hooks.useUserSettings as Mock).mockReturnValue({
 				attrs: {
 					zimbraMtaMaxMessageSize: '10485760' // 10MB in bytes
 				}
 			});
 
 			// Mock Files integration functions for smartlink modal
-			(hooks.useIntegratedFunction as jest.Mock).mockImplementation((id: string) => {
+			(hooks.useIntegratedFunction as Mock).mockImplementation((id: string) => {
 				if (id === 'get-link') {
-					return [jest.fn().mockResolvedValue({ url: 'http://example.com/link' }), true];
+					return [vi.fn().mockResolvedValue({ url: 'http://example.com/link' }), true];
 				}
-				return [jest.fn(), false];
+				return [vi.fn(), false];
 			});
 
-			(hooks.getIntegratedFunction as jest.Mock).mockImplementation(() => [jest.fn(), false]);
+			(hooks.getIntegratedFunction as Mock).mockImplementation(() => [vi.fn(), false]);
 
 			createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
 			createCheckSmimeEnabledAPIInterceptor();

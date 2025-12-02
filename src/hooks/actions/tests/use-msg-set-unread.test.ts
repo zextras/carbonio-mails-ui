@@ -8,6 +8,7 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -15,11 +16,11 @@ import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from 'hooks/actions/use-msg-set-unread';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useNavigate: (): jest.Mock => mockNavigate
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: (): Mock => mockNavigate
 }));
 
 describe('useMsgSetUnread', () => {
@@ -131,7 +132,7 @@ describe('useMsgSetUnread', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {

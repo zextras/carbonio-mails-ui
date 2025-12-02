@@ -63,7 +63,7 @@ describe('Reply All', () => {
 		rights: accountRights as never // cannot import AccountRights from carbonio-shell-ui
 	};
 	beforeEach(() => {
-		jest.spyOn(shellHooks, 'getUserAccount').mockImplementation(() => mainAccount);
+		vi.spyOn(shellHooks, 'getUserAccount').mockImplementation(() => mainAccount);
 	});
 	describe('Messages sent from someoneElse (outsider)', () => {
 		describe('A message sent To: [me, sharedAccount, another person]', () => {

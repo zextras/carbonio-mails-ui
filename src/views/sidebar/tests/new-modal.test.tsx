@@ -19,7 +19,7 @@ import { NewModal } from 'views/sidebar/new-modal';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
 
 		populateFoldersStore();
 		const folder: Folder = {
@@ -75,7 +75,7 @@ describe('new-modal', () => {
 	}, 20000);
 
 	test('create button should be disabled on blank folder name', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
 
 		populateFoldersStore();
 		const folder: Folder = {
@@ -127,7 +127,7 @@ describe('new-modal', () => {
 	}, 20000);
 
 	test('API is called with the proper parameters to create new folder', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -187,7 +187,7 @@ describe('new-modal', () => {
 	}, 20000);
 
 	test('Give error msg if creating with system folder name and create button should be disabled', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
 
 		populateFoldersStore();
 		const folder: Folder = {

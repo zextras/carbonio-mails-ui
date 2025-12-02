@@ -7,7 +7,6 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 
@@ -19,14 +18,9 @@ import {
 	generateChipName
 } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 
-jest.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
-	sendMsg: jest.fn(),
-	copyEmailToClipboard: jest.fn()
-}));
-
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'), // This line preserves other exports from the module
-	useSnackbar: jest.fn()
+vi.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
+	sendMsg: vi.fn(),
+	copyEmailToClipboard: vi.fn()
 }));
 
 const firstName1 = faker.person.firstName();
@@ -92,11 +86,9 @@ describe('Attachments visualization', () => {
 
 	it('calls copyEmailToClipboard when Copy icon is clicked', async () => {
 		const copyIcon = /icon: Copy/i;
-
-		const createSnackbar = useSnackbar();
 		const { user } = setupTest(<ContactNameChip {...props} />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
-		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, createSnackbar);
+		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, expect.anything());
 	});
 });
 

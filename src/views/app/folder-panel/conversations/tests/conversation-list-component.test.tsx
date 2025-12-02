@@ -37,7 +37,7 @@ function setUpConversationList({
 
 	const listItems = conversationsIds.map((conversationId, index) => (
 		<ConversationListItemComponent
-			deselectAll={jest.fn()}
+			deselectAll={vi.fn()}
 			key={index}
 			conversationId={conversationId}
 			selectedItems={{}}
@@ -45,10 +45,10 @@ function setUpConversationList({
 			selected={false}
 			selecting={false}
 			folderId={FOLDERS.INBOX}
-			setDraggedIds={jest.fn()}
+			setDraggedIds={vi.fn()}
 			index={0}
-			onSelect={jest.fn()}
-			onToggleExpanded={jest.fn()}
+			onSelect={vi.fn()}
+			onToggleExpanded={vi.fn()}
 			isConversationExpanded={false}
 		/>
 	));
@@ -65,15 +65,15 @@ function setUpConversationList({
 		conversationsIds,
 		isSelectModeOn: false,
 		selected: {},
-		deselectAll: jest.fn(),
-		selectAll: jest.fn(),
+		deselectAll: vi.fn(),
+		selectAll: vi.fn(),
 		isAllSelected: false,
-		selectAllModeOff: jest.fn(),
+		selectAllModeOff: vi.fn(),
 		isSearchModule,
-		setIsSelectModeOn: jest.fn(),
+		setIsSelectModeOn: vi.fn(),
 		dragImageRef,
 		loadMoreCallback,
-		onSelect: jest.fn()
+		onSelect: vi.fn()
 	};
 
 	return setupTest(<ConversationListComponent {...props} />);
@@ -104,7 +104,7 @@ describe('ConversationListComponent', () => {
 		test('should call loadMore when there are more items to load', async () => {
 			const conversationsIds = Array.from({ length: 100 }).map((_, index) => index.toString());
 
-			const loadMoreCallback = jest.fn();
+			const loadMoreCallback = vi.fn();
 
 			await act(async () => {
 				setUpConversationList({

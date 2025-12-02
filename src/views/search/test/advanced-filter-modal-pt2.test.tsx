@@ -8,6 +8,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useContactInput } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import {
 	EDIT_ACTION,
@@ -23,18 +24,18 @@ import {
 import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
 import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useContactInput: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useContactInput: vi.fn()
 }));
 
 describe('advanced-filter-modal-pt2', () => {
 	it('should remove edit action from query chip for "to" and "from" fields', async () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
-		(useContactInput as jest.Mock).mockReturnValue(generateMockedContactInput(valueToAdd));
+		(useContactInput as Mock).mockReturnValue(generateMockedContactInput(valueToAdd));
 
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,
@@ -83,9 +84,9 @@ describe('advanced-filter-modal-pt2', () => {
 	it('should display "to" and "from" with edit action in their inputs', async () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
-		(useContactInput as jest.Mock).mockReturnValue(generateMockedContactInput(valueToAdd));
+		(useContactInput as Mock).mockReturnValue(generateMockedContactInput(valueToAdd));
 
-		const updateQueryMock = jest.fn();
+		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
 			...defaultProps,

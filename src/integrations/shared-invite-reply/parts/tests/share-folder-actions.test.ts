@@ -77,7 +77,7 @@ describe('share folder actions', () => {
 			role: 'role',
 			allowedActions: 'allowedActions',
 			notifyOrganizer: false,
-			t: jest.fn()
+			t: vi.fn()
 		};
 
 		setupHook(accept, { initialProps: [acceptParams] });
@@ -118,7 +118,7 @@ describe('share folder actions', () => {
 			role: 'role',
 			allowedActions: 'allowedActions',
 			notifyOrganizer: false,
-			t: jest.fn()
+			t: vi.fn()
 		};
 
 		setupHook(accept, { initialProps: [acceptParams] });

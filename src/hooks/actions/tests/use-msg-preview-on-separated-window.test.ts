@@ -43,7 +43,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('Functions', () => {
-		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isFocusModeMailView');
+		const isStandalonePreviewSpy = vi.spyOn(externalTabs, 'isFocusModeMailView');
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {

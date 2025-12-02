@@ -95,7 +95,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(
@@ -115,7 +115,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(
@@ -136,7 +136,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
