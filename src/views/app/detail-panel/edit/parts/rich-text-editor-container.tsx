@@ -280,6 +280,7 @@ export const RichTextEditorContainer = ({
 						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
 						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
 					}}
+					excludedClasses={['signature-div']}
 				/>
 			</StyledComp.EditorWrapper>
 		</Container>
