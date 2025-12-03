@@ -46,7 +46,7 @@ describe('useViewLayout', () => {
 	describe('setCurrentLayout', () => {
 		it('should store the value in the local storage', () => {
 			const layout = MAILS_VIEW_LAYOUTS.NO_SPLIT;
-			const setter = jest.fn();
+			const setter = vi.fn();
 			mockLayoutStorage({ callback: setter });
 
 			const {
@@ -74,7 +74,7 @@ describe('useViewLayout', () => {
 	describe('setSplitLayoutOrientation', () => {
 		it('should store the value in the local storage', () => {
 			const orientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL;
-			const setter = jest.fn();
+			const setter = vi.fn();
 			mockLayoutStorage({ callback: setter });
 
 			const {
@@ -247,7 +247,7 @@ describe('useViewLayout', () => {
 				width: faker.number.int({ max: 5000 }),
 				height: faker.number.int({ max: 5000 })
 			};
-			const setter = jest.fn();
+			const setter = vi.fn();
 			mockLayoutStorage({ callback: setter });
 
 			const {

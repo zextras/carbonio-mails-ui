@@ -34,9 +34,9 @@ const certificate: Certificate[] = [
 ];
 
 describe('ShowAllCertificatesModal', () => {
-	const onClose = jest.fn();
-	const createModal = jest.fn();
-	const closeModal = jest.fn();
+	const onClose = vi.fn();
+	const createModal = vi.fn();
+	const closeModal = vi.fn();
 	it('should render the modal with the correct title', async () => {
 		setupTest(
 			<ShowAllCertificatesModal

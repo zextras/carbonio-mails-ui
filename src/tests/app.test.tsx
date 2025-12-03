@@ -29,15 +29,18 @@ import { DeletedMessageFromAPI } from 'types';
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
 // It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
 // I think we should consider removing that mock or redefine it or make it configurable
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	folderWorker: {
-		postMessage: jest.fn()
-	},
-	tagsWorker: {
-		postMessage: jest.fn()
-	}
-}));
+// vi.mock('@zextras/carbonio-ui-commons', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+// 	folderWorker: {
+// 		postMessage: vi.fn()
+// 	},
+// 	tagsWorker: {
+// 		postMessage: vi.fn()
+// 	}
+// }));
+// vi.mock('@zextras/carbonio-shell-ui', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-shell-ui'))
+// }));
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -60,8 +63,8 @@ function updateBackupSearchStoreWith(messages: DeletedMessageFromAPI[]): void {
 }
 
 describe('App', () => {
-	const removeRouteSpy = jest.spyOn(shellUi, 'removeRoute');
-	const addRouteSpy = jest.spyOn(shellUi, 'addRoute');
+	const removeRouteSpy = vi.spyOn(shellUi, 'removeRoute');
+	const addRouteSpy = vi.spyOn(shellUi, 'addRoute');
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
@@ -70,13 +73,12 @@ describe('App', () => {
 			folder: [generateFolder({ name: 'Inbox' })]
 		});
 		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
-		jest.clearAllMocks();
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
-		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
-		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
-		const registerShellIntegrationsSpy = jest.spyOn(
+		const addComponentsToShellSpy = vi.spyOn(addComponentsToShell, 'addComponentsToShell');
+		const registerShellActionSpy = vi.spyOn(registerShellActions, 'registerShellActions');
+		const registerShellIntegrationsSpy = vi.spyOn(
 			registerShellIntegrations,
 			'registerShellIntegrations'
 		);
@@ -87,7 +89,7 @@ describe('App', () => {
 	});
 
 	it('should register the search', () => {
-		const useSearchRegistererSpy = jest.spyOn(useSearchRegisterer, 'useSearchRegisterer');
+		const useSearchRegistererSpy = vi.spyOn(useSearchRegisterer, 'useSearchRegisterer');
 		setupTest(<App />);
 		expect(useSearchRegistererSpy).toHaveBeenCalled();
 	});

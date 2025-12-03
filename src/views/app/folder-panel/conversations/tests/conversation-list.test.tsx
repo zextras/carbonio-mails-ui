@@ -9,6 +9,7 @@ import React from 'react';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
@@ -22,17 +23,17 @@ import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d'
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useParams: vi.fn()
 }));
 
 describe('ConversationList Component', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 
 		const folderId = '2';
-		(useParams as jest.Mock).mockReturnValue({
+		(useParams as Mock).mockReturnValue({
 			folderId
 		});
 		populateFoldersStore({
@@ -207,7 +208,7 @@ describe('ConversationList Component', () => {
 					c: [conversation1],
 					more: true
 				});
-				(useParams as jest.Mock).mockReturnValue({
+				(useParams as Mock).mockReturnValue({
 					folderId: FOLDERS.TRASH
 				});
 				const { user } = await act(async () => setupTest(<ConversationList />));
@@ -251,7 +252,7 @@ describe('ConversationList Component', () => {
 					c: [conversation1],
 					more: true
 				});
-				(useParams as jest.Mock).mockReturnValue({
+				(useParams as Mock).mockReturnValue({
 					folderId: FOLDERS.INBOX
 				});
 				const { user } = await act(async () => setupTest(<ConversationList />));
@@ -298,7 +299,7 @@ describe('ConversationList Component', () => {
 					c: [conversation1, conversation2],
 					more: true
 				});
-				(useParams as jest.Mock).mockReturnValue({
+				(useParams as Mock).mockReturnValue({
 					folderId: FOLDERS.INBOX
 				});
 				const { user } = await act(async () => setupTest(<ConversationList />));
@@ -345,7 +346,7 @@ describe('ConversationList Component', () => {
 			su: conversation1Subject
 		});
 		it('items should still be selected after a multiple selection action', async () => {
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation1, conversation2],
 				more: true
@@ -408,7 +409,7 @@ describe('ConversationList Component', () => {
 			expect(totalItemsSelected).toHaveLength(2);
 		});
 		it('items should still be selected after a single conversation action on a unselected item', async () => {
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation1, conversation2],
 				more: true
@@ -467,7 +468,7 @@ describe('ConversationList Component', () => {
 			expect(totalItemsSelectedAfterAction).toHaveLength(1);
 		});
 		it('items should still be selected after a single conversation action on a selected item', async () => {
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation1, conversation2],
 				more: true
@@ -526,7 +527,7 @@ describe('ConversationList Component', () => {
 			expect(totalItemsSelectedAfterAction).toHaveLength(1);
 		});
 		it('enables select mode on first click and supports range selection with shift-click', async () => {
-			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation1, conversation2, conversation3],
 				more: true

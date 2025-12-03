@@ -112,7 +112,7 @@ describe('mailToAction', () => {
 
 describe('mailToActionOnClick', () => {
 	it('when called it should invoke mailToSharedFunction with the correct parameter', async () => {
-		jest.spyOn(sharedFunctions, 'mailToSharedFunction');
+		vi.spyOn(sharedFunctions, 'mailToSharedFunction');
 
 		const contacts = [
 			{ email: { email: { mail: 'anymail' } }, firstName: 'any', middleName: 'any' }
@@ -130,7 +130,7 @@ describe('mailToActionOnClick', () => {
 
 describe('mailToRecipientsActionOnClick', () => {
 	it('when called it should invoke mailToSharedFunction with the correct parameter', async () => {
-		jest.spyOn(sharedFunctions, 'mailToSharedFunction');
+		vi.spyOn(sharedFunctions, 'mailToSharedFunction');
 
 		const recipients = [
 			{ email: 'anymail', name: 'any', carbonCopy: false },

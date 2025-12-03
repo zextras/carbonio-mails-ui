@@ -65,7 +65,7 @@ describe('useMsgPrintDescripto', () => {
 
 		describe('execute', () => {
 			// Mock result for window.open
-			const documentWriteSpy = jest.fn();
+			const documentWriteSpy = vi.fn();
 			const documentMock: Document = { ...window.document, write: documentWriteSpy };
 			const windowOpenResultMock = {
 				...window,
@@ -75,7 +75,7 @@ describe('useMsgPrintDescripto', () => {
 					document: documentMock
 				}
 			};
-			const windowOpenSpy = jest.spyOn(window, 'open').mockReturnValue(
+			const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(
 				// The mock is not perfect, but it's good enough for this test
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore

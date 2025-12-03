@@ -657,11 +657,15 @@ export function getUseEmailStoreAndHooksForTesting(): {
 	setMessagesInSearchSlice: typeof setMessagesInSearchSlice;
 	usePopulatedItemsSlice: typeof usePopulatedItemsSlice;
 	resetConversationAndPopulatedItems: typeof resetConversationAndPopulatedItems;
+	resetMessagesAndPopulatedItems: typeof resetMessagesAndPopulatedItems;
+	resetSearchAndPopulatedItems: typeof resetSearchAndPopulatedItems;
 } {
 	return {
 		useEmailsStore,
 		setMessagesInSearchSlice,
 		usePopulatedItemsSlice,
-		resetConversationAndPopulatedItems
+		resetConversationAndPopulatedItems,
+		resetMessagesAndPopulatedItems,
+		resetSearchAndPopulatedItems
 	};
 }

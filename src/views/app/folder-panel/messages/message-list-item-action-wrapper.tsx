@@ -157,6 +157,7 @@ export const MessageListItemActionWrapper = ({
 					crossAlignment="center"
 					$hoverBackground={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${item.id}`}
+					gap={'0.25rem'}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>

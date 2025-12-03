@@ -37,7 +37,7 @@ describe('ConversationPreviewPanelContainer', () => {
 
 	describe('should show panel if the conversation has messages', () => {
 		it('in focus mode', async () => {
-			jest.mocked(shell).IS_FOCUS_MODE = true;
+			vi.mocked(shell).IS_FOCUS_MODE = true;
 			populateFoldersStore();
 			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
 				populateConversationInEmailStore()
@@ -54,7 +54,7 @@ describe('ConversationPreviewPanelContainer', () => {
 		});
 
 		it('in trash with trash messages', async () => {
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 			const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
 				populateConversationInEmailStore({ conversationParams: { folderId: '3' } })
 			);
@@ -71,7 +71,7 @@ describe('ConversationPreviewPanelContainer', () => {
 	});
 
 	it('should not set the window title if the focus mode is disabled', async () => {
-		jest.mocked(shell).IS_FOCUS_MODE = false;
+		vi.mocked(shell).IS_FOCUS_MODE = false;
 		const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
 			populateConversationInEmailStore()
 		);
@@ -85,7 +85,7 @@ describe('ConversationPreviewPanelContainer', () => {
 	});
 
 	it('should set the window title to the message subject if the focus mode is enabled', async () => {
-		jest.mocked(shell).IS_FOCUS_MODE = true;
+		vi.mocked(shell).IS_FOCUS_MODE = true;
 		const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
 			populateConversationInEmailStore()
 		);

@@ -72,8 +72,8 @@ const props = {
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
-	deselectAll: jest.fn(),
-	selectAll: jest.fn()
+	deselectAll: vi.fn(),
+	selectAll: vi.fn()
 };
 describe('Actions visibility', () => {
 	test.each`

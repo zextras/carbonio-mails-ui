@@ -1,26 +1,26 @@
+import moment from 'moment';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import moment from 'moment';
-
 import * as utils from 'commons/utils';
 import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-query';
 import { Query } from 'views/search/types/types';
 
 // Mock the getUserLocale function
-jest.mock('commons/utils', () => ({
-	...jest.requireActual('commons/utils'),
-	getUserLocale: jest.fn()
+vi.mock('commons/utils', async () => ({
+	...(await vi.importActual('commons/utils')),
+	getUserLocale: vi.fn()
 }));
 
-const mockedGetUserLocale = utils.getUserLocale as jest.MockedFunction<typeof utils.getUserLocale>;
+const mockedGetUserLocale = utils.getUserLocale as Mock<typeof utils.getUserLocale>;
 
 describe('extractDateFieldFromQuery', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	afterEach(() => {
@@ -123,7 +123,7 @@ describe('extractDateFieldFromQuery', () => {
 
 	it('should handle invalid date gracefully', () => {
 		// Mock console.warn to suppress moment deprecation warnings
-		const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+		const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(vi.fn());
 
 		mockedGetUserLocale.mockReturnValue('en-US');
 		const query: Query = [{ id: '1', label: 'before:invalid-date' }];

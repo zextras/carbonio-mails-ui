@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
-
 type FileUploadSuccessResponse = {
 	nodeId: string;
 };
@@ -48,24 +46,21 @@ export function uploadToFiles({ file }: { file: File }): UploadResult {
 		};
 
 		try {
-			const response = await axios.post<FileUploadSuccessResponse>('/services/files/upload', file, {
+			const response = await fetch('/services/files/upload', {
+				method: 'POST',
+				body: file,
 				headers,
 				signal: abortController.signal
 			});
 
-			if (
-				!response.data?.nodeId ||
-				response.data.nodeId === '' ||
-				typeof response.data.nodeId !== 'string'
-			) {
+			const data = await response.json();
+
+			if (!data?.nodeId || data.nodeId === '' || typeof data.nodeId !== 'string') {
 				throw new Error('Upload successful but no valid nodeId returned');
 			}
 
-			return response.data.nodeId;
+			return data.nodeId;
 		} catch (error) {
-			if (axios.isCancel(error)) {
-				throw error;
-			}
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			throw new Error(`File upload failed: ${message}`);
 		}

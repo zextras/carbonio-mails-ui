@@ -64,7 +64,7 @@ function getFoldersAllowed(
 	};
 }
 
-const selectAll = jest.fn();
+const selectAll = vi.fn();
 
 const props = {
 	items: [],
@@ -73,7 +73,7 @@ const props = {
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
-	deselectAll: jest.fn(),
+	deselectAll: vi.fn(),
 	selectAll
 };
 

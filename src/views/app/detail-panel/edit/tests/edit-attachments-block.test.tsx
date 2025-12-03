@@ -19,7 +19,7 @@ import { generateEditorV2Case } from '__test__/generators/editors';
 import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
 
 describe('Attachments visualization', () => {
-	const setLargeFileUploadInfoBannerVisible = jest.fn();
+	const setLargeFileUploadInfoBannerVisible = vi.fn();
 	test.each`
 		editorTestCaseId | attachmentType
 		${'1'}           | ${'Various format attachments'}
