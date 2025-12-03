@@ -1,24 +1,20 @@
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getTags } from '@zextras/carbonio-ui-commons';
-
 import { getTagIds } from 'normalizations/utils';
-
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn()
-}));
 
 describe('getTagIds utility function', () => {
 	beforeEach(() => {
-		(getTags as jest.Mock).mockReturnValue([
-			{ id: '1', name: 'tag1' },
-			{ id: '2', name: 'tag2' }
-		]);
+		useTagStore.setState({
+			tags: {
+				1: { id: '1', name: 'tag1' },
+				2: { id: '2', name: 'tag2' }
+			}
+		});
 	});
 
 	it('returns undefined when both t and tn are undefined', () => {

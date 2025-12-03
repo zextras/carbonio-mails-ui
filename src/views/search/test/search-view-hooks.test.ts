@@ -38,7 +38,7 @@ describe('search view hooks', () => {
 				zimbraPrefGroupMailBy: 'conversation'
 			}
 		});
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [],
 			more: false
@@ -77,7 +77,7 @@ describe('search view hooks', () => {
 				zimbraPrefGroupMailBy: 'conversation'
 			}
 		});
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
@@ -110,7 +110,7 @@ describe('search view hooks', () => {
 				zimbraPrefGroupMailBy: 'conversation'
 			}
 		});
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
@@ -153,7 +153,7 @@ describe('search view hooks', () => {
 				zimbraPrefGroupMailBy: 'conversation'
 			}
 		});
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 		const message = generateConvMessageFromAPI({ id: '1' });
@@ -198,7 +198,7 @@ describe('search view hooks', () => {
 		});
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
 			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
@@ -388,7 +388,7 @@ describe('useLoadMore', () => {
 	});
 
 	it('should not call the API if hasMore is false', async () => {
-		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const mockedSearch = vi.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
 			useLoadMoreForSearchSlice({
@@ -406,7 +406,7 @@ describe('useLoadMore', () => {
 
 	it('should not call the API if loadingMore is true', async () => {
 		loadingMore.current = true;
-		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const mockedSearch = vi.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
 			useLoadMoreForSearchSlice({

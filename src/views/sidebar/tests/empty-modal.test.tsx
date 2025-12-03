@@ -18,7 +18,7 @@ import { EmptyModal } from 'views/sidebar/empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -62,7 +62,7 @@ describe('empty-modal', () => {
 	});
 
 	test('empty the trash folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
@@ -100,7 +100,7 @@ describe('empty-modal', () => {
 	});
 
 	test('empty the trash folder of the shared account', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
@@ -138,7 +138,7 @@ describe('empty-modal', () => {
 	});
 
 	test('API is called with the proper parameters', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);

@@ -8,6 +8,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useTags } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
@@ -15,17 +16,17 @@ import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useTags: vi.fn()
 }));
 
-const mockToggleOpen = jest.fn();
+const mockToggleOpen = vi.fn();
 const tagsArray = Object.values(tags);
 
 describe('ConversationListItemCore', () => {
 	beforeEach(() => {
-		(useTags as jest.Mock).mockReturnValue(tags);
+		(useTags as Mock).mockReturnValue(tags);
 	});
 
 	it('renders conversation details correctly', async () => {
@@ -45,7 +46,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -71,7 +72,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -96,7 +97,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -124,7 +125,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -149,7 +150,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -173,7 +174,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -202,7 +203,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -230,7 +231,7 @@ describe('ConversationListItemCore', () => {
 				open={false}
 				toggleCollapseElementCallback={mockToggleOpen}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 

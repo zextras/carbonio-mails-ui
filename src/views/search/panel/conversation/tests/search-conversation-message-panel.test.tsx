@@ -13,10 +13,10 @@ import { updateMessageStatus } from '../../../../../store/emails/store';
 import { SearchConversationMessagePanel } from '../search-conversation-message-panel';
 import { setupTest } from '@test-setup';
 
-const mockNavigateSpy = jest.fn();
+const mockNavigateSpy = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
 	useNavigate: (): NavigateFunction => mockNavigateSpy
 }));
 

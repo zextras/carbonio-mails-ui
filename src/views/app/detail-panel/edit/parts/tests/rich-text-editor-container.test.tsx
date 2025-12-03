@@ -11,16 +11,16 @@ import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-jest.mock('lodash', () => ({
-	...jest.requireActual('lodash'),
-	debounce: (fn: (...args: any[]) => any): any => fn,
-	noop: (): void => {
-		// do nothing
-	}
-}));
+// vi.mock('lodash', async () => ({
+// 	...(await vi.importActual('lodash')),
+// 	debounce: (fn: (...args: any[]) => any): any => fn,
+// 	noop: (): void => {
+// 		// do nothing
+// 	}
+// }));
 
-jest.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
-	handleEditorPaste: jest.fn()
+vi.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
+	handleEditorPaste: vi.fn()
 }));
 
 let editorInstance: any = null;
@@ -43,10 +43,10 @@ const MockComposer: React.FC<any> = (props) => {
 			setContent: (html: string): void => {
 				editorInstance.html = html;
 			},
-			hasFocus: jest.fn(() => true),
-			setDirty: jest.fn(),
-			focus: jest.fn(),
-			dispatchEvent: jest.fn()
+			hasFocus: vi.fn(() => true),
+			setDirty: vi.fn(),
+			focus: vi.fn(),
+			dispatchEvent: vi.fn()
 		};
 
 		if (props.customInitOptions?.init_instance_callback) {
@@ -61,35 +61,35 @@ const MockComposer: React.FC<any> = (props) => {
 	return <div data-testid="mock-composer" />;
 };
 
-jest.mock('@zextras/carbonio-ui-text-composer', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-text-composer'),
+vi.mock('@zextras/carbonio-ui-text-composer', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-text-composer')),
 	Composer: (props: any): any => <MockComposer {...props} />
 }));
 
-const mockRemoveInlineAttachments = jest.fn();
-const mockSetText = jest.fn();
-const mockSetTextProvider = jest.fn();
+const mockRemoveInlineAttachments = vi.fn();
+const mockSetText = vi.fn();
+const mockSetTextProvider = vi.fn();
 
-jest.mock('store/editor/index', () => ({
-	useEditorText: jest.fn(() => ({
-		getText: jest.fn(() => ({ plainText: '', richText: '' })),
+vi.mock('store/editor/index', () => ({
+	useEditorText: vi.fn(() => ({
+		getText: vi.fn(() => ({ plainText: '', richText: '' })),
 		setText: mockSetText
 	})),
-	useEditorTextProvider: jest.fn(() => ({ setTextProvider: mockSetTextProvider })),
-	useEditorAttachments: jest.fn(() => ({
-		addInlineAttachments: jest.fn(),
+	useEditorTextProvider: vi.fn(() => ({ setTextProvider: mockSetTextProvider })),
+	useEditorAttachments: vi.fn(() => ({
+		addInlineAttachments: vi.fn(),
 		removeInlineAttachments: mockRemoveInlineAttachments
 	}))
 }));
 
 describe('RichTextEditorContainer', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		editorInstance = null;
 	});
 
 	test('cleans up inline attachments that are no longer in content', async () => {
-		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
 		await screen.findByTestId('mock-composer');
 
 		editorInstance?.setContent(
@@ -108,7 +108,7 @@ describe('RichTextEditorContainer', () => {
 	});
 
 	test('handles paste event and restores scroll position', async () => {
-		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={jest.fn()} />);
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
 		await screen.findByTestId('mock-composer');
 
 		const editWrapper = document.createElement('div');

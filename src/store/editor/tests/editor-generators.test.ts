@@ -1,38 +1,38 @@
+import { find } from 'lodash';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { find } from 'lodash';
-
+import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions } from 'constants/index';
 import { generateEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/hooks/editors';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActionsType, MailMessage } from 'types/index.d';
 
-jest.mock('store/editor/hooks/editors', () => ({
-	...jest.requireActual('store/editor/hooks/editors'),
-	getEditor: jest.fn()
+vi.mock('store/editor/hooks/editors', async () => ({
+	...(await vi.importActual('store/editor/hooks/editors')),
+	getEditor: vi.fn()
 }));
 
-jest.mock('uuid', () => ({
-	v4: jest.fn(() => 'test-editor-id')
+vi.mock('uuid', () => ({
+	v4: vi.fn(() => 'test-editor-id')
 }));
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserSettings: jest.fn(() => ({
+vi.mock('@zextras/carbonio-shell-ui', () => ({
+	getUserSettings: vi.fn(() => ({
 		prefs: { zimbraPrefComposeFormat: 'html' }
 	})),
-	t: jest.fn((_key: string, fallback: string) => fallback)
+	t: vi.fn((_key: string, fallback: string) => fallback)
 }));
 
-jest.mock('../../../helpers/identities', () => ({
-	getIdentityFromParticipant: jest.fn(() => ({ id: 'test-identity-id' })),
-	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' })),
-	getRecipientReplyIdentity: jest.fn(() => ({ id: 'recipient-reply-id' })),
-	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
+vi.mock('../../../helpers/identities', () => ({
+	getIdentityFromParticipant: vi.fn(() => ({ id: 'test-identity-id' })),
+	getDefaultIdentity: vi.fn(() => ({ id: 'default-identity-id' })),
+	getRecipientReplyIdentity: vi.fn(() => ({ id: 'recipient-reply-id' })),
+	getAddressOwnerAccount: vi.fn(() => ({ id: 'address-owner-id' }))
 }));
 
 describe('generateEditor', () => {
@@ -252,7 +252,7 @@ describe('generateEditor', () => {
 					message: urgentMessage
 				});
 
-				(getEditor as jest.Mock).mockReturnValueOnce(draftEditor);
+				(getEditor as Mock).mockReturnValueOnce(draftEditor);
 
 				const resumedEditor = generateEditor({
 					action: EditViewActions.RESUME,

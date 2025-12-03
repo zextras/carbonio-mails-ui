@@ -26,14 +26,14 @@ describe('Redirect To', () => {
 						}
 					}
 				]}
-				onChange={jest.fn()}
+				onChange={vi.fn()}
 			/>
 		);
 
 		expect(screen.getByText('test label')).toBeVisible();
 	});
 	it('it should call onChange only when adding the first value', async () => {
-		const onChangeFn = jest.fn();
+		const onChangeFn = vi.fn();
 
 		const { user } = setupTest(<RedirectTo defaultValue={[]} onChange={onChangeFn} />);
 
@@ -47,7 +47,7 @@ describe('Redirect To', () => {
 		]);
 	});
 	it('it should not call onChange if adding a second value (max 1 chip)', async () => {
-		const onChangeFn = jest.fn();
+		const onChangeFn = vi.fn();
 		const label = 'test label';
 
 		const { user } = setupTest(

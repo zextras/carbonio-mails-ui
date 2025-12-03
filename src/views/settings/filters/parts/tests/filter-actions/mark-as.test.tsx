@@ -20,7 +20,7 @@ describe('Mark As', () => {
 		];
 		const selectedOption = { flagName: '1' };
 
-		setupTest(<MarkAs options={options} onChange={jest.fn()} selected={selectedOption} />);
+		setupTest(<MarkAs options={options} onChange={vi.fn()} selected={selectedOption} />);
 
 		expect(screen.getByText('label 1')).toBeVisible();
 	});
@@ -33,7 +33,7 @@ describe('Mark As', () => {
 		const selectedOption = { flagName: '1' };
 		const secondOption = options[1];
 
-		const onChangeFn = jest.fn();
+		const onChangeFn = vi.fn();
 		const { user } = setupTest(
 			<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />
 		);
@@ -52,7 +52,7 @@ describe('Mark As', () => {
 		];
 		const selectedOption = {};
 
-		const onChangeFn = jest.fn();
+		const onChangeFn = vi.fn();
 		setupTest(<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />);
 
 		expect(screen.queryByText('label 1')).not.toBeInTheDocument();

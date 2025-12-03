@@ -91,7 +91,7 @@ describe('Change signature while composing mail', () => {
 
 		const account = cloneDeep(getUserAccount());
 		account && (account.signatures.signature = []);
-		if (account) jest.spyOn(hooks, 'getUserAccount').mockReturnValue(account);
+		if (account) vi.spyOn(hooks, 'getUserAccount').mockReturnValue(account);
 
 		const props: EditViewProp = {
 			editorId: editor.id,

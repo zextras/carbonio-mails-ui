@@ -88,7 +88,7 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Move`)).toBeVisible();
@@ -106,7 +106,7 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Move Conversation`)).not.toBeInTheDocument();

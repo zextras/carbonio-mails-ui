@@ -23,7 +23,7 @@ describe('Backup search header', () => {
 			}
 		});
 
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
 		const queryParams = {
 			endDate: new Date('2024-05-25T22:00:00.000Z'),
@@ -47,7 +47,7 @@ describe('Backup search header', () => {
 			}
 		});
 
-		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
 		const queryParams = {
 			endDate: new Date('2024-05-25T22:00:00.000Z'),

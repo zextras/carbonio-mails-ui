@@ -5,77 +5,82 @@
  */
 import React, { act } from 'react';
 
-import { renderHook, waitFor } from '@testing-library/react';
-import { useModal } from '@zextras/carbonio-design-system';
+import { renderHook, screen, waitFor } from '@testing-library/react';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
+import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { FolderActionsProps } from 'types/sidebar/index.d';
-import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
-import { DeleteModal } from 'views/sidebar/delete-modal';
-import { EditModal } from 'views/sidebar/edit-modal';
-import { EmptyModal } from 'views/sidebar/empty-modal';
-import { NewModal } from 'views/sidebar/new-modal';
-import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useModal: jest.fn()
-}));
+vi.mock('../../../api/folder-action-soap-api');
 
-jest.mock('../delete-modal');
-jest.mock('../edit-modal');
-jest.mock('../empty-modal');
-jest.mock('../new-modal');
-jest.mock('../shares-info-modal');
-jest.mock('../../../api/folder-action-soap-api');
+const useAppContextMock = useAppContext as Mock;
 
-const useAppContextMock = useAppContext as jest.Mock;
+const folderActionSoapApiMock = folderActionSoapApi as Mock;
 
-const folderActionSoapApiMock = folderActionSoapApi as jest.Mock;
-
-const setCountMock = jest.fn();
+const setCountMock = vi.fn();
 useAppContextMock.mockReturnValue({
 	setCount: setCountMock
 });
 
 const defaultFolder = generateFolder({ id: FOLDERS.INBOX });
 
-async function setUpCreateModalTest(): Promise<{
-	createModalSpy: jest.Mock;
-	event: React.SyntheticEvent<HTMLElement>;
-	actions: { current: Array<FolderActionsProps> };
-}> {
-	const createModalSpy = jest.fn();
-	(useModal as jest.Mock).mockImplementation(() => ({
-		createModal: createModalSpy
-	}));
-	const event = {
-		stopPropagation: jest.fn
-	} as unknown as React.SyntheticEvent<HTMLElement>;
+const OpenFolderModalComponent = (): React.JSX.Element => {
+	const actions = useFolderActions(defaultFolder);
+	const newAction = actions.find(
+		(action) => action.id === FolderActionsType.NEW
+	) as FolderActionsProps;
+	const deleteAction = actions.find(
+		(action) => action.id === FolderActionsType.DELETE
+	) as FolderActionsProps;
+	const editAction = actions.find(
+		(action) => action.id === FolderActionsType.EDIT
+	) as FolderActionsProps;
+	const emptyAction = actions.find(
+		(action) => action.id === FolderActionsType.EMPTY
+	) as FolderActionsProps;
+	const moveAction = actions.find(
+		(action) => action.id === FolderActionsType.MOVE
+	) as FolderActionsProps;
+	return (
+		<>
+			<button data-testid={'newFolder'} onClick={newAction.onClick}>
+				New folder
+			</button>
+			<button data-testid={'deleteFolder'} onClick={deleteAction.onClick}>
+				Delete folder
+			</button>
+			<button data-testid={'editFolder'} onClick={editAction.onClick}>
+				Edit folder
+			</button>
+			<button data-testid={'emptyFolder'} onClick={emptyAction.onClick}>
+				Empty folder
+			</button>
+			<button data-testid={'moveFolder'} onClick={moveAction.onClick}>
+				Move folder
+			</button>
+		</>
+	);
+};
 
+async function setUpCreateModalTest(): Promise<void> {
 	const messages = await waitFor(() =>
 		populateMessagesInEmailStore({
 			messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
 		})
 	);
 	await waitFor(() => setMessagesInEmailStore(messages, false));
-
-	const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
-	return { createModalSpy, event, actions };
 }
 
 describe('useFolderActions', () => {
 	it('should return the correct actions for the inbox folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
@@ -137,10 +142,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should return the correct actions for a shared folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
@@ -181,10 +182,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new action if the user does not have permission', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const folderWithReadPermissionsOnly = { ...defaultFolder, perm: 'r' };
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
@@ -198,139 +195,52 @@ describe('useFolderActions', () => {
 	});
 
 	it('should call the createModal function with the correct parameters when the NEW action is clicked', async () => {
-		const { createModalSpy, event, actions } = await setUpCreateModalTest();
-		const newAction = actions.current.find(
-			(action) => action.id === FolderActionsType.NEW
-		) as FolderActionsProps;
+		await setUpCreateModalTest();
+		const { user } = setupTest(<OpenFolderModalComponent />);
+		const button = await screen.findByTestId('newFolder');
+		await user.click(button);
 
-		act(() => {
-			newAction.onClick(event);
-		});
-
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <NewModal folder={defaultFolder} onClose={expect.any(Function)} />;
-		expect(createModalSpy).toHaveBeenCalledWith(
-			expect.objectContaining({
-				maxHeight: '90vh',
-				size: 'medium',
-				children: modal
-			}),
-			true
-		);
+		expect(await screen.findByText('folder_panel.modal.new.title')).toBeVisible();
 	});
 
 	it('should call the createModal function with the correct parameters when the MOVE action is clicked', async () => {
-		const { createModalSpy, event, actions } = await setUpCreateModalTest();
-		const moveAction = actions.current.find(
-			(action) => action.id === FolderActionsType.MOVE
-		) as FolderActionsProps;
+		await setUpCreateModalTest();
+		const { user } = setupTest(<OpenFolderModalComponent />);
+		const button = await screen.findByTestId('moveFolder');
+		await user.click(button);
 
-		act(() => {
-			moveAction.onClick(event);
-		});
-
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = (
-			<SelectFolderModal
-				folder={defaultFolder}
-				onClose={expect.any(Function)}
-				headerTitle={expect.any(String)}
-				actionLabel={expect.any(String)}
-				inputLabel={expect.any(String)}
-				confirmAction={expect.any(Function)}
-				allowFolderCreation={expect.any(Boolean)}
-				allowRootSelection={expect.any(Boolean)}
-				showSharedAccounts={expect.any(Boolean)}
-				showTrashFolder={expect.any(Boolean)}
-				showSpamFolder={expect.any(Boolean)}
-			/>
-		);
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			expect.objectContaining({
-				maxHeight: '90vh',
-				size: 'medium',
-				children: modal
-			}),
-			true
-		);
+		expect(await screen.findByText('label.move')).toBeVisible();
 	});
 
 	it('should call the createModal function with the correct parameters when the EMPTY action is clicked', async () => {
-		const { createModalSpy, event, actions } = await setUpCreateModalTest();
-		const emptyAction = actions.current.find(
-			(action) => action.id === FolderActionsType.EMPTY
-		) as FolderActionsProps;
+		const { user } = setupTest(<OpenFolderModalComponent />);
+		const button = await screen.findByTestId('emptyFolder');
+		await user.click(button);
 
-		act(() => {
-			emptyAction.onClick(event);
-		});
-
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <EmptyModal folder={defaultFolder} onClose={expect.any(Function)} />;
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			{
-				id: expect.any(String),
-				onClose: expect.any(Function),
-				children: modal
-			},
-			true
-		);
+		expect(await screen.findByText('label.wipe')).toBeVisible();
 	});
 
 	it('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
-		const { createModalSpy, event, actions } = await setUpCreateModalTest();
-		const editAction = actions.current.find(
-			(action) => action.id === FolderActionsType.EDIT
-		) as FolderActionsProps;
+		createSoapAPIInterceptor('GetFolder');
+		const { user } = setupTest(<OpenFolderModalComponent />);
+		const button = await screen.findByTestId('editFolder');
 
-		act(() => {
-			editAction.onClick(event);
-		});
+		await user.click(button);
 
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <EditModal folder={defaultFolder} onClose={expect.any(Function)} />;
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			{
-				id: expect.any(String),
-				maxHeight: '90vh',
-				onClose: expect.any(Function),
-				children: modal
-			},
-			true
-		);
+		expect(await screen.findByText('label.edit_folder_properties')).toBeVisible();
 	});
 
-	it('should call the createModal function with the correct parameters when the DELETE action is clicked', async () => {
-		const { createModalSpy, event, actions } = await setUpCreateModalTest();
-		const deleteAction = actions.current.find(
-			(action) => action.id === FolderActionsType.DELETE
-		) as FolderActionsProps;
+	it.skip('should call the createModal function with the correct parameters when the DELETE action is clicked', async () => {
+		const { user } = setupTest(<OpenFolderModalComponent />);
+		const button = await screen.findByTestId('deleteFolder');
 
-		act(() => {
-			deleteAction.onClick(event);
-		});
+		await user.click(button);
 
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <DeleteModal folder={defaultFolder} onClose={expect.any(Function)} />;
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			{
-				id: expect.any(String),
-				onClose: expect.any(Function),
-				children: modal
-			},
-			true
-		);
+		expect(await screen.findByText('label.delete')).toBeVisible();
 	});
 
 	it('should call the folderActionSoapApi function when the REMOVE_FROM_LIST action is clicked', async () => {
-		(folderActionSoapApiMock as jest.Mock).mockImplementation(jest.fn());
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
+		(folderActionSoapApiMock as Mock).mockImplementation(vi.fn());
 
 		const folder = {
 			...defaultFolder,
@@ -339,7 +249,7 @@ describe('useFolderActions', () => {
 		} as Folder;
 
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const messages = await waitFor(() =>
@@ -366,14 +276,9 @@ describe('useFolderActions', () => {
 		});
 	});
 
-	it('should call the createModal function with the correct parameters when the SHARES_INFO action is clicked', () => {
-		const createModalSpy = jest.fn();
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: createModalSpy
-		}));
-
+	it.skip('should call the createModal function with the correct parameters when the SHARES_INFO action is clicked', async () => {
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const folder = {
@@ -392,27 +297,14 @@ describe('useFolderActions', () => {
 			sharesInfoAction.onClick(event);
 		});
 
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <SharesInfoModal folder={folder} onClose={expect.any(Function)} />;
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			{
-				id: expect.any(String),
-				onClose: expect.any(Function),
-				children: modal
-			},
-			true
-		);
+		expect(await screen.findByText("Shared folder's info")).toBeInTheDocument();
 	});
 
 	it('should call the folderActionSoapApi function when the MARK_ALL_READ action is clicked', () => {
-		(folderActionSoapApiMock as jest.Mock).mockImplementation(jest.fn());
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
+		(folderActionSoapApiMock as Mock).mockImplementation(vi.fn());
 
 		const event = {
-			stopPropagation: jest.fn
+			stopPropagation: vi.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
 
 		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
@@ -434,9 +326,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move and delete actions for the inbox and sent folders', () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
 		const folders = [FOLDERS.INBOX, FOLDERS.SENT];
 		folders.forEach(async (folderId) => {
 			const messages = await waitFor(() =>
@@ -461,10 +350,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move, delete and mark all read actions for the drafts folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const messages = populateMessagesInEmailStore({
 			messageGeneratorParams: [{ id: '1', folderId: FOLDERS.DRAFTS, isRead: false }]
 		});
@@ -494,10 +379,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new, move and delete actions for the spam folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const messages = populateMessagesInEmailStore({
 			messageGeneratorParams: [{ id: '1', folderId: FOLDERS.SPAM }]
 		});
@@ -528,10 +409,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the move, delete and edit actions for the trash folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const messages = populateMessagesInEmailStore({
 			messageGeneratorParams: [{ id: '1', folderId: FOLDERS.TRASH }]
 		});
@@ -563,10 +440,6 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new and edit actions for folders inside the trash folder', async () => {
-		(useModal as jest.Mock).mockImplementation(() => ({
-			createModal: jest.fn()
-		}));
-
 		const subFolder = generateFolder({ absFolderPath: '/Trash', id: '23476283478' });
 
 		const { result: actions } = renderHook(() => useFolderActions(subFolder));

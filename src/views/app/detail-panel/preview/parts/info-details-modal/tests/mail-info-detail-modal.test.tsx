@@ -20,7 +20,7 @@ const signature = {
 };
 describe('MailInfoDetailModal', () => {
 	it(`Should correctly render all parts`, async () => {
-		const onClose = jest.fn();
+		const onClose = vi.fn();
 
 		setupTest(
 			<MailInfoDetailModal
@@ -72,7 +72,7 @@ describe('MailInfoDetailModal', () => {
 	});
 
 	it(`Should not render undefined, but render other`, async () => {
-		const onClose = jest.fn();
+		const onClose = vi.fn();
 
 		setupTest(
 			<MailInfoDetailModal
@@ -124,7 +124,7 @@ describe('MailInfoDetailModal', () => {
 	});
 
 	it(`Should render empty modal dialog if no valid metadata to show`, async () => {
-		const onClose = jest.fn();
+		const onClose = vi.fn();
 		setupTest(
 			<MailInfoDetailModal
 				onClose={onClose}
@@ -146,7 +146,7 @@ describe('MailInfoDetailModal', () => {
 	});
 
 	// test(`Should show authentication header subsection if authentication header is an empty object`, async () => {
-	// 	const onClose = jest.fn();
+	// 	const onClose = vi.fn();
 	// 	setupTest(<MailInfoDetailModal onClose={onClose} authenticationMailsHeaders={{}} />);
 	//
 	// 	expect(screen.getByText('Message details')).toBeVisible();

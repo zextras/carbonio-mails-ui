@@ -76,7 +76,7 @@ describe('useConvSetSpam', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {
@@ -111,7 +111,7 @@ describe('useConvSetSpam', () => {
 
 				act(() => {
 					functions.execute();
-					jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				const requestParameter = await apiInterceptor;

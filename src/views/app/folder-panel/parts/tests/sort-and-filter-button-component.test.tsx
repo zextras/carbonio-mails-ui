@@ -15,11 +15,6 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
 
-jest.mock('@zextras/carbonio-ui-soap-lib', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-soap-lib'),
-	soapFetchV2: jest.fn().mockResolvedValue({ Body: {} })
-}));
-
 describe('Sort and filter button component', () => {
 	it('should render a dropdown wrapper with a visible button', async () => {
 		setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);

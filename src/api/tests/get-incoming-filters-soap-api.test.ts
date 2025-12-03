@@ -45,7 +45,7 @@ describe('getIncomingFiltersSoapApi', () => {
 			HttpResponse.json({}, { type: 'error', status: 500, statusText: 'Failed' })
 		);
 
-		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
 			'warning error';
 		});
 		getIncomingFiltersSoapApi();

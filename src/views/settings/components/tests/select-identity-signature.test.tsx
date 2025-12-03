@@ -14,12 +14,8 @@ import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
 import { SignItemType } from 'types/index.d';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key, defaultValue) => defaultValue)
-}));
-
 describe('SelectIdentitySignature', () => {
-	const mockUpdateIdentities = jest.fn();
+	const mockUpdateIdentities = vi.fn();
 	const mockDefaultAccount = {
 		id: '0',
 		name: PRIMARY_IDENTITY_NAME,
@@ -53,7 +49,7 @@ describe('SelectIdentitySignature', () => {
 	];
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders with default signatures selected', () => {
@@ -68,7 +64,7 @@ describe('SelectIdentitySignature', () => {
 
 		// Assert that the translated string was called for default accounts
 		expect(mockT).toHaveBeenCalledWith('settings.label.default', PRIMARY_IDENTITY_NAME);
-		expect(screen.getByText(PRIMARY_IDENTITY_NAME)).toBeInTheDocument(); // DEFAULT
+		expect(screen.getByText('settings.label.default')).toBeInTheDocument(); // DEFAULT
 		expect(screen.getByText('Signature 1 Label')).toBeInTheDocument();
 	});
 

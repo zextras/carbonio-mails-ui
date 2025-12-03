@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
-
 import { parse } from 'api/upload-attachments-api';
 import { convertToDecimal } from 'commons/utilities';
 
@@ -16,7 +14,9 @@ import { convertToDecimal } from 'commons/utilities';
  * @returns A promise that resolves to an object containing the attachment ID (`aid`).
  */
 export const uploadFileApi = async (file: File): Promise<{ aid: string }> => {
-	const response = await axios.post('/service/upload?fmt=extended,raw&lbfums', file, {
+	const response = await fetch('/service/upload?fmt=extended,raw&lbfums', {
+		method: 'POST',
+		body: file,
 		headers: {
 			'Cache-Control': 'no-cache',
 			'X-Requested-With': 'XMLHttpRequest',
@@ -24,8 +24,10 @@ export const uploadFileApi = async (file: File): Promise<{ aid: string }> => {
 			'Content-Disposition': `attachment; filename="${convertToDecimal(file.name)}"`
 		}
 	});
-	if (response) {
-		const val = parse(`[${response.data}]`);
+	const data = await response.text();
+
+	if (data) {
+		const val = parse(`[${data}]`);
 		const { aid } = val[2][0];
 
 		return {

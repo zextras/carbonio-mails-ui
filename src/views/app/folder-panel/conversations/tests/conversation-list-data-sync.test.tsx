@@ -9,6 +9,7 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -19,18 +20,18 @@ import { ConversationList } from 'views/app/folder-panel/conversations/conversat
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useParams: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
 	folderWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	},
 	tagsWorker: {
-		postMessage: jest.fn()
+		postMessage: vi.fn()
 	}
 }));
 
@@ -45,7 +46,7 @@ const ConversationListDataSyncTest: () => React.JSX.Element = () => {
 
 describe('conversation-list-data-sync', () => {
 	it('single message conversation should not disappear from the list when replying', async () => {
-		(useParams as jest.Mock).mockReturnValue({
+		(useParams as Mock).mockReturnValue({
 			folderId: FOLDERS.INBOX
 		});
 		populateFoldersStore();
