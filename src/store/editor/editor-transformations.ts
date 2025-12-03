@@ -8,6 +8,7 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
 import { areContentIdsEqual, removeAngleBrackets } from 'commons/content-id-utils';
+import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import {
 	composeAttachmentDownloadUrl,
 	getCidFromCidUrl,
@@ -15,6 +16,7 @@ import {
 	isDownloadServicedUrl
 } from 'helpers/attachments';
 import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
+import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
 import {
 	filterSavedInlineAttachment,
 	filterSavedStandardAttachment,
@@ -142,15 +144,16 @@ export const replaceServiceUrlWithCidUrl = (content: string): string => {
 };
 
 /**
- *
- * @param content
- * @param style
+ * @deprecated Use applyUserPreferenceStyles from helpers/user-preference-styles.ts instead
+ * Wraps content with user preference styles applied via CSS, ensuring signature content is not affected.
+ * @param content - The HTML content to wrap
+ * @param style - User preference styles (font, fontSize, color)
+ * @returns HTML content with inlined styles
  */
 const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string =>
-	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
