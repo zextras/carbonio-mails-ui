@@ -6,9 +6,10 @@
 
 /**
  * Base content styles for TinyMCE editor and email body formatting.
+ * Optimized for email client compatibility (Gmail, Outlook, Apple Mail, etc.)
  */
 export const TINYMCE_BASE_CONTENT_STYLES = `
-	/* Reset paragraph margins */
+	/* Paragraphs */
 	p {
 		margin: 0;
 		padding: 0;
@@ -32,7 +33,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	h5 { font-size: 14px; }
 	h6 { font-size: 12px; }
 	
-	/* Table styles */
+	/* Tables */
 	table {
 		border-collapse: collapse;
 		border-spacing: 0;
@@ -40,13 +41,11 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		max-width: 100%;
 		background-color: transparent;
 	}
-	/* Default padding and alignment - always applied */
 	table td,
 	table th {
 		padding: 8px;
 		vertical-align: top;
 	}
-	/* Default borders only when no inline border style is set */
 	table td:not([style*="border"]),
 	table th:not([style*="border"]) {
 		border: 1px solid #cccccc;
@@ -58,7 +57,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	table th:not([style*="background"]) {
 		background-color: #f5f5f5;
 	}
-	/* Alternative for tables with explicit border attribute */
 	table[border="1"] td:not([style*="border"]),
 	table[border="1"] th:not([style*="border"]) {
 		border: 1px solid #cccccc;
@@ -68,7 +66,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border: none;
 	}
 	
-	/* Table caption - descriptive text above/below table */
+	/* Table captions */
 	caption {
 		padding: 8px;
 		caption-side: top;
@@ -102,7 +100,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		color: #1e5092;
 	}
 	
-	/* Images - responsive and email-safe */
+	/* Images */
 	img {
 		max-width: 100%;
 		height: auto;
@@ -112,7 +110,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		display: block;
 	}
 	
-	/* Horizontal rule */
+	/* Horizontal rules */
 	hr {
 		border: 0;
 		border-top: 1px solid #cccccc;
@@ -120,7 +118,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		height: 0;
 	}
 	
-	/* Code and pre - inline code styling */
+	/* Code blocks */
 	code {
 		background-color: #f5f5f5;
 		padding: 2px 4px;
@@ -144,7 +142,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border: none;
 	}
 	
-	/* Blockquote styling */
+	/* Blockquotes */
 	blockquote {
 		border-left: 3px solid #cccccc;
 		margin: 16px 0;
@@ -155,8 +153,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border-right: 3px solid #cccccc;
 		padding: 8px 16px 8px 0;
 	}
-	
-	/* Editor-specific blockquote styles for TinyMCE */
 	.mce-content-body:not([dir=rtl]) blockquote {
 		border-left: 3px solid #cccccc;
 		margin: 16px 0;
@@ -169,23 +165,19 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		padding: 8px 16px 8px 0;
 	}
 	
-	/* Strong and emphasis */
+	/* Text formatting */
 	strong, b {
 		font-weight: bold;
 	}
 	em, i {
 		font-style: italic;
 	}
-	
-	/* Underline and strikethrough */
 	u {
 		text-decoration: underline;
 	}
 	s, strike, del {
 		text-decoration: line-through;
 	}
-	
-	/* Subscript and superscript */
 	sub {
 		font-size: 75%;
 		line-height: 0;
@@ -201,7 +193,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		top: -0.5em;
 	}
 	
-	/* Div spacing */
+	/* Divs */
 	div {
 		margin: 0;
 		padding: 0;
