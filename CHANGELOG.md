@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.1...v1.28.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* fix advanced search results for from and to field ([1a09532](https://github.com/zextras/carbonio-mails-ui/commit/1a09532b1eee2a53a7aecdfdda3631c69e7a4e4f))
+
 ### [1.28.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.0...v1.28.1) (2025-11-27)
 
 
