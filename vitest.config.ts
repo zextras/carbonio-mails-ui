@@ -50,7 +50,7 @@ export default defineConfig({
 			...configDefaults.exclude,
 			'**/app.test.tsx',
 			'**/use-conversations-list-by-folder.test.ts',
-			'**/editor-slice-utils.test.ts',
+			// '**/editor-slice-utils.test.ts',
 			// '**/move-conv.test.tsx',
 			'**/editor-generators.test.ts',
 			'**/recover-messages.test.tsx',
