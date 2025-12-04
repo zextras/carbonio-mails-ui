@@ -89,12 +89,16 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		margin-bottom: 4px;
 	}
 	
-	/* Links - standard email styling */
-	a {
+	/* Links */
+	a[href] {
 		color: #2b73d2;
 		text-decoration: underline;
 	}
-	a:hover {
+	a[href]:hover {
+		color: #1e5092;
+		text-decoration: underline;
+	}
+	a[href]:visited {
 		color: #1e5092;
 	}
 	
