@@ -50,13 +50,9 @@ export default defineConfig({
 			...configDefaults.exclude,
 			'**/app.test.tsx',
 			'**/use-conversations-list-by-folder.test.ts',
-			'**/recover-messages.test.tsx',
-			'**/share-folder-actions.test.ts',
 			'**/useEditorAttachments.test.tsx',
-			// '**/get-conv-action.test.ts',
 			'**/get-message-with-existing-participants.test.ts',
 			'**/certificate-utils.test.ts',
-			'**/rich-text-editor-container.test.tsx',
 			'**/sort-and-filter-button-component.test.tsx',
 			'**/recipients-certificates-settings.test.tsx' // error certificates.map
 		]
