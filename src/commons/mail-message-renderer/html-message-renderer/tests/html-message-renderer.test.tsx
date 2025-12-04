@@ -80,6 +80,7 @@ describe('HTMLMessageRenderer Component', () => {
 
 			it.skip('should remove warning banner after successfully loading complete message', async () => {
 				// eslint-disable-next-line sonarjs/no-duplicate-string
+				// FIXME: banner not removed
 				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
 				updateMessages([message]);
 				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
