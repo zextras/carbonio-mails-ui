@@ -31,7 +31,7 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 
 	// Build CSS that applies user preferences to all elements except signature and headings
 	// Using :not(.signature-div) ensures signature and its children are excluded
-	// Using :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) ensures headings maintain their styles
+	// Using :not(h1-h6) ensures headings maintain their styles
 	let userPrefRules =
 		'body > *:not(.signature-div):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),\n\t\tbody > *:not(.signature-div) *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {\n';
 
