@@ -51,7 +51,6 @@ export default defineConfig({
 			'**/app.test.tsx',
 			'**/use-conversations-list-by-folder.test.ts',
 			'**/useEditorAttachments.test.tsx',
-			'**/get-message-with-existing-participants.test.ts',
 			'**/certificate-utils.test.ts',
 			'**/sort-and-filter-button-component.test.tsx'
 		]
