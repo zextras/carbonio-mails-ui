@@ -49,13 +49,26 @@ describe('EditViewFooter', () => {
 			expect(screen.getByText('Draft not saved')).toBeVisible();
 		});
 
-		it('should render a disabled delete button', () => {
+		it('should render an enabled delete button', () => {
 			const editor = generateNewMessageEditor();
 			setupEditorStore({ editors: [editor] });
 
 			setupTest(<EditViewFooter editorId={editor.id} />);
 
-			expect(getDraftDeleteBottom()).toBeDisabled();
+			expect(getDraftDeleteBottom()).toBeEnabled();
+		});
+
+		it('should immediately call onDraftDeleted when user clicks the delete button', async () => {
+			const onDraftDeleted = jest.fn();
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(
+				<EditViewFooter editorId={editor.id} onDraftDeleted={onDraftDeleted} />
+			);
+			await user.click(getDraftDeleteBottom());
+
+			expect(onDraftDeleted).toHaveBeenCalled();
 		});
 	});
 

@@ -52,9 +52,11 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 		[draftId]
 	);
 
+	const isDraftSaved = useMemo<boolean>((): boolean => !!draftId, [draftId]);
+
 	const isDeleteDisabled = useMemo<boolean>(
-		(): boolean => !draftId || draftSaveStatus?.status === PROCESS_STATUS.RUNNING,
-		[draftId, draftSaveStatus?.status]
+		(): boolean => draftSaveStatus?.status === PROCESS_STATUS.RUNNING,
+		[draftSaveStatus?.status]
 	);
 
 	const buttonColor = useMemo<string>(
@@ -74,12 +76,12 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 			});
 		}
 
-		if (!draftId) {
+		if (!isDraftSaved) {
 			return t('editView.footer.draftNotSaved', 'Draft not saved');
 		}
 
 		return '';
-	}, [draftId, draftSaveStatus?.lastSaveTimestamp, draftSaveStatus?.status, t]);
+	}, [isDraftSaved, draftSaveStatus?.lastSaveTimestamp, draftSaveStatus?.status, t]);
 
 	const onDeleteConfirm = useCallback((): void => {
 		closeModal(confirmationModalId);
@@ -88,6 +90,11 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	}, [closeModal, confirmationModalId, deleteDraft, onDraftDeleted]);
 
 	const onDeleteClick = useCallback((): void => {
+		if (!isDraftSaved) {
+			onDraftDeleted && onDraftDeleted();
+			return;
+		}
+
 		createModal({
 			id: confirmationModalId,
 			title: t('editView.footer.deleteDraftConfirmationTitle', 'Delete draft'),
@@ -107,7 +114,15 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 				</Text>
 			)
 		});
-	}, [createModal, confirmationModalId, t, onDeleteConfirm, closeModal]);
+	}, [
+		isDraftSaved,
+		createModal,
+		confirmationModalId,
+		t,
+		onDeleteConfirm,
+		onDraftDeleted,
+		closeModal
+	]);
 
 	return (
 		<FooterContainer>
