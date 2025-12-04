@@ -29,11 +29,12 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		return 'p { margin: 0; }';
 	}
 
-	// Build CSS that applies user preferences to all elements except signature and headings
+	// Build CSS that applies user preferences to all elements except signature, headings, and links
 	// Using :not(.signature-div) ensures signature and its children are excluded
 	// Using :not(h1-h6) ensures headings maintain their styles
+	// Using :not(a[href]) ensures links maintain their color styling
 	let userPrefRules =
-		'body > *:not(.signature-div):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),\n\t\tbody > *:not(.signature-div) *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {\n';
+		'body > *:not(.signature-div):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(a[href]),\n\t\tbody > *:not(.signature-div) *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(a[href]) {\n';
 
 	if (style?.color) {
 		userPrefRules += `\t\t\tcolor: ${style.color};\n`;
