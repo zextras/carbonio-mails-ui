@@ -8,7 +8,7 @@
  * Base content styles for TinyMCE editor and email body formatting.
  */
 export const TINYMCE_BASE_CONTENT_STYLES = `
-	/* Reset paragraph margins - Gmail and Outlook compatible */
+	/* Reset paragraph margins */
 	p {
 		margin: 0;
 		padding: 0;
@@ -18,7 +18,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		margin-bottom: 0;
 	}
 	
-	/* Headings - email client compatible sizing */
+	/* Headings */
 	h1, h2, h3, h4, h5, h6 {
 		margin-top: 0;
 		margin-bottom: 16px;
@@ -32,7 +32,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	h5 { font-size: 14px; }
 	h6 { font-size: 12px; }
 	
-	/* Table styles - optimized for email clients */
+	/* Table styles */
 	table {
 		border-collapse: collapse;
 		border-spacing: 0;
@@ -80,7 +80,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		margin-top: 8px;
 	}
 	
-	/* Lists - Gmail and Outlook compatible */
+	/* Lists */
 	ul, ol {
 		margin: 0 0 16px 0;
 		padding: 0 0 0 40px;
@@ -123,7 +123,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		font-style: italic;
 	}
 	
-	/* Horizontal rule - email client compatible */
+	/* Horizontal rule */
 	hr {
 		border: 0;
 		border-top: 1px solid #cccccc;
@@ -155,7 +155,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border: none;
 	}
 	
-	/* Blockquote styling - Gmail/Outlook compatible */
+	/* Blockquote styling */
 	blockquote {
 		border-left: 3px solid #cccccc;
 		margin: 16px 0;
