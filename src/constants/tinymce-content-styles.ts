@@ -102,8 +102,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	
 	/* Images */
 	img {
-		max-width: 100%;
-		height: auto;
 		border: 0;
 		outline: none;
 		text-decoration: none;
