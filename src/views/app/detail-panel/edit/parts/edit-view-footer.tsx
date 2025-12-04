@@ -5,26 +5,61 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { Container, Text, Divider, Button } from '@zextras/carbonio-design-system';
+import styled from '@emotion/styled';
+import { Container, Text, Button, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
+import { Divider } from '../../../../../components/divider';
 import { PROCESS_STATUS } from '../../../../../constants';
+import { useMsgMoveToTrashDescriptor } from '../../../../../hooks/actions/use-msg-move-to-trash';
 import { useEditorDid, useEditorDraftSaveProcessStatus } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
+import { MailsEditorV2 } from '../../../../../types/editor';
 
 type EditViewFooterProps = {
 	editorId: MailsEditorV2['id'];
+	onDraftDeleted?: () => void;
 };
 
-export const EditViewFooter = ({ editorId }: EditViewFooterProps): JSX.Element => {
+const FooterContainer = styled(Container)`
+	gap: 1rem;
+	max-height: 3.5rem;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	padding-bottom: 0.5rem;
+	width: 100%;
+`;
+
+export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps): JSX.Element => {
 	const draftSaveStatus = useEditorDraftSaveProcessStatus(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const [t] = useTranslation();
+	const { createModal, closeModal } = useModal();
+
+	const { folderId: routeFolderId } = useParams();
+	const { execute: deleteDraft } = useMsgMoveToTrashDescriptor({
+		ids: [draftId ?? ''],
+		messageFolderId: FOLDERS.DRAFTS,
+		routeFolderId: routeFolderId ?? '',
+		shouldReplaceHistory: true
+	});
+
+	const confirmationModalId = useMemo<string>(
+		() => `delete-draft-confirmation-${draftId}`,
+		[draftId]
+	);
 
 	const isDeleteDisabled = useMemo<boolean>(
 		(): boolean => !draftId || draftSaveStatus?.status === PROCESS_STATUS.RUNNING,
 		[draftId, draftSaveStatus?.status]
+	);
+
+	const buttonColor = useMemo<string>(
+		() => (isDeleteDisabled ? 'secondary' : 'secondary.focus'),
+		[isDeleteDisabled]
 	);
 
 	const draftSavedStatusMessage = useMemo<string>((): string => {
@@ -46,23 +81,57 @@ export const EditViewFooter = ({ editorId }: EditViewFooterProps): JSX.Element =
 		return '';
 	}, [draftId, draftSaveStatus?.lastSaveTimestamp, draftSaveStatus?.status, t]);
 
+	const onDeleteConfirm = useCallback((): void => {
+		closeModal(confirmationModalId);
+		deleteDraft();
+		onDraftDeleted && onDraftDeleted();
+	}, [closeModal, confirmationModalId, deleteDraft, onDraftDeleted]);
+
 	const onDeleteClick = useCallback((): void => {
-		// Implement delete draft logic here
-	}, []);
+		createModal({
+			id: confirmationModalId,
+			title: t('editView.footer.deleteDraftConfirmationTitle', 'Delete draft'),
+			confirmLabel: t('label.delete', 'Delete'),
+			confirmColor: 'error',
+			onConfirm: onDeleteConfirm,
+			onClose: () => {
+				closeModal(confirmationModalId);
+			},
+			showCloseIcon: true,
+			children: (
+				<Text overflow="break-word">
+					{t(
+						'editView.footer.deleteDraftConfirmationContent',
+						'Are you sure you want to delete this draft?'
+					)}
+				</Text>
+			)
+		});
+	}, [createModal, confirmationModalId, t, onDeleteConfirm, closeModal]);
 
 	return (
-		<Container>
+		<FooterContainer>
 			<Divider />
 			<Container
 				orientation="horizontal"
 				mainAlignment="flex-end"
 				crossAlignment="center"
-				gap="0.5rem"
+				gap="1rem"
+				padding={{ right: '0.5rem' }}
 			>
-				<Text>{draftSavedStatusMessage}</Text>
-				<Divider />
-				<Button icon="Trash2Outline" onClick={onDeleteClick} disabled={isDeleteDisabled} />
+				<Text color="gray1">{draftSavedStatusMessage}</Text>
+				<Divider orientation="vertical" />
+				<Tooltip label={t('editView.footer.deleteDraft', 'Delete draft')}>
+					<Button
+						type="ghost"
+						size="extralarge"
+						color={buttonColor}
+						icon="Trash2Outline"
+						onClick={onDeleteClick}
+						disabled={isDeleteDisabled}
+					/>
+				</Tooltip>
 			</Container>
-		</Container>
+		</FooterContainer>
 	);
 };

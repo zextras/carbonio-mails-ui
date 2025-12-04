@@ -31,7 +31,6 @@ import {
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
-import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewFooter } from './parts/edit-view-footer';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
@@ -58,7 +57,6 @@ import {
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
-	useEditorDraftSaveProcessStatus,
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
@@ -168,12 +166,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
-	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
-
-	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
 	useEffect(() => {
 		if (!isCarbonioCE) {
@@ -591,6 +586,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
+
+	const onDraftDeleted = useCallback((): void => {
+		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
+	}, [close]);
+
 	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
@@ -678,7 +678,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					</Container>
 					<EditAttachmentsBlock editorId={editorId} />
 					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
-					<MemoizedFooter editorId={editorId} />
+					<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
 				</GapContainer>
 			</GapContainer>
 		</Container>

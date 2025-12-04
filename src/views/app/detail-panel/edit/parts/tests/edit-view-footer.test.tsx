@@ -5,104 +5,222 @@
  */
 import React from 'react';
 
+import { faker } from '@faker-js/faker';
+import { act } from '@testing-library/react';
+import { Theme, useTheme } from '@zextras/carbonio-design-system';
+
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import { setupEditorStore } from '../../../../../../__test__/generators/editor-store';
-import { setupTest, screen } from '../../../../../../__test__/test-setup';
+import { createSoapAPIInterceptor } from '../../../../../../__test__/mocks/network/msw/create-api-interceptor';
+import { setupTest, screen, setupHook } from '../../../../../../__test__/test-setup';
+import { FOLDER_ACTIONS } from '../../../../../../commons/utilities';
 import { PROCESS_STATUS } from '../../../../../../constants';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { MailsEditorV2 } from '../../../../../../types';
 import { EditViewFooter } from '../edit-view-footer';
 
+const getDraftDeleteBottom = (): HTMLElement =>
+	screen.getByRoleWithIcon('button', {
+		icon: TESTID_SELECTORS.icons.trash
+	});
+
+const getConfirmationModalMessage = (): HTMLElement | null =>
+	screen.queryByText('Are you sure you want to delete this draft?');
+
+const getConfirmationModalButton = (): HTMLElement =>
+	screen.getByRole('button', { name: /delete/i });
+
+const awaitModalOpening = (): void => {
+	act(() => {
+		jest.advanceTimersByTime(10);
+	});
+};
+
+const draftId = faker.number.int().toString();
+
 describe('EditViewFooter', () => {
-	describe('Appearence', () => {
+	describe('Draft not saved yet', () => {
+		it('should render the "Draft not saved" text', () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
 
-		
-		describe('Draft not saved yet', () => {
-			it('should render the "Draft not saved" text', () => {
-				const editor = generateNewMessageEditor();
-				const editors = [editor];
-				setupEditorStore({ editors });
+			setupTest(<EditViewFooter editorId={editor.id} />);
 
-				setupTest(<EditViewFooter editorId={editor.id} />);
-
-				expect(screen.getByText('Draft not saved')).toBeVisible();
-			});
-
-			it('should render a disabled delete button', () => {
-				const editor = generateNewMessageEditor();
-				const editors = [editor];
-				setupEditorStore({ editors });
-
-				setupTest(<EditViewFooter editorId={editor.id} />);
-				const deleteButton = screen.getByRoleWithIcon('button', {
-					icon: TESTID_SELECTORS.icons.trash
-				});
-
-				expect(deleteButton).toBeDisabled();
-			});
+			expect(screen.getByText('Draft not saved')).toBeVisible();
 		});
 
-		describe('Draft saving', () => {
-			it('should render the "Saving..." text', () => {
-				const editor: MailsEditorV2 = {
-					...generateNewMessageEditor(),
-					draftSaveProcessStatus: { status: PROCESS_STATUS.RUNNING }
-				};
-				const editors = [editor];
-				setupEditorStore({ editors });
+		it('should render a disabled delete button', () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
 
-				setupTest(<EditViewFooter editorId={editor.id} />);
+			setupTest(<EditViewFooter editorId={editor.id} />);
 
-				expect(screen.getByText('Saving...')).toBeVisible();
-			});
+			expect(getDraftDeleteBottom()).toBeDisabled();
+		});
+	});
 
-			it('should render a disabled delete button', () => {
-				const editor: MailsEditorV2 = {
-					...generateNewMessageEditor(),
-					draftSaveProcessStatus: { status: PROCESS_STATUS.RUNNING }
-				};
-				const editors = [editor];
-				setupEditorStore({ editors });
+	describe('Draft saving', () => {
+		it('should render the "Saving..." text', () => {
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				draftSaveProcessStatus: { status: PROCESS_STATUS.RUNNING }
+			};
+			setupEditorStore({ editors: [editor] });
 
-				setupTest(<EditViewFooter editorId={editor.id} />);
-				const deleteButton = screen.getByRoleWithIcon('button', {
-					icon: TESTID_SELECTORS.icons.trash
-				});
+			setupTest(<EditViewFooter editorId={editor.id} />);
 
-				expect(deleteButton).toBeDisabled();
-			});
+			expect(screen.getByText('Saving...')).toBeVisible();
 		});
 
-		describe('Draft saved', () => {
-			it.todo('should render an enabled delete button');
+		it('should render a disabled delete button', () => {
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				draftSaveProcessStatus: { status: PROCESS_STATUS.RUNNING }
+			};
+			setupEditorStore({ editors: [editor] });
 
+			setupTest(<EditViewFooter editorId={editor.id} />);
 
-
-			it('should render the last saved timestamp', () => {
-				const lastSaveTimestamp = new Date(Date.now() - 1000 * 60); // 1 minute ago
-				const editor: MailsEditorV2 = {
-					...generateNewMessageEditor(),
-					did: 'draft-id-123',
-					draftSaveProcessStatus: {
-						status: PROCESS_STATUS.COMPLETED,
-						lastSaveTimestamp
-					}
-				};
-				const editors = [editor];
-				setupEditorStore({ editors });
-
-				setupTest(<EditViewFooter editorId={editor.id} />);
-
-				const formattedTime = new Intl.DateTimeFormat(undefined, {
-					hour: 'numeric',
-					minute: 'numeric',
-					second: 'numeric'
-				}).format(new Date(lastSaveTimestamp));
-
-				expect(screen.getByText(`Draft saved at ${formattedTime}`)).toBeVisible();
-			});
-
-			it.todo('should call onDeleteClick when delete button is clicked');
+			expect(getDraftDeleteBottom()).toBeDisabled();
 		});
+	});
+
+	describe('Draft saved', () => {
+		it('should render the last saved timestamp', () => {
+			const lastSaveTimestamp = new Date(Date.now() - 1000 * 60); // 1 minute ago
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditViewFooter editorId={editor.id} />);
+			const formattedTime = new Intl.DateTimeFormat(undefined, {
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric'
+			}).format(new Date(lastSaveTimestamp));
+
+			expect(screen.getByText(`Draft saved at ${formattedTime}`)).toBeVisible();
+		});
+
+		it('should render an enabled delete button', () => {
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp: new Date()
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditViewFooter editorId={editor.id} />);
+
+			expect(getDraftDeleteBottom()).toBeEnabled();
+		});
+
+		it('should ask for confirmation before deleting the draft', async () => {
+			const {
+				result: { current: theme }
+			} = setupHook<never, Theme>(useTheme);
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp: new Date()
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditViewFooter editorId={editor.id} />);
+			await act(() => user.click(getDraftDeleteBottom()));
+			awaitModalOpening();
+
+			expect(getConfirmationModalMessage()).toBeVisible();
+			expect(getConfirmationModalButton()).toBeVisible();
+			expect(getConfirmationModalButton()).toHaveStyle(
+				`background-color: ${theme.palette.error.regular}`
+			);
+		});
+
+		it('should call the DeleteMsg API when the deletion is confirmed', async () => {
+			const apiInterceptor = createSoapAPIInterceptor('MsgAction');
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp: new Date()
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditViewFooter editorId={editor.id} />);
+			await user.click(getDraftDeleteBottom());
+			awaitModalOpening();
+			await act(() => user.click(getConfirmationModalButton()));
+			const apiRequestPayload = await apiInterceptor;
+
+			expect(apiRequestPayload).toEqual(
+				expect.objectContaining({
+					action: { id: draftId, op: FOLDER_ACTIONS.TRASH }
+				})
+			);
+		});
+
+		it('should close the confirmation modal when deletion is successful', async () => {
+			const apiInterceptor = createSoapAPIInterceptor('MsgAction');
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp: new Date()
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditViewFooter editorId={editor.id} />);
+			await user.click(getDraftDeleteBottom());
+			awaitModalOpening();
+			await act(() => user.click(getConfirmationModalButton()));
+
+			await apiInterceptor;
+
+			expect(getConfirmationModalMessage()).not.toBeInTheDocument();
+		});
+
+		it('should call onDraftDeleted when the draft is deleted', async () => {
+			createSoapAPIInterceptor('MsgAction');
+			const onDraftDeleted = jest.fn();
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp: new Date()
+				}
+			};
+			const editors = [editor];
+			setupEditorStore({ editors });
+
+			const { user } = setupTest(
+				<EditViewFooter editorId={editor.id} onDraftDeleted={onDraftDeleted} />
+			);
+
+			await user.click(getDraftDeleteBottom());
+			awaitModalOpening();
+			await act(() => user.click(getConfirmationModalButton()));
+
+			expect(onDraftDeleted).toHaveBeenCalled();
+		});
+
+		it.todo('should not call onDraftDeleted when the draft deletion fails');
 	});
 });
