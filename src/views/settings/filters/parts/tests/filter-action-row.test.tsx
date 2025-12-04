@@ -27,11 +27,11 @@ describe('FilterActionsRows', () => {
 		getOptionsTranslations: getActionTranslations(true),
 		mailForwardingEnabled: 'TRUE' as const,
 		selectedAction: defaultAction,
-		onAddNewAction: jest.fn(),
-		onRemoveAction: jest.fn(),
-		onActionSwitch: jest.fn(),
+		onAddNewAction: vi.fn(),
+		onRemoveAction: vi.fn(),
+		onActionSwitch: vi.fn(),
 		disableRemove: false,
-		onActionValueChange: jest.fn()
+		onActionValueChange: vi.fn()
 	};
 	it('should display filter actions', async () => {
 		const testProps = {
@@ -395,7 +395,7 @@ describe('FilterActionsRows', () => {
 			await user.click(browseFolder);
 			makeListItemsVisible();
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				vi.advanceTimersByTime(1000);
 			});
 			await user.click(screen.getByTestId(`folder-accordion-item-${folder.id}`));
 			const chooseFolder = screen.getByRole('button', { name: 'Choose' });

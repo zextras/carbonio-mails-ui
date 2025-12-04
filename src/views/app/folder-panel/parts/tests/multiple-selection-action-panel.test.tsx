@@ -7,21 +7,22 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 describe('MultipleSelectionActionsPanel', () => {
-	let deselectAll: jest.Mock;
-	let setIsSelectModeOn: jest.Mock;
-	let selectAll: jest.Mock;
-	let selectAllModeOff: jest.Mock;
+	let deselectAll: Mock;
+	let setIsSelectModeOn: Mock;
+	let selectAll: Mock;
+	let selectAllModeOff: Mock;
 
 	beforeEach(() => {
-		deselectAll = jest.fn();
-		setIsSelectModeOn = jest.fn();
-		selectAll = jest.fn();
-		selectAllModeOff = jest.fn();
+		deselectAll = vi.fn();
+		setIsSelectModeOn = vi.fn();
+		selectAll = vi.fn();
+		selectAllModeOff = vi.fn();
 	});
 	it('calls deselectAll and setIsSelectModeOn(false) when folderId changes', () => {
 		const { rerender } = setupTest(

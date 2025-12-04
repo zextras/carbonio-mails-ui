@@ -8,27 +8,28 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useTags: vi.fn()
 }));
 
-jest.mock('../../../../../ui-actions/tag-actions', () => ({
-	useTagExist: jest.fn().mockReturnValue(true)
+vi.mock('../../../../../ui-actions/tag-actions', () => ({
+	useTagExist: vi.fn().mockReturnValue(true)
 }));
 
-const mockToggle = jest.fn();
+const mockToggle = vi.fn();
 
 describe('SearchMessageListItemCore', () => {
 	const subject = 'Test Subject';
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe('render test', () => {
@@ -39,7 +40,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -63,7 +64,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -85,7 +86,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore: { color: number; name: string; id: string }[] = [];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -107,7 +108,7 @@ describe('SearchMessageListItemCore', () => {
 			});
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -133,7 +134,7 @@ describe('SearchMessageListItemCore', () => {
 				{ id: 'tag1', name: 'Tag 1', color: 0 },
 				{ id: 'tag2', name: 'Tag 2', color: 1 }
 			];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchMessageListItemCore

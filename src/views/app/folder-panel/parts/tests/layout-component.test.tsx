@@ -104,7 +104,7 @@ describe('LayoutComponent', () => {
 	});
 
 	test('onClick will call the local storage function', async () => {
-		const callback = jest.fn();
+		const callback = vi.fn();
 		mockLayoutStorage({ callback });
 
 		const { user } = setupTest(<LayoutComponent />);

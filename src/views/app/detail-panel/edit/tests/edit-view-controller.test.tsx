@@ -75,7 +75,7 @@ describe('EditViewController', () => {
 			editorId: editor.id
 		});
 		useBoard.mockReturnValue(boardMock);
-		const apiCallFlag = jest.fn();
+		const apiCallFlag = vi.fn();
 		createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
 
 		await act(async () => setupTest(<EditViewController />));
@@ -103,7 +103,7 @@ describe('EditViewController', () => {
 				originActionTargetId: messages[0].id
 			});
 			useBoard.mockReturnValue(boardMock);
-			const apiCallFlag = jest.fn();
+			const apiCallFlag = vi.fn();
 			createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
 
 			await act(async () => setupTest(<EditViewController />));

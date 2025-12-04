@@ -21,11 +21,11 @@ export const mockLayoutStorage = ({
 	left,
 	width,
 	height,
-	callback = jest.fn()
+	callback = vi.fn()
 }: {
 	layout?: MailsListLayout;
 	splitOrientation?: MailsSplitLayoutOrientation;
-	callback?: typeof jest.fn;
+	callback?: typeof vi.fn;
 	top?: number;
 	left?: number;
 	width?: number;
@@ -36,7 +36,7 @@ export const mockLayoutStorage = ({
 			key
 		): [
 			MailsListLayout | MailsSplitLayoutOrientation | Partial<Geometry> | undefined,
-			typeof jest.fn
+			typeof vi.fn
 		] => {
 			if (key === LOCAL_STORAGE_LAYOUT) {
 				return [layout, callback];

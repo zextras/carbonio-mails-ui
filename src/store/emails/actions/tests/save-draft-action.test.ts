@@ -38,7 +38,7 @@ describe('saveDraftEmailStoreAction', () => {
 		};
 
 		beforeEach(() => {
-			jest.spyOn(shellHooks, 'getUserAccount').mockReturnValue(mainAccount);
+			vi.spyOn(shellHooks, 'getUserAccount').mockReturnValue(mainAccount);
 		});
 
 		it('should add reply-to participant when reply-to is set in Mails settings', async () => {

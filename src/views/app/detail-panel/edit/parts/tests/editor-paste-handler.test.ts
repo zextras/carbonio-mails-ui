@@ -1,3 +1,5 @@
+import { type Editor } from 'tinymce';
+import type { Mock } from 'vitest';
 /* eslint-disable sonarjs/no-duplicate-string */
 // noinspection HtmlRequiredLangAttribute
 
@@ -7,8 +9,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type Editor } from 'tinymce';
-
 import { uploadFileApi } from 'api/upload-file-api';
 import { getEditor, useEditorsStore } from 'store/editor/index';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
@@ -17,26 +17,24 @@ import {
 	handleEditorPaste
 } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
-jest.mock('api/upload-file-api');
-jest.mock('store/emails/actions/save-draft-action');
-jest.mock('store/editor');
-
-jest.mock('axios');
+vi.mock('api/upload-file-api');
+vi.mock('store/emails/actions/save-draft-action');
+vi.mock('store/editor');
 
 const createMockEditor = (): Editor =>
 	({
-		insertContent: jest.fn(),
-		setProgressState: jest.fn()
+		insertContent: vi.fn(),
+		setProgressState: vi.fn()
 	}) as unknown as Editor;
 
 describe('handleEditorPaste', () => {
 	const defaultClipboardEvent = {
-		preventDefault: jest.fn(),
+		preventDefault: vi.fn(),
 		clipboardData: {
 			items: [
 				{
 					type: 'image/png',
-					getAsFile: jest.fn(() => new File(['dummy content'], 'test.png', { type: 'image/png' }))
+					getAsFile: vi.fn(() => new File(['dummy content'], 'test.png', { type: 'image/png' }))
 				}
 			]
 		}
@@ -54,8 +52,8 @@ describe('handleEditorPaste', () => {
 		const event = {
 			...defaultClipboardEvent,
 			clipboardData: {
-				items: [{ type: 'text/plain', getAsFile: jest.fn(() => null) }],
-				getData: jest.fn(() => null)
+				items: [{ type: 'text/plain', getAsFile: vi.fn(() => null) }],
+				getData: vi.fn(() => null)
 			}
 		} as unknown as ClipboardEvent;
 		handleEditorPaste(editor, 'editor-1', event);
@@ -70,10 +68,10 @@ describe('handleEditorPaste', () => {
 				items: [
 					{
 						type: 'text/plain',
-						getAsFile: jest.fn(() => null)
+						getAsFile: vi.fn(() => null)
 					}
 				],
-				getData: jest.fn(() => 'https://example.com/image.png')
+				getData: vi.fn(() => 'https://example.com/image.png')
 			}
 		} as unknown as ClipboardEvent;
 		handleEditorPaste(editor, 'editor-1', event);
@@ -84,15 +82,15 @@ describe('handleEditorPaste', () => {
 		const editor = createMockEditor();
 		const excelTableHtml = `<table><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></table>`;
 		const event = {
-			preventDefault: jest.fn(),
+			preventDefault: vi.fn(),
 			clipboardData: {
 				items: [
 					{
 						type: 'text/plain',
-						getAsFile: jest.fn(() => null)
+						getAsFile: vi.fn(() => null)
 					}
 				],
-				getData: jest.fn((format: string) => {
+				getData: vi.fn((format: string) => {
 					if (format === 'text/html') return excelTableHtml;
 					if (format === 'text/plain') return 'Cell 1\tCell 2\nCell 3\tCell 4';
 					return '';
@@ -108,15 +106,15 @@ describe('handleEditorPaste', () => {
 		const editor = createMockEditor();
 		const excelTableHtml = `<table><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></table>`;
 		const event = {
-			preventDefault: jest.fn(),
+			preventDefault: vi.fn(),
 			clipboardData: {
 				items: [
 					{
 						type: 'image/png',
-						getAsFile: jest.fn(() => new File(['dummy'], 'screenshot.png', { type: 'image/png' }))
+						getAsFile: vi.fn(() => new File(['dummy'], 'screenshot.png', { type: 'image/png' }))
 					}
 				],
-				getData: jest.fn((format: string) => {
+				getData: vi.fn((format: string) => {
 					if (format === 'text/html') return excelTableHtml;
 					if (format === 'text/plain') return 'Cell 1\tCell 2\nCell 3\tCell 4';
 					return '';
@@ -135,14 +133,14 @@ describe('handleEditorPaste', () => {
 			const mockContentId = `${mockAid}@carbonio`;
 			const mockEditorId = 'test-editor';
 
-			(useEditorsStore.getState as jest.Mock).mockReturnValue({
-				setDid: jest.fn(),
-				setSize: jest.fn(),
-				removeUnsavedAttachments: jest.fn(),
-				setSavedAttachments: jest.fn()
+			(useEditorsStore.getState as Mock).mockReturnValue({
+				setDid: vi.fn(),
+				setSize: vi.fn(),
+				removeUnsavedAttachments: vi.fn(),
+				setSavedAttachments: vi.fn()
 			});
 
-			(saveDraftEmailStoreAction as jest.Mock).mockResolvedValue({
+			(saveDraftEmailStoreAction as Mock).mockResolvedValue({
 				m: [
 					{
 						id: 'msg123',
@@ -168,8 +166,8 @@ describe('handleEditorPaste', () => {
 				]
 			});
 
-			(uploadFileApi as jest.Mock).mockResolvedValue({ aid: mockAid });
-			(getEditor as jest.Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
+			(uploadFileApi as Mock).mockResolvedValue({ aid: mockAid });
+			(getEditor as Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
 				savedAttachments: [
 					{
 						messageId: 'msg123',

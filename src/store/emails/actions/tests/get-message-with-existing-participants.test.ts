@@ -1,10 +1,10 @@
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -14,9 +14,9 @@ import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
 import { GetMsgResponse } from 'types/index.d';
 
-jest.mock('../../../../api/get-msg-soap-api');
-jest.mock('../../store');
-jest.mock('../../../../normalizations/normalize-message');
+vi.mock('../../../../api/get-msg-soap-api');
+vi.mock('../../store');
+vi.mock('../../../../normalizations/normalize-message');
 
 describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 	const messageId = '123';
@@ -31,8 +31,8 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 			{ address: addressFrom, type: ParticipantRole.FROM },
 			{ address: addressTo, type: ParticipantRole.TO }
 		];
-		(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
-		(normalizeMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+		(getMsgSoapApi as Mock).mockResolvedValueOnce(mockResponse);
+		(normalizeMailMessageFromSoap as Mock).mockReturnValueOnce({
 			id: '1',
 			subject: message1Subject,
 			participants: mockParticipants
@@ -59,7 +59,7 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 			{ address: addressFrom, type: ParticipantRole.FROM },
 			{ address: addressTo, type: ParticipantRole.TO }
 		];
-		(getMsgSoapApi as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(getMsgSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
 		const result = await getMessageWithExistingParticipantsEmailStoreAction(
 			messageId,
@@ -77,7 +77,7 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 			{ address: addressTo, type: ParticipantRole.TO }
 		];
 		const faultResponse = { Fault: {} };
-		(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+		(getMsgSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
 		const result = await getMessageWithExistingParticipantsEmailStoreAction(
 			messageId,
@@ -95,7 +95,7 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 			{ address: addressTo, type: ParticipantRole.TO }
 		];
 		const emptyResponse = { m: [] };
-		(getMsgSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+		(getMsgSoapApi as Mock).mockResolvedValueOnce(emptyResponse);
 
 		const result = await getMessageWithExistingParticipantsEmailStoreAction(
 			messageId,

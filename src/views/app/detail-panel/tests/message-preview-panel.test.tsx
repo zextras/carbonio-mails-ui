@@ -1,27 +1,27 @@
+import React from 'react';
+
+import { act, screen } from '@testing-library/react';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
-import { act, screen } from '@testing-library/react';
-
 import { setupTest } from '@test-setup';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { updateMessageStatus } from 'store/emails/store';
-import { generateMessage } from '__test__/generators/generateMessage';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
-jest.mock('../../../../store/emails/hooks/hooks');
+vi.mock('../../../../store/emails/hooks/hooks');
 
 describe('MessagePreviewPanel', () => {
-	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;
+	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as Mock;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders spinner when message is loading', () => {

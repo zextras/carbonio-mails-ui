@@ -19,8 +19,8 @@ describe('Move to Folder', () => {
 		setupTest(
 			<MovetoFolder
 				destination={{ name: 'test path' }}
-				onSelectFolder={jest.fn()}
-				onConfirmDestination={jest.fn()}
+				onSelectFolder={vi.fn()}
+				onConfirmDestination={vi.fn()}
 			/>
 		);
 		const input = screen.getByRole('textbox', { name: 'Destination Folder' });
@@ -37,11 +37,11 @@ describe('Move to Folder', () => {
 			view: FOLDER_VIEW.message,
 			customFolders: [rootFolder]
 		});
-		const onConfirm = jest.fn();
+		const onConfirm = vi.fn();
 		const { user } = setupTest(
 			<MovetoFolder
 				destination={undefined}
-				onSelectFolder={jest.fn()}
+				onSelectFolder={vi.fn()}
 				onConfirmDestination={onConfirm}
 			/>
 		);
@@ -51,7 +51,7 @@ describe('Move to Folder', () => {
 		await user.click(browseFolder);
 		makeListItemsVisible();
 		act(() => {
-			jest.advanceTimersByTime(1000);
+			vi.advanceTimersByTime(1000);
 		});
 		await user.click(screen.getByTestId(`folder-accordion-item-${folder.id}`));
 		const chooseFolder = screen.getByRole('button', { name: 'Choose' });
@@ -70,11 +70,11 @@ describe('Move to Folder', () => {
 			view: FOLDER_VIEW.message,
 			customFolders: [rootFolder]
 		});
-		const onConfirm = jest.fn();
+		const onConfirm = vi.fn();
 		const { user } = setupTest(
 			<MovetoFolder
 				destination={undefined}
-				onSelectFolder={jest.fn()}
+				onSelectFolder={vi.fn()}
 				onConfirmDestination={onConfirm}
 			/>
 		);

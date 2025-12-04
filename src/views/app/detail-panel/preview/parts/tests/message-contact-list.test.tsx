@@ -23,7 +23,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('MessageContactList', () => {
 		});
 
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} />
 		);
 
 		const contactsListToggleIcon = screen.getByTestId('contacs-list-toggle-icon');
@@ -83,7 +83,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} />
 		);
 		const toggleDownIcon = await screen.findByTestId('icon: ChevronDown');
 		expect(toggleDownIcon).toBeInTheDocument();

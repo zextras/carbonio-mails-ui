@@ -4,5 +4,5 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 module.exports = {
-	play: jest.fn()
+	play: vi.fn()
 };

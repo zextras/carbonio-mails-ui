@@ -9,7 +9,7 @@ import { TIMEOUTS } from 'constants/index';
 
 describe('getErrorSnackbarProps', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('returns default error message and default timeout for generic errors', () => {

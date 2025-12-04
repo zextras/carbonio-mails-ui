@@ -109,7 +109,7 @@ describe('useMsgMoveToTrash', () => {
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {
-				const apiCallSpy = jest.fn();
+				const apiCallSpy = vi.fn();
 				createSoapAPIInterceptor<MsgActionRequest>('MsgAction').then(apiCallSpy);
 
 				const {

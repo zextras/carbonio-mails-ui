@@ -15,7 +15,7 @@ import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-
 describe('FilterActionsPanel', () => {
 	it('should update actions when switching an existing action for another one', async () => {
 		const mockCompProps: FilterActionsProps = {
-			setTempActions: jest.fn(),
+			setTempActions: vi.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
 			tempActions: [
@@ -40,7 +40,7 @@ describe('FilterActionsPanel', () => {
 	it.skip('should reset the tag input after changing action from tag to keep back to tag', async () => {
 		const filterName = 'Test Designer';
 		const mockCompProps: FilterActionsProps = {
-			setTempActions: jest.fn(),
+			setTempActions: vi.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
 			tempActions: [{ actionTag: [{ tagName: filterName }] }]
@@ -57,7 +57,7 @@ describe('FilterActionsPanel', () => {
 	});
 	it('should allow removing action if more than one', async () => {
 		const mockCompProps: FilterActionsProps = {
-			setTempActions: jest.fn(),
+			setTempActions: vi.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
 			tempActions: [
@@ -77,7 +77,7 @@ describe('FilterActionsPanel', () => {
 
 	it('should update single action if switching it', async () => {
 		const mockCompProps: FilterActionsProps = {
-			setTempActions: jest.fn(),
+			setTempActions: vi.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
 			tempActions: [{ id: '7', actionKeep: [{}] }]

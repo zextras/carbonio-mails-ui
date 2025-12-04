@@ -25,7 +25,7 @@ const ListItemHoverAction = ({ action }: { action: UIActionDescriptor }): ReactE
 				key={action.id}
 				icon={action.icon}
 				onClick={onClick}
-				size="small"
+				size={'large'}
 				type="ghost"
 				color="text"
 			/>

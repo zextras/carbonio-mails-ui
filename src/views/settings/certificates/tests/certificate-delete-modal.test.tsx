@@ -12,8 +12,8 @@ import { setupTest } from '@test-setup';
 import CertificateDeleteModal from 'views/settings/certificates/certificate-delete-modal';
 
 describe('CertificateDeleteModal', () => {
-	const onClose = jest.fn();
-	const onConfirmDelete = jest.fn();
+	const onClose = vi.fn();
+	const onConfirmDelete = vi.fn();
 	const email = 'test@example.com';
 
 	describe('Delete Certificate', () => {

@@ -20,7 +20,7 @@ import { DeleteModal } from 'views/sidebar/delete-modal';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: '106',
@@ -65,7 +65,7 @@ describe('delete-modal', () => {
 		expect(cancelButton).toBeEnabled();
 	});
 	test('delete the child folder of trash', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		const folder: Folder = {
 			id: '109',
@@ -118,7 +118,7 @@ describe('delete-modal', () => {
 	});
 
 	test('API is called with the proper parameters to delete normal folder excepting trash', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.INBOX);
@@ -147,7 +147,7 @@ describe('delete-modal', () => {
 	});
 
 	test('API is called with the proper parameters to delete folder of trash', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);
@@ -174,7 +174,7 @@ describe('delete-modal', () => {
 	});
 
 	test('API is called with the proper parameters to delete a folder in a shared account', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		populateFoldersStore();
 		const folders = getFolders();
