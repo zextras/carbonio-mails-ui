@@ -13,8 +13,15 @@ export type UserPreferenceStyle = {
 };
 
 /**
- * Generates CSS styles that apply user preferences to email content while excluding signature elements.
- * The selectors target only non-signature content to prevent styles from cascading into signatures.
+ * Generates CSS styles that apply user preferences to email content while excluding signature elements
+ * and special formatting elements.
+ *
+ * The selectors target only non-signature, non-special-element content to prevent styles from
+ * cascading into elements that should maintain their original styling.
+ *
+ * Note: Elements with explicit inline styles (e.g., style="color: red") will have those styles
+ * inlined with higher specificity after CSS processing, so they will take precedence over
+ * user preferences. The juice library respects CSS specificity when inlining.
  *
  * @param style - User preference styles (font, fontSize, color)
  * @returns CSS string with user preference styles
@@ -29,12 +36,35 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		return 'p { margin: 0; }';
 	}
 
-	// Build CSS that applies user preferences to all elements except signature, headings, and links
-	// Using :not(.signature-div) ensures signature and its children are excluded
-	// Using :not(h1-h6) ensures headings maintain their styles
-	// Using :not(a[href]) ensures links maintain their color styling
-	let userPrefRules =
-		'body > *:not(.signature-div):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(a[href]),\n\t\tbody > *:not(.signature-div) *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(a[href]) {\n';
+	// Build CSS that applies user preferences to all elements except signature, headings, links, and special elements
+	// Excluded elements maintain their original/intended styling:
+	// - .signature-div: signature content and children
+	// - h1-h6: heading hierarchy
+	// - a[href]: links with proper colors
+	// - button: call-to-action buttons
+	// - code, pre: code blocks with monospace fonts
+	// - mark: highlighted text with specific styling
+	// - blockquote: quoted content with distinct styling
+	// - caption: table captions with bold/larger text
+	const excludedSelectors = [
+		'.signature-div',
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'a[href]',
+		'button',
+		'code',
+		'pre',
+		'mark',
+		'blockquote',
+		'caption'
+	];
+	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
+
+	let userPrefRules = `body > *${notSelectors},\n\t\tbody > *:not(.signature-div) *${notSelectors} {\n`;
 
 	if (style?.color) {
 		userPrefRules += `\t\t\tcolor: ${style.color};\n`;
