@@ -16,7 +16,6 @@ import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '@test-utils/store/folders';
 import App from 'app';
 import * as addComponentsToShell from 'app-utils/add-shell-components';
 import * as registerShellActions from 'app-utils/register-shell-actions';
@@ -25,6 +24,23 @@ import * as useSearchRegisterer from 'app-utils/use-search-registerer';
 import { BACKUP_SEARCH_ROUTE } from 'constants/index';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { DeletedMessageFromAPI } from 'types';
+
+// Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
+// is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
+// It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
+// I think we should consider removing that mock or redefine it or make it configurable
+// vi.mock('@zextras/carbonio-ui-commons', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+// 	folderWorker: {
+// 		postMessage: vi.fn()
+// 	},
+// 	tagsWorker: {
+// 		postMessage: vi.fn()
+// 	}
+// }));
+// vi.mock('@zextras/carbonio-shell-ui', async () => ({
+// 	...(await vi.importActual('@zextras/carbonio-shell-ui'))
+// }));
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -79,8 +95,8 @@ describe('App', () => {
 	});
 
 	it('should add the backup search route when the backup search messages are present', () => {
-		populateFoldersStore();
 		updateBackupSearchStoreWith([aDeletedMessage()]);
+
 		setupTest(<App />);
 
 		expect(addRouteSpy).toHaveBeenCalledWith(
@@ -89,7 +105,6 @@ describe('App', () => {
 	});
 
 	it('should remove the backup search route when the backup search messages is present', () => {
-		populateFoldersStore();
 		updateBackupSearchStoreWith([aDeletedMessage()]);
 
 		setupTest(<App />);

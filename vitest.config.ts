@@ -48,7 +48,7 @@ export default defineConfig({
 		},
 		exclude: [
 			...configDefaults.exclude,
-			// '**/app.test.tsx',
+			'**/app.test.tsx',
 			'**/use-conversations-list-by-folder.test.ts',
 			'**/useEditorAttachments.test.tsx',
 			'**/certificate-utils.test.ts',
