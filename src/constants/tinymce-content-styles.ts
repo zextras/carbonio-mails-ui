@@ -6,18 +6,6 @@
 
 /**
  * Base content styles for TinyMCE editor and email body formatting.
- * These styles are optimized for maximum compatibility with major email clients:
- * - Gmail (Web, iOS, Android)
- * - Outlook (Desktop, Web, Mobile)
- * - Apple Mail (macOS, iOS)
- * - Yahoo Mail, AOL, ProtonMail, etc.
- *
- * Best practices applied:
- * - Inline-friendly CSS (converted via juice library)
- * - Pixel values instead of rem (better email client support)
- * - Avoid complex selectors when inlined
- * - Use table-friendly styling
- * - Minimal use of shorthand properties
  */
 export const TINYMCE_BASE_CONTENT_STYLES = `
 	/* Reset paragraph margins - Gmail and Outlook compatible */
@@ -52,25 +40,44 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		max-width: 100%;
 		background-color: transparent;
 	}
+	/* Default padding and alignment - always applied */
 	table td,
 	table th {
 		padding: 8px;
 		vertical-align: top;
+	}
+	/* Default borders only when no inline border style is set */
+	table td:not([style*="border"]),
+	table th:not([style*="border"]) {
 		border: 1px solid #cccccc;
 	}
 	table th {
 		font-weight: bold;
 		text-align: left;
+	}
+	table th:not([style*="background"]) {
 		background-color: #f5f5f5;
 	}
 	/* Alternative for tables with explicit border attribute */
-	table[border="1"] td,
-	table[border="1"] th {
+	table[border="1"] td:not([style*="border"]),
+	table[border="1"] th:not([style*="border"]) {
 		border: 1px solid #cccccc;
 	}
 	table[border="0"] td,
 	table[border="0"] th {
 		border: none;
+	}
+	
+	/* Table caption - descriptive text above/below table */
+	caption {
+		padding: 8px;
+		caption-side: top;
+		margin-bottom: 8px;
+	}
+	caption[align="bottom"] {
+		caption-side: bottom;
+		margin-bottom: 0;
+		margin-top: 8px;
 	}
 	
 	/* Lists - Gmail and Outlook compatible */
