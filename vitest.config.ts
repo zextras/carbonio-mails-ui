@@ -59,7 +59,6 @@ export default defineConfig({
 			'**/useEditorAttachments.test.tsx',
 			'**/get-conv-action.test.ts',
 			'**/get-message-with-existing-participants.test.ts',
-			'**/get-message.test.ts',
 			'**/certificate-utils.test.ts',
 			// '**/message-list.test.tsx',
 			// '**/create-filter-modal.test.tsx',
