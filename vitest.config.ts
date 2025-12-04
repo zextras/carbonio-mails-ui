@@ -53,8 +53,7 @@ export default defineConfig({
 			'**/useEditorAttachments.test.tsx',
 			'**/get-message-with-existing-participants.test.ts',
 			'**/certificate-utils.test.ts',
-			'**/sort-and-filter-button-component.test.tsx',
-			'**/recipients-certificates-settings.test.tsx' // error certificates.map
+			'**/sort-and-filter-button-component.test.tsx'
 		]
 	}
 });
