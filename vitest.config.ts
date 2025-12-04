@@ -52,7 +52,11 @@ export default defineConfig({
 			'**/use-conversations-list-by-folder.test.ts',
 			'**/useEditorAttachments.test.tsx',
 			'**/certificate-utils.test.ts',
-			'**/sort-and-filter-button-component.test.tsx'
+			'**/sort-and-filter-button-component.test.tsx',
+			'**/recover-messages.test.tsx',
+			'**/rich-text-editor-container.test.tsx',
+			'**/share-folder-actions.test.ts',
+			'**/recipients-certificates-settings.test.tsx'
 		]
 	}
 });
