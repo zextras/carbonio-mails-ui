@@ -112,21 +112,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		display: block;
 	}
 	
-	/* Figure styles - fallback to simple styling */
-	figure {
-		margin: 16px 0;
-		padding: 0;
-	}
-	figure img {
-		margin-bottom: 8px;
-	}
-	figcaption {
-		font-size: 12px;
-		color: #666666;
-		text-align: center;
-		font-style: italic;
-	}
-	
 	/* Horizontal rule */
 	hr {
 		border: 0;
@@ -164,8 +149,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border-left: 3px solid #cccccc;
 		margin: 16px 0;
 		padding: 8px 0 8px 16px;
-		color: #666666;
-		font-style: italic;
 	}
 	blockquote[dir="rtl"] {
 		border-left: none;
