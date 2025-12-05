@@ -8,9 +8,9 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults, defineConfig } from 'vitest/config';
 
-const junitReporter: ['junit', { outputFile: string; logConsoleError: boolean }] = [
+const junitReporter: ['junit', { outputFile: string; console: boolean }] = [
 	'junit',
-	{ outputFile: 'junit.xml', logConsoleError: false }
+	{ outputFile: 'junit.xml', console: false }
 ];
 
 export default defineConfig({
