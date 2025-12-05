@@ -138,6 +138,30 @@ describe('MessageContactList', () => {
 			const badge = screen.queryByTestId('FolderBadge');
 			expect(badge).not.toBeInTheDocument();
 		});
+		it(`should not show badge if this message is displayed in the same shared account folder`, async () => {
+			populateFoldersStore();
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+			const folders = getFolders();
+			// eslint-disable-next-line testing-library/no-node-access
+			const accountFolderId = folders[1].children[1].id;
+			const message = generateMessage({
+				folderId: accountFolderId
+			});
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={accountFolderId}
+				/>,
+				{
+					initialEntries: [`/folder/${accountFolderId}/message/${message.id}`],
+					path: '/folder/:folderId/message/:messageId'
+				}
+			);
+
+			const badge = screen.queryByTestId('FolderBadge');
+			expect(badge).not.toBeInTheDocument();
+		});
 		it(`should show badge if this message is displayed in a different shared folder`, async () => {
 			populateFoldersStore();
 			jest.mocked(shell).IS_FOCUS_MODE = false;
@@ -155,6 +179,30 @@ describe('MessageContactList', () => {
 				/>,
 				{
 					initialEntries: [`/folder/${FOLDERS.INBOX}/message/${message.id}`],
+					path: '/folder/:folderId/message/:messageId'
+				}
+			);
+
+			const badge = await screen.findByTestId('FolderBadge');
+			expect(badge).toBeVisible();
+		});
+		it(`should show badge if this message is displayed in a different shared account folder`, async () => {
+			populateFoldersStore();
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+			const folders = getFolders();
+			// eslint-disable-next-line testing-library/no-node-access
+			const accountFolders = folders[1].children;
+			const message = generateMessage({
+				folderId: accountFolders[0].id
+			});
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={accountFolders[1].id}
+				/>,
+				{
+					initialEntries: [`/folder/${accountFolders[1].id}/message/${message.id}`],
 					path: '/folder/:folderId/message/:messageId'
 				}
 			);

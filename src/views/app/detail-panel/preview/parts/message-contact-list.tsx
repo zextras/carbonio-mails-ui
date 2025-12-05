@@ -84,12 +84,10 @@ const MessageContactList: FC<{
 			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
 	}, [message.read]);
 
-	const messageFolder = useMemo(() => {
-		if (folderId && message.parent?.includes(':')) {
-			return find(folders, (folder) => folder.id === folderId);
-		}
-		return find(folders, (folder) => folder.id === message.parent);
-	}, [folderId, folders, message.parent]);
+	const messageFolder = useMemo(
+		() => find(folders, (folder) => folder.id === message.parent),
+		[folders, message.parent]
+	);
 
 	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);
 	const labelCc = useMemo(() => `${t('label.cc', 'CC')}: `, []);
