@@ -8,6 +8,11 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults, defineConfig } from 'vitest/config';
 
+const junitReporter: ['junit', { outputFile: string; console: boolean }] = [
+	'junit',
+	{ outputFile: 'junit.xml', console: false }
+];
+
 export default defineConfig({
 	plugins: [
 		react({
@@ -37,11 +42,11 @@ export default defineConfig({
 		mockReset: false,
 		testTimeout: 20000,
 		hookTimeout: 20000,
-		reporters: ['default', 'junit'],
+		reporters: ['default', junitReporter],
 		coverage: {
 			enabled: true,
 			provider: 'v8',
-			reporter: ['text', 'cobertura', 'lcov'],
+			reporter: ['cobertura', 'lcov'],
 			reportsDirectory: 'coverage',
 			include: ['src/**/*.{ts,tsx}'],
 			exclude: ['**/__test__/**', '**/tests/**', '**/mocks/**', '**/*.test.{js,jsx,ts,tsx}']
