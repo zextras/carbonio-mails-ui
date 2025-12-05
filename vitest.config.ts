@@ -63,7 +63,6 @@ export default defineConfig({
 			'**/certificate-utils.test.ts',
 			// '**/message-list.test.tsx',
 			// '**/create-filter-modal.test.tsx',
-			'**/rich-text-editor-container.test.tsx',
 			'**/sort-and-filter-button-component.test.tsx',
 			'**/recipients-certificates-settings.test.tsx' // error certificates.map
 		]
