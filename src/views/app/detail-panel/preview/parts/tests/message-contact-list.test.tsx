@@ -10,7 +10,9 @@ import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { find } from 'lodash';
 
+import { getFolders } from '../../../../../../hooks/use-folders';
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateMessage } from '__test__/generators/generateMessage';
@@ -111,6 +113,54 @@ describe('MessageContactList', () => {
 
 			const badge = screen.queryByTestId('FolderBadge');
 			expect(badge).not.toBeInTheDocument();
+		});
+		it(`should not show badge if this message is displayed in the same shared folder`, async () => {
+			populateFoldersStore();
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+			const folders = getFolders();
+			// eslint-disable-next-line testing-library/no-node-access
+			const linkFolderId = find(folders[0].children, (folder) => folder.isLink)?.id;
+			const message = generateMessage({
+				folderId: linkFolderId
+			});
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={linkFolderId}
+				/>,
+				{
+					initialEntries: [`/folder/${linkFolderId}/message/${message.id}`],
+					path: '/folder/:folderId/message/:messageId'
+				}
+			);
+
+			const badge = screen.queryByTestId('FolderBadge');
+			expect(badge).not.toBeInTheDocument();
+		});
+		it(`should show badge if this message is displayed in a different shared folder`, async () => {
+			populateFoldersStore();
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+			const folders = getFolders();
+			// eslint-disable-next-line testing-library/no-node-access
+			const linkFolderId = find(folders[0].children, (folder) => folder.isLink)?.id;
+			const message = generateMessage({
+				folderId: linkFolderId
+			});
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>,
+				{
+					initialEntries: [`/folder/${FOLDERS.INBOX}/message/${message.id}`],
+					path: '/folder/:folderId/message/:messageId'
+				}
+			);
+
+			const badge = await screen.findByTestId('FolderBadge');
+			expect(badge).toBeVisible();
 		});
 		it(`should not show badge if this message in not displayed inside a folder (eml)`, async () => {
 			const message = { ...generateMessage(), parent: undefined };
