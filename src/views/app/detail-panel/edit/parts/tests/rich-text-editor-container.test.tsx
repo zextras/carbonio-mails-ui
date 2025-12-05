@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // noinspection HtmlRequiredAltAttribute
 
 /*
@@ -16,19 +17,31 @@ vi.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
 }));
 
 let editorInstance: any = null;
+const EDITOR_ID = 'editor-1';
 
 const MockComposer: React.FC<any> = (props) => {
 	React.useEffect(() => {
-		const handlers: Record<string, ((evt?: any) => void)[]> = {};
+		const handlers = new Map<string, ((evt?: any) => void)[]>();
+
+		const registerHandler = (event: string, cb: (evt?: any) => void): void => {
+			const normalizedEvent = event.trim();
+			if (!normalizedEvent) return;
+			if (!handlers.has(normalizedEvent)) {
+				handlers.set(normalizedEvent, []);
+			}
+			handlers.get(normalizedEvent)?.push(cb);
+		};
 
 		editorInstance = {
 			html: '',
-			on: (event: string, cb: (evt?: any) => void): void => {
-				if (!handlers[event]) handlers[event] = [];
-				handlers[event].push(cb);
+			on: (events: string, cb: (evt?: any) => void): void => {
+				events
+					.split(/\s+/)
+					.filter(Boolean)
+					.forEach((event) => registerHandler(event, cb));
 			},
 			dispatch: (event: string, evt?: any): void => {
-				(handlers[event] || []).forEach((cb) => cb(evt || { type: event }));
+				(handlers.get(event) || []).forEach((cb) => cb(evt || { type: event }));
 			},
 			getContent: ({ format }: { format: 'html' | 'text' }) =>
 				format === 'html' ? editorInstance.html : editorInstance.html.replace(/<[^>]+>/g, ''),
@@ -41,11 +54,12 @@ const MockComposer: React.FC<any> = (props) => {
 			dispatchEvent: vi.fn()
 		};
 
-		if (props.customInitOptions?.init_instance_callback) {
-			props.customInitOptions.init_instance_callback(editorInstance);
-		}
+		const cleanup = props.customInitOptions?.init_instance_callback
+			? props.customInitOptions.init_instance_callback(editorInstance)
+			: undefined;
 
 		return () => {
+			cleanup?.();
 			editorInstance = null;
 		};
 	}, [props.customInitOptions]);
@@ -74,43 +88,76 @@ vi.mock('store/editor/index', () => ({
 	}))
 }));
 
+const renderEditor = async (): Promise<void> => {
+	setupTest(<RichTextEditorContainer editorId={EDITOR_ID} onDragOver={vi.fn()} />);
+	await screen.findByTestId('mock-composer');
+};
+
+const setEditorContent = (html: string): void => {
+	if (!editorInstance) throw new Error('Editor not initialized');
+	editorInstance.setContent(html);
+};
+
+const createEditWrapper = (): HTMLElement => {
+	const editWrapper = document.createElement('div');
+	editWrapper.dataset.testid = 'edit-view-editor';
+	const parent = document.createElement('div');
+	parent.scrollTop = 42;
+	parent.appendChild(editWrapper);
+	document.body.appendChild(parent);
+	return parent;
+};
+
+const inlineContent =
+	'<p><img pnsrc="cid:first" src="cid:first" />' +
+	'<img src="cid:second" />' +
+	'<img src="https://test.test/image.png" /></p>';
+
+const expectedCidList = ['cid:first', 'cid:first', 'cid:second'];
+
 describe('RichTextEditorContainer', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		editorInstance = null;
+		document.body.innerHTML = '';
+	});
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+		vi.useRealTimers();
 	});
 
 	test('cleans up inline attachments that are no longer in content', async () => {
-		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
-		await screen.findByTestId('mock-composer');
+		await renderEditor();
+		vi.useFakeTimers();
 
-		editorInstance?.setContent(
-			'<p><img pnsrc="cid:first" src="cid:first" />' +
-				'<img src="cid:second" />' +
-				'<img src="https://test.test/image.png" /></p>'
-		);
+		setEditorContent(inlineContent);
 
 		editorInstance?.dispatch('Change');
+		vi.runAllTimers();
 
-		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith({});
+		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith(expectedCidList);
+	});
+
+	test('cleans up inline attachments immediately on paste-related events', async () => {
+		await renderEditor();
+
+		setEditorContent(inlineContent);
+
+		editorInstance?.dispatch('Paste');
+
+		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith(expectedCidList);
 	});
 
 	test('handles paste event and restores scroll position', async () => {
-		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
-		await screen.findByTestId('mock-composer');
+		await renderEditor();
 
-		const editWrapper = document.createElement('div');
-		editWrapper.dataset.testid = 'edit-view-editor';
-		const parent = document.createElement('div');
-		parent.scrollTop = 42;
-		parent.appendChild(editWrapper);
-		document.body.appendChild(parent);
-
+		const parent = createEditWrapper();
 		const event = {} as unknown as ClipboardEvent;
 
-		editorInstance.dispatch('paste', event);
+		editorInstance?.dispatch('paste', event);
 
-		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, 'editor-1', event);
+		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, EDITOR_ID, event);
 		expect(parent.scrollTop).toBe(42);
 	});
 });
