@@ -250,8 +250,6 @@ describe('generateEditor', () => {
 				const draftEditorId = draftEditor.id;
 				useEditorsStore.getState().addEditor(draftEditorId, draftEditor);
 
-				// (getEditor as Mock).mockReturnValueOnce(draftEditor);
-
 				const resumedEditor = generateEditor({
 					action: EditViewActions.RESUME,
 					id: draftEditor?.id
