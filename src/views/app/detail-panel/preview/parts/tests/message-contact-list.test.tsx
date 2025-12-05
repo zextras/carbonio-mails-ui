@@ -8,9 +8,11 @@ import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import * as shell from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateMessage } from '__test__/generators/generateMessage';
 import MessageContactList from 'views/app/detail-panel/preview/parts/message-contact-list';
 
@@ -92,5 +94,78 @@ describe('MessageContactList', () => {
 		});
 		const toggleIcon = await screen.findByTestId('icon: ChevronUp');
 		expect(toggleIcon).toBeInTheDocument();
+	});
+	describe('badge', () => {
+		it(`should not show badge if this message is displayed in the same folder`, async () => {
+			const message = generateMessage({
+				folderId: FOLDERS.INBOX
+			});
+			populateFoldersStore();
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const badge = screen.queryByTestId('FolderBadge');
+			expect(badge).not.toBeInTheDocument();
+		});
+		it(`should not show badge if this message in not displayed inside a folder (eml)`, async () => {
+			const message = { ...generateMessage(), parent: undefined };
+			populateFoldersStore();
+
+			setupTest(
+				<MessageContactList
+					// MailMessage type is wrong, parent can actually be undefined, this test cover this possibility
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const badge = screen.queryByTestId('FolderBadge');
+			expect(badge).not.toBeInTheDocument();
+		});
+		it(`should show badge if this message is displayed in a different folder`, async () => {
+			const message = generateMessage({
+				folderId: FOLDERS.SENT
+			});
+			populateFoldersStore();
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const badge = await screen.findByTestId('FolderBadge');
+			expect(badge).toBeVisible();
+		});
+		it(`should show badge if this message is displayed in focus mode`, async () => {
+			jest.mocked(shell).IS_FOCUS_MODE = true;
+			const message = generateMessage({
+				folderId: FOLDERS.INBOX
+			});
+			populateFoldersStore();
+			setupTest(
+				<MessageContactList
+					message={message}
+					contactListExpandCB={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>,
+				{
+					initialEntries: [`/folder/${message.parent}/message/${message.id}`],
+					path: '/folder/:folderId/message/:messageId'
+				}
+			);
+
+			const badge = await screen.findByTestId('FolderBadge');
+			expect(badge).toBeVisible();
+		});
 	});
 });
