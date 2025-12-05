@@ -44,9 +44,9 @@ export default defineConfig({
 		hookTimeout: 20000,
 		reporters: ['default', junitReporter],
 		coverage: {
-			enabled: false,
+			enabled: true,
 			provider: 'v8',
-			reporter: ['text', 'cobertura', 'lcov'],
+			reporter: ['lcov'],
 			reportsDirectory: 'coverage',
 			include: ['src/**/*.{ts,tsx}'],
 			exclude: ['**/__test__/**', '**/tests/**', '**/mocks/**', '**/*.test.{js,jsx,ts,tsx}']
