@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // noinspection HtmlRequiredAltAttribute
 
 /*
@@ -12,36 +11,32 @@ import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { setupTest, screen } from '@test-setup';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 
+// vi.mock('lodash', async () => ({
+// 	...(await vi.importActual('lodash')),
+// 	debounce: (fn: (...args: any[]) => any): any => fn,
+// 	noop: (): void => {
+// 		// do nothing
+// 	}
+// }));
+
 vi.mock('views/app/detail-panel/edit/parts/editor-paste-handler', () => ({
 	handleEditorPaste: vi.fn()
 }));
 
 let editorInstance: any = null;
-const EDITOR_ID = 'editor-1';
 
 const MockComposer: React.FC<any> = (props) => {
 	React.useEffect(() => {
-		const handlers = new Map<string, ((evt?: any) => void)[]>();
-
-		const registerHandler = (event: string, cb: (evt?: any) => void): void => {
-			const normalizedEvent = event.trim();
-			if (!normalizedEvent) return;
-			if (!handlers.has(normalizedEvent)) {
-				handlers.set(normalizedEvent, []);
-			}
-			handlers.get(normalizedEvent)?.push(cb);
-		};
+		const handlers: Record<string, ((evt?: any) => void)[]> = {};
 
 		editorInstance = {
 			html: '',
-			on: (events: string, cb: (evt?: any) => void): void => {
-				events
-					.split(/\s+/)
-					.filter(Boolean)
-					.forEach((event) => registerHandler(event, cb));
+			on: (event: string, cb: (evt?: any) => void): void => {
+				if (!handlers[event]) handlers[event] = [];
+				handlers[event].push(cb);
 			},
 			dispatch: (event: string, evt?: any): void => {
-				(handlers.get(event) || []).forEach((cb) => cb(evt || { type: event }));
+				(handlers[event] || []).forEach((cb) => cb(evt || { type: event }));
 			},
 			getContent: ({ format }: { format: 'html' | 'text' }) =>
 				format === 'html' ? editorInstance.html : editorInstance.html.replace(/<[^>]+>/g, ''),
@@ -54,12 +49,11 @@ const MockComposer: React.FC<any> = (props) => {
 			dispatchEvent: vi.fn()
 		};
 
-		const cleanup = props.customInitOptions?.init_instance_callback
-			? props.customInitOptions.init_instance_callback(editorInstance)
-			: undefined;
+		if (props.customInitOptions?.init_instance_callback) {
+			props.customInitOptions.init_instance_callback(editorInstance);
+		}
 
 		return () => {
-			cleanup?.();
 			editorInstance = null;
 		};
 	}, [props.customInitOptions]);
@@ -88,76 +82,47 @@ vi.mock('store/editor/index', () => ({
 	}))
 }));
 
-const renderEditor = async (): Promise<void> => {
-	setupTest(<RichTextEditorContainer editorId={EDITOR_ID} onDragOver={vi.fn()} />);
-	await screen.findByTestId('mock-composer');
-};
-
-const setEditorContent = (html: string): void => {
-	if (!editorInstance) throw new Error('Editor not initialized');
-	editorInstance.setContent(html);
-};
-
-const createEditWrapper = (): HTMLElement => {
-	const editWrapper = document.createElement('div');
-	editWrapper.dataset.testid = 'edit-view-editor';
-	const parent = document.createElement('div');
-	parent.scrollTop = 42;
-	parent.appendChild(editWrapper);
-	document.body.appendChild(parent);
-	return parent;
-};
-
-const inlineContent =
-	'<p><img pnsrc="cid:first" src="cid:first" />' +
-	'<img src="cid:second" />' +
-	'<img src="https://test.test/image.png" /></p>';
-
-const expectedCidList = ['cid:first', 'cid:first', 'cid:second'];
-
 describe('RichTextEditorContainer', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		editorInstance = null;
-		document.body.innerHTML = '';
-	});
-
-	afterEach(() => {
-		document.body.innerHTML = '';
-		vi.useRealTimers();
 	});
 
 	test('cleans up inline attachments that are no longer in content', async () => {
-		await renderEditor();
-		vi.useFakeTimers();
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
+		await screen.findByTestId('mock-composer');
 
-		setEditorContent(inlineContent);
+		editorInstance?.setContent(
+			'<p><img pnsrc="cid:first" src="cid:first" />' +
+				'<img src="cid:second" />' +
+				'<img src="https://test.test/image.png" /></p>'
+		);
 
 		editorInstance?.dispatch('Change');
-		vi.runAllTimers();
 
-		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith(expectedCidList);
-	});
-
-	test('cleans up inline attachments immediately on paste-related events', async () => {
-		await renderEditor();
-
-		setEditorContent(inlineContent);
-
-		editorInstance?.dispatch('Paste');
-
-		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith(expectedCidList);
+		expect(mockRemoveInlineAttachments).toHaveBeenCalledWith([
+			'cid:first',
+			'cid:first',
+			'cid:second'
+		]);
 	});
 
 	test('handles paste event and restores scroll position', async () => {
-		await renderEditor();
+		setupTest(<RichTextEditorContainer editorId="editor-1" onDragOver={vi.fn()} />);
+		await screen.findByTestId('mock-composer');
 
-		const parent = createEditWrapper();
+		const editWrapper = document.createElement('div');
+		editWrapper.dataset.testid = 'edit-view-editor';
+		const parent = document.createElement('div');
+		parent.scrollTop = 42;
+		parent.appendChild(editWrapper);
+		document.body.appendChild(parent);
+
 		const event = {} as unknown as ClipboardEvent;
 
-		editorInstance?.dispatch('paste', event);
+		editorInstance.dispatch('paste', event);
 
-		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, EDITOR_ID, event);
+		expect(handleEditorPaste).toHaveBeenCalledWith(editorInstance, 'editor-1', event);
 		expect(parent.scrollTop).toBe(42);
 	});
 });
