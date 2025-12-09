@@ -28,18 +28,19 @@ export default defineConfig({
 			'./src/__test__/setup-browser-env.ts'
 		],
 		clearMocks: true,
-		maxWorkers: '80%',
+		isolate: true,
+		pool: 'forks',
+		maxWorkers: 4,
 		environmentOptions: {
 			jsdom: {
 				url: 'http://localhost'
 			}
 		},
-		mockReset: false,
 		testTimeout: 20000,
 		hookTimeout: 20000,
 		reporters: ['default', 'junit'],
 		coverage: {
-			enabled: true,
+			enabled: false,
 			provider: 'v8',
 			reporter: ['text', 'cobertura', 'lcov'],
 			reportsDirectory: 'coverage',
