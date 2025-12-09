@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
@@ -102,13 +102,14 @@ describe('MoveConversation', () => {
 				`folder-accordion-item-${destinationFolder}`
 			);
 
-			await act(async () => {
-				await user.click(inboxFolderListItem);
+			await user.click(inboxFolderListItem);
+
+			await waitFor(() => {
+				const moveButton = screen.getByRole('button', {
+					name: /Move/
+				});
+				expect(moveButton).toBeEnabled();
 			});
-			const moveButton = screen.getByRole('button', {
-				name: /Move/
-			});
-			expect(moveButton).toBeEnabled();
 		});
 	});
 
@@ -148,18 +149,17 @@ describe('MoveConversation', () => {
 		);
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${destinationFolder}`,
-			{}
+			`folder-accordion-item-${destinationFolder}`
 		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		const request = await interceptor;
 		expect(request.action.id).toBe(convIds.join(','));
 		expect(request.action.op).toBe('move');
@@ -179,19 +179,16 @@ describe('MoveConversation', () => {
 			/>
 		);
 		makeListItemsVisible();
-		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{}
-		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		await interceptor;
 
 		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
@@ -223,11 +220,16 @@ describe('MoveConversation', () => {
 		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
 
 		await user.click(inboxFolderListItem);
-		await user.click(await screen.findByRole('button', { name: /Move/ }));
 
-		await expect(screen.findByText('Conversation successfully moved')).resolves.toBeInTheDocument();
+		const moveButton = await screen.findByRole('button', { name: /Move/ });
+		await waitFor(() => expect(moveButton).toBeEnabled());
+		await user.click(moveButton);
 
-		await user.click(await screen.findByRole('button', { name: /GO TO FOLDER/ }));
+		const successMessage = await screen.findByText('Conversation successfully moved');
+		expect(successMessage).toBeInTheDocument();
+
+		const goToFolderButton = await screen.findByRole('button', { name: /GO TO FOLDER/ });
+		await user.click(goToFolderButton);
 		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
 	});
 });
