@@ -78,7 +78,7 @@ const extractPartContent = (content: string | { _content: string } | undefined):
 
 	return content._content;
 };
-async function awaitDebouncedSaveDraft(time = 2_000): Promise<void> {
+function awaitDebouncedSaveDraft(time = 2_000): void {
 	vi.advanceTimersByTime(time);
 }
 
@@ -380,17 +380,15 @@ describe('Edit view', () => {
 			);
 			expect(markAsImportantOption).toBeVisible();
 
-			await act(async () => {
-				await awaitDebouncedSaveDraft();
-			});
+			awaitDebouncedSaveDraft();
+			await waitFor(() => expect(screen.queryByText(/saving/i)).not.toBeInTheDocument());
 
 			await user.click(editorTextareaElement);
 			await user.clear(editorTextareaElement);
 			await user.type(editorTextareaElement, body);
 
-			await act(async () => {
-				await awaitDebouncedSaveDraft();
-			});
+			awaitDebouncedSaveDraft();
+			await waitFor(() => expect(screen.queryByText(/saving/i)).not.toBeInTheDocument());
 
 			// // Check for the status of the "send" button to be enabled
 			expect(btnSend).toBeEnabled();
@@ -475,9 +473,7 @@ describe('Edit view', () => {
 				SoapSendMsgResponse
 			>('SendMsg', response);
 
-			await act(async () => {
-				await user.click(btnSend);
-			});
+			await user.click(btnSend);
 
 			const { m: msg } = await sendMsgInterceptor;
 
@@ -532,9 +528,7 @@ describe('Edit view', () => {
 				SoapSendMsgResponse
 			>('SendMsg', response);
 
-			await act(async () => {
-				await user.click(btnSend);
-			});
+			await user.click(btnSend);
 
 			const { m: msg } = await sendMsgInterceptor;
 
@@ -588,13 +582,9 @@ describe('Edit view', () => {
 			// Insert the text into the text area
 			await waitFor(clearAndInsertText(user, area, text));
 
-			await act(async () => {
-				await user.click(btnSend as HTMLElement);
-			});
+			await user.click(btnSend as HTMLElement);
 
-			await act(async () => {
-				vi.runOnlyPendingTimers();
-			});
+			vi.runOnlyPendingTimers();
 
 			const sendMsgRequest = await sendMsgInterceptor;
 
@@ -632,13 +622,9 @@ describe('Edit view', () => {
 			const btnSend = await screen.findByTestId('BtnSendMailMulti');
 			await waitFor(() => expect(btnSend).toBeEnabled());
 
-			await act(async () => {
-				await user.click(btnSend);
-			});
+			await user.click(btnSend);
 
-			await act(async () => {
-				vi.advanceTimersByTime(4000);
-			});
+			vi.advanceTimersByTime(4000);
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
 		});
@@ -663,10 +649,10 @@ describe('Edit view', () => {
 			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
-			await act(async () => {
-				vi.advanceTimersByTime(5_000);
+			vi.advanceTimersByTime(5_000);
+			await waitFor(() => {
+				expect(mockedSaveDraft).not.toHaveBeenCalled();
 			});
-			expect(mockedSaveDraft).not.toHaveBeenCalled();
 		});
 
 		it('is autosaved on initialization if draft id is not present', async () => {
@@ -728,44 +714,34 @@ describe('Edit view', () => {
 				const subjectInputElement = within(subjectComponent).getByRole('textbox');
 				const editorTextareaElement = screen.getByTestId('MailPlainTextEditor');
 
-				await act(() => user.click(toInputElement));
-				await act(() => user.clear(toInputElement));
-				await act(() => user.type(toInputElement, recipient));
+				await user.click(toInputElement);
+				await user.clear(toInputElement);
+				await user.type(toInputElement, recipient);
 
-				await act(async () => {
-					await user.click(btnCc);
-				});
+				await user.click(btnCc);
 
 				const ccComponent = screen.getByTestId('RecipientCc');
 				const ccInputElement = within(ccComponent).getByRole('textbox');
 
-				await act(() => user.click(ccInputElement));
-				await act(() => user.clear(ccInputElement));
-				await act(() => user.type(ccInputElement, cc));
+				await user.click(ccInputElement);
+				await user.clear(ccInputElement);
+				await user.type(ccInputElement, cc);
 
-				await act(() => user.click(subjectInputElement));
-				await act(() => user.clear(subjectInputElement));
-				await act(() => user.type(subjectInputElement, subject));
+				await user.click(subjectInputElement);
+				await user.clear(subjectInputElement);
+				await user.type(subjectInputElement, subject);
 
-				await act(async () => {
-					await awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
-				await act(async () => {
-					await user.click(editorTextareaElement);
-					await user.clear(editorTextareaElement);
-					await user.type(editorTextareaElement, body);
-				});
+				await user.click(editorTextareaElement);
+				await user.clear(editorTextareaElement);
+				await user.type(editorTextareaElement, body);
 
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 
-				await act(async () => {
-					await awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
-				await act(async () => {
-					await user.click(btnSave);
-				});
+				await user.click(btnSave);
 
 				// Obtain the message from the rest handler
 				const { m: msg } = await draftSavingInterceptor;
@@ -800,9 +776,7 @@ describe('Edit view', () => {
 				const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
 				await waitFor(clearAndInsertText(user, subjectInputElement, subjectText));
 
-				await act(async () => {
-					await awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
 				const { m: msg } = await draftSavingInterceptor;
 				expect(msg.su._content).toBe(subjectText);
@@ -824,13 +798,9 @@ describe('Edit view', () => {
 				const recipient = createFakeIdentity().email;
 				const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
 				await waitFor(clearAndInsertText(user, toInputElement, recipient));
-				await waitFor(async () => {
-					await user.tab();
-				});
+				await user.tab();
 
-				await act(async () => {
-					awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
 				const { m: msg } = await draftSavingInterceptor;
 				const sentRecipient = msg.e[0];
@@ -857,9 +827,7 @@ describe('Edit view', () => {
 				// Insert the text into the text area
 				await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
-				await act(async () => {
-					awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
 				const { m: msg } = await draftSavingInterceptor;
 				expect(msg.mp[0]?.content?._content).toBe(body);
@@ -882,16 +850,9 @@ describe('Edit view', () => {
 				await firstSaveDraft;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const fileInput = screen.getByTestId('file-input');
-				await act(async () => {
-					await user.upload(
-						fileInput,
-						new File(['test string'], 'test.txt', { type: 'text/plain' })
-					);
-				});
+				await user.upload(fileInput, new File(['test string'], 'test.txt', { type: 'text/plain' }));
 
-				await act(async () => {
-					awaitDebouncedSaveDraft();
-				});
+				awaitDebouncedSaveDraft();
 
 				await draftSavingInterceptor;
 				expect(saveDraftSpy).toHaveBeenCalledTimes(2);
@@ -911,9 +872,7 @@ describe('Edit view', () => {
 						editor
 					});
 					setupTest(<EditView editorId={editor.id} closeController={noop} />);
-					await act(async () => {
-						await failingSaveDraft;
-					});
+					await failingSaveDraft;
 
 					screen.queryByText('label.error_try_again');
 					const btnSend =
