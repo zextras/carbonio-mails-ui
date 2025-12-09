@@ -74,6 +74,7 @@ afterEach(() => {
 
 beforeEach(() => {
 	vi.useFakeTimers({ shouldAdvanceTime: true, shouldClearNativeTimers: true });
+	vi.setSystemTime(new Date('1970-01-01T00:00:00.000Z'));
 	useEditorsStore.setState({});
 	getUseEmailStoreAndHooksForTesting().resetMessagesAndPopulatedItems();
 	getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems();
