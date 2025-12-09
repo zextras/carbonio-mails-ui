@@ -72,7 +72,7 @@ afterEach(() => {
 });
 
 beforeEach(() => {
-	vi.useFakeTimers({ shouldAdvanceTime: true });
+	vi.useFakeTimers({ shouldAdvanceTime: true, shouldClearNativeTimers: true });
 	useEditorsStore.setState({});
 	getUseEmailStoreAndHooksForTesting().resetMessagesAndPopulatedItems();
 	getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems();
