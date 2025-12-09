@@ -7,6 +7,8 @@
 import { getConvSoapApi } from 'api/get-conv-soap-api';
 import { updateConversations, updateMessages } from 'store/emails/store';
 
+// TODO: this does not return any result, it is meant just to make an api call and update the store.
+//  I suggest to make a hook which loads and returns data instead, avoid functions that do not return anything if possible
 export async function getConvEmailStoreAction({
 	id,
 	onConversationIdChange

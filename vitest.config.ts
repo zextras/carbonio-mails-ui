@@ -55,22 +55,13 @@ export default defineConfig({
 			...configDefaults.exclude,
 			'**/app.test.tsx',
 			'**/use-conversations-list-by-folder.test.ts',
-			'**/editor-slice-utils.test.ts',
-			// '**/move-conv.test.tsx',
-			'**/editor-generators.test.ts',
-			'**/recover-messages.test.tsx',
-			'**/html-message-renderer.test.tsx',
-			'**/share-folder-actions.test.ts',
 			'**/useEditorAttachments.test.tsx',
-			'**/get-conv-action.test.ts',
-			'**/get-message-with-existing-participants.test.ts',
-			'**/get-message.test.ts',
 			'**/certificate-utils.test.ts',
-			// '**/message-list.test.tsx',
-			// '**/create-filter-modal.test.tsx',
-			'**/rich-text-editor-container.test.tsx',
 			'**/sort-and-filter-button-component.test.tsx',
-			'**/recipients-certificates-settings.test.tsx' // error certificates.map
+			'**/recover-messages.test.tsx',
+			'**/rich-text-editor-container.test.tsx',
+			'**/share-folder-actions.test.ts',
+			'**/recipients-certificates-settings.test.tsx'
 		]
 	}
 });
