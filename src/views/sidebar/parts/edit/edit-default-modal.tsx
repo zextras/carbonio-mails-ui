@@ -243,10 +243,11 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			<ModalFooter
 				onConfirm={onConfirm}
 				label={t('label.edit', 'Edit')}
-				secondaryAction={openShareModal}
+				secondaryAction={
+					allowedActionOnSharedAccount(folder, FolderActionsType.SHARE) ? openShareModal : undefined
+				}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
-				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
 				secondaryBtnType="outlined"
 				secondaryColor="primary"
 				tooltip={
