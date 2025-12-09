@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.2...v1.28.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* add tests for message list badge display ([46f2dec](https://github.com/zextras/carbonio-mails-ui/commit/46f2dec7c48c1e755077d27dd26cb30ec62e53a1))
+* show message badge only when folder name is available ([7740072](https://github.com/zextras/carbonio-mails-ui/commit/77400727e9c906eac42d53945df253b1ffea2575))
+* update tests generators and tests ([946ad48](https://github.com/zextras/carbonio-mails-ui/commit/946ad48df776fd22a267ef6926bdb2c948383c4d))
+
 ### [1.28.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.1...v1.28.2) (2025-12-04)
 
 
