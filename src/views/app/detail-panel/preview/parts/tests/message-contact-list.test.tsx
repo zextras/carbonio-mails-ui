@@ -7,13 +7,19 @@
 import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { uuidv4 } from '@posthog/core/vendor/uuidv7';
 import { screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { find } from 'lodash';
 
-import { getFolders } from '../../../../../../hooks/use-folders';
 import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import {
+	generateFolder,
+	generateFolderLink,
+	generateSharedAccountFolder,
+	generateSharedAccountsRoot
+} from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateMessage } from '__test__/generators/generateMessage';
 import MessageContactList from 'views/app/detail-panel/preview/parts/message-contact-list';
@@ -115,22 +121,25 @@ describe('MessageContactList', () => {
 			expect(badge).not.toBeInTheDocument();
 		});
 		it(`should not show badge if this message is displayed in the same shared folder`, async () => {
-			populateFoldersStore();
 			jest.mocked(shell).IS_FOCUS_MODE = false;
-			const folders = getFolders();
-			// eslint-disable-next-line testing-library/no-node-access
-			const linkFolderId = find(folders[0].children, (folder) => folder.isLink)?.id;
+
+			const identity = createFakeIdentity();
+			const customFolder = generateFolder();
+			const linkFolder = generateFolderLink(customFolder.id, uuidv4.toString(), identity);
+
+			populateFoldersStore({ customFolders: [{ ...customFolder, children: [linkFolder] }] });
+
 			const message = generateMessage({
-				folderId: linkFolderId
+				folderId: linkFolder.id
 			});
 			setupTest(
 				<MessageContactList
 					message={message}
 					contactListExpandCB={jest.fn()}
-					folderId={linkFolderId}
+					folderId={linkFolder.id}
 				/>,
 				{
-					initialEntries: [`/folder/${linkFolderId}/message/${message.id}`],
+					initialEntries: [`/folder/${linkFolder.id}/message/${message.id}`],
 					path: '/folder/:folderId/message/:messageId'
 				}
 			);
@@ -139,22 +148,29 @@ describe('MessageContactList', () => {
 			expect(badge).not.toBeInTheDocument();
 		});
 		it(`should not show badge if this message is displayed in the same shared account folder`, async () => {
-			populateFoldersStore();
+			const identity = createFakeIdentity();
+
+			const accountFolder = generateSharedAccountFolder({
+				identity,
+				folderId: FOLDERS.INBOX
+			});
+
+			const root = generateSharedAccountsRoot([{ identity }], [accountFolder]);
+
+			populateFoldersStore({ additionalFolders: root });
 			jest.mocked(shell).IS_FOCUS_MODE = false;
-			const folders = getFolders();
-			// eslint-disable-next-line testing-library/no-node-access
-			const accountFolderId = folders[1].children[1].id;
+
 			const message = generateMessage({
-				folderId: accountFolderId
+				folderId: accountFolder.id
 			});
 			setupTest(
 				<MessageContactList
 					message={message}
 					contactListExpandCB={jest.fn()}
-					folderId={accountFolderId}
+					folderId={message.parent}
 				/>,
 				{
-					initialEntries: [`/folder/${accountFolderId}/message/${message.id}`],
+					initialEntries: [`/folder/${message.parent}/message/${message.id}`],
 					path: '/folder/:folderId/message/:messageId'
 				}
 			);
@@ -165,11 +181,13 @@ describe('MessageContactList', () => {
 		it(`should show badge if this message is displayed in a different shared folder`, async () => {
 			populateFoldersStore();
 			jest.mocked(shell).IS_FOCUS_MODE = false;
-			const folders = getFolders();
-			// eslint-disable-next-line testing-library/no-node-access
-			const linkFolderId = find(folders[0].children, (folder) => folder.isLink)?.id;
+			const identity = createFakeIdentity();
+			const customFolder = generateFolder();
+			const linkFolder = generateFolderLink(customFolder.id, uuidv4.toString(), identity);
+
+			populateFoldersStore({ customFolders: [{ ...customFolder, children: [linkFolder] }] });
 			const message = generateMessage({
-				folderId: linkFolderId
+				folderId: linkFolder.id
 			});
 			setupTest(
 				<MessageContactList
@@ -187,22 +205,35 @@ describe('MessageContactList', () => {
 			expect(badge).toBeVisible();
 		});
 		it(`should show badge if this message is displayed in a different shared account folder`, async () => {
-			populateFoldersStore();
-			jest.mocked(shell).IS_FOCUS_MODE = false;
-			const folders = getFolders();
-			// eslint-disable-next-line testing-library/no-node-access
-			const accountFolders = folders[1].children;
-			const message = generateMessage({
-				folderId: accountFolders[0].id
+			const identity = createFakeIdentity();
+
+			const inboxFolder = generateSharedAccountFolder({
+				identity,
+				folderId: FOLDERS.INBOX
 			});
+
+			const sentFolder = generateSharedAccountFolder({
+				identity,
+				folderId: FOLDERS.SENT
+			});
+
+			const root = generateSharedAccountsRoot([{ identity }], [inboxFolder, sentFolder]);
+
+			populateFoldersStore({ additionalFolders: root });
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+
+			const message = generateMessage({
+				folderId: sentFolder.id
+			});
+
 			setupTest(
 				<MessageContactList
 					message={message}
 					contactListExpandCB={jest.fn()}
-					folderId={accountFolders[1].id}
+					folderId={inboxFolder.id}
 				/>,
 				{
-					initialEntries: [`/folder/${accountFolders[1].id}/message/${message.id}`],
+					initialEntries: [`/folder/${inboxFolder.id}/message/${message.id}`],
 					path: '/folder/:folderId/message/:messageId'
 				}
 			);
