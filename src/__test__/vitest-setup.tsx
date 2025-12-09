@@ -69,7 +69,6 @@ beforeAll(() => {
 
 afterEach(() => {
 	vi.clearAllTimers();
-	vi.useRealTimers();
 });
 
 beforeEach(() => {
