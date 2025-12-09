@@ -83,7 +83,7 @@ describe('share folder actions', () => {
 		setupHook(accept, { initialProps: [acceptParams] });
 
 		const snackbar = await screen.findByTestId('snackbar');
-		expect(within(snackbar).getByText(/You have accepted the share request/i)).toBeVisible();
+		expect(await within(snackbar).findByText(/You have accepted the share request/i)).toBeVisible();
 	});
 
 	it('should display an error on existing folder', async () => {
@@ -125,7 +125,7 @@ describe('share folder actions', () => {
 
 		const snackbar = await screen.findByTestId('snackbar');
 		expect(
-			within(snackbar).getByText(
+			await within(snackbar).findByText(
 				/A folder\/calendar\/addressbook with the same name already exists/i
 			)
 		).toBeVisible();
