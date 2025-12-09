@@ -21,6 +21,6 @@ export const handleGetMsgRequest: HttpResponseResolver<
 		);
 	}
 	const { id } = (await request.json()).Body.GetMsgRequest.m;
-	const { getMsgResult } = await import(`./cases/getMsg/getMsg-${id}`);
+	const { getMsgResult } = await import(`./cases/getMsg/getMsg-${id}.ts`);
 	return HttpResponse.json(getMsgResult);
 };
