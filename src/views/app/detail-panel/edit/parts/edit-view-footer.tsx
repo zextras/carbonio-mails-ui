@@ -6,7 +6,14 @@
 import React, { useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
-import { Container, Text, Button, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Text,
+	Button,
+	Tooltip,
+	useModal,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -26,9 +33,6 @@ type EditViewFooterProps = {
 const FooterContainer = styled(Container)`
 	gap: 1rem;
 	max-height: 3.5rem;
-	position: fixed;
-	bottom: 0;
-	left: 0;
 	padding-bottom: 0.5rem;
 	width: 100%;
 `;
@@ -106,12 +110,14 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 			},
 			showCloseIcon: true,
 			children: (
-				<Text overflow="break-word">
-					{t(
-						'editView.footer.deleteDraftConfirmationContent',
-						'Are you sure you want to delete this draft?'
-					)}
-				</Text>
+				<Padding vertical="1.25rem">
+					<Text overflow="break-word">
+						{t(
+							'editView.footer.deleteDraftConfirmationContent',
+							'Are you sure you want to delete this draft?'
+						)}
+					</Text>
+				</Padding>
 			)
 		});
 	}, [
