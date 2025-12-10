@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
@@ -15,7 +16,8 @@ import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
 	applyUserPreferenceStyles,
-	generateUserPreferenceStyles
+	generateUserPreferenceStyles,
+	UserPreferenceStyle
 } from 'helpers/user-preference-styles';
 import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
@@ -30,6 +32,14 @@ type FileSelectProps = {
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
+
+function getUserPreferenceStyle(prefs: AccountSettingsPrefs): UserPreferenceStyle {
+	return {
+		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+	};
+}
 
 export const RichTextEditorContainer = ({
 	editorId,
@@ -83,11 +93,7 @@ export const RichTextEditorContainer = ({
 		const plainText = composerRef.current.getContent({ format: 'text' });
 		let richText = composerRef.current.getContent({ format: 'html' });
 
-		const style = {
-			font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-			fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-			color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-		};
+		const style = getUserPreferenceStyle(prefs);
 
 		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
@@ -189,11 +195,7 @@ export const RichTextEditorContainer = ({
 			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
 			.join('');
 
-		const style = {
-			font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-			fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-			color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-		};
+		const style = getUserPreferenceStyle(prefs);
 		const userPreferenceStyles = generateUserPreferenceStyles(style);
 
 		return {
