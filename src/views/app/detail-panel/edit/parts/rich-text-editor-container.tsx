@@ -12,6 +12,7 @@ import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { debounce, noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+import { editorUtils } from './editor-utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -143,29 +144,19 @@ export const RichTextEditorContainer = ({
 			const editViewWrapper = document.querySelector(
 				'[data-testid="edit-view-editor"]'
 			)?.parentElement;
-			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
 
 			handleEditorPaste(editor, editorID, event);
 
 			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
 			if (editViewWrapper) {
-				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
+				editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
 			}
 		};
 	}
 
 	function createAttachmentCleanupHandler(editor: Editor, removeFn: (usedCids: string[]) => void) {
 		return (): void => {
-			const content = editor.getContent({ format: 'html' });
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(content, 'text/html');
-			const usedCids = [
-				...Array.from(doc.querySelectorAll('img[pnsrc]')).map((img) => img.getAttribute('pnsrc')),
-				...Array.from(doc.querySelectorAll('img[src^="cid:"]')).map((img) =>
-					img.getAttribute('src')
-				)
-			].filter((cid): cid is string => Boolean(cid));
-
+			const { usedCids } = editorUtils.computeUsedCids(editor);
 			removeFn(usedCids);
 		};
 	}
