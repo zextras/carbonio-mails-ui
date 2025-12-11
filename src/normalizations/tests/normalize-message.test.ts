@@ -1307,11 +1307,12 @@ describe('normalize-message.ts', () => {
 						{
 							ct: 'multipart/mixed',
 							part: '1',
+
 							mp: [
 								{
 									ct: 'message/rfc822',
-									part: '1.1',
 									cd: 'attachment',
+									part: '1.1',
 									filename: 'image.jpg',
 									s: 100
 								}
