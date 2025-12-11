@@ -178,6 +178,8 @@ export const getAttachmentsFromParts = (
 						} else if (item.ci && item.cd === 'inline' && hasHtml) {
 							// Not referenced in HTML but marked inline -> change to attachment
 							item.cd = 'attachment';
+						} else if (item.cd === 'inline' && item.filename && hasHtml) {
+							item.cd = 'attachment';
 						} else {
 							item.cd ??= 'attachment';
 						}
@@ -204,9 +206,6 @@ export const getAttachmentsFromParts = (
 		mailParts.filename ||
 		mailParts.ci
 	) {
-		if (mailParts.mp) {
-			results = results.concat(getAttachmentsFromParts(mailParts.mp));
-		}
 		if (!isIgnoredAttachment(mailParts)) {
 			const updatedMailPart: AttachmentPart = {
 				...mailParts,

@@ -1301,22 +1301,34 @@ describe('normalize-message.ts', () => {
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Original Email.eml');
 			});
-			it('should recursively collect attachments from nested multiparts via normalizeMailMessageFromSoap', () => {
+			it('should update attachments content disposition when inline, has html body, and no content ID', () => {
 				const soapMessage = generateMessageFromAPI({
 					mp: [
 						{
-							ct: 'message/rfc822',
-							cd: 'attachment',
+							ct: 'text/html',
+							part: '1.1',
+							body: true,
+							content: 'default text'
+						},
+						{
+							ct: 'application/xml',
+							cd: 'inline',
 							part: '1',
-							filename: 'outer.msg',
-							s: 10,
-
+							filename: 'daticert.xml',
+							s: 10
+						},
+						{
+							ct: 'message/rfc822',
+							cd: 'inline',
+							part: '1.1',
+							filename: 'postacert.eml',
+							s: 100,
 							mp: [
 								{
-									ct: 'message/rfc822',
+									ct: 'application/pdf',
 									cd: 'attachment',
 									part: '1.1',
-									filename: 'image.jpg',
+									filename: 'pdfname.pdf',
 									s: 100
 								}
 							]
@@ -1326,7 +1338,11 @@ describe('normalize-message.ts', () => {
 
 				const normalized = normalizeMailMessageFromSoap(soapMessage);
 
-				expect(normalized.attachments?.[0].filename).toBe('image.jpg');
+				expect(normalized.attachments).toHaveLength(2);
+				expect(normalized.attachments?.[0].filename).toBe('daticert.xml');
+				expect(normalized.attachments?.[1].filename).toBe('postacert.eml');
+				expect(normalized.attachments?.[0].cd).toBe('attachment');
+				expect(normalized.attachments?.[1].cd).toBe('attachment');
 			});
 
 			it('should add default filename for text/html without filename', () => {
