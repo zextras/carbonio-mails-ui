@@ -204,6 +204,9 @@ export const getAttachmentsFromParts = (
 		mailParts.filename ||
 		mailParts.ci
 	) {
+		if (mailParts.mp) {
+			results = results.concat(getAttachmentsFromParts(mailParts.mp));
+		}
 		if (!isIgnoredAttachment(mailParts)) {
 			const updatedMailPart: AttachmentPart = {
 				...mailParts,

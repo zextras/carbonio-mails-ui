@@ -1301,6 +1301,30 @@ describe('normalize-message.ts', () => {
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Original Email.eml');
 			});
+			it('should recursively collect attachments from nested multiparts via normalizeMailMessageFromSoap', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [
+								{
+									ct: 'message/rfc822',
+									part: '1.1',
+									cd: 'attachment',
+									filename: 'image.jpg',
+									s: 100
+								}
+							]
+						}
+					]
+				});
+
+				const normalized = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalized.attachments).toHaveLength(1);
+				expect(normalized.attachments?.[0].filename).toBe('image.jpg');
+			});
 
 			it('should add default filename for text/html without filename', () => {
 				const soapMessage = generateMessageFromAPI({
