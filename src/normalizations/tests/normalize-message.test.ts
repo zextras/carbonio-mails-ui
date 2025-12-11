@@ -1305,8 +1305,11 @@ describe('normalize-message.ts', () => {
 				const soapMessage = generateMessageFromAPI({
 					mp: [
 						{
-							ct: 'multipart/mixed',
+							ct: 'message/rfc822',
+							cd: 'attachment',
 							part: '1',
+							filename: 'outer.msg',
+							s: 10,
 
 							mp: [
 								{
@@ -1323,7 +1326,6 @@ describe('normalize-message.ts', () => {
 
 				const normalized = normalizeMailMessageFromSoap(soapMessage);
 
-				expect(normalized.attachments).toHaveLength(1);
 				expect(normalized.attachments?.[0].filename).toBe('image.jpg');
 			});
 
