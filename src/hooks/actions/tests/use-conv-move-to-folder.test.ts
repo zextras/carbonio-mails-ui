@@ -10,6 +10,8 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
+import { createSoapAPIInterceptor } from '../../../__test__/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../__test__/mocks/store/folders';
 import { setupHook, screen } from '@test-setup';
 import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
@@ -110,6 +112,37 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				expect(screen.queryByText(`Move Conversation`)).not.toBeInTheDocument();
+			});
+
+			it('should call onActionComplete when provided after successful move', async () => {
+				const onActionComplete = jest.fn();
+				populateFoldersStore({ view: 'message' });
+				createSoapAPIInterceptor('ConvAction');
+
+				const {
+					user,
+					result: { current: functions }
+				} = setupHook(useConvMoveToFolderFn, {
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX, onActionComplete }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				// Select the destination folder in the modal
+				const folderOption = screen.getByText('folders.sent');
+				await act(async () => user.click(folderOption));
+
+				// Click the move button in the modal
+				const moveButton = screen.getByText('Move');
+				await act(async () => user.click(moveButton));
+
+				expect(onActionComplete).toHaveBeenCalledWith(conversationsId);
 			});
 		});
 	});

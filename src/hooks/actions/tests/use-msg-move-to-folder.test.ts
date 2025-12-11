@@ -122,6 +122,31 @@ describe('useMsgMoveToFolder', () => {
 
 				expect(screen.queryByText(`Move Message`)).not.toBeInTheDocument();
 			});
+
+			it('should call onActionComplete when provided after moving messages', async () => {
+				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				const onActionComplete = jest.fn();
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgMoveToFolderFn, {
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX, onActionComplete }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				const moveButton = screen.getByText(tags.button.move);
+				act(() => {
+					moveButton.click();
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(messagesId);
+			});
 		});
 	});
 });
