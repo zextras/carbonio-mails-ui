@@ -23,13 +23,15 @@ type MoveMessageProps = {
 	isRestore?: boolean;
 	onClose: () => void;
 	folderId: string;
+	onMoveComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const MoveConversation = ({
 	selectedIDs,
 	isRestore,
 	onClose,
-	folderId
+	folderId,
+	onMoveComplete
 }: MoveMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -53,6 +55,7 @@ export const MoveConversation = ({
 				parent: id
 			}).then((res) => {
 				if (!('Fault' in res)) {
+					onMoveComplete && onMoveComplete(selectedIDs);
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -80,7 +83,7 @@ export const MoveConversation = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, createSnackbar, isRestore, t, navigate]
+		[selectedIDs, onCloseModal, createSnackbar, isRestore, t, navigate, onMoveComplete]
 	);
 
 	const hasSameName = useMemo(

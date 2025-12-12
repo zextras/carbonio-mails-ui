@@ -44,6 +44,7 @@ describe('useConvDeletePermanently', () => {
 			});
 		});
 	});
+
 	describe('Functions', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
@@ -147,6 +148,32 @@ describe('useConvDeletePermanently', () => {
 				const request = await act(async () => interceptor);
 
 				expect(request.action.op).toEqual('delete');
+			});
+
+			it('should call the onActionComplete callback when the deletion is successful', async () => {
+				const onActionComplete = jest.fn();
+				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				const {
+					user,
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					initialProps: [{ ids, folderId: FOLDERS.TRASH, onActionComplete }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
+				expect(confirmButton).toBeVisible();
+
+				await act(async () => user.click(confirmButton));
+
+				expect(onActionComplete).toHaveBeenCalledWith(ids);
 			});
 		});
 	});

@@ -101,6 +101,8 @@ export type ConversationListComponentProps = {
 	listRef?: React.RefObject<HTMLDivElement>;
 	loadMoreCallback?: () => void;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
+	// callback to be executed after conversations have been moved
+	onConversationsMoved?: (conversationsIds: Array<string>) => void;
 };
 
 export const ConversationListComponent = memo(function ConversationListComponent({
@@ -122,7 +124,8 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	dragImageRef,
 	listRef,
 	loadMoreCallback,
-	onSelect
+	onSelect,
+	onConversationsMoved
 }: ConversationListComponentProps): React.JSX.Element {
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
@@ -158,6 +161,7 @@ export const ConversationListComponent = memo(function ConversationListComponent
 					<ConversationsMultipleSelectionActions
 						selectedConversationsIds={selectedIds}
 						folderId={folderId}
+						onConversationsMoved={onConversationsMoved}
 					/>
 				</MultipleSelectionActionsPanel>
 			) : (
