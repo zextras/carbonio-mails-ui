@@ -73,7 +73,6 @@ export const generateMessage = ({
 	parts,
 	did = ''
 }: MessageGenerationParams = {}): MailMessage => ({
-	attachments: undefined,
 	autoSendTime: 0,
 	body: { content: body, contentType: 'text/plain', truncated },
 	conversation: cid,

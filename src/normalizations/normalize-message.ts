@@ -11,9 +11,8 @@ import {
 	ParticipantRoleType,
 	useFolderStore
 } from '@zextras/carbonio-ui-commons';
-import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
+import { find, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
-import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
 import {
 	getCreationDateFromMailHeadersFromAPI,
 	getMessageIdFromMailHeadersFromAPI,
@@ -23,7 +22,6 @@ import {
 } from 'normalizations/mail-header-utils';
 import { getTagIds } from 'normalizations/utils';
 import {
-	AttachmentPart,
 	BodyPart,
 	IncompleteMessage,
 	MailHeaders,
@@ -52,199 +50,6 @@ type Flags = {
 	isSentByMe?: boolean;
 	isInvite?: boolean;
 	isReplied?: boolean;
-};
-
-/**
- * Recursively examines multipart structure and extracts all Content-IDs
- * referenced in HTML body parts.
- *
- * @param multipart - The multipart structure to examine
- * @returns Array of Content-IDs found in HTML content
- */
-const getAttachmentsAnchoredOnHtmlBody = (
-	multipart: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
-): Array<string> => {
-	const result: Array<string> = [];
-
-	const extractFromParts = (
-		parts: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
-	): void => {
-		forEach(parts, (part: SoapMailMessagePart) => {
-			if (part.mp) {
-				extractFromParts(part.mp);
-			}
-			if (part.content) {
-				result.push(...extractContentIdsFromHtml(part.content));
-			}
-		});
-	};
-
-	extractFromParts(multipart);
-	return result;
-};
-
-/**
- * Determines if an attachment part should be ignored and not included in the attachments list.
- * Ignores Apple-specific formats, body parts, and calendar invites without filenames.
- *
- * @param item - The attachment part to check
- * @returns True if the attachment should be ignored
- */
-const isIgnoredAttachment = (item: AttachmentPart): boolean => {
-	// Ignore Apple-specific attachment formats
-	if (item.ct === 'multipart/appledouble' || item.ct === 'application/applefile') {
-		return true;
-	}
-	// Ignore HTML/plain text body parts
-	if (item.body && (item.ct === 'text/html' || item.ct === 'text/plain')) {
-		return true;
-	}
-	// Ignore multipart/digest containers
-	if (item.ct === 'multipart/digest') {
-		return true;
-	}
-	// Ignore text-body markers
-	if (item.ci === 'text-body') {
-		return true;
-	}
-	// Ignore calendar invites without filenames (they're typically embedded)
-	return item.ct === 'text/calendar' && !item.filename;
-};
-
-/**
- * Recursively checks if a multipart structure contains any HTML content.
- * Used to determine if CID lookup is reliable for distinguishing inline vs attachment disposition.
- *
- * @param parts - Multipart structure to check
- * @returns True if HTML content is found anywhere in the structure
- */
-const hasHtmlContent = (parts: Array<AttachmentPart> | AttachmentPart): boolean => {
-	if (isArray(parts)) {
-		return parts.some((part) => hasHtmlContent(part));
-	}
-	if (parts.ct === 'text/html' && parts.body) {
-		return true;
-	}
-	if (parts.mp) {
-		return hasHtmlContent(parts.mp);
-	}
-	return false;
-};
-
-/**
- * Extracts and normalizes attachments from SOAP message parts.
- * Handles proper classification of inline vs regular attachments based on Content-ID references in HTML.
- *
- * Key behaviors:
- * - Items with Content-IDs referenced in HTML body are marked as 'inline'
- * - Items with Content-IDs NOT referenced (but marked inline) are changed to 'attachment'
- * - Filters out body parts, Apple formats, and PKCS7 signatures
- * - Adds normalized properties (contentType, name, size)
- *
- * @param mailParts - SOAP mail parts structure (can be array or single part)
- * @returns Array of normalized attachment parts
- */
-export const getAttachmentsFromParts = (
-	mailParts: Array<AttachmentPart> | AttachmentPart
-): Array<AttachmentPart> => {
-	const anchoredAttachmentsList = getAttachmentsAnchoredOnHtmlBody(mailParts);
-	const hasHtml = hasHtmlContent(mailParts);
-	let results: Array<AttachmentPart> = [];
-
-	if (!mailParts) {
-		return results;
-	}
-
-	if (isArray(mailParts)) {
-		forEach(mailParts, (part) => {
-			const attachmentParts = getAttachmentsFromParts(part);
-			forEach(attachmentParts, (attachmentPart: AttachmentPart) => {
-				if (!isIgnoredAttachment(attachmentPart)) {
-					const item = {
-						...attachmentPart,
-						contentType: attachmentPart.ct,
-						name: attachmentPart?.part,
-						size: attachmentPart?.s
-					};
-					if (
-						(item.cd && item.cd === 'attachment') ||
-						(item.ct && (item.ct === 'message/rfc822' || item.ct === 'text/calendar')) ||
-						item.filename ||
-						item.ci
-					) {
-						// Determine content disposition based on whether it's referenced in HTML body
-						if (item.ci && anchoredAttachmentsList.includes(removeAngleBrackets(item.ci))) {
-							item.cd = 'inline';
-						} else if (item.ci && item.cd === 'inline' && hasHtml) {
-							// Not referenced in HTML but marked inline -> change to attachment
-							item.cd = 'attachment';
-						} else if (item.cd === 'inline' && item.filename && hasHtml) {
-							item.cd = 'attachment';
-						} else {
-							item.cd ??= 'attachment';
-						}
-
-						// Add default filenames for known types
-						if (item.ct === 'message/rfc822' && !item.filename) {
-							item.filename = 'Unknown <message/rfc822>';
-						}
-						if (item.ct === 'text/html' && !item.filename) {
-							item.filename = 'Unknown <text/html>';
-						}
-
-						// Exclude PKCS7 signatures
-						if (item.ct && item.ct !== 'application/pkcs7-signature') {
-							results.push(item);
-						}
-					}
-				}
-			});
-		});
-	} else if (
-		(mailParts.cd && mailParts.cd === 'attachment') ||
-		(mailParts.ct && (mailParts.ct === 'message/rfc822' || mailParts.ct === 'text/calendar')) ||
-		mailParts.filename ||
-		mailParts.ci
-	) {
-		if (!isIgnoredAttachment(mailParts)) {
-			const updatedMailPart: AttachmentPart = {
-				...mailParts,
-				contentType: mailParts.ct,
-				name: mailParts?.part,
-				size: mailParts?.s
-			};
-
-			// Determine content disposition based on whether it's referenced in HTML body
-			if (
-				updatedMailPart.ci &&
-				anchoredAttachmentsList.includes(removeAngleBrackets(updatedMailPart.ci))
-			) {
-				updatedMailPart.cd = 'inline';
-			} else if (updatedMailPart.ci && updatedMailPart.cd === 'inline' && hasHtml) {
-				// Not referenced in HTML but marked inline -> change to attachment
-				updatedMailPart.cd = 'attachment';
-			} else {
-				updatedMailPart.cd ??= 'attachment';
-			}
-
-			// Add default filenames for known types
-			if (updatedMailPart.ct === 'message/rfc822' && !updatedMailPart.filename) {
-				updatedMailPart.filename = 'Unknown <message/rfc822>';
-			}
-			if (updatedMailPart.ct === 'text/html' && !updatedMailPart.filename) {
-				updatedMailPart.filename = 'Unknown <text/html>';
-			}
-
-			// Exclude PKCS7 signatures
-			if (updatedMailPart.ct && updatedMailPart.ct !== 'application/pkcs7-signature') {
-				results.push(updatedMailPart);
-			}
-		}
-	} else if (mailParts.mp) {
-		results = results.concat(getAttachmentsFromParts(mailParts.mp));
-	}
-
-	return results;
 };
 
 const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
@@ -423,7 +228,7 @@ export const normalizeMailMessageFromSoap = (
 				: undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
+			attachments: m.mp ? m.mp : undefined,
 			invite: m.inv,
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
@@ -480,7 +285,7 @@ export const normalizePartialIncompleteMessageFromSoap = (
 				: undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
+			attachments: m.mp ? m.mp : undefined,
 			invite: m.inv,
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,

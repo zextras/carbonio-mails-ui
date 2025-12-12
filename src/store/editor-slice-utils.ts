@@ -263,7 +263,7 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
 		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
-		attach: { mp: retrieveAttachmentsFromMail(msg, 'attachment') },
+		attach: { mp: retrieveAttachmentsFromMail(msg) },
 		su: { _content: msg.subject ?? '' },
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

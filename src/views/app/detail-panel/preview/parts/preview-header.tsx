@@ -96,7 +96,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
 		[onClick]
 	);
-	const attachments = retrieveAttachmentsFromMail(message, 'attachment');
+	const attachments = retrieveAttachmentsFromMail(message);
 	const senderContact = find(message.participants, ['type', 's']);
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 
@@ -342,7 +342,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 											</Padding>
 										</Dropdown>
 									)}
-									{message.hasAttachment && attachments.length > 0 && (
+									{attachments.blockAttachments.length > 0 && (
 										<Padding left="small">
 											<Icon icon="AttachOutline" />
 										</Padding>
