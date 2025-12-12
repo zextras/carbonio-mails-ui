@@ -10,7 +10,11 @@ export const editorUtils = {
 		return { position: editViewWrapperPrevScrollTop ?? 0 };
 	},
 
-	computeUsedCids: ({ htmlContent }: { htmlContent: string }): { usedCids: Array<string> } => {
+	retrieveCIdsFromContent: ({
+		htmlContent
+	}: {
+		htmlContent: string;
+	}): { usedCids: Array<string> } => {
 		const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
 		// collect all used attachment IDs
 		const usedCids = Array.from(doc.querySelectorAll('img[data-pnsrc], img[src^="cid:"]'))

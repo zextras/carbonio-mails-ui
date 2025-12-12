@@ -21,13 +21,13 @@ describe('Editor utils', () => {
 			expect(editorUtils.calculateScrollTop(parent).position).toBe(0);
 		});
 	});
-	describe('Used Cids', () => {
+	describe('Cids', () => {
 		it('returns used Cids in the editor', () => {
 			const htmlContent =
 				'<p><img pnsrc="cid:first" src="cid:first" />' +
 				'<img src="cid:second" />' +
 				'<img src="https://test.test/image.png" /></p>';
-			const { usedCids } = editorUtils.computeUsedCids({ htmlContent });
+			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent });
 			expect(usedCids).toEqual(['cid:first', 'cid:second']);
 		});
 	});

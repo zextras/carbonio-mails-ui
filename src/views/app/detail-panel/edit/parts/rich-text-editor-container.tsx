@@ -96,7 +96,7 @@ export const RichTextEditorContainer = ({
 	const cleanupUnusedAttachments = useCallback(
 		(html: string) => {
 			if (!composerRef.current) return;
-			const { usedCids } = editorUtils.computeUsedCids({ htmlContent: html });
+			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: html });
 			removeInlineAttachments(usedCids);
 		},
 		[removeInlineAttachments]
