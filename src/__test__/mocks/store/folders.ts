@@ -4,15 +4,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
+	Folder,
 	FolderState,
+	FolderView,
 	getLinkIdMapKey,
 	LinkFolder,
-	PopulateFoldersStoreOptions,
 	useFolderStore
 } from '@zextras/carbonio-ui-commons';
 import { filter, values } from 'lodash';
 
 import { generateFolders } from '@test-utils/folders/folders-generator';
+
+export type PopulateFoldersStoreOptions = {
+	view?: FolderView;
+	noSharedAccounts?: boolean;
+	customFolders?: Array<Folder>;
+	additionalFolders?: Record<string, Folder>;
+};
 
 /**
  * Initialize the folder's store with roots and folders provided by
@@ -22,7 +30,8 @@ import { generateFolders } from '@test-utils/folders/folders-generator';
 export const populateFoldersStore = ({
 	view,
 	noSharedAccounts,
-	customFolders
+	customFolders,
+	additionalFolders
 }: PopulateFoldersStoreOptions = {}): void => {
 	const folders = generateFolders({
 		view,
@@ -39,7 +48,10 @@ export const populateFoldersStore = ({
 	}, {});
 	const initialStoreState: Partial<FolderState> = {
 		linksIdMap,
-		folders,
+		folders: {
+			...folders,
+			...(additionalFolders ?? {})
+		},
 		searches: {}
 	};
 	useFolderStore.setState((state) => ({ ...state, ...initialStoreState }), true);

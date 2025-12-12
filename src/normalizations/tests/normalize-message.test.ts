@@ -238,17 +238,33 @@ describe('normalize-message.ts', () => {
 
 			const result = normalizePartialIncompleteMessageFromSoap(input);
 
-			expect(result).toEqual({ id: '111', read: true }); // read flag, since it has a default fallback
+			expect(result).toEqual({ id: '111' }); // read flag, since it has a default fallback
+		});
+
+		it('should return flag read: true when the flag is empty', () => {
+			const result = normalizePartialIncompleteMessageFromSoap({ id: '111', f: '' });
+			expect(result).toEqual({
+				id: '111',
+				flagged: false,
+				hasAttachment: false,
+				isDeleted: false,
+				isDraft: false,
+				isForwarded: false,
+				isInvite: false,
+				isReplied: false,
+				isSentByMe: false,
+				read: true,
+				urgent: false
+			});
 		});
 
 		describe.each([
-			['should return flag read: true when the flag is empty', { id: '111', f: '' }],
-			['should return flag read: true when the flag is undefined', { id: '111', f: undefined }],
-			['should return flag read: true when the flag is missing', { id: '111' }]
+			['should not return flag read when the flag is undefined', { id: '111', f: undefined }],
+			['should not return flag read when the flag is missing', { id: '111' }]
 		])('%s', (_desc, input) => {
-			it('returns { id, read: true }', () => {
+			it('returns { id }', () => {
 				const result = normalizePartialIncompleteMessageFromSoap(input);
-				expect(result).toEqual({ id: '111', read: true });
+				expect(result).toEqual({ id: '111' });
 			});
 		});
 	});
@@ -1284,6 +1300,49 @@ describe('normalize-message.ts', () => {
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Original Email.eml');
+			});
+			it('should update attachments content disposition when inline, has html body, and no content ID', () => {
+				const soapMessage = generateMessageFromAPI({
+					mp: [
+						{
+							ct: 'text/html',
+							part: '1.1',
+							body: true,
+							content: 'default text'
+						},
+						{
+							ct: 'application/xml',
+							cd: 'inline',
+							part: '1',
+							filename: 'daticert.xml',
+							s: 10
+						},
+						{
+							ct: 'message/rfc822',
+							cd: 'inline',
+							part: '1.1',
+							filename: 'postacert.eml',
+							s: 100,
+							mp: [
+								{
+									ct: 'application/pdf',
+									cd: 'attachment',
+									part: '1.1',
+									filename: 'pdfname.pdf',
+									s: 100
+								}
+							]
+						}
+					]
+				});
+
+				const normalized = normalizeMailMessageFromSoap(soapMessage);
+
+				expect(normalized.attachments).toHaveLength(2);
+				expect(normalized.attachments?.[0].filename).toBe('daticert.xml');
+				expect(normalized.attachments?.[1].filename).toBe('postacert.eml');
+				expect(normalized.attachments?.[0].cd).toBe('attachment');
+				expect(normalized.attachments?.[1].cd).toBe('attachment');
 			});
 
 			it('should add default filename for text/html without filename', () => {
