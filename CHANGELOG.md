@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.4...v1.28.5) (2025-12-12)
+
+
+### Bug Fixes
+
+* added speficic case for attachments with no html ([62e1273](https://github.com/zextras/carbonio-mails-ui/commit/62e127390e138e2756c8782e99cdd0395460a830))
+
 ### [1.28.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.3...v1.28.4) (2025-12-12)
 
 ### [1.28.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.2...v1.28.3) (2025-12-09)
