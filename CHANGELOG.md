@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.3...v1.28.4) (2025-12-12)
+
+### [1.28.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.2...v1.28.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* add tests for message list badge display ([46f2dec](https://github.com/zextras/carbonio-mails-ui/commit/46f2dec7c48c1e755077d27dd26cb30ec62e53a1))
+* show message badge only when folder name is available ([7740072](https://github.com/zextras/carbonio-mails-ui/commit/77400727e9c906eac42d53945df253b1ffea2575))
+* update tests generators and tests ([946ad48](https://github.com/zextras/carbonio-mails-ui/commit/946ad48df776fd22a267ef6926bdb2c948383c4d))
+
+### [1.28.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.1...v1.28.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* fix advanced search results for from and to field ([1a09532](https://github.com/zextras/carbonio-mails-ui/commit/1a09532b1eee2a53a7aecdfdda3631c69e7a4e4f))
+
+### [1.28.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.0...v1.28.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* update message flags from sync properly ([18da921](https://github.com/zextras/carbonio-mails-ui/commit/18da9218179f800643c6777c0a2814c317a615a7))
+* update message flags from sync properly ([#1054](https://github.com/zextras/carbonio-mails-ui/issues/1054)) ([7a99751](https://github.com/zextras/carbonio-mails-ui/commit/7a99751fe0068ab1e79adcaf607e2818f10ccdf6))
+
+## [1.28.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.27.0...v1.28.0) (2025-11-19)
+
+
+### Features
+
+* [CO-2101] Refined “mark as read” behavior for Messages and Conversations ([#1040](https://github.com/zextras/carbonio-mails-ui/issues/1040)) ([c50492d](https://github.com/zextras/carbonio-mails-ui/commit/c50492d38f3167e737a45e819e032c74a2c0592a))
+* [CO-2279] keep expanded conversations open while scrolling ([#1029](https://github.com/zextras/carbonio-mails-ui/issues/1029)) ([ffb7425](https://github.com/zextras/carbonio-mails-ui/commit/ffb7425f9102a50c193151e29a43cc8820eaa029))
+* [CO-2313] Fix lost styles when Replying/Forwarding emails ([#1024](https://github.com/zextras/carbonio-mails-ui/issues/1024)) ([1d268d6](https://github.com/zextras/carbonio-mails-ui/commit/1d268d60d2074e21e1e304684ef43b92e5d31415))
+* [CO-2506]  Move composer from shell to mails ([#1016](https://github.com/zextras/carbonio-mails-ui/issues/1016)) ([45ba3d6](https://github.com/zextras/carbonio-mails-ui/commit/45ba3d6044a0c40ec777ec4288b416d56c5def73))
+* [CO-2643] Add Smartlink conversion support in editor dropzone ([#1036](https://github.com/zextras/carbonio-mails-ui/issues/1036)) ([39fbaaf](https://github.com/zextras/carbonio-mails-ui/commit/39fbaafe022b14751e289645d97af68496a54861))
+* enhance drag-and-drop functionality for file attachments in email composer ([#1045](https://github.com/zextras/carbonio-mails-ui/issues/1045)) ([d98efc1](https://github.com/zextras/carbonio-mails-ui/commit/d98efc12d5da7051b5fc2fe61878013c5bac4349))
+* **Modals:** let the user press the ESC key to close modals ([1ac3a20](https://github.com/zextras/carbonio-mails-ui/commit/1ac3a2091c376fc36c4c3c44f020cd0ed166f37d))
+
+
+### Bug Fixes
+
+*  imported same ModalHeader used in creation filter modal ([#1015](https://github.com/zextras/carbonio-mails-ui/issues/1015)) ([a5a5b1a](https://github.com/zextras/carbonio-mails-ui/commit/a5a5b1ac8ff8fa289b4731a87cc9e899f106d577))
+* [CO-1964] Clicking edit draft action opens multiple duplicate editors ([#993](https://github.com/zextras/carbonio-mails-ui/issues/993)) ([11625d9](https://github.com/zextras/carbonio-mails-ui/commit/11625d9a6c451f25989191e276e6b2a11065a8e5))
+* [CO-2294] add the name of the sharer on contact and calendar share ([#1030](https://github.com/zextras/carbonio-mails-ui/issues/1030)) ([734f1d0](https://github.com/zextras/carbonio-mails-ui/commit/734f1d0e304d2501918dc5c9a0cb986bfc25c7f8))
+* [CO-2297] Inability to delete an image added inline ([#1017](https://github.com/zextras/carbonio-mails-ui/issues/1017)) ([bfb1f00](https://github.com/zextras/carbonio-mails-ui/commit/bfb1f0078f61ec039ae25a1d8cf6a403b1c1887f))
+* [CO-2310] handle pasting of excel/cacl tables correctly  ([#1027](https://github.com/zextras/carbonio-mails-ui/issues/1027)) ([db95609](https://github.com/zextras/carbonio-mails-ui/commit/db9560911e414db939bef3ae975b729f65c00daa))
+* [CO-2312] use full name in sent mails instead of first name [#1020](https://github.com/zextras/carbonio-mails-ui/issues/1020) ([81c4175](https://github.com/zextras/carbonio-mails-ui/commit/81c4175f7976a4bc08d0a82ad5c52f4b75fbbb20))
+* [CO-2316] render number of value when applying a filter ([#1026](https://github.com/zextras/carbonio-mails-ui/issues/1026)) ([48392f5](https://github.com/zextras/carbonio-mails-ui/commit/48392f573fb0b84721dbb406c304cbddf3b9d2c8))
+* [CO-2495] prevent click event propagation in message preview actions ([#994](https://github.com/zextras/carbonio-mails-ui/issues/994)) ([55c7e5d](https://github.com/zextras/carbonio-mails-ui/commit/55c7e5dbb3193b3c04b74cc7e77c6222e38f77a1))
+* [CO-2556] search filter header responsiveness ([#1010](https://github.com/zextras/carbonio-mails-ui/issues/1010)) ([099380b](https://github.com/zextras/carbonio-mails-ui/commit/099380b969c8a1eb7d093bac5d73730f9a45620f))
+* [CO-2692] Fix inline image detection by preserving full content-ID during normalization ([#1028](https://github.com/zextras/carbonio-mails-ui/issues/1028)) ([bb54908](https://github.com/zextras/carbonio-mails-ui/commit/bb54908d2e0045258184ab7057f33a5e9b23ddd3))
+* [CO-2724] Browser makes failed network requests to CID URLs ([#1031](https://github.com/zextras/carbonio-mails-ui/issues/1031)) ([9d8e62d](https://github.com/zextras/carbonio-mails-ui/commit/9d8e62ddc746c0ba5d836d3e7ac2c51f2d033e9e))
+* [CO-2736] Drag and drop text blocked by attachment dropzone ([#1034](https://github.com/zextras/carbonio-mails-ui/issues/1034)) ([6e0b3d2](https://github.com/zextras/carbonio-mails-ui/commit/6e0b3d2a9beaec6dc2bdba712fdb79a84d60787e))
+* added sorting by size ([#1042](https://github.com/zextras/carbonio-mails-ui/issues/1042)) ([f04891f](https://github.com/zextras/carbonio-mails-ui/commit/f04891fc84dd94d50be6df58d713b397ef94eb66))
+* avoid UI crash when a component selector is used ([5e67011](https://github.com/zextras/carbonio-mails-ui/commit/5e67011516a112a7e4a22738af0e3a281494dbae))
+* composer editing area does not auto-expand in rich & plain text edit modes ([47bef27](https://github.com/zextras/carbonio-mails-ui/commit/47bef27d7a6baa7ecdcf14a28a626ebd680a0923))
+* disable keyboard shortcuts when file preview is open ([cd228ef](https://github.com/zextras/carbonio-mails-ui/commit/cd228ef93526ee73cea96f69440b07b753db625d))
+* handle 'esc' keystroke in the search view ([#1022](https://github.com/zextras/carbonio-mails-ui/issues/1022)) ([9d800f6](https://github.com/zextras/carbonio-mails-ui/commit/9d800f66d9a9644be5f787599939a4f963ebd2c3))
+* imported same ModalHeader used in creation filter modal ([58c1a98](https://github.com/zextras/carbonio-mails-ui/commit/58c1a98c340b88ef3b39404d460f30b7bef1bc50))
+* missing close btn ([#1035](https://github.com/zextras/carbonio-mails-ui/issues/1035)) ([a1c21fb](https://github.com/zextras/carbonio-mails-ui/commit/a1c21fbe7aff0b5e555cb6798b197260fb2eacaf))
+* navigate to previous route or to previous folder depending on the action performed ([38c704e](https://github.com/zextras/carbonio-mails-ui/commit/38c704eac60f3b7f1d7fbe60a0ac3e57baa58951))
+
 ## [1.27.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.26.7...v1.27.0) (2025-09-29)
 
 
