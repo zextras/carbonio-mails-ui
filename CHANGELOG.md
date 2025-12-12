@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.5...v1.28.6) (2025-12-12)
+
+
+### Bug Fixes
+
+* update multiple selection after selected conversations are moved ([5692296](https://github.com/zextras/carbonio-mails-ui/commit/5692296e38a23704f2781a560bcd732ffa68bd1c))
+* update multiple selection after selected messages are moved ([0df7579](https://github.com/zextras/carbonio-mails-ui/commit/0df7579c953f99e1885e92a1e7290da92d5feaaa))
+
 ### [1.28.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.4...v1.28.5) (2025-12-12)
 
 
