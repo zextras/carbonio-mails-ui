@@ -135,28 +135,28 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 			) {
 				// Determine content disposition based on whether it's referenced in HTML body
 				if (item.ci && anchoredAttachmentsList.includes(removeAngleBrackets(item.ci))) {
-					results.inlineAttachments.push({ contentId: item.ci });
+					results.inlineAttachments.push(item);
 				} else if (item.ci && item.cd === 'inline' && hasHtml) {
 					// Not referenced in HTML but marked inline -> change to attachment
 					// TODO: double check this condition
 					// item.cd = 'attachment';
-					results.blockAttachments.push({ fileName: 'unknown' });
+					results.blockAttachments.push(item);
 				} else if (item.cd === 'inline' && item.filename && hasHtml) {
-					results.blockAttachments.push({ fileName: item.filename });
+					results.blockAttachments.push(item);
 					// item.cd = 'attachment';
 				} else {
-					results.blockAttachments.push({ fileName: 'unknown' });
+					results.blockAttachments.push(item);
 					// item.cd ??= 'attachment';
 				}
 
 				// Add default filenames for known types
 				if (item.contentType === 'message/rfc822' && !item.filename) {
 					item.filename = 'Unknown <message/rfc822>';
-					results.blockAttachments.push({ fileName: item.filename });
+					results.blockAttachments.push(item);
 				}
 				if (item.contentType === 'text/html' && !item.filename) {
 					item.filename = 'Unknown <text/html>';
-					results.blockAttachments.push({ fileName: item.filename });
+					results.blockAttachments.push(item);
 				}
 
 				// Exclude PKCS7 signatures
@@ -171,18 +171,9 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 	return results;
 };
 
-// TODO: add content type, contentid, filename and needed props
-type BlockAttachment = {
-	fileName: string;
-};
-
-type InlineAttachment = {
-	contentId: string;
-};
-
 type Attachments = {
-	inlineAttachments: Array<InlineAttachment>;
-	blockAttachments: Array<BlockAttachment>;
+	inlineAttachments: Array<MailMessagePart>;
+	blockAttachments: Array<MailMessagePart>;
 };
 // export const retrieveAttachmentsFromMail = (msg: MailMessage): Array<MailMessagePart> =>
 // 	getAttachmentsFromParts(msg.parts);

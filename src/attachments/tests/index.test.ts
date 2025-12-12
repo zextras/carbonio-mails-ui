@@ -55,7 +55,8 @@ describe('Inline image attachments', () => {
 			expect(attachments.inlineAttachments.length).toBe(1);
 			expect(attachments.inlineAttachments?.[0]).toEqual(
 				expect.objectContaining({
-					contentId: `<${contentId}>`,
+					cd: 'inline',
+					ci: `<${contentId}>`,
 					filename: 'Screenshot.png',
 					contentType: 'image/png'
 				})
