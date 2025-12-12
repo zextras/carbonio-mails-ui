@@ -10,6 +10,8 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
+import { createSoapAPIInterceptor } from '../../../__test__/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../__test__/mocks/store/folders';
 import { setupHook, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { TIMERS } from '__test__/constants';
@@ -124,9 +126,11 @@ describe('useMsgMoveToFolder', () => {
 			});
 
 			it('should call onActionComplete when provided after moving messages', async () => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				populateFoldersStore({ view: 'message' });
+				createSoapAPIInterceptor('MsgAction');
 				const onActionComplete = jest.fn();
 				const {
+					user,
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
 					initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX, onActionComplete }]
@@ -140,10 +144,13 @@ describe('useMsgMoveToFolder', () => {
 					jest.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
-				const moveButton = screen.getByText(tags.button.move);
-				act(() => {
-					moveButton.click();
-				});
+				// Select the destination folder in the modal
+				const folderOption = screen.getByText('folders.sent');
+				await act(async () => user.click(folderOption));
+
+				// Click the move button in the modal
+				const moveButton = screen.getByText('Move');
+				await act(async () => user.click(moveButton));
 
 				expect(onActionComplete).toHaveBeenCalledWith(messagesId);
 			});

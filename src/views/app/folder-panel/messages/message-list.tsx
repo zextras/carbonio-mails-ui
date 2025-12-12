@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { CustomListItem, FOLDERS } from '@zextras/carbonio-ui-commons';
@@ -86,6 +86,17 @@ export const MessageList = (): React.JSX.Element => {
 		}
 		return null;
 	}, [messageListIndex?.length, folderId, t]);
+
+	const onMessagesMoved = useCallback((movedMessagesIds: Array<string>): void => {
+		// Deselect moved messages
+		setSelectedItems((prevSelectedItems) => {
+			const newSelectedItems = new Set(prevSelectedItems);
+			movedMessagesIds.forEach((id) => {
+				newSelectedItems.delete(id);
+			});
+			return newSelectedItems;
+		});
+	}, []);
 
 	const selectedItemsMap: Record<string, boolean> = Object.fromEntries(
 		Array.from(selectedItems, (item) => [item, true])
@@ -178,6 +189,7 @@ export const MessageList = (): React.JSX.Element => {
 			deselectAll={deselectAll}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
+			onMessagesMoved={onMessagesMoved}
 		/>
 	);
 };

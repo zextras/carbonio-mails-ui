@@ -124,6 +124,29 @@ describe('useMsgMoveToTrash', () => {
 
 				expect(apiCallSpy).not.toHaveBeenCalled();
 			});
+
+			it('should call onActionComplete when provided after moving messages to trash', async () => {
+				const onActionComplete = jest.fn();
+				createSoapAPIInterceptor('MsgAction');
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgMoveToTrashFn, {
+					initialProps: [
+						{
+							ids: messagesId,
+							messageFolderId: FOLDERS.INBOX,
+							onActionComplete
+						}
+					]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(messagesId);
+			});
 		});
 	});
 });
