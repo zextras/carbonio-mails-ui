@@ -9,7 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
-import { debounce, noop } from 'lodash';
+import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
@@ -29,6 +29,12 @@ import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 type FileSelectProps = {
 	editor: TinyMCE;
 	files: FileList | null | undefined;
+};
+
+type InlineAttachment = {
+	contentId: string | undefined;
+	cidUrl: string | undefined;
+	downloadServiceUrl: string | undefined;
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
@@ -86,10 +92,27 @@ export const RichTextEditorContainer = ({
 		[getCurrentText, onExternalTextChanges, setTextProvider]
 	);
 
+	const cleanupUnusedAttachments = useCallback(
+		(html: string) => {
+			if (!composerRef.current) return;
+
+			const doc = new DOMParser().parseFromString(html, 'text/html');
+
+			// collect all used attachment IDs
+			const usedCids = Array.from(doc.querySelectorAll('img[data-pnsrc], img[src^="cid:"]'))
+				.map((img) => img.getAttribute('data-pnsrc') || img.getAttribute('src'))
+				.filter((cid): cid is string => Boolean(cid));
+
+			removeInlineAttachments(usedCids);
+		},
+		[removeInlineAttachments]
+	);
+
 	const saveEditor = useCallback(() => {
 		if (!composerRef.current) {
 			return;
 		}
+
 		const plainText = composerRef.current.getContent({ format: 'text' });
 		let richText = composerRef.current.getContent({ format: 'html' });
 
@@ -97,8 +120,9 @@ export const RichTextEditorContainer = ({
 
 		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
+		cleanupUnusedAttachments(richText);
 		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [prefs, setText]);
+	}, [prefs, cleanupUnusedAttachments, setText]);
 
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
@@ -126,13 +150,36 @@ export const RichTextEditorContainer = ({
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			if (!fileList) return;
 			const files = buildArrayFromFileList(fileList);
+
+			const insertSingleInlineAttachment = async (
+				editor: TinyMCE,
+				inlineAttachment: InlineAttachment
+			): Promise<void> => {
+				const url = inlineAttachment.downloadServiceUrl;
+				if (!url) return;
+				// get the updated image in order to avoid TinyMCE caching issues
+				const blob = await fetch(url).then((r) => r.blob());
+				const objectUrl = URL.createObjectURL(blob);
+
+				const img = `&nbsp;<img alt="Inline attachment"
+                data-pnsrc="${inlineAttachment.cidUrl}"
+                data-mce-src="${inlineAttachment.cidUrl}"
+                src="${objectUrl}" /><br/>`;
+
+				editor?.activeEditor?.insertContent(img);
+			};
+
+			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
+				const editor = tinymce;
+				const insertPromises = inlineAttachments.map((inlineAttachment) =>
+					insertSingleInlineAttachment(editor, inlineAttachment)
+				);
+
+				Promise.all(insertPromises).catch(console.error);
+			};
+
 			addInlineAttachments(files, {
-				onSaveComplete: (inlineAttachments) => {
-					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img alt="Inline attachment" data-pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
-						tinymce?.activeEditor?.insertContent(img);
-					});
-				}
+				onSaveComplete: handleSaveComplete
 			});
 		},
 		[addInlineAttachments]
@@ -151,22 +198,6 @@ export const RichTextEditorContainer = ({
 			if (editViewWrapper) {
 				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
 			}
-		};
-	}
-
-	function createAttachmentCleanupHandler(editor: Editor, removeFn: (usedCids: string[]) => void) {
-		return (): void => {
-			const content = editor.getContent({ format: 'html' });
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(content, 'text/html');
-			const usedCids = [
-				...Array.from(doc.querySelectorAll('img[pnsrc]')).map((img) => img.getAttribute('pnsrc')),
-				...Array.from(doc.querySelectorAll('img[src^="cid:"]')).map((img) =>
-					img.getAttribute('src')
-				)
-			].filter((cid): cid is string => Boolean(cid));
-
-			removeFn(usedCids);
 		};
 	}
 
@@ -254,16 +285,9 @@ export const RichTextEditorContainer = ({
 				onComposerInit({} as Event, editor);
 
 				const handlePaste = createPasteHandler(editor, editorId);
-				const handleAttachmentCleanup = createAttachmentCleanupHandler(
-					editor,
-					removeInlineAttachments
-				);
-
 				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
 				editor.on('remove', onComposerClose);
-				editor.on('Paste Cut Drop Undo Redo', handleAttachmentCleanup);
-				editor.on('Change', debounce(handleAttachmentCleanup, 300));
 
 				// Handle drag over events
 				if (onDragOver) {

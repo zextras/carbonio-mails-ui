@@ -40,7 +40,7 @@ export function mockSoapModifyConversationAction(
 			c: [
 				{
 					id: '123',
-					f: `s${action}`
+					f: action
 				}
 			]
 		}
@@ -61,7 +61,29 @@ export function mockSoapModifyMessageAction(
 			m: [
 				{
 					id: messageId,
-					f: `s${action}`
+					f: action
+				}
+			]
+		},
+		...(seq ? { seq } : {})
+	});
+	mockSoapSync([soapNotify]);
+}
+
+export function mockSoapModifyMessage(
+	mailboxNumber: number,
+	messageId: string,
+	mod: Record<string, unknown>,
+	seq?: number
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		modified: {
+			mbx: [{ s: mailboxNumber }],
+			m: [
+				{
+					id: messageId,
+					...(mod ?? {})
 				}
 			]
 		},
@@ -84,13 +106,13 @@ export function mockSoapMessageActionAndConversationModified(
 			m: [
 				{
 					id: messageId,
-					f: `s${action}`
+					f: action
 				}
 			],
 			c: [
 				{
 					id: conversationId,
-					f: `s${action}`
+					f: action
 				}
 			]
 		}

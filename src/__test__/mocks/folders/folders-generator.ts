@@ -5,6 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { uuidv4 } from '@posthog/core/vendor/uuidv7';
 import {
 	Folder,
 	FOLDERS,
@@ -49,7 +50,7 @@ const fillReferenceToParent = (folder: Folder, parent?: Folder): void => {
  * Recursive function that returns a flat map of the children folders
  * @param children
  */
-const getFlatChildren = (children: Array<Folder>): Folders => {
+export const getFlatChildren = (children: Array<Folder>): Folders => {
 	let destination: Folders = {};
 	children.forEach((child) => {
 		destination[child.id] = child;
@@ -249,12 +250,12 @@ export const generateFolderLink = (
 
 /**
  *
- * @param primaryContextIdentity
  * @param sharedContextIdentity
+ * @param children
  */
 const generateSharedAccountRoot = (
-	primaryContextIdentity: MocksContextIdentity,
-	sharedContextIdentity: MocksContextIdentity
+	sharedContextIdentity: MocksContextIdentity,
+	children: Array<Folder> = generateSharedAccountSystemFolders(sharedContextIdentity)
 ): Record<string, Folder> => {
 	const id = `${sharedContextIdentity.identity.id}:${FOLDERS.USER_ROOT}`;
 	return {
@@ -264,7 +265,7 @@ const generateSharedAccountRoot = (
 			activesyncdisabled: false,
 			broken: false,
 			checked: false,
-			children: generateSharedAccountSystemFolders(sharedContextIdentity),
+			children,
 			// color: undefined,
 			deletable: false,
 			depth: 1,
@@ -306,20 +307,24 @@ const generateSharedAccountRoot = (
 
 /**
  *
- * @param primaryContextIdentity
  * @param sharedContextIdentities
+ * @param children
  */
-const generateSharedAccountsRoot = (
-	primaryContextIdentity: MocksContextIdentity,
-	sharedContextIdentities: Array<MocksContextIdentity>
+export const generateSharedAccountsRoot = (
+	sharedContextIdentities: Array<MocksContextIdentity>,
+	children?: Array<Folder>
 ): Record<string, Folder> => {
-	if (!primaryContextIdentity || !sharedContextIdentities || !sharedContextIdentities.length) {
+	if (!sharedContextIdentities || !sharedContextIdentities.length) {
 		return {};
 	}
 
 	let result = {};
 	sharedContextIdentities.forEach((sharedAccount) => {
-		result = { ...result, ...generateSharedAccountRoot(primaryContextIdentity, sharedAccount) };
+		result = {
+			...result,
+			...generateSharedAccountRoot(sharedAccount, children),
+			...getFlatChildren(children ?? [])
+		};
 	});
 
 	return result;
@@ -370,6 +375,21 @@ export const generateFolder = (model: Partial<Folder & { oname: string }> = {}):
 	};
 };
 
+type SharedAccountFolder = {
+	identity: FakeIdentity;
+	folderId: string;
+	parent?: string;
+};
+
+export const generateSharedAccountFolder = (options: SharedAccountFolder): Folder => {
+	const { identity, folderId, parent = FOLDERS.USER_ROOT } = options;
+	return generateFolder({
+		id: `${identity.id}:${folderId}`,
+		l: `${identity.id}:${parent}`,
+		uuid: uuidv4(),
+		parent: `${identity.id}:${parent}`
+	});
+};
 /**
  * Generate a semi-fixed folders structure mock
  * TODO make it more flexible
@@ -1064,13 +1084,8 @@ export const generateFolders = ({
 			parent: undefined,
 			depth: 0
 		},
-		...(!noSharedAccounts &&
-			generateSharedAccountsRoot(mockContext.identities.primary, mockContext.identities.sendAs)),
-		...(!noSharedAccounts &&
-			generateSharedAccountsRoot(
-				mockContext.identities.primary,
-				mockContext.identities.sendOnBehalf
-			))
+		...(!noSharedAccounts && generateSharedAccountsRoot(mockContext.identities.sendAs)),
+		...(!noSharedAccounts && generateSharedAccountsRoot(mockContext.identities.sendOnBehalf))
 	} as Folders;
 
 	// Add any child folder to the first level
