@@ -178,7 +178,11 @@ export const getAttachmentsFromParts = (
 						} else if (item.ci && item.cd === 'inline' && hasHtml) {
 							// Not referenced in HTML but marked inline -> change to attachment
 							item.cd = 'attachment';
-						} else if (item.cd === 'inline' && item.filename && hasHtml) {
+
+							// TODO: the conditions order it impacting the behavior here, we need to refactor this logic
+						} else if (item.ci && item.cd === 'inline' && !hasHtml) {
+							item.cd = 'inline';
+						} else if (item.cd === 'inline' && item.filename) {
 							item.cd = 'attachment';
 						} else {
 							item.cd ??= 'attachment';
