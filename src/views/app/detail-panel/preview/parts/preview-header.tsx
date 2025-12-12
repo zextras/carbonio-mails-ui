@@ -13,6 +13,7 @@ import React, {
 	useState
 } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Avatar,
 	AvatarPropTypes,
@@ -38,12 +39,11 @@ import {
 import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled from '@emotion/styled';
 
+import { retrieveAttachmentsFromMail } from '../../../../../attachments';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
-import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import type { MailMessage } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
@@ -96,7 +96,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
 		[onClick]
 	);
-	const attachments = retrieveAttachmentsType(message, 'attachment');
+	const attachments = retrieveAttachmentsFromMail(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 

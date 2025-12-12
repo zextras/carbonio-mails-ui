@@ -8,6 +8,7 @@ import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
+import { retrieveAttachmentsFromMail } from '../attachments';
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
@@ -16,7 +17,6 @@ import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
 import type {
 	InlineAttachments,
-	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor,
@@ -24,28 +24,6 @@ import type {
 	SharedParticipant,
 	SoapDraftMessageObj
 } from 'types/index.d';
-
-export const retrieveAttachmentsType = (
-	original: MailMessage,
-	disposition: string
-): Array<MailAttachmentParts> =>
-	reduce(
-		original?.parts?.[0]?.parts ?? [],
-		(acc, part) =>
-			part.disposition && part.disposition === disposition
-				? [
-						...acc,
-						{
-							part: part.name,
-							mid: original.id
-						}
-					]
-				: acc,
-		[] as Array<MailAttachmentParts>
-	);
-
-export const retrieveFROM = (original: MailMessage): Array<Participant> =>
-	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM);
 
 export const changeParticipantRole = (
 	original: MailMessage,
@@ -285,7 +263,7 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
 		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
-		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
+		attach: { mp: retrieveAttachmentsFromMail(msg, 'attachment') },
 		su: { _content: msg.subject ?? '' },
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
