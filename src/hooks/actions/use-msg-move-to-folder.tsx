@@ -15,10 +15,12 @@ import { MoveMessage } from 'ui-actions/move-msg';
 
 export const useMsgMoveToFolderFn = ({
 	folderId,
-	ids
+	ids,
+	onActionComplete
 }: {
 	folderId: string;
 	ids: Array<string>;
+	onActionComplete?: (ids: Array<string>) => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
@@ -40,27 +42,31 @@ export const useMsgMoveToFolderFn = ({
 							selectedIDs={ids}
 							onClose={(): void => closeModal(modalId)}
 							isRestore={false}
+							onMoveComplete={onActionComplete}
 						/>
 					)
 				},
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, ids, closeModal]);
+	}, [canExecute, createModal, folderId, ids, onActionComplete, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgMoveToFolderDescriptor = ({
 	folderId,
-	ids
+	ids,
+	onActionComplete
 }: {
 	folderId: string;
 	ids: Array<string>;
+	onActionComplete?: (ids: Array<string>) => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToFolderFn({
 		folderId,
-		ids
+		ids,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

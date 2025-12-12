@@ -166,6 +166,7 @@ describe('MoveConversation', () => {
 		expect(request.action.l).toBe(destinationFolder);
 		expect(request.action.tn).toBeUndefined();
 	});
+
 	it('should show an error message if API call returns a Fault case', async () => {
 		populateFoldersStore();
 
@@ -231,5 +232,36 @@ describe('MoveConversation', () => {
 		const goToFolderButton = await screen.findByRole('button', { name: /GO TO FOLDER/ });
 		await user.click(goToFolderButton);
 		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
+	});
+
+	it('should call onMoveComplete on success', async () => {
+		const onMoveComplete = vi.fn();
+		populateFoldersStore();
+
+		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+			action: {
+				id: convIds.join(','),
+				op: 'move'
+			}
+		});
+
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={vi.fn()}
+				isRestore={false}
+				onMoveComplete={onMoveComplete}
+			/>
+		);
+
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
+		await user.click(await screen.findByRole('button', { name: /Move/ }));
+
+		await expect(screen.findByText('Conversation successfully moved')).resolves.toBeInTheDocument();
+
+		expect(onMoveComplete).toHaveBeenCalledWith(convIds);
 	});
 });
