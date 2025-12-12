@@ -22,7 +22,7 @@ describe('Editor utils', () => {
 		});
 	});
 	describe('Cids', () => {
-		it('returns used Cids in the editor', () => {
+		it('returns used Cids referenced in the html content', () => {
 			const htmlContent =
 				'<p><img pnsrc="cid:first" src="cid:first" />' +
 				'<img src="cid:second" />' +
