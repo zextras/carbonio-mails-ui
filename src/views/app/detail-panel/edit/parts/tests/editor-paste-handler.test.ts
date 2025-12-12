@@ -132,7 +132,7 @@ describe('handleEditorPaste', () => {
 		const mockContentId = `${mockAid}@carbonio`;
 		const mockEditorId = 'test-editor';
 		it('should upload an image and return the correct result', async () => {
-			(useEditorsStore.getState as vi.Mock).mockReturnValue({
+			(useEditorsStore.getState as Mock).mockReturnValue({
 				setDid: vi.fn(),
 				setSize: vi.fn(),
 				removeUnsavedAttachments: vi.fn(),
@@ -189,14 +189,14 @@ describe('handleEditorPaste', () => {
 		});
 
 		it('should fetch uploaded image and insert updated <img> tag into editor', async () => {
-			(useEditorsStore.getState as jest.Mock).mockReturnValue({
-				setDid: jest.fn(),
-				setSize: jest.fn(),
-				removeUnsavedAttachments: jest.fn(),
-				setSavedAttachments: jest.fn()
+			(useEditorsStore.getState as Mock).mockReturnValue({
+				setDid: vi.fn(),
+				setSize: vi.fn(),
+				removeUnsavedAttachments: vi.fn(),
+				setSavedAttachments: vi.fn()
 			});
 
-			(saveDraftEmailStoreAction as jest.Mock).mockResolvedValue({
+			(saveDraftEmailStoreAction as Mock).mockResolvedValue({
 				m: [
 					{
 						id: 'msg789',
@@ -216,7 +216,7 @@ describe('handleEditorPaste', () => {
 			});
 
 			// Mock getEditor to return savedAttachments
-			(getEditor as jest.Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
+			(getEditor as Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
 				savedAttachments: [
 					{
 						messageId: 'msg789',
@@ -230,16 +230,16 @@ describe('handleEditorPaste', () => {
 				]
 			});
 
-			(uploadFileApi as jest.Mock).mockResolvedValue({ aid: mockAid });
+			(uploadFileApi as Mock).mockResolvedValue({ aid: mockAid });
 
 			const fakeBlob = new Blob(['xxx'], { type: 'image/png' });
-			global.fetch = jest.fn(() =>
+			global.fetch = vi.fn(() =>
 				Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
-			) as jest.Mock;
+			) as Mock;
 			const fakeObjectUrl = 'blob://fake-object-url';
-			global.URL.createObjectURL = jest.fn(() => fakeObjectUrl);
+			global.URL.createObjectURL = vi.fn(() => fakeObjectUrl);
 
-			const editor = { insertContent: jest.fn(), setProgressState: jest.fn() };
+			const editor = { insertContent: vi.fn(), setProgressState: vi.fn() };
 
 			const uploadResult = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
 

@@ -302,15 +302,7 @@ export const RichTextEditorContainer = ({
 				};
 			}
 		};
-	}, [
-		editorId,
-		onComposerClose,
-		onComposerInit,
-		onDragOver,
-		onTextChange,
-		prefs,
-		removeInlineAttachments
-	]);
+	}, [editorId, onComposerClose, onComposerInit, onDragOver, onTextChange, prefs]);
 
 	return (
 		<Container
