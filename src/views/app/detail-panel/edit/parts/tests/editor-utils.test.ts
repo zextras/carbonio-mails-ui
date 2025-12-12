@@ -28,7 +28,7 @@ describe('Editor utils', () => {
 				'<img src="cid:second" />' +
 				'<img src="https://test.test/image.png" /></p>';
 			const { usedCids } = editorUtils.computeUsedCids({ htmlContent });
-			expect(usedCids).toHaveLength(2);
+			expect(usedCids).toEqual(['cid:first', 'cid:second']);
 		});
 	});
 });
