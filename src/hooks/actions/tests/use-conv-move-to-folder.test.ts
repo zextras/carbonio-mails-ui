@@ -90,7 +90,7 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Move`)).toBeVisible();
@@ -108,14 +108,14 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Move Conversation`)).not.toBeInTheDocument();
 			});
 
 			it('should call onActionComplete when provided after successful move', async () => {
-				const onActionComplete = jest.fn();
+				const onActionComplete = vi.fn();
 				populateFoldersStore({ view: 'message' });
 				createSoapAPIInterceptor('ConvAction');
 
@@ -131,7 +131,7 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				// Select the destination folder in the modal

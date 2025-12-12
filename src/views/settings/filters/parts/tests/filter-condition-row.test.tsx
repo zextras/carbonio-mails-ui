@@ -26,7 +26,7 @@ describe('Filter Condition Row', () => {
 				name: ''
 			}
 		],
-		setNewFilters: jest.fn(),
+		setNewFilters: vi.fn(),
 		condition: 'anyof',
 		activeFilter: false,
 		filterName: ''

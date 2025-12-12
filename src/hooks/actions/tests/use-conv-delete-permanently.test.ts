@@ -96,7 +96,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(
@@ -116,7 +116,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(
@@ -137,7 +137,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
@@ -151,7 +151,7 @@ describe('useConvDeletePermanently', () => {
 			});
 
 			it('should call the onActionComplete callback when the deletion is successful', async () => {
-				const onActionComplete = jest.fn();
+				const onActionComplete = vi.fn();
 				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 				const {
 					user,
@@ -165,7 +165,7 @@ describe('useConvDeletePermanently', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });

@@ -1,27 +1,21 @@
+import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
-
 import { EditViewActions } from '../../../../../constants';
 import { createEditBoard } from '../edit-view-board';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	addBoard: jest.fn(),
-	getBoardById: jest.fn(),
-	setCurrentBoard: jest.fn()
-}));
-
-const mockAddBoard = addBoard as jest.MockedFunction<typeof addBoard>;
-const mockGetBoardById = getBoardById as jest.MockedFunction<typeof getBoardById>;
-const mockSetCurrentBoard = setCurrentBoard as jest.MockedFunction<typeof setCurrentBoard>;
+const mockAddBoard = addBoard as Mock<typeof addBoard>;
+const mockGetBoardById = getBoardById as Mock<typeof getBoardById>;
+const mockSetCurrentBoard = setCurrentBoard as Mock<typeof setCurrentBoard>;
 
 describe('createEditBoard', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should create a new board when no existing board exists for draft editing', () => {

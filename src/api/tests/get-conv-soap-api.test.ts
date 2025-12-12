@@ -53,7 +53,7 @@ describe('getConvSoapApi', () => {
 	});
 
 	it('should call onConversationIdChange when conversation ID changes', async () => {
-		const mockOnConversationIdChange = jest.fn();
+		const mockOnConversationIdChange = vi.fn();
 		const conversation = generateConversationFromAPI({ id: '123' });
 		const response: GetConvResponse = {
 			c: [conversation]
@@ -69,7 +69,7 @@ describe('getConvSoapApi', () => {
 	});
 
 	it('should not call onConversationIdChange when conversation ID remains the same', async () => {
-		const mockOnConversationIdChange = jest.fn();
+		const mockOnConversationIdChange = vi.fn();
 		const conversation = generateConversationFromAPI({ id: '123' });
 		const response: GetConvResponse = {
 			c: [conversation]

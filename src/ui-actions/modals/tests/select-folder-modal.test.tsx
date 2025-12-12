@@ -91,13 +91,13 @@ const rootFolder = {
 
 describe('move-modal', () => {
 	test('folder selector is displaying correctly when root folder is selected', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 		const inputLabel = t(
 			'folder_panel.modal.move.body.message1',
 			'Select a folder to move the considered one to:'
 		);
 
-		const confirmAction = jest.fn();
+		const confirmAction = vi.fn();
 		setupTest(
 			<SelectFolderModal
 				onClose={(): void => closeModal()}
@@ -128,7 +128,7 @@ describe('move-modal', () => {
 	});
 
 	test('move a nested folder to the root folder', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 		const inputLabel = t(
 			'folder_panel.modal.move.body.message1',
 			'Select a folder to move the considered one to:'
@@ -156,7 +156,7 @@ describe('move-modal', () => {
 });
 
 test('API is called with the proper parameters to move the selected folder into the root folder', async () => {
-	const closeModal = jest.fn();
+	const closeModal = vi.fn();
 	populateFoldersStore();
 	const confirmAction = (): Promise<FolderActionResponse> =>
 		folderActionSoapApi({ folder: folderToMove, l: rootFolder.id, op: 'move' });

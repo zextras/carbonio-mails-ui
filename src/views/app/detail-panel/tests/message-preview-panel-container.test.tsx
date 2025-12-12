@@ -8,19 +8,11 @@ import React from 'react';
 
 import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
-import { NavigateFunction } from 'react-router-dom';
 
 import { updateMessageStatus } from '../../../../store/emails/store';
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
-
-const mockNavigateSpy = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useNavigate: (): NavigateFunction => mockNavigateSpy
-}));
 
 describe('MessagePreviewPanelContainer', () => {
 	const defaultTitle = 'test title';
@@ -33,9 +25,9 @@ describe('MessagePreviewPanelContainer', () => {
 		const mockedMessage = populateMessagesInEmailStore()[0];
 		await act(() => updateMessageStatus(mockedMessage.id, 'error'));
 
-		window.close = jest.fn();
-		jest.mocked(shell).IS_FOCUS_MODE = true;
-		const closeWindowSpy = jest.spyOn(window, 'close');
+		window.close = vi.fn();
+		vi.mocked(shell).IS_FOCUS_MODE = true;
+		const closeWindowSpy = vi.spyOn(window, 'close');
 		setupTest(<MessagePreviewPanelContainer />, {
 			initialEntries: [`/folder/${mockedMessage.parent}/message/${mockedMessage.id}`],
 			path: '/folder/:folderId/message/:messageId'
@@ -45,7 +37,7 @@ describe('MessagePreviewPanelContainer', () => {
 	});
 
 	it('should not set the window title if the focus mode is disabled', () => {
-		jest.mocked(shell).IS_FOCUS_MODE = false;
+		vi.mocked(shell).IS_FOCUS_MODE = false;
 		const mockedMessage = populateMessagesInEmailStore()[0];
 
 		setupTest(<MessagePreviewPanelContainer />, {
@@ -57,7 +49,7 @@ describe('MessagePreviewPanelContainer', () => {
 	});
 
 	it('should set the window title to the message subject if the focus mode is enabled', () => {
-		jest.mocked(shell).IS_FOCUS_MODE = true;
+		vi.mocked(shell).IS_FOCUS_MODE = true;
 		const mockedMessage = populateMessagesInEmailStore()[0];
 
 		setupTest(<MessagePreviewPanelContainer />, {

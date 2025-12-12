@@ -22,7 +22,7 @@ beforeEach(() => {
 
 describe('SubjectRow', () => {
 	it('Should display the subject', async () => {
-		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });
 		const editor = await readyToBeSentEditorTestCase({
 			subject: 'test subject'
@@ -34,7 +34,7 @@ describe('SubjectRow', () => {
 	});
 
 	it('Should display the request read receipt icon when requestReadReceipt is true', async () => {
-		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });
 		const editor = await readyToBeSentEditorTestCase({
 			requestReadReceipt: true
@@ -46,7 +46,7 @@ describe('SubjectRow', () => {
 	});
 
 	it('Should display the urgent icon when isUrgent is true', async () => {
-		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });
 		const editor = await readyToBeSentEditorTestCase({
 			isUrgent: true
@@ -58,7 +58,7 @@ describe('SubjectRow', () => {
 	});
 
 	it('Should display the S/MIME sign icon when isSmimeSign is true', async () => {
-		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });
 		const editor = await readyToBeSentEditorTestCase({
 			isSmimeSign: true
@@ -70,7 +70,7 @@ describe('SubjectRow', () => {
 	});
 
 	it('Should display the S/MIME encrypt icon when isSmimeEncrypt is true', async () => {
-		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });
 		const editor = await readyToBeSentEditorTestCase({
 			isSmimeEncrypt: true

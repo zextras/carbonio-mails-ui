@@ -28,7 +28,7 @@ describe('ConversationListHooks', () => {
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
 		const folder = generateFolder({ id: 'folder-1' });
-		const appendConversationsSpy = jest.spyOn(
+		const appendConversationsSpy = vi.spyOn(
 			storeHooks,
 			'appendConversationsToConversationIndexSlice'
 		);
@@ -69,7 +69,7 @@ describe('ConversationListHooks', () => {
 		const searchResponse = {
 			Fault: {}
 		};
-		const updateConversationsResultsLoadingStatusSpy = jest.spyOn(
+		const updateConversationsResultsLoadingStatusSpy = vi.spyOn(
 			storeHooks,
 			'updateConversationsResultsLoadingStatus'
 		);
@@ -100,7 +100,7 @@ describe('ConversationListHooks', () => {
 	});
 
 	it('should handle 500 gracefully', async () => {
-		const updateConversationsResultsLoadingStatusSpy = jest.spyOn(
+		const updateConversationsResultsLoadingStatusSpy = vi.spyOn(
 			storeHooks,
 			'updateConversationsResultsLoadingStatus'
 		);
@@ -131,7 +131,7 @@ describe('ConversationListHooks', () => {
 	});
 
 	it('should not load more results if hasMore is false', async () => {
-		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
@@ -156,7 +156,7 @@ describe('ConversationListHooks', () => {
 	it('should not load more results if already loading', async () => {
 		const loadingMore = { current: true };
 
-		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,

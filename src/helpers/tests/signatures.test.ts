@@ -5,6 +5,7 @@
  */
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
 import { Signature } from '../../types';
@@ -87,7 +88,7 @@ describe('Signatures', () => {
 		};
 
 		beforeEach(() => {
-			(getUserAccount as jest.Mock).mockReturnValue({
+			(getUserAccount as Mock).mockReturnValue({
 				...account,
 				signatures: { signature: [signature1, signature2] }
 			});

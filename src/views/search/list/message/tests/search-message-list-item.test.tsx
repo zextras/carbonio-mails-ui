@@ -39,7 +39,7 @@ describe('SearchMessageListItem', () => {
 				selecting={false}
 				active={false}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				selected={false}
 			/>
 		);
@@ -88,7 +88,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -118,7 +118,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -146,7 +146,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -177,7 +177,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -206,7 +206,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);

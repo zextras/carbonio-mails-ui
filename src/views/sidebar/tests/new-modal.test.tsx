@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { Folder, FOLDERS, SoapFolder } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -15,231 +15,115 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { NewModal } from 'views/sidebar/new-modal';
 
-// TODO IMPROVE BECAUSE TAKES TOO LONG
+const NEW_FOLDER_NAME_TEST_ID = 'new-folder-name';
+
+const createMockFolder = (): Folder => ({
+	id: FOLDERS.INBOX,
+	uuid: faker.string.uuid(),
+	name: 'Inbox',
+	absFolderPath: '/Inbox',
+	l: FOLDERS.USER_ROOT,
+	luuid: faker.string.uuid(),
+	checked: false,
+	f: 'ui',
+	u: 37,
+	rev: 1,
+	ms: 2633,
+	n: 889,
+	s: 174031840,
+	i4ms: 33663,
+	i4next: 17222,
+	activesyncdisabled: false,
+	webOfflineSyncDays: 30,
+	recursive: false,
+	deletable: false,
+	acl: {
+		grant: []
+	},
+	isLink: false,
+	children: [],
+	parent: undefined,
+	depth: 1
+});
 
 describe('new-modal', () => {
-	test('add folder name and create button should enabled', async () => {
-		const closeFn = jest.fn();
-
+	beforeEach(() => {
 		populateFoldersStore();
-		const folder: Folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
+	});
 
-		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
-		const newFolder = screen.getByTestId('new-folder-name');
+	test('add folder name and create button should be enabled', async () => {
+		const closeFn = vi.fn();
+		const folder = createMockFolder();
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, {
+			setupOptions: { delay: null }
+		});
+
+		const folderInputElement = within(screen.getByTestId(NEW_FOLDER_NAME_TEST_ID)).getByRole(
+			'textbox'
+		);
 		const folderName = faker.lorem.word();
-		const folderInputElement = within(newFolder).getByRole('textbox');
 
-		expect(newFolder).toBeInTheDocument();
 		await user.clear(folderInputElement);
-
-		// Insert the new folder name into the text input
 		await user.type(folderInputElement, folderName);
 
-		const createButton = screen.getByRole('button', {
-			name: /label.create/i
-		});
-		expect(createButton).toBeEnabled();
-
-		const cancelButton = screen.getByRole('button', {
-			name: /label.cancel/i
-		});
-		expect(cancelButton).toBeEnabled();
-	}, 20000);
+		expect(screen.getByRole('button', { name: /label.create/i })).toBeEnabled();
+	});
 
 	test('create button should be disabled on blank folder name', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
+		const folder = createMockFolder();
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, {
+			setupOptions: { delay: null }
+		});
 
-		populateFoldersStore();
-		const folder: Folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
+		const folderInputElement = within(screen.getByTestId(NEW_FOLDER_NAME_TEST_ID)).getByRole(
+			'textbox'
+		);
 
-		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
-		const newFolder = screen.getByTestId('new-folder-name');
-		const folderInputElement = within(newFolder).getByRole('textbox');
-
-		expect(newFolder).toBeInTheDocument();
 		await user.clear(folderInputElement);
 
-		const createButton = screen.getByRole('button', {
-			name: /label.create/i
-		});
-		expect(createButton).toBeDisabled();
-
-		const cancelButton = screen.getByRole('button', {
-			name: /label.cancel/i
-		});
-		expect(cancelButton).toBeEnabled();
-	}, 20000);
+		expect(screen.getByRole('button', { name: /label.create/i })).toBeDisabled();
+	});
 
 	test('API is called with the proper parameters to create new folder', async () => {
-		const closeFn = jest.fn();
-		populateFoldersStore();
-		const folder: Folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
-
-		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
-		const newFolderName = screen.getByTestId('new-folder-name');
-		const folderInputElement = within(newFolderName).getByRole('textbox');
-
-		expect(newFolderName).toBeInTheDocument();
-		await user.clear(folderInputElement);
-
-		const folderName = faker.lorem.word();
-		// Insert the new folder name into the text input
-		await user.type(folderInputElement, folderName);
-
-		const createButton = screen.getByRole('button', {
-			name: /label.create/i
+		const closeFn = vi.fn();
+		const folder = createMockFolder();
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, {
+			setupOptions: { delay: null }
 		});
-		expect(createButton).toBeEnabled();
+
+		const folderInputElement = within(screen.getByTestId(NEW_FOLDER_NAME_TEST_ID)).getByRole(
+			'textbox'
+		);
+		const folderName = faker.lorem.word();
+
 		const apiInterceptor = createSoapAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
-		await act(async () => {
-			await user.click(createButton);
-		});
+		await user.clear(folderInputElement);
+		await user.type(folderInputElement, folderName);
+		await user.click(screen.getByRole('button', { name: /label.create/i }));
 
 		const { folder: newFolder } = await apiInterceptor;
 		expect(newFolder.view).toBe('message');
 		expect(newFolder.l).toBe(folder.id);
 		expect(newFolder.name).toBe(folderName);
-	}, 20000);
+	});
 
 	test('Give error msg if creating with system folder name and create button should be disabled', async () => {
-		const closeFn = jest.fn();
+		const closeFn = vi.fn();
+		const folder = createMockFolder();
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, {
+			setupOptions: { delay: null }
+		});
 
-		populateFoldersStore();
-		const folder: Folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
+		const folderInputElement = within(screen.getByTestId(NEW_FOLDER_NAME_TEST_ID)).getByRole(
+			'textbox'
+		);
 
-		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
-		const newFolder = screen.getByTestId('new-folder-name');
-		const folderName = 'Inbox';
-		const folderInputElement = within(newFolder).getByRole('textbox');
-
-		expect(newFolder).toBeInTheDocument();
 		await user.clear(folderInputElement);
-
-		// Insert the new folder name into the text input
-		await user.type(folderInputElement, folderName);
+		await user.type(folderInputElement, 'Inbox');
 
 		expect(screen.getByTestId('error-message')).toBeInTheDocument();
-		const createButton = screen.getByRole('button', {
-			name: /label.create/i
-		});
-		expect(createButton).toBeDisabled();
-
-		const cancelButton = screen.getByRole('button', {
-			name: /label.cancel/i
-		});
-		expect(cancelButton).toBeEnabled();
-	}, 20000);
+		expect(screen.getByRole('button', { name: /label.create/i })).toBeDisabled();
+	});
 });

@@ -22,9 +22,9 @@ export const defaultValues = getAdvancedFiltersDefaultValues(emptyQuery, false);
 
 export const defaultProps: AdvancedFilterModalProps = {
 	isSharedFolderIncluded: false,
-	onClose: jest.fn(),
+	onClose: vi.fn(),
 	query: emptyQuery,
-	onSearchConfirm: jest.fn()
+	onSearchConfirm: vi.fn()
 };
 
 export const renderWithUseForm = async (

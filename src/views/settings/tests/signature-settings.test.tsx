@@ -16,7 +16,7 @@ import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
 import SignatureSettings from 'views/settings/signature-settings';
 
 // noinspection JSUnusedGlobalSymbols
-jest.mock('@zextras/carbonio-ui-text-composer', () => ({
+vi.mock('@zextras/carbonio-ui-text-composer', () => ({
 	Composer: ({
 		'data-testid': testId,
 		value,
@@ -43,10 +43,10 @@ const FIND_TIMEOUT = 2000;
 
 const buildProps = ({
 	updatedIdentities = [],
-	updateIdentities = jest.fn(),
-	setDisabled = jest.fn(),
+	updateIdentities = vi.fn(),
+	setDisabled = vi.fn(),
 	signatures = [],
-	setSignatures = jest.fn()
+	setSignatures = vi.fn()
 }: Partial<SignatureSettingsPropsType>): SignatureSettingsPropsType => ({
 	updatedIdentities,
 	updateIdentities,
@@ -61,8 +61,8 @@ const SettingsViewMock = ({
 	preloadedSignatures?: Array<SignItemType>;
 }): React.JSX.Element => {
 	const updatedIdentities = useMemo(() => [], []);
-	const updateIdentities = useCallback(() => jest.fn(), []);
-	const setDisabled = useCallback(() => jest.fn(), []);
+	const updateIdentities = useCallback(() => vi.fn(), []);
+	const setDisabled = useCallback(() => vi.fn(), []);
 	const [signatures, setSignatures] = useState<Array<SignItemType>>(preloadedSignatures);
 	return (
 		<SignatureSettings
@@ -126,7 +126,7 @@ describe('Signature settings', () => {
 		 * JSDOM does not support the `:hover` pseudo-class and it is impossible to simulate
 		 * when the visibility is changed in a nested css selector.
 		 */
-		it.failing('should display a delete button when when user hover on the list item', async () => {
+		it.fails('should display a delete button when when user hover on the list item', async () => {
 			const signature = buildSignature({});
 			const signatures: Array<SignItemType> = [signature];
 			handleGetSignaturesRequest(signatures);

@@ -21,6 +21,6 @@ export const handleGetConvRequest: HttpResponseResolver<
 		);
 	}
 	const { id } = (await request.json()).Body.GetConvRequest.c;
-	const { getConvResult } = await import(`./cases/getConv/getConv-${id}`);
+	const { getConvResult } = await import(`./cases/getConv/getConv-${id}.ts`);
 	return HttpResponse.json(getConvResult);
 };

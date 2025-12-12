@@ -159,7 +159,7 @@ describe('hasModalOverlay', () => {
 
 	describe('when modal elements are present', () => {
 		it('should return true when element with data-testid containing "modal" (lowercase) exists', () => {
-			document.querySelector = jest.fn((selector) => {
+			document.querySelector = vi.fn((selector) => {
 				if (selector === '[data-testid*="modal"]') {
 					return document.createElement('div');
 				}
@@ -170,7 +170,7 @@ describe('hasModalOverlay', () => {
 		});
 
 		it('should return true when element with data-testid containing "Modal" (capitalized) exists', () => {
-			document.querySelector = jest.fn((selector) => {
+			document.querySelector = vi.fn((selector) => {
 				if (selector === '[data-testid*="Modal"]') {
 					return document.createElement('div');
 				}
@@ -181,7 +181,7 @@ describe('hasModalOverlay', () => {
 		});
 
 		it('should return true when element with data-testid containing "BoardContainerComp" exists', () => {
-			document.querySelector = jest.fn((selector) => {
+			document.querySelector = vi.fn((selector) => {
 				if (selector === '[data-testid*="BoardContainerComp"]') {
 					return document.createElement('div');
 				}
@@ -192,13 +192,13 @@ describe('hasModalOverlay', () => {
 		});
 
 		it('should return true when multiple modal elements exist', () => {
-			document.querySelector = jest.fn(() => document.createElement('div'));
+			document.querySelector = vi.fn(() => document.createElement('div'));
 
 			expect(hasModalOverlay()).toBe(true);
 		});
 
 		it('should stop checking once first modal element is found', () => {
-			const querySelectorMock = jest.fn((selector) => {
+			const querySelectorMock = vi.fn((selector) => {
 				if (selector === '[data-testid*="modal"]') {
 					return document.createElement('div');
 				}
@@ -217,13 +217,13 @@ describe('hasModalOverlay', () => {
 
 	describe('when no modal elements are present', () => {
 		it('should return false when no matching elements exist', () => {
-			document.querySelector = jest.fn(() => null);
+			document.querySelector = vi.fn(() => null);
 
 			expect(hasModalOverlay()).toBe(false);
 		});
 
 		it('should check all selectors when none match', () => {
-			const querySelectorMock = jest.fn(() => null);
+			const querySelectorMock = vi.fn(() => null);
 			document.querySelector = querySelectorMock;
 
 			const result = hasModalOverlay();

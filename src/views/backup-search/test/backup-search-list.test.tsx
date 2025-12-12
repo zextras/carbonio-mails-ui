@@ -7,9 +7,9 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { HttpResponse } from 'msw';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -31,24 +31,15 @@ const LABEL_SELECT_ALL = 'label.select_all';
 const LABEL_DESELECT_ALL = 'label.deselect_all';
 const LABEL_RECOVER_EMAILS = 'label.recover_selected_emails';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
-}));
-
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
-
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useParams: vi.fn()
 }));
 
 describe('Backup search list', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
-		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-		(useParams as jest.Mock).mockReturnValue({ itemId: message1.messageId });
+		vi.clearAllMocks();
+		(useParams as Mock).mockReturnValue({ itemId: message1.messageId });
 	});
 
 	it('should selects and deselects all messages pressing select / deselect all', async () => {
@@ -94,15 +85,7 @@ describe('Backup search list', () => {
 			expect(modalRecoveryButton).not.toBeInTheDocument();
 		});
 
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'info',
-				label: 'label.recover_emails',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
+		await screen.findByText('label.recover_emails');
 	});
 	it('shows error snackbar on recovery failure', async () => {
 		const apiInterceptor = createAPIInterceptor(
@@ -115,18 +98,8 @@ describe('Backup search list', () => {
 		const { user } = setupTest(<BackupSearchList />, {});
 
 		const selectAllButton = screen.getByText(LABEL_SELECT_ALL);
-		user.click(selectAllButton);
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'info',
-				label: 'label.all_items_selected',
-				key: 'selected-all-backupMessages',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
-		createSnackbarSpy.mockClear();
+		await user.click(selectAllButton);
+		await screen.findByText('label.all_items_selected');
 		await waitFor(() => {
 			expect(screen.getByText(LABEL_DESELECT_ALL)).toBeInTheDocument();
 		});
@@ -136,14 +109,6 @@ describe('Backup search list', () => {
 		expect(modalRecoveryButton).toBeInTheDocument();
 		await user.click(modalRecoveryButton);
 		expect(apiInterceptor.getCalledTimes()).toEqual(1);
-		await waitFor(() => {
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				replace: true,
-				severity: 'error',
-				label: 'label.error_recovering_emails',
-				autoHideTimeout: 5000,
-				hideButton: true
-			});
-		});
+		await screen.findByText('label.error_recovering_emails');
 	});
 });

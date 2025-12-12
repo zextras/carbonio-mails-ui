@@ -31,7 +31,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -43,7 +43,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={vi.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -58,7 +58,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -80,7 +80,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -101,7 +101,6 @@ describe('MoveMsg', () => {
 
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
-
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -118,7 +117,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -163,7 +162,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -191,7 +190,7 @@ describe('MoveMsg', () => {
 		});
 
 		it('should call the onMoveComplete callback when the move is successful', async () => {
-			const onMoveComplete = jest.fn();
+			const onMoveComplete = vi.fn();
 			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
 			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
@@ -205,7 +204,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 					onMoveComplete={onMoveComplete}
 				/>

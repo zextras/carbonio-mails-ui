@@ -16,11 +16,11 @@ import { SearchMessageListItemWrapper } from 'views/search/list/message/search-m
 
 describe('SearchMessageListItemWrapper', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders nothing when message is not found', () => {
-		const useMessageByIdSpy = jest.spyOn(storeModule, 'useMessageById').mockReturnValue(undefined);
+		const useMessageByIdSpy = vi.spyOn(storeModule, 'useMessageById').mockReturnValue(undefined);
 
 		const { container } = render(
 			<SearchMessageListItemWrapper
@@ -28,7 +28,7 @@ describe('SearchMessageListItemWrapper', () => {
 				selected={false}
 				selecting={false}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -50,7 +50,7 @@ describe('SearchMessageListItemWrapper', () => {
 				selected={false}
 				selecting={false}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				active
 			/>
 		);

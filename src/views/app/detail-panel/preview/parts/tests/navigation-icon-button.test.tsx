@@ -15,7 +15,7 @@ describe('NavigationIconButton', () => {
 			tooltipLabel: 'test-tooltip',
 			disabled: false,
 			icon: 'ArrowIosForward',
-			action: jest.fn()
+			action: vi.fn()
 		};
 		setupTest(<NavigationIconButton item={item} />);
 
@@ -28,7 +28,7 @@ describe('NavigationIconButton', () => {
 			tooltipLabel: 'test-tooltip',
 			disabled: true,
 			icon: 'ArrowIosForward',
-			action: jest.fn()
+			action: vi.fn()
 		};
 
 		setupTest(<NavigationIconButton item={item} />);
@@ -43,7 +43,7 @@ describe('NavigationIconButton', () => {
 			tooltipLabel,
 			disabled: false,
 			icon: 'ArrowIosForward',
-			action: jest.fn()
+			action: vi.fn()
 		};
 
 		const { user } = setupTest(<NavigationIconButton item={item} />);
@@ -55,7 +55,7 @@ describe('NavigationIconButton', () => {
 		expect(await screen.findByText(tooltipLabel)).toBeVisible();
 	});
 	test('on click will call the item action', async () => {
-		const action = jest.fn();
+		const action = vi.fn();
 
 		const item = {
 			tooltipLabel: 'test-tooltip',

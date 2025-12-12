@@ -7,11 +7,18 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
+import {
+	applyUserPreferenceStyles,
+	generateUserPreferenceStyles,
+	UserPreferenceStyle
+} from 'helpers/user-preference-styles';
 import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
@@ -31,6 +38,14 @@ type InlineAttachment = {
 };
 
 export const SAVE_EDITOR_DELAY = 2000;
+
+function getUserPreferenceStyle(prefs: AccountSettingsPrefs): UserPreferenceStyle {
+	return {
+		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+	};
+}
 
 export const RichTextEditorContainer = ({
 	editorId,
@@ -99,11 +114,15 @@ export const RichTextEditorContainer = ({
 		}
 
 		const plainText = composerRef.current.getContent({ format: 'text' });
-		const richText = composerRef.current.getContent({ format: 'html' });
+		let richText = composerRef.current.getContent({ format: 'html' });
+
+		const style = getUserPreferenceStyle(prefs);
+
+		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
 		cleanupUnusedAttachments(richText);
 		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [cleanupUnusedAttachments, setText]);
+	}, [prefs, cleanupUnusedAttachments, setText]);
 
 	const onTextChange = useCallback(() => {
 		if (timeoutId.current) {
@@ -207,19 +226,17 @@ export const RichTextEditorContainer = ({
 			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
 			.join('');
 
+		const style = getUserPreferenceStyle(prefs);
+		const userPreferenceStyles = generateUserPreferenceStyles(style);
+
 		return {
 			base_url: `${BASE_PATH}`,
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
-			content_style: `
-			p { margin: 0; }
-			body *:not(.signature-div):not(.signature-div *) {
-				color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
-				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
-				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
-			}`,
+			preview_styles: false,
+			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
 			plugins: [
 				'advlist',
 				'autolink',
@@ -285,16 +302,7 @@ export const RichTextEditorContainer = ({
 				};
 			}
 		};
-	}, [
-		editorId,
-		onComposerClose,
-		onComposerInit,
-		onDragOver,
-		onTextChange,
-		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
-		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize
-	]);
+	}, [editorId, onComposerClose, onComposerInit, onDragOver, onTextChange, prefs]);
 
 	return (
 		<Container

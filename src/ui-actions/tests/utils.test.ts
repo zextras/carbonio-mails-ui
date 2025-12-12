@@ -23,13 +23,13 @@ describe('findMessageActionById', () => {
 				id: 'dummy-action-1',
 				icon: 'gear',
 				label: 'dummy action 1',
-				onClick: jest.fn()
+				onClick: vi.fn()
 			},
 			{
 				id: 'dummy-action-2',
 				icon: 'gear',
 				label: 'dummy action 2',
-				onClick: jest.fn()
+				onClick: vi.fn()
 			}
 		];
 		expect(findMessageActionById(actions, '42')).toBeUndefined();
@@ -40,21 +40,21 @@ describe('findMessageActionById', () => {
 			id: 'dummy-action-1',
 			icon: 'gear',
 			label: 'dummy action 1',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action2 = {
 			id: 'dummy-action-2',
 			icon: 'gear',
 			label: 'dummy action 2',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action3 = {
 			id: 'dummy-action-3',
 			icon: 'gear',
 			label: 'dummy action 3',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const actions: Array<MessageAction> = [action1, action2, action3];
@@ -66,35 +66,35 @@ describe('findMessageActionById', () => {
 			id: 'dummy-action-1',
 			icon: 'gear',
 			label: 'dummy action 1',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action2 = {
 			id: 'dummy-action-2',
 			icon: 'gear',
 			label: 'dummy action 2',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action3 = {
 			id: 'dummy-action-3',
 			icon: 'gear',
 			label: 'dummy action 3',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action4 = {
 			id: 'dummy-action-2',
 			icon: 'gear',
 			label: 'dummy action 2',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const action5 = {
 			id: 'dummy-action-4',
 			icon: 'gear',
 			label: 'dummy action 4',
-			onClick: jest.fn()
+			onClick: vi.fn()
 		};
 
 		const actions: Array<MessageAction> = [action1, action2, action3, action4, action5];

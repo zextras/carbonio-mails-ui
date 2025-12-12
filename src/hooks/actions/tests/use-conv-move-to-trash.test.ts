@@ -149,7 +149,7 @@ describe('useConMoveToTrash', () => {
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {
-				const apiCallSpy = jest.fn();
+				const apiCallSpy = vi.fn();
 				createSoapAPIInterceptor<MsgActionRequest>('ConvAction').then(apiCallSpy);
 
 				const {
@@ -166,7 +166,7 @@ describe('useConMoveToTrash', () => {
 			});
 
 			it('should call the onActionComplete callback when the action is successful', async () => {
-				const onActionComplete = jest.fn();
+				const onActionComplete = vi.fn();
 				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 				const {
 					result: { current: functions }
@@ -179,7 +179,7 @@ describe('useConMoveToTrash', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(onActionComplete).toHaveBeenCalledWith(conversationsId);
