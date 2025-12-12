@@ -8,6 +8,7 @@
 		"npm": "v10"
 	},
 	"scripts": {
+		"browser-test": "vitest --project=browser --watch --open --ui",
 		"build": "sdk build",
 		"deploy": "sdk deploy",
 		"install": "sdk install",
@@ -63,7 +64,9 @@
 		"@vitejs/plugin-react": "^5.0.4",
 		"@vitest/browser": "^4.0.14",
 		"@vitest/browser-playwright": "^4.0.14",
+		"@vitest/browser-preview": "4.0.14",
 		"@vitest/coverage-v8": "^4.0.14",
+		"@vitest/ui": "^4.0.14",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#e99cda51ad3a0dc1f775837c6e7971e8046eb4f2",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "2.2.0-devel.5",
@@ -81,6 +84,7 @@
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.0.14",
+		"vitest-browser-react": "^2.0.2",
 		"vitest-mock-commonjs": "^1.0.2"
 	},
 	"dependencies": {
@@ -92,7 +96,7 @@
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
 		"@zextras/carbonio-design-system": "11.0.0-devel.1",
-		"@zextras/carbonio-shell-ui": "12.0.0-devel.1756979172527",
+		"@zextras/carbonio-shell-ui": "file:zextras-carbonio-shell-ui-13.0.0.tgz",
 		"@zextras/carbonio-ui-commons": "2.0.1-devel.2",
 		"@zextras/carbonio-ui-preview": "3.3.0-devel.1",
 		"@zextras/carbonio-ui-soap-lib": "1.0.3",

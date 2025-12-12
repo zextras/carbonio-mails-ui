@@ -5,6 +5,7 @@
  */
 
 import react from '@vitejs/plugin-react';
+import { playwright } from '@vitest/browser-playwright';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults, defineConfig } from 'vitest/config';
 
@@ -23,26 +24,13 @@ export default defineConfig({
 		}),
 		tsconfigPaths()
 	],
+	publicDir: './',
+	server: {
+		fs: {
+			allow: ['./']
+		}
+	},
 	test: {
-		globals: true,
-		environment: 'jsdom',
-		setupFiles: [
-			'./src/__test__/globals.ts',
-			'./src/__test__/worker.ts',
-			'./src/__test__/vitest-setup.tsx',
-			'./src/__test__/setup-browser-env.ts'
-		],
-		clearMocks: true,
-		isolate: true,
-		pool: 'forks',
-		maxWorkers: 4,
-		environmentOptions: {
-			jsdom: {
-				url: 'http://localhost'
-			}
-		},
-		testTimeout: 20000,
-		hookTimeout: 20000,
 		reporters: ['default', junitReporter],
 		coverage: {
 			enabled: true,
@@ -50,19 +38,84 @@ export default defineConfig({
 			reporter: ['cobertura', 'lcov'],
 			reportsDirectory: 'coverage',
 			include: ['src/**/*.{ts,tsx}'],
-			exclude: ['**/__test__/**', '**/tests/**', '**/mocks/**', '**/*.test.{js,jsx,ts,tsx}']
+			exclude: [
+				'**/__test__/**',
+				'**/tests/**',
+				'**/mocks/**',
+				'**/*.test.{js,jsx,ts,tsx}',
+				'**/*.browser-test.{js,jsx,ts,tsx}'
+			]
 		},
-		exclude: [
-			...configDefaults.exclude,
-			'**/app.test.tsx',
-			'**/use-conversations-list-by-folder.test.ts',
-			'**/useEditorAttachments.test.tsx',
-			'**/certificate-utils.test.ts',
-			'**/sort-and-filter-button-component.test.tsx',
-			'**/recover-messages.test.tsx',
-			'**/rich-text-editor-container.test.tsx',
-			'**/share-folder-actions.test.ts',
-			'**/recipients-certificates-settings.test.tsx'
+		projects: [
+			{
+				test: {
+					globals: true,
+					environment: 'jsdom',
+					setupFiles: [
+						'./src/__test__/globals.ts',
+						'./src/__test__/worker.ts',
+						'./src/__test__/vitest-setup.tsx',
+						'./src/__test__/setup-browser-env.ts'
+					],
+					clearMocks: true,
+					isolate: true,
+					pool: 'forks',
+					maxWorkers: 4,
+					environmentOptions: {
+						jsdom: {
+							url: 'http://localhost'
+						}
+					},
+					testTimeout: 20000,
+					hookTimeout: 20000,
+					exclude: [
+						...configDefaults.exclude,
+						'**/*.browser-test.*',
+						'**/app.test.tsx',
+						'**/use-conversations-list-by-folder.test.ts',
+						'**/useEditorAttachments.test.tsx',
+						'**/certificate-utils.test.ts',
+						'**/sort-and-filter-button-component.test.tsx',
+						'**/recover-messages.test.tsx',
+						'**/rich-text-editor-container.test.tsx',
+						'**/share-folder-actions.test.ts',
+						'**/recipients-certificates-settings.test.tsx'
+					]
+				}
+			},
+			{
+				plugins: [
+					react({
+						jsxImportSource: '@emotion/react',
+						babel: {
+							plugins: ['@emotion/babel-plugin']
+						}
+					}),
+					tsconfigPaths()
+				],
+				test: {
+					name: 'browser',
+					globals: true,
+					setupFiles: [
+						'./src/__test__/browser/base-path.ts',
+						'./src/__test__/browser/shell-setup.tsx'
+					],
+					clearMocks: true,
+					maxWorkers: '80%',
+					browser: {
+						enabled: true,
+						instances: [{ browser: 'chromium' }],
+						provider: playwright(),
+						headless: false,
+						screenshotFailures: false
+					},
+					mockReset: false,
+					testTimeout: 20000,
+					hookTimeout: 20000,
+					include: ['**/*.browser-test.*'],
+					exclude: [...configDefaults.exclude, '**/*.test.*']
+				}
+			}
 		]
 	}
 });
