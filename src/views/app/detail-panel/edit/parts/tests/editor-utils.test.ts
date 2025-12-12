@@ -23,14 +23,12 @@ describe('Editor utils', () => {
 	});
 	describe('Used Cids', () => {
 		it('returns used Cids in the editor', () => {
-			const editor = {
-				getContent: (): string =>
-					'<p><img pnsrc="cid:first" src="cid:first" />' +
-					'<img src="cid:second" />' +
-					'<img src="https://test.test/image.png" /></p>'
-			};
-			const { usedCids } = editorUtils.computeUsedCids(editor);
-			expect(usedCids).toHaveLength(3);
+			const htmlContent =
+				'<p><img pnsrc="cid:first" src="cid:first" />' +
+				'<img src="cid:second" />' +
+				'<img src="https://test.test/image.png" /></p>';
+			const { usedCids } = editorUtils.computeUsedCids({ htmlContent });
+			expect(usedCids).toHaveLength(2);
 		});
 	});
 });
