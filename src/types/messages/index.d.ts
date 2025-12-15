@@ -78,23 +78,6 @@ export type MailMessagePartWithDisposition = MailMessagePart & {
 	disposition: 'inline' | 'attachment';
 };
 
-export type AttachmentPart = {
-	part?: string;
-	ct?: string;
-	s?: number;
-	size?: number;
-	filename?: string;
-	body?: boolean;
-	contentType?: string;
-	content?: string;
-	name?: string;
-	parts?: Array<AttachmentPart>;
-	ci?: string;
-	disposition?: 'inline' | 'attachment';
-	cd?: 'inline' | 'attachment';
-	mp?: Array<AttachmentPart>;
-};
-
 export type MailMessage = IncompleteMessage & {
 	parts: Array<MailMessagePart>;
 	body: BodyPart;
