@@ -8,10 +8,10 @@ import { useMemo } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
 
+import { retrieveAttachmentsFromMail } from 'attachments';
 import { areContentIdsEqual, extractContentIdsFromHtml } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
 import { MailMessage, MailMessagePart, SavedAttachment, UnsavedAttachment } from 'types/index.d';
-import { retrieveAttachmentsFromMail } from 'attachments';
 
 /**
  * Content disposition types for email attachments
@@ -307,12 +307,23 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = retrieveAttachmentsFromMail(message);
 
-	return attachmentsParts.blockAttachments.map((attachment) => ({
+	const blockAttachments = attachmentsParts.blockAttachments.map((attachment) => ({
 		filename: attachment.filename ?? '',
 		messageId: message.id,
+		contentId: attachment.ci,
 		partName: attachment.name,
 		isInline: false,
 		size: attachment.size,
 		contentType: attachment.contentType
 	}));
+	const inlineAttachments = attachmentsParts.inlineAttachments.map((attachment) => ({
+		filename: attachment.filename ?? '',
+		messageId: message.id,
+		contentId: attachment.ci,
+		partName: attachment.name,
+		isInline: true,
+		size: attachment.size,
+		contentType: attachment.contentType
+	}));
+	return [...blockAttachments, ...inlineAttachments];
 };

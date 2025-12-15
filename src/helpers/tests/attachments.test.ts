@@ -124,7 +124,8 @@ describe('attachments', () => {
 					contentType: 'text/html',
 					size: 0,
 					name: 'HTML body',
-					content: 'This is my inline image: <a href="cid:<abc123@zimbra>"/>'
+					content: 'This is my inline image: <a href="cid:abc123@zimbra"/>',
+					body: true
 				},
 				{
 					contentType: 'image/png',
@@ -140,7 +141,7 @@ describe('attachments', () => {
 
 			expect(result[0]).toMatchObject({
 				isInline: true,
-				contentId: 'abc123@zimbra',
+				contentId: '<abc123@zimbra>',
 				partName: '2.2',
 				contentType: 'image/png',
 				filename: 'img.png',
@@ -155,9 +156,17 @@ describe('attachments', () => {
 				{
 					contentType: 'application/pdf',
 					cd: 'inline',
+					ci: '<123>',
 					filename: 'doc.pdf',
 					name: '2.3',
 					size: 2048
+				},
+				{
+					contentType: 'text/html',
+					content: 'Hello <a href="cid:123"/>',
+					name: '2.4',
+					size: 2048,
+					body: true
 				}
 			];
 
@@ -180,7 +189,7 @@ describe('attachments', () => {
 			expect(result[0].isInline).toBe(false);
 		});
 
-		it('should extract inner contentId from brackets', () => {
+		it('should NOT extract inner contentId from brackets', () => {
 			const message = generateMessage({ folderId: '2' });
 			message.parts = [
 				{
@@ -192,7 +201,7 @@ describe('attachments', () => {
 			];
 
 			const result = buildSavedAttachments(message);
-			expect(result[0].contentId).toBe('image123@crb');
+			expect(result[0].contentId).toBe('<image123@crb>');
 		});
 
 		it('should leave contentId undefined if ci is not present', () => {
@@ -200,6 +209,8 @@ describe('attachments', () => {
 			message.parts = [
 				{
 					contentType: 'image/jpeg',
+					cd: 'attachment',
+					filename: 'test.jpeg',
 					name: '2.6',
 					size: 300
 				}
@@ -231,7 +242,7 @@ describe('attachments', () => {
 				{
 					messageId: message.id,
 					isInline: true, // because ci is present and contentType is text/html
-					contentId: '65766eee-4439-438c-a375-1ac111ed1a07@zimbra',
+					contentId: '<65766eee-4439-438c-a375-1ac111ed1a07@zimbra>',
 					filename: '', // no filename provided
 					partName: '2.2',
 					contentType: 'text/html',
