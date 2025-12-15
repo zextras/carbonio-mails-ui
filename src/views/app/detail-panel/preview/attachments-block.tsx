@@ -45,7 +45,8 @@ import type {
 	AttachmentType,
 	CopyToFileRequest,
 	CopyToFileResponse,
-	MailMessage
+	MailMessage,
+	MailMessagePart
 } from 'types/index.d';
 import {
 	ArrayOneOrMore,
@@ -486,7 +487,7 @@ const copyToFiles = (
 type AttachmentsBlockProps = {
 	messageId: MailMessage['id'];
 	messageSubject: MailMessage['subject'];
-	messageAttachments: MailMessage['attachments'];
+	messageAttachments: Array<MailMessagePart>;
 	isEml?: boolean;
 };
 const AttachmentsBlock = ({

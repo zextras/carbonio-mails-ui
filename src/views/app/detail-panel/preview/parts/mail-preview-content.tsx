@@ -9,6 +9,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 
+import { retrieveAttachmentsFromMail } from '../../../../../attachments';
 import { MailMessageRenderer } from 'commons/mail-message-renderer/mail-message-renderer';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import SharedInviteReply from 'integrations/shared-invite-reply/index';
@@ -105,7 +106,7 @@ export const MailPreviewContent = ({
 						<AttachmentsBlock
 							messageId={message.id}
 							messageSubject={message.subject}
-							messageAttachments={message.attachments}
+							messageAttachments={retrieveAttachmentsFromMail(message).blockAttachments}
 							isEml={isEml}
 						/>
 					</Row>

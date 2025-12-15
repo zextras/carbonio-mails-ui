@@ -7,6 +7,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
+import { retrieveAttachmentsFromMail } from '../../attachments';
 import type { MailMessage } from 'types/index.d';
 
 export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
@@ -30,7 +31,7 @@ export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
       </div>
    </td>
    ${map(
-			msg.attachments,
+			retrieveAttachmentsFromMail(msg).blockAttachments,
 			(item) => `
    <td style="
       color: #000000;

@@ -175,26 +175,6 @@ type Attachments = {
 	inlineAttachments: Array<MailMessagePart>;
 	blockAttachments: Array<MailMessagePart>;
 };
-// export const retrieveAttachmentsFromMail = (msg: MailMessage): Array<MailMessagePart> =>
-// 	getAttachmentsFromParts(msg.parts);
 
 export const retrieveAttachmentsFromMail = (msg: MailMessage): Attachments =>
 	getAttachmentsFromParts(msg.parts);
-
-// Keeping original just for reference
-// multipart/mixed
-//  parts: [text/html, plain/text]
-// reduce(
-// 	original?.parts?.[0]?.parts ?? [],
-// 	(acc, part) =>
-// 		part.disposition && part.disposition === disposition
-// 			? [
-// 					...acc,
-// 					{
-// 						part: part.name,
-// 						mid: original.id
-// 					}
-// 				]
-// 			: acc,
-// 	[] as Array<MailAttachmentParts>
-// );
