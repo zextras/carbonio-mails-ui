@@ -10,10 +10,10 @@ import { calcColor } from 'commons/utilities';
 import { getUserLocale } from 'commons/utils';
 import { getAttachmentExtension } from 'helpers/attachments';
 import {
-	AttachmentPart,
 	EditorAttachmentFiles,
 	GetAttachmentsDownloadLinkProps,
-	IconColors
+	IconColors,
+	MailMessagePart
 } from 'types/index.d';
 
 export const getLocationOrigin = (): string => window.location.origin;
@@ -94,11 +94,11 @@ export const getAttachmentIconColors = ({
 	attachments,
 	theme
 }: {
-	attachments: AttachmentPart[] | EditorAttachmentFiles[];
+	attachments: MailMessagePart[] | EditorAttachmentFiles[];
 	theme: Theme;
 }): IconColors =>
 	uniqBy(
-		attachments.map((att: AttachmentPart | EditorAttachmentFiles) => {
+		attachments.map((att: MailMessagePart | EditorAttachmentFiles) => {
 			const fileExtn = getAttachmentExtension(att.contentType, att.filename).value;
 			const color = calcColor(att.contentType ?? '', theme);
 

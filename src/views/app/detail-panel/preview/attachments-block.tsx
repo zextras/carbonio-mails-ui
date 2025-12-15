@@ -41,7 +41,6 @@ import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import type {
-	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
 	CopyToFileResponse,
@@ -474,7 +473,7 @@ const Attachment = ({
 };
 
 const copyToFiles = (
-	att: AttachmentPart,
+	att: MailMessagePart,
 	messageId: string,
 	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>
