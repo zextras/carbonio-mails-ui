@@ -169,7 +169,7 @@ type Attachments = {
 };
 
 export const retrieveAttachmentsFromMail = (msg: MailMessage): Attachments =>
-	getAttachmentsFromParts(msg.parts);
+	getAttachmentsFromParts(msg.parts ?? []);
 
 export const hasAttachments = (msg: MailMessage): boolean => {
 	const attachments = retrieveAttachmentsFromMail(msg);

@@ -306,15 +306,8 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = retrieveAttachmentsFromMail(message);
-	const inlineAttachments = attachmentsParts.inlineAttachments.map((attachment) => ({
-		filename: attachment.filename ?? '',
-		messageId: message.id,
-		partName: attachment.name,
-		isInline: true,
-		size: attachment.size,
-		contentType: attachment.contentType
-	}));
-	const blockAttachments = attachmentsParts.blockAttachments.map((attachment) => ({
+
+	return attachmentsParts.blockAttachments.map((attachment) => ({
 		filename: attachment.filename ?? '',
 		messageId: message.id,
 		partName: attachment.name,
@@ -322,5 +315,4 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 		size: attachment.size,
 		contentType: attachment.contentType
 	}));
-	return [...inlineAttachments, ...blockAttachments];
 };
