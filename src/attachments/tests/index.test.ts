@@ -1438,7 +1438,7 @@ describe('Retrieve attachments', () => {
 			expect(filenames).toContain('forwarded.eml');
 		});
 
-		it('should treat part with Content-ID but no HTML body as inline', () => {
+		it('should treat part with Content-ID as inline when message has no html body', () => {
 			const soapMessage = generateMessage({
 				parts: [
 					{

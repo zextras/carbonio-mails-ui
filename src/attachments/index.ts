@@ -110,7 +110,7 @@ function flattenParts(obj: { parts: MailMessagePart['parts'] }): Array<MailMessa
  */
 const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments => {
 	const anchoredAttachmentsList = getAttachmentsAnchoredOnHtmlBody(mailPart);
-	const hasHtml = hasHtmlContent(mailPart);
+	const mailHasHtmlBody = hasHtmlContent(mailPart);
 	const results: Attachments = {
 		inlineAttachments: [],
 		blockAttachments: []
@@ -139,11 +139,13 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 				// Determine content disposition based on whether it's referenced in HTML body
 				if (item.ci && anchoredAttachmentsList.includes(removeAngleBrackets(item.ci))) {
 					results.inlineAttachments.push(item);
-				} else if (item.ci && item.cd === 'inline' && hasHtml) {
+				} else if (item.ci && item.cd === 'inline') {
+					mailHasHtmlBody
+						? results.blockAttachments.push(item)
+						: results.inlineAttachments.push(item);
 					// Not referenced in HTML but marked inline -> change to attachment
 					// TODO: double check this condition
-					results.blockAttachments.push(item);
-				} else if (item.cd === 'inline' && item.filename && hasHtml) {
+				} else if (item.cd === 'inline' && item.filename && mailHasHtmlBody) {
 					results.blockAttachments.push(item);
 				} else if (item.contentType === 'message/rfc822' && !item.filename) {
 					item.filename = 'Unknown <message/rfc822>';
