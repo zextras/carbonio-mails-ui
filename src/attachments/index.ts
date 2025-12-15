@@ -23,6 +23,9 @@ const isIgnoredAttachment = (item: MailMessagePart): boolean => {
 	) {
 		return true;
 	}
+	if (item.contentType === 'application/pkcs7-signature') {
+		return true;
+	}
 	// Ignore HTML/plain text body parts
 	if (item.body && (item.contentType === 'text/html' || item.contentType === 'text/plain')) {
 		return true;
@@ -157,12 +160,6 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 				if (item.contentType === 'text/html' && !item.filename) {
 					item.filename = 'Unknown <text/html>';
 					results.blockAttachments.push(item);
-				}
-
-				// Exclude PKCS7 signatures
-				if (item.contentType && item.contentType !== 'application/pkcs7-signature') {
-					// TODO: What to do in this case, is it inline or block?
-					// results.blockAttachments.push({ fileName: item.filename });
 				}
 			}
 		}
