@@ -6,11 +6,11 @@
 
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
+import { retrieveAttachmentsFromMail } from 'attachments';
 import { getBodyWrapper } from 'commons/print-conversation/get-body-wrapper';
 import { getCompleteHTML } from 'commons/print-conversation/get-complete-html';
 import { getHeader } from 'commons/print-conversation/get-header';
 import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from 'commons/utils';
-import { findAttachments } from 'helpers/attachments';
 import { NormalizedConversation, type MailMessage } from 'types/index.d';
 
 function getSs(conversationMessage: Array<MailMessage>): Array<string> {
@@ -18,7 +18,7 @@ function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 		const { body } = msg;
 		switch (body.contentType) {
 			case 'text/html': {
-				const parts = findAttachments(msg.parts ?? [], []);
+				const parts = retrieveAttachmentsFromMail(msg);
 				const parser = new DOMParser();
 				const htmlDoc = parser.parseFromString(body.content, 'text/html');
 				const imgMap = reduce(

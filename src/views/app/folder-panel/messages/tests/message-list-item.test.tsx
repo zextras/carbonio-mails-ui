@@ -116,7 +116,19 @@ describe('MessageListItem Component', () => {
 	});
 
 	it('should display the attachment icon if the message has an attachment', () => {
-		const props = { ...defaultProps, message: { ...defaultProps.message, hasAttachment: true } };
+		const attachmentPart = {
+			contentType: 'image/png',
+			size: 1000,
+			name: 'picture.png',
+			cd: 'attachment' as const,
+			body: false
+		};
+
+		const _message = generateMessage({
+			id: '1',
+			parts: [attachmentPart]
+		});
+		const props = { ...defaultProps, message: _message };
 		setupTest(<MessageListItem {...props} />);
 		expect(screen.getByTestId('AttachmentIcon')).toBeInTheDocument();
 	});

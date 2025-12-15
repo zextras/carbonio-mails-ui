@@ -57,7 +57,7 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 		contentType: v.ct,
 		size: v.s || 0,
 		name: v.part,
-		disposition: v.cd,
+		cd: v.cd,
 		body: Boolean(v.body)
 	};
 	if (v.mp) {
@@ -66,7 +66,7 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	if (v.filename) ret.filename = v.filename;
 	if (v.content) ret.content = v.content;
 	if (v.ci) ret.ci = v.ci;
-	if (v.cd) ret.disposition = v.cd;
+	if (v.cd) ret.cd = v.cd;
 	return ret;
 };
 
@@ -182,6 +182,8 @@ const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNulla
 	const flags = m.f;
 	return {
 		read: !/u/.test(flags),
+
+		// todo: give it a loot and think if we want to reintroduce that
 		hasAttachment: /a/.test(flags),
 		flagged: /f/.test(flags),
 		urgent: /!/.test(flags),
@@ -228,7 +230,6 @@ export const normalizeMailMessageFromSoap = (
 				: undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? m.mp : undefined,
 			invite: m.inv,
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
@@ -285,7 +286,6 @@ export const normalizePartialIncompleteMessageFromSoap = (
 				: undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? m.mp : undefined,
 			invite: m.inv,
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,

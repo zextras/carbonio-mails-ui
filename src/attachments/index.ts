@@ -173,5 +173,5 @@ export const retrieveAttachmentsFromMail = (msg: MailMessage): Attachments =>
 
 export const hasAttachments = (msg: MailMessage): boolean => {
 	const attachments = retrieveAttachmentsFromMail(msg);
-	return attachments.blockAttachments.length > 0 || attachments.blockAttachments.length > 0;
+	return attachments.inlineAttachments.length > 0 || attachments.blockAttachments.length > 0;
 };

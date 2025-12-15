@@ -7,22 +7,11 @@
 import { useMemo } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
-import { reduce } from 'lodash';
 
-import {
-	areContentIdsEqual,
-	extractContentIdsFromHtml,
-	removeAngleBrackets
-} from 'commons/content-id-utils';
+import { areContentIdsEqual, extractContentIdsFromHtml } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
-import {
-	AbstractAttachment,
-	MailMessage,
-	MailMessagePart,
-	MailMessagePartWithDisposition,
-	SavedAttachment,
-	UnsavedAttachment
-} from 'types/index.d';
+import { MailMessage, MailMessagePart, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import { retrieveAttachmentsFromMail } from 'attachments';
 
 /**
  * Content disposition types for email attachments
@@ -138,22 +127,22 @@ const MIME_TYPE_EXTENSIONS: Record<string, { value: string; displayName?: string
 	'message/rfc822': { value: 'EML' }
 };
 
-export function findAttachments(
-	parts: MailMessagePart[],
-	acc: Array<Omit<AbstractAttachment, 'isInline'>>
-): Array<Omit<AbstractAttachment, 'isInline'>> {
-	return reduce(
-		parts,
-		(found, part: MailMessagePart) => {
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push({ ...part, filename: part.filename ?? '' });
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc
-	);
-}
+// export function findAttachments(
+// 	parts: MailMessagePart[],
+// 	acc: Array<Omit<AbstractAttachment, 'isInline'>>
+// ): Array<Omit<AbstractAttachment, 'isInline'>> {
+// 	return reduce(
+// 		parts,
+// 		(found, part: MailMessagePart) => {
+// 			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
+// 				found.push({ ...part, filename: part.filename ?? '' });
+// 			}
+// 			if (part.parts) return findAttachments(part.parts, found);
+// 			return acc;
+// 		},
+// 		acc
+// 	);
+// }
 
 const isEml = (part: MailMessagePart): boolean =>
 	part.contentType === MIMETYPE_EML ||
@@ -209,64 +198,64 @@ const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
  * @param filtered - Accumulated results array
  * @returns Flattened array of parts with proper disposition set
  */
-function flattenAndAddDisposition(
-	parts: Array<MailMessagePart>,
-	referredCIDs: Array<string>,
-	filtered: Array<MailMessagePartWithDisposition> = []
-): Array<MailMessagePartWithDisposition> {
-	return reduce(
-		parts,
-		(incoming, part) => {
-			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
-			const partShouldBeIncluded =
-				isAttachmentDisposition(part.disposition) ||
-				(isInlineDisposition(part.disposition) && (part.filename || isReferredByCid)) ||
-				(isInlineDisposition(part.disposition) && part.name) ||
-				(part.disposition === undefined &&
-					(isReferredByCid ||
-						(!part.parts &&
-							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
-							part.contentType !== MIMETYPE_PLAINTEXT &&
-							part.contentType !== MIMETYPE_RICHTEXT &&
-							part.name)));
+// function flattenAndAddDisposition(
+// 	parts: Array<MailMessagePart>,
+// 	referredCIDs: Array<string>,
+// 	filtered: Array<MailMessagePartWithDisposition> = []
+// ): Array<MailMessagePartWithDisposition> {
+// 	return reduce(
+// 		parts,
+// 		(incoming, part) => {
+// 			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
+// 			const partShouldBeIncluded =
+// 				isAttachmentDisposition(part.disposition) ||
+// 				(isInlineDisposition(part.disposition) && (part.filename || isReferredByCid)) ||
+// 				(isInlineDisposition(part.disposition) && part.name) ||
+// 				(part.disposition === undefined &&
+// 					(isReferredByCid ||
+// 						(!part.parts &&
+// 							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+// 							part.contentType !== MIMETYPE_PLAINTEXT &&
+// 							part.contentType !== MIMETYPE_RICHTEXT &&
+// 							part.name)));
 
-			if (partShouldBeIncluded && !part.body) {
-				// Determine disposition: inline if referenced, attachment otherwise
-				if (part.disposition === undefined) {
-					incoming.push({
-						...part,
-						disposition: isReferredByCid ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
-					});
-				} else if (isReferredByCid) {
-					incoming.push({
-						...part,
-						disposition: DISPOSITION_INLINE
-					});
-				} else {
-					incoming.push({ ...part, disposition: part.disposition });
-				}
-			}
+// 			if (partShouldBeIncluded && !part.body) {
+// 				// Determine disposition: inline if referenced, attachment otherwise
+// 				if (part.disposition === undefined) {
+// 					incoming.push({
+// 						...part,
+// 						disposition: isReferredByCid ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
+// 					});
+// 				} else if (isReferredByCid) {
+// 					incoming.push({
+// 						...part,
+// 						disposition: DISPOSITION_INLINE
+// 					});
+// 				} else {
+// 					incoming.push({ ...part, disposition: part.disposition });
+// 				}
+// 			}
 
-			if (part.parts && !isEml(part)) {
-				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
-			}
-			return incoming;
-		},
-		filtered
-	);
-}
+// 			if (part.parts && !isEml(part)) {
+// 				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
+// 			}
+// 			return incoming;
+// 		},
+// 		filtered
+// 	);
+// }
 
 /**
  * Flattens the message parts and adds disposition to each part.
  * It returns flattened attachments with disposition.
  */
-export function getFlattenedAttachmentParts(
-	mailMessage: MailMessage
-): Array<MailMessagePartWithDisposition> {
-	const mailMessageParts = mailMessage.parts;
-	const referredCIDS = getReferredContentIds(mailMessageParts);
-	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
-}
+// export function getFlattenedAttachmentParts(
+// 	mailMessage: MailMessage
+// ): Array<MailMessagePartWithDisposition> {
+// 	const mailMessageParts = mailMessage.parts;
+// 	const referredCIDS = getReferredContentIds(mailMessageParts);
+// 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
+// }
 
 export const getAttachmentExtension = (
 	contentType: string | undefined,
@@ -316,14 +305,22 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getFlattenedAttachmentParts(message);
-	return attachmentsParts.map<SavedAttachment>((part) => ({
+	const attachmentsParts = retrieveAttachmentsFromMail(message);
+	const inlineAttachments = attachmentsParts.inlineAttachments.map((attachment) => ({
+		filename: attachment.filename ?? '',
 		messageId: message.id,
-		isInline: isInlineDisposition(part.disposition),
-		contentId: (part.ci && removeAngleBrackets(part.ci)) ?? undefined,
-		filename: part.filename ?? '',
-		partName: part.name,
-		contentType: part.contentType,
-		size: part.size
+		partName: attachment.name,
+		isInline: true,
+		size: attachment.size,
+		contentType: attachment.contentType
 	}));
+	const blockAttachments = attachmentsParts.blockAttachments.map((attachment) => ({
+		filename: attachment.filename ?? '',
+		messageId: message.id,
+		partName: attachment.name,
+		isInline: false,
+		size: attachment.size,
+		contentType: attachment.contentType
+	}));
+	return [...inlineAttachments, ...blockAttachments];
 };

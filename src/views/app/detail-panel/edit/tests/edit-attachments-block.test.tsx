@@ -67,7 +67,7 @@ describe('Attachments visualization', () => {
 				{
 					name: 'part2',
 					filename: 'file-with-no-content-id',
-					disposition: 'inline' as const,
+					cd: 'inline' as const,
 					contentType: 'image/png',
 					size: 200
 				}
@@ -92,14 +92,14 @@ describe('Attachments visualization', () => {
 				{
 					name: 'part2',
 					filename: 'other',
-					disposition: 'inline' as const,
+					cd: 'inline' as const,
 					contentType: 'image/png',
 					size: 200
 				},
 				{
 					name: 'inlinePart1',
 					filename: 'file-with-content-id',
-					disposition: 'inline' as const,
+					cd: 'inline' as const,
 					ci: '123',
 					contentType: 'image/png',
 					size: 200

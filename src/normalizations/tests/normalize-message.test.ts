@@ -119,7 +119,7 @@ describe('normalize-message.ts', () => {
 						contentType: 'text/plain',
 						size: 123,
 						name: '1',
-						disposition: 'inline',
+						cd: 'inline',
 						body: false,
 						filename: 'file.txt',
 						content: 'Hello',
@@ -134,7 +134,7 @@ describe('normalize-message.ts', () => {
 						contentType: 'text/plain',
 						size: 50,
 						name: '1',
-						disposition: 'inline',
+						cd: 'inline',
 						body: true
 					});
 				});

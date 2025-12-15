@@ -45,7 +45,6 @@ export type IncompleteMessage = MailHeaders & {
 	autoSendTime?: number;
 	originalId?: string;
 	replyType?: 'r' | 'w';
-	// attachments?: Array<AttachmentPart>;
 	participants?: Array<Participant>;
 	date: number;
 	subject: string;
@@ -70,8 +69,7 @@ export type MailMessagePart = {
 	filename?: string;
 	parts?: Array<MailMessagePart>;
 	ci?: string;
-	cd?: string;
-	disposition?: 'inline' | 'attachment';
+	cd?: 'inline' | 'attachment';
 };
 
 export type MailMessagePartWithDisposition = MailMessagePart & {

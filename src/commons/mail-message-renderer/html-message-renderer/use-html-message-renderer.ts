@@ -10,10 +10,9 @@ import { JSNS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { filter, forEach, isArray, some } from 'lodash';
 
-import { getFlattenedAttachmentParts } from '../../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../../helpers/identities';
 import { getFullMessageEmailStoreAction } from '../../../store/emails/actions/get-message';
-import { BodyPart, MailMessage, MailMessagePartWithDisposition } from '../../../types';
+import { BodyPart, MailMessage, MailMessagePart } from '../../../types';
 import {
 	getOriginalHtmlContent,
 	getQuotedTextFromOriginalContent
@@ -24,6 +23,7 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from '../../utils';
+import { retrieveAttachmentsFromMail } from 'attachments';
 
 export type ExternalImageState = {
 	showExternalImages: boolean;
@@ -175,7 +175,7 @@ const useMessageContent = (body: BodyPart, showQuotedText: boolean): MessageCont
 // Custom hook for processing HTML content
 const useProcessedContent = (
 	contentToDisplay: string,
-	attachments: MailMessagePartWithDisposition[],
+	attachments: MailMessagePart[],
 	showExternalImages: boolean,
 	messageId: string
 ): { processedContent: string; hasExternalImages: boolean } => {
@@ -210,7 +210,7 @@ export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendere
 
 	// Extract message data
 	const body: BodyPart = message?.body ?? { content: '', truncated: false };
-	const attachments = useMemo(() => getFlattenedAttachmentParts(message), [message]);
+	const attachments = useMemo(() => retrieveAttachmentsFromMail(message), [message]);
 
 	// Get sender information
 	const settingsPrefs = useUserSettings()?.prefs as SettingsPrefs;
@@ -227,7 +227,7 @@ export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendere
 	// Process HTML and handle external images
 	const { hasExternalImages } = useProcessedContent(
 		messageContent.contentToDisplay,
-		attachments,
+		[...attachments.inlineAttachments, ...attachments.blockAttachments],
 		false,
 		message.id
 	);
@@ -237,7 +237,7 @@ export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendere
 	// Reprocess content when external image state changes
 	const { processedContent: finalProcessedContent } = useProcessedContent(
 		messageContent.contentToDisplay,
-		attachments,
+		[...attachments.inlineAttachments, ...attachments.blockAttachments],
 		externalImageState.showExternalImages,
 		message.id
 	);
