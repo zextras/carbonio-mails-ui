@@ -9,9 +9,8 @@ import { useMemo } from 'react';
 import { useTheme } from '@zextras/carbonio-design-system';
 
 import { retrieveAttachmentsFromMail } from 'attachments';
-import { areContentIdsEqual, extractContentIdsFromHtml } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
-import { MailMessage, MailMessagePart, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import { MailMessage, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 
 /**
  * Content disposition types for email attachments
@@ -40,10 +39,6 @@ export const isAttachmentDisposition = (disposition?: string): boolean =>
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
 export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
-export const EML_FILENAME_REGEX = '^(.+)\\.eml$';
-export const MIMETYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
-export const MIMETYPE_PLAINTEXT = 'text/plain';
-export const MIMETYPE_RICHTEXT = 'text/html';
 export const MIMETYPE_EML = 'message/rfc822';
 
 /**
@@ -127,27 +122,6 @@ const MIME_TYPE_EXTENSIONS: Record<string, { value: string; displayName?: string
 	'message/rfc822': { value: 'EML' }
 };
 
-// export function findAttachments(
-// 	parts: MailMessagePart[],
-// 	acc: Array<Omit<AbstractAttachment, 'isInline'>>
-// ): Array<Omit<AbstractAttachment, 'isInline'>> {
-// 	return reduce(
-// 		parts,
-// 		(found, part: MailMessagePart) => {
-// 			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-// 				found.push({ ...part, filename: part.filename ?? '' });
-// 			}
-// 			if (part.parts) return findAttachments(part.parts, found);
-// 			return acc;
-// 		},
-// 		acc
-// 	);
-// }
-
-const isEml = (part: MailMessagePart): boolean =>
-	part.contentType === MIMETYPE_EML ||
-	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
-
 export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
 
 export const getCidFromCidUrl = (cidUrl: string): string | null => {
@@ -157,105 +131,6 @@ export const getCidFromCidUrl = (cidUrl: string): string | null => {
 	}
 	return cidUrlTokens[1];
 };
-
-/**
- * Extracts all Content-IDs referenced in HTML parts of the message.
- * Now properly handles HTML entity encoded CIDs.
- * @param parts - Message parts to scan for CID references
- */
-export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<string> => {
-	const result: Array<string> = [];
-	parts?.forEach((part) => {
-		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
-			const contentIdsFromHtml = extractContentIdsFromHtml(part.content);
-			result.push(...contentIdsFromHtml);
-		}
-
-		if (part.parts) {
-			result.push(...getReferredContentIds(part.parts));
-		}
-	});
-	return result;
-};
-
-/**
- * Checks if a Content-ID is referenced in the list of referred CIDs.
- * Uses centralized CID comparison logic.
- *
- * @param cid - Content-ID to check
- * @param referredCIDs - Array of Content-IDs that are referenced in HTML
- * @returns True if the CID is in the referenced list
- */
-const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
-	referredCIDs.some((referredCid) => areContentIdsEqual(cid, referredCid));
-
-/**
- * Filters the message parts to collect body content and attachments and adds disposition.
- * Uses centralized disposition utilities for consistent behavior.
- *
- * @param parts - Message parts to process
- * @param referredCIDs - Content-IDs referenced in HTML content
- * @param filtered - Accumulated results array
- * @returns Flattened array of parts with proper disposition set
- */
-// function flattenAndAddDisposition(
-// 	parts: Array<MailMessagePart>,
-// 	referredCIDs: Array<string>,
-// 	filtered: Array<MailMessagePartWithDisposition> = []
-// ): Array<MailMessagePartWithDisposition> {
-// 	return reduce(
-// 		parts,
-// 		(incoming, part) => {
-// 			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
-// 			const partShouldBeIncluded =
-// 				isAttachmentDisposition(part.disposition) ||
-// 				(isInlineDisposition(part.disposition) && (part.filename || isReferredByCid)) ||
-// 				(isInlineDisposition(part.disposition) && part.name) ||
-// 				(part.disposition === undefined &&
-// 					(isReferredByCid ||
-// 						(!part.parts &&
-// 							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
-// 							part.contentType !== MIMETYPE_PLAINTEXT &&
-// 							part.contentType !== MIMETYPE_RICHTEXT &&
-// 							part.name)));
-
-// 			if (partShouldBeIncluded && !part.body) {
-// 				// Determine disposition: inline if referenced, attachment otherwise
-// 				if (part.disposition === undefined) {
-// 					incoming.push({
-// 						...part,
-// 						disposition: isReferredByCid ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
-// 					});
-// 				} else if (isReferredByCid) {
-// 					incoming.push({
-// 						...part,
-// 						disposition: DISPOSITION_INLINE
-// 					});
-// 				} else {
-// 					incoming.push({ ...part, disposition: part.disposition });
-// 				}
-// 			}
-
-// 			if (part.parts && !isEml(part)) {
-// 				flattenAndAddDisposition(part.parts, referredCIDs, incoming);
-// 			}
-// 			return incoming;
-// 		},
-// 		filtered
-// 	);
-// }
-
-/**
- * Flattens the message parts and adds disposition to each part.
- * It returns flattened attachments with disposition.
- */
-// export function getFlattenedAttachmentParts(
-// 	mailMessage: MailMessage
-// ): Array<MailMessagePartWithDisposition> {
-// 	const mailMessageParts = mailMessage.parts;
-// 	const referredCIDS = getReferredContentIds(mailMessageParts);
-// 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
-// }
 
 export const getAttachmentExtension = (
 	contentType: string | undefined,
