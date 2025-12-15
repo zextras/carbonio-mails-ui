@@ -19,8 +19,14 @@ type MsgSetSpam = {
 	ids: Array<string>;
 	shouldReplaceHistory: boolean;
 	folderId: string;
+	onActionComplete?: (ids: Array<string>) => void;
 };
-export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetSpam): ActionFn => {
+export const useMsgSetSpamFn = ({
+	ids,
+	shouldReplaceHistory,
+	folderId,
+	onActionComplete
+}: MsgSetSpam): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const navigate = useNavigate();
 
@@ -46,12 +52,12 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 				}
 			});
 			setTimeout(() => {
-				/** If the user has not clicked on the undo button, we can proceed with the action */
-				if (!notCanceled) return;
+				// If the user clicked on the undo button, we skip the action
+				if (!notCanceled) {
+					return;
+				}
+
 				msgActionEmailStoreAction({ operation: 'spam', ids }).then((res) => {
-					if (!('Fault' in res) && shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-					}
 					if ('Fault' in res) {
 						createSnackbar({
 							key: `trash-${ids}`,
@@ -60,11 +66,18 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});
+						return;
+					}
+
+					onActionComplete && onActionComplete(ids);
+
+					if (shouldReplaceHistory) {
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
-	}, [canExecute, createSnackbar, folderId, ids, navigate, shouldReplaceHistory]);
+	}, [canExecute, createSnackbar, folderId, ids, navigate, onActionComplete, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -72,12 +85,14 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 export const useMsgSetSpamDescriptor = ({
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: MsgSetSpam): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetSpamFn({
 		ids,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

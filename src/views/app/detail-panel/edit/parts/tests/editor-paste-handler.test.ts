@@ -127,12 +127,11 @@ describe('handleEditorPaste', () => {
 	});
 
 	describe('uploadImage', () => {
+		const mockFile = new File(['content'], '1.jpg', { type: 'image/jpeg' });
+		const mockAid = '12345';
+		const mockContentId = `${mockAid}@carbonio`;
+		const mockEditorId = 'test-editor';
 		it('should upload an image and return the correct result', async () => {
-			const mockFile = new File(['content'], '1.jpg', { type: 'image/jpeg' });
-			const mockAid = '12345';
-			const mockContentId = `${mockAid}@carbonio`;
-			const mockEditorId = 'test-editor';
-
 			(useEditorsStore.getState as Mock).mockReturnValue({
 				setDid: vi.fn(),
 				setSize: vi.fn(),
@@ -187,6 +186,76 @@ describe('handleEditorPaste', () => {
 			expect(result.fileName).toBe(mockFile.name);
 			expect(result.downloadServiceUrl).toBeDefined();
 			expect(result.cidUrl).toBeDefined();
+		});
+
+		it('should fetch uploaded image and insert updated <img> tag into editor', async () => {
+			(useEditorsStore.getState as Mock).mockReturnValue({
+				setDid: vi.fn(),
+				setSize: vi.fn(),
+				removeUnsavedAttachments: vi.fn(),
+				setSavedAttachments: vi.fn()
+			});
+
+			(saveDraftEmailStoreAction as Mock).mockResolvedValue({
+				m: [
+					{
+						id: 'msg789',
+						s: 1234,
+						mp: [
+							{
+								part: '2.2',
+								ct: 'image/png',
+								s: 1000,
+								cd: 'inline',
+								filename: mockFile.name,
+								ci: mockContentId
+							}
+						]
+					}
+				]
+			});
+
+			// Mock getEditor to return savedAttachments
+			(getEditor as Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
+				savedAttachments: [
+					{
+						messageId: 'msg789',
+						isInline: true,
+						contentId: mockContentId,
+						filename: mockFile.name,
+						partName: '2.2',
+						contentType: 'image/png',
+						size: 1000
+					}
+				]
+			});
+
+			(uploadFileApi as Mock).mockResolvedValue({ aid: mockAid });
+
+			const fakeBlob = new Blob(['xxx'], { type: 'image/png' });
+			global.fetch = vi.fn(() =>
+				Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
+			) as Mock;
+			const fakeObjectUrl = 'blob://fake-object-url';
+			global.URL.createObjectURL = vi.fn(() => fakeObjectUrl);
+
+			const editor = { insertContent: vi.fn(), setProgressState: vi.fn() };
+
+			const uploadResult = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
+
+			// **This is the part you actually want to test: fetch → blob → object URL → insert**
+			const blob = await fetch(uploadResult.downloadServiceUrl).then((r) => r.blob());
+			const objectUrl = URL.createObjectURL(blob);
+
+			editor.insertContent(
+				`<img alt="${uploadResult.fileName}" src="${objectUrl}" data-mce-src="${uploadResult.cidUrl}"/>`
+			);
+
+			expect(editor.insertContent).toHaveBeenCalledWith(
+				`<img alt="${mockFile.name}" src="${fakeObjectUrl}" data-mce-src="cid:${mockContentId}"/>`
+			);
+			expect(fetch).toHaveBeenCalledWith(uploadResult.downloadServiceUrl);
+			expect(URL.createObjectURL).toHaveBeenCalledWith(fakeBlob);
 		});
 	});
 });

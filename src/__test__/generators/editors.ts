@@ -15,7 +15,7 @@ const alignState = (editor: MailsEditorV2): void => {
 };
 
 export const generateEditorV2Case = async (id: number): Promise<MailsEditorV2> => {
-	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
+	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}.ts`);
 	const editor = buildEditorCase();
 	alignState(editor);
 	return editor;

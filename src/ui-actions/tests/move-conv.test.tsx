@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
@@ -102,13 +102,14 @@ describe('MoveConversation', () => {
 				`folder-accordion-item-${destinationFolder}`
 			);
 
-			await act(async () => {
-				await user.click(inboxFolderListItem);
+			await user.click(inboxFolderListItem);
+
+			await waitFor(() => {
+				const moveButton = screen.getByRole('button', {
+					name: /Move/
+				});
+				expect(moveButton).toBeEnabled();
 			});
-			const moveButton = screen.getByRole('button', {
-				name: /Move/
-			});
-			expect(moveButton).toBeEnabled();
 		});
 	});
 
@@ -148,24 +149,24 @@ describe('MoveConversation', () => {
 		);
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${destinationFolder}`,
-			{}
+			`folder-accordion-item-${destinationFolder}`
 		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		const request = await interceptor;
 		expect(request.action.id).toBe(convIds.join(','));
 		expect(request.action.op).toBe('move');
 		expect(request.action.l).toBe(destinationFolder);
 		expect(request.action.tn).toBeUndefined();
 	});
+
 	it('should show an error message if API call returns a Fault case', async () => {
 		populateFoldersStore();
 
@@ -179,19 +180,16 @@ describe('MoveConversation', () => {
 			/>
 		);
 		makeListItemsVisible();
-		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{}
-		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		await interceptor;
 
 		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
@@ -223,11 +221,47 @@ describe('MoveConversation', () => {
 		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
 
 		await user.click(inboxFolderListItem);
+
+		const moveButton = await screen.findByRole('button', { name: /Move/ });
+		await waitFor(() => expect(moveButton).toBeEnabled());
+		await user.click(moveButton);
+
+		const successMessage = await screen.findByText('Conversation successfully moved');
+		expect(successMessage).toBeInTheDocument();
+
+		const goToFolderButton = await screen.findByRole('button', { name: /GO TO FOLDER/ });
+		await user.click(goToFolderButton);
+		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
+	});
+
+	it('should call onMoveComplete on success', async () => {
+		const onMoveComplete = vi.fn();
+		populateFoldersStore();
+
+		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+			action: {
+				id: convIds.join(','),
+				op: 'move'
+			}
+		});
+
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={vi.fn()}
+				isRestore={false}
+				onMoveComplete={onMoveComplete}
+			/>
+		);
+
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
 		await user.click(await screen.findByRole('button', { name: /Move/ }));
 
 		await expect(screen.findByText('Conversation successfully moved')).resolves.toBeInTheDocument();
 
-		await user.click(await screen.findByRole('button', { name: /GO TO FOLDER/ }));
-		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
+		expect(onMoveComplete).toHaveBeenCalledWith(convIds);
 	});
 });

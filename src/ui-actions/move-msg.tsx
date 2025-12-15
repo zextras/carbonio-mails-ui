@@ -19,13 +19,15 @@ type MoveMessageProps = {
 	isRestore?: boolean;
 	onClose: () => void;
 	folderId: string;
+	onMoveComplete?: (ids: Array<string>) => void;
 };
 
 export const MoveMessage = ({
 	selectedIDs,
 	isRestore,
 	onClose,
-	folderId
+	folderId,
+	onMoveComplete
 }: MoveMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -44,6 +46,7 @@ export const MoveMessage = ({
 				parent: newFolderId
 			}).then((res) => {
 				if (!('Fault' in res)) {
+					onMoveComplete && onMoveComplete(selectedIDs);
 					createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -67,7 +70,7 @@ export const MoveMessage = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, onMoveComplete, createSnackbar, isRestore, t]
 	);
 
 	const isDestinationFolderSelectionInvalid = useMemo(

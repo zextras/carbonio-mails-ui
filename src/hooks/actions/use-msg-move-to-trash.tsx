@@ -62,13 +62,15 @@ type MoveToTrashExecute = {
 	messageFolderId?: string;
 	routeFolderId?: string;
 	shouldReplaceHistory?: boolean;
+	onActionComplete?: (ids: Array<string>) => void;
 };
 
 export const useMsgMoveToTrashFn = ({
 	ids,
 	messageFolderId = FOLDERS.INBOX,
 	routeFolderId,
-	shouldReplaceHistory
+	shouldReplaceHistory,
+	onActionComplete
 }: MoveToTrashExecute): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isTrash(messageFolderId) && !isFocusModeMailView(),
@@ -86,22 +88,7 @@ export const useMsgMoveToTrashFn = ({
 				operation: 'trash',
 				ids
 			}).then((res) => {
-				if (!('Fault' in res)) {
-					if (!inSearchModule) {
-						shouldReplaceHistory &&
-							navigate(`/${MAILS_ROUTE}/folder/${routeFolderId}`, { replace: true });
-					}
-					createSnackbar({
-						key: `trash-${ids}`,
-						replace: true,
-						severity: 'info',
-						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
-						autoHideTimeout: 5000,
-						hideButton: false,
-						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreMessage(ids, messageFolderId, shouldReplaceHistory)
-					});
-				} else {
+				if ('Fault' in res) {
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
@@ -110,12 +97,30 @@ export const useMsgMoveToTrashFn = ({
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
+					return;
 				}
+				onActionComplete && onActionComplete(ids);
+
+				if (!inSearchModule) {
+					shouldReplaceHistory &&
+						navigate(`/${MAILS_ROUTE}/folder/${routeFolderId}`, { replace: true });
+				}
+				createSnackbar({
+					key: `trash-${ids}`,
+					replace: true,
+					severity: 'info',
+					label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+					autoHideTimeout: 5000,
+					hideButton: false,
+					actionLabel: t('label.undo', 'Undo'),
+					onActionClick: () => restoreMessage(ids, messageFolderId, shouldReplaceHistory)
+				});
 			});
 		}
 	}, [
 		canExecute,
 		ids,
+		onActionComplete,
 		inSearchModule,
 		createSnackbar,
 		t,
@@ -133,13 +138,15 @@ export const useMsgMoveToTrashDescriptor = ({
 	ids,
 	messageFolderId,
 	routeFolderId,
-	shouldReplaceHistory
+	shouldReplaceHistory,
+	onActionComplete
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
 		ids,
 		messageFolderId,
 		routeFolderId,
-		shouldReplaceHistory
+		shouldReplaceHistory,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

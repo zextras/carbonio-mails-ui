@@ -27,7 +27,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useFoldersMap } from '@zextras/carbonio-ui-commons';
-import { filter } from 'lodash';
+import { filter, find } from 'lodash';
 
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
 import type { MailMessage, TextReadValuesProps } from 'types/index.d';
@@ -85,15 +85,16 @@ const MessageContactList: FC<{
 	}, [message.read]);
 
 	const messageFolder = useMemo(
-		() => folders[folderId && message.parent?.includes(':') ? folderId : message.parent],
-		[folderId, folders, message.parent]
+		() => find(folders, (folder) => folder.id === message.parent),
+		[folders, message.parent]
 	);
+
 	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);
 	const labelCc = useMemo(() => `${t('label.cc', 'CC')}: `, []);
 	const labelBcc = useMemo(() => `${t('label.bcc', 'BCC')}: `, []);
 
 	const showBadge = useMemo(
-		() => (messageFolder?.name && messageFolder?.id !== folderId) || isFocusModeMailView(),
+		() => !!messageFolder?.name && (messageFolder?.id !== folderId || isFocusModeMailView()),
 		[folderId, messageFolder]
 	);
 
@@ -215,7 +216,7 @@ const MessageContactList: FC<{
 			</Container>
 			<Container ref={containerRef} width="fit" mainAlignment="flex-start">
 				{message.urgent && <Icon data-testid="UrgentIcon" color="error" icon="ArrowUpward" />}
-				{showBadge && (
+				{showBadge && messageFolder?.name && (
 					<Padding left="small">
 						<Badge
 							data-testid="FolderBadge"
