@@ -11,7 +11,6 @@ import { screen } from '@testing-library/react';
 import { setupTest } from '@test-setup';
 import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
-import { getMessageById } from 'store/emails/store';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
 
 describe('attachments-block', () => {
@@ -216,15 +215,20 @@ describe('Attachments visualization', () => {
 		${'8'} | ${'GIF'}
 		${'9'} | ${'PDF'}
 	`(`$attachmentType attachments are visible in email preview`, async ({ msgId }) => {
-		// Generate the store
-
-		const message = getMessageById(msgId);
+		const attachments = [
+			{
+				contentType: 'image/jpeg',
+				name: '1.2',
+				filename: 'test.jpeg',
+				size: 0
+			}
+		];
 
 		// Create the props for the component
 		const props = {
-			messageSubject: message.subject,
-			messageId: message.id,
-			messageAttachments: []
+			messageSubject: 'any',
+			messageId: msgId,
+			messageAttachments: attachments
 		};
 
 		// Render the component
@@ -238,7 +242,7 @@ describe('Attachments visualization', () => {
 		}
 
 		// Check the visibility of the attachment blocks
-		filenames.forEach((filename) => {
+		attachments.forEach((filename) => {
 			try {
 				screen.getByTestId(`attachment-container-${filename}`);
 			} catch (e) {
@@ -257,14 +261,18 @@ describe('Attachment actions visualization', () => {
 	`(
 		`$attachmentType attachments are visible in email preview`,
 		async ({ msgId, attachmentType }) => {
-			// Generate the store
-
-			const message = getMessageById(msgId);
-			// Create the props for the component
+			const attachments = [
+				{
+					contentType: 'image/jpeg',
+					name: '1.2',
+					filename: 'test.jpeg',
+					size: 0
+				}
+			];
 			const props = {
-				messageSubject: message.subject,
-				messageId: message.id,
-				messageAttachments: []
+				messageSubject: 'any subject',
+				messageId: msgId,
+				messageAttachments: attachments
 			};
 
 			// Render the component
@@ -278,7 +286,7 @@ describe('Attachment actions visualization', () => {
 			}
 
 			// Check the visibility of the attachment actions icon
-			filenames.forEach((filename) => {
+			attachments.forEach((filename) => {
 				try {
 					screen.getByTestId(`remove-attachments-${filename}`);
 					screen.getByTestId(`download-attachment-${filename}`);
