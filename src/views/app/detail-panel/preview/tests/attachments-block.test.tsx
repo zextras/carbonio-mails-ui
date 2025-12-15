@@ -7,11 +7,14 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
 import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
+
+const CreateContactFakeComponent = (): React.JSX.Element => <></>;
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
@@ -205,132 +208,156 @@ describe('attachments-block', () => {
 
 		expect(previewContextMock.createPreview).not.toHaveBeenCalled();
 	});
-});
 
-describe('Attachments visualization', () => {
-	test.each`
-		msgId  | attachmentType
-		${'5'} | ${'MIME formatted mail PDF'}
-		${'6'} | ${'MIME formatted mail inline images'}
-		${'8'} | ${'GIF'}
-		${'9'} | ${'PDF'}
-	`(`$attachmentType attachments are visible in email preview`, async ({ msgId }) => {
-		const attachments = [
-			{
-				contentType: 'image/jpeg',
-				name: '1.2',
-				filename: 'test.jpeg',
-				size: 0
-			}
-		];
-
-		// Create the props for the component
-		const props = {
-			messageSubject: 'any',
-			messageId: msgId,
-			messageAttachments: attachments
-		};
-
-		// Render the component
-		const { user } = setupTest(<AttachmentsBlock {...props} />);
-
-		// Check if the attachments list expansion link exists
-		const expansionLink = screen.queryByTestId('attachment-list-expand-link');
-		if (expansionLink) {
-			await user.click(expansionLink);
-			await screen.findByTestId('attachment-list-collapse-link');
-		}
-
-		// Check the visibility of the attachment blocks
-		attachments.forEach((filename) => {
-			try {
-				screen.getByTestId(`attachment-container-${filename}`);
-			} catch (e) {
-				throw new Error(`The attachment block for the file ${filename} is not present`);
-			}
-		});
-	});
-});
-
-describe('Attachment actions visualization', () => {
-	test.each`
-		msgId   | attachmentType
-		${'8'}  | ${'GIF'}
-		${'9'}  | ${'PDF'}
-		${'14'} | ${'VCARD'}
-	`(
-		`$attachmentType attachments are visible in email preview`,
-		async ({ msgId, attachmentType }) => {
+	describe('Attachment actions visualization', () => {
+		it('should not display expand button when there are 2 attachments', async () => {
 			const attachments = [
 				{
-					contentType: 'image/jpeg',
+					contentType: 'image/gif',
 					name: '1.2',
-					filename: 'test.jpeg',
+					filename: 'image.gif',
+					size: 0
+				},
+				{
+					contentType: 'application/pdf',
+					name: '1.3',
+					filename: 'test.pdf',
 					size: 0
 				}
 			];
 			const props = {
 				messageSubject: 'any subject',
-				messageId: msgId,
+				messageId: '123',
 				messageAttachments: attachments
 			};
 
-			// Render the component
-			const { user } = setupTest(<AttachmentsBlock {...props} />);
+			setupTest(<AttachmentsBlock {...props} />);
 
-			// Check if the attachments list expansion link exists
 			const expansionLink = screen.queryByTestId('attachment-list-expand-link');
-			if (expansionLink) {
-				await user.click(expansionLink);
-				await screen.findByTestId('attachment-list-collapse-link');
-			}
-
-			// Check the visibility of the attachment actions icon
-			attachments.forEach((filename) => {
-				try {
-					screen.getByTestId(`remove-attachments-${filename}`);
-					screen.getByTestId(`download-attachment-${filename}`);
-					if (attachmentType === 'VCARD') screen.getByTestId(`import-contacts-${filename}`);
-				} catch (e) {
-					throw new Error(
-						`The attachment block or action icon for the file ${filename} is not present`
-					);
+			expect(expansionLink).not.toBeInTheDocument();
+		});
+		it('should display expand button when there are at least 3 attachment', async () => {
+			const attachments = [
+				{
+					contentType: 'image/gif',
+					name: '1.2',
+					filename: 'image.gif',
+					size: 0
+				},
+				{
+					contentType: 'application/pdf',
+					name: '1.3',
+					filename: 'test.pdf',
+					size: 0
+				},
+				{
+					contentType: 'image/png',
+					name: '1.4',
+					filename: 'test.png',
+					size: 0
 				}
-			});
-		}
-	);
-});
+			];
+			const props = {
+				messageSubject: 'any subject',
+				messageId: '123',
+				messageAttachments: attachments
+			};
 
-describe('Attachment link validation', () => {
-	test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
-		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+			const { user } = setupTest(<AttachmentsBlock {...props} />);
+			const expansionLink = await screen.findByTestId('attachment-list-expand-link');
+			await user.click(expansionLink);
+			expect(await screen.findByTestId('attachment-list-collapse-link')).toBeVisible();
+		});
 
-		const messageAttachments = [
-			{
-				cd: 'attachment',
-				name: 'test',
-				filename: 'image.tiff',
-				size: 12345,
-				contentType: 'image/tiff'
-			} as const
-		];
-		const { user } = setupTest(
-			<AttachmentsBlock
-				messageId={'1'}
-				messageSubject={'test'}
-				messageAttachments={messageAttachments}
-			/>
+		it('displays remove/download and import contacts action when attachment is vcard', () => {
+			const spyOn = vi.spyOn(shell, 'useIntegratedFunction');
+			spyOn.mockImplementation((): [() => React.JSX.Element, boolean] => [
+				CreateContactFakeComponent,
+				true
+			]);
+
+			const filename = 'vcard.vcf';
+			const attachments = [
+				{
+					contentType: 'text/vcard',
+					name: '1.4',
+					filename,
+					size: 0
+				}
+			];
+			const props = {
+				messageSubject: 'any subject',
+				messageId: '123',
+				messageAttachments: attachments
+			};
+
+			setupTest(<AttachmentsBlock {...props} />);
+
+			expect(screen.getByTestId(`remove-attachments-${filename}`)).toBeInTheDocument();
+			expect(screen.getByTestId(`download-attachment-${filename}`)).toBeInTheDocument();
+			expect(screen.getByTestId(`import-contacts-${filename}`)).toBeInTheDocument();
+		});
+
+		test.each`
+			msgId  | attachmentType | contentType          | filename
+			${'8'} | ${'GIF'}       | ${'image/gif'}       | ${'test.gif'}
+			${'9'} | ${'PDF'}       | ${'application/pdf'} | ${'test.pdf'}
+		`(
+			`displays remove and download actions for $attachmentType in email preview`,
+			async ({ msgId, contentType, filename }) => {
+				const attachments = [
+					{
+						contentType,
+						name: '1.2',
+						filename,
+						size: 0
+					}
+				];
+				const props = {
+					messageSubject: 'any subject',
+					messageId: msgId,
+					messageAttachments: attachments
+				};
+
+				setupTest(<AttachmentsBlock {...props} />);
+				expect(screen.getByTestId(`remove-attachments-${filename}`)).toBeInTheDocument();
+				expect(screen.getByTestId(`download-attachment-${filename}`)).toBeInTheDocument();
+				expect(screen.getByTestId(`attachment-container-${filename}`)).toBeInTheDocument();
+			}
 		);
+	});
 
-		await user.hover(screen.getByText('image.tiff'));
-		expect(await screen.findByText('Click to preview')).toBeVisible();
+	describe('Attachment link validation', () => {
+		test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
+			useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
 
-		await user.click(screen.getByText('image.tiff'));
-		expect(previewContextMock.createPreview).toHaveBeenCalledTimes(1);
+			const messageAttachments = [
+				{
+					cd: 'attachment',
+					name: 'test',
+					filename: 'image.tiff',
+					size: 12345,
+					contentType: 'image/tiff'
+				} as const
+			];
+			const { user } = setupTest(
+				<AttachmentsBlock
+					messageId={'1'}
+					messageSubject={'test'}
+					messageAttachments={messageAttachments}
+				/>
+			);
 
-		const createPreviewParam = previewContextMock.createPreview.mock.calls[0][0];
-		expect(createPreviewParam.src).toBe(
-			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
-		);
+			await user.hover(screen.getByText('image.tiff'));
+			expect(await screen.findByText('Click to preview')).toBeVisible();
+
+			await user.click(screen.getByText('image.tiff'));
+			expect(previewContextMock.createPreview).toHaveBeenCalledTimes(1);
+
+			const createPreviewParam = previewContextMock.createPreview.mock.calls[0][0];
+			expect(createPreviewParam.src).toBe(
+				'http://localhost/service/preview/image/1/test/0x0/?quality=high'
+			);
+		});
 	});
 });
