@@ -142,14 +142,11 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 				} else if (item.ci && item.cd === 'inline' && hasHtml) {
 					// Not referenced in HTML but marked inline -> change to attachment
 					// TODO: double check this condition
-					// item.cd = 'attachment';
 					results.blockAttachments.push(item);
 				} else if (item.cd === 'inline' && item.filename && hasHtml) {
 					results.blockAttachments.push(item);
-					// item.cd = 'attachment';
 				} else {
 					results.blockAttachments.push(item);
-					// item.cd ??= 'attachment';
 				}
 
 				// Add default filenames for known types
