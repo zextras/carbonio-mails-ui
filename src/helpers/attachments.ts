@@ -12,30 +12,6 @@ import { retrieveAttachmentsFromMail } from 'attachments';
 import { calcColor } from 'commons/utilities';
 import { MailMessage, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 
-/**
- * Content disposition types for email attachments
- */
-export const DISPOSITION_INLINE = 'inline' as const;
-export const DISPOSITION_ATTACHMENT = 'attachment' as const;
-
-/**
- * Checks if a content disposition indicates an inline attachment.
- *
- * @param disposition - The content disposition value
- * @returns True if the disposition is 'inline'
- */
-export const isInlineDisposition = (disposition?: string): boolean =>
-	disposition === DISPOSITION_INLINE;
-
-/**
- * Checks if a content disposition indicates a regular attachment.
- *
- * @param disposition - The content disposition value
- * @returns True if the disposition is 'attachment'
- */
-export const isAttachmentDisposition = (disposition?: string): boolean =>
-	disposition === DISPOSITION_ATTACHMENT;
-
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
 export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
