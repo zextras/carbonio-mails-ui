@@ -145,17 +145,13 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 					results.blockAttachments.push(item);
 				} else if (item.cd === 'inline' && item.filename && hasHtml) {
 					results.blockAttachments.push(item);
-				} else {
-					results.blockAttachments.push(item);
-				}
-
-				// Add default filenames for known types
-				if (item.contentType === 'message/rfc822' && !item.filename) {
+				} else if (item.contentType === 'message/rfc822' && !item.filename) {
 					item.filename = 'Unknown <message/rfc822>';
 					results.blockAttachments.push(item);
-				}
-				if (item.contentType === 'text/html' && !item.filename) {
+				} else if (item.contentType === 'text/html' && !item.filename) {
 					item.filename = 'Unknown <text/html>';
+					results.blockAttachments.push(item);
+				} else {
 					results.blockAttachments.push(item);
 				}
 			}
