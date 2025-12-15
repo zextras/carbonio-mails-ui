@@ -138,7 +138,7 @@ describe('Inline image attachments', () => {
 
 		expect(attachments.blockAttachments).toHaveLength(0);
 		expect(attachments.inlineAttachments).toHaveLength(1);
-		expect(attachments.inlineAttachments?.[0].cd).toBe('inline');
+		expect(attachments.inlineAttachments?.[0].filename).toBe('test.jpg');
 	});
 
 	it('should treat inline attachment with Content-IDs without angle brackets as inline', () => {
@@ -174,7 +174,7 @@ describe('Inline image attachments', () => {
 
 		expect(attachments.blockAttachments).toHaveLength(0);
 		expect(attachments.inlineAttachments).toHaveLength(1);
-		expect(attachments.inlineAttachments?.[0].cd).toBe('inline');
+		expect(attachments.inlineAttachments?.[0].filename).toBe('animation.gif');
 	});
 
 	it('should handle multiple inline images in the same email', () => {
@@ -219,8 +219,8 @@ describe('Inline image attachments', () => {
 
 		expect(attachments.blockAttachments).toHaveLength(0);
 		expect(attachments.inlineAttachments).toHaveLength(2);
-		expect(attachments.inlineAttachments?.[0].cd).toBe('inline');
-		expect(attachments.inlineAttachments?.[1].cd).toBe('inline');
+		expect(attachments.inlineAttachments?.[0].filename).toBe('image1.jpg');
+		expect(attachments.inlineAttachments?.[1].filename).toBe('image2.jpg');
 	});
 
 	it('should handle mix of inline and regular attachments', () => {
