@@ -499,13 +499,9 @@ const AttachmentsBlock = ({
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
-	const attachments = useMemo(
-		() => filter(messageAttachments, { cd: 'attachment' }),
-		[messageAttachments]
-	);
 
-	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
-	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
+	const attachmentsCount = useMemo(() => messageAttachments?.length || 0, [messageAttachments]);
+	const attachmentsParts = useMemo(() => map(messageAttachments, 'name'), [messageAttachments]);
 	const theme = useTheme();
 	const actionsDownloadLink = useMemo(
 		() =>
@@ -541,7 +537,7 @@ const AttachmentsBlock = ({
 
 	const confirmAction = useCallback<SelectNodesFunctionArgs['confirmAction']>(
 		(nodes) => {
-			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
+			const promises = map(messageAttachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;
 				const allSuccess = isFault
@@ -560,7 +556,7 @@ const AttachmentsBlock = ({
 				});
 			});
 		},
-		[attachments, createSnackbar, getLabel, messageId]
+		[messageAttachments, createSnackbar, getLabel, messageId]
 	);
 
 	const isAValidDestination = useCallback(
@@ -612,7 +608,7 @@ const AttachmentsBlock = ({
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
-				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
+				{map(expanded ? messageAttachments : messageAttachments?.slice(0, 2), (att, index) => (
 					<Attachment
 						key={`att-${att.filename}-${index}`}
 						filename={att?.filename}
@@ -631,7 +627,7 @@ const AttachmentsBlock = ({
 						messageId={messageId}
 						isEml={isEml}
 						part={att?.name ?? ''}
-						iconColors={getAttachmentIconColors({ attachments, theme })}
+						iconColors={getAttachmentIconColors({ attachments: messageAttachments, theme })}
 						att={att}
 					/>
 				))}
