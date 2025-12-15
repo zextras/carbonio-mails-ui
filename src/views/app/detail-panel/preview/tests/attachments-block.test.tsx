@@ -219,17 +219,12 @@ describe('Attachments visualization', () => {
 		// Generate the store
 
 		const message = getMessageById(msgId);
-		// Get the attachment filename
-		const filenames = message?.attachments?.map((attachment) => attachment.filename);
-		if (!filenames) {
-			return;
-		}
 
 		// Create the props for the component
 		const props = {
 			messageSubject: message.subject,
 			messageId: message.id,
-			messageAttachments: message.attachments
+			messageAttachments: []
 		};
 
 		// Render the component
@@ -265,18 +260,11 @@ describe('Attachment actions visualization', () => {
 			// Generate the store
 
 			const message = getMessageById(msgId);
-
-			// Get the attachment filename
-			const filenames = message?.attachments?.map((attachment) => attachment.filename);
-
-			if (!filenames) {
-				return;
-			}
 			// Create the props for the component
 			const props = {
 				messageSubject: message.subject,
 				messageId: message.id,
-				messageAttachments: message.attachments
+				messageAttachments: []
 			};
 
 			// Render the component
