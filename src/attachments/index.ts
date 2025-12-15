@@ -86,7 +86,7 @@ const hasHtmlContent = (parts: Array<MailMessagePart> | MailMessagePart): boolea
 };
 
 // TODO: avoid recursion for certain parts (e.g.: eml)
-function flattenParts(obj: MailMessagePart): Array<MailMessagePart> {
+function flattenParts(obj: { parts: MailMessagePart['parts'] }): Array<MailMessagePart> {
 	return (obj.parts || []).flatMap(({ parts, ...rest }) => [
 		rest,
 		...(parts ? flattenParts({ parts }) : [])
