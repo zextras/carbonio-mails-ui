@@ -26,7 +26,6 @@ vi.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: vi.fn()
 }));
 const mailMessage: MailMessage = {
-	attachments: undefined,
 	autoSendTime: 0,
 	body: {
 		contentType: 'text/html',
@@ -39,7 +38,6 @@ const mailMessage: MailMessage = {
 	did: '',
 	flagged: false,
 	fragment: '',
-	hasAttachment: false,
 	id: '',
 	invite: undefined,
 	isComplete: false,

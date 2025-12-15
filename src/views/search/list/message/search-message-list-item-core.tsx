@@ -20,6 +20,7 @@ import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { hasAttachments } from '../../../../attachments';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -186,7 +187,7 @@ export const SearchMessageListItemCore = ({
 								/>
 							</Padding>
 						)}
-						{completeMessage.hasAttachment && (
+						{hasAttachments(completeMessage) && (
 							<Padding left="small">
 								<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
 							</Padding>

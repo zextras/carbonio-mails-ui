@@ -80,7 +80,6 @@ export const generateMessage = ({
 	did,
 	flagged: isFlagged,
 	fragment: convertHtmlToPlainText(body).substring(0, 40).trim(),
-	hasAttachment: false,
 	id,
 	invite: undefined,
 	isComplete,

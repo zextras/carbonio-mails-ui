@@ -8,6 +8,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import moment from 'moment';
 
+import { hasAttachments } from '../../attachments';
 import { getAttachments } from 'commons/print-conversation/get-attachments';
 import { getParticipantHeader } from 'commons/print-conversation/get-participant-header';
 import { getSubject } from 'commons/print-conversation/get-subject';
@@ -21,7 +22,7 @@ export function getHeader(msg: MailMessage, content: string): string {
 	const bcc = filter(participants, { type: 'b' });
 	const replyTo = filter(participants, { type: 'r' });
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
-	const hasAttachments = msg.attachments && msg.attachments?.length > 0;
+	const hasSomeAttachments = hasAttachments(msg);
 
 	return `
     <table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:0.625rem;">
@@ -53,7 +54,7 @@ export function getHeader(msg: MailMessage, content: string): string {
             </td>
         </tr>
 		  <tr>
-      ${hasAttachments ? getAttachments({ msg }) : ''}
+      ${hasSomeAttachments ? getAttachments({ msg }) : ''}
 
    </tr>
         <td id="iframeBody" style="padding:0.3125rem; font-family: monospace" valign='top' colspan="2">

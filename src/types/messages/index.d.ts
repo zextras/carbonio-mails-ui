@@ -34,7 +34,6 @@ export type IncompleteMessage = MailHeaders & {
 	conversation: string;
 	read: boolean;
 	size: number;
-	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
 	isDeleted: boolean;
@@ -46,7 +45,7 @@ export type IncompleteMessage = MailHeaders & {
 	autoSendTime?: number;
 	originalId?: string;
 	replyType?: 'r' | 'w';
-	attachments?: Array<AttachmentPart>;
+	// attachments?: Array<AttachmentPart>;
 	participants?: Array<Participant>;
 	date: number;
 	subject: string;

@@ -259,11 +259,18 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	const extractedBody = extractBody(msg);
+	const attachments = retrieveAttachmentsFromMail(msg);
+	const attachmentsToSend = attachments.blockAttachments
+		.concat(attachments.inlineAttachments)
+		.map((attachment) => ({
+			part: attachment.name,
+			mid: attachment.name
+		}));
 	const body = isHtml(msg.parts);
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
 		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
-		attach: { mp: retrieveAttachmentsFromMail(msg) },
+		attach: { mp: attachmentsToSend },
 		su: { _content: msg.subject ?? '' },
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

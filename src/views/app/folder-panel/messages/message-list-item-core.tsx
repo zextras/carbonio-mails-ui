@@ -20,6 +20,7 @@ import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbon
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
+import { hasAttachments } from '../../../../attachments';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
@@ -182,7 +183,7 @@ export const MessageListItemCore = ({
 								<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
 							</Padding>
 						)}
-						{message.hasAttachment && (
+						{hasAttachments(message) && (
 							<Padding left="small">
 								<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
 							</Padding>
