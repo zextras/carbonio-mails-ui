@@ -155,8 +155,8 @@ export const isDownloadServicedUrl = (url: string): boolean =>
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
 
-export const composeAttachmentDownloadUrlFromUploadID = (uploadId: string): string =>
-	`/service/content/proxy?aid=${uploadId}`;
+export const composeAttachmentDownloadUrlFromUploadID = (attachmentId: string): string =>
+	`/service/content/proxy?aid=${attachmentId}`;
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = retrieveAttachmentsFromMail(message);

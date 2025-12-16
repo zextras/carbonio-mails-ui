@@ -14,7 +14,7 @@ import {
 	UploadCallbacks
 } from 'api/upload-attachments-api';
 import { TIMEOUTS } from 'constants/index';
-import { composeAttachmentDownloadUrlFromUploadID } from 'helpers/attachments';
+import { composeAttachmentDownloadUrlFromUploadID as composeAttachmentDownloadUrlFromAttachmentId } from 'helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
 import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
@@ -166,36 +166,14 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	const addAndSaveGenericAttachments = (
 		files: Array<File>,
 		areInline: boolean,
-		callbacks?: UploadAttachmentsOptions & {
-			onSaveComplete?: (savedContentIds: Array<string>) => void;
-		}
+		callbacks?: UploadAttachmentsOptions
 	): Array<UnsavedAttachment> => {
 		const customizedCallbacks = {
 			...callbacks,
 			onUploadsEnd: (completedUploadsId: Array<string>, failedUploadsId: Array<string>): void => {
 				const editor = getEditor({ id: editorId });
 				if (editor) {
-					const uploadedUnsavedAttachments = filterUnsavedAttachmentsByUploadId(
-						editor.unsavedAttachments,
-						completedUploadsId
-					);
-
-					const uploadedContentIds: Array<string> = [];
-					uploadedUnsavedAttachments.forEach((uploadedUnsavedAttachment) => {
-						if (
-							uploadedUnsavedAttachment.isInline === areInline &&
-							uploadedUnsavedAttachment.contentId
-						) {
-							uploadedContentIds.push(uploadedUnsavedAttachment.contentId);
-						}
-					});
-
-					const saveDraftOptions: SaveDraftOptions = {
-						onComplete: (): void => {
-							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
-						}
-					};
-					debouncedSaveDraft(editorId, saveDraftOptions);
+					debouncedSaveDraft(editorId);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -266,7 +244,6 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		}
 	): Array<UnsavedAttachment> => {
 		const customizedCallbacks = {
-			...omit(callbacks, 'onSaveComplete'),
 			onUploadComplete: (file: File, uploadId: string, attachmentId: string): void => {
 				const editor = getEditor({ id: editorId });
 				if (!editor) {
@@ -277,7 +254,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 				const inlineInfo = {
 					contentId,
 					cidUrl: contentId ? (composeCidUrlFromContentId(contentId) ?? undefined) : undefined,
-					downloadServiceUrl: composeAttachmentDownloadUrlFromUploadID(uploadId)
+					downloadServiceUrl: composeAttachmentDownloadUrlFromAttachmentId(attachmentId)
 				};
 
 				callbacks?.onSaveComplete && callbacks.onSaveComplete(inlineInfo);
