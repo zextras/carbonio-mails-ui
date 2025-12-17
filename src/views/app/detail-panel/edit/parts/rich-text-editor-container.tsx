@@ -12,6 +12,7 @@ import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+import { editorUtils } from './editor-utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -95,14 +96,7 @@ export const RichTextEditorContainer = ({
 	const cleanupUnusedAttachments = useCallback(
 		(html: string) => {
 			if (!composerRef.current) return;
-
-			const doc = new DOMParser().parseFromString(html, 'text/html');
-
-			// collect all used attachment IDs
-			const usedCids = Array.from(doc.querySelectorAll('img[data-pnsrc], img[src^="cid:"]'))
-				.map((img) => img.getAttribute('data-pnsrc') || img.getAttribute('src'))
-				.filter((cid): cid is string => Boolean(cid));
-
+			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: html });
 			removeInlineAttachments(usedCids);
 		},
 		[removeInlineAttachments]
@@ -190,13 +184,11 @@ export const RichTextEditorContainer = ({
 			const editViewWrapper = document.querySelector(
 				'[data-testid="edit-view-editor"]'
 			)?.parentElement;
-			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
-
 			handleEditorPaste(editor, editorID, event);
 
 			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
 			if (editViewWrapper) {
-				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
+				editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
 			}
 		};
 	}
