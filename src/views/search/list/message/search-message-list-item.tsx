@@ -9,13 +9,13 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
+import { createEditBoard } from '../../../editor/edit-view-board';
 import { EditViewActions } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
