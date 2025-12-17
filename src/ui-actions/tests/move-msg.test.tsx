@@ -11,7 +11,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { makeListItemsVisible, setupTest } from '@test-setup';
+import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
@@ -86,7 +86,6 @@ describe('MoveMsg', () => {
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
 				{}
@@ -124,7 +123,6 @@ describe('MoveMsg', () => {
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
@@ -150,6 +148,7 @@ describe('MoveMsg', () => {
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
+
 		it('should show an error snackbar when the API call fails ', async () => {
 			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
@@ -169,7 +168,6 @@ describe('MoveMsg', () => {
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
@@ -188,7 +186,50 @@ describe('MoveMsg', () => {
 				await user.click(button);
 			});
 
-			await expect(await screen.findByText('Something went wrong, please try again')).toBeVisible();
+			expect(screen.getByText('Something went wrong, please try again')).toBeVisible();
+		});
+
+		it('should call the onMoveComplete callback when the move is successful', async () => {
+			const onMoveComplete = vi.fn();
+			populateFoldersStore();
+			const destinationFolder = FOLDERS.INBOX;
+			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+				action: {
+					id: msgIds.join(','),
+					op: 'move'
+				}
+			});
+
+			const component = (
+				<MoveMessage
+					folderId={sourceFolder}
+					selectedIDs={msgIds}
+					onClose={vi.fn()}
+					isRestore={false}
+					onMoveComplete={onMoveComplete}
+				/>
+			);
+
+			const { user } = setupTest(component);
+
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`,
+				{}
+			);
+
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
+
+			const button = screen.getByRole('button', {
+				name: /Move/
+			});
+
+			await act(async () => {
+				await user.click(button);
+			});
+
+			expect(onMoveComplete).toHaveBeenCalledWith(msgIds);
 		});
 	});
 });

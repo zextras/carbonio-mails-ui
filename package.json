@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.28.4",
+	"version": "1.28.6",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "sdk build",
 		"deploy": "sdk deploy",
-		"install": "sdk install",
+		"sdkInstall": "sdk install",
 		"start": "sdk watch",
 		"type-check": "tsc --noEmit",
 		"type-check:watch": "npm run type-check -- --watch",

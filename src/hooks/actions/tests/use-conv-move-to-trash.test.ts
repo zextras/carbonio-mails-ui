@@ -11,6 +11,7 @@ import { fireEvent } from '@testing-library/react';
 import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
+import { TIMERS } from '../../../__test__/constants';
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
@@ -19,7 +20,7 @@ import {
 	useConvMoveToTrashDescriptor,
 	useConvMoveToTrashFn
 } from 'hooks/actions/use-conv-move-to-trash';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { ConvActionRequest, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -162,6 +163,26 @@ describe('useConMoveToTrash', () => {
 				});
 
 				expect(apiCallSpy).not.toHaveBeenCalled();
+			});
+
+			it('should call the onActionComplete callback when the action is successful', async () => {
+				const onActionComplete = vi.fn();
+				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX, onActionComplete }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				act(() => {
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(conversationsId);
 			});
 		});
 	});
