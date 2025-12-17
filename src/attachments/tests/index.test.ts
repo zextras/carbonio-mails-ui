@@ -1137,7 +1137,8 @@ describe('Retrieve attachments', () => {
 			const normalized = retrieveAttachmentsFromMail(soapMessage);
 
 			expect(normalized.inlineAttachments).toHaveLength(0);
-			expect(normalized.blockAttachments).toHaveLength(3);
+			// FIXME: failing on purpose, shouldn't we exclude attachments in emls?
+			expect(normalized.blockAttachments).toHaveLength(2);
 			expect(normalized.blockAttachments?.[0].filename).toBe('daticert.xml');
 			expect(normalized.blockAttachments?.[1].filename).toBe('postacert.eml');
 			expect(normalized.blockAttachments?.[2].filename).toBe('pdfname.pdf');
