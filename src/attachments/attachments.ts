@@ -8,6 +8,9 @@ import { forEach, isArray } from 'lodash';
 import { extractContentIdsFromHtml, removeAngleBrackets } from '../commons/content-id-utils';
 import { MailMessage, MailMessagePart } from '../types';
 
+const EML_FILENAME_REGEX = '^(.+)\\.eml$';
+const MIMETYPE_EML = 'message/rfc822';
+
 /**
  * Determines if an attachment part should be ignored and not included in the attachments list.
  * Ignores Apple-specific formats, body parts, and calendar invites without filenames.
@@ -88,13 +91,17 @@ const hasHtmlContent = (parts: Array<MailMessagePart> | MailMessagePart): boolea
 	return false;
 };
 
-// TODO: avoid recursion for certain parts (e.g.: eml)
+const isEmlAttachment = (part: MailMessagePart): boolean =>
+	part.contentType === MIMETYPE_EML ||
+	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
+
 function flattenParts(obj: { parts: MailMessagePart['parts'] }): Array<MailMessagePart> {
-	return (obj.parts || []).flatMap(({ parts, ...rest }) => [
-		rest,
-		...(parts ? flattenParts({ parts }) : [])
+	return (obj.parts || []).flatMap((part) => [
+		part,
+		...(!isEmlAttachment(part) ? flattenParts({ parts: part.parts }) : [])
 	]);
 }
+
 /**
  * Extracts and normalizes attachments from SOAP message parts.
  * Handles proper classification of inline vs regular attachments based on Content-ID references in HTML.
@@ -145,7 +152,7 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 						: results.inlineAttachments.push(item);
 					// Not referenced in HTML but marked inline -> change to attachment
 					// TODO: double check this condition
-				} else if (item.cd === 'inline' && item.filename && mailHasHtmlBody) {
+				} else if (item.cd === 'inline' && item.filename) {
 					results.blockAttachments.push(item);
 				} else if (item.contentType === 'message/rfc822' && !item.filename) {
 					item.filename = 'Unknown <message/rfc822>';

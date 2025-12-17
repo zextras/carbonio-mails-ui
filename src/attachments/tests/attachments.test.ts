@@ -1137,11 +1137,9 @@ describe('Retrieve attachments', () => {
 			const normalized = retrieveAttachmentsFromMail(soapMessage);
 
 			expect(normalized.inlineAttachments).toHaveLength(0);
-			// FIXME: failing on purpose, shouldn't we exclude attachments in emls?
 			expect(normalized.blockAttachments).toHaveLength(2);
 			expect(normalized.blockAttachments?.[0].filename).toBe('daticert.xml');
 			expect(normalized.blockAttachments?.[1].filename).toBe('postacert.eml');
-			expect(normalized.blockAttachments?.[2].filename).toBe('pdfname.pdf');
 		});
 
 		it('(PEC) should treat part with content disposition inline, NO html body, and no content ID as block attachment', () => {
@@ -1183,10 +1181,9 @@ describe('Retrieve attachments', () => {
 			const normalized = retrieveAttachmentsFromMail(soapMessage);
 
 			expect(normalized.inlineAttachments).toHaveLength(0);
-			expect(normalized.blockAttachments).toHaveLength(3);
+			expect(normalized.blockAttachments).toHaveLength(2);
 			expect(normalized.blockAttachments?.[0].filename).toBe('daticert.xml');
 			expect(normalized.blockAttachments?.[1].filename).toBe('postacert.eml');
-			expect(normalized.blockAttachments?.[2].filename).toBe('pdfname.pdf');
 		});
 		it('should add default filename for text/html without filename', () => {
 			const soapMessage = generateMessage({
@@ -1516,6 +1513,43 @@ describe('Retrieve attachments', () => {
 			expect(attachments.inlineAttachments).toHaveLength(1);
 			// Should preserve inline since there's no HTML to contradict it
 			expect(attachments.inlineAttachments?.[0].filename).toBe('chart.png');
+		});
+	});
+
+	describe('EML attachments', () => {
+		it('should NOT display attachments inside an EML attachment', () => {
+			const soapMessage = generateMessage({
+				parts: [
+					{
+						contentType: 'message/rfc822',
+						cd: 'inline',
+						name: '1.1',
+						filename: 'email.eml',
+						size: 100,
+						parts: [
+							{
+								contentType: 'application/pdf',
+								cd: 'attachment',
+								name: '1.2',
+								filename: 'pdfname.pdf',
+								size: 100
+							},
+							{
+								contentType: 'image/png',
+								cd: 'attachment',
+								name: '1.3',
+								filename: 'pngname.png',
+								size: 100
+							}
+						]
+					}
+				]
+			});
+			const normalized = retrieveAttachmentsFromMail(soapMessage);
+
+			expect(normalized.inlineAttachments).toHaveLength(0);
+			expect(normalized.blockAttachments).toHaveLength(1);
+			expect(normalized.blockAttachments?.[0].filename).toBe('email.eml');
 		});
 	});
 });

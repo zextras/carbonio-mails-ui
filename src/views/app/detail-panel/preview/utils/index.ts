@@ -9,12 +9,7 @@ import { includes, uniqBy } from 'lodash';
 import { calcColor } from 'commons/utilities';
 import { getUserLocale } from 'commons/utils';
 import { getAttachmentExtension } from 'helpers/attachments';
-import {
-	EditorAttachmentFiles,
-	GetAttachmentsDownloadLinkProps,
-	IconColors,
-	MailMessagePart
-} from 'types/index.d';
+import { GetAttachmentsDownloadLinkProps, IconColors, MailMessagePart } from 'types/index.d';
 
 export const getLocationOrigin = (): string => window.location.origin;
 
@@ -94,11 +89,11 @@ export const getAttachmentIconColors = ({
 	attachments,
 	theme
 }: {
-	attachments: MailMessagePart[] | EditorAttachmentFiles[];
+	attachments: MailMessagePart[];
 	theme: Theme;
 }): IconColors =>
 	uniqBy(
-		attachments.map((att: MailMessagePart | EditorAttachmentFiles) => {
+		attachments.map((att: MailMessagePart) => {
 			const fileExtn = getAttachmentExtension(att.contentType, att.filename).value;
 			const color = calcColor(att.contentType ?? '', theme);
 
