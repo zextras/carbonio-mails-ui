@@ -9,10 +9,10 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
+import MailPreview from '../../../app/detail-panel/mail-preview';
 import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';

@@ -33,7 +33,7 @@ import {
 import { useEditorUploadProcess } from '../../store/editor/hooks/updload';
 import StyledWrapper from '../../styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
-import { getAttachmentsLink } from '../app/detail-panel/preview/utils';
+import { getAttachmentsLink } from '../app/detail-panel/utils';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;

@@ -12,6 +12,7 @@ import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { PreviewPanelHeader } from './preview-panel-header';
 import type {
 	DetailPanelConversationRouteParams,
 	DetailPanelRoutesParams
@@ -24,7 +25,6 @@ import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import { useConversationMessages } from 'store/emails/store';
 import { ConversationPreviewPanel } from 'views/app/detail-panel/conversation-preview-panel';
-import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();

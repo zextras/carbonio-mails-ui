@@ -7,8 +7,8 @@ import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
+import MailPreview from './mail-preview';
 import { MailMessage } from 'types/index.d';
-import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export type ConversationMessagePreviewProps = {
 	message: MailMessage;
