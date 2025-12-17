@@ -7,7 +7,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { retrieveAttachmentsFromMail } from '../../attachments';
+import { retrieveAttachmentsFromMail } from '../../attachments/attachments';
 import type { MailMessage } from 'types/index.d';
 
 export const getAttachments = ({ msg }: { msg: MailMessage }): string =>

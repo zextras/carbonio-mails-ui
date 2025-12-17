@@ -40,7 +40,7 @@ import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } 
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 
-import { retrieveAttachmentsFromMail } from '../../../../../attachments';
+import { retrieveAttachmentsFromMail } from '../../../../../attachments/attachments';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';

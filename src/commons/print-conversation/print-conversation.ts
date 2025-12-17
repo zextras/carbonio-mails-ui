@@ -6,7 +6,7 @@
 
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
-import { retrieveAttachmentsFromMail } from 'attachments';
+import { retrieveAttachmentsFromMail } from 'attachments/attachments';
 import { getBodyWrapper } from 'commons/print-conversation/get-body-wrapper';
 import { getCompleteHTML } from 'commons/print-conversation/get-complete-html';
 import { getHeader } from 'commons/print-conversation/get-header';

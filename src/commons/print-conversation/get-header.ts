@@ -8,7 +8,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import moment from 'moment';
 
-import { hasAttachments } from '../../attachments';
+import { hasAttachments } from '../../attachments/attachments';
 import { getAttachments } from 'commons/print-conversation/get-attachments';
 import { getParticipantHeader } from 'commons/print-conversation/get-participant-header';
 import { getSubject } from 'commons/print-conversation/get-subject';

@@ -8,7 +8,7 @@ import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
-import { retrieveAttachmentsFromMail } from '../attachments';
+import { retrieveAttachmentsFromMail } from '../attachments/attachments';
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';

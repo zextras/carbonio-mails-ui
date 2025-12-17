@@ -20,7 +20,7 @@ import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbon
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
-import { hasAttachments } from '../../../../attachments';
+import { hasAttachments } from '../../../../attachments/attachments';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';

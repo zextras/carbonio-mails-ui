@@ -9,7 +9,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { retrieveAttachmentsFromMail } from '../../../../../attachments';
+import { retrieveAttachmentsFromMail } from '../../../../../attachments/attachments';
 import { MailMessageRenderer } from 'commons/mail-message-renderer/mail-message-renderer';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import SharedInviteReply from 'integrations/shared-invite-reply/index';

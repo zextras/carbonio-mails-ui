@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { retrieveAttachmentsFromMail } from 'attachments';
+import { retrieveAttachmentsFromMail } from 'attachments/attachments';
 import { calcColor } from 'commons/utilities';
 import { MailMessage, SavedAttachment, UnsavedAttachment } from 'types/index.d';
 

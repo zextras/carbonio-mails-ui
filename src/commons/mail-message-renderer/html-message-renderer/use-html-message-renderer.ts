@@ -23,7 +23,7 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from '../../utils';
-import { retrieveAttachmentsFromMail } from 'attachments';
+import { retrieveAttachmentsFromMail } from 'attachments/attachments';
 
 export type ExternalImageState = {
 	showExternalImages: boolean;

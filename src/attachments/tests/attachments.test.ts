@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { generateMessage } from '../../__test__/generators/generateMessage';
-import { retrieveAttachmentsFromMail } from '../index';
+import { retrieveAttachmentsFromMail } from '../attachments';
 
 describe('Retrieve attachments', () => {
 	describe('Inline image attachments', () => {
