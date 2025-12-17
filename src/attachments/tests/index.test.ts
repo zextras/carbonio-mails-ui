@@ -1098,7 +1098,8 @@ describe('Retrieve attachments', () => {
 			expect(attachments.blockAttachments[0].contentType).toBe('message/rfc822');
 			expect(attachments.blockAttachments?.[0].filename).toBe('Original Email.eml');
 		});
-		it('(PEC) should treat part with content disposition inline, has html body, and no content ID as block atatchment', () => {
+		// TODO: double check this test, I think attachments inside an eml should not be returned
+		it('(PEC) should treat part with content disposition inline, has html body, and no content ID as block attachment', () => {
 			const soapMessage = generateMessage({
 				parts: [
 					{
@@ -1106,6 +1107,50 @@ describe('Retrieve attachments', () => {
 						name: '1.1',
 						body: true,
 						size: 0,
+						content: 'default text'
+					},
+					{
+						contentType: 'application/xml',
+						cd: 'inline',
+						name: '1',
+						filename: 'daticert.xml',
+						size: 10
+					},
+					{
+						contentType: 'message/rfc822',
+						cd: 'inline',
+						name: '1.1',
+						filename: 'postacert.eml',
+						size: 100,
+						parts: [
+							{
+								contentType: 'application/pdf',
+								cd: 'attachment',
+								name: '1.1',
+								filename: 'pdfname.pdf',
+								size: 100
+							}
+						]
+					}
+				]
+			});
+			const normalized = retrieveAttachmentsFromMail(soapMessage);
+
+			expect(normalized.inlineAttachments).toHaveLength(0);
+			expect(normalized.blockAttachments).toHaveLength(3);
+			expect(normalized.blockAttachments?.[0].filename).toBe('daticert.xml');
+			expect(normalized.blockAttachments?.[1].filename).toBe('postacert.eml');
+			expect(normalized.blockAttachments?.[2].filename).toBe('pdfname.pdf');
+		});
+
+		it('(PEC) should treat part with content disposition inline, NO html body, and no content ID as block attachment', () => {
+			const soapMessage = generateMessage({
+				parts: [
+					{
+						contentType: 'text/plain',
+						size: 0,
+						name: '1.1',
+						body: true,
 						content: 'default text'
 					},
 					{
@@ -1142,7 +1187,6 @@ describe('Retrieve attachments', () => {
 			expect(normalized.blockAttachments?.[1].filename).toBe('postacert.eml');
 			expect(normalized.blockAttachments?.[2].filename).toBe('pdfname.pdf');
 		});
-
 		it('should add default filename for text/html without filename', () => {
 			const soapMessage = generateMessage({
 				parts: [
