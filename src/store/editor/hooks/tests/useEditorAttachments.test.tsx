@@ -16,7 +16,7 @@ import {
 import { generateNewEditor, generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
-import { mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
+import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
 import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';
 import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
@@ -207,17 +207,18 @@ describe('useEditorAttachments', () => {
 			messageId: 'm1'
 		});
 	});
-	it('upload error sets aborted', () => {
-		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
-			o.onUploadError(new File([''], 'f'), 'u5', 'err');
-			return [{ file: new File([''], 'f'), uploadId: 'u5', abortController: {} }];
+	it('upload error sets aborted when upload fails', async () => {
+		const editor = generateNewMessageEditor();
+		useEditorsStore.getState().addEditor(editor.id, editor);
+		const uploadApiInterceptor = mockUploadApiError();
+
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
+		act(() => result.current.addStandardAttachments([new File([''], 'f')]));
+		expect(result.current.unsavedStandardAttachments).toHaveLength(1);
+		await waitFor(() => {
+			expect(uploadApiInterceptor.getCalledTimes()).toBe(1);
 		});
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-		result.current.addStandardAttachments([new File([''], 'f')]);
-		expect(setAttachmentUploadStatusMock).toHaveBeenCalledWith(editorId, 'u5', {
-			status: 'aborted',
-			abortReason: 'err'
-		});
+		expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('aborted');
 	});
 
 	it('upload progress sets running', () => {

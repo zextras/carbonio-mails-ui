@@ -5,7 +5,10 @@
  */
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	APIInterceptor,
+	createAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
 
 const createUploadResponse = (res: {
 	aid: string;
@@ -14,7 +17,7 @@ const createUploadResponse = (res: {
 }): string =>
 	`200,'null',[{"aid":"${res.aid}","ct":"${res.contentType}","filename":"${res.filename}","s":232278}]`;
 
-export const mockUploadApiSuccess = (file: File, attachmentId = '123'): void => {
+export const mockUploadApiSuccess = (file: File, attachmentId = '123'): APIInterceptor =>
 	createAPIInterceptor(
 		'post',
 		'/service/upload',
@@ -26,7 +29,8 @@ export const mockUploadApiSuccess = (file: File, attachmentId = '123'): void => 
 			})
 		)
 	);
-};
 export const mockUploadApiEmptyResponse = (): void => {
-	createAPIInterceptor('post', '/service/upload?fmt=extended,raw&lbfums', HttpResponse.text(''));
+	createAPIInterceptor('post', '/service/upload', HttpResponse.text(''));
 };
+export const mockUploadApiError = (): APIInterceptor =>
+	createAPIInterceptor('post', '/service/upload', HttpResponse.error());
