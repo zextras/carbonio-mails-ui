@@ -114,7 +114,7 @@ describe('useEditorAttachments', () => {
 		expect(res[0].filename).toBe('f');
 	});
 
-	it('addInlineAttachments with save complete', async () => {
+	it('addInlineAttachments should callback save complete with attachment to be added to editor', async () => {
 		const editor = generateNewEditor({
 			isRichText: true
 		});
@@ -123,23 +123,30 @@ describe('useEditorAttachments', () => {
 		const attachmentId = 'attachment123';
 		const pngImage = new File([''], 'f.png', { type: 'image/png' });
 		mockUploadApiSuccess(pngImage, attachmentId);
+		const messageId = '123';
+		const partName = '1.2';
 
-		createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>('SaveDraft', (request) => {
-			const messageResponse = generateCompleteMessageFromAPI();
-			const contentId = extractContentIdFromRequest(request.Body.SaveDraftRequest);
-			messageResponse.mp = [
-				{
-					part: '1.2',
-					ct: 'image/png',
-					filename: 'f.png',
-					cd: 'inline',
-					ci: `<${contentId}>`
-				}
-			];
-			return {
-				msg: [messageResponse]
-			};
-		});
+		const saveDraftRequestPromise = createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>(
+			'SaveDraft',
+			(request) => {
+				const messageResponse = generateCompleteMessageFromAPI({
+					id: messageId
+				});
+				const contentId = extractContentIdFromRequest(request.Body.SaveDraftRequest);
+				messageResponse.mp = [
+					{
+						part: partName,
+						ct: 'image/png',
+						filename: 'f.png',
+						cd: 'inline',
+						ci: `<${contentId}>`
+					}
+				];
+				return {
+					m: [messageResponse]
+				};
+			}
+		);
 
 		const { result } = renderHook(() => useEditorAttachments(editor.id));
 
@@ -149,8 +156,16 @@ describe('useEditorAttachments', () => {
 				onSaveComplete
 			});
 		});
+		const saveDraftRequest = await saveDraftRequestPromise;
+		const contentId = extractContentIdFromRequest(saveDraftRequest);
 		await waitFor(() => {
-			expect(onSaveComplete).toHaveBeenCalledWith([]);
+			expect(onSaveComplete).toHaveBeenCalledWith([
+				{
+					contentId,
+					cidUrl: `cid:${contentId}`,
+					downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
+				}
+			]);
 		});
 	});
 
