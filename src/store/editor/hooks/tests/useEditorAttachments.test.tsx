@@ -6,6 +6,9 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { UnsavedAttachment } from '../../../../types';
+import { generateNewMessageEditor } from '../../editor-generators';
+import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
@@ -14,68 +17,33 @@ import {
 	filterUnsavedAttachmentsByUploadId
 } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
-import { useEditorsStore } from 'store/editor/store';
 
-vi.mock('store/editor/store', () => ({ useEditorsStore: vi.fn() }));
-vi.mock('store/editor/hooks/editors', () => ({ getEditor: vi.fn() }));
-vi.mock('store/editor/editor-transformations', () => ({ composeCidUrlFromContentId: vi.fn() }));
-vi.mock('api/upload-attachments-api', () => ({ uploadAttachmentsApi: vi.fn() }));
-vi.mock('store/editor/hooks/commons', () => ({ computeAndUpdateEditorStatus: vi.fn() }));
-vi.mock('store/editor/hooks/save-draft', () => ({
-	useSaveDraftFromEditor: (): any => ({
-		debouncedSaveDraft: vi.fn((_id, opts?: any) => {
-			opts?.onComplete && opts.onComplete();
-		})
-	})
-}));
-vi.mock('helpers/attachments', () => ({ composeAttachmentDownloadUrl: vi.fn(() => 'url') }));
-vi.mock('store/editor/editor-utils', () => ({
-	filterUnsavedAttachmentsByUploadId: vi.fn(),
-	getSavedInlineAttachmentsByContentId: vi.fn()
-}));
-vi.mock('hooks/use-ui-utilities', () => ({
-	useUiUtilities: (): any => ({ createSnackbar: vi.fn() })
-}));
-vi.mock('@zextras/carbonio-shell-ui', () => ({
-	t: (_: string, o: any): string => `Upload failed for the file "${o.filename}"`
-}));
-
+const generateUnsavedAttachment = (): UnsavedAttachment => ({
+	contentType: 'image/png',
+	filename: 'test.png',
+	isInline: false,
+	size: 300
+});
 describe('useEditorAttachments', () => {
 	const editorId = 'e1';
-	const removeSavedAttachmentMock = vi.fn();
-	const removeUnsavedAttachmentMock = vi.fn();
-	const clearStandardAttachmentsMock = vi.fn();
-	const addUnsavedAttachmentsMock = vi.fn();
-	const setAttachmentUploadStatusMock = vi.fn();
-	const setAttachmentUploadCompletedMock = vi.fn();
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-		(useEditorsStore as unknown as Mock).mockImplementation((sel) =>
-			sel({
-				editors: {
-					[editorId]: {
-						unsavedAttachments: [{ uploadId: 'u1', isInline: false }],
-						savedAttachments: [{ partName: 'p1', isInline: false }]
-					}
-				},
-				removeSavedAttachment: removeSavedAttachmentMock,
-				removeUnsavedAttachment: removeUnsavedAttachmentMock,
-				clearStandardAttachments: clearStandardAttachmentsMock
-			})
-		);
-		(useEditorsStore as any).getState = (): any => ({
-			addUnsavedAttachments: addUnsavedAttachmentsMock,
-			setAttachmentUploadStatus: setAttachmentUploadStatusMock,
-			setAttachmentUploadCompleted: setAttachmentUploadCompletedMock,
-			removeSavedAttachment: removeSavedAttachmentMock
-		});
-	});
 
 	it('removeUnsavedAttachment', () => {
-		const { result } = renderHook(() => useEditorAttachments(editorId));
+		const editor = generateNewMessageEditor();
+		useEditorsStore.getState().addEditor(editor.id, editor);
+		const unsavedAttachment: UnsavedAttachment = {
+			contentType: 'image/png',
+			filename: 'test.png',
+			isInline: false,
+			size: 300,
+			uploadId: 'u1'
+		};
+		useEditorsStore.getState().addUnsavedAttachment(editor.id, unsavedAttachment);
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
+		expect(result.current.unsavedStandardAttachments).toHaveLength(1);
+
 		act(() => result.current.removeUnsavedAttachment('u1'));
-		expect(removeUnsavedAttachmentMock).toHaveBeenCalledWith(editorId, 'u1');
+
+		expect(result.current.unsavedStandardAttachments).toHaveLength(0);
 	});
 
 	it('removeSavedAttachment', () => {
