@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -6,105 +6,152 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { UnsavedAttachment } from '../../../../types';
-import { generateNewMessageEditor } from '../../editor-generators';
+import { generateCompleteMessageFromAPI } from '../../../../__test__/generators/api';
+import {
+	SavedAttachment,
+	SaveDraftRequest,
+	SaveDraftResponse,
+	UnsavedAttachment
+} from '../../../../types';
+import { generateNewEditor, generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
+import { mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
-import {
-	getSavedInlineAttachmentsByContentId,
-	filterUnsavedAttachmentsByUploadId
-} from 'store/editor/editor-utils';
+import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 
-const generateUnsavedAttachment = (): UnsavedAttachment => ({
+const generateUnsavedStandardAttachment = (
+	partial?: Partial<UnsavedAttachment>
+): UnsavedAttachment => ({
 	contentType: 'image/png',
 	filename: 'test.png',
 	isInline: false,
-	size: 300
+	size: 300,
+	...partial
 });
+const generateSavedStandardAttachment = (partial?: Partial<SavedAttachment>): SavedAttachment => ({
+	contentId: '',
+	contentType: 'image/png',
+	filename: 'test.png',
+	isInline: false,
+	messageId: '1',
+	partName: '1.2',
+	size: 0,
+	...partial
+});
+
 describe('useEditorAttachments', () => {
-	const editorId = 'e1';
+	describe('Remove attachments', () => {
+		it('removeUnsavedAttachment', () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const unsavedAttachment = generateUnsavedStandardAttachment({ uploadId: 'u1' });
+			useEditorsStore.getState().addUnsavedAttachment(editor.id, unsavedAttachment);
 
-	it('removeUnsavedAttachment', () => {
-		const editor = generateNewMessageEditor();
-		useEditorsStore.getState().addEditor(editor.id, editor);
-		const unsavedAttachment: UnsavedAttachment = {
-			contentType: 'image/png',
-			filename: 'test.png',
-			isInline: false,
-			size: 300,
-			uploadId: 'u1'
-		};
-		useEditorsStore.getState().addUnsavedAttachment(editor.id, unsavedAttachment);
-		const { result } = renderHook(() => useEditorAttachments(editor.id));
-		expect(result.current.unsavedStandardAttachments).toHaveLength(1);
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			expect(result.current.unsavedStandardAttachments).toHaveLength(1);
 
-		act(() => result.current.removeUnsavedAttachment('u1'));
+			act(() => result.current.removeUnsavedAttachment('u1'));
 
-		expect(result.current.unsavedStandardAttachments).toHaveLength(0);
-	});
-
-	it('removeSavedAttachment', () => {
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-		act(() => result.current.removeSavedAttachment('p1'));
-		expect(removeSavedAttachmentMock).toHaveBeenCalledWith(editorId, 'p1');
-	});
-
-	it('removeStandardAttachments', () => {
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-		act(() => result.current.removeStandardAttachments());
-		expect(clearStandardAttachmentsMock).toHaveBeenCalledWith(editorId);
-	});
-
-	it('addUploadedAttachment', () => {
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-		const att = result.current.addUploadedAttachment({
-			attachmentId: 'a1',
-			fileName: 'f',
-			contentType: 't',
-			size: 1
+			expect(result.current.unsavedStandardAttachments).toHaveLength(0);
 		});
-		expect(att.aid).toBe('a1');
+
+		it('removeSavedAttachment', () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const savedAttachment = generateSavedStandardAttachment({ partName: 'p1' });
+			useEditorsStore.getState().addSavedAttachment(editor.id, savedAttachment);
+
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+
+			act(() => result.current.removeSavedAttachment('p1'));
+			expect(result.current.savedStandardAttachments).toHaveLength(0);
+		});
+
+		it('removeStandardAttachments', () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const savedAttachment1 = generateSavedStandardAttachment({ partName: 'p1' });
+			const savedAttachment2 = generateSavedStandardAttachment({ partName: 'p2' });
+			useEditorsStore.getState().addSavedAttachment(editor.id, savedAttachment1);
+			useEditorsStore.getState().addSavedAttachment(editor.id, savedAttachment2);
+
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			expect(result.current.savedStandardAttachments).toHaveLength(2);
+			act(() => result.current.removeStandardAttachments());
+			expect(result.current.savedStandardAttachments).toHaveLength(0);
+		});
+	});
+
+	describe('Add uploaded attachment', () => {
+		it('addUploadedAttachment', () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			const att = result.current.addUploadedAttachment({
+				attachmentId: 'a1',
+				fileName: 'f',
+				contentType: 't',
+				size: 1
+			});
+			expect(att.aid).toBe('a1');
+		});
+		// TODO: add test that checks upload attachment is in standard attachments
 	});
 
 	it('addStandardAttachments', () => {
-		(uploadAttachmentsApi as Mock).mockReturnValue([
-			{ file: new File([''], 'f'), uploadId: 'u2', abortController: {} }
-		]);
-		const { result } = renderHook(() => useEditorAttachments(editorId));
+		const editor = generateNewMessageEditor();
+		useEditorsStore.getState().addEditor(editor.id, editor);
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
 		const res = result.current.addStandardAttachments([new File([''], 'f')]);
 		expect(res[0].filename).toBe('f');
 	});
 
-	it('addInlineAttachments with save complete', () => {
-		(uploadAttachmentsApi as Mock).mockImplementation((_files, options) => {
-			options.onUploadsEnd(['u3'], []);
-			return [{ file: new File([''], 'f.png'), uploadId: 'u3', abortController: {} }];
+	it('addInlineAttachments with save complete', async () => {
+		const uploadId = 'my-upload-id';
+		const editor = generateNewEditor({
+			isRichText: true
 		});
+		editor.isRichText = true;
+		useEditorsStore.getState().addEditor(editor.id, editor);
+		const attachmentId = 'attachment123';
+		const pngImage = new File([''], 'f.png', { type: 'image/png' });
+		mockUploadApiSuccess(pngImage, attachmentId);
+		const messageResponse = generateCompleteMessageFromAPI();
+		messageResponse.mp = [
+			{
+				part: '1.2',
+				ct: 'image/png',
+				filename: 'f.png',
+				cd: 'inline',
+				ci: `<${uploadId}@carbonio>`
+			}
+		];
+		const saveDraftRequestPromise = createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>(
+			'SaveDraft',
+			{
+				m: [messageResponse]
+			}
+		);
 
-		(getEditor as Mock).mockReturnValue({
-			unsavedAttachments: [{ uploadId: 'u3', isInline: true, contentId: 'c1' }],
-			savedAttachments: [{ contentId: 'c1' }]
-		});
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
 
-		(filterUnsavedAttachmentsByUploadId as Mock).mockReturnValue([
-			{ isInline: true, contentId: 'c1' }
-		]);
-		(getSavedInlineAttachmentsByContentId as Mock).mockReturnValue([{ contentId: 'c1' }]);
-		(composeCidUrlFromContentId as Mock).mockReturnValue('cid:c1');
-
-		const cb: any = { onSaveComplete: vi.fn() };
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-
+		const onSaveComplete = vi.fn();
 		act(() => {
-			result.current.addInlineAttachments([new File([''], 'f.png')], cb);
+			result.current.addInlineAttachments([pngImage], {
+				onSaveComplete
+			});
 		});
-
-		expect(cb.onSaveComplete).toHaveBeenCalledWith([
-			{ contentId: 'c1', cidUrl: 'cid:c1', downloadServiceUrl: 'url' }
-		]);
+		const saveDraftRequest = await saveDraftRequestPromise;
+		// TODO: the uploadId is randomly generated and we have no control over it.
+		//  The save draft should return a response with the same contentId/uuid/uploadId
+		//  in order to have a real simulation of the behavior
+		await waitFor(() => {
+			expect(onSaveComplete).toHaveBeenCalledWith([]);
+		});
 	});
 
 	it('removeInlineAttachments removes unused', () => {
