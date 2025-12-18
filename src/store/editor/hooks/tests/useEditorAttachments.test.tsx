@@ -1,5 +1,4 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -18,8 +17,6 @@ import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
 import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
 import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
-import { uploadAttachmentsApi } from 'api/upload-attachments-api';
-import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 
 const extractContentIdFromRequest = (request: SaveDraftRequest): string | undefined => {
@@ -254,20 +251,12 @@ describe('useEditorAttachments', () => {
 		expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('completed');
 	});
 
-	it('uploads end calls callback', () => {
-		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
-			o.onUploadsEnd(['u8'], []);
-			return [{ file: new File([''], 'f'), uploadId: 'u8', abortController: {} }];
-		});
-		(getEditor as Mock).mockReturnValue({
-			unsavedAttachments: [{ uploadId: 'u8', isInline: false }],
-			savedAttachments: []
-		});
-		(filterUnsavedAttachmentsByUploadId as Mock).mockReturnValue([
-			{ isInline: false, contentId: 'cidx' }
-		]);
+	it('when all uploads end callback is called with uploaded ids', () => {
+		const editor = generateNewMessageEditor();
+		useEditorsStore.getState().addEditor(editor.id, editor);
+
 		const cb: any = { onUploadsEnd: vi.fn() };
-		const { result } = renderHook(() => useEditorAttachments(editorId));
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
 		result.current.addStandardAttachments([new File([''], 'f')], cb);
 		expect(cb.onUploadsEnd).toHaveBeenCalledWith(['u8'], []);
 	});
