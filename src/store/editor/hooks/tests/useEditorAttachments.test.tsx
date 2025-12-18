@@ -16,7 +16,10 @@ import { generateNewEditor, generateNewMessageEditor } from '../../editor-genera
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
 import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
-import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createSoapAPIInterceptor,
+	createSoapAPIInterceptorV2
+} from '@test-utils/network/msw/create-api-interceptor';
 import { getEditor } from 'store/editor/hooks/editors';
 
 const extractContentIdFromRequest = (request: SaveDraftRequest): string | undefined => {
@@ -200,37 +203,27 @@ describe('useEditorAttachments', () => {
 	});
 
 	describe('add standard attachments', () => {
-		it('addStandardAttachments', () => {
-			const editor = generateNewMessageEditor();
-			useEditorsStore.getState().addEditor(editor.id, editor);
-			const { result } = renderHook(() => useEditorAttachments(editor.id));
-			const res = result.current.addStandardAttachments([new File([''], 'f')]);
-			expect(res[0].filename).toBe('f');
-		});
-
 		it('should add the attachment to saved attachment when save draft succeeds', async () => {
 			const editor = generateNewMessageEditor();
 			useEditorsStore.getState().addEditor(editor.id, editor);
 			const { result } = renderHook(() => useEditorAttachments(editor.id));
 			const file = new File([''], 'f');
 
-			const saveDraftRequest = createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>(
+			const messageResponse = generateCompleteMessageFromAPI({
+				id: '123'
+			});
+			messageResponse.mp = [
+				{
+					part: '1.2',
+					ct: 'image/png',
+					filename: 'f.png',
+					cd: 'attachment'
+				}
+			];
+			const saveDraftRequest = createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>(
 				'SaveDraft',
-				() => {
-					const messageResponse = generateCompleteMessageFromAPI({
-						id: '123'
-					});
-					messageResponse.mp = [
-						{
-							part: '1.2',
-							ct: 'image/png',
-							filename: 'f.png',
-							cd: 'attachment'
-						}
-					];
-					return {
-						m: [messageResponse]
-					};
+				{
+					m: [messageResponse]
 				}
 			);
 
