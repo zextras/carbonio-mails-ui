@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { DefaultBodyType, http, HttpResponse, StrictRequest } from 'msw';
+import { DefaultBodyType, delay, http, HttpResponse, StrictRequest } from 'msw';
 
 import { getSetupServer } from '../../../vitest-setup';
 
@@ -55,7 +55,8 @@ export type APIInterceptor = {
 export const createAPIInterceptor = (
 	method: 'get' | 'post',
 	url: string,
-	response: HttpResponse<DefaultBodyType>
+	response: HttpResponse<DefaultBodyType>,
+	delayTime = 0
 ): APIInterceptor => {
 	let calledTimes = 0;
 	const requests: Array<StrictRequest<DefaultBodyType>> = [];
@@ -64,6 +65,10 @@ export const createAPIInterceptor = (
 		http[method](url, async ({ request }) => {
 			calledTimes += 1;
 			requests.push(request);
+
+			if (delayTime > 0) {
+				await delay(delayTime);
+			}
 			return response;
 		})
 	);

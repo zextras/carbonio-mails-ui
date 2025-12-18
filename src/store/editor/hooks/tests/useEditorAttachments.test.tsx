@@ -15,7 +15,11 @@ import {
 import { generateNewEditor, generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
-import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
+import {
+	mockSlowUploadApiSuccess,
+	mockUploadApiError,
+	mockUploadApiSuccess
+} from '@test-utils/api/upload-file-api-mocks';
 import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
 import { getEditor } from 'store/editor/hooks/editors';
 
@@ -103,29 +107,23 @@ describe('useEditorAttachments', () => {
 		// TODO: add test that checks upload attachment is in standard attachments
 	});
 
-	it('addStandardAttachments', () => {
-		const editor = generateNewMessageEditor();
-		useEditorsStore.getState().addEditor(editor.id, editor);
-		const { result } = renderHook(() => useEditorAttachments(editor.id));
-		const res = result.current.addStandardAttachments([new File([''], 'f')]);
-		expect(res[0].filename).toBe('f');
-	});
+	describe('Add inline attachments', () => {
+		it('addInlineAttachments should callback save complete with attachment to be added to editor', async () => {
+			const editor = generateNewEditor({
+				isRichText: true
+			});
+			editor.isRichText = true;
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const attachmentId = 'attachment123';
+			const pngImage = new File([''], 'f.png', { type: 'image/png' });
+			mockUploadApiSuccess(pngImage, attachmentId);
+			const messageId = '123';
+			const partName = '1.2';
 
-	it('addInlineAttachments should callback save complete with attachment to be added to editor', async () => {
-		const editor = generateNewEditor({
-			isRichText: true
-		});
-		editor.isRichText = true;
-		useEditorsStore.getState().addEditor(editor.id, editor);
-		const attachmentId = 'attachment123';
-		const pngImage = new File([''], 'f.png', { type: 'image/png' });
-		mockUploadApiSuccess(pngImage, attachmentId);
-		const messageId = '123';
-		const partName = '1.2';
-
-		const saveDraftRequestPromise = createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>(
-			'SaveDraft',
-			(request) => {
+			const saveDraftRequestPromise = createSoapAPIInterceptorV2<
+				SaveDraftRequest,
+				SaveDraftResponse
+			>('SaveDraft', (request) => {
 				const messageResponse = generateCompleteMessageFromAPI({
 					id: messageId
 				});
@@ -142,34 +140,58 @@ describe('useEditorAttachments', () => {
 				return {
 					m: [messageResponse]
 				};
-			}
-		);
+			});
 
-		const { result } = renderHook(() => useEditorAttachments(editor.id));
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
 
-		const onSaveComplete = vi.fn();
-		act(() => {
-			result.current.addInlineAttachments([pngImage], {
-				onSaveComplete
+			const onSaveComplete = vi.fn();
+			act(() => {
+				result.current.addInlineAttachments([pngImage], {
+					onSaveComplete
+				});
+			});
+			const saveDraftRequest = await saveDraftRequestPromise;
+			const contentId = extractContentIdFromRequest(saveDraftRequest);
+			await waitFor(() => {
+				expect(onSaveComplete).toHaveBeenCalledWith([
+					{
+						contentId,
+						cidUrl: `cid:${contentId}`,
+						downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
+					}
+				]);
 			});
 		});
-		const saveDraftRequest = await saveDraftRequestPromise;
-		const contentId = extractContentIdFromRequest(saveDraftRequest);
-		await waitFor(() => {
-			expect(onSaveComplete).toHaveBeenCalledWith([
-				{
-					contentId,
-					cidUrl: `cid:${contentId}`,
-					downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
-				}
-			]);
-		});
-	});
 
-	it('keepOnlyInlineAttachments removes unused ones', async () => {
-		const editor = generateNewMessageEditor();
-		editor.savedAttachments = [
-			{
+		it('keep only inlineAttachments removes unused ones', async () => {
+			const editor = generateNewMessageEditor();
+			editor.savedAttachments = [
+				{
+					isInline: true,
+					contentId: 'c1',
+					partName: 'p1',
+					filename: 'firstimage.png',
+					contentType: 'image/png',
+					size: 10,
+					messageId: 'm1'
+				},
+				{
+					isInline: true,
+					contentId: 'c2',
+					partName: 'p2',
+					filename: 'secondimage.jpeg',
+					contentType: 'image/jpeg',
+					size: 10,
+					messageId: 'm1'
+				}
+			];
+			useEditorsStore.getState().addEditor(editor.id, editor);
+
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			result.current.keepOnlyInlineAttachments(['cid:c1']);
+			const updatedEditor = getEditor({ id: editor.id });
+			expect(updatedEditor?.savedAttachments).toHaveLength(1);
+			expect(updatedEditor?.savedAttachments[0]).toEqual({
 				isInline: true,
 				contentId: 'c1',
 				partName: 'p1',
@@ -177,31 +199,63 @@ describe('useEditorAttachments', () => {
 				contentType: 'image/png',
 				size: 10,
 				messageId: 'm1'
-			},
-			{
-				isInline: true,
-				contentId: 'c2',
-				partName: 'p2',
-				filename: 'secondimage.jpeg',
-				contentType: 'image/jpeg',
-				size: 10,
-				messageId: 'm1'
-			}
-		];
-		useEditorsStore.getState().addEditor(editor.id, editor);
+			});
+		});
+	});
 
-		const { result } = renderHook(() => useEditorAttachments(editor.id));
-		result.current.keepOnlyInlineAttachments(['cid:c1']);
-		const updatedEditor = getEditor({ id: editor.id });
-		expect(updatedEditor?.savedAttachments).toHaveLength(1);
-		expect(updatedEditor?.savedAttachments[0]).toEqual({
-			isInline: true,
-			contentId: 'c1',
-			partName: 'p1',
-			filename: 'firstimage.png',
-			contentType: 'image/png',
-			size: 10,
-			messageId: 'm1'
+	describe('add standard attachments', () => {
+		it('addStandardAttachments', () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			const res = result.current.addStandardAttachments([new File([''], 'f')]);
+			expect(res[0].filename).toBe('f');
+		});
+
+		it('should add the attachment to saved attachment when save draft succeeds', async () => {
+			const editor = generateNewMessageEditor();
+			useEditorsStore.getState().addEditor(editor.id, editor);
+			const { result } = renderHook(() => useEditorAttachments(editor.id));
+			const file = new File([''], 'f');
+
+			const saveDraftRequest = createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>(
+				'SaveDraft',
+				() => {
+					const messageResponse = generateCompleteMessageFromAPI({
+						id: '123'
+					});
+					messageResponse.mp = [
+						{
+							part: '1.2',
+							ct: 'image/png',
+							filename: 'f.png',
+							cd: 'attachment'
+						}
+					];
+					return {
+						m: [messageResponse]
+					};
+				}
+			);
+
+			mockUploadApiSuccess(file, 'aid:123');
+			result.current.addStandardAttachments([file]);
+
+			await saveDraftRequest;
+
+			await waitFor(() => {
+				expect(result.current.savedStandardAttachments).toHaveLength(1);
+			});
+
+			expect(result.current.savedStandardAttachments[0]).toEqual({
+				contentId: undefined,
+				contentType: 'image/png',
+				filename: 'f.png',
+				isInline: false,
+				messageId: '123',
+				partName: '1.2',
+				size: 0
+			});
 		});
 	});
 
@@ -219,19 +273,18 @@ describe('useEditorAttachments', () => {
 			expect(result.current.unsavedStandardAttachments).toHaveLength(1);
 			expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('aborted');
 		});
-		// FIXME: running status disappears immediately, api response is too fast
-		it.skip('upload progress sets running when upload starts', async () => {
+
+		it('upload progress sets running when upload starts', async () => {
 			const editor = generateNewMessageEditor();
 			useEditorsStore.getState().addEditor(editor.id, editor);
+
 			const { result } = renderHook(() => useEditorAttachments(editor.id));
 			const file = new File([''], 'f');
-			const uploadApiInterceptor = mockUploadApiSuccess(file, 'aid:123');
+			mockSlowUploadApiSuccess(file, 'aid:123');
 			result.current.addStandardAttachments([file]);
+
 			await waitFor(() => {
-				expect(uploadApiInterceptor.getCalledTimes()).toBe(1);
-			});
-			await waitFor(() => {
-				expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('running');
+				expect(result.current.unsavedStandardAttachments).toHaveLength(1);
 			});
 			expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('running');
 		});
@@ -251,14 +304,35 @@ describe('useEditorAttachments', () => {
 		expect(result.current.unsavedStandardAttachments[0].uploadStatus?.status).toBe('completed');
 	});
 
-	it('when all uploads end callback is called with uploaded ids', () => {
+	it('when all uploads end callback and api succeeds is called with uploaded ids', async () => {
 		const editor = generateNewMessageEditor();
 		useEditorsStore.getState().addEditor(editor.id, editor);
 
+		const file = new File([''], 'f');
+		mockUploadApiSuccess(file, 'attachmentId123');
 		const cb: any = { onUploadsEnd: vi.fn() };
 		const { result } = renderHook(() => useEditorAttachments(editor.id));
-		result.current.addStandardAttachments([new File([''], 'f')], cb);
-		expect(cb.onUploadsEnd).toHaveBeenCalledWith(['u8'], []);
+		result.current.addStandardAttachments([file], cb);
+
+		await waitFor(() => {
+			// we cannot check for exact uploaded ids due to contentId generation during upload throught uuid
+			expect(cb.onUploadsEnd).toHaveBeenCalledWith([expect.anything()], []);
+		});
+	});
+
+	it('when all uploads end callback and api fail is called with uploaded ids', async () => {
+		const editor = generateNewMessageEditor();
+		useEditorsStore.getState().addEditor(editor.id, editor);
+
+		const file = new File([''], 'f');
+		mockUploadApiError();
+		const cb: any = { onUploadsEnd: vi.fn() };
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
+		result.current.addStandardAttachments([file], cb);
+
+		await waitFor(() => {
+			expect(cb.onUploadsEnd).toHaveBeenCalledWith([], [expect.anything()]);
+		});
 	});
 
 	describe('has attachments', () => {

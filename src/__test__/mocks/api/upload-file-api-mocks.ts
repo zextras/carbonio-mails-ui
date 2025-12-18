@@ -29,6 +29,25 @@ export const mockUploadApiSuccess = (file: File, attachmentId = '123'): APIInter
 			})
 		)
 	);
+
+export const mockSlowUploadApiSuccess = (
+	file: File,
+	attachmentId = '123',
+	delayTime = 10000
+): APIInterceptor =>
+	createAPIInterceptor(
+		'post',
+		'/service/upload',
+		HttpResponse.text(
+			createUploadResponse({
+				aid: attachmentId,
+				filename: file.name,
+				contentType: file.type
+			})
+		),
+		delayTime
+	);
+
 export const mockUploadApiEmptyResponse = (): void => {
 	createAPIInterceptor('post', '/service/upload', HttpResponse.text(''));
 };
