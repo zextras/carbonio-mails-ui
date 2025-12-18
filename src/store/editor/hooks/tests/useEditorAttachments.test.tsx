@@ -103,7 +103,6 @@ describe('useEditorAttachments', () => {
 			});
 			expect(att.aid).toBe('a1');
 		});
-		// TODO: add test that checks upload attachment is in standard attachments
 	});
 
 	describe('Add inline attachments', () => {
@@ -111,7 +110,6 @@ describe('useEditorAttachments', () => {
 			const editor = generateNewEditor({
 				isRichText: true
 			});
-			editor.isRichText = true;
 			useEditorsStore.getState().addEditor(editor.id, editor);
 			const attachmentId = 'attachment123';
 			const pngImage = new File([''], 'f.png', { type: 'image/png' });
