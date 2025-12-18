@@ -60,7 +60,7 @@ export const RichTextEditorContainer = ({
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments, removeInlineAttachments } = useEditorAttachments(editorId);
+	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -97,9 +97,9 @@ export const RichTextEditorContainer = ({
 		(html: string) => {
 			if (!composerRef.current) return;
 			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: html });
-			removeInlineAttachments(usedCids);
+			keepOnlyInlineAttachments(usedCids);
 		},
-		[removeInlineAttachments]
+		[keepOnlyInlineAttachments]
 	);
 
 	const saveEditor = useCallback(() => {

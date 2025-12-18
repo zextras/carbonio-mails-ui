@@ -154,17 +154,45 @@ describe('useEditorAttachments', () => {
 		});
 	});
 
-	it('removeInlineAttachments removes unused', () => {
-		(getEditor as Mock).mockReturnValue({
-			savedAttachments: [
-				{ isInline: true, contentId: 'c1', partName: 'p1' },
-				{ isInline: true, contentId: 'c2', partName: 'p2' }
-			]
-		});
-		(composeCidUrlFromContentId as Mock).mockImplementation((c) => `cid:${c}`);
-		const { result } = renderHook(() => useEditorAttachments(editorId));
-		act(() => result.current.removeInlineAttachments(['cid:c1']));
-		expect(removeSavedAttachmentMock).toHaveBeenCalledWith(editorId, 'p2');
+	it('keepOnlyInlineAttachments removes unused ones', async () => {
+		const editor = generateNewMessageEditor();
+		editor.savedAttachments = [
+			{
+				isInline: true,
+				contentId: 'c1',
+				partName: 'p1',
+				filename: 'firstimage.png',
+				contentType: 'image/png',
+				size: 10,
+				messageId: 'm1'
+			},
+			{
+				isInline: true,
+				contentId: 'c2',
+				partName: 'p2',
+				filename: 'secondimage.jpeg',
+				contentType: 'image/jpeg',
+				size: 10,
+				messageId: 'm1'
+			}
+		];
+		useEditorsStore.getState().addEditor(editor.id, editor);
+
+		// (composeCidUrlFromContentId as Mock).mockImplementation((c) => `cid:${c}`);
+		const { result } = renderHook(() => useEditorAttachments(editor.id));
+		await result.current.keepOnlyInlineAttachments(['cid:c1']);
+		const updatedEditor = getEditor({ id: editor.id });
+		expect(updatedEditor?.savedAttachments).toBe([
+			{
+				isInline: true,
+				contentId: 'c1',
+				partName: 'p1',
+				filename: 'firstimage.png',
+				contentType: 'image/png',
+				size: 10,
+				messageId: 'm1'
+			}
+		]);
 	});
 	it('upload error sets aborted', () => {
 		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
