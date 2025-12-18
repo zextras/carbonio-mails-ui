@@ -63,7 +63,7 @@ const labels = {
 /**
  *
  */
-// TODO: this is a plain text editor and it is not clear, cleanup the generators or rename them
+// FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
 export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
