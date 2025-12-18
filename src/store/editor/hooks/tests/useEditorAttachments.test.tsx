@@ -15,11 +15,7 @@ import {
 import { generateNewEditor, generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
-import {
-	mockSlowUploadApiSuccess,
-	mockUploadApiError,
-	mockUploadApiSuccess
-} from '@test-utils/api/upload-file-api-mocks';
+import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
 import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
 import { getEditor } from 'store/editor/hooks/editors';
 
@@ -280,7 +276,7 @@ describe('useEditorAttachments', () => {
 
 			const { result } = renderHook(() => useEditorAttachments(editor.id));
 			const file = new File([''], 'f');
-			mockSlowUploadApiSuccess(file, 'aid:123');
+			mockUploadApiSuccess(file, 'aid:123', 1000);
 			result.current.addStandardAttachments([file]);
 
 			await waitFor(() => {

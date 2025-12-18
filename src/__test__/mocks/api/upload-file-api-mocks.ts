@@ -17,23 +17,10 @@ const createUploadResponse = (res: {
 }): string =>
 	`200,'null',[{"aid":"${res.aid}","ct":"${res.contentType}","filename":"${res.filename}","s":232278}]`;
 
-export const mockUploadApiSuccess = (file: File, attachmentId = '123'): APIInterceptor =>
-	createAPIInterceptor(
-		'post',
-		'/service/upload',
-		HttpResponse.text(
-			createUploadResponse({
-				aid: attachmentId,
-				filename: file.name,
-				contentType: file.type
-			})
-		)
-	);
-
-export const mockSlowUploadApiSuccess = (
+export const mockUploadApiSuccess = (
 	file: File,
 	attachmentId = '123',
-	delayTime = 10000
+	delayTime = 0
 ): APIInterceptor =>
 	createAPIInterceptor(
 		'post',
