@@ -73,3 +73,38 @@ export const createAPIInterceptor = (
 		getCalledTimes: () => calledTimes
 	};
 };
+
+export const createSoapAPIInterceptorV2 = <RequestParamsType, ResponseType = never>(
+	apiAction: string,
+	responseHandler: (request: HandlerRequest<RequestParamsType>) => ResponseType
+): Promise<RequestParamsType> =>
+	new Promise<RequestParamsType>((resolve, reject) => {
+		getSetupServer().use(
+			http.post<never, HandlerRequest<RequestParamsType>>(
+				`/service/soap/${apiAction}Request`,
+				async ({ request }) => {
+					if (!request) {
+						reject(new Error('Empty request'));
+						return HttpResponse.json(
+							{},
+							{
+								status: 500,
+								statusText: 'Empty request'
+							}
+						);
+					}
+
+					const reqActionParamWrapper = `${apiAction}Request`;
+					const requestContent = await request.json();
+					const params = requestContent?.Body?.[reqActionParamWrapper];
+					resolve(params);
+
+					return HttpResponse.json({
+						Body: {
+							[`${apiAction}Response`]: responseHandler(requestContent) || {}
+						}
+					});
+				}
+			)
+		);
+	});

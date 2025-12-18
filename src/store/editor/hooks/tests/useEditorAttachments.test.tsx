@@ -17,12 +17,16 @@ import { generateNewEditor, generateNewMessageEditor } from '../../editor-genera
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
 import { mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptorV2 } from '@test-utils/network/msw/create-api-interceptor';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';
-import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
 import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 
+const extractContentIdFromRequest = (request: SaveDraftRequest): string | undefined => {
+	// Magic, trust me
+	const match = JSON.stringify(request.m).match(/"ci":\s*"([^"]+)"/);
+	return match?.[1];
+};
 const generateUnsavedStandardAttachment = (
 	partial?: Partial<UnsavedAttachment>
 ): UnsavedAttachment => ({
@@ -111,7 +115,6 @@ describe('useEditorAttachments', () => {
 	});
 
 	it('addInlineAttachments with save complete', async () => {
-		const uploadId = 'my-upload-id';
 		const editor = generateNewEditor({
 			isRichText: true
 		});
@@ -120,22 +123,23 @@ describe('useEditorAttachments', () => {
 		const attachmentId = 'attachment123';
 		const pngImage = new File([''], 'f.png', { type: 'image/png' });
 		mockUploadApiSuccess(pngImage, attachmentId);
-		const messageResponse = generateCompleteMessageFromAPI();
-		messageResponse.mp = [
-			{
-				part: '1.2',
-				ct: 'image/png',
-				filename: 'f.png',
-				cd: 'inline',
-				ci: `<${uploadId}@carbonio>`
-			}
-		];
-		const saveDraftRequestPromise = createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>(
-			'SaveDraft',
-			{
-				m: [messageResponse]
-			}
-		);
+
+		createSoapAPIInterceptorV2<SaveDraftRequest, SaveDraftResponse>('SaveDraft', (request) => {
+			const messageResponse = generateCompleteMessageFromAPI();
+			const contentId = extractContentIdFromRequest(request.Body.SaveDraftRequest);
+			messageResponse.mp = [
+				{
+					part: '1.2',
+					ct: 'image/png',
+					filename: 'f.png',
+					cd: 'inline',
+					ci: `<${contentId}>`
+				}
+			];
+			return {
+				msg: [messageResponse]
+			};
+		});
 
 		const { result } = renderHook(() => useEditorAttachments(editor.id));
 
@@ -145,10 +149,6 @@ describe('useEditorAttachments', () => {
 				onSaveComplete
 			});
 		});
-		const saveDraftRequest = await saveDraftRequestPromise;
-		// TODO: the uploadId is randomly generated and we have no control over it.
-		//  The save draft should return a response with the same contentId/uuid/uploadId
-		//  in order to have a real simulation of the behavior
 		await waitFor(() => {
 			expect(onSaveComplete).toHaveBeenCalledWith([]);
 		});
@@ -178,21 +178,19 @@ describe('useEditorAttachments', () => {
 		];
 		useEditorsStore.getState().addEditor(editor.id, editor);
 
-		// (composeCidUrlFromContentId as Mock).mockImplementation((c) => `cid:${c}`);
 		const { result } = renderHook(() => useEditorAttachments(editor.id));
-		await result.current.keepOnlyInlineAttachments(['cid:c1']);
+		result.current.keepOnlyInlineAttachments(['cid:c1']);
 		const updatedEditor = getEditor({ id: editor.id });
-		expect(updatedEditor?.savedAttachments).toBe([
-			{
-				isInline: true,
-				contentId: 'c1',
-				partName: 'p1',
-				filename: 'firstimage.png',
-				contentType: 'image/png',
-				size: 10,
-				messageId: 'm1'
-			}
-		]);
+		expect(updatedEditor?.savedAttachments).toHaveLength(1);
+		expect(updatedEditor?.savedAttachments[0]).toEqual({
+			isInline: true,
+			contentId: 'c1',
+			partName: 'p1',
+			filename: 'firstimage.png',
+			contentType: 'image/png',
+			size: 10,
+			messageId: 'm1'
+		});
 	});
 	it('upload error sets aborted', () => {
 		(uploadAttachmentsApi as Mock).mockImplementation((_f, o) => {
