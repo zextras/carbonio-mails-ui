@@ -35,6 +35,7 @@ function getDraftSaveDelay(): number {
 		autoSaveDraftSettings.replace('s', '');
 		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000, maximumDraftSaveDelay);
 	}
+	// FIXME: comparing minutes with 2 seconds will always result in 2 seconds to be the minimum, consider to remove this code if this is the case
 	if (autoSaveDraftSettings.includes('m')) {
 		autoSaveDraftSettings.replace('m', '');
 		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000 * 60, maximumDraftSaveDelay);

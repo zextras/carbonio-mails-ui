@@ -6,7 +6,6 @@
 
 import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
-import type { AccountSettings } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { HttpResponse } from 'msw';
 
 import { MailsEditorV2 } from '../../../../types';
@@ -19,6 +18,17 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorDraftSave, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 
+const setSaveDraftDelaySetting = (value: string): void => {
+	vi.spyOn(shell, 'getUserSettings').mockImplementation(
+		vi.fn(() => ({
+			attrs: {},
+			prefs: {
+				zimbraPrefAutoSaveDraftInterval: value
+			},
+			props: []
+		}))
+	);
+};
 const setupSaveDraftTest = (): { editor: MailsEditorV2 } => {
 	const editor = generateNewMessageEditor();
 	setupEditorStore({ editors: [editor] });
@@ -82,8 +92,7 @@ describe('useEditorDraftSave', () => {
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('debounces the previous save draft call when invoked again', async () => {
-			const editor = generateNewMessageEditor();
-			setupEditorStore({ editors: [editor] });
+			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
 			const { saveDraftApi } = setupSaveDraftApi();
 
@@ -99,23 +108,24 @@ describe('useEditorDraftSave', () => {
 
 	describe('Save draft delay based on settings', () => {
 		it('debounces after 1 seconds if save draft setting is 1 second (less than default)', async () => {
-			vi.spyOn(shell, 'getUserSettings').mockImplementation(
-				(): AccountSettings => ({
-					attrs: {},
-					prefs: {
-						zimbraPrefAutoSaveDraftInterval: '1s'
-					},
-					props: []
-				})
-			);
-			const editor = generateNewMessageEditor();
-			setupEditorStore({ editors: [editor] });
+			setSaveDraftDelaySetting('1s');
+			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
 			const { saveDraftApi } = setupSaveDraftApi();
 
 			act(() => hookResult.current.debouncedSaveDraft(editor.id));
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
+		});
+		it('debounces after 2 s if save draft setting is 3 s (more than default)', async () => {
+			setSaveDraftDelaySetting('3s');
+			const { editor } = setupSaveDraftTest();
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
+
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
 	});
 });
