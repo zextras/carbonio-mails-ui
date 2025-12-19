@@ -129,6 +129,7 @@ describe('useEditorDraftSave', () => {
 
 			act(() => hookResult.current.debouncedSaveDraft(editor.id));
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting is not set', async () => {
@@ -139,6 +140,7 @@ describe('useEditorDraftSave', () => {
 
 			act(() => hookResult.current.debouncedSaveDraft(editor.id));
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
 
@@ -160,6 +162,29 @@ describe('useEditorDraftSave', () => {
 
 			act(() => hookResult.current.debouncedSaveDraft(editor.id));
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
+		});
+		it('calls SaveDraft after 2s if save draft setting is 2m (minutes)', async () => {
+			setSaveDraftDelaySetting('2m');
+			const { editor } = setupSaveDraftTest();
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
+
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
+		});
+		it('calls SaveDraft after 2s if save draft setting has no unit and is not 0', async () => {
+			setSaveDraftDelaySetting('100');
+			const { editor } = setupSaveDraftTest();
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
+
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
 	});
