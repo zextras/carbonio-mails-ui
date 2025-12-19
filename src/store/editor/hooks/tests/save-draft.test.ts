@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { HttpResponse } from 'msw';
+
 import { setupHook } from '@test-setup';
-import { generateNewMessageEditor } from 'store/editor/editor-generators';
-import { useEditorDraftSave } from 'store/editor/hooks/save-draft';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { useEditorDraftSave, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {
@@ -32,4 +35,22 @@ describe('useEditorDraftSave', () => {
 	it.todo(
 		'call the saveDraft API function after 3 seconds if the saveDraft is invoked twice, with a 1 second delay between the 2 invocations'
 	);
+
+	it('debounced save draft calls the SaveDraft after 3 seconds', async () => {
+		const editor = generateNewMessageEditor();
+		setupEditorStore({ editors: [editor] });
+		const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+		const saveDraft = createAPIInterceptor(
+			'post',
+			'/service/SaveDraftRequest',
+			HttpResponse.json()
+		);
+
+		hookResult.current.debouncedSaveDraft(editor.id);
+		expect(saveDraft.getCalledTimes()).toBe(0);
+		vi.advanceTimersByTime(1000);
+		expect(saveDraft.getCalledTimes()).toBe(0);
+		vi.advanceTimersByTime(2000);
+		expect(saveDraft.getCalledTimes()).toBe(1);
+	});
 });
