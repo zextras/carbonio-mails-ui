@@ -7,16 +7,43 @@
 import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
+import { MailsEditorV2 } from '../../../../types';
 import { setupHook } from '@test-setup';
-import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	APIInterceptor,
+	createAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorDraftSave, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 
+const setupSaveDraftTest = (): { editor: MailsEditorV2 } => {
+	const editor = generateNewMessageEditor();
+	setupEditorStore({ editors: [editor] });
+	return {
+		editor
+	};
+};
+const setupSaveDraftApi = (): { saveDraftApi: APIInterceptor } => ({
+	saveDraftApi: createAPIInterceptor('post', '/service/soap/SaveDraftRequest', HttpResponse.json())
+});
+
+const expectedCallsAfterSeconds = async ({
+	seconds,
+	api,
+	calls
+}: {
+	seconds: number;
+	api: APIInterceptor;
+	calls: number;
+}): Promise<void> => {
+	await vi.advanceTimersByTimeAsync(seconds * 1000);
+	expect(api.getCalledTimes()).toBe(calls);
+};
+
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {
-		const editor = generateNewMessageEditor();
-		setupEditorStore({ editors: [editor] });
+		const { editor } = setupSaveDraftTest();
 		const { result: hookResult } = setupHook(useEditorDraftSave, {
 			initialProps: [editor.id]
 		});
@@ -29,30 +56,42 @@ describe('useEditorDraftSave', () => {
 		});
 	});
 
-	it.todo('call the saveDraft API function if the immediateSaveDraft is invoked');
+	describe('Immediate save draft', () => {
+		it('calls the SaveDraft immediately', async () => {
+			const { editor } = setupSaveDraftTest();
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
 
-	it.todo('call the saveDraft API function after 2 seconds if the saveDraft is invoked');
+			act(() => hookResult.current.immediateSaveDraft(editor.id));
+			// Well, "Almost!" immediately
+			await vi.advanceTimersByTimeAsync(100);
+			expect(saveDraftApi.getCalledTimes()).toBe(1);
+		});
+	});
+	describe('Debounced save draft', () => {
+		it('calls the SaveDraft after 2 seconds by default', async () => {
+			const { editor } = setupSaveDraftTest();
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
 
-	it.todo(
-		'call the saveDraft API function after 3 seconds if the saveDraft is invoked twice, with a 1 second delay between the 2 invocations'
-	);
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
+		});
+		it('debounces the previous save draft call when invoked again', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
 
-	it('debounced save draft calls the SaveDraft after 2 seconds by default', async () => {
-		vi.useFakeTimers();
-		const editor = generateNewMessageEditor();
-		setupEditorStore({ editors: [editor] });
-		const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
-		const saveDraft = createAPIInterceptor(
-			'post',
-			'/service/soap/SaveDraftRequest',
-			HttpResponse.json()
-		);
-
-		act(() => hookResult.current.debouncedSaveDraft(editor.id));
-		expect(saveDraft.getCalledTimes()).toBe(0);
-		await vi.advanceTimersByTimeAsync(1000);
-		expect(saveDraft.getCalledTimes()).toBe(0);
-		await vi.advanceTimersByTimeAsync(1000);
-		expect(saveDraft.getCalledTimes()).toBe(1);
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
+		});
 	});
 });
