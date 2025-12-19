@@ -7,7 +7,7 @@ import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 
 import { TIMEOUTS } from 'constants/index';
-import { EditorsStateTypeV2, UnsavedAttachment } from 'types/index.d';
+import { EditorsStateTypeV2 } from 'types/index.d';
 
 export const getUnsavedAttachmentIndex = (
 	state: EditorsStateTypeV2,
@@ -22,18 +22,6 @@ export const getUnsavedAttachmentIndex = (
 		uploadId
 	]);
 	return unsavedAttachmentIndex < 0 ? null : unsavedAttachmentIndex;
-};
-
-export const getUnsavedAttachment = (
-	state: EditorsStateTypeV2,
-	editorId: string,
-	uploadId: string
-): UnsavedAttachment | null => {
-	const index = getUnsavedAttachmentIndex(state, editorId, uploadId);
-	if (index === null) {
-		return null;
-	}
-	return state.editors[editorId].unsavedAttachments[index];
 };
 
 export function getDraftSaveDelay(): number {
