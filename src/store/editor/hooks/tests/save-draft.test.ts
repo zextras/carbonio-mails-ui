@@ -5,6 +5,8 @@
  */
 
 import { act } from '@testing-library/react';
+import * as shell from '@zextras/carbonio-shell-ui';
+import type { AccountSettings } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { HttpResponse } from 'msw';
 
 import { MailsEditorV2 } from '../../../../types';
@@ -91,6 +93,28 @@ describe('useEditorDraftSave', () => {
 			act(() => hookResult.current.debouncedSaveDraft(editor.id));
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
+		});
+	});
+
+	describe('Save draft delay based on settings', () => {
+		it('debounces after 1 seconds if save draft setting is 1 second (less than default)', async () => {
+			vi.spyOn(shell, 'getUserSettings').mockImplementation(
+				(): AccountSettings => ({
+					attrs: {},
+					prefs: {
+						zimbraPrefAutoSaveDraftInterval: '1s'
+					},
+					props: []
+				})
+			);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { saveDraftApi } = setupSaveDraftApi();
+
+			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 	});
