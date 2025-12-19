@@ -5,16 +5,17 @@
  */
 import { useCallback, useMemo } from 'react';
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { TIMEOUTS } from '../../../constants';
 import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
-import { getDraftSaveDelay } from 'store/editor/store-utils';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -24,6 +25,22 @@ export type SaveDraftOptions = {
 };
 
 export type SaveDraftFunction = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions) => void;
+function getDraftSaveDelay(): number {
+	const maximumDraftSaveDelay = TIMEOUTS.DRAFT_SAVE_DELAY;
+	const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval as string;
+	if (!autoSaveDraftSettings || autoSaveDraftSettings === '0') {
+		return TIMEOUTS.DRAFT_SAVE_DELAY;
+	}
+	if (autoSaveDraftSettings.includes('s')) {
+		autoSaveDraftSettings.replace('s', '');
+		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000, maximumDraftSaveDelay);
+	}
+	if (autoSaveDraftSettings.includes('m')) {
+		autoSaveDraftSettings.replace('m', '');
+		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000 * 60, maximumDraftSaveDelay);
+	}
+	return TIMEOUTS.DRAFT_SAVE_DELAY;
+}
 
 /**
  *
