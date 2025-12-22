@@ -60,7 +60,7 @@
 		"@vitest/browser": "^4.0.14",
 		"@vitest/browser-playwright": "^4.0.14",
 		"@vitest/coverage-v8": "^4.0.14",
-		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#e99cda51ad3a0dc1f775837c6e7971e8046eb4f2",
+		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#caf6938ade75f694e687c45c777a12ae51a5fa4c",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "2.2.0-devel.5",
 		"babel-plugin-transform-import-meta": "^2.2.0",
