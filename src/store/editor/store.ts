@@ -22,7 +22,7 @@ import {
 } from 'types/index.d';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
-export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
+export const useEditorsStore = create<EditorsStateTypeV2>()((set, get) => ({
 	editors: {},
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2): void => {
 		set(
@@ -369,5 +369,16 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 				}
 			})
 		);
+	},
+
+	// Iterate through editors to find one with matching draftId and return it. Return null if not found
+	getEditorByDraftId: (draftId: string): MailsEditorV2 | null => {
+		let foundEditor: MailsEditorV2 | null = null;
+		Object.values(get().editors).forEach((editor) => {
+			if (editor.did === draftId) {
+				foundEditor = editor;
+			}
+		});
+		return foundEditor;
 	}
 }));

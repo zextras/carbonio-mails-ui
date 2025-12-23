@@ -84,6 +84,7 @@ export type EditorsStateTypeV2 = {
 		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
 	) => void;
 	setTextProvider: (id: MailsEditorV2['id'], textProvider: EditorTextProvider) => void;
+	getEditorByDraftId: (draftId: string) => MailsEditorV2 | null;
 };
 
 export type MsgStateType = {
