@@ -4,13 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { act } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
-import { generateMessage } from '__test__/generators/generateMessage';
+
+const createModal = vi.fn();
+const closeModal = vi.fn();
+
+vi.mock('hooks/use-ui-utilities', () => ({
+	useUiUtilities: (): { createModal: typeof createModal; closeModal: typeof closeModal } => ({
+		createModal,
+		closeModal
+	})
+}));
 
 describe('useMsgEditDraft', () => {
 	const msg = generateMessage();
@@ -97,6 +108,73 @@ describe('useMsgEditDraft', () => {
 
 				functions.execute();
 
+				expect(addBoard).not.toHaveBeenCalled();
+			});
+
+			it('should open a warning modal if the message is scheduled', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, true, FOLDERS.DRAFTS]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(createModal).toHaveBeenCalledWith(
+					expect.objectContaining({
+						title: 'label.warning',
+						confirmLabel: 'action.edit_anyway',
+						onConfirm: expect.any(Function),
+						onClose: expect.any(Function),
+						showCloseIcon: true,
+						children: expect.anything()
+					})
+				);
+			});
+
+			it('should create a board when confirming the warning modal', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, true, FOLDERS.DRAFTS]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const modalCall = createModal.mock.calls[0][0];
+				modalCall.onConfirm();
+
+				expect(closeModal).toHaveBeenCalledWith(modalCall.id);
+				expect(addBoard).toHaveBeenCalledWith(
+					expect.objectContaining({
+						boardViewId: 'mails_editor_board_view',
+						context: expect.objectContaining({
+							originAction: 'editAsDraft',
+							originActionTargetId: msg.id
+						})
+					})
+				);
+			});
+
+			it('should close the modal when closing the warning modal', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, true, FOLDERS.DRAFTS]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const modalCall = createModal.mock.calls[0][0];
+				modalCall.onClose();
+
+				expect(closeModal).toHaveBeenCalledWith(modalCall.id);
 				expect(addBoard).not.toHaveBeenCalled();
 			});
 		});
