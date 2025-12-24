@@ -36,7 +36,7 @@ export const useMsgEditDraftFn = (
 						closeModal(warningModalId);
 						createEditBoard({
 							action: EditViewActions.EDIT_AS_DRAFT,
-							actionTargetId: `${messageId}`
+							actionTargetId: messageId
 						});
 					},
 					onClose: () => {
