@@ -8,11 +8,13 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { SoapFolderAction } from 'types/index.d';
 import { EmptyModal } from 'views/sidebar/empty-modal';
 
@@ -163,5 +165,33 @@ describe('empty-modal', () => {
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('empty');
 		expect(action.recursive).toBe(true);
+	});
+
+	test('should show an error snackbar when API returns a Fault', async () => {
+		const closeModal = vi.fn();
+
+		populateFoldersStore();
+		const folder = getFolder(FOLDERS.TRASH);
+		if (!folder) {
+			return;
+		}
+
+		const { user } = setupTest(
+			<EmptyModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
+
+		const emptyButton = screen.getByRole('button', {
+			name: /label\.empty/i
+		});
+
+		createSoapAPIInterceptor<{ action: SoapFolderAction }, ErrorSoapBodyResponse>(
+			'FolderAction',
+			buildSoapErrorResponseBody()
+		);
+
+		await act(() => user.click(emptyButton));
+
+		expect(await screen.findByText(/label\.error_try_again/i)).toBeInTheDocument();
 	});
 });
