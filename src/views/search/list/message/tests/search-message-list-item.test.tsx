@@ -8,6 +8,7 @@ import React, { act } from 'react';
 
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
@@ -17,12 +18,25 @@ import { populateMessagesInEmailStore } from '__test__/generators/generateMessag
 import { CONVACTIONS } from 'commons/utilities';
 import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
 vi.mock('helpers/external-tabs', () => ({
 	openMessageStandalonePreview: vi.fn(),
 	isFocusModeMailView: vi.fn().mockReturnValue(false)
 }));
+
+vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
+	createEditBoard: vi.fn()
+}));
+
+vi.mock('helpers/folders', async () => {
+	const actual = await vi.importActual('helpers/folders');
+	return {
+		...actual,
+		isDraft: vi.fn((folderId: string) => folderId === FOLDERS.DRAFTS)
+	};
+});
 
 describe('SearchMessageListItem', () => {
 	beforeEach(() => {
@@ -256,9 +270,9 @@ describe('SearchMessageListItem', () => {
 			});
 		});
 
-		it('should open preview in new tab when double clicked on a draft', async () => {
+		it('should open edit board when double clicked on a draft', async () => {
 			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '302', isDraft: true }]
+				messageGeneratorParams: [{ id: '302', isDraft: true, folderId: FOLDERS.DRAFTS }]
 			});
 
 			const { user } = setupTest(
@@ -279,9 +293,9 @@ describe('SearchMessageListItem', () => {
 			await user.dblClick(hoverContainer);
 
 			await waitFor(() => {
-				expect(openMessageStandalonePreview).toHaveBeenCalledWith({
-					folderId: messages[0].parent,
-					messageId: '302'
+				expect(createEditBoard).toHaveBeenCalledWith({
+					action: 'editAsDraft',
+					actionTargetId: '302'
 				});
 			});
 		});
