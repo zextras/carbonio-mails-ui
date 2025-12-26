@@ -54,8 +54,7 @@ describe('empty-modal', () => {
 		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		// Verify title with proper formatting
-		expect(screen.getByText(/label\.wipe/i)).toBeInTheDocument();
-		expect(screen.getByText(/folders\.inbox/i)).toBeInTheDocument();
+		expect(screen.getByText('label.wipe: folders.inbox')).toBeInTheDocument();
 
 		// Verify warning icon is present
 		expect(screen.getByTestId('icon: AlertTriangleOutline')).toBeInTheDocument();
@@ -67,7 +66,7 @@ describe('empty-modal', () => {
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
-		expect(dividers.length).toBeGreaterThan(0);
+		expect(dividers.length).toBe(2);
 
 		const wipeButton = screen.getByRole('button', {
 			name: /folder_panel\.modal\.wipe\.button/i
@@ -114,8 +113,7 @@ describe('empty-modal', () => {
 		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		// Verify title with proper formatting
-		expect(screen.getByText(/label\.empty/i)).toBeInTheDocument();
-		expect(screen.getByText(/folders\.trash/i)).toBeInTheDocument();
+		expect(screen.getByText('label.empty: folders.trash')).toBeInTheDocument();
 
 		// Verify error icon is present
 		expect(screen.getByTestId('icon: AlertTriangleOutline')).toBeInTheDocument();
@@ -127,7 +125,7 @@ describe('empty-modal', () => {
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
-		expect(dividers.length).toBeGreaterThan(0);
+		expect(dividers.length).toBe(2);
 
 		// Verify buttons
 		const emptyButton = screen.getByRole('button', {
