@@ -96,7 +96,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						{title}
 					</Text>
 				</Row>
-				<Button type={'outlined'} icon="CloseOutline" onClick={onClose} size="medium" />
+				<Button type="outlined" icon="CloseOutline" onClick={onClose} size="medium" />
 			</Container>
 			<Divider />
 			<Container padding={{ top: 'medium', bottom: 'large' }} crossAlignment="flex-start">
