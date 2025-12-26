@@ -66,13 +66,12 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 			: `${t('label.wipe', 'Wipe')}: ${folderName}`;
 	}, [isTrashFolder, folder.name, folder.id]);
 
-	const confirmLabel = useMemo(
-		() =>
-			isTrashFolder
-				? t('folder_panel.modal.empty.button', 'Empty Trash')
-				: t('folder_panel.modal.wipe.button', 'Wipe Folder'),
-		[isTrashFolder]
-	);
+	const confirmLabel = useMemo(() => {
+		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
+		return isTrashFolder
+			? `${t('folder_panel.modal.empty.button', 'Empty')} ${folderName}`
+			: t('folder_panel.modal.wipe.button', 'Wipe Folder');
+	}, [isTrashFolder, folder.name, folder.id]);
 
 	return (
 		<Container
@@ -105,14 +104,14 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						<Text overflow="break-word">
 							{t(
 								'folder_panel.modal.empty.body.message1',
-								'All items in Trash will be permanently deleted.'
+								'Do you want to empty the selected folder?'
 							)}
 						</Text>
 						<Padding top="medium" />
 						<Text overflow="break-word">
 							{t(
 								'folder_panel.modal.empty.body.message2',
-								'This includes emails, conversations, and attachments that were previously deleted.'
+								'If you empty it, all the related content will be deleted permanently.'
 							)}
 						</Text>
 						<Padding top="medium" />
@@ -125,14 +124,14 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						<Text overflow="break-word">
 							{t(
 								'folder_panel.modal.wipe.body.message1',
-								'All emails in this folder will be permanently deleted.'
+								'Do you want to wipe the selected folder?'
 							)}
 						</Text>
 						<Padding top="medium" />
 						<Text overflow="break-word">
 							{t(
 								'folder_panel.modal.wipe.body.message2',
-								'The emails will be removed immediately and will not be moved to Trash.'
+								'If you wipe it, all the related content will be deleted permanently.'
 							)}
 						</Text>
 						<Padding top="medium" />
