@@ -3,13 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { useSnackbar } from '@zextras/carbonio-design-system';
+import { useModal, useSnackbar, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import { DraftTrashedEvent } from '../../event-bus/events/draft-trashed';
+import { useEventPublish } from '../../event-bus/use-event-publish';
+import { useEditorsStore } from '../../store/editor';
 import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
@@ -81,13 +84,76 @@ export const useMsgMoveToTrashFn = ({
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 	const navigate = useNavigate();
+	const { createModal, closeModal } = useModal();
+	const publishBusEvent = useEventPublish();
+
+	const performPreDeleteChecks = useCallback(
+		(): Promise<boolean> =>
+			new Promise((resolve) => {
+				// Get all possible open editors for these messages (supposing they are drafts)
+				const editors = useEditorsStore.getState().getEditorsByDraftsId(ids);
+
+				// If there are no open editors, resolve immediately
+				if (!editors || editors.length === 0) {
+					resolve(true);
+				}
+
+				// If there is an open editor, show a confirmation dialog to the user
+				const modalId = 'confirm-delete-draft-modal';
+				createModal({
+					id: modalId,
+					title: t('label.delete_draft', 'Delete Draft'),
+					children: (
+						<Text overflow="break-word">
+							{t('messages.confirm_delete_draft', {
+								defaultValue_one:
+									'This draft is currently open in an editor. Are you sure you want to delete it?',
+								defaultValue_other:
+									'One or more of these drafts are currently open in editors. Are you sure you want to delete them?',
+								count: ids.length
+							})}
+						</Text>
+					),
+					onConfirm: () => {
+						editors.forEach((editor) => {
+							publishBusEvent(new DraftTrashedEvent(editor.did));
+						});
+						closeModal(modalId);
+						resolve(true);
+					},
+					showCloseIcon: true,
+					confirmLabel: t('label.delete', 'Delete'),
+					confirmColor: 'error',
+					onClose: () => {
+						closeModal(modalId);
+						resolve(false);
+					}
+				});
+			}),
+		[ids, createModal, t, closeModal, publishBusEvent]
+	);
 
 	const execute = useCallback((): void => {
-		if (canExecute()) {
-			msgActionEmailStoreAction({
-				operation: 'trash',
-				ids
-			}).then((res) => {
+		if (!canExecute()) {
+			return;
+		}
+
+		// Check if there is an open editor for this message (supposing it is a draft)
+		performPreDeleteChecks()
+			.then((canProceed) =>
+				canProceed
+					? msgActionEmailStoreAction({
+							operation: 'trash',
+							ids
+						})
+					: Promise.resolve(undefined)
+			)
+			.then((res) => {
+				// If user cancelled or pre-check failed
+				if (!res) {
+					return;
+				}
+
 				if ('Fault' in res) {
 					createSnackbar({
 						key: `trash-${ids}`,
@@ -116,9 +182,9 @@ export const useMsgMoveToTrashFn = ({
 					onActionClick: () => restoreMessage(ids, messageFolderId, shouldReplaceHistory)
 				});
 			});
-		}
 	}, [
 		canExecute,
+		performPreDeleteChecks,
 		ids,
 		onActionComplete,
 		inSearchModule,

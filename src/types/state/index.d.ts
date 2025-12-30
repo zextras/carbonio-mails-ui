@@ -85,6 +85,7 @@ export type EditorsStateTypeV2 = {
 	) => void;
 	setTextProvider: (id: MailsEditorV2['id'], textProvider: EditorTextProvider) => void;
 	getEditorByDraftId: (draftId: string) => MailsEditorV2 | null;
+	getEditorsByDraftsId: (draftsId: Array<string>) => Array<MailsEditorV2 & { did: string }>;
 };
 
 export type MsgStateType = {

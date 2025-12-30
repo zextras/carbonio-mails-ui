@@ -380,5 +380,16 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set, get) => ({
 			}
 		});
 		return foundEditor;
+	},
+
+	// Return all editors matching any of the provided draft IDs
+	getEditorsByDraftsId: (draftsId: Array<string>): Array<MailsEditorV2 & { did: string }> => {
+		const foundEditors: Array<MailsEditorV2 & { did: string }> = [];
+		Object.values(get().editors).forEach((editor) => {
+			if (editor.did && draftsId.includes(editor.did)) {
+				foundEditors.push(editor as MailsEditorV2 & { did: string });
+			}
+		});
+		return foundEditors;
 	}
 }));
