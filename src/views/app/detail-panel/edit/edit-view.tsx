@@ -39,6 +39,8 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
+import { DraftTrashedEvent } from '../../../../event-bus/events/draft-trashed';
+import { useEventSubscribe } from '../../../../event-bus/use-event-subscribe';
 import { isFulfilled } from '../../../../helpers/promises';
 import { useEditorIsDirty } from '../../../../store/editor/hooks/statuses';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -64,7 +66,8 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
-	useEditorRecipients
+	useEditorRecipients,
+	useEditorDid
 } from 'store/editor';
 import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
 import { isValidEmail } from 'views/search/parts/utils';
@@ -156,6 +159,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
+	const { did: draftId } = useEditorDid(editorId);
+	const subscribeBusEvent = useEventSubscribe();
 
 	const {
 		recipients: { to, cc, bcc }
@@ -170,6 +175,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
+	// Check for SMiME enablement
 	useEffect(() => {
 		if (!isCarbonioCE) {
 			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
@@ -193,6 +199,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[closeController]
 	);
+
+	// Subscribe to draft deletion events to close the edit view when the draft is deleted elsewhere
+	useEffect(() => {
+		subscribeBusEvent(DraftTrashedEvent.EventName, (details) => {
+			if (details.draftId === draftId) {
+				close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
+			}
+		});
+	}, [close, draftId, subscribeBusEvent]);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
