@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { useModal, useSnackbar, Text } from '@zextras/carbonio-design-system';
+import { useModal, useSnackbar, Text, Padding } from '@zextras/carbonio-design-system';
 import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -96,6 +96,7 @@ export const useMsgMoveToTrashFn = ({
 				// If there are no open editors, resolve immediately
 				if (!editors || editors.length === 0) {
 					resolve(true);
+					return;
 				}
 
 				// If there is an open editor, show a confirmation dialog to the user
@@ -104,15 +105,16 @@ export const useMsgMoveToTrashFn = ({
 					id: modalId,
 					title: t('label.delete_draft', 'Delete Draft'),
 					children: (
-						<Text overflow="break-word">
-							{t('messages.confirm_delete_draft', {
-								defaultValue_one:
-									'This draft is currently open in an editor. Are you sure you want to delete it?',
-								defaultValue_other:
-									'One or more of these drafts are currently open in editors. Are you sure you want to delete them?',
-								count: ids.length
-							})}
-						</Text>
+						<Padding vertical="1.25rem">
+							<Text overflow="break-word">
+								{t('messages.confirm_delete_draft', {
+									defaultValue_one: 'Are you sure you want to delete this draft?',
+									defaultValue_other:
+										'One or more of these drafts are currently open in editors. Are you sure you want to delete them?',
+									count: ids.length
+								})}
+							</Text>
+						</Padding>
 					),
 					onConfirm: () => {
 						editors.forEach((editor) => {

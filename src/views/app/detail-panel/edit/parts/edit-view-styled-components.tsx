@@ -45,9 +45,14 @@ export const TextArea = styled.textarea`
 `;
 
 export const EditorWrapper = styled.div`
+	background-color: brown;
 	width: 100%;
-	height: auto;
-	position: relative;
+
+	.tox.tox-tinymce {
+		width: 100%;
+		height: 100%;
+		border: none;
+	}
 
 	> .tox:not(.tox-tinymce-inline) {
 		width: 100%;
@@ -62,7 +67,7 @@ export const EditorWrapper = styled.div`
 		.tox-toolbar__primary {
 			background: none;
 			background-color: ${(props): string => props.theme.palette.gray4.regular};
-			border-radius: ${(props): string => props.theme.borderRadius};
+			// border-radius: ${(props): string => props.theme.borderRadius};
 		}
 	}
 	> .tox {

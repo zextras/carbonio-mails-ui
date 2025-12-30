@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useMemo, useRef } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
@@ -210,6 +209,7 @@ export const RichTextEditorContainer = ({
 		};
 	}
 
+	// Prevent the TinyMCE stick toolbar to remain fixed when the board is resized or moved
 	function setupResizeObserver(editor: Editor): MutationObserver {
 		const mutationObserver = new MutationObserver(() => {
 			editor.dispatch('ResizeWindow');
@@ -314,24 +314,23 @@ export const RichTextEditorContainer = ({
 	}, [editorId, onComposerClose, onComposerInit, onDragOver, onTextChange, prefs]);
 
 	return (
-		<Container
-			background={'gray6'}
-			mainAlignment="flex-start"
-			style={{ minHeight: 0, overflow: 'hidden' }}
-		>
-			<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-				<Composer
-					initialValue={initialValue.current}
-					onFileSelect={onInlineAttachmentsSelected}
-					customInitOptions={composerCustomOptions}
-					accountSettingsPrefs={{
-						zimbraPrefLocale: prefs?.zimbraPrefLocale,
-						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-					}}
-				/>
-			</StyledComp.EditorWrapper>
-		</Container>
+		// <Container
+		// 	mainAlignment="flex-start"
+		// 	style={{ background: 'brown', minHeight: 0, overflow: 'hidden' }}
+		// >
+		<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
+			<Composer
+				initialValue={initialValue.current}
+				onFileSelect={onInlineAttachmentsSelected}
+				customInitOptions={composerCustomOptions}
+				accountSettingsPrefs={{
+					zimbraPrefLocale: prefs?.zimbraPrefLocale,
+					zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+					zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+					zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+				}}
+			/>
+		</StyledComp.EditorWrapper>
+		// </Container>
 	);
 };

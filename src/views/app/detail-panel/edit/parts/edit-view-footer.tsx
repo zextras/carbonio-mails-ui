@@ -6,14 +6,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
-import {
-	Container,
-	Text,
-	Button,
-	Tooltip,
-	useModal,
-	Padding
-} from '@zextras/carbonio-design-system';
+import { Container, Text, Button, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +28,8 @@ const FooterContainer = styled(Container)`
 	max-height: 3.5rem;
 	padding-bottom: 0.5rem;
 	width: 100%;
+	position: sticky;
+	bottom: 0;
 `;
 
 export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps): JSX.Element => {
@@ -44,12 +39,6 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	const { createModal, closeModal } = useModal();
 
 	const { folderId: routeFolderId } = useParams();
-	const { execute: deleteDraft } = useMsgMoveToTrashDescriptor({
-		ids: [draftId ?? ''],
-		messageFolderId: FOLDERS.DRAFTS,
-		routeFolderId: routeFolderId ?? '',
-		shouldReplaceHistory: true
-	});
 
 	const confirmationModalId = useMemo<string>(
 		() => `delete-draft-confirmation-${draftId}`,
@@ -87,48 +76,27 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 		return '';
 	}, [isDraftSaved, draftSaveStatus?.lastSaveTimestamp, draftSaveStatus?.status, t]);
 
-	const onDeleteConfirm = useCallback((): void => {
+	const onDeleteComplete = useCallback((): void => {
 		closeModal(confirmationModalId);
-		deleteDraft();
 		onDraftDeleted && onDraftDeleted();
-	}, [closeModal, confirmationModalId, deleteDraft, onDraftDeleted]);
+	}, [closeModal, confirmationModalId, onDraftDeleted]);
+
+	const { execute: deleteDraft } = useMsgMoveToTrashDescriptor({
+		ids: [draftId ?? ''],
+		messageFolderId: FOLDERS.DRAFTS,
+		routeFolderId: routeFolderId ?? '',
+		shouldReplaceHistory: true,
+		onActionComplete: onDeleteComplete
+	});
 
 	const onDeleteClick = useCallback((): void => {
 		if (!isDraftSaved) {
-			onDraftDeleted && onDraftDeleted();
+			onDeleteComplete();
 			return;
 		}
 
-		createModal({
-			id: confirmationModalId,
-			title: t('editView.footer.deleteDraftConfirmationTitle', 'Delete draft'),
-			confirmLabel: t('label.delete', 'Delete'),
-			confirmColor: 'error',
-			onConfirm: onDeleteConfirm,
-			onClose: () => {
-				closeModal(confirmationModalId);
-			},
-			showCloseIcon: true,
-			children: (
-				<Padding vertical="1.25rem">
-					<Text overflow="break-word">
-						{t(
-							'editView.footer.deleteDraftConfirmationContent',
-							'Are you sure you want to delete this draft?'
-						)}
-					</Text>
-				</Padding>
-			)
-		});
-	}, [
-		isDraftSaved,
-		createModal,
-		confirmationModalId,
-		t,
-		onDeleteConfirm,
-		onDraftDeleted,
-		closeModal
-	]);
+		deleteDraft();
+	}, [isDraftSaved, deleteDraft, onDeleteComplete]);
 
 	return (
 		<FooterContainer>

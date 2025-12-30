@@ -614,88 +614,90 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 
 	return (
-		<Container
-			data-testid={'edit-view-editor'}
-			mainAlignment={flexStart}
-			height={'100%'}
-			crossAlignment={flexStart}
-			padding={{ all: 'large' }}
-			background={'gray5'}
-			onDragOver={handleDragOver}
-		>
-			{dropZoneEnabled && (
-				<DropZoneAttachment
-					onDragOverEvent={handleDragOver}
-					onDropEvent={handleDrop}
-					onDragLeaveEvent={handleDragLeave}
-				/>
-			)}
-			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
-				{/* Header start */}
+		<Container flexGrow={1} height="100%" mainAlignment={flexStart} crossAlignment={flexStart}>
+			<Container
+				data-testid={'edit-view-editor'}
+				mainAlignment={flexStart}
+				flexGrow={'1'}
+				crossAlignment={flexStart}
+				padding={{ all: 'large' }}
+				background={'green'} // background={'gray5'}
+				onDragOver={handleDragOver}
+			>
+				{dropZoneEnabled && (
+					<DropZoneAttachment
+						onDragOverEvent={handleDragOver}
+						onDropEvent={handleDrop}
+						onDragLeaveEvent={handleDragLeave}
+					/>
+				)}
+				<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
+					{/* Header start */}
 
-				<GapRow
-					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
-					orientation="horizontal"
-					width="fill"
-					gap={'medium'}
-				>
-					{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
+					<GapRow
+						mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
+						orientation="horizontal"
+						width="fill"
+						gap={'medium'}
+					>
+						{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
 
-					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
-						<MemoizedAddAttachmentsDropdown editorId={editorId} />
-						<MemoizedChangeSignaturesDropdown editorId={editorId} />
-						<MemoizedOptionsDropdown
-							editorId={editorId}
-							onSmimeOptionChange={(isSmimeSelected: boolean): void =>
-								isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
-							}
-							onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
-								isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
-							}
-							isSmimeEnabled={isSmimeEnabled}
-						/>
-						<Tooltip
-							label={saveDraftAllowedStatus?.reason}
-							disabled={saveDraftAllowedStatus?.allowed}
-						>
-							<Button
-								data-testid="BtnSaveMail"
-								type="outlined"
-								onClick={onSaveClick}
-								label={`${t('label.save', 'Save')}`}
-								disabled={!saveDraftAllowedStatus?.allowed}
+						<GapRow mainAlignment={'flex-end'} gap={'medium'}>
+							<MemoizedAddAttachmentsDropdown editorId={editorId} />
+							<MemoizedChangeSignaturesDropdown editorId={editorId} />
+							<MemoizedOptionsDropdown
+								editorId={editorId}
+								onSmimeOptionChange={(isSmimeSelected: boolean): void =>
+									isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
+								}
+								onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
+									isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
+								}
+								isSmimeEnabled={isSmimeEnabled}
 							/>
-						</Tooltip>
-						<EditViewSendButtons
-							onSendLater={onSendLaterClick}
-							onSendNow={onSendClick}
-							disabled={sendDisabled}
-							tooltip={sendDisabledReason ?? ''}
-						/>
+							<Tooltip
+								label={saveDraftAllowedStatus?.reason}
+								disabled={saveDraftAllowedStatus?.allowed}
+							>
+								<Button
+									data-testid="BtnSaveMail"
+									type="outlined"
+									onClick={onSaveClick}
+									label={`${t('label.save', 'Save')}`}
+									disabled={!saveDraftAllowedStatus?.allowed}
+								/>
+							</Tooltip>
+							<EditViewSendButtons
+								onSendLater={onSendLaterClick}
+								onSendNow={onSendClick}
+								disabled={sendDisabled}
+								tooltip={sendDisabledReason ?? ''}
+							/>
+						</GapRow>
 					</GapRow>
-				</GapRow>
 
-				{/* Header end */}
+					{/* Header end */}
 
-				<SendToYourselfWarningBanner editorId={editorId} />
-				<GapContainer
-					mainAlignment={flexStart}
-					crossAlignment={flexStart}
-					background={'white'}
-					padding={{ all: 'small' }}
-					gap={'small'}
-				>
-					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<MemoizedRecipientsRows editorId={editorId} />
-					</Container>
-					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<MemoizedSubjectRow editorId={editorId} />
-					</Container>
-					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
-					<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
+					<SendToYourselfWarningBanner editorId={editorId} />
+					<GapContainer
+						mainAlignment={flexStart}
+						crossAlignment={flexStart}
+						background={'white'}
+						padding={{ all: 'small' }}
+						gap={'small'}
+					>
+						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+							<MemoizedRecipientsRows editorId={editorId} />
+						</Container>
+						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+							<MemoizedSubjectRow editorId={editorId} />
+						</Container>
+						<EditAttachmentsBlock editorId={editorId} />
+						<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
+						<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
+					</GapContainer>
 				</GapContainer>
-			</GapContainer>
+			</Container>
 		</Container>
 	);
 });
