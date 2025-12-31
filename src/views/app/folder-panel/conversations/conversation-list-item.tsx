@@ -154,6 +154,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
+					folderId={folderId}
 				>
 					<ConversationListItemCore
 						conversation={conversation}

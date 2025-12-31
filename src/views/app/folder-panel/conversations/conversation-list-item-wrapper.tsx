@@ -22,13 +22,15 @@ export const ConversationListItemActionWrapper = ({
 	active,
 	onClick,
 	onDoubleClick,
-	children
+	children,
+	folderId
 }: {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	active?: boolean;
 	conversation: NormalizedConversation;
+	folderId?: string;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const shouldReplaceHistory = useShouldReplaceHistory(conversation);
@@ -53,7 +55,8 @@ export const ConversationListItemActionWrapper = ({
 		showOriginalDescriptor
 	} = useConvActions({
 		conversation,
-		shouldReplaceHistory
+		shouldReplaceHistory,
+		routeFolderId: folderId
 	});
 	const hoverActions = useMemo(
 		() => [

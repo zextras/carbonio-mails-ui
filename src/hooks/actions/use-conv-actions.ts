@@ -33,6 +33,7 @@ import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
 	shouldReplaceHistory?: boolean;
+	routeFolderId?: string;
 };
 
 type ConversationActionsReturnType = {
@@ -58,7 +59,8 @@ type ConversationActionsReturnType = {
 
 export const useConvActions = ({
 	conversation,
-	shouldReplaceHistory = false
+	shouldReplaceHistory = false,
+	routeFolderId
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
@@ -67,8 +69,8 @@ export const useConvActions = ({
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 		}) ?? messages?.[0];
 
-	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = getParentFolderId(firstConversationMessage.parent);
+	// Use routeFolderId if provided (from route params), otherwise fall back to first message's parent folder
+	const folderId = routeFolderId ?? getParentFolderId(firstConversationMessage.parent);
 
 	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
