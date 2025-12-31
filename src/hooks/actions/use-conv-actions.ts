@@ -69,7 +69,6 @@ export const useConvActions = ({
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 		}) ?? messages?.[0];
 
-	// Use routeFolderId if provided (from route params), otherwise fall back to first message's parent folder
 	const folderId = routeFolderId ?? getParentFolderId(firstConversationMessage.parent);
 
 	const replyDescriptor = useConvReplyDescriptor({
