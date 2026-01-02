@@ -229,7 +229,6 @@ export const RichTextEditorContainer = ({
 			font_family_formats: fontsOptionsToString,
 			preview_styles: false,
 			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
-			// Configure style formats as single list with logical separators
 			style_formats: [
 				// Headers
 				{ title: 'Heading 1', format: 'h1' },
@@ -242,11 +241,8 @@ export const RichTextEditorContainer = ({
 				// Blocks
 				{ title: 'Paragraph', format: 'p' },
 				{ title: 'Pre', format: 'pre' },
-				{ title: '' },
-				// Containers
 				{ title: 'Blockquote', format: 'blockquote' }
 			],
-			// Only include plugins that are actually used or necessary
 			plugins: [
 				'advlist', // Enhances list functionality
 				'lists', // List support (bullist/numlist)
