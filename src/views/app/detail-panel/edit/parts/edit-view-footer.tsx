@@ -37,7 +37,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	const draftSaveStatus = useEditorDraftSaveProcessStatus(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const [t] = useTranslation();
-	const { createModal, closeModal } = useModal();
+	const { closeModal } = useModal();
 
 	const { folderId: routeFolderId } = useParams();
 
