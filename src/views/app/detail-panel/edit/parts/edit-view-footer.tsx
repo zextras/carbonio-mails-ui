@@ -6,7 +6,14 @@
 import React, { useCallback, useMemo } from 'react';
 
 import styled from '@emotion/styled';
-import { Container, Text, Button, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Text,
+	Button,
+	Tooltip,
+	useModal,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -106,10 +113,11 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 				orientation="horizontal"
 				mainAlignment="flex-end"
 				crossAlignment="center"
-				gap="1rem"
+				gap="0.5rem"
 				padding={{ right: '0.5rem' }}
 			>
 				<Text color="gray1">{draftSavedStatusMessage}</Text>
+				<Padding left="0.5rem" />
 				<Divider orientation="vertical" />
 				<Tooltip label={t('editView.footer.deleteDraft', 'Delete draft')}>
 					<Button
