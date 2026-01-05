@@ -209,22 +209,39 @@ export const RichTextEditorContainer = ({
 		};
 	}
 
-	// Prevent the TinyMCE stick toolbar to remain fixed when the board is resized or moved
-	function setupResizeObserver(editor: Editor): MutationObserver {
-		const mutationObserver = new MutationObserver(() => {
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
+	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
+		const boardElement = document.querySelector('[data-testid="MailEditorWrapper"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new ResizeObserver(() => {
+			editor.dispatch('ResizeWindow');
+		});
+		observer.observe(boardElement);
+
+		return observer;
+	}, []);
+
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is moved
+	const setupMutationObserver = useCallback((editor: Editor): MutationObserver | null => {
+		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new MutationObserver(() => {
 			editor.dispatch('ResizeWindow');
 		});
 
-		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-		if (boardElement) {
-			mutationObserver.observe(boardElement, {
-				attributes: true,
-				attributeFilter: ['style']
-			});
-		}
+		observer.observe(boardElement, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
 
-		return mutationObserver;
-	}
+		return observer;
+	}, []);
 
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
@@ -305,19 +322,26 @@ export const RichTextEditorContainer = ({
 					});
 				}
 
-				const mutationObserver = setupResizeObserver(editor);
+				const resizeObserver = setupResizeObserver(editor);
+				const mutationObserver = setupMutationObserver(editor);
 				return () => {
-					mutationObserver.disconnect();
+					resizeObserver?.disconnect();
+					mutationObserver?.disconnect();
 				};
 			}
 		};
-	}, [editorId, onComposerClose, onComposerInit, onDragOver, onTextChange, prefs]);
+	}, [
+		editorId,
+		onComposerClose,
+		onComposerInit,
+		onDragOver,
+		onTextChange,
+		prefs,
+		setupMutationObserver,
+		setupResizeObserver
+	]);
 
 	return (
-		// <Container
-		// 	mainAlignment="flex-start"
-		// 	style={{ background: 'brown', minHeight: 0, overflow: 'hidden' }}
-		// >
 		<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 			<Composer
 				initialValue={initialValue.current}
@@ -331,6 +355,5 @@ export const RichTextEditorContainer = ({
 				}}
 			/>
 		</StyledComp.EditorWrapper>
-		// </Container>
 	);
 };

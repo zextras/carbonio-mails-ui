@@ -618,10 +618,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			<Container
 				data-testid={'edit-view-editor'}
 				mainAlignment={flexStart}
-				flexGrow={'1'}
+				flexGrow={1}
 				crossAlignment={flexStart}
 				padding={{ all: 'large' }}
-				background={'green'} // background={'gray5'}
+				background={'gray5'}
+				style={{ overflowY: 'scroll' }}
 				onDragOver={handleDragOver}
 			>
 				{dropZoneEnabled && (
@@ -682,9 +683,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<GapContainer
 						mainAlignment={flexStart}
 						crossAlignment={flexStart}
-						background={'white'}
+						background={'gray6'}
 						padding={{ all: 'small' }}
 						gap={'small'}
+						height={'fit'}
 					>
 						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 							<MemoizedRecipientsRows editorId={editorId} />
@@ -694,10 +696,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						</Container>
 						<EditAttachmentsBlock editorId={editorId} />
 						<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
-						<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
 					</GapContainer>
 				</GapContainer>
 			</Container>
+			<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
 		</Container>
 	);
 });

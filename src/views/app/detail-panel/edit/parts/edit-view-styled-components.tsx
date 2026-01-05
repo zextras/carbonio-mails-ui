@@ -45,44 +45,12 @@ export const TextArea = styled.textarea`
 `;
 
 export const EditorWrapper = styled.div`
-	background-color: brown;
 	width: 100%;
 
 	.tox.tox-tinymce {
 		width: 100%;
 		height: 100%;
 		border: none;
-	}
-
-	> .tox:not(.tox-tinymce-inline) {
-		width: 100%;
-		border: none;
-		.tox-editor-container {
-			min-height: 18.75rem;
-		}
-		.tox-editor-header {
-			padding: ${(props): string => props.theme.sizes.padding.large};
-			background-color: ${(props): string => props.theme.palette.gray6.regular};
-		}
-		.tox-toolbar__primary {
-			background: none;
-			background-color: ${(props): string => props.theme.palette.gray4.regular};
-			// border-radius: ${(props): string => props.theme.borderRadius};
-		}
-	}
-	> .tox {
-		.tox-edit-area {
-			margin-left: calc(-1rem + ${(props): string => props.theme.sizes.padding.large});
-			overflow-y: auto;
-			max-height: 100%;
-		}
-		.tox-edit-area__iframe {
-			height: 100%;
-			padding-bottom: ${(props): string => props.theme.sizes.padding.large};
-		}
-		&.tox-tinymce {
-			height: 100% !important;
-		}
 	}
 `;
 

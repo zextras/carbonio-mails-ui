@@ -24,12 +24,13 @@ type EditViewFooterProps = {
 };
 
 const FooterContainer = styled(Container)`
-	gap: 1rem;
-	max-height: 3.5rem;
+	gap: 0.75rem;
+	max-height: 4rem;
 	padding-bottom: 0.5rem;
 	width: 100%;
-	position: sticky;
+	position: relative;
 	bottom: 0;
+	background-color: ${(props): string => props.theme.palette.gray6.regular};
 `;
 
 export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps): JSX.Element => {
