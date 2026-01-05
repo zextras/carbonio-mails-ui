@@ -80,7 +80,7 @@ type EditorAttachmentHook = {
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
-	removeInlineAttachments: (usedCids: string[]) => void;
+	keepOnlyInlineAttachments: (usedCids: string[]) => void;
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
@@ -302,7 +302,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 
 		return addAndSaveGenericAttachments(files, true, customizedCallbacks);
 	};
-	const removeInlineAttachments = (usedCids: string[]): void => {
+	const keepOnlyInlineAttachments = (usedCids: string[]): void => {
 		const editor = getEditor({ id: editorId });
 		if (!editor) return;
 
@@ -344,6 +344,6 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		addStandardAttachments,
 		addInlineAttachments,
 		addUploadedAttachment,
-		removeInlineAttachments
+		keepOnlyInlineAttachments
 	};
 };

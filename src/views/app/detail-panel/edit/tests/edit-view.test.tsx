@@ -47,6 +47,7 @@ import { getDefaultIdentity } from 'helpers/identities';
 import { addEditor, getEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
+	generateNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
