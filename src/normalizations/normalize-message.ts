@@ -178,6 +178,12 @@ export const getAttachmentsFromParts = (
 						} else if (item.ci && item.cd === 'inline' && hasHtml) {
 							// Not referenced in HTML but marked inline -> change to attachment
 							item.cd = 'attachment';
+
+							// TODO: the conditions order it impacting the behavior here, we need to refactor this logic
+						} else if (item.ci && item.cd === 'inline' && !hasHtml) {
+							item.cd = 'inline';
+						} else if (item.cd === 'inline' && item.filename) {
+							item.cd = 'attachment';
 						} else {
 							item.cd ??= 'attachment';
 						}
@@ -368,11 +374,9 @@ export const haveReadReceipt = (
 /**
  * Extracts and maps flags from a SOAP message to a Flags object.
  * */
-const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
-	const defaultFlag = { read: true };
-
-	if (isNil(m?.f) || m.f === '') {
-		return defaultFlag;
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNullable<unknown> => {
+	if (isNil(m?.f)) {
+		return {};
 	}
 	const flags = m.f;
 	return {

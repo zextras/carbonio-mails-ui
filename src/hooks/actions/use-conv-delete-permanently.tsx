@@ -17,11 +17,13 @@ import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 type ConvDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvDeletePermanentlyFn = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useModal();
 
@@ -37,6 +39,7 @@ export const useConvDeletePermanentlyFn = ({
 				ids
 			});
 			if (!('Fault' in response)) {
+				onActionComplete && onActionComplete(ids);
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
@@ -56,7 +59,7 @@ export const useConvDeletePermanentlyFn = ({
 			}
 			onClose();
 		},
-		[ids, createSnackbar, t]
+		[ids, onActionComplete, createSnackbar, t]
 	);
 
 	const execute = useCallback((): void => {
@@ -84,11 +87,13 @@ export const useConvDeletePermanentlyFn = ({
 
 export const useConvDeletePermanentlyDescriptor = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvDeletePermanentlyFn({
 		ids,
-		folderId
+		folderId,
+		onActionComplete
 	});
 
 	const [t] = useTranslation();

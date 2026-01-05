@@ -118,6 +118,30 @@ describe('useMsgSetNotSpam', () => {
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
+
+			it('should call onActionComplete when provided after setting messages as not spam', async () => {
+				const onActionComplete = vi.fn();
+				createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+					action: {
+						id: ids.join(','),
+						op: '!spam'
+					}
+				});
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSetNotSpamFn, {
+					initialProps: [
+						{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM, onActionComplete }
+					]
+				});
+
+				await act(async () => {
+					functions.execute();
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(ids);
+			});
 		});
 	});
 });

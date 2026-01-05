@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
@@ -29,13 +29,25 @@ import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/
 
 export const MessagesMultipleSelectionActions = ({
 	ids,
-	folderId
+	folderId,
+	onMessagesMoved
 }: {
 	ids: Array<string>;
 	folderId: string;
+	onMessagesMoved?: (messagesIds: Array<string>) => void;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { folderId: routeFolderId } = useParams();
+
+	/*
+	 * Callback to be executed after any action that moves conversations (to trash, to folder, etc.)
+	 */
+	const onActionComplete = useCallback(
+		(messagesIds: Array<string>): void => {
+			onMessagesMoved && onMessagesMoved(messagesIds);
+		},
+		[onMessagesMoved]
+	);
 
 	const items = useMessagesByIds(ids);
 	const selectedItems = filter(items, (item) => ids.includes(item.id));
@@ -56,9 +68,10 @@ export const MessagesMultipleSelectionActions = ({
 	const moveToTrash = useMsgMoveToTrashDescriptor({
 		ids,
 		messageFolderId: folderId,
-		routeFolderId
+		routeFolderId,
+		onActionComplete
 	});
-	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, folderId });
+	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, folderId, onActionComplete });
 	const applyTagDescriptor = useMsgApplyTagDescriptor({
 		ids,
 		messageTags: tagsInCommon,
@@ -68,13 +81,19 @@ export const MessagesMultipleSelectionActions = ({
 
 	const flagDescriptor = useMsgSetFlagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
-	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, ids });
-	const setAsSpam = useMsgSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
+	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, ids, onActionComplete });
+	const setAsSpam = useMsgSetSpamDescriptor({
+		ids,
+		shouldReplaceHistory: false,
+		folderId,
+		onActionComplete
+	});
 	const forwardAsAttachment = useMsgForwardAsAttachmentDescriptor(ids, folderId);
 	const setAsNotSpam = useMsgSetNotSpamDescriptor({
 		ids,
 		shouldReplaceHistory: false,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const actions = [
 		setAsRead,

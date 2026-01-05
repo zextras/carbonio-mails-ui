@@ -18,11 +18,13 @@ type MsgSetNotSpam = {
 	ids: Array<string>;
 	shouldReplaceHistory?: boolean;
 	folderId?: string;
+	onActionComplete?: (ids: Array<string>) => void;
 };
 export const useMsgSetNotSpamFn = ({
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: MsgSetNotSpam): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
@@ -47,12 +49,12 @@ export const useMsgSetNotSpamFn = ({
 				}
 			});
 			setTimeout(() => {
-				/** If the user has not clicked on the undo button, we can proceed with the action */
-				if (!notCanceled) return;
+				// If the user clicked on the undo button, we skip the action
+				if (!notCanceled) {
+					return;
+				}
+
 				msgActionEmailStoreAction({ operation: '!spam', ids }).then((res) => {
-					if (!('Fault' in res) && shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-					}
 					if ('Fault' in res) {
 						createSnackbar({
 							key: `trash-${ids}`,
@@ -61,11 +63,27 @@ export const useMsgSetNotSpamFn = ({
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});
+						return;
+					}
+
+					onActionComplete && onActionComplete(ids);
+
+					if (shouldReplaceHistory) {
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
-	}, [canExecute, createSnackbar, folderId, ids, navigate, shouldReplaceHistory, t]);
+	}, [
+		canExecute,
+		createSnackbar,
+		folderId,
+		ids,
+		navigate,
+		onActionComplete,
+		shouldReplaceHistory,
+		t
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -73,12 +91,14 @@ export const useMsgSetNotSpamFn = ({
 export const useMsgSetNotSpamDescriptor = ({
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: MsgSetNotSpam): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetNotSpamFn({
 		ids,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

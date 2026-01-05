@@ -15,10 +15,12 @@ import { MoveConversation } from 'ui-actions/move-conv';
 
 export const useConvMoveToFolderFn = ({
 	folderId,
-	ids
+	ids,
+	onActionComplete
 }: {
 	folderId: string;
 	ids: Array<string>;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
@@ -43,26 +45,30 @@ export const useConvMoveToFolderFn = ({
 						selectedIDs={ids}
 						onClose={(): void => closeModal(id)}
 						isRestore={false}
+						onMoveComplete={onActionComplete}
 					/>
 				)
 			},
 			true
 		);
-	}, [canExecute, createModal, folderId, ids, closeModal]);
+	}, [canExecute, createModal, folderId, ids, onActionComplete, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvMoveToFolderDescriptor = ({
 	folderId,
-	ids
+	ids,
+	onActionComplete
 }: {
 	folderId: string;
 	ids: Array<string>;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useConvMoveToFolderFn({
 		folderId,
-		ids
+		ids,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {
