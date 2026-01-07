@@ -5,10 +5,10 @@
  */
 import { useMemo } from 'react';
 
+import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
 
 export const useEditorUploadProcess = (
@@ -18,15 +18,14 @@ export const useEditorUploadProcess = (
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const { setDirty } = useEditorIsDirty(editorId);
 	const attachmentStateInfo = useEditorsStore((state) => {
-		const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, editorId, uploadId);
-		if (unsavedAttachmentIndex === null) {
-			return null;
+		const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, editorId, uploadId);
+		if (!unsavedAttachment) {
+			return unsavedAttachment;
 		}
 
 		return {
-			status: state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadStatus,
-			abortController:
-				state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadAbortController
+			status: unsavedAttachment.uploadStatus,
+			abortController: unsavedAttachment.uploadAbortController
 		};
 	});
 

@@ -128,9 +128,6 @@ export const MessageListItemActionWrapper = ({
 	);
 
 	const hoverActions = [
-		replyDescriptor,
-		replyAllDescriptor,
-		forwardDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,

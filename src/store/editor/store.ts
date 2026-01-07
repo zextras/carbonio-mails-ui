@@ -7,11 +7,11 @@ import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
 
+import { selectUnsavedAttachmentByUploadId } from './store-selectors';
 import {
 	filterSavedInlineAttachment,
 	filterUnsavedInlineAttachment
 } from 'store/editor/editor-utils';
-import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
@@ -282,25 +282,25 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set, get) => ({
 	): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
-				if (unsavedAttachmentIndex === null) {
+				const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, id, uploadId);
+				if (!unsavedAttachment) {
 					return;
 				}
 
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = status;
+				unsavedAttachment.uploadStatus = status;
 			})
 		);
 	},
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
-				if (unsavedAttachmentIndex === null) {
+				const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, id, uploadId);
+				if (!unsavedAttachment) {
 					return;
 				}
 
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].aid = aid;
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = {
+				unsavedAttachment.aid = aid;
+				unsavedAttachment.uploadStatus = {
 					status: 'completed'
 				};
 			})

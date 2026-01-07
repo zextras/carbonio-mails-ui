@@ -57,9 +57,6 @@ export const ConversationListItemActionWrapper = ({
 	});
 	const hoverActions = useMemo(
 		() => [
-			replyDescriptor,
-			replyAllDescriptor,
-			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -69,9 +66,6 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor
 		],
 		[
-			replyDescriptor,
-			replyAllDescriptor,
-			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
