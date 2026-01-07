@@ -13,6 +13,20 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
 
+async function getWarningModal(): Promise<HTMLElement> {
+	return screen.findByTestId('modal');
+}
+
+function getWarningModalCloseButton(modal: HTMLElement): HTMLElement {
+	return within(modal).getByTestId('icon: Close');
+}
+
+function getWarningModalEditAnywayButton(modal: HTMLElement): HTMLElement {
+	return within(modal).getByRole('button', {
+		name: 'action.edit_anyway'
+	});
+}
+
 describe('useMsgEditDraft', () => {
 	const msg = generateMessage();
 
@@ -112,18 +126,14 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				const modal = await screen.findByTestId('modal');
-				expect(modal).toBeInTheDocument();
+				const modal = await getWarningModal();
 
 				expect(within(modal).getByText('label.warning')).toBeInTheDocument();
 
-				expect(within(modal).getByTestId('icon: Close')).toBeInTheDocument();
+				expect(getWarningModalCloseButton(modal)).toBeInTheDocument();
 
 				expect(within(modal).getByText('messages.edit_schedule_warning')).toBeInTheDocument();
-
-				const editAnywayButton = within(modal).getByRole('button', {
-					name: 'action.edit_anyway'
-				});
+				const editAnywayButton = getWarningModalEditAnywayButton(modal);
 				expect(editAnywayButton).toBeInTheDocument();
 			});
 
@@ -139,12 +149,9 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				const modal = await screen.findByTestId('modal');
-				expect(modal).toBeInTheDocument();
+				const modal = await getWarningModal();
 
-				const editAnywayButton = within(modal).getByRole('button', {
-					name: 'action.edit_anyway'
-				});
+				const editAnywayButton = getWarningModalEditAnywayButton(modal);
 
 				await user.click(editAnywayButton);
 
@@ -173,10 +180,9 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				const modal = await screen.findByTestId('modal');
-				expect(modal).toBeInTheDocument();
+				const modal = await getWarningModal();
 
-				const closeWarningModalButton = within(modal).getByTestId('icon: Close');
+				const closeWarningModalButton = getWarningModalCloseButton(modal);
 
 				await user.click(closeWarningModalButton);
 
