@@ -27,7 +27,7 @@ describe('useMsgEditDraft', () => {
 	const msg = generateMessage();
 
 	describe('Descriptor', () => {
-		it('Should return an object with specific id, icon, label and 2 functions', () => {
+		it('should return descriptor object with edit_as_draft id, Edit2Outline icon, Edit label, and action functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgEditDraftDescriptor, {
@@ -45,7 +45,7 @@ describe('useMsgEditDraft', () => {
 	});
 
 	describe('Functions', () => {
-		it('Should return an object with execute and canExecute functions', () => {
+		it('should return an ActionFn object containing execute and canExecute methods', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgEditDraftFn, {
@@ -67,7 +67,7 @@ describe('useMsgEditDraft', () => {
 				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
 				${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
 				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
-			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+			`(`should return $assertion when folder is $folder.desc`, ({ folder, assertion }) => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -79,7 +79,7 @@ describe('useMsgEditDraft', () => {
 		});
 
 		describe('execute', () => {
-			it('should create a board with specific parameters', async () => {
+			it('should call addBoard with editAsDraft action for non-scheduled draft message', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -99,7 +99,7 @@ describe('useMsgEditDraft', () => {
 				);
 			});
 
-			it('should not create a board if the action cannot be executed', async () => {
+			it('should not call addBoard when canExecute returns false', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -111,7 +111,7 @@ describe('useMsgEditDraft', () => {
 				expect(addBoard).not.toHaveBeenCalled();
 			});
 
-			it('should open a warning modal if the message is scheduled', async () => {
+			it('should call createModal with warning configuration when message is scheduled', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -134,7 +134,7 @@ describe('useMsgEditDraft', () => {
 				);
 			});
 
-			it('should create a board when confirming the warning modal', async () => {
+			it('should call closeModal and addBoard when modal onConfirm callback is invoked', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -160,7 +160,7 @@ describe('useMsgEditDraft', () => {
 				);
 			});
 
-			it('should close the modal when closing the warning modal', async () => {
+			it('should call closeModal without calling addBoard when modal onClose callback is invoked', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
