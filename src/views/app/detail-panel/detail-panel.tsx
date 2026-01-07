@@ -9,10 +9,10 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import { AppContext } from 'app-utils/app-context-initializer';
-import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
-import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
-import { SelectionInteractive } from 'views/app/detail-panel/selection-interactive';
+import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
+import { MessagePreviewPanelContainer } from './message-preview-panel-container';
+import { SelectionInteractive } from './selection-interactive';
+import { AppContext } from '../../../app-utils/app-context-initializer';
 
 const DetailPanel: FC = () => {
 	const { multipleSelectionCount } = useAppContext<AppContext>();

@@ -14,7 +14,7 @@ import { themeMuiExtension } from '../../theme/theme-mui';
 import { LayoutSelector } from '../layout-selector';
 
 const LazyDetailPanel = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './detail-panel')
+	() => import(/* webpackChunkName: "folder-panel-view" */ './detail-panel/detail-panel')
 );
 
 const DetailPanel = (): React.JSX.Element => (

@@ -22,7 +22,7 @@ type FolderViewProps = {
 };
 
 const LazyFolderView = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './folder-panel')
+	() => import(/* webpackChunkName: "folder-panel-view" */ './folder-panel/folder-panel')
 );
 
 export const FolderRoutes = ({ containerRef }: FolderViewProps): React.JSX.Element => {

@@ -11,8 +11,8 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 import type { Mock } from 'vitest';
 
+import FolderPanel from '../folder-panel';
 import { setupTest } from '@test-setup';
-import FolderPanel from 'views/app/folder-panel';
 import { useIsMessageView } from 'views/search/search-view-hooks';
 
 vi.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: vi.fn() }));
