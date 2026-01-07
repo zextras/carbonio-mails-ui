@@ -8,11 +8,14 @@ import React, { useEffect } from 'react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import type { DetailPanelRoutesParams, DetailPanelMessageRouteParams } from '../../../types/routes';
-import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
-import { isFocusModeMailView } from 'helpers/external-tabs';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
+import { MessagePreviewPanel } from './message-preview-panel';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
+import type {
+	DetailPanelRoutesParams,
+	DetailPanelMessageRouteParams
+} from '../../../../types/routes';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();

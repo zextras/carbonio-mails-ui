@@ -8,12 +8,12 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { MessagePreviewPanel } from '../messages/message-preview-panel';
 import { setupTest } from '@test-setup';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import { updateMessageStatus } from 'store/emails/store';
-import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 vi.mock('../../../../store/emails/hooks/hooks');
 

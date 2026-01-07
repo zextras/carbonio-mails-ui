@@ -9,9 +9,9 @@ import React from 'react';
 import { ModalManager } from '@zextras/carbonio-design-system';
 import { Route, Routes } from 'react-router-dom';
 
-import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
+import { ConversationPreviewPanelContainer } from './conversations/conversation-preview-panel-container';
+import { MessagePreviewPanelContainer } from './messages/message-preview-panel-container';
 import { EmlPreviewPanelContainer } from 'views/app/detail-panel/eml-preview-panel-container';
-import { MessagePreviewPanelContainer } from 'views/app/detail-panel/message-preview-panel-container';
 
 export default function FocusModeMailView(): React.JSX.Element {
 	return (

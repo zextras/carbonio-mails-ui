@@ -8,12 +8,12 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { MessagePreviewPanel } from './messages/message-preview-panel';
 import type { EmlRouteParams } from '../../../types/routes';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { MailMessage } from 'types/index.d';
-import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 	const [message, setMessage] = useState<MailMessage>();

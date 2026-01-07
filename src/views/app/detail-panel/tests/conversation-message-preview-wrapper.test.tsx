@@ -10,7 +10,7 @@ import { NavigateFunction } from 'react-router-dom';
 
 import { populateMessagesInEmailStore } from '../../../../__test__/generators/generateMessage';
 import { updateMessageStatus } from '../../../../store/emails/store';
-import { ConversationMessagePreviewWrapper } from '../conversation-message-preview-wrapper';
+import { ConversationMessagePreviewWrapper } from '../conversations/conversation-message-preview-wrapper';
 import { setupTest } from '@test-setup';
 
 const mockNavigateSpy = vi.fn();

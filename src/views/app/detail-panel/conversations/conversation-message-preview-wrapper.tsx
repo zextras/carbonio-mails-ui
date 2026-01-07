@@ -8,10 +8,10 @@ import React from 'react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
-import { Spinner } from 'assets/spinner';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { ConversationMessagePreview } from 'views/app/detail-panel/conversation-message-preview';
+import { Spinner } from '../../../../assets/spinner';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
+import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
+import { ConversationMessagePreview } from '../conversation-message-preview';
 
 export const ConversationMessagePreviewWrapper = ({
 	convMessageId,
