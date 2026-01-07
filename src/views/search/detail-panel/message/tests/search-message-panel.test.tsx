@@ -10,11 +10,11 @@ import { act, waitFor } from '@testing-library/react';
 import { NavigateFunction, useParams } from 'react-router-dom';
 import type { Mock } from 'vitest';
 
+import { SearchMessagePanel } from '../search-message-panel';
 import { setupTest, screen } from '@test-setup';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { setSearchResultsByMessage, updateMessageStatus } from 'store/emails/store';
-import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
 const mockNavigateSpy = vi.fn();
 

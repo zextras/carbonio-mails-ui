@@ -10,9 +10,9 @@ import { screen } from '@testing-library/react';
 import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
 
+import { SearchMessageListItemCore } from '../search-message-list-item-core';
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
-import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
 vi.mock('@zextras/carbonio-ui-commons', async () => ({
 	...(await vi.importActual('@zextras/carbonio-ui-commons')),

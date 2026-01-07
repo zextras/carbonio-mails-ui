@@ -11,14 +11,14 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { SearchConversationListItem } from './search-conversation-list-item';
 import type { SearchListPanelRouteParams } from '../../../../types/routes';
+import { SearchListHeader } from '../parts/search-list-header';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
-import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
-import { SearchListHeader } from 'views/search/list/parts/search-list-header';
 import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
 import ShimmerList from 'views/search/shimmer-list';
 

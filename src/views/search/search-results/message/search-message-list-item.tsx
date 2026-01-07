@@ -8,6 +8,7 @@ import React, { FC, memo, MouseEventHandler, useCallback } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
+import { SearchMessageListItemCore } from './search-message-list-item-core';
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { EditViewActions } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
@@ -17,7 +18,6 @@ import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
-import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;

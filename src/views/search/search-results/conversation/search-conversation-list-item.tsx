@@ -10,6 +10,8 @@ import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
+import { SearchConversationListItemCore } from './search-conversation-list-item-core';
+import { SearchConversationMessagesList } from './search-conversation-messages-list';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
@@ -22,8 +24,6 @@ import {
 	useConversationStatus
 } from 'store/emails/store';
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
-import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
-import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};

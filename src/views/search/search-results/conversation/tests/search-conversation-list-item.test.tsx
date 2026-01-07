@@ -12,6 +12,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
+import { SearchConversationListItem } from '../search-conversation-list-item';
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -19,7 +20,6 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { CONVACTIONS } from 'commons/utilities';
 import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
-import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
 const conversationId = '-123';
 
