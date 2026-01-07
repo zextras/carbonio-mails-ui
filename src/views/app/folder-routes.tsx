@@ -7,10 +7,10 @@ import React, { lazy, Suspense, useMemo } from 'react';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { Spinner } from 'assets/spinner';
-import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
-import { useViewLayout } from 'hooks/use-view-layout';
-import { ResizableContainer } from 'views/resizable-container';
+import { Spinner } from '../../assets/spinner';
+import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../constants';
+import { useViewLayout } from '../../hooks/use-view-layout';
+import { ResizableContainer } from '../resizable-container';
 
 export type MailsListLayout = (typeof MAILS_VIEW_LAYOUTS)[keyof typeof MAILS_VIEW_LAYOUTS];
 
@@ -22,10 +22,10 @@ type FolderViewProps = {
 };
 
 const LazyFolderView = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
+	() => import(/* webpackChunkName: "folder-panel-view" */ './folder-panel')
 );
 
-export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element => {
+export const FolderRoutes = ({ containerRef }: FolderViewProps): React.JSX.Element => {
 	const { isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit } = useViewLayout();
 	const border = useMemo(
 		() => (isCurrentLayoutHorizontalSplit ? BORDERS.SOUTH : BORDERS.EAST),

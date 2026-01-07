@@ -8,13 +8,13 @@ import React, { Suspense, lazy, useRef } from 'react';
 import { ThemeProvider } from '@zextras/carbonio-design-system';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 
-import { themeMuiExtension } from '../theme/theme-mui';
-import { Spinner } from 'assets/spinner';
-import { FolderView } from 'views/folder-view';
-import { LayoutSelector } from 'views/layout-selector';
+import { FolderRoutes } from './folder-routes';
+import { Spinner } from '../../assets/spinner';
+import { themeMuiExtension } from '../../theme/theme-mui';
+import { LayoutSelector } from '../layout-selector';
 
 const LazyDetailPanel = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
+	() => import(/* webpackChunkName: "folder-panel-view" */ './detail-panel')
 );
 
 const DetailPanel = (): React.JSX.Element => (
@@ -30,7 +30,7 @@ const AppView = (): React.JSX.Element => {
 	return (
 		<ThemeProvider extension={themeMuiExtension}>
 			<LayoutSelector
-				folderView={<FolderView containerRef={containerRef} />}
+				folderView={<FolderRoutes containerRef={containerRef} />}
 				detailPanel={<DetailPanel />}
 				containerRef={containerRef}
 			/>

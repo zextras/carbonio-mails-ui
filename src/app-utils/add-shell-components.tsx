@@ -29,7 +29,7 @@ import { useSmimeFeatureStore } from 'store/certificates/store';
 import { getSettingsSubSections } from 'views/settings/subsections';
 
 const LazyAppView = lazy(
-	() => import(/* webpackChunkName: "mails-folder-panel-view" */ '../views/app-view')
+	() => import(/* webpackChunkName: "mails-folder-panel-view" */ '../views/app/app-view')
 );
 
 const LazyEditView = lazy(
