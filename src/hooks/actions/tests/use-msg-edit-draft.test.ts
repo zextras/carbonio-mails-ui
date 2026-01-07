@@ -4,24 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { setupHook } from '@test-setup';
+import { setupHook, within } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
-
-const createModal = vi.fn();
-const closeModal = vi.fn();
-
-vi.mock('hooks/use-ui-utilities', () => ({
-	useUiUtilities: (): { createModal: typeof createModal; closeModal: typeof closeModal } => ({
-		createModal,
-		closeModal
-	})
-}));
 
 describe('useMsgEditDraft', () => {
 	const msg = generateMessage();
@@ -111,7 +101,7 @@ describe('useMsgEditDraft', () => {
 				expect(addBoard).not.toHaveBeenCalled();
 			});
 
-			it('should call createModal with warning configuration when message is scheduled', async () => {
+			it('it should open warning modal with title warning, warning message, edit anyway confirm label, and close icon', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgEditDraftFn, {
@@ -122,21 +112,25 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				expect(createModal).toHaveBeenCalledWith(
-					expect.objectContaining({
-						title: 'label.warning',
-						confirmLabel: 'action.edit_anyway',
-						onConfirm: expect.any(Function),
-						onClose: expect.any(Function),
-						showCloseIcon: true,
-						children: expect.anything()
-					})
-				);
+				const modal = await screen.findByTestId('modal');
+				expect(modal).toBeInTheDocument();
+
+				expect(within(modal).getByText('label.warning')).toBeInTheDocument();
+
+				expect(within(modal).getByTestId('icon: Close')).toBeInTheDocument();
+
+				expect(within(modal).getByText('messages.edit_schedule_warning')).toBeInTheDocument();
+
+				const editAnywayButton = within(modal).getByRole('button', {
+					name: 'action.edit_anyway'
+				});
+				expect(editAnywayButton).toBeInTheDocument();
 			});
 
-			it('should call closeModal and addBoard when modal onConfirm callback is invoked', async () => {
+			it('should close the warning modal and call addBoard when modal is confirmed', async () => {
 				const {
-					result: { current: functions }
+					result: { current: functions },
+					user
 				} = setupHook(useMsgEditDraftFn, {
 					initialProps: [msg.id, true, FOLDERS.DRAFTS]
 				});
@@ -145,10 +139,17 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				const modalCall = createModal.mock.calls[0][0];
-				modalCall.onConfirm();
+				const modal = await screen.findByTestId('modal');
+				expect(modal).toBeInTheDocument();
 
-				expect(closeModal).toHaveBeenCalledWith(modalCall.id);
+				const editAnywayButton = within(modal).getByRole('button', {
+					name: 'action.edit_anyway'
+				});
+
+				await user.click(editAnywayButton);
+
+				expect(modal).not.toBeInTheDocument();
+
 				expect(addBoard).toHaveBeenCalledWith(
 					expect.objectContaining({
 						boardViewId: 'mails_editor_board_view',
@@ -160,9 +161,10 @@ describe('useMsgEditDraft', () => {
 				);
 			});
 
-			it('should call closeModal without calling addBoard when modal onClose callback is invoked', async () => {
+			it('should close the warning modal without calling addBoard when modal is closed with close icon button', async () => {
 				const {
-					result: { current: functions }
+					result: { current: functions },
+					user
 				} = setupHook(useMsgEditDraftFn, {
 					initialProps: [msg.id, true, FOLDERS.DRAFTS]
 				});
@@ -171,10 +173,15 @@ describe('useMsgEditDraft', () => {
 					functions.execute();
 				});
 
-				const modalCall = createModal.mock.calls[0][0];
-				modalCall.onClose();
+				const modal = await screen.findByTestId('modal');
+				expect(modal).toBeInTheDocument();
 
-				expect(closeModal).toHaveBeenCalledWith(modalCall.id);
+				const closeWarningModalButton = within(modal).getByTestId('icon: Close');
+
+				await user.click(closeWarningModalButton);
+
+				expect(modal).not.toBeInTheDocument();
+
 				expect(addBoard).not.toHaveBeenCalled();
 			});
 		});
