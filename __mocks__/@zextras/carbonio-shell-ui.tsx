@@ -114,7 +114,3 @@ export const JSNS = {
 };
 
 export const IS_FOCUS_MODE = false;
-
-export const report: Mock<typeof shell.report> = vi.fn(() => {
-	noop();
-});
