@@ -11,11 +11,8 @@ import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
-<<<<<<< HEAD
-import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
-=======
 import { editorUtils } from './editor-utils';
->>>>>>> devel
+import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {

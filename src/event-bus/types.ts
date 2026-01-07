@@ -9,14 +9,8 @@ export type DrashTrashedEventPayload = {
 	draftId: string;
 };
 
-// TODO remove me
-export type PippoPayload = {
-	info: string;
-};
-
 export interface EventsBusEventsMap {
 	[DraftTrashedEvent.EventName]: DraftTrashedEvent;
-	'carbonio:mails:eventbus:pippo-released': CustomEvent<PippoPayload>; // TODO remove me
 }
 
 export type EventsBusEventsName = keyof EventsBusEventsMap;

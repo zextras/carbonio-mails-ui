@@ -32,7 +32,7 @@ const getConfirmationModalButton = (): HTMLElement =>
 
 const awaitModalOpening = (): void => {
 	act(() => {
-		jest.advanceTimersByTime(10);
+		vi.advanceTimersByTime(10);
 	});
 };
 
@@ -59,7 +59,7 @@ describe('EditViewFooter', () => {
 		});
 
 		it('should immediately call onDraftDeleted when user clicks the delete button', async () => {
-			const onDraftDeleted = jest.fn();
+			const onDraftDeleted = vi.fn();
 			const editor = generateNewMessageEditor();
 			setupEditorStore({ editors: [editor] });
 
@@ -211,7 +211,7 @@ describe('EditViewFooter', () => {
 
 		it('should call onDraftDeleted when the draft is deleted', async () => {
 			createSoapAPIInterceptor('MsgAction');
-			const onDraftDeleted = jest.fn();
+			const onDraftDeleted = vi.fn();
 			const editor: MailsEditorV2 = {
 				...generateNewMessageEditor(),
 				did: draftId,

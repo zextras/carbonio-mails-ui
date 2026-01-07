@@ -622,28 +622,3 @@ export const generateEditor = ({
 
 	return null;
 };
-
-export function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
-	return {
-		recipients: { to: [], cc: [], bcc: [] },
-		id: '',
-		isRichText: false,
-		isUrgent: false,
-		sendAllowedStatus: {
-			allowed: true
-		},
-		requestReadReceipt: false,
-		savedAttachments: [],
-		size: 0,
-		subject: '',
-		text: {
-			plainText: 'Hello',
-			richText: '<p>Hello</p>'
-		},
-		unsavedAttachments: [],
-		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
-		did: '123',
-		...customData
-	};
-}

@@ -43,7 +43,7 @@ export const useEditorSubject = (
 			setSubject: (val: string): void => {
 				setter(id, val);
 				setDirty();
-				debouncedSaveDraft(id);
+				debouncedSaveDraft();
 			}
 		}),
 		[id, debouncedSaveDraft, setter, value, setDirty]

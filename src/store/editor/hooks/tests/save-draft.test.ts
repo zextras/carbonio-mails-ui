@@ -75,10 +75,12 @@ describe('useEditorDraftSave', () => {
 	describe('Immediate save draft', () => {
 		it('calls the SaveDraft immediately', async () => {
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.immediateSaveDraft(editor.id));
+			act(() => hookResult.current.immediateSaveDraft());
 			// Well, "Almost!" immediately
 			await vi.advanceTimersByTimeAsync(100);
 			expect(saveDraftApi.getCalledTimes()).toBe(1);
@@ -87,23 +89,27 @@ describe('useEditorDraftSave', () => {
 	describe('Debounced save draft', () => {
 		it('calls the SaveDraft after 2s by default', async () => {
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('stops the previous save draft call when invoked again', async () => {
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
@@ -114,20 +120,24 @@ describe('useEditorDraftSave', () => {
 		it('calls SaveDraft after 1s if save draft setting is 1s (less than default)', async () => {
 			setSaveDraftDelaySetting('1s');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting is 3s (more than default)', async () => {
 			setSaveDraftDelaySetting('3s');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
@@ -135,10 +145,12 @@ describe('useEditorDraftSave', () => {
 		it('calls SaveDraft after 2s if save draft setting is not set', async () => {
 			unSetSaveDraftDelaySetting();
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
@@ -148,19 +160,23 @@ describe('useEditorDraftSave', () => {
 		it('calls SaveDraft after 0s if save draft setting is 0s', async () => {
 			setSaveDraftDelaySetting('0s');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting is 0', async () => {
 			setSaveDraftDelaySetting('0');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
@@ -168,10 +184,12 @@ describe('useEditorDraftSave', () => {
 		it('calls SaveDraft after 2s if save draft setting is 2m (minutes)', async () => {
 			setSaveDraftDelaySetting('2m');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
@@ -179,10 +197,12 @@ describe('useEditorDraftSave', () => {
 		it('calls SaveDraft after 2s if save draft setting has no unit and is not 0', async () => {
 			setSaveDraftDelaySetting('100');
 			const { editor } = setupSaveDraftTest();
-			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {});
+			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
+				initialProps: [editor.id]
+			});
 			const { saveDraftApi } = setupSaveDraftApi();
 
-			act(() => hookResult.current.debouncedSaveDraft(editor.id));
+			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });

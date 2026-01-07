@@ -6,6 +6,8 @@
 import { faker } from '@faker-js/faker';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
+import { EditViewActions } from '../../constants';
+import { getDefaultIdentity } from '../../helpers/identities';
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types';
 
@@ -51,3 +53,29 @@ export const anUnsavedAttachment = (): UnsavedAttachment => ({
 	isInline: false,
 	filename: `saved-attachment`
 });
+
+export function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
+	return {
+		recipients: { to: [], cc: [], bcc: [] },
+		id: '',
+		isDirty: false,
+		isRichText: false,
+		isUrgent: false,
+		sendAllowedStatus: {
+			allowed: true
+		},
+		requestReadReceipt: false,
+		savedAttachments: [],
+		size: 0,
+		subject: '',
+		text: {
+			plainText: 'Hello',
+			richText: '<p>Hello</p>'
+		},
+		unsavedAttachments: [],
+		action: EditViewActions.NEW,
+		identityId: getDefaultIdentity().id,
+		did: '123',
+		...customData
+	};
+}

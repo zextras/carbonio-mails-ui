@@ -38,16 +38,14 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { setupEditorStore } from '__test__/generators/editor-store';
-import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
+import { generateNewEditor, readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
-import { getDefaultIdentity } from 'helpers/identities';
 import { addEditor, getEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
-	generateNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
@@ -153,31 +151,31 @@ const TestingEditViewUnmount = ({ editor }: { editor: MailsEditorV2 }): React.JS
 	);
 };
 
-function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
-	return {
-		recipients: { to: [], cc: [], bcc: [] },
-		id: '',
-		isDirty: false,
-		isRichText: false,
-		isUrgent: false,
-		sendAllowedStatus: {
-			allowed: true
-		},
-		requestReadReceipt: false,
-		savedAttachments: [],
-		size: 0,
-		subject: '',
-		text: {
-			plainText: 'Hello',
-			richText: '<p>Hello</p>'
-		},
-		unsavedAttachments: [],
-		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
-		did: '123',
-		...customData
-	};
-}
+// function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
+// 	return {
+// 		recipients: { to: [], cc: [], bcc: [] },
+// 		id: '',
+// 		isDirty: false,
+// 		isRichText: false,
+// 		isUrgent: false,
+// 		sendAllowedStatus: {
+// 			allowed: true
+// 		},
+// 		requestReadReceipt: false,
+// 		savedAttachments: [],
+// 		size: 0,
+// 		subject: '',
+// 		text: {
+// 			plainText: 'Hello',
+// 			richText: '<p>Hello</p>'
+// 		},
+// 		unsavedAttachments: [],
+// 		action: EditViewActions.NEW,
+// 		identityId: getDefaultIdentity().id,
+// 		did: '123',
+// 		...customData
+// 	};
+// }
 
 const getSendButton = (): HTMLElement => screen.getByTestId(/BtnSendMail/i);
 
