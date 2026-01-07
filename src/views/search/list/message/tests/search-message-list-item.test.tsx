@@ -6,7 +6,7 @@
  */
 import React, { act } from 'react';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
@@ -298,6 +298,47 @@ describe('SearchMessageListItem', () => {
 					actionTargetId: '302'
 				});
 			});
+		});
+
+		it('should open warning dialog when double-clicking a scheduled draft message', async () => {
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{ id: '302', isDraft: true, folderId: FOLDERS.DRAFTS, isScheduled: true }
+				]
+			});
+
+			const { user } = setupTest(
+				<SearchMessageListItem
+					completeMessage={messages[0]}
+					selecting={false}
+					active={false}
+					index={0}
+					onSelect={vi.fn()}
+					selected={false}
+				/>
+			);
+
+			const messageWrapper = await screen.findByTestId('MessageListItem-302');
+			await user.hover(messageWrapper);
+
+			const hoverContainer = await screen.findByTestId('hover-container-302');
+			await user.dblClick(hoverContainer);
+
+			// Verify warning modal appears
+			const modal = await screen.findByTestId('modal');
+			expect(modal).toBeInTheDocument();
+
+			// Verify modal title
+			expect(within(modal).getByText('label.warning')).toBeInTheDocument();
+
+			// Verify modal message about delayed sending
+			expect(within(modal).getByText('messages.edit_schedule_warning')).toBeInTheDocument();
+
+			// Verify "Edit anyway" button exists
+			const editAnywayButton = within(modal).getByRole('button', {
+				name: 'action.edit_anyway'
+			});
+			expect(editAnywayButton).toBeInTheDocument();
 		});
 	});
 });
