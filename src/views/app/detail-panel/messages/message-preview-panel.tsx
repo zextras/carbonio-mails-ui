@@ -8,8 +8,10 @@ import React, { FC } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { Spinner } from '../../../../assets/spinner';
 import { IncompleteMessage, MailMessage } from '../../../../types';
+import { DetailPanelBody } from '../../../parts/detail-panel-body';
+import { DetailPanelBodyContainer } from '../../../parts/detail-panel-body-container';
+import { DetailPanelMessageLoading } from '../../../parts/detail-panel-message-loading';
 import MailPreview from '../preview/mail-preview';
 import { PreviewPanelHeader } from '../preview/preview-panel-header';
 
@@ -28,33 +30,19 @@ export const MessagePreviewPanel: FC<{
 				isRead={message?.read}
 				subject={message?.subject}
 			/>
-			<Container
-				style={{ overflowY: 'auto' }}
-				height="fill"
-				background="gray5"
-				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-				mainAlignment="flex-start"
-			>
+			<DetailPanelBodyContainer>
 				{isMessageLoaded ? (
-					<Container height="fit" mainAlignment="flex-start" background="gray5">
+					<DetailPanelBody>
 						<Padding bottom="medium" width="100%">
 							{message && (
 								<MailPreview message={message} expanded isAlone isMessageView isEml={isEml} />
 							)}
 						</Padding>
-					</Container>
+					</DetailPanelBody>
 				) : (
-					<Container
-						style={{ overflowY: 'auto' }}
-						height="fill"
-						background="gray5"
-						mainAlignment="center"
-						crossAlignment="center"
-					>
-						<Spinner text={t('displayer.loading_message', 'Loading message, please wait...')} />
-					</Container>
+					<DetailPanelMessageLoading />
 				)}
-			</Container>
+			</DetailPanelBodyContainer>
 		</Container>
 	);
 };

@@ -9,6 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
+import { DetailPanelBody } from '../../../parts/detail-panel-body';
 import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
@@ -48,7 +49,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 					mainAlignment="flex-start"
 					data-testid={`SearchMessagePanel-${messageId}`}
 				>
-					<Container height="fit" mainAlignment="flex-start" background="gray5">
+					<DetailPanelBody>
 						{message && messageStatus === API_REQUEST_STATUS.fulfilled && (
 							<Padding bottom="medium" width="100%">
 								<MailPreview message={message} expanded isAlone isMessageView />
@@ -57,7 +58,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 						{(messageStatus === API_REQUEST_STATUS.error || messageStatus === null) && (
 							<div data-testid="empty-fragment" />
 						)}
-					</Container>
+					</DetailPanelBody>
 				</Container>
 			)}
 		</Container>

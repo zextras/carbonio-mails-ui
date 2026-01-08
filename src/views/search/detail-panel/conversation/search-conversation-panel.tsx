@@ -5,12 +5,13 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
+import { DetailPanelBody } from '../../../parts/detail-panel-body';
+import { DetailPanelBodyContainer } from '../../../parts/detail-panel-body-container';
 import { DetailPanelContainer } from '../../../parts/detail-panel-container';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
@@ -51,19 +52,16 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	}
 
 	const { messageIds } = conversation;
+	const conversationLoaded = conversation && conversationStatus === API_REQUEST_STATUS.fulfilled;
+	const conversationErrorOrPending =
+		conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null;
 
 	return (
 		<DetailPanelContainer>
 			<SearchPanelHeader item={conversation} />
-			<Container
-				style={{ overflowY: 'auto' }}
-				height="fill"
-				background="gray5"
-				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-				mainAlignment="flex-start"
-			>
-				<Container height="fit" mainAlignment="flex-start" background="gray5">
-					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
+			<DetailPanelBodyContainer>
+				<DetailPanelBody>
+					{conversationLoaded && (
 						<>
 							{map(messageIds, (messageId, index) => (
 								<SearchConversationMessagePanel
@@ -75,11 +73,9 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 							))}
 						</>
 					)}
-					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
-						<div data-testid="empty-fragment" />
-					)}
-				</Container>
-			</Container>
+					{conversationErrorOrPending && <div data-testid="empty-fragment" />}
+				</DetailPanelBody>
+			</DetailPanelBodyContainer>
 		</DetailPanelContainer>
 	);
 };
