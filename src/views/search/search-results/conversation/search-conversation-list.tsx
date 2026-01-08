@@ -12,8 +12,8 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchConversationListItem } from './search-conversation-list-item';
+import { Divider } from '../../../../components/editor/parts/edit-view-styled-components';
 import type { SearchListPanelRouteParams } from '../../../../types/routes';
-import { Divider } from '../../../app/preview/edit/parts/edit-view-styled-components';
 import { SearchListHeader } from '../parts/search-list-header';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import type { SearchListProps } from 'types/index.d';

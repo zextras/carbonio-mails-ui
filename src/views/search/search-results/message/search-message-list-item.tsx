@@ -9,8 +9,8 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
 import { SearchMessageListItemCore } from './search-message-list-item-core';
+import { createEditBoard } from '../../../../components/editor/edit-view-board';
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
-import { createEditBoard } from '../../../app/preview/edit/edit-view-board';
 import { EditViewActions } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';

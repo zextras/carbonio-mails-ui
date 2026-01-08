@@ -9,7 +9,7 @@ import { Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { createEditBoard } from '../../views/app/preview/edit/edit-view-board';
+import { createEditBoard } from '../../components/editor/edit-view-board';
 import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';

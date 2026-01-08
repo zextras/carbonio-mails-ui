@@ -9,9 +9,9 @@ import { Container } from '@zextras/carbonio-design-system';
 import { debounce } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { createEditBoard } from '../../../../components/editor/edit-view-board';
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { FolderPanelRouteParams } from '../../../../types/routes';
-import { createEditBoard } from '../../preview/edit/edit-view-board';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';

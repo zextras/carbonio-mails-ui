@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { createEditBoard } from '../../views/app/preview/edit/edit-view-board';
+import { createEditBoard } from '../../components/editor/edit-view-board';
 import { ConversationActionsDescriptors, EditViewActions } from 'constants/index';
 import { MIMETYPE_EML } from 'helpers/attachments';
 import { useMsgForwardAsAttachmentFn } from 'hooks/actions/use-msg-forward-as-attachment';

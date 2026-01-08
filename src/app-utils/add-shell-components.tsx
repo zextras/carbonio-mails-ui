@@ -34,9 +34,7 @@ const LazyAppView = lazy(
 
 const LazyEditView = lazy(
 	() =>
-		import(
-			/* webpackChunkName: "mails-edit-view" */ '../views/app/preview/edit/edit-view-controller'
-		)
+		import(/* webpackChunkName: "mails-edit-view" */ '../components/editor/edit-view-controller')
 );
 
 const LazySettingsView = lazy(
