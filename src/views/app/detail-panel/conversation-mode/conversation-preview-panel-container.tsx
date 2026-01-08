@@ -24,7 +24,7 @@ import type {
 	DetailPanelRoutesParams
 } from '../../../../types/routes';
 import { DetailPanelContainer } from '../../../parts/detail-panel-container';
-import { PreviewPanelHeader } from '../preview/preview-panel-header';
+import { DetailPanelHeader } from '../header/detail-panel-header';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -78,7 +78,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		<DetailPanelContainer>
 			{showPreviewPanel && (
 				<>
-					<PreviewPanelHeader
+					<DetailPanelHeader
 						itemType={'conversation'}
 						subject={conversation.subject}
 						isRead={conversation.read}

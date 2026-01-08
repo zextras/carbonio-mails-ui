@@ -8,38 +8,38 @@ import React, { useCallback } from 'react';
 import { Row } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
-import { DetailPanelHeader } from '../../../parts/detail-panel-header';
-import { MAILS_ROUTE } from 'constants/index';
-import { isFocusModeMailView } from 'helpers/external-tabs';
-import { useViewLayout } from 'hooks/use-view-layout';
-import type { MailMessage } from 'types/index.d';
-import { ConversationPreviewHeaderNavigation } from 'views/app/detail-panel/preview/conversation-preview-header-navigation';
-import { MessagePreviewHeaderNavigation } from 'views/app/detail-panel/preview/message-preview-header-navigation';
+import { ConversationHeaderNavigation } from './conversation-header-navigation';
+import { MessageHeaderNavigation } from './message-header-navigation';
+import { MAILS_ROUTE } from '../../../../constants';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import { useViewLayout } from '../../../../hooks/use-view-layout';
+import type { MailMessage } from '../../../../types';
+import { DetailPanelHeaderContent } from '../../../parts/detail-panel-header-content';
 
-const PreviewHeaderNavigation = ({
+const DetailPanelHeaderNavigation = ({
 	itemType
 }: {
 	itemType: 'message' | 'conversation';
 }): React.JSX.Element => {
 	if (itemType === 'message') {
-		return <MessagePreviewHeaderNavigation />;
+		return <MessageHeaderNavigation />;
 	}
-	return <ConversationPreviewHeaderNavigation />;
+	return <ConversationHeaderNavigation />;
 };
 
-type PreviewPanelHeaderProps = {
+type DetailPanelHeaderProps = {
 	itemType: 'message' | 'conversation';
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
 };
 
-export const PreviewPanelHeader = ({
+export const DetailPanelHeader = ({
 	subject,
 	isRead,
 	folderId,
 	itemType
-}: PreviewPanelHeaderProps): React.JSX.Element => {
+}: DetailPanelHeaderProps): React.JSX.Element => {
 	const navigate = useNavigate();
 	const isStandAlone = isFocusModeMailView();
 	const navigateToFolder = useCallback(
@@ -51,7 +51,7 @@ export const PreviewPanelHeader = ({
 	const layoutView = isCurrentLayoutNoSplit && !isStandAlone;
 
 	return (
-		<DetailPanelHeader
+		<DetailPanelHeaderContent
 			onClose={navigateToFolder}
 			subject={subject}
 			isRead={isRead}
@@ -59,9 +59,9 @@ export const PreviewPanelHeader = ({
 		>
 			{layoutView && (
 				<Row padding={{ right: 'large' }}>
-					<PreviewHeaderNavigation itemType={itemType} />
+					<DetailPanelHeaderNavigation itemType={itemType} />
 				</Row>
 			)}
-		</DetailPanelHeader>
+		</DetailPanelHeaderContent>
 	);
 };

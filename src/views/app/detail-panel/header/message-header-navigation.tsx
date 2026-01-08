@@ -7,12 +7,12 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { NavigationIconButton } from './navigation-icon-button';
+import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
+import { useMessageIndexSlice } from '../../../../store/emails/store';
 import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
-import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
-import { useMessageIndexSlice } from 'store/emails/store';
-import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
-export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
+export const MessageHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, messageId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
 	const { messageListIndex, more, status } = useMessageIndexSlice();

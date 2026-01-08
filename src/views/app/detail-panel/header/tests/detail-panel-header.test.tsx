@@ -11,15 +11,15 @@ import { waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
 
+import { TESTID_SELECTORS } from '../../../../../__test__/constants';
+import { generateConversation } from '../../../../../__test__/generators/generateConversation';
+import { mockLayoutStorage } from '../../../../../__test__/layouts-utils';
+import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
+import { setConversationsInEmailStore } from '../../../../../store/emails/store';
+import { DetailPanelHeader } from '../detail-panel-header';
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { TESTID_SELECTORS } from '__test__/constants';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { mockLayoutStorage } from '__test__/layouts-utils';
-import { MAILS_VIEW_LAYOUTS } from 'constants/index';
-import { setConversationsInEmailStore } from 'store/emails/store';
-import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
 const mockNavigate = vi.fn();
 
@@ -31,13 +31,13 @@ vi.mock('react-router-dom', async () => {
 	};
 });
 
-describe('PreviewPanelHeader', () => {
+describe('DetailPanelHeader', () => {
 	it('renders correctly', () => {
 		populateFoldersStore();
 		const subject = faker.word.words();
 
 		setupTest(
-			<PreviewPanelHeader
+			<DetailPanelHeader
 				itemType={'conversation'}
 				subject={subject}
 				isRead={false}
@@ -52,7 +52,7 @@ describe('PreviewPanelHeader', () => {
 		populateFoldersStore();
 
 		setupTest(
-			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
+			<DetailPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
 		);
 
 		expect(screen.getByText('<No Subject>')).toBeVisible();
@@ -63,7 +63,7 @@ describe('PreviewPanelHeader', () => {
 		populateFoldersStore();
 
 		setupTest(
-			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
+			<DetailPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
 		);
 
 		expect(
@@ -82,7 +82,7 @@ describe('PreviewPanelHeader', () => {
 		setConversationsInEmailStore([conversation], false);
 
 		setupTest(
-			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />,
+			<DetailPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />,
 			{
 				initialEntries: [`/mails/folder/2/conversation/1`],
 				path: '/mails/folder/:folderId/conversation/:conversationId'

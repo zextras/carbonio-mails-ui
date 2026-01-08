@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { SEARCH_ROUTE } from '../../../constants';
 import type { MailMessage, NormalizedConversation } from '../../../types';
-import { DetailPanelHeader } from '../../parts/detail-panel-header';
+import { DetailPanelHeaderContent } from '../../parts/detail-panel-header-content';
 
 export const SearchPanelHeader: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
@@ -19,5 +19,5 @@ export const SearchPanelHeader: FC<{
 		navigate(`/${SEARCH_ROUTE}`, { replace: true });
 	}, [navigate]);
 
-	return <DetailPanelHeader onClose={navigateToSearch} {...item} />;
+	return <DetailPanelHeaderContent onClose={navigateToSearch} {...item} />;
 };

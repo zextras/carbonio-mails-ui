@@ -10,7 +10,7 @@ import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
 import { updateMessageStatus } from '../../../../store/emails/store';
-import { MessagePreviewPanelContainer } from '../messages/message-preview-panel-container';
+import { MessagePreviewPanelContainer } from '../message-mode/message-preview-panel-container';
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 

@@ -7,15 +7,15 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { NavigationIconButton } from './navigation-icon-button';
+import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
+import { useConversationIndexSlice } from '../../../../store/emails/store';
 import type {
 	DetailPanelConversationRouteParams,
 	DetailPanelRoutesParams
 } from '../../../../types/routes';
-import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
-import { useConversationIndexSlice } from 'store/emails/store';
-import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
-export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
+export const ConversationHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, conversationId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
 	const { conversationListIndex, more, status } = useConversationIndexSlice();

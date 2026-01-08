@@ -25,7 +25,7 @@ type DetailPanelHeaderProps = {
 	onClose?: () => void;
 	layoutView?: boolean;
 };
-export const DetailPanelHeader = ({
+export const DetailPanelHeaderContent = ({
 	subject,
 	isRead,
 	children,

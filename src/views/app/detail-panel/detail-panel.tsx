@@ -9,8 +9,8 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import { ConversationPreviewPanelContainer } from './conversations/conversation-preview-panel-container';
-import { MessagePreviewPanelContainer } from './messages/message-preview-panel-container';
+import { ConversationPreviewPanelContainer } from './conversation-mode/conversation-preview-panel-container';
+import { MessagePreviewPanelContainer } from './message-mode/message-preview-panel-container';
 import { SelectionInteractive } from './selection-interactive';
 import { AppContext } from '../../../app-utils/app-context-initializer';
 

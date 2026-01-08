@@ -8,7 +8,7 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { MessagePreviewPanel } from '../messages/message-preview-panel';
+import { MessagePreviewPanel } from '../message-mode/message-preview-panel';
 import { setupTest } from '@test-setup';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';

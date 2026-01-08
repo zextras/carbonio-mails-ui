@@ -9,7 +9,7 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { ConversationPreviewPanelContainer } from '../conversations/conversation-preview-panel-container';
+import { ConversationPreviewPanelContainer } from '../conversation-mode/conversation-preview-panel-container';
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';

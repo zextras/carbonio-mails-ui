@@ -8,11 +8,11 @@ import React from 'react';
 
 import { waitFor } from '@testing-library/react';
 
-import { ConversationPreviewPanel } from '../../conversations/conversation-preview-panel';
+import { generateConversation } from '../../../../../__test__/generators/generateConversation';
+import { generateMessage } from '../../../../../__test__/generators/generateMessage';
+import { updateConversations, updateMessages } from '../../../../../store/emails/store';
+import { ConversationPreviewPanel } from '../conversation-preview-panel';
 import { screen, setupTest } from '@test-setup';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { generateMessage } from '__test__/generators/generateMessage';
-import { updateConversations, updateMessages } from 'store/emails/store';
 
 /**
  * Test the Conversation Preview Panel component in different scenarios

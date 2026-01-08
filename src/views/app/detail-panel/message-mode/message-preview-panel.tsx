@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { IncompleteMessage, MailMessage } from '../../../../types';
 import { DetailPanelContainer } from '../../../parts/detail-panel-container';
 import { MessagePanelBody } from '../../../parts/message-panel-body';
-import { PreviewPanelHeader } from '../preview/preview-panel-header';
+import { DetailPanelHeader } from '../header/detail-panel-header';
 
 export const MessagePreviewPanel: FC<{
 	folderId: string;
@@ -17,7 +17,7 @@ export const MessagePreviewPanel: FC<{
 	isEml?: boolean;
 }> = ({ folderId, message, isMessageLoaded, isEml }) => (
 	<DetailPanelContainer>
-		<PreviewPanelHeader
+		<DetailPanelHeader
 			folderId={folderId}
 			itemType={'message'}
 			isRead={message?.read}
