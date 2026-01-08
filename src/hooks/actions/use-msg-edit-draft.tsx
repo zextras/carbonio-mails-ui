@@ -27,20 +27,20 @@ export const useMsgEditDraftFn = (
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			if (isMessageScheduled) {
-				const id = Date.now().toString();
+				const warningModalId = Date.now().toString();
 				createModal({
-					id,
+					id: warningModalId,
 					title: t('label.warning', 'Warning'),
 					confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 					onConfirm: () => {
-						closeModal(id);
+						closeModal(warningModalId);
 						createEditBoard({
 							action: EditViewActions.EDIT_AS_DRAFT,
-							actionTargetId: `${id}`
+							actionTargetId: messageId
 						});
 					},
 					onClose: () => {
-						closeModal(id);
+						closeModal(warningModalId);
 					},
 					showCloseIcon: true,
 					children: (

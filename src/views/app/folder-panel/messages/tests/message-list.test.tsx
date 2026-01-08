@@ -741,4 +741,57 @@ describe('message-list', () => {
 			expect(screen.getAllByTestId('icon: Checkmark')).toHaveLength(2);
 		});
 	});
+
+	describe('scheduled draft messages', () => {
+		it('should open warning dialog when double-clicking a scheduled draft message', async () => {
+			const scheduledTime = Date.now() + 3600000; // 1 hour in the future
+			const scheduledDraftMessage = generateCompleteMessageFromAPI({
+				id: '100',
+				l: FOLDERS.DRAFTS,
+				f: 'd',
+				autoSendTime: scheduledTime
+			});
+
+			populateFoldersStore();
+			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.DRAFTS });
+
+			createSoapAPIInterceptor('Search', {
+				m: [scheduledDraftMessage],
+				more: false
+			});
+
+			const { user } = setupTest(<MessageList />);
+
+			await screen.findAllByTestId('invisible-item');
+			makeListItemsVisible();
+
+			const messageListItem = await screen.findByTestId(
+				`MessageListItem-${scheduledDraftMessage.id}`
+			);
+			expect(messageListItem).toBeInTheDocument();
+
+			await user.hover(messageListItem);
+			const hoverContainer = await screen.findByTestId(/hover-container-/);
+
+			await act(async () => {
+				await user.dblClick(hoverContainer);
+			});
+
+			// modal appears
+			const modal = await screen.findByTestId('modal');
+			expect(modal).toBeInTheDocument();
+
+			// modal title
+			expect(within(modal).getByText('label.warning')).toBeInTheDocument();
+
+			// modal message about delayed sending
+			expect(within(modal).getByText('messages.edit_schedule_warning')).toBeInTheDocument();
+
+			// "Edit anyway" button exists
+			const editAnywayButton = within(modal).getByRole('button', {
+				name: 'action.edit_anyway'
+			});
+			expect(editAnywayButton).toBeInTheDocument();
+		});
+	});
 });
