@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { filter, isEmpty } from 'lodash';
@@ -24,6 +23,7 @@ import type {
 	DetailPanelConversationRouteParams,
 	DetailPanelRoutesParams
 } from '../../../../types/routes';
+import { DetailPanelCore } from '../../../parts/detail-panel-core';
 import { PreviewPanelHeader } from '../preview/preview-panel-header';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
@@ -68,8 +68,14 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		return filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0;
 	}, [conversation, folderId, messages]);
 
+	// TODO: early return if no such conversation
+	if (!conversation) {
+		// navigate(`/`, { replace: true });
+		return <></>;
+	}
+
 	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+		<DetailPanelCore>
 			{showPreviewPanel && (
 				<>
 					<PreviewPanelHeader
@@ -96,6 +102,6 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 					)}
 				</>
 			)}
-		</Container>
+		</DetailPanelCore>
 	);
 };

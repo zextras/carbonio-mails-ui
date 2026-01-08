@@ -11,6 +11,7 @@ import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
+import { DetailPanelCore } from '../../../parts/detail-panel-core';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
@@ -52,40 +53,33 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	const { messageIds } = conversation;
 
 	return (
-		<Container
-			orientation="vertical"
-			mainAlignment="flex-start"
-			crossAlignment="flex-start"
-			data-testid={`SearchConversationPanel-${conversationId}`}
-		>
-			<>
-				<SearchPanelHeader item={conversation} />
-				<Container
-					style={{ overflowY: 'auto' }}
-					height="fill"
-					background="gray5"
-					padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-					mainAlignment="flex-start"
-				>
-					<Container height="fit" mainAlignment="flex-start" background="gray5">
-						{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
-							<>
-								{map(messageIds, (messageId, index) => (
-									<SearchConversationMessagePanel
-										key={messageId}
-										convMessageId={messageId}
-										isExpanded={isExpanded(index)}
-										isAlone={conversation.messageIds?.length === 1}
-									/>
-								))}
-							</>
-						)}
-						{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
-							<div data-testid="empty-fragment" />
-						)}
-					</Container>
+		<DetailPanelCore>
+			<SearchPanelHeader item={conversation} />
+			<Container
+				style={{ overflowY: 'auto' }}
+				height="fill"
+				background="gray5"
+				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
+				mainAlignment="flex-start"
+			>
+				<Container height="fit" mainAlignment="flex-start" background="gray5">
+					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
+						<>
+							{map(messageIds, (messageId, index) => (
+								<SearchConversationMessagePanel
+									key={messageId}
+									convMessageId={messageId}
+									isExpanded={isExpanded(index)}
+									isAlone={conversation.messageIds?.length === 1}
+								/>
+							))}
+						</>
+					)}
+					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
+						<div data-testid="empty-fragment" />
+					)}
 				</Container>
-			</>
-		</Container>
+			</Container>
+		</DetailPanelCore>
 	);
 };
