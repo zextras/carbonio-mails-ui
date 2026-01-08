@@ -29,35 +29,31 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { AppContext } from '../../../app-utils/app-context-initializer';
-import { getAttachmentExtension, useAttachmentIconColor } from '../../../helpers/attachments';
-import { openEmlStandalonePreview } from '../../../helpers/external-tabs';
-import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { deleteAttachmentsEmailStoreAction } from '../../../store/emails/actions/delete-attachments-action';
+import DeleteAttachmentModal from './delete-attachment-modal';
+import { humanFileSize, isDocument, previewType } from './file-preview';
+import { AppContext } from '../../../../app-utils/app-context-initializer';
+import { getAttachmentExtension, useAttachmentIconColor } from '../../../../helpers/attachments';
+import { openEmlStandalonePreview } from '../../../../helpers/external-tabs';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
 import type {
 	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
 	CopyToFileResponse,
 	MailMessage
-} from '../../../types';
+} from '../../../../types';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
 	SelectNodesFunctionArgs
-} from '../../../types/integrations/carbonio-files-ui';
-import DeleteAttachmentModal from '../../../views/app/preview/preview/delete-attachment-modal';
-import {
-	humanFileSize,
-	isDocument,
-	previewType
-} from '../../../views/app/preview/preview/file-preview';
+} from '../../../../types/integrations/carbonio-files-ui';
 import {
 	getAttachmentIconColors,
 	getAttachmentsDownloadLink,
 	getAttachmentsLink,
 	getLocationOrigin
-} from '../../../views/app/preview/preview/utils';
+} from '../utils';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments

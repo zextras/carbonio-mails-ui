@@ -18,7 +18,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
-import { getAttachmentsLink } from '../preview/utils';
+import { getAttachmentsLink } from '../../../../components/preview/mail/utils';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,

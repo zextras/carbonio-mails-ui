@@ -11,7 +11,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { MessageSignature } from '../../../../../types';
-import { ErrorMessageCode } from '../../../../../views/app/preview/preview/utils';
+import { ErrorMessageCode } from '../../utils';
 
 type SmimeDetailsModalProps = {
 	signature: MessageSignature;

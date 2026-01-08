@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { getLocationOrigin } from '../../views/app/preview/preview/utils/index';
+import { getLocationOrigin } from '../../components/preview/mail/utils/index';
 import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';

@@ -9,7 +9,7 @@ import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import type { Mock } from 'vitest';
 
-import { ErrorMessageCode, getAttachmentsLink, getSignedIconColor } from '../utils/index';
+import { ErrorMessageCode, getAttachmentsLink, getSignedIconColor } from '../index';
 
 vi.mock('lodash', () => ({
 	includes: vi.fn()

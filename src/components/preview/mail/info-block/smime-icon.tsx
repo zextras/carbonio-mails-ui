@@ -9,7 +9,7 @@ import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { MessageSignature } from '../../../../types';
-import { getSignedIconColor } from '../../../../views/app/preview/preview/utils';
+import { getSignedIconColor } from '../utils';
 
 export const SmimeIcon = ({ signature }: { signature: MessageSignature }): React.JSX.Element => {
 	const [t] = useTranslation();
