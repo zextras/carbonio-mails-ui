@@ -9,8 +9,8 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Route, Routes, useParams } from 'react-router-dom';
 
-import { SearchConversationPanel } from './conversation/search-conversation-panel';
-import { SearchMessagePanel } from './message/search-message-panel';
+import { SearchConversationPreview } from './conversation-mode/search-conversation-preview';
+import { SearchMessagePreview } from './message-mode/search-message-preview';
 import { SearchPanelProps } from 'types/index.d';
 
 type WithMessageIdProps = {
@@ -29,7 +29,7 @@ const withMessageId = <P extends WithMessageIdProps>(
 
 	return ComponentWithMessageId;
 };
-const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
+const SearchDetailPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
 	const displayerMessage = useMemo(() => {
 		if (searchResults.conversationListIndex.length > 0 || searchResults.messageListIndex.length > 0)
 			return {
@@ -55,8 +55,8 @@ const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => 
 	);
 	return (
 		<Routes>
-			<Route path={`conversation/:conversationId`} element={<SearchConversationPanel />} />
-			<Route path={`message/:messageId`} Component={withMessageId(SearchMessagePanel)}></Route>
+			<Route path={`conversation/:conversationId`} element={<SearchConversationPreview />} />
+			<Route path={`message/:messageId`} Component={withMessageId(SearchMessagePreview)}></Route>
 			<Route
 				path={'/'}
 				element={
@@ -87,4 +87,4 @@ const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => 
 	);
 };
 
-export default SearchPanel;
+export default SearchDetailPanel;

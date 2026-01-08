@@ -9,9 +9,9 @@ import { Padding } from '@zextras/carbonio-design-system';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Spinner } from '../../../../assets/spinner';
+import MailPreview from '../../../../components/preview/mail-preview';
 import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
-import MailPreview from '../preview/mail-preview';
 
 export const ConversationMessagePreview = ({
 	convMessageId,

@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConversationPreviewBody } from './conversation-preview-body';
 import { Spinner } from '../../../../assets/spinner';
-import { DetailPanelContainer } from '../../../../components/detail-panel/detail-panel-container';
+import { DetailPanelContainer } from '../../../../components/preview/detail-panel-container';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { getFolderIdParts } from '../../../../helpers/folders';
@@ -31,11 +30,8 @@ export const ConversationPreview = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const { conversationId, folderId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
-		conversationId,
-		shouldMarkAsRead: zimbraPrefMarkMsgRead
+		conversationId
 	});
 	const messages = useConversationMessages(conversationId);
 

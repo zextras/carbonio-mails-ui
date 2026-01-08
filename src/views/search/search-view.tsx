@@ -11,7 +11,7 @@ import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { Route, Routes } from 'react-router-dom';
 
-import SearchPanel from './detail-panel/search-panel';
+import SearchDetailPanel from './preview/search-detail-panel';
 import { SearchConversationList } from './search-results/conversation/search-conversation-list';
 import { SearchMessageList } from './search-results/message/search-message-list';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -201,7 +201,7 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 				</Routes>
 				<Suspense fallback={<Spinner color="gray5" />}>
 					<Container mainAlignment="flex-start" width="75%">
-						<SearchPanel searchResults={searchResults} query={query} />
+						<SearchDetailPanel searchResults={searchResults} query={query} />
 					</Container>
 				</Suspense>
 			</Container>

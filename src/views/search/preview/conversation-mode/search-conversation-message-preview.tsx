@@ -8,8 +8,8 @@ import React from 'react';
 import { Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
+import MailPreview from '../../../../components/preview/mail-preview';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import MailPreview from '../../../app/preview/preview/mail-preview';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 
 export type SearchConversationMessagePreviewProps = {
@@ -18,7 +18,7 @@ export type SearchConversationMessagePreviewProps = {
 	isAlone: boolean;
 };
 
-export const SearchConversationMessagePanel = ({
+export const SearchConversationMessagePreview = ({
 	convMessageId,
 	isExpanded,
 	isAlone

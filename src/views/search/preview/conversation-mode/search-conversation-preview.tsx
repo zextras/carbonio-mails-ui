@@ -9,10 +9,10 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { DetailPanelBody } from '../../../../components/detail-panel/detail-panel-body';
-import { DetailPanelBodyContainer } from '../../../../components/detail-panel/detail-panel-body-container';
-import { DetailPanelContainer } from '../../../../components/detail-panel/detail-panel-container';
+import { SearchConversationMessagePreview } from './search-conversation-message-preview';
+import { DetailPanelBody } from '../../../../components/preview/detail-panel-body';
+import { DetailPanelBodyContainer } from '../../../../components/preview/detail-panel-body-container';
+import { DetailPanelContainer } from '../../../../components/preview/detail-panel-container';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
@@ -21,16 +21,13 @@ import {
 } from 'types/routes';
 import { SearchPanelHeader } from 'views/search/parts/search-panel-header';
 
-export const SearchConversationPanel = (): React.JSX.Element => {
+export const SearchConversationPreview = (): React.JSX.Element => {
 	const { conversationId } =
 		useParams<SearchDetailPanelRouteParams>() as SearchDetailPanelConversationRouteParams;
 	const navigate = useNavigate();
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
-		conversationId,
-		shouldMarkAsRead: zimbraPrefMarkMsgRead
+		conversationId
 	});
 
 	const settings = useUserSettings();
@@ -64,7 +61,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 					{conversationLoaded && (
 						<>
 							{map(messageIds, (messageId, index) => (
-								<SearchConversationMessagePanel
+								<SearchConversationMessagePreview
 									key={messageId}
 									convMessageId={messageId}
 									isExpanded={isExpanded(index)}

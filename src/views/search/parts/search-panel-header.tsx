@@ -7,7 +7,7 @@ import React, { FC, useCallback } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import { DetailPanelHeaderContent } from '../../../components/detail-panel/detail-panel-header-content';
+import { DetailPanelHeaderContent } from '../../../components/preview/detail-panel-header-content';
 import { SEARCH_ROUTE } from '../../../constants';
 import type { MailMessage, NormalizedConversation } from '../../../types';
 

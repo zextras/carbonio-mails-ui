@@ -33,7 +33,6 @@ type ConversationWithStatus = {
 type UseCompleteConversationOrFetchParams = {
 	conversationId: string;
 	folderId?: string;
-	shouldMarkAsRead?: boolean;
 };
 
 /**
@@ -47,9 +46,9 @@ type UseCompleteConversationOrFetchParams = {
  */
 export function useCompleteConversationOrFetch({
 	conversationId,
-	folderId,
-	shouldMarkAsRead = false
+	folderId
 }: UseCompleteConversationOrFetchParams): ConversationWithStatus {
+	const shouldMarkAsRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 

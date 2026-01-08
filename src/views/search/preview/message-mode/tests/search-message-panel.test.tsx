@@ -10,7 +10,7 @@ import { act, waitFor } from '@testing-library/react';
 import { NavigateFunction, useParams } from 'react-router-dom';
 import type { Mock } from 'vitest';
 
-import { SearchMessagePanel } from '../search-message-panel';
+import { SearchMessagePreview } from '../search-message-preview';
 import { setupTest, screen } from '@test-setup';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -43,7 +43,7 @@ describe('Message Panel', () => {
 			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 		});
 
-		setupTest(<SearchMessagePanel messageId="1" />);
+		setupTest(<SearchMessagePreview messageId="1" />);
 
 		expect(await screen.findByTestId('MessagePanel-1')).toBeVisible();
 		expect(await screen.findByText('Test subject')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('Message Panel', () => {
 		const messages = await act(() => populateMessagesInEmailStore());
 		await act(() => updateMessageStatus(messages[0].id, 'error'));
 
-		setupTest(<SearchMessagePanel messageId={messages[0].id} />, {
+		setupTest(<SearchMessagePreview messageId={messages[0].id} />, {
 			initialEntries: [`/message/${messages[0].id}`],
 			path: '/message/:messageId'
 		});

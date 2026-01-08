@@ -10,7 +10,7 @@ import { Padding } from '@zextras/carbonio-design-system';
 import { DetailPanelBody } from './detail-panel-body';
 import { DetailPanelBodyContainer } from './detail-panel-body-container';
 import { DetailPanelMessageLoading } from './detail-panel-message-loading';
-import MailPreview from '../../views/app/preview/preview/mail-preview';
+import MailPreview from './mail-preview';
 
 type MessagePanelBodyProps = {
 	isEml?: boolean;

@@ -10,7 +10,7 @@ import { NavigateFunction } from 'react-router-dom';
 
 import { populateMessagesInEmailStore } from '../../../../../__test__/generators/generateMessage';
 import { updateMessageStatus } from '../../../../../store/emails/store';
-import { SearchConversationMessagePanel } from '../search-conversation-message-panel';
+import { SearchConversationMessagePreview } from '../search-conversation-message-preview';
 import { setupTest } from '@test-setup';
 
 const mockNavigateSpy = vi.fn();
@@ -26,7 +26,11 @@ describe('conversation-message-preview-wrapper', () => {
 		await act(() => updateMessageStatus(messages[0].id, 'error'));
 
 		setupTest(
-			<SearchConversationMessagePanel convMessageId={messages[0].id} isExpanded={false} isAlone />,
+			<SearchConversationMessagePreview
+				convMessageId={messages[0].id}
+				isExpanded={false}
+				isAlone
+			/>,
 			{
 				initialEntries: [`/conversation/${messages[0].conversation}`],
 				path: '/conversation/:conversationId'

@@ -5,8 +5,8 @@
  */
 import React, { FC } from 'react';
 
-import { DetailPanelContainer } from '../../../../components/detail-panel/detail-panel-container';
-import { MessagePanelBody } from '../../../../components/detail-panel/message-panel-body';
+import { DetailPanelContainer } from '../../../../components/preview/detail-panel-container';
+import { MessagePanelBody } from '../../../../components/preview/message-panel-body';
 import { IncompleteMessage, MailMessage } from '../../../../types';
 import { DetailPanelHeader } from '../header/detail-panel-header';
 

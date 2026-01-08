@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ConversationHeaderNavigation } from './conversation-header-navigation';
 import { MessageHeaderNavigation } from './message-header-navigation';
-import { DetailPanelHeaderContent } from '../../../../components/detail-panel/detail-panel-header-content';
+import { DetailPanelHeaderContent } from '../../../../components/preview/detail-panel-header-content';
 import { MAILS_ROUTE } from '../../../../constants';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { useViewLayout } from '../../../../hooks/use-view-layout';
