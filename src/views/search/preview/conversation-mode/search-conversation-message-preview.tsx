@@ -8,7 +8,7 @@ import React from 'react';
 import { Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
-import MailPreview from '../../../../components/preview/mail-preview';
+import MailPreview from '../../../../components/preview/mail/mail-preview';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 

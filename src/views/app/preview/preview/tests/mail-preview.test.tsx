@@ -9,7 +9,7 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import MailPreview, { MailPreviewProps } from '../../../../../components/preview/mail-preview';
+import MailPreview, { MailPreviewProps } from '../../../../../components/preview/mail/mail-preview';
 import { setupTest } from '@test-setup';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
