@@ -1,0 +1,22 @@
+version = 1
+SPDX-PackageName = "carbonio-calendars-ui"
+SPDX-PackageSupplier = "Zextras <https://www.zextras.com>"
+
+[[annotations]]
+path = "**.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 Zextras <https://www.zextras.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+[[annotations]]
+path = ["THIRDPARTIES", ".nvmrc", ".npmrc", ".husky/**", ".github/**", "CHANGELOG.md", "REUSE.toml", "Dockerfile"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 Zextras <https://www.zextras.com>"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "src/assets/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2021 Zextras <https://www.zextras.com>"
+SPDX-License-Identifier = "CC-BY-NC-SA-4.0"
+
