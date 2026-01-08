@@ -11,7 +11,7 @@ import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { DetailPanelCore } from '../../../parts/detail-panel-core';
+import { DetailPanelContainer } from '../../../parts/detail-panel-container';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
@@ -53,7 +53,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	const { messageIds } = conversation;
 
 	return (
-		<DetailPanelCore>
+		<DetailPanelContainer>
 			<SearchPanelHeader item={conversation} />
 			<Container
 				style={{ overflowY: 'auto' }}
@@ -80,6 +80,6 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 					)}
 				</Container>
 			</Container>
-		</DetailPanelCore>
+		</DetailPanelContainer>
 	);
 };

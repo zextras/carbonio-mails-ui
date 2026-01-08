@@ -23,7 +23,7 @@ import type {
 	DetailPanelConversationRouteParams,
 	DetailPanelRoutesParams
 } from '../../../../types/routes';
-import { DetailPanelCore } from '../../../parts/detail-panel-core';
+import { DetailPanelContainer } from '../../../parts/detail-panel-container';
 import { PreviewPanelHeader } from '../preview/preview-panel-header';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
@@ -75,7 +75,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	}
 
 	return (
-		<DetailPanelCore>
+		<DetailPanelContainer>
 			{showPreviewPanel && (
 				<>
 					<PreviewPanelHeader
@@ -102,6 +102,6 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 					)}
 				</>
 			)}
-		</DetailPanelCore>
+		</DetailPanelContainer>
 	);
 };

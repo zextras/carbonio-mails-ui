@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
-export const DetailPanelCore = ({ children }: React.PropsWithChildren): React.JSX.Element => (
+export const DetailPanelContainer = ({ children }: React.PropsWithChildren): React.JSX.Element => (
 	<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 		{children}
 	</Container>
