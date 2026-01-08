@@ -15,10 +15,10 @@ import { ConversationPreviewBody } from '../conversation-preview-body';
 import { screen, setupTest } from '@test-setup';
 
 /**
- * Test the Conversation Preview Panel component in different scenarios
+ * Test the Conversation Preview Body component in different scenarios
  */
-describe('Conversation Preview Panel', () => {
-	it('renders the Conversation Preview Panel component and every conversation message', async () => {
+describe('Conversation Preview Body', () => {
+	it('renders the Conversation Preview Body component and every conversation message', async () => {
 		const message1 = generateMessage({ id: '1' });
 		const message2 = generateMessage({ id: '2' });
 		const messages = [message1, message2];

@@ -8,12 +8,12 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { MessagePreview } from '../message-mode/message-preview';
+import { generateMessage } from '../../../../../__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from '../../../../../constants';
+import { useCompleteMessageOrFetch } from '../../../../../store/emails/hooks/hooks';
+import { updateMessageStatus } from '../../../../../store/emails/store';
+import { MessagePreview } from '../message-preview';
 import { setupTest } from '@test-setup';
-import { generateMessage } from '__test__/generators/generateMessage';
-import { API_REQUEST_STATUS } from 'constants/index';
-import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import { updateMessageStatus } from 'store/emails/store';
 
 vi.mock('../../../../store/emails/hooks/hooks');
 

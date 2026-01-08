@@ -8,9 +8,9 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import { NavigateFunction } from 'react-router-dom';
 
-import { populateMessagesInEmailStore } from '../../../../__test__/generators/generateMessage';
-import { updateMessageStatus } from '../../../../store/emails/store';
-import { ConversationMessagePreview } from '../conversation-mode/conversation-message-preview';
+import { populateMessagesInEmailStore } from '../../../../../__test__/generators/generateMessage';
+import { updateMessageStatus } from '../../../../../store/emails/store';
+import { ConversationMessagePreview } from '../conversation-message-preview';
 import { setupTest } from '@test-setup';
 
 const mockNavigateSpy = vi.fn();

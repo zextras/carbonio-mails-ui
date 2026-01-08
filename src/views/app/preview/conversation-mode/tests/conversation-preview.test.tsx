@@ -9,11 +9,11 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { ConversationPreview } from '../conversation-mode/conversation-preview';
+import { populateConversationInEmailStore } from '../../../../../__test__/generators/generateConversation';
+import { updateConversationStatus } from '../../../../../store/emails/store';
+import { ConversationPreview } from '../conversation-preview';
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
-import { updateConversationStatus } from 'store/emails/store';
 
 describe('ConversationPreviewPanelContainer', () => {
 	const defaultTitle = 'test title';

@@ -9,10 +9,10 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { updateMessageStatus } from '../../../../store/emails/store';
-import { MessagePreviewContainer } from '../message-mode/message-preview-container';
+import { populateMessagesInEmailStore } from '../../../../../__test__/generators/generateMessage';
+import { updateMessageStatus } from '../../../../../store/emails/store';
+import { MessagePreviewContainer } from '../message-preview-container';
 import { setupTest } from '@test-setup';
-import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 
 describe('MessagePreviewPanelContainer', () => {
 	const defaultTitle = 'test title';
