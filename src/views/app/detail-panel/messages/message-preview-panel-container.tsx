@@ -5,7 +5,6 @@
  */
 import React, { useEffect } from 'react';
 
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { MessagePreviewPanel } from './message-preview-panel';
@@ -20,14 +19,11 @@ import type {
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
 
-	const prefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const { folderId, messageId } =
 		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
 
 	const { message, messageStatus } = useCompleteMessageOrFetch({
-		messageId,
-		shouldMarkAsRead: prefMarkMsgRead
+		messageId
 	});
 
 	useEffect(() => {

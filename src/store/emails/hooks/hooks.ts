@@ -6,6 +6,7 @@
 
 import { useEffect, useMemo } from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
@@ -85,7 +86,6 @@ type MessageWithStatus = {
 
 type UseCompleteMessageOrFetchParams = {
 	messageId: string;
-	shouldMarkAsRead?: boolean;
 };
 
 /**
@@ -93,9 +93,9 @@ type UseCompleteMessageOrFetchParams = {
  * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
  */
 export function useCompleteMessageOrFetch({
-	messageId,
-	shouldMarkAsRead = false
+	messageId
 }: UseCompleteMessageOrFetchParams): MessageWithStatus {
+	const shouldMarkAsRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 

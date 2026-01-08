@@ -6,7 +6,6 @@
 import React from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { DetailPanelBody } from '../../../parts/detail-panel-body';
@@ -16,11 +15,8 @@ import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const { message, messageStatus } = useCompleteMessageOrFetch({
-		messageId,
-		shouldMarkAsRead: zimbraPrefMarkMsgRead
+		messageId
 	});
 	const navigate = useNavigate();
 

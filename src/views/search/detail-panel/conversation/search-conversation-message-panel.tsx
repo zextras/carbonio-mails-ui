@@ -6,7 +6,6 @@
 import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -25,11 +24,9 @@ export const SearchConversationMessagePanel = ({
 	isAlone
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
 	const navigate = useNavigate();
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const { message, messageStatus } = useCompleteMessageOrFetch({
-		messageId: convMessageId,
-		shouldMarkAsRead: zimbraPrefMarkMsgRead
+		messageId: convMessageId
 	});
 
 	if (messageStatus === API_REQUEST_STATUS.error) {
