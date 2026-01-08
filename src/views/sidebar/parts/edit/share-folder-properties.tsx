@@ -14,7 +14,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 import styled from '@emotion/styled';
@@ -70,6 +70,8 @@ const Actions = ({
 		setActiveModal('revoke');
 	}, [setActiveModal, setActiveGrant, grant]);
 
+	const { zimbraFeatureSharingEnabled } = getUserSettings().attrs;
+
 	const { createSnackbar } = useUiUtilities();
 
 	const onResend = useCallback(() => {
@@ -104,10 +106,14 @@ const Actions = ({
 			onMouseLeave={onMouseLeave}
 			maxWidth="fit"
 		>
-			<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
-				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
-			</Tooltip>
-			<Padding horizontal="extrasmall" />
+			{zimbraFeatureSharingEnabled === 'TRUE' && (
+				<>
+					<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
+						<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
+					</Tooltip>
+					<Padding horizontal="extrasmall" />
+				</>
+			)}
 			<Tooltip label={t('tooltip.revoke', 'Revoke access')} placement="top">
 				<Button
 					type="outlined"
@@ -117,19 +123,23 @@ const Actions = ({
 					size="small"
 				/>
 			</Tooltip>
-			<Padding horizontal="extrasmall" />
-			<Tooltip
-				label={t('tooltip.resend', 'Send mail notification about this share')}
-				placement="top"
-				maxWidth="18.75rem"
-			>
-				<Button
-					type="outlined"
-					label={t('label.resend', 'Resend')}
-					onClick={onResend}
-					size="small"
-				/>
-			</Tooltip>
+			{zimbraFeatureSharingEnabled === 'TRUE' && (
+				<>
+					<Padding horizontal="extrasmall" />
+					<Tooltip
+						label={t('tooltip.resend', 'Send mail notification about this share')}
+						placement="top"
+						maxWidth="18.75rem"
+					>
+						<Button
+							type="outlined"
+							label={t('label.resend', 'Resend')}
+							onClick={onResend}
+							size="small"
+						/>
+					</Tooltip>
+				</>
+			)}
 		</Container>
 	);
 };
