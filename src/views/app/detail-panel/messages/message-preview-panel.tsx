@@ -5,14 +5,9 @@
  */
 import React, { FC } from 'react';
 
-import { Padding } from '@zextras/carbonio-design-system';
-
 import { IncompleteMessage, MailMessage } from '../../../../types';
-import { DetailPanelBody } from '../../../parts/detail-panel-body';
-import { DetailPanelBodyContainer } from '../../../parts/detail-panel-body-container';
 import { DetailPanelContainer } from '../../../parts/detail-panel-container';
-import { DetailPanelMessageLoading } from '../../../parts/detail-panel-message-loading';
-import MailPreview from '../preview/mail-preview';
+import { MessagePanelBody } from '../../../parts/message-panel-body';
 import { PreviewPanelHeader } from '../preview/preview-panel-header';
 
 export const MessagePreviewPanel: FC<{
@@ -28,18 +23,6 @@ export const MessagePreviewPanel: FC<{
 			isRead={message?.read}
 			subject={message?.subject}
 		/>
-		<DetailPanelBodyContainer>
-			{isMessageLoaded ? (
-				<DetailPanelBody>
-					<Padding bottom="medium" width="100%">
-						{message && (
-							<MailPreview message={message} expanded isAlone isMessageView isEml={isEml} />
-						)}
-					</Padding>
-				</DetailPanelBody>
-			) : (
-				<DetailPanelMessageLoading />
-			)}
-		</DetailPanelBodyContainer>
+		<MessagePanelBody isMessageFetched={isMessageLoaded} isEml={isEml} message={message} />
 	</DetailPanelContainer>
 );

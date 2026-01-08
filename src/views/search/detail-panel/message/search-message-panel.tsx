@@ -5,14 +5,13 @@
  */
 import React from 'react';
 
-import { Container, Padding } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
-import { DetailPanelBody } from '../../../parts/detail-panel-body';
+import { MessagePanelBody } from '../../../parts/message-panel-body';
 import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';
-import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch({
@@ -28,6 +27,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 		return <></>;
 	}
 
+	const isMessageLoaded = messageStatus === API_REQUEST_STATUS.fulfilled;
 	return (
 		<Container
 			orientation="vertical"
@@ -45,16 +45,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 					mainAlignment="flex-start"
 					data-testid={`SearchMessagePanel-${messageId}`}
 				>
-					<DetailPanelBody>
-						{message && messageStatus === API_REQUEST_STATUS.fulfilled && (
-							<Padding bottom="medium" width="100%">
-								<MailPreview message={message} expanded isAlone isMessageView />
-							</Padding>
-						)}
-						{(messageStatus === API_REQUEST_STATUS.error || messageStatus === null) && (
-							<div data-testid="empty-fragment" />
-						)}
-					</DetailPanelBody>
+					<MessagePanelBody message={message} isMessageFetched={isMessageLoaded} />
 				</Container>
 			)}
 		</Container>
