@@ -35,7 +35,7 @@ const LazyAppView = lazy(
 const LazyEditView = lazy(
 	() =>
 		import(
-			/* webpackChunkName: "mails-edit-view" */ '../views/app/detail-panel/edit/edit-view-controller'
+			/* webpackChunkName: "mails-edit-view" */ '../views/app/preview/edit/edit-view-controller'
 		)
 );
 
@@ -56,9 +56,7 @@ const LazySidebarView = lazy(
 
 const LazyFocusModeMailView = lazy(
 	() =>
-		import(
-			/* webpackChunkName: "mail-sidebar-view" */ '../views/app/detail-panel/focus-mode-mail-view'
-		)
+		import(/* webpackChunkName: "mail-sidebar-view" */ '../views/app/preview/focus-mode-mail-view')
 );
 
 const AppView = (): React.JSX.Element => (

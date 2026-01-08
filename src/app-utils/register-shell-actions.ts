@@ -10,9 +10,9 @@ import { Action, NewAction, registerActions, t } from '@zextras/carbonio-shell-u
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { isArray, isString, some } from 'lodash';
 
+import { createEditBoard } from '../views/app/preview/edit/edit-view-board';
 import { EditViewActions, MAIL_APP_ID } from 'constants/index';
 import { mailToSharedFunction } from 'integrations/shared-functions';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 interface MailToActionType extends Action {
 	id: string;

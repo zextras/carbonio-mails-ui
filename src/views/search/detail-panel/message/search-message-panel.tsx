@@ -8,7 +8,7 @@ import React from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
-import { MessagePanelBody } from '../../../parts/message-panel-body';
+import { MessagePanelBody } from '../../../../components/detail-panel/message-panel-body';
 import { SearchPanelHeader } from '../../parts/search-panel-header';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteMessageOrFetch } from 'store/emails/hooks/hooks';

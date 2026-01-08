@@ -7,9 +7,9 @@ import React, { FC, useCallback } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import { DetailPanelHeaderContent } from '../../../components/detail-panel/detail-panel-header-content';
 import { SEARCH_ROUTE } from '../../../constants';
 import type { MailMessage, NormalizedConversation } from '../../../types';
-import { DetailPanelHeaderContent } from '../../parts/detail-panel-header-content';
 
 export const SearchPanelHeader: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);

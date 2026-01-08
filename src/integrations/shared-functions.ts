@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { createEditBoard } from '../views/app/preview/edit/edit-view-board';
 import { EditViewActions } from 'constants/index';
 import { EditorPrefillData } from 'types/index.d';
 import type { Participant } from 'types/index.d';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const mailToSharedFunction: (recipients: Array<Participant>, subject?: string) => void = (
 	recipients,

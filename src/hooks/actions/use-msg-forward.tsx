@@ -7,10 +7,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { createEditBoard } from '../../views/app/preview/edit/edit-view-board';
 import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
 import { isDraft, isSpam } from 'helpers/folders';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgForwardFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(

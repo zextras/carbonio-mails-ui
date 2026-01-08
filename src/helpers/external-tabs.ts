@@ -5,8 +5,8 @@
  */
 import { IS_FOCUS_MODE } from '@zextras/carbonio-shell-ui';
 
+import { getLocationOrigin } from '../views/app/preview/preview/utils/index';
 import { EML_ROUTE, FOCUS_MODE_MAIL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from 'constants/index';
-import { getLocationOrigin } from 'views/app/detail-panel/preview/utils/index';
 
 export const isFocusModeMailView = (): boolean => IS_FOCUS_MODE;
 

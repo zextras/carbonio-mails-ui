@@ -10,9 +10,9 @@ import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { DetailPanelBody } from '../../../parts/detail-panel-body';
-import { DetailPanelBodyContainer } from '../../../parts/detail-panel-body-container';
-import { DetailPanelContainer } from '../../../parts/detail-panel-container';
+import { DetailPanelBody } from '../../../../components/detail-panel/detail-panel-body';
+import { DetailPanelBodyContainer } from '../../../../components/detail-panel/detail-panel-body-container';
+import { DetailPanelContainer } from '../../../../components/detail-panel/detail-panel-container';
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
