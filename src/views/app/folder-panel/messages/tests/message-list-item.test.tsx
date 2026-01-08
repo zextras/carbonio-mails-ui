@@ -15,8 +15,9 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags as mockTags } from '@test-utils/tags/tags';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 vi.mock('react-router-dom', async () => ({
@@ -24,10 +25,13 @@ vi.mock('react-router-dom', async () => ({
 	useParams: vi.fn()
 }));
 
-const canExecuteCallback = vi.fn();
-vi.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', async () => ({
-	...(await vi.importActual('../../../../../hooks/actions/use-msg-preview-on-separated-window')),
-	useMsgPreviewOnSeparatedWindowFn: vi.fn()
+vi.mock('helpers/external-tabs', () => ({
+	openMessageStandalonePreview: vi.fn(),
+	isFocusModeMailView: vi.fn().mockReturnValue(false)
+}));
+
+vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
+	createEditBoard: vi.fn()
 }));
 
 describe('MessageListItem Component', () => {
@@ -188,11 +192,7 @@ describe('MessageListItem Component', () => {
 		});
 	});
 
-	it('should call the doubleClick handler when the message is doubleClicked', async () => {
-		(useMsgPreviewOnSeparatedWindowFn as Mock).mockReturnValue({
-			canExecute: canExecuteCallback,
-			execute: vi.fn()
-		});
+	it('should call the msgPreview handler handler when the message is doubleClicked', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const { user } = setupTest(<MessageListItem {...defaultProps} />);
 
@@ -207,8 +207,28 @@ describe('MessageListItem Component', () => {
 		});
 
 		await waitFor(async () => {
-			expect(canExecuteCallback).toHaveBeenCalled();
+			expect(openMessageStandalonePreview).toHaveBeenCalled();
 		});
+	});
+
+	it('should call the editDraft handler when the draft message is doubleClicked', async () => {
+		const props = {
+			...defaultProps,
+			message: { ...defaultProps.message, isDraft: true, parent: FOLDERS.DRAFTS }
+		};
+		(useParams as Mock).mockReturnValue({
+			folderId: FOLDERS.DRAFTS,
+			itemId: '1'
+		});
+
+		const { user } = setupTest(<MessageListItem {...props} />);
+
+		const actionWrapper = await screen.findByTestId(`MessageListItem-${defaultProps.message.id}`);
+		await user.hover(actionWrapper);
+		const hoverContainer = await screen.findByTestId(/hover-container-/);
+		await user.dblClick(hoverContainer);
+
+		expect(createEditBoard).toHaveBeenCalled();
 	});
 
 	it('should display the scheduled time if the message is scheduled', () => {
@@ -220,7 +240,9 @@ describe('MessageListItem Component', () => {
 				autoSendTime: Number(new Date())
 			}
 		};
+
 		setupTest(<MessageListItem {...props} />);
+
 		expect(screen.getByText('label.send_scheduled')).toBeVisible();
 		expect(screen.getByText('message.schedule_time')).toBeVisible();
 	});

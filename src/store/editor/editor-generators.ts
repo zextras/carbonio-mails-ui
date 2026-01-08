@@ -63,6 +63,7 @@ const labels = {
 /**
  *
  */
+// FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
 export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
@@ -614,3 +615,28 @@ export const generateEditor = ({
 
 	return null;
 };
+
+export function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
+	return {
+		recipients: { to: [], cc: [], bcc: [] },
+		id: '',
+		isRichText: false,
+		isUrgent: false,
+		sendAllowedStatus: {
+			allowed: true
+		},
+		requestReadReceipt: false,
+		savedAttachments: [],
+		size: 0,
+		subject: '',
+		text: {
+			plainText: 'Hello',
+			richText: '<p>Hello</p>'
+		},
+		unsavedAttachments: [],
+		action: EditViewActions.NEW,
+		identityId: getDefaultIdentity().id,
+		did: '123',
+		...customData
+	};
+}
