@@ -255,28 +255,33 @@ export const RichTextEditorContainer = ({
 			font_family_formats: fontsOptionsToString,
 			preview_styles: false,
 			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
+			style_formats: [
+				// Headers
+				{ title: 'Heading 1', format: 'h1' },
+				{ title: 'Heading 2', format: 'h2' },
+				{ title: 'Heading 3', format: 'h3' },
+				{ title: 'Heading 4', format: 'h4' },
+				{ title: 'Heading 5', format: 'h5' },
+				{ title: 'Heading 6', format: 'h6' },
+				{ title: '' },
+				// Blocks
+				{ title: 'Paragraph', format: 'p' },
+				{ title: 'Pre', format: 'pre' },
+				{ title: 'Blockquote', format: 'blockquote' }
+			],
 			plugins: [
-				'advlist',
-				'autolink',
-				'lists',
-				'link',
-				'image',
-				'charmap',
-				'preview',
-				'anchor',
-				'searchreplace',
-				'code',
-				'fullscreen',
-				'insertdatetime',
-				'media',
-				'table',
-				'code',
-				'help',
-				'quickbars',
-				'directionality',
-				'autoresize',
-				'visualblocks',
-				'emoticons'
+				'advlist', // Enhances list functionality
+				'lists', // List support (bullist/numlist)
+				'link', // Link insertion
+				'image', // Image handling
+				'table', // Table support
+				'code', // Code view
+				'charmap', // Special characters
+				'quickbars', // Context toolbars
+				'directionality', // LTR/RTL support
+				'autoresize', // Auto-resize editor
+				'visualblocks', // Show block boundaries
+				'emoticons' // Emoji support
 			],
 			toolbar: [
 				// Fonts
@@ -290,7 +295,7 @@ export const RichTextEditorContainer = ({
 				// Lists and indentation
 				'bullist numlist',
 				// Insert elements
-				'link table insertfile image imageSelector emoticons',
+				'link table insertfile image imageSelector charmap emoticons',
 				// View and blocks
 				'visualblocks code'
 			].join(' | '),
