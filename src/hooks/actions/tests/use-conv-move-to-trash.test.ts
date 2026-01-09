@@ -12,6 +12,7 @@ import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
 import { TIMERS } from '../../../__test__/constants';
+import * as detailPanelControlsHooks from '../../../views/app/detail-panel/detail-panel-controls-hooks';
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
@@ -184,8 +185,52 @@ describe('useConMoveToTrash', () => {
 
 				expect(onActionComplete).toHaveBeenCalledWith(conversationsId);
 			});
-			it.todo('should close the panel when the active conversation is deleted');
-			it.todo('should not close the panel of the active conversation when another one is deleted');
+
+			it('should close the panel when the active conversation is deleted', async () => {
+				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+				const closeConversationPanelMock = vi.fn();
+				vi.spyOn(detailPanelControlsHooks, 'useConversationDetailPanelControls').mockReturnValue({
+					closeConversationPanel: closeConversationPanelMock,
+					openConversationPanel: vi.fn(),
+					currentConversation: { id: '12345' }
+				});
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: ['12345'], folderId: FOLDERS.INBOX }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(closeConversationPanelMock).toHaveBeenCalled();
+			});
+
+			it('should not close the panel of the active conversation when another one is deleted', async () => {
+				createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+				const closeConversationPanelMock = vi.fn();
+				vi.spyOn(detailPanelControlsHooks, 'useConversationDetailPanelControls').mockReturnValue({
+					closeConversationPanel: closeConversationPanelMock,
+					openConversationPanel: vi.fn(),
+					currentConversation: { id: '54321' }
+				});
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: ['12345'], folderId: FOLDERS.INBOX }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(closeConversationPanelMock).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
