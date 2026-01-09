@@ -1,9 +1,16 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import { setupWorker } from 'msw/browser';
 import { test as testBase } from 'vitest';
-import { setupWorker, SetupWorker } from 'msw/browser';
+
 const worker = setupWorker();
 export const test = testBase.extend({
 	worker: [
-		async ({}, use) => {
+		// eslint-disable-next-line no-empty-pattern
+		async ({}, use): Promise<void> => {
 			// Start the worker before the test.
 			await worker.start();
 
