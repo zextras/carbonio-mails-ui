@@ -9,6 +9,7 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
+import { TESTID_SELECTORS } from '../../__test__/constants';
 import { conversationTestUtilities } from '../../__test__/conversation-utils/ui-interactions';
 import {
 	generateConversationFromAPI,
@@ -105,14 +106,15 @@ describe('AppView', () => {
 			await conversation1Ui.checkPanelOpen();
 			makeAllItemsVisible();
 			const { hoverActionsContainer } = await conversation1Ui.hoverConversationInList(user);
-			const deleteConversationButton =
-				await within(hoverActionsContainer).findByTestId('icon: Trash2Outline');
+			const deleteConversationButton = await within(hoverActionsContainer).findByTestId(
+				TESTID_SELECTORS.icons.trash
+			);
 			createSoapAPIInterceptor('ConvAction');
 			await user.click(deleteConversationButton);
 			await conversation1Ui.checkPanelClosed();
 		});
 
-		it('it should not close the panel when deleting a different conversation', async () => {
+		it('should not close the panel when deleting a different conversation', async () => {
 			const conversation1Messages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
 			const conversation2Messages = [generateConvMessageFromAPI({ l: '2', id: '2' })];
 
@@ -151,8 +153,9 @@ describe('AppView', () => {
 			// delete conversation 2 which is not opened in the panel
 			makeAllItemsVisible();
 			const { hoverActionsContainer } = await conversation2Ui.hoverConversationInList(user);
-			const deleteConversationButton =
-				await within(hoverActionsContainer).findByTestId('icon: Trash2Outline');
+			const deleteConversationButton = await within(hoverActionsContainer).findByTestId(
+				TESTID_SELECTORS.icons.trash
+			);
 			createSoapAPIInterceptor('ConvAction');
 			await user.click(deleteConversationButton);
 			// check panel for conversation1 is still open
