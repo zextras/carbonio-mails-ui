@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import {
 	allowedActionOnSharedAccount,
 	FolderActionsType,
@@ -48,6 +48,8 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		dspYear: 'd',
 		dspRange: t(DAYS_LABEL, 'Days')
 	});
+
+	const { zimbraFeatureSharingEnabled } = getUserSettings().attrs;
 
 	const updateRetentionState = (partial: Partial<RetentionPolicyState>): void =>
 		setRetentionState((prev) => ({ ...prev, ...partial }));
@@ -244,7 +246,10 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				onConfirm={onConfirm}
 				label={t('label.edit', 'Edit')}
 				secondaryAction={
-					allowedActionOnSharedAccount(folder, FolderActionsType.SHARE) ? openShareModal : undefined
+					zimbraFeatureSharingEnabled === 'TRUE' &&
+					allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
+						? openShareModal
+						: undefined
 				}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
