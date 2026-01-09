@@ -76,21 +76,15 @@ describe('AppView', () => {
 			vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		});
 		it('should close panel when deleting conversation from Inbox', async () => {
-			const conversation1Messages = [
-				generateConvMessageFromAPI({ l: '2', id: '1' }),
-				generateConvMessageFromAPI({ l: '2', id: '2' })
-			];
+			const conversation1Messages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
 			const conversation1 = generateConversationFromAPI({
 				id: '123',
 				m: conversation1Messages
 			});
-			const conversation2 = generateConversationFromAPI({
-				id: '456',
-				m: [generateConvMessageFromAPI({ l: '2', id: '3' })]
-			});
+
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				more: false,
-				c: [conversation1, conversation2]
+				c: [conversation1]
 			});
 
 			const response: SearchConvResponse = {
@@ -108,7 +102,6 @@ describe('AppView', () => {
 			});
 
 			const conversation1Ui = conversationTestUtilities('123');
-			// check panel visible
 			await conversation1Ui.findConversationInList();
 			await conversation1Ui.checkPanelOpen();
 			makeAllItemsVisible();
