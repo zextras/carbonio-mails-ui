@@ -48,7 +48,17 @@ export default defineConfig({
 		},
 		projects: [
 			{
+				plugins: [
+					react({
+						jsxImportSource: '@emotion/react',
+						babel: {
+							plugins: ['@emotion/babel-plugin']
+						}
+					}),
+					tsconfigPaths()
+				],
 				test: {
+					name: 'unit',
 					globals: true,
 					environment: 'jsdom',
 					setupFiles: [
