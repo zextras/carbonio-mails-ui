@@ -25,7 +25,7 @@ export const PlainTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const { prefs } = useUserSettings();
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { setDirty, isDirty } = useEditorIsDirty(editorId);
+	const { setDirty } = useEditorIsDirty(editorId);
 	const text = useMemo(() => getText().plainText, [getText]);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const initialValueRef = useRef(text);
@@ -42,18 +42,14 @@ export const PlainTextEditorContainer = ({
 		return { plainText, richText };
 	}, []);
 
-	const onExternalTextChanges = useCallback(
-		(value: MailsEditorV2['text']): void => {
-			if (!textAreaRef.current) {
-				return;
-			}
-			setDirty();
-			textAreaRef.current.value = value.plainText;
-		},
-		[setDirty]
-	);
+	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
+		if (!textAreaRef.current) {
+			return;
+		}
+		textAreaRef.current.value = value.plainText;
+	}, []);
 
-	const debouncedSetText = useMemo(
+	const debounceTextChange = useMemo(
 		() =>
 			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
 				setText(
@@ -67,9 +63,9 @@ export const PlainTextEditorContainer = ({
 	const onTextChange = useCallback(
 		(ev: ChangeEvent<HTMLTextAreaElement>): void => {
 			setDirty();
-			debouncedSetText(ev);
+			debounceTextChange(ev);
 		},
-		[debouncedSetText, setDirty]
+		[debounceTextChange, setDirty]
 	);
 
 	const textProviderValue = useMemo(
@@ -82,18 +78,7 @@ export const PlainTextEditorContainer = ({
 
 	useEffect(() => {
 		setTextProvider(textProviderValue);
-		const textArea = textAreaRef?.current;
-		const initialValue = initialValueRef?.current;
 		return (): void => {
-			if (textArea && initialValue && textArea.value !== initialValue) {
-				setText(
-					{
-						plainText: textArea.value,
-						richText: plainTextToHTML(textArea.value)
-					},
-					{ syncTextProvider: false }
-				);
-			}
 			setTextProvider(undefined);
 		};
 	}, [setText, setTextProvider, textProviderValue]);
