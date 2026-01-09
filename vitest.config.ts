@@ -60,7 +60,7 @@ export default defineConfig({
 					clearMocks: true,
 					isolate: true,
 					pool: 'forks',
-					maxWorkers: 4,
+					maxWorkers: '80%',
 					environmentOptions: {
 						jsdom: {
 							url: 'http://localhost'
