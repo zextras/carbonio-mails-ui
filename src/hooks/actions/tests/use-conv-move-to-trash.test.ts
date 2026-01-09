@@ -184,6 +184,8 @@ describe('useConMoveToTrash', () => {
 
 				expect(onActionComplete).toHaveBeenCalledWith(conversationsId);
 			});
+			it.todo('should close the panel when the active conversation is deleted');
+			it.todo('should not close the panel of the active conversation when another one is deleted');
 		});
 	});
 });
