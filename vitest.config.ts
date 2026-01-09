@@ -83,7 +83,6 @@ export default defineConfig({
 						'**/*.browser-test.*',
 						'**/app.test.tsx',
 						'**/use-conversations-list-by-folder.test.ts',
-						'**/useEditorAttachments.test.tsx',
 						'**/certificate-utils.test.ts',
 						'**/sort-and-filter-button-component.test.tsx',
 						'**/recover-messages.test.tsx',
