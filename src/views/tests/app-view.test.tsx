@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { act } from 'react';
+import React from 'react';
 
 import { screen } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
@@ -21,11 +21,14 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('AppView', () => {
-	it('should render without crashing', async () => {
+	beforeEach(() => {
 		mockLayoutStorage({
 			layout: MAILS_VIEW_LAYOUTS.SPLIT,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		});
+		populateFoldersStore();
+	});
+	it('should display received messages on app load', async () => {
 		const settings = generateSettings({
 			prefs: {
 				zimbraPrefGroupMailBy: 'message'
@@ -42,13 +45,8 @@ describe('AppView', () => {
 			more: false,
 			m: [incompleteMessage]
 		});
-
-		populateFoldersStore();
-
-		act(() => {
-			setupTest(<AppView />, {
-				initialEntries: [`/folder/2`]
-			});
+		setupTest(<AppView />, {
+			initialEntries: [`/folder/2`]
 		});
 
 		await screen.findByTestId('message-item-123');
