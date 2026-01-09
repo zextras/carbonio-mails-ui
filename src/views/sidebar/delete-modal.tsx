@@ -6,7 +6,7 @@
 import React, { FC, useCallback } from 'react';
 
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { report, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { startsWith } from 'lodash';
 
@@ -48,7 +48,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						});
 					}
 				})
-				.catch(report);
+				.catch();
 		};
 
 		folderActionSoapApi(
@@ -86,7 +86,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 					});
 				}
 			})
-			.catch(report);
+			.catch();
 		onClose();
 	}, [createSnackbar, folder, onClose]);
 

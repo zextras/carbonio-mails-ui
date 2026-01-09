@@ -43,10 +43,10 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
 import * as saveDraftAction from 'api/save-draft-soap-api';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
-import { getDefaultIdentity } from 'helpers/identities';
 import { addEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
+	generateNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
@@ -156,31 +156,6 @@ vi.mock('store/editor', async () => ({
 	...(await vi.importActual('store/editor')),
 	deleteEditor: vi.fn()
 }));
-
-function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
-	return {
-		recipients: { to: [], cc: [], bcc: [] },
-		id: '',
-		isRichText: false,
-		isUrgent: false,
-		sendAllowedStatus: {
-			allowed: true
-		},
-		requestReadReceipt: false,
-		savedAttachments: [],
-		size: 0,
-		subject: '',
-		text: {
-			plainText: 'Hello',
-			richText: '<p>Hello</p>'
-		},
-		unsavedAttachments: [],
-		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
-		did: '123',
-		...customData
-	};
-}
 
 describe('Edit view', () => {
 	describe('Send button is disabled', () => {

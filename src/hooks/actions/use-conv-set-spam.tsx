@@ -18,12 +18,14 @@ type ConvSetSpamFunctionsParameter = {
 	ids: Array<string>;
 	shouldReplaceHistory: boolean;
 	folderId: string;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvSetSpamFn = ({
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvSetSpamFunctionsParameter): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
@@ -58,9 +60,6 @@ export const useConvSetSpamFn = ({
 					operation: 'spam',
 					ids
 				}).then((res) => {
-					if (!('Fault' in res) && shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-					}
 					if ('Fault' in res) {
 						createSnackbar({
 							key: `trash-${ids}`,
@@ -69,11 +68,17 @@ export const useConvSetSpamFn = ({
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});
+						return;
+					}
+
+					onActionComplete && onActionComplete(ids);
+					if (shouldReplaceHistory) {
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, navigate, shouldReplaceHistory, t]);
+	}, [createSnackbar, folderId, ids, navigate, onActionComplete, shouldReplaceHistory, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -81,12 +86,14 @@ export const useConvSetSpamFn = ({
 export const useConvSetSpamDescriptor = ({
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvSetSpamFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetSpamFn({
 		ids,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

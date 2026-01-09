@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { intersection, map, some } from 'lodash';
@@ -26,10 +26,12 @@ import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/
 
 export const ConversationsMultipleSelectionActions = ({
 	selectedConversationsIds,
-	folderId
+	folderId,
+	onConversationsMoved
 }: {
 	selectedConversationsIds: Array<string>;
 	folderId: string;
+	onConversationsMoved?: (conversationsIds: Array<string>) => void;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const selectedItems = useConversationsByIds(selectedConversationsIds);
@@ -37,6 +39,17 @@ export const ConversationsMultipleSelectionActions = ({
 	const atLeastOneConvIsUnread = some(selectedItems, (item) => !item.read);
 	const atLeastOneConvIsUnflagged = some(selectedItems, (item) => !item.flagged);
 	const tagsInCommon = intersection(...conversationstags);
+
+	/*
+	 * Callback to be executed after any action that moves conversations (to trash, to folder, etc.)
+	 */
+	const onActionComplete = useCallback(
+		(conversationsIds: Array<string>): void => {
+			onConversationsMoved && onConversationsMoved(conversationsIds);
+		},
+		[onConversationsMoved]
+	);
+
 	const setAsRead = useConvSetReadDescriptor({
 		ids: selectedConversationsIds,
 		folderId,
@@ -49,11 +62,13 @@ export const ConversationsMultipleSelectionActions = ({
 	});
 	const moveToTrash = useConvMoveToTrashDescriptor({
 		ids: selectedConversationsIds,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const deletePermanently = useConvDeletePermanentlyDescriptor({
 		ids: selectedConversationsIds,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const applyTagDescriptor = useConvApplyTagDescriptor({
 		ids: selectedConversationsIds,
@@ -72,17 +87,20 @@ export const ConversationsMultipleSelectionActions = ({
 	);
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
-		ids: selectedConversationsIds
+		ids: selectedConversationsIds,
+		onActionComplete
 	});
 	const setAsSpam = useConvSetSpamDescriptor({
 		ids: selectedConversationsIds,
 		shouldReplaceHistory: false,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const setAsNotSpam = useConvSetNotSpamDescriptor({
 		ids: selectedConversationsIds,
 		shouldReplaceHistory: false,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const actions = [
 		setAsRead,

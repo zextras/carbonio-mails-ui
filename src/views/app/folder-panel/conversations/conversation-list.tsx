@@ -34,6 +34,21 @@ export const ConversationList = (): React.JSX.Element => {
 	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
 
+	/*
+	 * Callback to be executed after conversations have been moved
+	 * to deselect them from the current selection
+	 */
+	const onConversationsMoved = React.useCallback((movedConversationsIds: Array<string>): void => {
+		// Deselect moved conversations
+		setSelectedItems((prevSelectedItems) => {
+			const newSelectedItems = new Set(prevSelectedItems);
+			movedConversationsIds.forEach((id) => {
+				newSelectedItems.delete(id);
+			});
+			return newSelectedItems;
+		});
+	}, []);
+
 	const toggleExpandedConversation = React.useCallback((conversationId: string) => {
 		setExpandedConversations((prev) => ({
 			...prev,
@@ -202,6 +217,7 @@ export const ConversationList = (): React.JSX.Element => {
 			dragImageRef={dragImageRef}
 			loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
 			onSelect={selectRange}
+			onConversationsMoved={onConversationsMoved}
 		/>
 	);
 };

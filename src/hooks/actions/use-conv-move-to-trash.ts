@@ -18,6 +18,7 @@ import { useInSearchModule } from 'ui-actions/utils';
 type ConvRestoreFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 const useRestoreConversation = (ids: Array<string>, folderId: string): (() => void) => {
@@ -60,7 +61,8 @@ const useRestoreConversation = (ids: Array<string>, folderId: string): (() => vo
 
 export const useConvMoveToTrashFn = ({
 	ids,
-	folderId = FOLDERS.INBOX
+	folderId = FOLDERS.INBOX,
+	onActionComplete
 }: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const createSnackbar = useSnackbar();
@@ -78,6 +80,7 @@ export const useConvMoveToTrashFn = ({
 			ids
 		}).then((res) => {
 			if (!('Fault' in res)) {
+				onActionComplete && onActionComplete(ids);
 				if (!inSearchModule) {
 					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
@@ -101,18 +104,30 @@ export const useConvMoveToTrashFn = ({
 				});
 			}
 		});
-	}, [canExecute, ids, inSearchModule, createSnackbar, t, restoreConversation, navigate, folderId]);
+	}, [
+		canExecute,
+		ids,
+		onActionComplete,
+		inSearchModule,
+		createSnackbar,
+		t,
+		restoreConversation,
+		navigate,
+		folderId
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvMoveToTrashDescriptor = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvRestoreFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvMoveToTrashFn({
 		ids,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

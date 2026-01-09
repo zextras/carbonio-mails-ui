@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { DefaultBodyType, http, HttpResponse, StrictRequest } from 'msw';
+import { DefaultBodyType, delay, http, HttpResponse, StrictRequest } from 'msw';
 
 import { getSetupServer } from '../../../vitest-setup';
 
@@ -12,9 +12,9 @@ type HandlerRequest<T> = DefaultBodyType & {
 	Body: Record<string, T>;
 };
 
-export const createSoapAPIInterceptor = <RequestParamsType, ResponseType = never>(
+export const createSoapAPIInterceptorV2 = <RequestParamsType, ResponseType = never>(
 	apiAction: string,
-	response?: ResponseType
+	responseHandler: (request: HandlerRequest<RequestParamsType>) => ResponseType
 ): Promise<RequestParamsType> =>
 	new Promise<RequestParamsType>((resolve, reject) => {
 		getSetupServer().use(
@@ -39,13 +39,18 @@ export const createSoapAPIInterceptor = <RequestParamsType, ResponseType = never
 
 					return HttpResponse.json({
 						Body: {
-							[`${apiAction}Response`]: response || {}
+							[`${apiAction}Response`]: responseHandler(requestContent) || {}
 						}
 					});
 				}
 			)
 		);
 	});
+
+export const createSoapAPIInterceptor = <RequestParamsType, ResponseType = never>(
+	apiAction: string,
+	response?: ResponseType
+): Promise<RequestParamsType> => createSoapAPIInterceptorV2(apiAction, () => response);
 
 export type APIInterceptor = {
 	getLastRequest: () => StrictRequest<DefaultBodyType>;
@@ -55,7 +60,8 @@ export type APIInterceptor = {
 export const createAPIInterceptor = (
 	method: 'get' | 'post',
 	url: string,
-	response: HttpResponse<DefaultBodyType>
+	response: HttpResponse<DefaultBodyType>,
+	delayTime = 0
 ): APIInterceptor => {
 	let calledTimes = 0;
 	const requests: Array<StrictRequest<DefaultBodyType>> = [];
@@ -64,6 +70,10 @@ export const createAPIInterceptor = (
 		http[method](url, async ({ request }) => {
 			calledTimes += 1;
 			requests.push(request);
+
+			if (delayTime > 0) {
+				await delay(delayTime);
+			}
 			return response;
 		})
 	);

@@ -120,6 +120,25 @@ describe('useConvSetSpam', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
+
+			it('should call onActionComplete when provided after the conversation is marked as spam', async () => {
+				const onActionComplete = vi.fn();
+				createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction');
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvSetSpamFn, {
+					initialProps: [
+						{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX, onActionComplete }
+					]
+				});
+				await act(async () => {
+					functions.execute();
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(ids);
+			});
 		});
 	});
 });

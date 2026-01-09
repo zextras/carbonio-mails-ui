@@ -197,7 +197,7 @@ describe('Advanced filter modal', () => {
 		expect(onCloseMock).toHaveBeenCalledTimes(1);
 	});
 
-	it('should add from suffix to query label but not to query value', async () => {
+	it('should add from suffix to query label and to query value', async () => {
 		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
@@ -220,14 +220,14 @@ describe('Advanced filter modal', () => {
 				query: [
 					expect.objectContaining({
 						label: 'from:validEmail@test.com',
-						value: 'validEmail@test.com'
+						value: 'from:validEmail@test.com'
 					})
 				]
 			});
 		});
 	});
 
-	it('should add to suffix to query label but not to value', async () => {
+	it('should add to suffix to query label and to value', async () => {
 		const updateQueryMock = vi.fn();
 
 		const props: AdvancedFilterModalProps = {
@@ -251,7 +251,7 @@ describe('Advanced filter modal', () => {
 				query: [
 					expect.objectContaining({
 						label: 'to:validEmail@test.com',
-						value: 'validEmail@test.com'
+						value: 'to:validEmail@test.com'
 					})
 				]
 			});
@@ -262,9 +262,9 @@ describe('Advanced filter modal', () => {
 		const updateQueryMock = vi.fn();
 
 		const query: SearchQueryItem = {
-			id: 'query1',
+			id: 'someone@test.com',
 			label: 'from:someone@test.com',
-			value: 'someone@test.com'
+			value: 'from:someone@test.com'
 		};
 
 		const props: AdvancedFilterModalProps = {
@@ -273,7 +273,7 @@ describe('Advanced filter modal', () => {
 			onSearchConfirm: updateQueryMock
 		};
 
-		const customValues = getAdvancedFiltersDefaultValues([query], false);
+		const customValues = getAdvancedFiltersDefaultValues([], false);
 		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, customValues);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -289,14 +289,14 @@ describe('Advanced filter modal', () => {
 				expect.objectContaining({
 					query: [
 						expect.objectContaining({
-							id: 'someone@test.com',
+							id: 'from:someone@test.com',
 							label: 'from:someone@test.com',
-							value: 'someone@test.com'
+							value: 'from:someone@test.com'
 						}),
 						expect.objectContaining({
 							id: 'validEmail@test.com',
 							label: 'to:validEmail@test.com',
-							value: 'validEmail@test.com'
+							value: 'to:validEmail@test.com'
 						})
 					]
 				})
