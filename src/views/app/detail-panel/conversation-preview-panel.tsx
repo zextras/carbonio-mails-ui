@@ -40,6 +40,7 @@ export const ConversationPreviewPanel = ({
 			background="gray5"
 			padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 			mainAlignment="flex-start"
+			data-testid={`conversation-preview-panel-${conversation.id}`}
 		>
 			<Container height="100%" mainAlignment="flex-start" background="gray5">
 				{map(messageIds, (convMessageId, index) =>
