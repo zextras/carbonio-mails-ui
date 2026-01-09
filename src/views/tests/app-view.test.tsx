@@ -112,5 +112,52 @@ describe('AppView', () => {
 			await user.click(deleteConversationButton);
 			await conversation1Ui.checkPanelClosed();
 		});
+
+		it('it should not close the panel when deleting a different conversation', async () => {
+			const conversation1Messages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
+			const conversation2Messages = [generateConvMessageFromAPI({ l: '2', id: '2' })];
+
+			const conversation1 = generateConversationFromAPI({
+				id: '123',
+				m: conversation1Messages
+			});
+			const conversation2 = generateConversationFromAPI({
+				id: '456',
+				m: conversation2Messages
+			});
+
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				more: false,
+				c: [conversation1, conversation2]
+			});
+
+			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
+				m: conversation1Messages,
+				more: false,
+				offset: '',
+				orderBy: ''
+			});
+
+			createSoapAPIInterceptor<GetConvRequest, GetConvResponse>('GetConv', {
+				c: [conversation1]
+			});
+			const { user } = setupTest(<AppView />, {
+				initialEntries: [`/folder/2/conversation/123`]
+			});
+			const conversation1Ui = conversationTestUtilities('123');
+			const conversation2Ui = conversationTestUtilities('456');
+
+			await conversation1Ui.checkPanelOpen();
+
+			// delete conversation 2 which is not opened in the panel
+			makeAllItemsVisible();
+			const { hoverActionsContainer } = await conversation2Ui.hoverConversationInList(user);
+			const deleteConversationButton =
+				await within(hoverActionsContainer).findByTestId('icon: Trash2Outline');
+			createSoapAPIInterceptor('ConvAction');
+			await user.click(deleteConversationButton);
+			// check panel for conversation1 is still open
+			await conversation1Ui.checkPanelOpen();
+		});
 	});
 });
