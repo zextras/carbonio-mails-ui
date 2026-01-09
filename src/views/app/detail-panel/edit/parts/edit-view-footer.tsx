@@ -92,8 +92,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	const { execute: deleteDraft } = useMsgMoveToTrashDescriptor({
 		ids: [draftId ?? ''],
 		messageFolderId: FOLDERS.DRAFTS,
-		routeFolderId: routeFolderId ?? '',
-		shouldReplaceHistory: true,
+		shouldReplaceHistory: false,
 		onActionComplete: onDeleteComplete
 	});
 
