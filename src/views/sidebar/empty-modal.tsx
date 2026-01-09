@@ -18,7 +18,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ModalFooter } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
-import { getFolderIdParts } from 'helpers/folders';
+import { getFolderIdParts, isTrash } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import type { ModalProps } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
@@ -54,10 +54,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [createSnackbar, folder, onClose]);
 
-	const isTrashFolder = useMemo(
-		() => getFolderIdParts(folder.id).id === FOLDERS.TRASH,
-		[folder.id]
-	);
+	const isTrashFolder = useMemo(() => isTrash(folder.id), [folder.id]);
 
 	const title = useMemo(() => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
@@ -95,7 +92,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						{title}
 					</Text>
 				</Row>
-				<Button type="outlined" icon="CloseOutline" onClick={onClose} size="medium" />
+				<Button type="ghost" color={'gray0'} icon="CloseOutline" onClick={onClose} size="medium" />
 			</Container>
 			<Divider />
 			<Container padding={{ top: 'medium', bottom: 'large' }} crossAlignment="flex-start">
