@@ -41,7 +41,7 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewEditor, readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
-import { addEditor, getEditor, useEditorsStore } from 'store/editor';
+import { addEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
@@ -375,35 +375,24 @@ describe('Edit view', () => {
 
 			await user.click(getEditorTextareaElement());
 			user.clear(getEditorTextareaElement());
-			await waitFor(() => expect(screen.queryByText(/saving/i)).not.toBeInTheDocument());
 
-			user.type(getEditorTextareaElement(), body);
-			await waitFor(() => expect(screen.queryByText(/saving/i)).not.toBeInTheDocument());
-
-			const x = getEditor({ id: editor.id });
+			await user.click(getEditorTextareaElement());
+			await user.type(getEditorTextareaElement(), body);
 
 			// Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(getSendButton()).toBeEnabled());
 
-			const response = {
-				m: [
-					{
-						id: '1'
-					}
-				],
-				_jsns: 'urn:zimbraMail'
-			};
-
+			/*
+			 * We simulate an error during in order to avoid the closing
+			 * of the edit view which seems to cause issues during tests
+			 */
+			const response = buildSoapErrorResponseBody();
 			const sendMsgPromise = createSoapAPIInterceptor<
 				{ m: SoapDraftMessageObj },
-				SoapSendMsgResponse
+				SoapSendMsgResponse | ErrorSoapBodyResponse
 			>('SendMsg', response);
 
-			await act(async () => {
-				await user.click(getSendButton());
-			});
-
-			return;
+			await user.click(getSendButton());
 
 			const { m: msg } = await sendMsgPromise;
 
@@ -458,17 +447,14 @@ describe('Edit view', () => {
 			// // Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(btnSend).toBeEnabled());
 
-			const response = {
-				m: [
-					{
-						id: '1'
-					}
-				],
-				_jsns: 'urn:zimbraMail'
-			};
+			/*
+			 * We simulate an error during in order to avoid the closing
+			 * of the edit view which seems to cause issues during tests
+			 */
+			const response = buildSoapErrorResponseBody();
 			const sendMsgInterceptor = createSoapAPIInterceptor<
 				{ m: SoapDraftMessageObj },
-				SoapSendMsgResponse
+				SoapSendMsgResponse | ErrorSoapBodyResponse
 			>('SendMsg', response);
 
 			await user.click(btnSend);
@@ -513,17 +499,14 @@ describe('Edit view', () => {
 			// // Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(btnSend).toBeEnabled());
 
-			const response = {
-				m: [
-					{
-						id: '1'
-					}
-				],
-				_jsns: 'urn:zimbraMail'
-			};
+			/*
+			 * We simulate an error during in order to avoid the closing
+			 * of the edit view which seems to cause issues during tests
+			 */
+			const response = buildSoapErrorResponseBody();
 			const sendMsgInterceptor = createSoapAPIInterceptor<
 				{ m: SoapDraftMessageObj },
-				SoapSendMsgResponse
+				SoapSendMsgResponse | ErrorSoapBodyResponse
 			>('SendMsg', response);
 
 			await user.click(btnSend);
