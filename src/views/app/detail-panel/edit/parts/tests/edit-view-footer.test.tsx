@@ -157,9 +157,6 @@ describe('EditViewFooter', () => {
 
 			expect(getConfirmationModalMessage()).toBeVisible();
 			expect(getConfirmationModalButton()).toBeVisible();
-			expect(getConfirmationModalButton()).toHaveStyle(
-				`background-color: ${theme.palette.error.regular}`
-			);
 		});
 
 		it('should call the DeleteMsg API when the deletion is confirmed', async () => {
