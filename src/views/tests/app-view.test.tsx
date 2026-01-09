@@ -6,9 +6,10 @@
 
 import React from 'react';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
+import { conversationTestUtilities } from '../../__test__/conversation-utils/ui-interactions';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI,
@@ -76,8 +77,8 @@ describe('AppView', () => {
 		});
 		it('should close panel when deleting conversation from Inbox', async () => {
 			const conversation1Messages = [
-				generateConvMessageFromAPI({ l: '2' }),
-				generateConvMessageFromAPI({ l: '2' })
+				generateConvMessageFromAPI({ l: '2', id: '1' }),
+				generateConvMessageFromAPI({ l: '2', id: '2' })
 			];
 			const conversation1 = generateConversationFromAPI({
 				id: '123',
@@ -85,7 +86,7 @@ describe('AppView', () => {
 			});
 			const conversation2 = generateConversationFromAPI({
 				id: '456',
-				m: [generateConvMessageFromAPI({ l: '2' })]
+				m: [generateConvMessageFromAPI({ l: '2', id: '3' })]
 			});
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				more: false,
@@ -106,14 +107,17 @@ describe('AppView', () => {
 				initialEntries: [`/folder/2/conversation/123`]
 			});
 
-			await screen.findByTestId('conversation-list-item-123');
-			await screen.findByTestId('conversation-list-item-456');
+			const conversation1Ui = conversationTestUtilities('123');
+			// check panel visible
+			await conversation1Ui.findConversationInList();
+			await conversation1Ui.checkPanelOpen();
 			makeAllItemsVisible();
-			const clickableConversation1 = await screen.findByTestId(
-				'clickable-conversation-list-item-123'
-			);
-			fireEvent.click(clickableConversation1);
-			await screen.findByTestId('conversation-preview-panel-123');
+			const { hoverActionsContainer } = await conversation1Ui.hoverConversationInList(user);
+			const deleteConversationButton =
+				await within(hoverActionsContainer).findByTestId('icon: Trash2Outline');
+			createSoapAPIInterceptor('ConvAction');
+			await user.click(deleteConversationButton);
+			await conversation1Ui.checkPanelClosed();
 		});
 	});
 });
