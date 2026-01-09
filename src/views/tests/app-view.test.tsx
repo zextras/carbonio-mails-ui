@@ -87,13 +87,12 @@ describe('AppView', () => {
 				c: [conversation1]
 			});
 
-			const response: SearchConvResponse = {
+			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
 				m: conversation1Messages,
 				more: false,
 				offset: '',
 				orderBy: ''
-			};
-			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
+			});
 			createSoapAPIInterceptor<GetConvRequest, GetConvResponse>('GetConv', {
 				c: [conversation1]
 			});
