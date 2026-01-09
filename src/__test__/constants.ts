@@ -102,7 +102,8 @@ export const TESTID_SELECTORS = {
 		navigateNext: 'icon: ArrowIosForward',
 		navigatePrevious: 'icon: ArrowIosBack',
 		trash: 'icon: Trash2Outline',
-		deletePermanently: 'icon: DeletePermanentlyOutline'
+		deletePermanently: 'icon: DeletePermanentlyOutline',
+		deleteDraft: 'icon: Trash2Outline'
 	},
 
 	signatureEditor: 'signature-editor',

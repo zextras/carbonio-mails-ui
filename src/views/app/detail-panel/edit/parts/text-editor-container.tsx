@@ -6,6 +6,8 @@
 
 import React, { FC } from 'react';
 
+import { Container } from '@zextras/carbonio-design-system';
+
 import { PlainTextEditorContainer } from './plain-text-editor-container';
 import { RichTextEditorContainer } from './rich-text-editor-container';
 import { useEditorIsRichText } from 'store/editor/index';
@@ -19,20 +21,21 @@ export type TextEditorContainerProps = {
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
 	const { isRichText } = useEditorIsRichText(editorId);
 
-	const containerHeight = isRichText ? 'fit' : '100%';
+	const containerHeight = !isRichText ? 'fit' : '100%';
 
 	return (
-		// <Container
-		// 	data-testid={'TextEditorContainer'}
-		// 	height={containerHeight}
-		// 	background={'gray6'}
-		// 	crossAlignment="flex-end"
-		// >
-		isRichText ? (
-			<RichTextEditorContainer editorId={editorId} onDragOver={onDragOver} />
-		) : (
-			<PlainTextEditorContainer editorId={editorId} />
-		)
-		// </Container>
+		<Container
+			data-testid={'TextEditorContainer'}
+			height={containerHeight}
+			background={'gray6'}
+			crossAlignment="flex-start"
+			mainAlignment="flex-start"
+		>
+			{isRichText ? (
+				<RichTextEditorContainer editorId={editorId} onDragOver={onDragOver} />
+			) : (
+				<PlainTextEditorContainer editorId={editorId} />
+			)}
+		</Container>
 	);
 };

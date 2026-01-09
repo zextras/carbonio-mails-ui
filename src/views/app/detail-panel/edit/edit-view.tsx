@@ -620,7 +620,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				mainAlignment={flexStart}
 				flexGrow={1}
 				crossAlignment={flexStart}
-				padding={{ all: 'large' }}
+				padding={{ horizontal: 'large', top: 'large', bottom: 'none' }}
 				background={'gray5'}
 				style={{ overflowY: 'scroll' }}
 				onDragOver={handleDragOver}
@@ -686,7 +686,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						background={'gray6'}
 						padding={{ all: 'small' }}
 						gap={'small'}
-						height={'fit'}
+						height={'fill'}
 					>
 						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 							<MemoizedRecipientsRows editorId={editorId} />

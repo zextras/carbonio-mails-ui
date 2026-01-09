@@ -107,7 +107,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	}, [isDraftSaved, deleteDraft, onDeleteComplete]);
 
 	return (
-		<FooterContainer>
+		<FooterContainer data-testid="edit-view-footer">
 			<Divider />
 			<Container
 				orientation="horizontal"
