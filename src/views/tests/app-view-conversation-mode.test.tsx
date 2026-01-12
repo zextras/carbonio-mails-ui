@@ -134,7 +134,7 @@ describe('AppView in conversation mode', () => {
 				await conversation1Ui.checkPanelOpen();
 				makeAllItemsVisible();
 				const contextMenu = await conversation1Ui.openConversationContextMenu(user);
-				const markAsSpamAction = await within(contextMenu).findByText('Mark as spam');
+				const markAsSpamAction = await contextMenu.markAsSpam();
 				createSoapAPIInterceptor('ConvAction');
 				await user.click(markAsSpamAction);
 				await conversation1Ui.checkPanelClosed();
@@ -164,15 +164,11 @@ describe('AppView in conversation mode', () => {
 				await openedConversation.checkPanelOpen();
 
 				makeAllItemsVisible();
-				const contextMenuOfOtherConversation =
-					await otherConversation.openConversationContextMenu(user);
-				const markAsSpamAction = await within(contextMenuOfOtherConversation).findByText(
-					'Mark as spam'
-				);
-
+				const contextMenu = await otherConversation.openConversationContextMenu(user);
+				const markAsSpamAction = await contextMenu.markAsSpam();
+				createSoapAPIInterceptor('ConvAction');
 				await user.click(markAsSpamAction);
 
-				createSoapAPIInterceptor('ConvAction');
 				await otherConversation.snackbars.seeConversationMovedToSpam({ status: 'open' });
 				await otherConversation.snackbars.seeConversationMovedToSpam({ status: 'closed' });
 				await openedConversation.checkPanelOpen();
@@ -198,9 +194,10 @@ describe('AppView in conversation mode', () => {
 				await conversation1Ui.checkPanelOpen();
 				makeAllItemsVisible();
 				const contextMenu = await conversation1Ui.openConversationContextMenu(user);
-				const notSpamAction = await within(contextMenu).findByText('Not spam');
+				const notSpamAction = await contextMenu.notSpam();
 				createSoapAPIInterceptor('ConvAction');
 				await user.click(notSpamAction);
+
 				await conversation1Ui.checkPanelClosed();
 			});
 			it('should not close the detail panel for opened conversation when marking a different conversation as not spam', async () => {
@@ -228,13 +225,11 @@ describe('AppView in conversation mode', () => {
 				await openedConversation.checkPanelOpen();
 
 				makeAllItemsVisible();
-				const contextMenuOfOtherConversation =
-					await otherConversation.openConversationContextMenu(user);
-				const notSpamAction = await within(contextMenuOfOtherConversation).findByText('Not spam');
-
+				const contextMenu = await otherConversation.openConversationContextMenu(user);
+				const notSpamAction = await contextMenu.notSpam();
+				createSoapAPIInterceptor('ConvAction');
 				await user.click(notSpamAction);
 
-				createSoapAPIInterceptor('ConvAction');
 				await otherConversation.snackbars.seeConversationNotSpamAnymore({ status: 'open' });
 				await otherConversation.snackbars.seeConversationNotSpamAnymore({ status: 'closed' });
 				await openedConversation.checkPanelOpen();

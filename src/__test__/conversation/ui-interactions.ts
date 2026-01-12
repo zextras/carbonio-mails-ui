@@ -3,16 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 
 import { UserEvent } from '@test-setup';
 
+type ConversationContextMenuActions = {
+	markAsSpam: () => Promise<HTMLElement>;
+	notSpam: () => Promise<HTMLElement>;
+};
 type ConversationTestUtilities = {
 	checkPanelClosed: () => Promise<void>;
 	checkPanelOpen: () => Promise<HTMLElement>;
 	findConversationInList: () => Promise<HTMLElement>;
 	hoverConversationInList: (user: UserEvent) => Promise<{ hoverActionsContainer: HTMLElement }>;
-	openConversationContextMenu: (user: UserEvent) => Promise<HTMLElement>;
+	openConversationContextMenu: (user: UserEvent) => Promise<ConversationContextMenuActions>;
 	snackbars: {
 		seeConversationMovedToSpam: ({ status }: { status: 'open' | 'closed' }) => Promise<void>;
 		seeConversationNotSpamAnymore: ({ status }: { status: 'open' | 'closed' }) => Promise<void>;
@@ -35,14 +39,6 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 		await waitFor(() => {
 			expect(screen.queryByTestId(`conversation-preview-panel-${id}`)).not.toBeInTheDocument();
 		});
-	},
-	openConversationContextMenu: async (user: UserEvent): Promise<HTMLElement> => {
-		const hoverActionsSection = await screen.findByTestId(`ConversationListItem-${id}`);
-		await user.hover(hoverActionsSection);
-		const hoverContainer = screen.getByTestId(`hover-container-${id}`);
-
-		await user.rightClick(hoverContainer);
-		return screen.getByTestId('dropdown-popper-list');
 	},
 	snackbars: {
 		seeConversationMovedToSpam: async ({
@@ -73,5 +69,21 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 				});
 			}
 		}
+	},
+	openConversationContextMenu: async (user: UserEvent): Promise<ConversationContextMenuActions> => {
+		const hoverActionsSection = await screen.findByTestId(`ConversationListItem-${id}`);
+		await user.hover(hoverActionsSection);
+		const hoverContainer = screen.getByTestId(`hover-container-${id}`);
+
+		await user.rightClick(hoverContainer);
+		const contextMenu = screen.getByTestId('dropdown-popper-list');
+		return {
+			async markAsSpam(): Promise<HTMLElement> {
+				return within(contextMenu).findByText('Mark as spam');
+			},
+			async notSpam(): Promise<HTMLElement> {
+				return within(contextMenu).findByText('Not spam');
+			}
+		};
 	}
 });
