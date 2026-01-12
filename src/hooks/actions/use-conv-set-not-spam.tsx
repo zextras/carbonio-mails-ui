@@ -16,14 +16,12 @@ import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetNotSpamFunctionsParameter = {
 	ids: Array<string>;
-	shouldReplaceHistory: boolean;
 	folderId: string;
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvSetNotSpamFn = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetNotSpamFunctionsParameter): ActionFn => {
@@ -71,34 +69,24 @@ export const useConvSetNotSpamFn = ({
 
 					onActionComplete && onActionComplete(ids);
 
-					if (currentConversation && shouldReplaceHistory && ids.includes(currentConversation.id)) {
+					if (currentConversation && ids.includes(currentConversation.id)) {
 						closeConversationPanel();
 					}
 				});
 			}
 		}, 3000);
-	}, [
-		closeConversationPanel,
-		createSnackbar,
-		currentConversation,
-		ids,
-		onActionComplete,
-		shouldReplaceHistory,
-		t
-	]);
+	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvSetNotSpamDescriptor = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetNotSpamFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetNotSpamFn({
 		ids,
-		shouldReplaceHistory,
 		folderId,
 		onActionComplete
 	});

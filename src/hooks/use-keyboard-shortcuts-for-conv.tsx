@@ -56,14 +56,12 @@ export const useKeyboardShortcutsForConv = ({
 	);
 	const markConvAsSpam = useConvSetSpamFn({
 		ids: conversationIds,
-		folderId,
-		shouldReplaceHistory: true
+		folderId
 	});
 
 	const markConvAsNotSpam = useConvSetNotSpamFn({
 		ids: conversationIds,
-		folderId,
-		shouldReplaceHistory: true
+		folderId
 	});
 
 	const moveConvToTrash = useConvMoveToTrashFn({

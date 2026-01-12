@@ -116,7 +116,6 @@ export const useConvActions = ({
 	});
 	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 
