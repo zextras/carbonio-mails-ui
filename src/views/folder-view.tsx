@@ -21,7 +21,7 @@ type FolderViewProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 };
 
-const LazyFolderView = lazy(
+const LazyFolderPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
 );
 
@@ -41,7 +41,7 @@ export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element
 					path={`folder/:folderId/:type?/:itemId?`}
 					element={
 						<Suspense fallback={<Spinner />}>
-							<LazyFolderView />
+							<LazyFolderPanel />
 						</Suspense>
 					}
 				/>
