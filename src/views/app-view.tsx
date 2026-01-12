@@ -3,25 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef } from 'react';
+import React, { lazy, Suspense, useRef } from 'react';
 
 import { ThemeProvider } from '@zextras/carbonio-design-system';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 
+import { Spinner } from '../assets/spinner';
 import { themeMuiExtension } from '../theme/theme-mui';
-import DetailPanel from './app/detail-panel';
 import { FolderView } from 'views/folder-view';
 import { LayoutSelector } from 'views/layout-selector';
 
-// const LazyDetailPanel = lazy(
-// 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
-// );
-//
-// const DetailPanel = (): React.JSX.Element => (
-// 	<Suspense fallback={<Spinner />}>
-// 		<LazyDetailPanel />
-// 	</Suspense>
-// );
+const LazyDetailPanel = lazy(
+	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
+);
+
+const DetailPanel = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<LazyDetailPanel />
+	</Suspense>
+);
 
 const AppView = (): React.JSX.Element => {
 	const containerRef = useRef<HTMLDivElement>(null);

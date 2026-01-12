@@ -62,7 +62,8 @@ describe('AppView', () => {
 			initialEntries: [`/folder/2`]
 		});
 
-		await screen.findByTestId('message-item-123');
+		// lazy components need longer timeout
+		await screen.findByTestId('message-item-123', {}, { timeout: 10000 });
 		makeAllItemsVisible();
 		expect(await screen.findByText('Test message 1')).toBeInTheDocument();
 	});

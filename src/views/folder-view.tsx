@@ -7,7 +7,6 @@ import React, { lazy, Suspense, useMemo } from 'react';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import FolderPanel from './app/folder-panel';
 import { Spinner } from 'assets/spinner';
 import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
 import { useViewLayout } from 'hooks/use-view-layout';
@@ -42,7 +41,7 @@ export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element
 					path={`folder/:folderId/:type?/:itemId?`}
 					element={
 						<Suspense fallback={<Spinner />}>
-							<FolderPanel />
+							<LazyFolderPanel />
 						</Suspense>
 					}
 				/>
