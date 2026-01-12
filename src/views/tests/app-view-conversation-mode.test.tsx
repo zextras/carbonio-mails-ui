@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { configure, within } from '@testing-library/react';
+import { waitFor, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { TESTID_SELECTORS } from '../../__test__/constants';
@@ -25,14 +25,26 @@ import { setupViewByConversation } from '../../__test__/setup-utils';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../constants';
 import AppView from '../app-view';
 import { makeAllItemsVisible } from '../settings/filters/tests/test-utils';
-import { setupTest } from '@test-setup';
+import { screen, setupTest, UserEvent } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 
-describe('AppView in conversation mode', () => {
-	beforeAll(() => {
-		configure({ asyncUtilTimeout: 5000 });
+const waitForLazySpinnerToDisappear = (): Promise<void> =>
+	waitFor(
+		() => {
+			expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
+		},
+		{ timeout: 10000 }
+	);
+
+const setupAppView = async (atUrl: string): Promise<UserEvent> => {
+	const { user } = setupTest(<AppView />, {
+		initialEntries: [atUrl]
 	});
+	await waitForLazySpinnerToDisappear();
+	return user;
+};
+describe('AppView in conversation mode', () => {
 	beforeEach(() => {
 		mockLayoutStorage({
 			layout: MAILS_VIEW_LAYOUTS.SPLIT,
@@ -58,9 +70,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation] });
 				stubSearchConversation({ conversation });
 				stubGetConversation({ conversation });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
-				});
+				const user = await setupAppView(`/folder/${inboxFolderId}/conversation/123`);
 
 				const conversation1Ui = conversationTestUtilities('123');
 				await conversation1Ui.findConversationInList();
@@ -93,9 +103,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation1, conversation2] });
 				stubSearchConversation({ conversation: conversation1 });
 				stubGetConversation({ conversation: conversation1 });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
-				});
+				const user = await setupAppView(`/folder/${inboxFolderId}/conversation/123`);
 				const conversation1Ui = conversationTestUtilities('123');
 				const conversation2Ui = conversationTestUtilities('456');
 
@@ -125,10 +133,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation] });
 				stubSearchConversation({ conversation });
 				stubGetConversation({ conversation });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
-				});
-
+				const user = await setupAppView(`/folder/${inboxFolderId}/conversation/123`);
 				const conversation1Ui = conversationTestUtilities('123');
 				await conversation1Ui.findConversationInList();
 				await conversation1Ui.checkPanelOpen();
@@ -137,6 +142,8 @@ describe('AppView in conversation mode', () => {
 				const markAsSpamAction = await contextMenu.markAsSpam();
 				createSoapAPIInterceptor('ConvAction');
 				await user.click(markAsSpamAction);
+				await conversation1Ui.snackbars.seeConversationMovedToSpam({ status: 'open' });
+				await conversation1Ui.snackbars.seeConversationMovedToSpam({ status: 'closed' });
 				await conversation1Ui.checkPanelClosed();
 			});
 			it('should not close the detail panel for opened conversation when marking a different conversation as spam', async () => {
@@ -155,9 +162,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation1, conversation2] });
 				stubSearchConversation({ conversation: conversation1 });
 				stubGetConversation({ conversation: conversation1 });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
-				});
+				const user = await setupAppView(`/folder/${inboxFolderId}/conversation/123`);
 				const openedConversation = conversationTestUtilities('123');
 				const otherConversation = conversationTestUtilities('456');
 
@@ -185,9 +190,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation] });
 				stubSearchConversation({ conversation });
 				stubGetConversation({ conversation });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${spamFolderId}/conversation/123`]
-				});
+				const user = await setupAppView(`/folder/${spamFolderId}/conversation/123`);
 
 				const conversation1Ui = conversationTestUtilities('123');
 				await conversation1Ui.findConversationInList();
@@ -197,6 +200,8 @@ describe('AppView in conversation mode', () => {
 				const notSpamAction = await contextMenu.notSpam();
 				createSoapAPIInterceptor('ConvAction');
 				await user.click(notSpamAction);
+				await conversation1Ui.snackbars.seeConversationNotSpamAnymore({ status: 'open' });
+				await conversation1Ui.snackbars.seeConversationNotSpamAnymore({ status: 'closed' });
 
 				await conversation1Ui.checkPanelClosed();
 			});
@@ -216,9 +221,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversations({ conversations: [conversation1, conversation2] });
 				stubSearchConversation({ conversation: conversation1 });
 				stubGetConversation({ conversation: conversation1 });
-				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/${spamFolderId}/conversation/123`]
-				});
+				const user = await setupAppView(`/folder/${spamFolderId}/conversation/123`);
 				const openedConversation = conversationTestUtilities('123');
 				const otherConversation = conversationTestUtilities('456');
 

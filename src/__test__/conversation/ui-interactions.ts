@@ -50,6 +50,7 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 			if (status === 'open') {
 				await screen.findByText(spamMessage);
 			} else {
+				vi.advanceTimersByTime(3000); // snackbar lasts 3 seconds
 				await waitFor(() => {
 					expect(screen.queryByText(spamMessage)).not.toBeInTheDocument();
 				});
@@ -64,6 +65,7 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 			if (status === 'open') {
 				await screen.findByText(notSpamMessage);
 			} else {
+				vi.advanceTimersByTime(3000); // snackbar lasts 3 seconds
 				await waitFor(() => {
 					expect(screen.queryByText(notSpamMessage)).not.toBeInTheDocument();
 				});
