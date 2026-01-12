@@ -112,7 +112,6 @@ export const useConvActions = ({
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);
 	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
