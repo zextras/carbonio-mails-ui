@@ -150,13 +150,11 @@ describe('useEditorAttachments', () => {
 			const saveDraftRequest = await saveDraftRequestPromise;
 			const contentId = extractContentIdFromRequest(saveDraftRequest);
 			await waitFor(() => {
-				expect(onSaveComplete).toHaveBeenCalledWith([
-					{
-						contentId,
-						cidUrl: `cid:${contentId}`,
-						downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
-					}
-				]);
+				expect(onSaveComplete).toHaveBeenCalledWith({
+					contentId,
+					cidUrl: `cid:${contentId}`,
+					downloadServiceUrl: `/service/content/proxy?aid=${attachmentId}`
+				});
 			});
 		});
 

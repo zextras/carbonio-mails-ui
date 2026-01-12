@@ -17,10 +17,9 @@ import { TIMEOUTS } from 'constants/index';
 import { composeAttachmentDownloadUrlFromUploadID as composeAttachmentDownloadUrlFromAttachmentId } from 'helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
-import { filterUnsavedAttachmentsByUploadId } from 'store/editor/editor-utils';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
-import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
