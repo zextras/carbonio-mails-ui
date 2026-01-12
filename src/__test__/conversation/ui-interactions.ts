@@ -13,6 +13,10 @@ type ConversationTestUtilities = {
 	findConversationInList: () => Promise<HTMLElement>;
 	hoverConversationInList: (user: UserEvent) => Promise<{ hoverActionsContainer: HTMLElement }>;
 	openConversationContextMenu: (user: UserEvent) => Promise<HTMLElement>;
+	snackbars: {
+		seeConversationMovedToSpam: ({ status }: { status: 'open' | 'closed' }) => Promise<void>;
+		seeConversationNotSpamAnymore: ({ status }: { status: 'open' | 'closed' }) => Promise<void>;
+	};
 };
 export const conversationTestUtilities = (id: string): ConversationTestUtilities => ({
 	findConversationInList: (): Promise<HTMLElement> =>
@@ -39,5 +43,35 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 
 		await user.rightClick(hoverContainer);
 		return screen.getByTestId('dropdown-popper-list');
+	},
+	snackbars: {
+		seeConversationMovedToSpam: async ({
+			status
+		}: {
+			status: 'open' | 'closed';
+		}): Promise<void> => {
+			const spamMessage = 'You’ve marked this e-mail as Spam';
+			if (status === 'open') {
+				await screen.findByText(spamMessage);
+			} else {
+				await waitFor(() => {
+					expect(screen.queryByText(spamMessage)).not.toBeInTheDocument();
+				});
+			}
+		},
+		seeConversationNotSpamAnymore: async ({
+			status
+		}: {
+			status: 'open' | 'closed';
+		}): Promise<void> => {
+			const notSpamMessage = 'You’ve marked this e-mail as Not Spam';
+			if (status === 'open') {
+				await screen.findByText(notSpamMessage);
+			} else {
+				await waitFor(() => {
+					expect(screen.queryByText(notSpamMessage)).not.toBeInTheDocument();
+				});
+			}
+		}
 	}
 });

@@ -6,7 +6,8 @@
 
 import React from 'react';
 
-import { configure, screen, waitFor, within } from '@testing-library/react';
+import { configure, within } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { TESTID_SELECTORS } from '../../__test__/constants';
 import {
@@ -43,10 +44,12 @@ describe('AppView in conversation mode', () => {
 		beforeEach(() => {
 			setupViewByConversation();
 		});
+		const spamFolderId = `${FOLDERS.SPAM}`;
+		const inboxFolderId = `${FOLDERS.INBOX}`;
 
 		describe('Trash conversation', () => {
 			it('should close panel when deleting conversation from Inbox', async () => {
-				const conversationMessages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
+				const conversationMessages = [generateConvMessageFromAPI({ l: inboxFolderId, id: '1' })];
 				const conversation = generateConversationFromAPI({
 					id: '123',
 					m: conversationMessages
@@ -56,7 +59,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversation({ conversation });
 				stubGetConversation({ conversation });
 				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/2/conversation/123`]
+					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
 				});
 
 				const conversation1Ui = conversationTestUtilities('123');
@@ -73,8 +76,10 @@ describe('AppView in conversation mode', () => {
 			});
 
 			it('should not close the panel when deleting a different conversation', async () => {
-				const conversation1Messages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
-				const conversation2Messages = [generateConvMessageFromAPI({ l: '2', id: '2' })];
+				const conversation1Messages = [generateConvMessageFromAPI({ l: inboxFolderId, id: '1' })];
+				const conversation2Messages = [
+					generateConvMessageFromAPI({ l: inboxFolderId, id: inboxFolderId })
+				];
 
 				const conversation1 = generateConversationFromAPI({
 					id: '123',
@@ -89,7 +94,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversation({ conversation: conversation1 });
 				stubGetConversation({ conversation: conversation1 });
 				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/2/conversation/123`]
+					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
 				});
 				const conversation1Ui = conversationTestUtilities('123');
 				const conversation2Ui = conversationTestUtilities('456');
@@ -121,7 +126,7 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversation({ conversation });
 				stubGetConversation({ conversation });
 				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/2/conversation/123`]
+					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
 				});
 
 				const conversation1Ui = conversationTestUtilities('123');
@@ -134,7 +139,6 @@ describe('AppView in conversation mode', () => {
 				await user.click(markAsSpamAction);
 				await conversation1Ui.checkPanelClosed();
 			});
-
 			it('should not close the detail panel for opened conversation when marking a different conversation as spam', async () => {
 				const conversation1Messages = [generateConvMessageFromAPI({ l: '2', id: '1' })];
 				const conversation2Messages = [generateConvMessageFromAPI({ l: '2', id: '2' })];
@@ -152,14 +156,13 @@ describe('AppView in conversation mode', () => {
 				stubSearchConversation({ conversation: conversation1 });
 				stubGetConversation({ conversation: conversation1 });
 				const { user } = setupTest(<AppView />, {
-					initialEntries: [`/folder/2/conversation/123`]
+					initialEntries: [`/folder/${inboxFolderId}/conversation/123`]
 				});
 				const openedConversation = conversationTestUtilities('123');
 				const otherConversation = conversationTestUtilities('456');
 
 				await openedConversation.checkPanelOpen();
 
-				// mark as spam conversation 2 which is not opened in the detail panel
 				makeAllItemsVisible();
 				const contextMenuOfOtherConversation =
 					await otherConversation.openConversationContextMenu(user);
@@ -170,12 +173,70 @@ describe('AppView in conversation mode', () => {
 				await user.click(markAsSpamAction);
 
 				createSoapAPIInterceptor('ConvAction');
-				await screen.findByText('You’ve marked this e-mail as Spam');
-				await waitFor(() => {
-					expect(screen.queryByText('You’ve marked this e-mail as Spam')).not.toBeInTheDocument();
+				await otherConversation.snackbars.seeConversationMovedToSpam({ status: 'open' });
+				await otherConversation.snackbars.seeConversationMovedToSpam({ status: 'closed' });
+				await openedConversation.checkPanelOpen();
+			});
+		});
+
+		describe('Not Spam', () => {
+			it('should close detail panel when marking opened conversation as not spam from Spam', async () => {
+				const conversationMessages = [generateConvMessageFromAPI({ l: spamFolderId, id: '1' })];
+				const conversation = generateConversationFromAPI({
+					id: '123',
+					m: conversationMessages
+				});
+				stubSearchConversations({ conversations: [conversation] });
+				stubSearchConversation({ conversation });
+				stubGetConversation({ conversation });
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${spamFolderId}/conversation/123`]
 				});
 
-				// check detail panel for opened Conversation is still open
+				const conversation1Ui = conversationTestUtilities('123');
+				await conversation1Ui.findConversationInList();
+				await conversation1Ui.checkPanelOpen();
+				makeAllItemsVisible();
+				const contextMenu = await conversation1Ui.openConversationContextMenu(user);
+				const notSpamAction = await within(contextMenu).findByText('Not spam');
+				createSoapAPIInterceptor('ConvAction');
+				await user.click(notSpamAction);
+				await conversation1Ui.checkPanelClosed();
+			});
+			it('should not close the detail panel for opened conversation when marking a different conversation as not spam', async () => {
+				const conversation1Messages = [generateConvMessageFromAPI({ l: spamFolderId, id: '1' })];
+				const conversation2Messages = [generateConvMessageFromAPI({ l: spamFolderId, id: '2' })];
+
+				const conversation1 = generateConversationFromAPI({
+					id: '123',
+					m: conversation1Messages
+				});
+				const conversation2 = generateConversationFromAPI({
+					id: '456',
+					m: conversation2Messages
+				});
+
+				stubSearchConversations({ conversations: [conversation1, conversation2] });
+				stubSearchConversation({ conversation: conversation1 });
+				stubGetConversation({ conversation: conversation1 });
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${spamFolderId}/conversation/123`]
+				});
+				const openedConversation = conversationTestUtilities('123');
+				const otherConversation = conversationTestUtilities('456');
+
+				await openedConversation.checkPanelOpen();
+
+				makeAllItemsVisible();
+				const contextMenuOfOtherConversation =
+					await otherConversation.openConversationContextMenu(user);
+				const notSpamAction = await within(contextMenuOfOtherConversation).findByText('Not spam');
+
+				await user.click(notSpamAction);
+
+				createSoapAPIInterceptor('ConvAction');
+				await otherConversation.snackbars.seeConversationNotSpamAnymore({ status: 'open' });
+				await otherConversation.snackbars.seeConversationNotSpamAnymore({ status: 'closed' });
 				await openedConversation.checkPanelOpen();
 			});
 		});
