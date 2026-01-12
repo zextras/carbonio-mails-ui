@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { isDraft, isSpam } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
@@ -35,7 +35,7 @@ export const useConvSetSpamFn = ({
 		[folderId]
 	);
 
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 	const execute = useCallback((): void => {
 		let notCanceled = true;
 
@@ -72,13 +72,21 @@ export const useConvSetSpamFn = ({
 					}
 
 					onActionComplete && onActionComplete(ids);
-					if (shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					if (currentConversation && shouldReplaceHistory && ids.includes(currentConversation.id)) {
+						closeConversationPanel();
 					}
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, navigate, onActionComplete, shouldReplaceHistory, t]);
+	}, [
+		closeConversationPanel,
+		createSnackbar,
+		currentConversation,
+		ids,
+		onActionComplete,
+		shouldReplaceHistory,
+		t
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
