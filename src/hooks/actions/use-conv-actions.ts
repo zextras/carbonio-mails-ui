@@ -32,7 +32,6 @@ import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
-	shouldReplaceHistory?: boolean;
 };
 
 type ConversationActionsReturnType = {
@@ -57,8 +56,7 @@ type ConversationActionsReturnType = {
 };
 
 export const useConvActions = ({
-	conversation,
-	shouldReplaceHistory = false
+	conversation
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
