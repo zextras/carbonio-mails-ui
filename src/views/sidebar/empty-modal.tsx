@@ -58,10 +58,8 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const title = useMemo(() => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
-		return isTrashFolder
-			? `${t('label.empty', 'Empty')}: ${folderName}`
-			: `${t('label.wipe', 'Wipe')}: ${folderName}`;
-	}, [isTrashFolder, folder.name, folder.id]);
+		return `${t('label.empty', 'Empty')}: ${folderName}`;
+	}, [folder.name, folder.id]);
 
 	const confirmLabel = useMemo(() => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
