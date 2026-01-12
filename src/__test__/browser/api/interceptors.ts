@@ -63,7 +63,7 @@ export const stubSoapApi = <RequestParamsType, ResponseType = never>(
 
 					return HttpResponse.json({
 						Body: {
-							[`${apiAction}Response`]: response || {}
+							[`${apiAction}Response`]: response ?? {}
 						}
 					});
 				}
