@@ -167,7 +167,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
-				<Container onClick={_onClick}>
+				<Container
+					data-testid={`clickable-conversation-list-item-${conversationId}`}
+					onClick={_onClick}
+				>
 					<ConversationListItemCore
 						conversation={conversation}
 						selected={selected}
