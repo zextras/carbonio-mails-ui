@@ -5,7 +5,7 @@ import { DraftTrashedEvent } from './events/draft-trashed';
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-export type DrashTrashedEventPayload = {
+export type DraftTrashedEventPayload = {
 	draftId: string;
 };
 
