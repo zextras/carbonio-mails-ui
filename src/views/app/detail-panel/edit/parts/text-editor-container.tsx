@@ -21,7 +21,7 @@ export type TextEditorContainerProps = {
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
 	const { isRichText } = useEditorIsRichText(editorId);
 
-	const containerHeight = !isRichText ? 'fit' : '100%';
+	const containerHeight = isRichText ? '100%' : 'fit';
 
 	return (
 		<Container
