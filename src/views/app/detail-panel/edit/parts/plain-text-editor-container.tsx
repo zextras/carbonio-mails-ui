@@ -9,7 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
-import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
+import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { plainTextToHTML } from 'commons/utils';
 import { useEditorText, useEditorTextProvider } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
@@ -25,7 +25,7 @@ export const PlainTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const { prefs } = useUserSettings();
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { setDirty, isDirty } = useEditorIsDirty(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
 	const text = useMemo(() => getText().plainText, [getText]);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const initialValueRef = useRef(text);

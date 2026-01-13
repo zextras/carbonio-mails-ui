@@ -150,7 +150,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	const { isDirty } = useEditorIsDirty(editorId);
+	const isDirty = useEditorIsDirty(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);

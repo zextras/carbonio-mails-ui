@@ -6,7 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -34,8 +34,8 @@ export const useEditorSubject = (
 ): { subject: string; setSubject: (subject: string) => void } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].subject);
-	const setter = useEditorsStore((state) => state.setSubject);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setSubject;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -57,7 +57,7 @@ export const useEditorTextProvider = (
 	setTextProvider: (textProvider: MailsEditorV2['textProvider']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].textProvider);
-	const setter = useEditorsStore((state) => state.setTextProvider);
+	const setter = useEditorsStore.getState().setTextProvider;
 
 	const setTextProvider = useCallback(
 		(val: MailsEditorV2['textProvider']): void => {
@@ -90,9 +90,9 @@ export const useEditorText = (
 	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
 	const { immediateSaveDraft } = useSaveDraftFromEditor(id);
-	const setter = useEditorsStore((state) => state.setText);
+	const setter = useEditorsStore.getState().setText;
 	const { textProvider } = useEditorTextProvider(id);
-	const { setDirty } = useEditorIsDirty(id);
+	const { setDirty } = useEditorSetDirty(id);
 
 	const getText = useCallback(
 		(): MailsEditorV2['text'] =>
@@ -136,8 +136,8 @@ export const useEditorAutoSendTime = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].autoSendTime);
-	const setter = useEditorsStore((state) => state.setAutoSendTime);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setAutoSendTime;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -164,8 +164,8 @@ export const useEditorDid = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].did);
-	const setter = useEditorsStore((state) => state.setDid);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setDid;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -192,8 +192,8 @@ export const useEditorIsRichText = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isRichText);
-	const setter = useEditorsStore((state) => state.setIsRichText);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setIsRichText;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -220,8 +220,8 @@ export const useEditorRecipients = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients);
-	const setter = useEditorsStore((state) => state.setRecipients);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setRecipients;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -249,8 +249,8 @@ export const useEditorToRecipients = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
-	const setter = useEditorsStore((state) => state.setToRecipients);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setToRecipients;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -278,8 +278,8 @@ export const useEditorCcRecipients = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
-	const setter = useEditorsStore((state) => state.setCcRecipients);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setCcRecipients;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -307,8 +307,8 @@ export const useEditorBccRecipients = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
-	const setter = useEditorsStore((state) => state.setBccRecipients);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setBccRecipients;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -336,8 +336,8 @@ export const useEditorIdentityId = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].identityId);
-	const setter = useEditorsStore((state) => state.setIdentityId);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setIdentityId;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -365,8 +365,8 @@ export const useEditorIsUrgent = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
-	const setter = useEditorsStore((state) => state.setIsUrgent);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setIsUrgent;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -393,8 +393,8 @@ export const useEditorRequestReadReceipt = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
-	const setter = useEditorsStore((state) => state.setRequestReadReceipt);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setRequestReadReceipt;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -421,8 +421,8 @@ export const useEditorSignatureId = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const value = useEditorsStore((state) => state.editors[editorId].signatureId);
-	const setter = useEditorsStore((state) => state.setSignatureId);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const setter = useEditorsStore.getState().setSignatureId;
+	const { setDirty } = useEditorSetDirty(editorId);
 
 	return useMemo(
 		() => ({
@@ -450,8 +450,8 @@ export const useEditorIsSmimeSign = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isSmimeSign);
-	const setter = useEditorsStore((state) => state.setIsSmimeSign);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setIsSmimeSign;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({
@@ -478,8 +478,8 @@ export const useEditorIsSmimeEncrypt = (
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
 	const value = useEditorsStore((state) => state.editors[id].isSmimeEncrypt);
-	const setter = useEditorsStore((state) => state.setIsSmimeEncrypt);
-	const { setDirty } = useEditorIsDirty(id);
+	const setter = useEditorsStore.getState().setIsSmimeEncrypt;
+	const { setDirty } = useEditorSetDirty(id);
 
 	return useMemo(
 		() => ({

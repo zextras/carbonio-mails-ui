@@ -23,7 +23,7 @@ import {
 } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
@@ -85,7 +85,7 @@ type EditorAttachmentHook = {
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
-	const { setDirty } = useEditorIsDirty(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
 	const notifyUploadError = useNotifyUploadError();
 
 	const unsavedStandardAttachments = reject(

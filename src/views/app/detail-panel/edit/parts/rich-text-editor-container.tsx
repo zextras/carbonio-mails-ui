@@ -12,7 +12,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
-import { useEditorIsDirty } from '../../../../../store/editor/hooks/statuses';
+import { useEditorIsDirty, useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -54,7 +54,8 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): JSX.Element => {
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
-	const { setDirty, isDirty } = useEditorIsDirty(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
+	const isDirty = useEditorIsDirty(editorId);
 
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);

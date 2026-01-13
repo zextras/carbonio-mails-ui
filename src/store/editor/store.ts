@@ -86,7 +86,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set, get) => ({
 	setIsDirty: (id: MailsEditorV2['id'], value: MailsEditorV2['isDirty']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
+				if (state?.editors?.[id] && state.editors[id].isDirty !== value) {
 					state.editors[id].isDirty = value;
 				}
 			})

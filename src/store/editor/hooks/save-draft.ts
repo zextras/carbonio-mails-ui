@@ -14,7 +14,7 @@ import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { getEditor } from 'store/editor/hooks/editors';
-import { computeAndUpdateEditorStatus, useEditorIsDirty } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
 import { MailsEditorV2 } from 'types/index.d';
@@ -57,7 +57,7 @@ export const useSaveDraftFromEditor = (
 } => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const { resetDirty } = useEditorIsDirty(editorId);
+	const { resetDirty } = useEditorSetDirty(editorId);
 
 	const saveDraftFromEditor = useCallback(
 		(options?: SaveDraftOptions): void => {
@@ -166,7 +166,7 @@ export const useEditorDraftSave = (
 } => {
 	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const { resetDirty } = useEditorIsDirty(editorId);
+	const { resetDirty } = useEditorSetDirty(editorId);
 
 	const immediateInvoker = useCallback(
 		(options?: SaveDraftOptions): void => {
