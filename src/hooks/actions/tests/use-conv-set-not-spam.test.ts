@@ -26,7 +26,7 @@ describe('useConvSetNotSpam', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvSetNotSpamDescriptor, {
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+				initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 			});
 
 			expect(descriptor).toEqual({
@@ -48,7 +48,7 @@ describe('useConvSetNotSpam', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvSetNotSpamFn, {
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+				initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 			});
 
 			expect(functions).toEqual({
@@ -70,7 +70,7 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
+					initialProps: [{ ids, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -85,7 +85,7 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 				});
 
 				await act(async () => {
@@ -109,7 +109,7 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+					initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 				});
 
 				act(() => {
@@ -131,9 +131,7 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					initialProps: [
-						{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM, onActionComplete }
-					]
+					initialProps: [{ ids, folderId: FOLDERS.SPAM, onActionComplete }]
 				});
 				await act(async () => {
 					functions.execute();

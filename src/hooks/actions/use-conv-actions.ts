@@ -32,7 +32,6 @@ import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
-	shouldReplaceHistory?: boolean;
 };
 
 type ConversationActionsReturnType = {
@@ -57,8 +56,7 @@ type ConversationActionsReturnType = {
 };
 
 export const useConvActions = ({
-	conversation,
-	shouldReplaceHistory = false
+	conversation
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
@@ -112,12 +110,10 @@ export const useConvActions = ({
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);
 	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 
