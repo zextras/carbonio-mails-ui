@@ -7,29 +7,27 @@ import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { isSpam } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetNotSpamFunctionsParameter = {
 	ids: Array<string>;
-	shouldReplaceHistory: boolean;
 	folderId: string;
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvSetNotSpamFn = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetNotSpamFunctionsParameter): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const canExecute = useCallback((): boolean => isSpam(folderId), [folderId]);
 
@@ -71,26 +69,24 @@ export const useConvSetNotSpamFn = ({
 
 					onActionComplete && onActionComplete(ids);
 
-					if (shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					if (currentConversation && ids.includes(currentConversation.id)) {
+						closeConversationPanel();
 					}
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, navigate, onActionComplete, shouldReplaceHistory, t]);
+	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvSetNotSpamDescriptor = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetNotSpamFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetNotSpamFn({
 		ids,
-		shouldReplaceHistory,
 		folderId,
 		onActionComplete
 	});
