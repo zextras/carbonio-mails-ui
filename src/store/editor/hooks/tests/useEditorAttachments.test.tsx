@@ -6,13 +6,14 @@ import { renderHook, act, waitFor } from '@testing-library/react';
  */
 
 import { generateCompleteMessageFromAPI } from '../../../../__test__/generators/api';
+import { generateNewEditor } from '../../../../__test__/generators/editors';
 import {
 	SavedAttachment,
 	SaveDraftRequest,
 	SaveDraftResponse,
 	UnsavedAttachment
 } from '../../../../types';
-import { generateNewEditor, generateNewMessageEditor } from '../../editor-generators';
+import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
 import { mockUploadApiError, mockUploadApiSuccess } from '@test-utils/api/upload-file-api-mocks';

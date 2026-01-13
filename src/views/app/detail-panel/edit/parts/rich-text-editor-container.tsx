@@ -5,7 +5,6 @@
  */
 import React, { useCallback, useMemo, useRef } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
@@ -13,6 +12,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
+import { useEditorIsDirty, useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -54,6 +54,8 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): JSX.Element => {
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
+	const { setDirty } = useEditorSetDirty(editorId);
+	const isDirty = useEditorIsDirty(editorId);
 
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
@@ -75,12 +77,16 @@ export const RichTextEditorContainer = ({
 		return { plainText, richText };
 	}, []);
 
-	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
-		if (!composerRef.current) {
-			return;
-		}
-		composerRef.current.setContent(value.richText);
-	}, []);
+	const onExternalTextChanges = useCallback(
+		(value: MailsEditorV2['text']): void => {
+			if (!composerRef.current) {
+				return;
+			}
+			setDirty();
+			composerRef.current.setContent(value.richText);
+		},
+		[setDirty]
+	);
 
 	const onComposerInit = useCallback(
 		(_evt: Event, composer: Editor) => {
@@ -119,6 +125,7 @@ export const RichTextEditorContainer = ({
 	}, [prefs, cleanupUnusedAttachments, setText]);
 
 	const onTextChange = useCallback(() => {
+		setDirty();
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
@@ -132,13 +139,15 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [saveEditor]);
+	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		saveEditor();
+		if (isDirty) {
+			saveEditor();
+		}
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider]);
+	}, [saveEditor, setTextProvider, isDirty]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
@@ -193,21 +202,39 @@ export const RichTextEditorContainer = ({
 		};
 	}
 
-	function setupResizeObserver(editor: Editor): MutationObserver {
-		const mutationObserver = new MutationObserver(() => {
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
+	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
+		const boardElement = document.querySelector('[data-testid="MailEditorWrapper"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new ResizeObserver(() => {
+			editor.dispatch('ResizeWindow');
+		});
+		observer.observe(boardElement);
+
+		return observer;
+	}, []);
+
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is moved
+	const setupMutationObserver = useCallback((editor: Editor): MutationObserver | null => {
+		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new MutationObserver(() => {
 			editor.dispatch('ResizeWindow');
 		});
 
-		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-		if (boardElement) {
-			mutationObserver.observe(boardElement, {
-				attributes: true,
-				attributeFilter: ['style']
-			});
-		}
+		observer.observe(boardElement, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
 
-		return mutationObserver;
-	}
+		return observer;
+	}, []);
 
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
@@ -293,33 +320,38 @@ export const RichTextEditorContainer = ({
 					});
 				}
 
-				const mutationObserver = setupResizeObserver(editor);
+				const resizeObserver = setupResizeObserver(editor);
+				const mutationObserver = setupMutationObserver(editor);
 				return () => {
-					mutationObserver.disconnect();
+					resizeObserver?.disconnect();
+					mutationObserver?.disconnect();
 				};
 			}
 		};
-	}, [editorId, onComposerClose, onComposerInit, onDragOver, onTextChange, prefs]);
+	}, [
+		editorId,
+		onComposerClose,
+		onComposerInit,
+		onDragOver,
+		onTextChange,
+		prefs,
+		setupMutationObserver,
+		setupResizeObserver
+	]);
 
 	return (
-		<Container
-			background={'gray6'}
-			mainAlignment="flex-start"
-			style={{ minHeight: 0, overflow: 'hidden' }}
-		>
-			<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-				<Composer
-					initialValue={initialValue.current}
-					onFileSelect={onInlineAttachmentsSelected}
-					customInitOptions={composerCustomOptions}
-					accountSettingsPrefs={{
-						zimbraPrefLocale: prefs?.zimbraPrefLocale,
-						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-					}}
-				/>
-			</StyledComp.EditorWrapper>
-		</Container>
+		<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
+			<Composer
+				initialValue={initialValue.current}
+				onFileSelect={onInlineAttachmentsSelected}
+				customInitOptions={composerCustomOptions}
+				accountSettingsPrefs={{
+					zimbraPrefLocale: prefs?.zimbraPrefLocale,
+					zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+					zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+					zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+				}}
+			/>
+		</StyledComp.EditorWrapper>
 	);
 };

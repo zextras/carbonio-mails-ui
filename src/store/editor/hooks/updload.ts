@@ -6,8 +6,8 @@
 import { useMemo } from 'react';
 
 import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
 
@@ -15,7 +15,8 @@ export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],
 	uploadId: string
 ): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
 	const attachmentStateInfo = useEditorsStore((state) => {
 		const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, editorId, uploadId);
 		if (!unsavedAttachment) {
@@ -43,8 +44,9 @@ export const useEditorUploadProcess = (
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		};
-	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId]);
+	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId, setDirty]);
 };

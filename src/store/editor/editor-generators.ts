@@ -86,6 +86,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -216,6 +217,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		id: editorId,
 		unsavedAttachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients,
@@ -287,6 +289,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -355,6 +358,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -414,6 +418,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		id: editorId,
 		unsavedAttachments: attachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -464,6 +469,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -508,6 +514,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -615,28 +622,3 @@ export const generateEditor = ({
 
 	return null;
 };
-
-export function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
-	return {
-		recipients: { to: [], cc: [], bcc: [] },
-		id: '',
-		isRichText: false,
-		isUrgent: false,
-		sendAllowedStatus: {
-			allowed: true
-		},
-		requestReadReceipt: false,
-		savedAttachments: [],
-		size: 0,
-		subject: '',
-		text: {
-			plainText: 'Hello',
-			richText: '<p>Hello</p>'
-		},
-		unsavedAttachments: [],
-		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
-		did: '123',
-		...customData
-	};
-}

@@ -143,10 +143,14 @@ export type MailsEditorV2 = {
 	action: EditViewActionsType;
 	// the id of the sender identity
 	identityId: string;
+	// the attachments that are not yet saved on the server
 	unsavedAttachments: Array<UnsavedAttachment>;
+	// the attachments that are already saved on the server
 	savedAttachments: Array<SavedAttachment>;
 	// user defined delayed send timer
 	autoSendTime?: number;
+	// flag to indicate if the editor has unsaved changes
+	isDirty: boolean;
 	// the saved draft id
 	did?: string;
 	// true if the message is rich text
@@ -183,6 +187,7 @@ export type MailsEditorV2 = {
 	isSmimeSign?: boolean;
 	// flag for the S/MIME Encrypt request
 	isSmimeEncrypt?: boolean;
+	// optional external text provider to get/set the editor text
 	textProvider?: EditorTextProvider;
 };
 
