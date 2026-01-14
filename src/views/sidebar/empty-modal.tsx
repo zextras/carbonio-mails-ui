@@ -15,10 +15,10 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ModalFooter } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isTrash, ModalFooter } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
-import { getFolderIdParts, isTrash } from 'helpers/folders';
+import { getFolderIdParts } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import type { ModalProps } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
@@ -54,19 +54,17 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [createSnackbar, folder, onClose]);
 
-	const isTrashFolder = useMemo(() => isTrash(folder.id), [folder.id]);
-
-	const title = useMemo(() => {
+	const modalTitle = useMemo(() => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
 		return `${t('label.empty', 'Empty')}: ${folderName}`;
 	}, [folder.name, folder.id]);
 
-	const confirmLabel = useMemo(() => {
+	const confirmButtonLabel = useMemo(() => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
-		return isTrashFolder
-			? `${t('folder_panel.modal.empty.button', 'Empty')} ${folderName}`
+		return isTrash(folder.id)
+			? `${t('folder_panel.modal.empty.trash.button.yes', 'Yes, Empty')} ${folderName}`
 			: t('folder_panel.modal.empty.folder.button.yes', 'Yes, Empty Folder');
-	}, [isTrashFolder, folder.name, folder.id]);
+	}, [folder.name, folder.id]);
 
 	return (
 		<Container
@@ -87,59 +85,37 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						<Icon icon="AlertCircleOutline" color="error" size="large" />
 					</Padding>
 					<Text weight="bold" size="large">
-						{title}
+						{modalTitle}
 					</Text>
 				</Row>
 				<Button type="ghost" color={'gray0'} icon="CloseOutline" onClick={onClose} size="medium" />
 			</Container>
 			<Divider />
 			<Container padding={{ top: 'medium', bottom: 'large' }} crossAlignment="flex-start">
-				{isTrashFolder ? (
-					<Container crossAlignment="flex-start" mainAlignment="flex-start">
-						<Text overflow="break-word">
-							{t(
-								'folder_panel.modal.empty.body.message1',
-								'Do you want to empty the selected folder?'
-							)}
-						</Text>
-						<Padding top="medium" />
-						<Text overflow="break-word">
-							{t(
-								'folder_panel.modal.empty.body.message2',
-								'If you empty it, all the related content will be deleted permanently.'
-							)}
-						</Text>
-						<Padding top="medium" />
-						<Text weight="bold" color="error" overflow="break-word">
-							{t('folder_panel.modal.empty.folder.body.message3', 'This action cannot be undone.')}
-						</Text>
-					</Container>
-				) : (
-					<Container crossAlignment="flex-start" mainAlignment="flex-start">
-						<Text overflow="break-word">
-							{t(
-								'folder_panel.modal.folder.empty.body.message1',
-								'Do you want to empty the selected folder?'
-							)}
-						</Text>
-						<Padding top="medium" />
-						<Text overflow="break-word">
-							{t(
-								'folder_panel.modal.folder.empty.body.message2',
-								'If you empty it, all the related content will be deleted permanently.'
-							)}
-						</Text>
-						<Padding top="medium" />
-						<Text weight="bold" color="error" overflow="break-word">
-							{t('label.action_cannot_be_undone', 'This action cannot be undone.')}
-						</Text>
-					</Container>
-				)}
+				<Container crossAlignment="flex-start" mainAlignment="flex-start">
+					<Text overflow="break-word">
+						{t(
+							'folder_panel.modal.empty.body.message1',
+							'Do you want to empty the selected folder?'
+						)}
+					</Text>
+					<Padding top="medium" />
+					<Text overflow="break-word">
+						{t(
+							'folder_panel.modal.empty.body.message2',
+							'If you empty it, all the related content will be deleted permanently.'
+						)}
+					</Text>
+					<Padding top="medium" />
+					<Text weight="bold" color="error" overflow="break-word">
+						{t('folder_panel.modal.empty.body.message3', 'This action cannot be undone.')}
+					</Text>
+				</Container>
 			</Container>
 
 			<ModalFooter
 				onConfirm={onConfirm}
-				label={confirmLabel}
+				label={confirmButtonLabel}
 				color="error"
 				secondaryAction={onClose}
 				secondaryBtnType="outlined"

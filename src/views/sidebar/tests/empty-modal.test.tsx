@@ -60,9 +60,9 @@ describe('empty-modal', () => {
 		expect(screen.getByTestId('icon: AlertCircleOutline')).toBeInTheDocument();
 
 		// Verify warning messages
-		expect(screen.getByText('folder_panel.modal.folder.empty.body.message1')).toBeInTheDocument();
-		expect(screen.getByText('folder_panel.modal.folder.empty.body.message2')).toBeInTheDocument();
-		expect(screen.getByText('label.action_cannot_be_undone')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message1')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message2')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message3')).toBeInTheDocument();
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
@@ -119,9 +119,9 @@ describe('empty-modal', () => {
 		expect(screen.getByTestId('icon: AlertCircleOutline')).toBeInTheDocument();
 
 		// Verify warning messages specific to trash
-		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
-		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message2/i)).toBeInTheDocument();
-		expect(screen.getByText('folder_panel.modal.empty.folder.body.message3')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message1')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message2')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.body.message3')).toBeInTheDocument();
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
@@ -129,7 +129,7 @@ describe('empty-modal', () => {
 
 		// Verify buttons
 		const emptyButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.empty\.button/i
+			name: 'folder_panel.modal.empty.trash.button.yes folders.trash'
 		});
 		expect(emptyButton).toBeEnabled();
 
@@ -230,7 +230,7 @@ describe('empty-modal', () => {
 		);
 
 		const emptyButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.empty\.button/i
+			name: 'folder_panel.modal.empty.trash.button.yes folders.trash'
 		});
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
@@ -258,7 +258,7 @@ describe('empty-modal', () => {
 		);
 
 		const emptyButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.empty\.button/i
+			name: 'folder_panel.modal.empty.trash.button.yes folders.trash'
 		});
 
 		const successInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
@@ -341,7 +341,7 @@ describe('empty-modal', () => {
 		);
 
 		const emptyButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.empty\.button/i
+			name: 'folder_panel.modal.empty.trash.button.yes folders.trash'
 		});
 
 		createSoapAPIInterceptor<{ action: SoapFolderAction }, ErrorSoapBodyResponse>(
