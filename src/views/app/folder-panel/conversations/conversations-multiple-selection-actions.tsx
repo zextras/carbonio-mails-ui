@@ -92,13 +92,11 @@ export const ConversationsMultipleSelectionActions = ({
 	});
 	const setAsSpam = useConvSetSpamDescriptor({
 		ids: selectedConversationsIds,
-		shouldReplaceHistory: false,
 		folderId,
 		onActionComplete
 	});
 	const setAsNotSpam = useConvSetNotSpamDescriptor({
 		ids: selectedConversationsIds,
-		shouldReplaceHistory: false,
 		folderId,
 		onActionComplete
 	});

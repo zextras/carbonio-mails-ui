@@ -7,23 +7,21 @@ import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { isDraft, isSpam } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetSpamFunctionsParameter = {
 	ids: Array<string>;
-	shouldReplaceHistory: boolean;
 	folderId: string;
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvSetSpamFn = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetSpamFunctionsParameter): ActionFn => {
@@ -35,13 +33,13 @@ export const useConvSetSpamFn = ({
 		[folderId]
 	);
 
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 	const execute = useCallback((): void => {
 		let notCanceled = true;
 
 		const infoSnackbar = (hideButton = false): void => {
 			createSnackbar({
-				key: `trash-${ids}`,
+				key: `spam-${ids}`,
 				replace: true,
 				severity: 'info',
 				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
@@ -62,7 +60,7 @@ export const useConvSetSpamFn = ({
 				}).then((res) => {
 					if ('Fault' in res) {
 						createSnackbar({
-							key: `trash-${ids}`,
+							key: `spam-${ids}`,
 							replace: true,
 							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
@@ -72,26 +70,24 @@ export const useConvSetSpamFn = ({
 					}
 
 					onActionComplete && onActionComplete(ids);
-					if (shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					if (currentConversation && ids.includes(currentConversation.id)) {
+						closeConversationPanel();
 					}
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, navigate, onActionComplete, shouldReplaceHistory, t]);
+	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvSetSpamDescriptor = ({
 	ids,
-	shouldReplaceHistory,
 	folderId,
 	onActionComplete
 }: ConvSetSpamFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetSpamFn({
 		ids,
-		shouldReplaceHistory,
 		folderId,
 		onActionComplete
 	});

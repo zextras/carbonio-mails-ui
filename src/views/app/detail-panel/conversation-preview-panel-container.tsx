@@ -80,10 +80,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 					/>
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
-						<ConversationPreviewPanel
-							data-testid={`conversation-preview-panel-${conversationId}`}
-							conversation={conversation}
-						/>
+						<ConversationPreviewPanel conversation={conversation} />
 					)}
 
 					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
