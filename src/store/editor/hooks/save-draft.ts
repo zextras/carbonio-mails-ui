@@ -5,16 +5,17 @@
  */
 import { useCallback, useMemo } from 'react';
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { TIMEOUTS } from '../../../constants';
 import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { getDraftSaveDelay } from 'store/editor/store-utils';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
 import { MailsEditorV2 } from 'types/index.d';
 
@@ -23,22 +24,43 @@ export type SaveDraftOptions = {
 	onError?: (error: string) => void;
 };
 
-export type SaveDraftFunction = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions) => void;
+export type SaveDraftFunction = (options?: SaveDraftOptions) => void;
+
+function getDraftSaveDelay(): number {
+	const maximumDraftSaveDelay = TIMEOUTS.DRAFT_SAVE_DELAY;
+	const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval as string;
+	if (!autoSaveDraftSettings || autoSaveDraftSettings === '0') {
+		return TIMEOUTS.DRAFT_SAVE_DELAY;
+	}
+	if (autoSaveDraftSettings.includes('s')) {
+		autoSaveDraftSettings.replace('s', '');
+		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000, maximumDraftSaveDelay);
+	}
+	// FIXME: comparing minutes with 2 seconds will always result in 2 seconds to be the minimum, consider to remove this code if this is the case
+	if (autoSaveDraftSettings.includes('m')) {
+		autoSaveDraftSettings.replace('m', '');
+		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000 * 60, maximumDraftSaveDelay);
+	}
+	return TIMEOUTS.DRAFT_SAVE_DELAY;
+}
 
 /**
  *
  * @param editorId
  * @param options
  */
-export const useSaveDraftFromEditor = (): {
+export const useSaveDraftFromEditor = (
+	editorId: MailsEditorV2['id']
+): {
 	debouncedSaveDraft: ReturnType<typeof debounce<SaveDraftFunction>>;
 	immediateSaveDraft: SaveDraftFunction;
 } => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
+	const { resetDirty } = useEditorSetDirty(editorId);
 
 	const saveDraftFromEditor = useCallback(
-		(editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+		(options?: SaveDraftOptions): void => {
 			const editor = getEditor({ id: editorId });
 			if (!editor) {
 				console.warn('Cannot find the editor', editorId);
@@ -93,7 +115,7 @@ export const useSaveDraftFromEditor = (): {
 						lastSaveTimestamp: new Date()
 					});
 					computeAndUpdateEditorStatus(editorId);
-
+					resetDirty();
 					options?.onComplete?.();
 				})
 				.catch((err) => {
@@ -113,7 +135,7 @@ export const useSaveDraftFromEditor = (): {
 			// FIXME use a subscription to the store update
 			computeAndUpdateEditorStatus(editorId);
 		},
-		[createSnackbar, t]
+		[createSnackbar, editorId, resetDirty, t]
 	);
 
 	const delay = getDraftSaveDelay();
@@ -140,14 +162,26 @@ export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
 ): {
 	status: MailsEditorV2['draftSaveAllowedStatus'];
-	saveDraft: () => void;
+	saveDraft: (options?: SaveDraftOptions) => void;
 } => {
-	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const immediateInvoker = useCallback((): void => {
-		debouncedSaveDraft.cancel();
-		immediateSaveDraft(editorId);
-	}, [debouncedSaveDraft, editorId, immediateSaveDraft]);
+	const { resetDirty } = useEditorSetDirty(editorId);
+
+	const immediateInvoker = useCallback(
+		(options?: SaveDraftOptions): void => {
+			debouncedSaveDraft.cancel();
+			const finalOptions = {
+				...options,
+				onComplete: (): void => {
+					resetDirty();
+					options?.onComplete?.();
+				}
+			};
+			immediateSaveDraft(finalOptions);
+		},
+		[debouncedSaveDraft, immediateSaveDraft, resetDirty]
+	);
 
 	return useMemo(
 		() => ({

@@ -9,13 +9,12 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
 
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
-import { EditViewActions } from 'constants/index';
+import { useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
@@ -47,6 +46,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		folderId
 	});
 
+	const editDraft = useMsgEditDraftFn(itemId, completeMessage.isScheduled, folderId);
+
 	const setAsRead = useMsgSetReadFn({
 		ids: [itemId],
 		shouldReplaceHistory,
@@ -75,17 +76,14 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			const { id, isDraft } = completeMessage;
+			const { isDraft } = completeMessage;
 			if (isDraft) {
-				createEditBoard({
-					action: EditViewActions.EDIT_AS_DRAFT,
-					actionTargetId: id
-				});
+				editDraft.canExecute() && editDraft.execute();
 				return;
 			}
 			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
-		[previewOnSeparatedWindow, completeMessage]
+		[previewOnSeparatedWindow, completeMessage, editDraft]
 	);
 
 	return (

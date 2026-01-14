@@ -5,27 +5,27 @@
  */
 import { useMemo } from 'react';
 
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
 
 export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],
 	uploadId: string
 ): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
 	const attachmentStateInfo = useEditorsStore((state) => {
-		const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, editorId, uploadId);
-		if (unsavedAttachmentIndex === null) {
-			return null;
+		const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, editorId, uploadId);
+		if (!unsavedAttachment) {
+			return unsavedAttachment;
 		}
 
 		return {
-			status: state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadStatus,
-			abortController:
-				state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadAbortController
+			status: unsavedAttachment.uploadStatus,
+			abortController: unsavedAttachment.uploadAbortController
 		};
 	});
 
@@ -44,8 +44,9 @@ export const useEditorUploadProcess = (
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraft(editorId);
+				setDirty();
+				debouncedSaveDraft();
 			}
 		};
-	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId]);
+	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId, setDirty]);
 };

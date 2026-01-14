@@ -10,7 +10,7 @@ import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { MailsEditorV2 } from '../../../../types';
 import { generateNewMessageEditor } from '../../editor-generators';
-import { computeAndUpdateEditorStatus } from '../commons';
+import { computeAndUpdateEditorStatus } from '../statuses';
 import { useEditorSend } from '../send';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';

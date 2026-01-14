@@ -57,7 +57,7 @@ describe('TextEditorContainer', () => {
 		expect(screen.getByText(`Composer with RichText for ${editor.id}`)).toBeInTheDocument();
 	});
 
-	it('should set container height to "fit" when in rich text mode', () => {
+	it('should set container height to "100%" when in rich text mode', () => {
 		const editor = generateNewMessageEditor();
 		const editors: Array<MailsEditorV2> = [
 			{ ...editor, isRichText: true, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }
@@ -72,10 +72,10 @@ describe('TextEditorContainer', () => {
 		const containerElement = screen.getByTestId('TextEditorContainer');
 		expect(containerElement).toBeInTheDocument();
 
-		expect(containerElement).toHaveStyle({ height: 'fit' });
+		expect(containerElement).toHaveStyle({ height: '100%' });
 	});
 
-	it('should set container height to "100%" when in plain text mode', () => {
+	it('should set container height to "fit" when in plain text mode', () => {
 		const editor = generateNewMessageEditor();
 		const editors = [
 			{
@@ -93,7 +93,7 @@ describe('TextEditorContainer', () => {
 
 		const containerElement = screen.getByTestId('TextEditorContainer');
 		expect(containerElement).toBeInTheDocument();
-		expect(containerElement).toHaveStyle({ height: '100%' });
+		expect(containerElement).toHaveStyle({ height: 'fit' });
 	});
 });
 

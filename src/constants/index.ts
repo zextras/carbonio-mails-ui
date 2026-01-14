@@ -518,7 +518,8 @@ export const PROCESS_STATUS = {
 export const EDIT_VIEW_CLOSING_REASONS = {
 	EXTERNAL_CLOSE_REQUEST: 'externalRequest',
 	MESSAGE_SENT: 'send',
-	MESSAGE_SEND_SCHEDULED: 'sendLater'
+	MESSAGE_SEND_SCHEDULED: 'sendLater',
+	DRAFT_DELETED: 'draftDeleted'
 } as const;
 
 export const SORTING_OPTIONS = {

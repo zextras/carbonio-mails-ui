@@ -10,7 +10,7 @@ import { find } from 'lodash';
 
 import { sendMsgFromEditor } from 'api/send-msg';
 import { createCancelableTimer } from 'helpers/timers';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';

@@ -8,6 +8,7 @@
 		"npm": "v10"
 	},
 	"scripts": {
+		"browser-test": "vitest --project=browser --watch --open --ui",
 		"build": "sdk build",
 		"deploy": "sdk deploy",
 		"sdkInstall": "sdk install",
@@ -19,7 +20,7 @@
 		"lint-errors": "eslint --ext .js,.jsx,.ts,.tsx --quiet --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-check": "npm run lint-errors; npm run type-check",
-		"test": "TZ=Europe/Rome vitest run",
+		"test": "TZ=Europe/Rome vitest run --project=unit",
 		"test:watch": "TZ=Europe/Rome vitest",
 		"coverage": "TZ=Europe/Rome vitest run --coverage",
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
@@ -59,7 +60,9 @@
 		"@vitejs/plugin-react": "^5.0.4",
 		"@vitest/browser": "^4.0.14",
 		"@vitest/browser-playwright": "^4.0.14",
+		"@vitest/browser-preview": "4.0.14",
 		"@vitest/coverage-v8": "^4.0.14",
+		"@vitest/ui": "^4.0.14",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "2.2.1",
@@ -78,6 +81,7 @@
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.0.14",
+		"vitest-browser-react": "^2.0.2",
 		"vitest-mock-commonjs": "^1.0.2"
 	},
 	"dependencies": {
@@ -89,7 +93,7 @@
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
 		"@zextras/carbonio-design-system": "11.0.2",
-		"@zextras/carbonio-shell-ui": "13.0.0-devel.1766140356030",
+		"@zextras/carbonio-shell-ui": "13.0.0-devel.1767956380147",
 		"@zextras/carbonio-ui-commons": "2.0.1-devel.4",
 		"@zextras/carbonio-ui-preview": "4.0.1-devel.1",
 		"@zextras/carbonio-ui-soap-lib": "1.0.4",
@@ -104,9 +108,7 @@
 		"juice": "^11.0.3",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.4",
-		"node-forge": "^1.3.1",
 		"pkijs": "^3.2.4",
-		"prop-types": "^15.8.1",
 		"react": "^18.3.1",
 		"react-colorful": "^5.6.1",
 		"react-dom": "^18.3.1",
