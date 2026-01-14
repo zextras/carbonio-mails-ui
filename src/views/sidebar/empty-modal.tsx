@@ -36,7 +36,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					label:
 						getFolderIdParts(folder.id).id === FOLDERS.TRASH
 							? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
-							: t('messages.snackbar.folder_wiped', 'Folder successfully wiped'),
+							: t('messages.snackbar.folder_emptied', 'Folder successfully emptied'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});

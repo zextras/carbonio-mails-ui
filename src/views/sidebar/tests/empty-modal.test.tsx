@@ -322,7 +322,7 @@ describe('empty-modal', () => {
 
 		await successInterceptor;
 
-		expect(await screen.findByText(/messages\.snackbar\.folder_wiped/i)).toBeInTheDocument();
+		expect(await screen.findByText('messages.snackbar.folder_emptied')).toBeInTheDocument();
 		expect(closeModal).toHaveBeenCalledTimes(1);
 	});
 
