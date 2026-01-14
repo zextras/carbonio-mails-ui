@@ -125,8 +125,8 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						<Padding top="medium" />
 						<Text overflow="break-word">
 							{t(
-								'folder_panel.modal.wipe.body.message2',
-								'If you wipe it, all the related content will be deleted permanently.'
+								'folder_panel.modal.folder.empty.body.message2',
+								'If you empty it, all the related content will be deleted permanently.'
 							)}
 						</Text>
 						<Padding top="medium" />
