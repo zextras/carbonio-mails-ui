@@ -54,28 +54,28 @@ describe('empty-modal', () => {
 		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		// Verify title with proper formatting
-		expect(screen.getByText('label.wipe: folders.inbox')).toBeInTheDocument();
+		expect(screen.getByText('label.empty: folders.inbox')).toBeInTheDocument();
 
 		// Verify warning icon is present
-		expect(screen.getByTestId('icon: AlertTriangleOutline')).toBeInTheDocument();
+		expect(screen.getByTestId('icon: AlertCircleOutline')).toBeInTheDocument();
 
 		// Verify warning messages
-		expect(screen.getByText(/folder_panel\.modal\.wipe\.body\.message1/i)).toBeInTheDocument();
-		expect(screen.getByText(/folder_panel\.modal\.wipe\.body\.message2/i)).toBeInTheDocument();
-		expect(screen.getByText(/label\.action_cannot_be_undone/i)).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.folder.empty.body.message1')).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.folder.empty.body.message2')).toBeInTheDocument();
+		expect(screen.getByText('label.action_cannot_be_undone')).toBeInTheDocument();
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
 		expect(dividers.length).toBe(2);
 
 		const wipeButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.wipe\.button/i
+			name: 'folder_panel.modal.empty.folder.button'
 		});
 
 		expect(wipeButton).toBeEnabled();
 
 		const cancelButton = screen.getByRole('button', {
-			name: /label\.cancel/i
+			name: 'label.no_cancel'
 		});
 		expect(cancelButton).toBeEnabled();
 
@@ -116,7 +116,7 @@ describe('empty-modal', () => {
 		expect(screen.getByText('label.empty: folders.trash')).toBeInTheDocument();
 
 		// Verify error icon is present
-		expect(screen.getByTestId('icon: AlertTriangleOutline')).toBeInTheDocument();
+		expect(screen.getByTestId('icon: AlertCircleOutline')).toBeInTheDocument();
 
 		// Verify warning messages specific to trash
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('empty-modal', () => {
 		expect(emptyButton).toBeEnabled();
 
 		const cancelButton = screen.getByRole('button', {
-			name: /label\.cancel/i
+			name: 'label.no_cancel'
 		});
 		expect(cancelButton).toBeEnabled();
 
@@ -180,7 +180,7 @@ describe('empty-modal', () => {
 		);
 
 		const cancelButton = screen.getByRole('button', {
-			name: /label\.cancel/i
+			name: 'label.no_cancel'
 		});
 
 		await user.click(cancelButton);
@@ -311,7 +311,7 @@ describe('empty-modal', () => {
 		);
 
 		const wipeButton = screen.getByRole('button', {
-			name: /folder_panel\.modal\.wipe\.button/i
+			name: 'folder_panel.modal.empty.folder.button'
 		});
 
 		const successInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
