@@ -142,6 +142,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 				label={confirmLabel}
 				color="error"
 				secondaryAction={onClose}
+				secondaryBtnType="outlined"
 				secondaryLabel={t('label.no_cancel', 'No, Cancel')}
 			/>
 		</Container>
