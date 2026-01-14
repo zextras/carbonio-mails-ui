@@ -219,7 +219,7 @@ describe('useFolderActions', () => {
 
 		const modal = await screen.findByTestId('modal');
 
-		expect(within(modal).getByText(/label\.wipe: /i)).toBeVisible();
+		expect(within(modal).getByText(/label\.empty: /i)).toBeVisible();
 	});
 
 	it('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
