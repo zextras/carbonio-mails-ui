@@ -65,7 +65,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
 		return isTrashFolder
 			? `${t('folder_panel.modal.empty.button', 'Empty')} ${folderName}`
-			: t('folder_panel.modal.wipe.button', 'Wipe Folder');
+			: t('folder_panel.modal.empty.folder.button', 'Yes, Empty Folder');
 	}, [isTrashFolder, folder.name, folder.id]);
 
 	return (
