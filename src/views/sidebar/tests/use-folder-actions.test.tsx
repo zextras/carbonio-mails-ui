@@ -112,7 +112,7 @@ describe('useFolderActions', () => {
 				id: FolderActionsType.EMPTY,
 				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
 				icon: 'EmptyFolderOutline',
-				label: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
+				label: t('folder_panel.action.empty.folder_panel', 'Empty Folder'),
 				disabled: true,
 				onClick: expect.any(Function)
 			},
