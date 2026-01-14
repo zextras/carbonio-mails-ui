@@ -65,7 +65,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
 		return isTrashFolder
 			? `${t('folder_panel.modal.empty.button', 'Empty')} ${folderName}`
-			: t('folder_panel.modal.empty.folder.button', 'Yes, Empty Folder');
+			: t('folder_panel.modal.empty.folder.button.yes', 'Yes, Empty Folder');
 	}, [isTrashFolder, folder.name, folder.id]);
 
 	return (
@@ -111,7 +111,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						</Text>
 						<Padding top="medium" />
 						<Text weight="bold" color="error" overflow="break-word">
-							{t('label.action_cannot_be_undone', 'This action cannot be undone.')}
+							{t('folder_panel.modal.empty.folder.body.message3', 'This action cannot be undone.')}
 						</Text>
 					</Container>
 				) : (
@@ -143,7 +143,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 				color="error"
 				secondaryAction={onClose}
 				secondaryBtnType="outlined"
-				secondaryLabel={t('label.no_cancel', 'No, Cancel')}
+				secondaryLabel={t('folder_panel.modal.empty.folder.button.no', 'No, Cancel')}
 			/>
 		</Container>
 	);

@@ -69,13 +69,13 @@ describe('empty-modal', () => {
 		expect(dividers.length).toBe(2);
 
 		const wipeButton = screen.getByRole('button', {
-			name: 'folder_panel.modal.empty.folder.button'
+			name: 'folder_panel.modal.empty.folder.button.yes'
 		});
 
 		expect(wipeButton).toBeEnabled();
 
 		const cancelButton = screen.getByRole('button', {
-			name: 'label.no_cancel'
+			name: 'folder_panel.modal.empty.folder.button.no'
 		});
 		expect(cancelButton).toBeEnabled();
 
@@ -121,7 +121,7 @@ describe('empty-modal', () => {
 		// Verify warning messages specific to trash
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message2/i)).toBeInTheDocument();
-		expect(screen.getByText(/label\.action_cannot_be_undone/i)).toBeInTheDocument();
+		expect(screen.getByText('folder_panel.modal.empty.folder.body.message3')).toBeInTheDocument();
 
 		// Verify dividers are present (header divider and footer divider)
 		const dividers = screen.getAllByTestId('divider');
@@ -134,7 +134,7 @@ describe('empty-modal', () => {
 		expect(emptyButton).toBeEnabled();
 
 		const cancelButton = screen.getByRole('button', {
-			name: 'label.no_cancel'
+			name: 'folder_panel.modal.empty.folder.button.no'
 		});
 		expect(cancelButton).toBeEnabled();
 
@@ -180,7 +180,7 @@ describe('empty-modal', () => {
 		);
 
 		const cancelButton = screen.getByRole('button', {
-			name: 'label.no_cancel'
+			name: 'folder_panel.modal.empty.folder.button.no'
 		});
 
 		await user.click(cancelButton);
@@ -311,7 +311,7 @@ describe('empty-modal', () => {
 		);
 
 		const wipeButton = screen.getByRole('button', {
-			name: 'folder_panel.modal.empty.folder.button'
+			name: 'folder_panel.modal.empty.folder.button.yes'
 		});
 
 		const successInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
