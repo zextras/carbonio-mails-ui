@@ -118,8 +118,8 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Container crossAlignment="flex-start" mainAlignment="flex-start">
 						<Text overflow="break-word">
 							{t(
-								'folder_panel.modal.wipe.body.message1',
-								'Do you want to wipe the selected folder?'
+								'folder_panel.modal.folder.empty.body.message1',
+								'Do you want to empty the selected folder?'
 							)}
 						</Text>
 						<Padding top="medium" />
