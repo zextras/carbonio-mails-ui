@@ -84,7 +84,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 			>
 				<Row mainAlignment="flex-start" crossAlignment="center" takeAvailableSpace>
 					<Padding right="small">
-						<Icon icon="AlertTriangleOutline" color="error" size="large" />
+						<Icon icon="AlertCircleOutline" color="error" size="large" />
 					</Padding>
 					<Text weight="bold" size="large">
 						{title}
