@@ -67,12 +67,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	}, [folder.name, folder.id]);
 
 	return (
-		<Container
-			padding={{ all: 'large' }}
-			mainAlignment="center"
-			crossAlignment="flex-start"
-			height="fit"
-		>
+		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<Container
 				orientation="horizontal"
 				mainAlignment="space-between"
