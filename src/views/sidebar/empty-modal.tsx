@@ -79,23 +79,23 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Padding right="small">
 						<Icon icon="AlertCircleOutline" color="error" size="large" />
 					</Padding>
-					<Text weight="bold" size="large">
+					<Text weight="bold" size="medium">
 						{modalTitle}
 					</Text>
 				</Row>
 				<Button type="ghost" color={'gray0'} icon="CloseOutline" onClick={onClose} size="medium" />
 			</Container>
 			<Divider />
-			<Container padding={{ top: 'medium', bottom: 'large' }} crossAlignment="flex-start">
+			<Container padding={{ top: 'medium' }} crossAlignment="flex-start">
 				<Container crossAlignment="flex-start" mainAlignment="flex-start">
-					<Text overflow="break-word">
+					<Text overflow="break-word" size={'small'}>
 						{t(
 							'folder_panel.modal.empty.body.message1',
 							'Do you want to empty the selected folder?'
 						)}
 					</Text>
 					<Padding top="medium" />
-					<Text overflow="break-word">
+					<Text overflow="break-word" size={'small'}>
 						{t(
 							'folder_panel.modal.empty.body.message2',
 							'If you empty it, all the related content will be deleted permanently.'
