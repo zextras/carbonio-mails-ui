@@ -88,21 +88,21 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 			<Divider />
 			<Container padding={{ top: 'medium' }} crossAlignment="flex-start">
 				<Container crossAlignment="flex-start" mainAlignment="flex-start">
-					<Text overflow="break-word" size={'small'}>
+					<Text overflow="break-word" size={'medium'}>
 						{t(
 							'folder_panel.modal.empty.body.message1',
 							'Do you want to empty the selected folder?'
 						)}
 					</Text>
 					<Padding top="medium" />
-					<Text overflow="break-word" size={'small'}>
+					<Text overflow="break-word" size={'medium'}>
 						{t(
 							'folder_panel.modal.empty.body.message2',
 							'If you empty it, all the related content will be deleted permanently.'
 						)}
 					</Text>
 					<Padding top="medium" />
-					<Text weight="bold" color="error" overflow="break-word">
+					<Text weight="bold" color="error" overflow="break-word" size={'medium'}>
 						{t('folder_panel.modal.empty.body.message3', 'This action cannot be undone.')}
 					</Text>
 				</Container>
