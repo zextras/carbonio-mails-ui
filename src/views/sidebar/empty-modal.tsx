@@ -79,7 +79,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Padding right="small">
 						<Icon icon="AlertCircleOutline" color="error" size="large" />
 					</Padding>
-					<Text weight="bold" size="medium">
+					<Text weight="bold" size="large">
 						{modalTitle}
 					</Text>
 				</Row>
