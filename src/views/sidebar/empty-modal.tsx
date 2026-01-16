@@ -5,9 +5,17 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
-import { Container, Text } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	Container,
+	Divider,
+	Icon,
+	Padding,
+	Row,
+	Text
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isTrash, ModalFooter } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { getFolderIdParts } from 'helpers/folders';
@@ -28,7 +36,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					label:
 						getFolderIdParts(folder.id).id === FOLDERS.TRASH
 							? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
-							: t('messages.snackbar.folder_wiped', 'Folder successfully wiped'),
+							: t('messages.snackbar.folder_emptied', 'Folder successfully emptied'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -46,54 +54,67 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [createSnackbar, folder, onClose]);
 
-	const title = useMemo(
-		() =>
-			getFolderIdParts(folder.id).id === FOLDERS.TRASH
-				? `${t('label.empty', 'Empty')} ${getFolderTranslatedName({ folderName: folder.name, folderId: folder.id })}`
-				: `${t('label.wipe', 'Wipe')} ${getFolderTranslatedName({ folderName: folder.name, folderId: folder.id })}`,
-		[folder.id, folder.name]
-	);
+	const modalTitle = useMemo(() => {
+		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
+		return `${t('label.empty', 'Empty')}: ${folderName}`;
+	}, [folder.name, folder.id]);
+
+	const confirmButtonLabel = useMemo(() => {
+		const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
+		return isTrash(folder.id)
+			? `${t('folder_panel.modal.empty.trash.button.yes', 'Yes, Empty')} ${folderName}`
+			: t('folder_panel.modal.empty.folder.button.yes', 'Yes, Empty Folder');
+	}, [folder.name, folder.id]);
+
 	return (
-		<Container
-			padding={{ all: 'large' }}
-			mainAlignment="center"
-			crossAlignment="flex-start"
-			height="fit"
-		>
-			<ModalHeader title={title} onClose={onClose} />
-			<Container padding={{ top: 'large', bottom: 'large' }} crossAlignment="flex-start">
-				{getFolderIdParts(folder.id).id === FOLDERS.TRASH ? (
-					<Text overflow="break-word">
+		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+			<Container
+				orientation="horizontal"
+				mainAlignment="space-between"
+				crossAlignment="center"
+				padding={{ bottom: 'medium' }}
+				width="fill"
+			>
+				<Row mainAlignment="flex-start" crossAlignment="center" takeAvailableSpace>
+					<Padding right="small">
+						<Icon icon="AlertCircleOutline" color="error" size="large" />
+					</Padding>
+					<Text weight="bold" size="large">
+						{modalTitle}
+					</Text>
+				</Row>
+				<Button type="ghost" color={'gray0'} icon="CloseOutline" onClick={onClose} size="medium" />
+			</Container>
+			<Divider />
+			<Container padding={{ top: 'medium' }} crossAlignment="flex-start">
+				<Container crossAlignment="flex-start" mainAlignment="flex-start">
+					<Text overflow="break-word" size={'medium'}>
 						{t(
 							'folder_panel.modal.empty.body.message1',
 							'Do you want to empty the selected folder?'
 						)}
-						<br />
+					</Text>
+					<Padding top="medium" />
+					<Text overflow="break-word" size={'medium'}>
 						{t(
 							'folder_panel.modal.empty.body.message2',
 							'If you empty it, all the related content will be deleted permanently.'
 						)}
 					</Text>
-				) : (
-					<Text overflow="break-word">
-						{t('folder_panel.modal.wipe.body.message1', 'Do you want to wipe the selected folder?')}
-						<br />
-						{t(
-							'folder_panel.modal.wipe.body.message2',
-							'If you wipe it, all the related content will be deleted permanently.'
-						)}
+					<Padding top="medium" />
+					<Text weight="bold" color="error" overflow="break-word" size={'medium'}>
+						{t('folder_panel.modal.empty.body.message3', 'This action cannot be undone.')}
 					</Text>
-				)}
+				</Container>
 			</Container>
 
 			<ModalFooter
 				onConfirm={onConfirm}
-				label={
-					getFolderIdParts(folder.id).id === FOLDERS.TRASH
-						? t('label.empty', 'Empty')
-						: t('label.wipe', 'Wipe')
-				}
+				label={confirmButtonLabel}
 				color="error"
+				secondaryAction={onClose}
+				secondaryBtnType="outlined"
+				secondaryLabel={t('folder_panel.modal.empty.folder.button.no', 'No, Cancel')}
 			/>
 		</Container>
 	);

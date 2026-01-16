@@ -5,7 +5,7 @@
  */
 import React, { act } from 'react';
 
-import { renderHook, screen, waitFor } from '@testing-library/react';
+import { renderHook, screen, waitFor, within } from '@testing-library/react';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
@@ -112,7 +112,7 @@ describe('useFolderActions', () => {
 				id: FolderActionsType.EMPTY,
 				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
 				icon: 'EmptyFolderOutline',
-				label: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
+				label: t('folder_panel.action.empty.folder_panel', 'Empty Folder'),
 				disabled: true,
 				onClick: expect.any(Function)
 			},
@@ -217,7 +217,9 @@ describe('useFolderActions', () => {
 		const button = await screen.findByTestId('emptyFolder');
 		await user.click(button);
 
-		expect(await screen.findByText('label.wipe')).toBeVisible();
+		const modal = await screen.findByTestId('modal');
+
+		expect(within(modal).getByText(/label\.empty: /i)).toBeVisible();
 	});
 
 	it('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
