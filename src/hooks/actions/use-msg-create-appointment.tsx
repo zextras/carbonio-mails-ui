@@ -36,14 +36,14 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 			let calendar: CalendarType | null = null;
 			let sender: SenderType | null = null;
 			const htmlBody = extractBody(item).richText;
-			if (rooFolder && rooFolder?.isLink) {
+			/*if (rooFolder && rooFolder?.isLink) {
 				const calendarId = `${rooFolder.id.split(':')[0]}:${FOLDERS.CALENDAR}`;
 				calendar = {
 					id: calendarId,
 					owner: rooFolder?.isLink && rooFolder.owner
 				};
 				sender = getSenderByOwner(rooFolder?.owner);
-			}
+			}*/
 			if (!item?.isComplete) {
 				getMessageEmailStoreAction(item.id)
 					.then((message) => {
