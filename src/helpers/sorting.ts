@@ -92,7 +92,9 @@ function modifySettingString(
 		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
 		return replacedString.concat(`,${prefToUpdate},BDLV`);
 	}
-	return currentFolder && zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
+	const re = new RegExp('(^|,)' + currentFolder + '(?=,|$)');
+	// Replace returns a new string, so assign it back
+	return currentFolder && zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
 }
 
 export function updateSortAndFilterSettings({
