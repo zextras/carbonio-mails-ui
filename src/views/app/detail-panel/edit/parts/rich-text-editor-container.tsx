@@ -20,7 +20,12 @@ import {
 	generateUserPreferenceStyles,
 	UserPreferenceStyle
 } from 'helpers/user-preference-styles';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
+import {
+	useEditorAttachments,
+	useEditorText,
+	useEditorTextProvider,
+	useSaveDraftFromEditor
+} from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -63,6 +68,7 @@ export const RichTextEditorContainer = ({
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
 	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -171,21 +177,26 @@ export const RichTextEditorContainer = ({
 
 				editor?.activeEditor?.insertContent(img);
 			};
-
 			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
 				const editor = tinymce;
+
 				const insertPromises = inlineAttachments.map((inlineAttachment) =>
 					insertSingleInlineAttachment(editor, inlineAttachment)
 				);
 
-				Promise.all(insertPromises).catch(console.error);
+				Promise.all(insertPromises)
+					.then(() => {
+						setDirty();
+						debouncedSaveDraft();
+					})
+					.catch(console.error);
 			};
 
 			addInlineAttachments(files, {
 				onSaveComplete: handleSaveComplete
 			});
 		},
-		[addInlineAttachments]
+		[addInlineAttachments, debouncedSaveDraft, setDirty]
 	);
 
 	function createPasteHandler(editor: Editor, editorID: string) {
