@@ -20,6 +20,7 @@ import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbon
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
+import { ROOM_DIVIDER } from '../../../../constants';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
@@ -132,9 +133,17 @@ export const MessageListItemCore = ({
 		() => message.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[message.subject]
 	);
+	const hasInjectedHtml = useMemo(
+		() => message.fragment?.includes(ROOM_DIVIDER),
+		[message.fragment]
+	);
+	const showFragment = useMemo(
+		() => !isEmpty(message.fragment) && !hasInjectedHtml,
+		[hasInjectedHtml, message.fragment]
+	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(message.fragment) ? message.fragment : subject),
-		[subject, message.fragment]
+		() => (showFragment ? subject : message.fragment),
+		[showFragment, subject, message.fragment]
 	);
 
 	const scheduledTime = useMemo(
@@ -236,7 +245,7 @@ export const MessageListItemCore = ({
 									</Text>
 								)}
 
-								{!isEmpty(message.fragment) && (
+								{showFragment && (
 									<Row
 										takeAvailableSpace
 										mainAlignment="flex-start"

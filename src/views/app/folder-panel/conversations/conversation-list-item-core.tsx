@@ -19,6 +19,7 @@ import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commo
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { ROOM_DIVIDER } from '../../../../constants';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
@@ -119,9 +120,13 @@ export const ConversationListItemCore = ({
 		() => cleanSubject(conversation.subject) || t('label.no_subject_with_tags', '<No Subject>'),
 		[conversation.subject, t]
 	);
+	const hasInjectedHtml = useMemo(
+		() => conversation.fragment?.includes(ROOM_DIVIDER),
+		[conversation.fragment]
+	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
-		[subject, conversation.fragment]
+		() => (isEmpty(conversation.fragment) || hasInjectedHtml ? subject : conversation.fragment),
+		[subject, conversation.fragment, hasInjectedHtml]
 	);
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>

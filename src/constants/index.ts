@@ -576,6 +576,9 @@ export const MAIL_SENSITIVITY_HEADER = {
 	companyConfidential: 'Company-Confidential'
 } as const;
 
+export const ROOM_DIVIDER =
+	'-:::_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_::_:_::-';
+
 // noinspection JSUnusedGlobalSymbols
 export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
 
