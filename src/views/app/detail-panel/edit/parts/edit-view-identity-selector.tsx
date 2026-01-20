@@ -143,6 +143,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 						height="fit"
 						wrap="nowrap"
 						padding={{ all: 'small' }}
+						data-testid="identity-selector-toggle"
 					>
 						{createIdentitySelectorItemElement(selected, false, noName)}
 						<Button
