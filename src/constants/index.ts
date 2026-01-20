@@ -531,6 +531,7 @@ export const SORTING_OPTIONS = {
 } as const;
 
 export const FILTER_OPTIONS = {
+	all: { label: 'all', value: undefined },
 	unread: { label: 'unread', value: 'read' },
 	important: { label: 'important', value: 'priority' },
 	flagged: { label: 'flagged', value: 'flag' },
