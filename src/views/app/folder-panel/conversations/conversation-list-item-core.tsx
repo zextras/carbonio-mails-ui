@@ -16,10 +16,10 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ROOM_DIVIDER } from '../../../../constants';
+import { showFragment } from '../parts/utils/utils';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
@@ -120,13 +120,10 @@ export const ConversationListItemCore = ({
 		() => cleanSubject(conversation.subject) || t('label.no_subject_with_tags', '<No Subject>'),
 		[conversation.subject, t]
 	);
-	const hasInjectedHtml = useMemo(
-		() => conversation.fragment?.includes(ROOM_DIVIDER),
-		[conversation.fragment]
-	);
+
 	const subFragmentTooltipLabel = useMemo(
-		() => (isEmpty(conversation.fragment) || hasInjectedHtml ? subject : conversation.fragment),
-		[subject, conversation.fragment, hasInjectedHtml]
+		() => (showFragment(conversation.fragment) ? subject : conversation.fragment),
+		[conversation.fragment, subject]
 	);
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>

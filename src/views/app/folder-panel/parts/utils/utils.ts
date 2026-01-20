@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { isEmpty } from 'lodash';
+
+import { ROOM_DIVIDER } from '../../../../../constants';
 import { Folder } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -27,3 +30,6 @@ export const getFolderPath = (
 			.join(' / ') ?? ''
 	);
 };
+
+export const showFragment = (fragment: string | undefined): boolean =>
+	!isEmpty(fragment) && !fragment?.includes(ROOM_DIVIDER);

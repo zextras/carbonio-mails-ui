@@ -17,11 +17,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { find, includes, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
-import { ROOM_DIVIDER } from '../../../../constants';
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import { showFragment } from '../parts/utils/utils';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -133,17 +133,10 @@ export const MessageListItemCore = ({
 		() => message.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[message.subject]
 	);
-	const hasInjectedHtml = useMemo(
-		() => message.fragment?.includes(ROOM_DIVIDER),
-		[message.fragment]
-	);
-	const showFragment = useMemo(
-		() => !isEmpty(message.fragment) && !hasInjectedHtml,
-		[hasInjectedHtml, message.fragment]
-	);
+
 	const subFragmentTooltipLabel = useMemo(
-		() => (showFragment ? subject : message.fragment),
-		[showFragment, subject, message.fragment]
+		() => (showFragment(message.fragment) ? subject : message.fragment),
+		[message.fragment, subject]
 	);
 
 	const scheduledTime = useMemo(
@@ -245,7 +238,7 @@ export const MessageListItemCore = ({
 									</Text>
 								)}
 
-								{showFragment && (
+								{showFragment(message.fragment) && (
 									<Row
 										takeAvailableSpace
 										mainAlignment="flex-start"
