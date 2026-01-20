@@ -6,7 +6,7 @@
 
 import { isEmpty } from 'lodash';
 
-import { ROOM_DIVIDER } from '../../../../../constants';
+import { INJECTED_DESCRIPTION_DECORATOR } from '../../../../../constants';
 import { Folder } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -32,4 +32,4 @@ export const getFolderPath = (
 };
 
 export const showFragment = (fragment: string | undefined): boolean =>
-	!isEmpty(fragment) && !fragment?.includes(ROOM_DIVIDER);
+	!isEmpty(fragment) && !fragment?.includes(INJECTED_DESCRIPTION_DECORATOR);
