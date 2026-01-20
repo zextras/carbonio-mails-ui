@@ -11,7 +11,7 @@ import {
 	Avatar,
 	Collapse,
 	Container,
-	IconButton,
+	Button,
 	List,
 	ListItem,
 	Padding,
@@ -109,10 +109,12 @@ export const FlatRoot = ({
 				</Container>
 
 				<Padding right="small">
-					<IconButton
-						customSize={{ iconSize: 'large', paddingSize: 0 }}
-						onClick={toggleOpen}
+					<Button
+						type="ghost"
+						size={'medium'}
+						color={'gray0'}
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
+						onClick={toggleOpen}
 					/>
 				</Padding>
 			</CustomContainer>

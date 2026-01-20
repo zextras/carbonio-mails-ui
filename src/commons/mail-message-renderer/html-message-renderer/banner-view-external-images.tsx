@@ -5,9 +5,9 @@
  */
 import React, { useMemo } from 'react';
 
-import { IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
 import styled from '@emotion/styled';
+import { Button, MultiButton, Padding, Row } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { WarningBanner } from './warning-banner';
 
@@ -79,14 +79,13 @@ export const BannerViewExternalImages = ({
 					}}
 					items={items}
 				/>
-				<IconButton
+				<Padding right={'extrasmall'}></Padding>
+				<Button
 					icon="CloseOutline"
 					onClick={(): void => setDisplayBanner(false)}
-					customSize={{
-						iconSize: 'large',
-						paddingSize: 'small'
-					}}
-					size="small"
+					size="large"
+					type={'ghost'}
+					color={'gray0'}
 				/>
 			</Row>
 		</WarningBanner>

@@ -1617,4 +1617,81 @@ describe('Edit view', () => {
 			expect(computedStyle.height).toBe('100%');
 		});
 	});
+
+	describe('Identity selector dropdown', () => {
+		beforeAll(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+
+		test('should show ChevronDownOutline icon when dropdown is closed', async () => {
+			const editor: MailsEditorV2 = generateNewEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const identitySelector = await screen.findByTestId('from-dropdown');
+			expect(identitySelector).toBeInTheDocument();
+
+			const chevronDownIcon = within(identitySelector).getByTestId(
+				TESTID_SELECTORS.icons.chevronDown
+			);
+			expect(chevronDownIcon).toBeInTheDocument();
+		});
+
+		test('should show ChevronUpOutline icon when dropdown is opened', async () => {
+			const editor: MailsEditorV2 = generateNewEditor();
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const identitySelector = await screen.findByTestId('from-dropdown');
+			expect(identitySelector).toBeInTheDocument();
+
+			const identityToggle = within(identitySelector).getByTestId('identity-selector-toggle');
+			await user.click(identityToggle);
+
+			await waitFor(() => {
+				const chevronUpIcon = within(identitySelector).getByTestId(
+					TESTID_SELECTORS.icons.chevronUp
+				);
+				expect(chevronUpIcon).toBeInTheDocument();
+			});
+		});
+
+		test('should toggle between ChevronUp and ChevronDown icons when opening and closing dropdown', async () => {
+			const editor: MailsEditorV2 = generateNewEditor();
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const identitySelector = await screen.findByTestId('from-dropdown');
+			expect(identitySelector).toBeInTheDocument();
+
+			// Initial state - closed (ChevronDown)
+			expect(
+				within(identitySelector).getByTestId(TESTID_SELECTORS.icons.chevronDown)
+			).toBeInTheDocument();
+
+			const identityToggle = within(identitySelector).getByTestId('identity-selector-toggle');
+
+			await user.click(identityToggle);
+
+			// Open state (ChevronUp)
+			await waitFor(() => {
+				expect(
+					within(identitySelector).getByTestId(TESTID_SELECTORS.icons.chevronUp)
+				).toBeInTheDocument();
+			});
+
+			await user.click(identityToggle);
+
+			// Closed state again (ChevronDown)
+			await waitFor(() => {
+				expect(
+					within(identitySelector).getByTestId(TESTID_SELECTORS.icons.chevronDown)
+				).toBeInTheDocument();
+			});
+		});
+	});
 });

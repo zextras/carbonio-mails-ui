@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
-import { Dropdown, IconButton } from '@zextras/carbonio-design-system';
+import { Button, Dropdown } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -128,9 +128,11 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 
 	return (
 		<Dropdown items={options} selectedBackgroundColor={'gray5'} data-testid="options-dropdown">
-			<IconButton
+			<Button
 				data-testid="options-dropdown-icon"
 				size="large"
+				type={'ghost'}
+				color={'gray0'}
 				icon="MoreVertical"
 				onClick={noop}
 			/>
