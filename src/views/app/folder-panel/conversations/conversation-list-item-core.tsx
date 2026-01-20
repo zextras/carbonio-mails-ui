@@ -122,7 +122,7 @@ export const ConversationListItemCore = ({
 	);
 
 	const subFragmentTooltipLabel = useMemo(
-		() => (showFragment(conversation.fragment) ? subject : conversation.fragment),
+		() => (showFragment(conversation.fragment) ? conversation.fragment : subject),
 		[conversation.fragment, subject]
 	);
 	return (
