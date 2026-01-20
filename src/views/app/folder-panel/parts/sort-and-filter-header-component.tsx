@@ -36,8 +36,10 @@ const getTranslatedLabelFromValue = (
 	return value;
 };
 
-const isValid = (val: string | undefined, options: Record<string, { value: string }>): boolean =>
-	!!val && Object.values(options).some((opt) => opt.value === val);
+const isValid = (
+	val: string | undefined,
+	options: Record<string, { value: string | undefined }>
+): boolean => !!val && Object.values(options).some((opt) => opt.value === val);
 
 export const SortAndFilterHeaderComponent = ({
 	folderId
