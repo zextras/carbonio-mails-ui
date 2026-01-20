@@ -643,7 +643,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					>
 						{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
 
-						<GapRow mainAlignment={'flex-end'} gap={'medium'}>
+						<GapRow mainAlignment={'flex-end'} gap={'medium'} padding={{ top: 'small' }}>
 							<MemoizedAddAttachmentsDropdown editorId={editorId} />
 							<MemoizedChangeSignaturesDropdown editorId={editorId} />
 							<MemoizedOptionsDropdown

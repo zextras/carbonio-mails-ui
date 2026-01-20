@@ -6,7 +6,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 
-import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Container, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from 'hooks/use-ui-utilities';
@@ -87,12 +87,13 @@ export const MultipleSelectionActionsPanel = ({
 			>
 				<Row mainAlignment="flex-start" width="fit" padding={{ right: 'medium' }}>
 					<Tooltip label={iconButtonTooltip}>
-						<IconButton
-							icon="ArrowBack"
-							iconColor="primary"
-							size="large"
+						<Button
+							icon={'ArrowBack'}
+							type={'ghost'}
+							color={'primary'}
+							size={'large'}
 							onClick={arrowBackOnClick}
-							data-testid="action-button-deselect-all"
+							data-testid={'action-button-deselect-all'}
 						/>
 					</Tooltip>
 					<Button
