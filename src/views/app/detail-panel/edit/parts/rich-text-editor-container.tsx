@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
@@ -56,10 +56,14 @@ export const RichTextEditorContainer = ({
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
 	const isDirty = useEditorIsDirty(editorId);
-
+	const isDirtyRef = useRef(isDirty);
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
 	const timeoutId = useRef<NodeJS.Timeout>();
+
+	useEffect(() => {
+		isDirtyRef.current = isDirty;
+	}, [isDirty]);
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
 	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
@@ -142,12 +146,13 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		if (isDirty) {
+		if (isDirtyRef.current) {
 			saveEditor();
 		}
+
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider, isDirty]);
+	}, [saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
