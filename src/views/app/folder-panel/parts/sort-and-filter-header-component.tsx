@@ -138,7 +138,7 @@ export const SortAndFilterHeaderComponent = ({
 				<Padding right="medium" />
 				<Tooltip
 					placement="top"
-					label={t('label.reset_to_sort_by_date', 'Reset to “Sort by: Date”')}
+					label={t('label.reset_sort_and_filter_to_default', 'Reset to default')}
 				>
 					<Button
 						type="ghost"
