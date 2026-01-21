@@ -15,7 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
@@ -88,15 +88,6 @@ export const SearchConversationListItemCore = ({
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
 		[open, t]
 	);
-	const subject = useMemo(
-		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[conversation.subject, t]
-	);
-	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
-		[subject, conversation.fragment]
-	);
-
 	const badgeTotalConversationMessages = useCallback(
 		(): number => conversation.messagesInConversation,
 		[conversation]

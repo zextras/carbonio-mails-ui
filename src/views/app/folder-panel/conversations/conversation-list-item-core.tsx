@@ -19,7 +19,6 @@ import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
-import { showFragment } from '../parts/utils/utils';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
@@ -37,10 +36,6 @@ type ConversationListItemCoreProps = {
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
-
-function cleanSubject(subject: string): string {
-	return subject.replace(/^(RE:|FWD:)\s*/i, '').trim();
-}
 
 export const ConversationListItemCore = ({
 	conversation,
@@ -116,15 +111,7 @@ export const ConversationListItemCore = ({
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
 		[open, t]
 	);
-	const subject = useMemo(
-		() => cleanSubject(conversation.subject) || t('label.no_subject_with_tags', '<No Subject>'),
-		[conversation.subject, t]
-	);
 
-	const subFragmentTooltipLabel = useMemo(
-		() => (showFragment(conversation.fragment) ? conversation.fragment : subject),
-		[conversation.fragment, subject]
-	);
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
 			<div
