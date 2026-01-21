@@ -21,7 +21,7 @@ import { find, includes, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
-import { MessageFragment } from '../parts/message-fragment';
+import { MessageSubjectRow } from '../parts/message-subject-row';
 import { showFragment } from '../parts/utils/utils';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
@@ -132,7 +132,7 @@ export const MessageListItemCore = ({
 	);
 
 	const subFragmentTooltipLabel = useMemo(
-		() => (showFragment(message.fragment) ? subject : message.fragment),
+		() => (showFragment(message.fragment) ? message.fragment : subject),
 		[message.fragment, subject]
 	);
 
@@ -218,29 +218,12 @@ export const MessageListItemCore = ({
 								</Padding>
 							</Tooltip>
 						)}
-						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-							<Row
-								wrap="nowrap"
-								takeAvailableSpace
-								mainAlignment="flex-start"
-								crossAlignment="baseline"
-							>
-								{!isConvChildren && (
-									<Text
-										data-testid="Subject"
-										weight={textReadValues.weight}
-										color={message.subject ? 'text' : 'secondary'}
-									>
-										{subject}
-									</Text>
-								)}
-								<MessageFragment
-									fragment={message.fragment}
-									read={message.read}
-									isConvChildren={isConvChildren}
-								/>
-							</Row>
-						</Tooltip>
+						<MessageSubjectRow
+							subject={message.subject}
+							read={message.read}
+							fragment={message.fragment}
+							isConvChildren={isConvChildren}
+						/>
 					</Row>
 					<Row>
 						{message.urgent && (

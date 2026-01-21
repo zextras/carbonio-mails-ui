@@ -7,31 +7,32 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { MessageFragment } from './message-fragment';
 import { SubjectListItemTooltip } from './subject-list-item-tootltip';
 import { SubjectText } from './subject-text';
 
-function cleanSubject(subject: string): string {
-	return subject.replace(/^(RE:|FWD:)\s*/i, '').trim();
-}
-
-export const ConversationSubjectRow = ({
+export const MessageSubjectRow = ({
 	subject,
 	fragment,
-	read
+	read,
+	isConvChildren
 }: {
 	subject: string;
-	fragment: string;
+	fragment: string | undefined;
 	read: boolean;
+	isConvChildren: boolean;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
+
 	const subjectText = useMemo(
-		() => cleanSubject(subject) || t('label.no_subject_with_tags', '<No Subject>'),
+		() => subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[subject, t]
 	);
 
 	return (
-		<SubjectListItemTooltip fragment={fragment} subjectText={subjectText}>
-			<SubjectText text={subjectText} read={read} />
+		<SubjectListItemTooltip subjectText={subjectText} fragment={fragment}>
+			{!isConvChildren && <SubjectText text={subjectText} read={read} />}
+			<MessageFragment isConvChildren={isConvChildren} fragment={fragment} read={read} />
 		</SubjectListItemTooltip>
 	);
 };
