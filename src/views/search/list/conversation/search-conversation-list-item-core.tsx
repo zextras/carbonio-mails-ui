@@ -12,13 +12,13 @@ import {
 	Icon,
 	Padding,
 	Row,
-	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
@@ -158,23 +158,11 @@ export const SearchConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-
-					<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-						<Row
-							wrap="nowrap"
-							takeAvailableSpace
-							mainAlignment="flex-start"
-							crossAlignment="baseline"
-						>
-							<Text
-								data-testid="Subject"
-								weight={textReadValues.weight}
-								color={conversation.subject ? 'text' : 'secondary'}
-							>
-								{subject}
-							</Text>
-						</Row>
-					</Tooltip>
+					<ConversationSubjectRow
+						subject={conversation.subject}
+						read={conversation.read}
+						fragment={conversation.fragment}
+					/>
 					<Row>
 						{conversation.urgent && (
 							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
