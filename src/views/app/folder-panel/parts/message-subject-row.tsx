@@ -8,8 +8,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageFragment } from './message-fragment';
-import { SubjectListItemTooltip } from './subject-list-item-tootltip';
 import { SubjectText } from './subject-text';
+import { SubjectTooltip } from './subject-tooltip';
 
 export const MessageSubjectRow = ({
 	subject,
@@ -30,9 +30,9 @@ export const MessageSubjectRow = ({
 	);
 
 	return (
-		<SubjectListItemTooltip subjectText={subjectText} fragment={fragment}>
+		<SubjectTooltip subjectText={subjectText} fragment={fragment}>
 			{!isConvChildren && <SubjectText text={subjectText} read={read} />}
 			<MessageFragment isConvChildren={isConvChildren} fragment={fragment} read={read} />
-		</SubjectListItemTooltip>
+		</SubjectTooltip>
 	);
 };

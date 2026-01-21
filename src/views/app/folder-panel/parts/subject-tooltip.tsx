@@ -9,7 +9,7 @@ import { Row, Tooltip } from '@zextras/carbonio-design-system';
 
 import { showFragment } from './utils/utils';
 
-export const SubjectListItemTooltip = ({
+export const SubjectTooltip = ({
 	children,
 	fragment,
 	subjectText

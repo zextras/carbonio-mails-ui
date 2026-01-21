@@ -7,8 +7,8 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { SubjectListItemTooltip } from './subject-list-item-tootltip';
 import { SubjectText } from './subject-text';
+import { SubjectTooltip } from './subject-tooltip';
 
 function cleanSubject(subject: string): string {
 	return subject.replace(/^(RE:|FWD:)\s*/i, '').trim();
@@ -30,8 +30,8 @@ export const ConversationSubjectRow = ({
 	);
 
 	return (
-		<SubjectListItemTooltip fragment={fragment} subjectText={subjectText}>
+		<SubjectTooltip fragment={fragment} subjectText={subjectText}>
 			<SubjectText text={subjectText} read={read} />
-		</SubjectListItemTooltip>
+		</SubjectTooltip>
 	);
 };
