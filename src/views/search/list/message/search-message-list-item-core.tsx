@@ -219,7 +219,6 @@ export const SearchMessageListItemCore = ({
 							subject={completeMessage.subject}
 							read={completeMessage.read}
 							fragment={completeMessage.fragment}
-							isConvChildren={false}
 						/>
 					</Row>
 					<Row>

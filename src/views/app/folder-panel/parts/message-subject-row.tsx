@@ -13,12 +13,12 @@ export const MessageSubjectRow = ({
 	subject,
 	fragment,
 	read,
-	isConvChildren
+	isConvChildren = false
 }: {
 	subject: string;
 	fragment: string | undefined;
 	read: boolean;
-	isConvChildren: boolean;
+	isConvChildren?: boolean;
 }): React.JSX.Element => (
 	<SubjectTooltip subject={subject} fragment={fragment}>
 		{!isConvChildren && <SubjectText subject={subject} read={read} />}
