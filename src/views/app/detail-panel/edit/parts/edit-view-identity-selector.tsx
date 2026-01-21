@@ -8,10 +8,10 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import {
 	Avatar,
+	Button,
 	Container,
 	Dropdown,
 	DropdownItem,
-	IconButton,
 	Row,
 	Text,
 	Tooltip
@@ -143,9 +143,15 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 						height="fit"
 						wrap="nowrap"
 						padding={{ all: 'small' }}
+						data-testid="identity-selector-toggle"
 					>
 						{createIdentitySelectorItemElement(selected, false, noName)}
-						<IconButton icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'} onClick={noop} />
+						<Button
+							icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+							type={'ghost'}
+							color={'gray0'}
+							onClick={noop}
+						/>
 					</Row>
 				</Dropdown>
 			</Tooltip>
