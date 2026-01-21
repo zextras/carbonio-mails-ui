@@ -22,7 +22,6 @@ import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { MessageSubjectRow } from '../parts/message-subject-row';
-import { showFragment } from '../parts/utils/utils';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -126,15 +125,6 @@ export const MessageListItemCore = ({
 	);
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-	const subject = useMemo(
-		() => message.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[message.subject]
-	);
-
-	const subFragmentTooltipLabel = useMemo(
-		() => (showFragment(message.fragment) ? message.fragment : subject),
-		[message.fragment, subject]
-	);
 
 	const scheduledTime = useMemo(
 		() =>
