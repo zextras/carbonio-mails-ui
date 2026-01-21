@@ -8,20 +8,24 @@ import React, { useMemo } from 'react';
 import { Row, Tooltip } from '@zextras/carbonio-design-system';
 
 import { showFragment } from './utils/utils';
+import { useListItemTextSubject } from '../../../../hooks/use-list-item-text-subject';
 
 export const SubjectTooltip = ({
 	children,
 	fragment,
-	subjectText
+	subject
 }: {
 	fragment: string | undefined;
-	subjectText: string;
+	subject: string;
 	children: React.ReactNode;
 }): React.JSX.Element => {
+	const subjectText = useListItemTextSubject(subject);
+
 	const subFragmentTooltipLabel = useMemo(
 		() => (showFragment(fragment) ? fragment : subjectText),
 		[fragment, subjectText]
 	);
+
 	return (
 		<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
 			<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start" crossAlignment="baseline">

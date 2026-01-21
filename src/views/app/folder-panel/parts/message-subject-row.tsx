@@ -3,9 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
-
-import { useTranslation } from 'react-i18next';
+import React from 'react';
 
 import { MessageFragment } from './message-fragment';
 import { SubjectText } from './subject-text';
@@ -21,18 +19,9 @@ export const MessageSubjectRow = ({
 	fragment: string | undefined;
 	read: boolean;
 	isConvChildren: boolean;
-}): React.JSX.Element => {
-	const [t] = useTranslation();
-
-	const subjectText = useMemo(
-		() => subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[subject, t]
-	);
-
-	return (
-		<SubjectTooltip subjectText={subjectText} fragment={fragment}>
-			{!isConvChildren && <SubjectText text={subjectText} read={read} />}
-			<MessageFragment isConvChildren={isConvChildren} fragment={fragment} read={read} />
-		</SubjectTooltip>
-	);
-};
+}): React.JSX.Element => (
+	<SubjectTooltip subject={subject} fragment={fragment}>
+		{!isConvChildren && <SubjectText subject={subject} read={read} />}
+		<MessageFragment isConvChildren={isConvChildren} fragment={fragment} read={read} />
+	</SubjectTooltip>
+);

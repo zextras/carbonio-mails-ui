@@ -7,14 +7,24 @@ import React, { useMemo } from 'react';
 
 import { Text } from '@zextras/carbonio-design-system';
 
-export const SubjectText = ({ read, text }: { read: boolean; text: string }): React.JSX.Element => {
+import { useListItemTextSubject } from '../../../../hooks/use-list-item-text-subject';
+
+export const SubjectText = ({
+	read,
+	subject
+}: {
+	read: boolean;
+	subject: string;
+}): React.JSX.Element => {
+	const subjectText = useListItemTextSubject(subject);
+
 	const weight = useMemo<'bold' | 'regular'>(() => {
 		if (typeof read === 'undefined') return 'regular';
 		return read ? 'regular' : 'bold';
 	}, [read]);
 	return (
-		<Text data-testid="Subject" weight={weight} color={text ? 'text' : 'secondary'}>
-			{text}
+		<Text data-testid="Subject" weight={weight} color={subject ? 'text' : 'secondary'}>
+			{subjectText}
 		</Text>
 	);
 };
