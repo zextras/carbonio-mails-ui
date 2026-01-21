@@ -266,6 +266,7 @@ export const RichTextEditorContainer = ({
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
 			preview_styles: false,
+			content_css: false,
 			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
 			style_formats: [
 				// Headers
