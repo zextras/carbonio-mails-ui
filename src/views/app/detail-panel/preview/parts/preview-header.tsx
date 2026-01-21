@@ -13,6 +13,7 @@ import React, {
 	useState
 } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Avatar,
 	AvatarPropTypes,
@@ -20,7 +21,7 @@ import {
 	Container,
 	Dropdown,
 	Icon,
-	IconButton,
+	Button,
 	Padding,
 	Row,
 	Text,
@@ -38,7 +39,6 @@ import {
 import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled from '@emotion/styled';
 
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { getTimeLabel, participantToString } from 'commons/utils';
@@ -338,7 +338,13 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 									{showMultiTagIcon && (
 										<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
 											<Padding left="small">
-												<IconButton data-testid="TagIcon" icon={tagIcon} onClick={onIconClick} />
+												<Button
+													data-testid="TagIcon"
+													icon={tagIcon}
+													type="ghost"
+													color={'gray0'}
+													onClick={onIconClick}
+												/>
 											</Padding>
 										</Dropdown>
 									)}

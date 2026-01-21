@@ -96,6 +96,7 @@ export const TESTID_SELECTORS = {
 	icons: {
 		attachmentDropdown: 'icon: AttachOutline',
 		chevronDown: 'icon: ChevronDownOutline',
+		chevronUp: 'icon: ChevronUpOutline',
 		layoutVerticalSplit: 'icon: LayoutOutline',
 		layoutHorizontalSplit: 'icon: BottomViewOutline',
 		layoutNoSplit: 'icon: ViewOffOutline',

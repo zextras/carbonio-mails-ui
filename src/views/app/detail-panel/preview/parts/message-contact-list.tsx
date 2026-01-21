@@ -17,9 +17,9 @@ import React, {
 
 import {
 	Badge,
+	Button,
 	Container,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
 	Text,
@@ -128,14 +128,12 @@ const MessageContactList: FC<{
 				orientation="horizontal"
 			>
 				<Tooltip label={toggleExpandButtonLabel}>
-					<IconButton
-						size="small"
+					<Button
+						size={'small'}
+						type={'ghost'}
+						color={'gray0'}
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 						onClick={toggleOpen}
-						customSize={{
-							iconSize: 'small',
-							paddingSize: ''
-						}}
 						data-testid="contacs-list-toggle-icon"
 					/>
 				</Tooltip>

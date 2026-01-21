@@ -7,7 +7,7 @@
 import React, { FC, useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { Container, Icon, IconButton, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Button, Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { TIMEOUTS } from 'constants/index';
@@ -48,9 +48,11 @@ export const AttachmentUploadStatus: FC<{
 
 					<Icon icon={'AnimatedLoader'} color={'gray1'} size="large" />
 					<Padding right="extrasmall" />
-					<IconButton
+					<Button
 						icon="CloseCircleOutline"
-						customSize={{ iconSize: 'large', paddingSize: 0 }}
+						size={'large'}
+						type={'ghost'}
+						color={'gray0'}
 						onClick={cancelUpload}
 					/>
 				</>
