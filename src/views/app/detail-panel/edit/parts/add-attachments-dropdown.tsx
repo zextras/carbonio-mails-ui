@@ -13,10 +13,11 @@ import {
 	Tooltip,
 	Icon,
 	Padding,
-	DropdownItem
+	DropdownItem,
+	Button
 } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
-import { compact, map } from 'lodash';
+import { compact, map, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
@@ -207,7 +208,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
 				<Dropdown items={actionsItems} display="inline-block">
-					<StyledComp.ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
+					<Button size="large" icon="AttachOutline" onClick={noop} type={'ghost'} color={'gray0'} />
 				</Dropdown>
 			</Tooltip>
 		</SelectorContainer>

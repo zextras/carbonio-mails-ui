@@ -10,7 +10,7 @@ import {
 	Container,
 	getColor,
 	Icon,
-	IconButton,
+	Button,
 	Link,
 	Padding,
 	Row,
@@ -409,7 +409,9 @@ const Attachment = ({
 							key={`${messageId}-DriveOutline`}
 							label={t('label.save_to_files', 'Save to Files')}
 						>
-							<IconButton
+							<Button
+								type={'ghost'}
+								color={'gray0'}
 								size="medium"
 								icon="DriveOutline"
 								onClick={(): void => {
@@ -421,7 +423,9 @@ const Attachment = ({
 
 					<Padding right="small">
 						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<IconButton
+							<Button
+								type={'ghost'}
+								color={'gray0'}
 								data-testid={`download-attachment-${filename}`}
 								size="medium"
 								icon="DownloadOutline"
@@ -435,7 +439,9 @@ const Attachment = ({
 								key={`${messageId}-DeletePermanentlyOutline`}
 								label={t('label.delete', 'Delete')}
 							>
-								<IconButton
+								<Button
+									type={'ghost'}
+									color={'gray0'}
 									data-testid={`remove-attachments-${filename}`}
 									size="medium"
 									icon="DeletePermanentlyOutline"
@@ -450,9 +456,9 @@ const Attachment = ({
 								key={`${messageId}-UploadOutline`}
 								label={t('label.import_to_contacts', 'Import to Contacts')}
 							>
-								<IconButton
+								<Button
 									data-testid={`import-contacts-${filename}`}
-									size="medium"
+									size="small"
 									icon="UploadOutline"
 									onClick={onCreateContact}
 								/>
