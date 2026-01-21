@@ -245,6 +245,7 @@ export const SortAndFilterButtonComponent = ({
 			placement="top"
 		>
 			<Dropdown
+				disableAutoFocus
 				items={dropdownItems}
 				multiple
 				itemPaddingBetween="large"
