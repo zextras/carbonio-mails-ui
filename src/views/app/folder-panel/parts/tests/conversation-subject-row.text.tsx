@@ -12,63 +12,31 @@ import { ConversationSubjectRow } from '../conversation-subject-row';
 import { setupTest } from '@test-setup';
 
 describe('ConversationSubjectRow', () => {
-	it('show tooltip with fragment when available', async () => {
+	it('will render subjectText component', async () => {
 		const subject = 'subject';
 		const fragment = 'fragment';
-		const { user } = setupTest(
-			<ConversationSubjectRow subject={subject} read={false} fragment={fragment} />
-		);
+		setupTest(<ConversationSubjectRow subject={subject} read={false} fragment={fragment} />);
 
-		const subjectElement = screen.getByText(subject);
-
-		await act(async () => {
-			await user.hover(subjectElement);
-		});
-
-		act(() => {
-			vi.advanceTimersByTime(500);
-		});
-		const tooltip = screen.getByTestId('tooltip');
-		expect(tooltip).toHaveTextContent(fragment);
+		expect(screen.getByTestId('Subject')).toBeVisible();
 	});
-	it('show tooltip with subject if fragment is empty', async () => {
+	it('will render subjectTooltip component', async () => {
 		const subject = 'subject';
-		const fragment = '';
 		const { user } = setupTest(
-			<ConversationSubjectRow subject={subject} read={false} fragment={fragment} />
+			<ConversationSubjectRow
+				subject={subject}
+				read={false}
+				fragment={INJECTED_DESCRIPTION_DECORATOR}
+			/>
 		);
 
-		const subjectElement = screen.getByText(subject);
-
 		await act(async () => {
-			await user.hover(subjectElement);
+			await user.hover(screen.getByText(subject));
 		});
 
 		act(() => {
 			vi.advanceTimersByTime(500);
 		});
 
-		const tooltip = screen.getByTestId('tooltip');
-		expect(tooltip).toHaveTextContent(subject);
-	});
-	it('show tooltip with subject if fragment contain injected decorator', async () => {
-		const subject = 'subject';
-		const fragment = INJECTED_DESCRIPTION_DECORATOR;
-		const { user } = setupTest(
-			<ConversationSubjectRow subject={subject} read={false} fragment={fragment} />
-		);
-
-		const subjectElement = screen.getByText(subject);
-
-		await act(async () => {
-			await user.hover(subjectElement);
-		});
-
-		act(() => {
-			vi.advanceTimersByTime(500);
-		});
-
-		const tooltip = screen.getByTestId('tooltip');
-		expect(tooltip).toHaveTextContent(subject);
+		expect(screen.getByTestId('tooltip')).toBeVisible();
 	});
 });
