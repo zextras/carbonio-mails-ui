@@ -238,7 +238,11 @@ export const SearchMessageListItemCore = ({
 								>
 									{subject}
 								</Text>
-								<MessageFragment fragment={completeMessage.fragment} read={completeMessage.read} />
+								<MessageFragment
+									isConvChildren={false}
+									fragment={completeMessage.fragment}
+									read={completeMessage.read}
+								/>
 							</Row>
 						</Tooltip>
 					</Row>

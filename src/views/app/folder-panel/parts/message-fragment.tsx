@@ -10,13 +10,18 @@ import { Row, Text } from '@zextras/carbonio-design-system';
 import { showFragment } from './utils/utils';
 
 export const MessageFragment = ({
+	isConvChildren,
 	fragment,
 	read
 }: {
+	isConvChildren: boolean;
 	fragment: string | undefined;
 	read: boolean;
 }): React.JSX.Element | null => {
-	const fragmentLabel = 'ciao';
+	const fragmentLabel = useMemo(
+		() => (isConvChildren ? fragment : ` - ${fragment}`),
+		[fragment, isConvChildren]
+	);
 	const weight = useMemo<'regular' | 'bold'>(() => {
 		if (typeof read === 'undefined') return 'regular';
 		return read ? 'regular' : 'bold';

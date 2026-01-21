@@ -112,10 +112,6 @@ export const MessageListItemCore = ({
 		[message.tags, tagsFromStore]
 	);
 
-	const fragmentLabel = useMemo(
-		() => (isConvChildren ? message.fragment : ` - ${message.fragment}`),
-		[message.fragment, isConvChildren]
-	);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
 		if (typeof message.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -238,7 +234,11 @@ export const MessageListItemCore = ({
 										{subject}
 									</Text>
 								)}
-								<MessageFragment fragment={message.fragment} read={message.read} />
+								<MessageFragment
+									fragment={message.fragment}
+									read={message.read}
+									isConvChildren={isConvChildren}
+								/>
 							</Row>
 						</Tooltip>
 					</Row>
