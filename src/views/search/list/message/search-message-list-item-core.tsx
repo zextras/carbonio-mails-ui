@@ -20,6 +20,7 @@ import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { MessageFragment } from '../../../app/folder-panel/parts/message-fragment';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -237,23 +238,7 @@ export const SearchMessageListItemCore = ({
 								>
 									{subject}
 								</Text>
-
-								{!isEmpty(completeMessage.fragment) && (
-									<Row
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										padding={{ left: 'extrasmall' }}
-									>
-										<Text
-											data-testid="Fragment"
-											size="small"
-											color="secondary"
-											weight={textReadValues.weight}
-										>
-											{fragmentLabel}
-										</Text>
-									</Row>
-								)}
+								<MessageFragment fragment={completeMessage.fragment} read={completeMessage.read} />
 							</Row>
 						</Tooltip>
 					</Row>

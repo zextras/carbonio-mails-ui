@@ -21,6 +21,7 @@ import { find, includes, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import { MessageFragment } from '../parts/message-fragment';
 import { showFragment } from '../parts/utils/utils';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
@@ -237,23 +238,7 @@ export const MessageListItemCore = ({
 										{subject}
 									</Text>
 								)}
-
-								{showFragment(message.fragment) && (
-									<Row
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										padding={{ left: 'extrasmall' }}
-									>
-										<Text
-											data-testid="Fragment"
-											size="small"
-											color="secondary"
-											weight={textReadValues.weight}
-										>
-											{fragmentLabel}
-										</Text>
-									</Row>
-								)}
+								<MessageFragment fragment={message.fragment} read={message.read} />
 							</Row>
 						</Tooltip>
 					</Row>
