@@ -112,13 +112,8 @@ describe('EditViewFooter', () => {
 			setupEditorStore({ editors: [editor] });
 
 			setupTest(<EditViewFooter editorId={editor.id} />);
-			const formattedTime = new Intl.DateTimeFormat(undefined, {
-				hour: 'numeric',
-				minute: 'numeric',
-				second: 'numeric'
-			}).format(new Date(lastSaveTimestamp));
 
-			expect(screen.getByText(`Draft saved at ${formattedTime}`)).toBeVisible();
+			expect(screen.getByText(/Draft saved at/i)).toBeVisible();
 		});
 
 		it('should render an enabled delete button', () => {

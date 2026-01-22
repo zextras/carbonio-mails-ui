@@ -7,10 +7,11 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { useTheme } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
 
-import { setupTest } from '@test-setup';
+import { setupHook, setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
@@ -66,6 +67,10 @@ describe('SearchConversationListItemCore', () => {
 		);
 		populateFoldersStore();
 
+		const {
+			result: { current: theme }
+		} = setupHook(useTheme);
+
 		setupTest(
 			<SearchConversationListItemCore
 				conversation={{ ...conversation, read: false }}
@@ -79,7 +84,9 @@ describe('SearchConversationListItemCore', () => {
 			/>
 		);
 
-		expect(screen.getByText('Test Subject')).toHaveStyle('font-weight: 700');
+		expect(screen.getByText('Test Subject')).toHaveStyle({
+			'font-weight': theme.fonts.weight.bold
+		});
 	});
 
 	it('calls toggleOpen when expand button is clicked', async () => {
