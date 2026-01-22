@@ -126,11 +126,16 @@ describe('Breadcrumbs sorting', () => {
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		forEach(sortingOptionsWithoutSize, (option) => {
-			if (option.label !== SORTING_OPTIONS.to.label)
+			if (option.label !== SORTING_OPTIONS.to.label) {
+				// Date option has "(Default)" suffix
+				const expectedText =
+					option.label === SORTING_OPTIONS.date.label
+						? `${capitalize(option.label)} (Default)`
+						: capitalize(option.label);
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+					within(screen.getByTestId(dropdownRegex)).getByText(expectedText)
 				).toBeInTheDocument();
-			else {
+			} else {
 				const excludedOptionRegexPattern = new RegExp(
 					`sorting_dropdown.${SORTING_OPTIONS.to.label}`,
 					'i'
@@ -153,11 +158,16 @@ describe('Breadcrumbs sorting', () => {
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		forEach(sortingOptionsWithoutSize, (option) => {
-			if (option.label !== SORTING_OPTIONS.from.label)
+			if (option.label !== SORTING_OPTIONS.from.label) {
+				// Date option has "(Default)" suffix
+				const expectedText =
+					option.label === SORTING_OPTIONS.date.label
+						? `${capitalize(option.label)} (Default)`
+						: capitalize(option.label);
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+					within(screen.getByTestId(dropdownRegex)).getByText(expectedText)
 				).toBeInTheDocument();
-			else {
+			} else {
 				const excludedOptionRegexPattern = new RegExp(
 					`sorting_dropdown.${SORTING_OPTIONS.from.value}`,
 					'i'

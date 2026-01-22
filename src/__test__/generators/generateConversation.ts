@@ -8,8 +8,8 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { updateConversations, updateMessages } from 'store/emails/store';
 import { generateMessage, MessageGenerationParams } from '__test__/generators/generateMessage';
+import { updateConversations, updateMessages } from 'store/emails/store';
 import type { MailMessage, NormalizedConversation, Participant } from 'types';
 
 /**
@@ -22,6 +22,7 @@ export type ConversationGenerationParams = {
 	to?: Array<Participant>;
 	cc?: Array<Participant>;
 	receiveDate?: number;
+	fragment?: string;
 	subject?: string;
 	isRead?: boolean;
 	isFlagged?: boolean;
@@ -49,10 +50,11 @@ const generateRandomParticipants = (count: number, type: ParticipantRoleType): A
  * @param cc
  * @param from
  * @param subject
+ * @param fragment
  * @param isRead
  * @param isFlagged
  * @param isSingleMessageConversation
- * @param messages
+ * @param messageIds
  * @param messageGenerationCount
  */
 export const generateConversation = ({
@@ -62,6 +64,7 @@ export const generateConversation = ({
 	to,
 	cc,
 	from,
+	fragment = '',
 	subject = faker.lorem.word(6),
 	isRead = false,
 	isFlagged = false,
@@ -80,7 +83,7 @@ export const generateConversation = ({
 	return {
 		date: receiveDate,
 		flagged: isFlagged,
-		fragment: '',
+		fragment,
 		hasAttachment: false,
 		id,
 		participants: [...finalFrom, ...finalTo, ...finalCc],
