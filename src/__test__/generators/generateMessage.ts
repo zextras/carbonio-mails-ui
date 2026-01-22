@@ -42,7 +42,7 @@ export type MessageGenerationParams = {
 };
 
 const loremBody =
-	'Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nInteger nec odio. Praesent libero. Sed cursus ante dapibus diam.\nNam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis.\nFusce nec tellus sed augue semper porta. Mauris massa.';
+	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.\nNam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis.\nFusce nec tellus sed augue semper porta. Mauris massa.';
 
 export const generateMessage = ({
 	id = faker.number.int().toString(),
@@ -80,7 +80,7 @@ export const generateMessage = ({
 	date: receiveDate,
 	did,
 	flagged: isFlagged,
-	fragment: convertHtmlToPlainText(body).substring(0, 40).trim(),
+	fragment: convertHtmlToPlainText(body).substring(0, 100).trim(),
 	hasAttachment: false,
 	id,
 	invite: undefined,
