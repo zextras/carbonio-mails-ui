@@ -7,11 +7,11 @@ import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
 
+import { selectUnsavedAttachmentByUploadId } from './store-selectors';
 import {
 	filterSavedInlineAttachment,
 	filterUnsavedInlineAttachment
 } from 'store/editor/editor-utils';
-import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
@@ -22,7 +22,7 @@ import {
 } from 'types/index.d';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
-export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
+export const useEditorsStore = create<EditorsStateTypeV2>()((set, get) => ({
 	editors: {},
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2): void => {
 		set(
@@ -79,6 +79,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].size = size;
+				}
+			})
+		);
+	},
+	setIsDirty: (id: MailsEditorV2['id'], value: MailsEditorV2['isDirty']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id] && state.editors[id].isDirty !== value) {
+					state.editors[id].isDirty = value;
 				}
 			})
 		);
@@ -273,25 +282,25 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
-				if (unsavedAttachmentIndex === null) {
+				const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, id, uploadId);
+				if (!unsavedAttachment) {
 					return;
 				}
 
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = status;
+				unsavedAttachment.uploadStatus = status;
 			})
 		);
 	},
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
-				if (unsavedAttachmentIndex === null) {
+				const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, id, uploadId);
+				if (!unsavedAttachment) {
 					return;
 				}
 
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].aid = aid;
-				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = {
+				unsavedAttachment.aid = aid;
+				unsavedAttachment.uploadStatus = {
 					status: 'completed'
 				};
 			})
@@ -360,5 +369,27 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 				}
 			})
 		);
+	},
+
+	// Iterate through editors to find one with matching draftId and return it. Return null if not found
+	getEditorByDraftId: (draftId: string): MailsEditorV2 | null => {
+		let foundEditor: MailsEditorV2 | null = null;
+		Object.values(get().editors).forEach((editor) => {
+			if (editor.did === draftId) {
+				foundEditor = editor;
+			}
+		});
+		return foundEditor;
+	},
+
+	// Return all editors matching any of the provided draft IDs
+	getEditorsByDraftsId: (draftsId: Array<string>): Array<MailsEditorV2 & { did: string }> => {
+		const foundEditors: Array<MailsEditorV2 & { did: string }> = [];
+		Object.values(get().editors).forEach((editor) => {
+			if (editor.did && draftsId.includes(editor.did)) {
+				foundEditors.push(editor as MailsEditorV2 & { did: string });
+			}
+		});
+		return foundEditors;
 	}
 }));

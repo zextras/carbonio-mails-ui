@@ -8,12 +8,20 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from 'hooks/actions/use-msg-set-unread';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: (): Mock => mockNavigate
+}));
 
 describe('useMsgSetUnread', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
@@ -124,7 +132,7 @@ describe('useMsgSetUnread', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {
@@ -182,6 +190,68 @@ describe('useMsgSetUnread', () => {
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
+		});
+	});
+
+	describe('Navigation after execution', () => {
+		beforeEach(() => {
+			mockNavigate.mockClear();
+		});
+
+		it('should not navigate when shouldReplaceHistory is false in folder context', async () => {
+			const response: MsgActionResponse = {
+				action: {
+					id: '123',
+					op: '!read'
+				}
+			};
+			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
+
+			const testIds = ['1', '2'];
+			const { result } = setupHook(useMsgSetUnreadFn, {
+				initialProps: [
+					{
+						ids: testIds,
+						folderId: FOLDERS.INBOX,
+						isMessageRead: true,
+						shouldReplaceHistory: false
+					}
+				]
+			});
+
+			await act(async () => {
+				result.current.execute();
+			});
+
+			expect(mockNavigate).not.toHaveBeenCalled();
+		});
+
+		it('should not navigate when API returns a fault', async () => {
+			const response = {
+				Fault: {
+					Code: { Value: 'soap:Sender' },
+					Reason: { Text: 'Error' }
+				}
+			};
+			createSoapAPIInterceptor<MsgActionRequest, typeof response>('MsgAction', response);
+
+			const testIds = ['1', '2'];
+			const { result } = setupHook(useMsgSetUnreadFn, {
+				initialProps: [
+					{
+						ids: testIds,
+						folderId: FOLDERS.INBOX,
+						isMessageRead: true,
+						shouldReplaceHistory: true
+					}
+				]
+			});
+
+			await act(async () => {
+				result.current.execute();
+			});
+
+			expect(mockNavigate).not.toHaveBeenCalled();
 		});
 	});
 });

@@ -46,7 +46,7 @@ describe.each`
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
 	};
 	const mockedFolders = generateFolders();
-	const useFolder = jest.fn((id: string) => mockedFolders[id]);
+	const useFolder = vi.fn((id: string) => mockedFolders[id]);
 	useFolder.mockImplementation((folderId) => folders[folderId]);
 
 	describe('in any folders', () => {
@@ -207,7 +207,7 @@ describe.each`
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
 					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent('label.no_subject_with_tags');
+					expect(subjectLabel).toHaveTextContent('<No Subject>');
 				} else {
 					expect(subjectLabel).not.toBeInTheDocument();
 				}

@@ -19,11 +19,13 @@ import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 type MsgDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
+	onActionComplete?: (ids: Array<string>) => void;
 };
 
 export const useMsgDeletePermanentlyFn = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: MsgDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const createSnackbar = useSnackbar();
@@ -36,6 +38,7 @@ export const useMsgDeletePermanentlyFn = ({
 				ids
 			});
 			if (!('Fault' in response)) {
+				onActionComplete && onActionComplete(ids);
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
@@ -55,7 +58,7 @@ export const useMsgDeletePermanentlyFn = ({
 			}
 			onClose();
 		},
-		[ids, createSnackbar, t]
+		[ids, onActionComplete, createSnackbar, t]
 	);
 
 	const canExecute = useCallback(
@@ -87,9 +90,10 @@ export const useMsgDeletePermanentlyFn = ({
 
 export const useMsgDeletePermanentlyDescriptor = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: MsgDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, folderId });
+	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, folderId, onActionComplete });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.DELETE_PERMANENTLY.id,

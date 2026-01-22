@@ -7,28 +7,30 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { useTheme } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 
-import { setupTest } from '@test-setup';
+import { setupHook, setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useTags: vi.fn()
 }));
-jest.mock('../../../../../ui-actions/tag-actions', () => ({
-	useTagExist: jest.fn()
+vi.mock('../../../../../ui-actions/tag-actions', () => ({
+	useTagExist: vi.fn()
 }));
 
 const tagsArray = Object.values(tags);
 
 describe('SearchConversationListItemCore', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('renders conversation details correctly', async () => {
@@ -45,10 +47,10 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				toggleCollapseElementCallback={jest.fn()}
+				toggleCollapseElementCallback={vi.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -65,20 +67,26 @@ describe('SearchConversationListItemCore', () => {
 		);
 		populateFoldersStore();
 
+		const {
+			result: { current: theme }
+		} = setupHook(useTheme);
+
 		setupTest(
 			<SearchConversationListItemCore
 				conversation={{ ...conversation, read: false }}
 				selected={false}
 				selecting={false}
 				open={false}
-				toggleCollapseElementCallback={jest.fn()}
+				toggleCollapseElementCallback={vi.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
-		expect(screen.getByText('Test Subject')).toHaveStyle('font-weight: 700');
+		expect(screen.getByText('Test Subject')).toHaveStyle({
+			'font-weight': theme.fonts.weight.bold
+		});
 	});
 
 	it('calls toggleOpen when expand button is clicked', async () => {
@@ -89,7 +97,7 @@ describe('SearchConversationListItemCore', () => {
 			})
 		);
 		populateFoldersStore();
-		const mockSetOpen = jest.fn();
+		const mockSetOpen = vi.fn();
 
 		const { user } = setupTest(
 			<SearchConversationListItemCore
@@ -100,7 +108,7 @@ describe('SearchConversationListItemCore', () => {
 				toggleCollapseElementCallback={mockSetOpen}
 				parent={FOLDERS.INBOX}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -127,10 +135,10 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				toggleCollapseElementCallback={jest.fn()}
+				toggleCollapseElementCallback={vi.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -152,10 +160,10 @@ describe('SearchConversationListItemCore', () => {
 				selected={false}
 				selecting={false}
 				open={false}
-				toggleCollapseElementCallback={jest.fn()}
+				toggleCollapseElementCallback={vi.fn()}
 				parent={FOLDERS.INBOX}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 			/>
 		);
 
@@ -171,13 +179,13 @@ describe('SearchConversationListItemCore', () => {
 				})
 			);
 
-			(useTagExist as jest.Mock).mockReturnValue(true);
+			(useTagExist as Mock).mockReturnValue(true);
 
 			const tagsFromStore = [
 				{ id: 'tag1', name: 'Tag 1', color: 0 },
 				{ id: 'tag2', name: 'Tag 2', color: 0 }
 			];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchConversationListItemCore
@@ -185,10 +193,10 @@ describe('SearchConversationListItemCore', () => {
 					selected={false}
 					selecting={false}
 					open={false}
-					toggleCollapseElementCallback={jest.fn()}
+					toggleCollapseElementCallback={vi.fn()}
 					parent={FOLDERS.INBOX}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 				/>
 			);
 
@@ -203,10 +211,10 @@ describe('SearchConversationListItemCore', () => {
 				})
 			);
 
-			(useTagExist as jest.Mock).mockReturnValue(true);
+			(useTagExist as Mock).mockReturnValue(true);
 
 			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			(useTags as Mock).mockReturnValue(tagsFromStore);
 
 			setupTest(
 				<SearchConversationListItemCore
@@ -214,10 +222,10 @@ describe('SearchConversationListItemCore', () => {
 					selected={false}
 					selecting={false}
 					open={false}
-					toggleCollapseElementCallback={jest.fn()}
+					toggleCollapseElementCallback={vi.fn()}
 					parent={FOLDERS.INBOX}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 				/>
 			);
 

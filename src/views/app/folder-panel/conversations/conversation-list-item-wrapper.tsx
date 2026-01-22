@@ -3,7 +3,6 @@ import React, { ReactNode, useMemo } from 'react';
 import { ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useConvActions } from 'hooks/actions/use-conv-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
@@ -31,7 +30,6 @@ export const ConversationListItemActionWrapper = ({
 	conversation: NormalizedConversation;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	const shouldReplaceHistory = useShouldReplaceHistory(conversation);
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -52,14 +50,10 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation,
-		shouldReplaceHistory
+		conversation
 	});
 	const hoverActions = useMemo(
 		() => [
-			replyDescriptor,
-			replyAllDescriptor,
-			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -69,9 +63,6 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor
 		],
 		[
-			replyDescriptor,
-			replyAllDescriptor,
-			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -158,6 +149,7 @@ export const ConversationListItemActionWrapper = ({
 					crossAlignment="center"
 					$hoverBackground={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${conversation.id}`}
+					gap={'0.25rem'}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>

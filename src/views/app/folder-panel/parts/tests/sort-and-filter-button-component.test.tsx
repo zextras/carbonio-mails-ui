@@ -6,9 +6,11 @@
 
 import React from 'react';
 
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
+
 import { SortAndFilterButtonComponent } from '../sort-and-filter-button-component';
 import { screen, setupTest } from '@test-setup';
-import { editSettings, useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
@@ -44,7 +46,8 @@ describe('Sort and filter button component', () => {
 	const SORT_OPTION = [
 		{ label: 'Date', value: 'date' },
 		{ label: 'Subject', value: 'subj' },
-		{ label: 'From', value: 'name' }
+		{ label: 'From', value: 'name' },
+		{ label: 'Size', value: 'size' }
 	];
 	const DIRECTION_OPTION = [
 		{ label: 'sorting_dropdown.descendingOrder', value: 'Asc' },
@@ -75,13 +78,16 @@ describe('Sort and filter button component', () => {
 			await user.click(screen.getByTestId(icon));
 			await user.click(screen.getByText(filterLabel));
 
-			expect(editSettings).toHaveBeenCalledWith({
-				prefs: {
-					zimbraPrefSortOrder: expect.stringContaining(
-						`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
-					)
-				}
-			});
+			expect(soapFetchV2).toHaveBeenCalledWith(
+				'ModifyPrefs',
+				expect.objectContaining({
+					_attrs: {
+						zimbraPrefSortOrder: expect.stringContaining(
+							`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
+						)
+					}
+				})
+			);
 		}
 	);
 });

@@ -518,7 +518,8 @@ export const PROCESS_STATUS = {
 export const EDIT_VIEW_CLOSING_REASONS = {
 	EXTERNAL_CLOSE_REQUEST: 'externalRequest',
 	MESSAGE_SENT: 'send',
-	MESSAGE_SEND_SCHEDULED: 'sendLater'
+	MESSAGE_SEND_SCHEDULED: 'sendLater',
+	DRAFT_DELETED: 'draftDeleted'
 } as const;
 
 export const SORTING_OPTIONS = {
@@ -574,6 +575,9 @@ export const MAIL_SENSITIVITY_HEADER = {
 	// eslint-disable-next-line sonarjs/no-duplicate-string
 	companyConfidential: 'Company-Confidential'
 } as const;
+
+export const INJECTED_DESCRIPTION_DECORATOR =
+	'-:::_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_::_:_::-';
 
 // noinspection JSUnusedGlobalSymbols
 export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];

@@ -1,13 +1,13 @@
+import React from 'react';
+
+import { screen } from '@testing-library/react';
+import { getFolder } from '@zextras/carbonio-ui-commons';
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import React from 'react';
-
-import { screen } from '@testing-library/react';
-import { getFolder } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
@@ -15,9 +15,9 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { useBackupSearchStore } from 'store/backup-search/store';
 import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getFolder: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	getFolder: vi.fn()
 }));
 
 const deletedMessage = {
@@ -34,11 +34,11 @@ const deletedMessage = {
 
 describe('Backup search list', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should display To when sender is the owner', async () => {
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			name: 'francesco@example.com'
 		});
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
@@ -49,7 +49,7 @@ describe('Backup search list', () => {
 			<BackupSearchMessageListItem
 				message={message}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -63,7 +63,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should display inbox chip', async () => {
-		(getFolder as jest.Mock).mockReturnValue(generateFolder({ name: 'Inbox' }));
+		(getFolder as Mock).mockReturnValue(generateFolder({ name: 'Inbox' }));
 
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
@@ -73,7 +73,7 @@ describe('Backup search list', () => {
 			<BackupSearchMessageListItem
 				message={message}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -84,7 +84,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should not display the chip if no folder is found', async () => {
-		(getFolder as jest.Mock).mockReturnValue(undefined);
+		(getFolder as Mock).mockReturnValue(undefined);
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
@@ -93,7 +93,7 @@ describe('Backup search list', () => {
 			<BackupSearchMessageListItem
 				message={message}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,
@@ -104,7 +104,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should display sender when to is the owner', async () => {
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			name: 'giuliano@example.com'
 		});
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
@@ -115,7 +115,7 @@ describe('Backup search list', () => {
 			<BackupSearchMessageListItem
 				message={message}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				key={message.id}
 				messageIsSelected={false}
 			/>,

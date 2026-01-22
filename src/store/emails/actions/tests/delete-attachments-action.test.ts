@@ -1,3 +1,5 @@
+import type { Mock } from 'vitest';
+
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -7,18 +9,18 @@ import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
 import { handleDeleteAttachments } from 'store/emails/store';
 
-jest.mock('../../../../api/delete-all-attachments-soap-api');
-jest.mock('../../store');
+vi.mock('../../../../api/delete-all-attachments-soap-api');
+vi.mock('../../store');
 
 describe('deleteAttachmentsEmailStoreAction', () => {
 	const mockResponse = { success: true };
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('handles successful attachment deletion', async () => {
-		(deleteAttachmentsSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
+		(deleteAttachmentsSoapApi as Mock).mockResolvedValueOnce(mockResponse);
 		const result = await deleteAttachmentsEmailStoreAction({
 			id: '123',
 			attachments: ['att1', 'att2']
@@ -33,7 +35,7 @@ describe('deleteAttachmentsEmailStoreAction', () => {
 
 	it('handles error during attachment deletion', async () => {
 		const error = new Error('Error');
-		(deleteAttachmentsSoapApi as jest.Mock).mockRejectedValueOnce(error);
+		(deleteAttachmentsSoapApi as Mock).mockRejectedValueOnce(error);
 		await expect(
 			deleteAttachmentsEmailStoreAction({ id: '123', attachments: ['att1', 'att2'] })
 		).rejects.toThrow('Error');
@@ -54,7 +56,7 @@ describe('deleteAttachmentsEmailStoreAction', () => {
 	});
 
 	it('handles null response from API', async () => {
-		(deleteAttachmentsSoapApi as jest.Mock).mockResolvedValueOnce(null);
+		(deleteAttachmentsSoapApi as Mock).mockResolvedValueOnce(null);
 		const result = await deleteAttachmentsEmailStoreAction({
 			id: '123',
 			attachments: ['att1', 'att2']

@@ -4,17 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
-import { updateConversations, updateMessages } from 'store/emails/store';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
-import { GetConvResponse } from 'types/soap/get-conv';
+import { renderHook } from '@testing-library/react';
 
-jest.mock('../../store', () => ({
-	...jest.requireActual('../../store'),
-	updateMessages: jest.fn(),
-	updateConversations: jest.fn()
-}));
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
+import { useConversationById } from 'store/emails/store';
+import { GetConvResponse } from 'types/soap/get-conv';
 
 describe('getConvEmailStoreAction', () => {
 	it('should fetch conversation data and update the store', async () => {
@@ -38,7 +34,9 @@ describe('getConvEmailStoreAction', () => {
 				c: expect.objectContaining({ id: '123' })
 			})
 		);
-		expect(updateMessages).toHaveBeenCalledTimes(1);
-		expect(updateConversations).toHaveBeenCalledTimes(1);
+		const { result } = renderHook(() => useConversationById('123'));
+		expect(result.current).not.toBeUndefined();
+		// TODO: redefine this hook and expect actual output, avoid spying store.
+		//  The store may as well not exist, so what is the role of this function?
 	});
 });

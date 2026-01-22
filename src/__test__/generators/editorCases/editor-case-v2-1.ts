@@ -20,6 +20,7 @@ export const buildEditorCase = (): MailsEditorV2 => {
 		did: FAKE_MESSAGE_ID,
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: mocksContext.identities.primary.identity.id,
+		isDirty: false,
 		isRichText: true,
 		isUrgent: false,
 		requestReadReceipt: false,

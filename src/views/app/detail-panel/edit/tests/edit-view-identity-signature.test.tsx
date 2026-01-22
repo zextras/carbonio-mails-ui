@@ -37,7 +37,7 @@ describe('New and Replay email view', () => {
 				: '';
 			const signatureContent = getSignatureValue(account, signatureId);
 			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+			vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
 					return 'new';
 				}
@@ -103,7 +103,7 @@ describe('New and Replay email view', () => {
 			populateFoldersStore();
 
 			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+			vi.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
 					return EditViewActions.REPLY;
 				}

@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import type { ActionFn, UIActionDescriptor } from 'types/index.d';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -18,13 +18,14 @@ import { useInSearchModule } from 'ui-actions/utils';
 type ConvRestoreFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 const useRestoreConversation = (ids: Array<string>, folderId: string): (() => void) => {
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
-	const navigate = useNavigate();
+	const { openConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	return useCallback(() => {
 		convActionEmailStoreAction({
@@ -33,8 +34,8 @@ const useRestoreConversation = (ids: Array<string>, folderId: string): (() => vo
 			parent: folderId
 		}).then((res) => {
 			if (!('Fault' in res)) {
-				if (!inSearchModule) {
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${ids[0]}`, { replace: true });
+				if (currentConversation && !inSearchModule) {
+					openConversationPanel(currentConversation.id);
 				}
 				createSnackbar({
 					key: `edit`,
@@ -55,19 +56,28 @@ const useRestoreConversation = (ids: Array<string>, folderId: string): (() => vo
 				});
 			}
 		});
-	}, [createSnackbar, folderId, ids, inSearchModule, navigate, t]);
+	}, [
+		createSnackbar,
+		currentConversation,
+		folderId,
+		ids,
+		inSearchModule,
+		openConversationPanel,
+		t
+	]);
 };
 
 export const useConvMoveToTrashFn = ({
 	ids,
-	folderId = FOLDERS.INBOX
+	folderId = FOLDERS.INBOX,
+	onActionComplete
 }: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const createSnackbar = useSnackbar();
 	const restoreConversation = useRestoreConversation(ids, folderId);
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const execute = useCallback((): void => {
 		if (!canExecute()) {
@@ -78,8 +88,11 @@ export const useConvMoveToTrashFn = ({
 			ids
 		}).then((res) => {
 			if (!('Fault' in res)) {
-				if (!inSearchModule) {
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+				onActionComplete && onActionComplete(ids);
+				if (currentConversation && !inSearchModule) {
+					if (ids.includes(currentConversation.id)) {
+						closeConversationPanel();
+					}
 				}
 				createSnackbar({
 					key: `trash-${ids}`,
@@ -101,18 +114,30 @@ export const useConvMoveToTrashFn = ({
 				});
 			}
 		});
-	}, [canExecute, ids, inSearchModule, createSnackbar, t, restoreConversation, navigate, folderId]);
+	}, [
+		canExecute,
+		ids,
+		onActionComplete,
+		currentConversation,
+		inSearchModule,
+		createSnackbar,
+		t,
+		restoreConversation,
+		closeConversationPanel
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvMoveToTrashDescriptor = ({
 	ids,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvRestoreFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvMoveToTrashFn({
 		ids,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {

@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
-import { Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-system';
+import { Button, Dropdown, DropdownItem } from '@zextras/carbonio-design-system';
 import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
 
@@ -76,11 +76,13 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 					selectedBackgroundColor={'gray5'}
 					data-testid="signature-dropdown"
 				>
-					<IconButton
+					<Button
 						data-testid="change-sign-dropdown-icon"
 						size="large"
 						icon="SignatureOutline"
 						onClick={noop}
+						type={'ghost'}
+						color={'gray0'}
 					/>
 				</Dropdown>
 			)}

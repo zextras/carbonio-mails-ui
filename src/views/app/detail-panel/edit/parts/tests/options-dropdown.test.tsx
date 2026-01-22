@@ -26,8 +26,8 @@ describe('OptionsDropdown', () => {
 
 		const defaultProps: OptionsDropdownProps = {
 			editorId: editor.id,
-			onSmimeOptionChange: jest.fn(),
-			onSmimeEncryptOptionChange: jest.fn(),
+			onSmimeOptionChange: vi.fn(),
+			onSmimeEncryptOptionChange: vi.fn(),
 			isSmimeEnabled
 		};
 		return setupTest(<OptionsDropdown {...defaultProps}></OptionsDropdown>);

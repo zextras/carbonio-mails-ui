@@ -5,5 +5,5 @@
  */
 
 module.exports = {
-	play: jest.fn()
+	play: vi.fn()
 };

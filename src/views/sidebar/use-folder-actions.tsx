@@ -210,7 +210,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				label:
 					getFolderIdParts(folder.id).id === FOLDERS.TRASH
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
-						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
+						: t('folder_panel.action.empty.folder_panel', 'Empty Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {

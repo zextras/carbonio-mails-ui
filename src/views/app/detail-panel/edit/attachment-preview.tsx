@@ -7,9 +7,9 @@ import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 
 import styled from '@emotion/styled';
 import {
+	Button,
 	Container,
 	getColor,
-	IconButton,
 	Padding,
 	Row,
 	Text,
@@ -209,8 +209,10 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{isDeletable && (
 								<Padding right="small">
 									<Tooltip label={t('label.delete', 'Delete')}>
-										<IconButton
+										<Button
 											size="large"
+											type={'ghost'}
+											color={'gray0'}
 											icon="DeletePermanentlyOutline"
 											data-testid={'btn-delete-attachment'}
 											onClick={removeAttachment}

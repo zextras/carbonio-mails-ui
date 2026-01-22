@@ -7,6 +7,7 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -17,26 +18,26 @@ import {
 	createAPIInterceptorToGetRecipientsCertificates
 } from 'views/settings/certificates/tests/utils/utils';
 
-jest.mock('../../../../store/certificates/store', () => {
-	const actual = jest.requireActual('../../../../store/certificates/store');
+vi.mock('../../../../store/certificates/store', async () => {
+	const actual = await vi.importActual('../../../../store/certificates/store');
 	return {
 		...actual,
-		useSmimePasswordStore: jest.fn(() => ({
+		useSmimePasswordStore: vi.fn(() => ({
 			smimePassword: '',
-			updateSmimePassword: jest.fn()
+			updateSmimePassword: vi.fn()
 		}))
 	};
 });
 
-jest.mock('../../../../api/check-exist-password-api', () => ({
-	checkExistEncryptionPassword: jest.fn()
+vi.mock('../../../../api/check-exist-password-api', () => ({
+	checkExistEncryptionPassword: vi.fn()
 }));
 
 describe('CertificatesView', () => {
-	const mockCheckExistEncryptionPassword = checkExistEncryptionPassword as jest.Mock;
+	const mockCheckExistEncryptionPassword = checkExistEncryptionPassword as Mock;
 
 	it('calls checkExistEncryptionPassword API when password is empty', async () => {
-		(useSmimePasswordStore as unknown as jest.Mock).mockReturnValue({ smimePassword: '' });
+		(useSmimePasswordStore as unknown as Mock).mockReturnValue({ smimePassword: '' });
 		mockCheckExistEncryptionPassword.mockResolvedValue({ data: {} });
 
 		setupTest(<CertificatesView />);
@@ -60,7 +61,7 @@ describe('CertificatesView', () => {
 	});
 
 	it('renders personal and recipient certificates sections when password exists', () => {
-		(useSmimePasswordStore as unknown as jest.Mock).mockReturnValue({
+		(useSmimePasswordStore as unknown as Mock).mockReturnValue({
 			smimePassword: 'mockPassword'
 		});
 

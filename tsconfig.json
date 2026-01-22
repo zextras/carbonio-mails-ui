@@ -3,18 +3,17 @@
 	"compilerOptions": {
 		"noUncheckedIndexedAccess": false,
 		"baseUrl": "./src",
+		"types": ["vitest/globals"],
 		"paths": {
 			"@test-mocks/*": ["../__mocks__/*"],
 			"@test-utils/*": ["__test__/mocks/*"],
-			"@test-setup": ["__test__/test-setup.tsx"],
-			"@jest-setup": ["../jest-setup.ts"]
+			"@browser-test-utils/*": ["__test__/browser/*"],
+			"@test-setup": ["__test__/test-setup.tsx"]
 		}
 	},
 	"include": [
 		"**/*",
-		".eslintrc.js",
-		"jest.config.ts",
-		"jest-setup.ts"
+		".eslintrc.js"
 	],
 	"exclude": ["./node_modules/*", "./dist/*"]
 }

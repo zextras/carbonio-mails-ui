@@ -21,9 +21,9 @@ import {
 	filterUnsavedAttachmentsByUploadId,
 	getSavedInlineAttachmentsByContentId
 } from 'store/editor/editor-utils';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
 import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
@@ -80,11 +80,12 @@ type EditorAttachmentHook = {
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
-	removeInlineAttachments: (usedCids: string[]) => void;
+	keepOnlyInlineAttachments: (usedCids: string[]) => void;
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
+	const { setDirty } = useEditorSetDirty(editorId);
 	const notifyUploadError = useNotifyUploadError();
 
 	const unsavedStandardAttachments = reject(
@@ -200,7 +201,8 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
-					debouncedSaveDraft(editorId, saveDraftOptions);
+					setDirty();
+					debouncedSaveDraft(saveDraftOptions);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -236,8 +238,8 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		} satisfies UnsavedAttachment;
 		addUnsavedAttachments(editorId, [unsavedAttachment]);
 		computeAndUpdateEditorStatus(editorId);
-
-		debouncedSaveDraft(editorId);
+		setDirty();
+		debouncedSaveDraft();
 
 		return unsavedAttachment;
 	};
@@ -300,7 +302,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 
 		return addAndSaveGenericAttachments(files, true, customizedCallbacks);
 	};
-	const removeInlineAttachments = (usedCids: string[]): void => {
+	const keepOnlyInlineAttachments = (usedCids: string[]): void => {
 		const editor = getEditor({ id: editorId });
 		if (!editor) return;
 
@@ -313,7 +315,8 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		});
 		computeAndUpdateEditorStatus(editorId);
-		debouncedSaveDraft(editorId);
+		setDirty();
+		debouncedSaveDraft();
 	};
 	return {
 		hasStandardAttachments: unsavedStandardAttachments.length + savedStandardAttachments.length > 0,
@@ -322,22 +325,25 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraft(editorId);
+			setDirty();
+			debouncedSaveDraft();
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraft(editorId);
+			setDirty();
+			debouncedSaveDraft();
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraft(editorId);
+			setDirty();
+			debouncedSaveDraft();
 		},
 		addStandardAttachments,
 		addInlineAttachments,
 		addUploadedAttachment,
-		removeInlineAttachments
+		keepOnlyInlineAttachments
 	};
 };

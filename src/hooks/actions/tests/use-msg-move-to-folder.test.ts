@@ -10,6 +10,8 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
+import { createSoapAPIInterceptor } from '../../../__test__/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../__test__/mocks/store/folders';
 import { setupHook, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { TIMERS } from '__test__/constants';
@@ -32,7 +34,7 @@ describe('useMsgMoveToFolder', () => {
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgMoveToFolderDescriptor, {
@@ -50,7 +52,7 @@ describe('useMsgMoveToFolder', () => {
 	});
 	describe('useMsgMoveToFolderFn', () => {
 		it('Should return an object with execute and canExecute functions', () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToFolderFn, {
@@ -73,7 +75,7 @@ describe('useMsgMoveToFolder', () => {
 				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
 			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -86,7 +88,7 @@ describe('useMsgMoveToFolder', () => {
 
 		describe('execute', () => {
 			it('should open the move modal', async () => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -98,14 +100,14 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Move Message`)).toBeVisible();
 			});
 
 			it('should not open the move modal with if the action cannot be executed', async () => {
-				jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+				vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToFolderFn, {
@@ -117,10 +119,40 @@ describe('useMsgMoveToFolder', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Move Message`)).not.toBeInTheDocument();
+			});
+
+			it('should call onActionComplete when provided after moving messages', async () => {
+				populateFoldersStore({ view: 'message' });
+				createSoapAPIInterceptor('MsgAction');
+				const onActionComplete = vi.fn();
+				const {
+					user,
+					result: { current: functions }
+				} = setupHook(useMsgMoveToFolderFn, {
+					initialProps: [{ ids: messagesId, folderId: FOLDERS.INBOX, onActionComplete }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				// Select the destination folder in the modal
+				const folderOption = screen.getByText('folders.sent');
+				await act(async () => user.click(folderOption));
+
+				// Click the move button in the modal
+				const moveButton = screen.getByText('Move');
+				await act(async () => user.click(moveButton));
+
+				expect(onActionComplete).toHaveBeenCalledWith(messagesId);
 			});
 		});
 	});

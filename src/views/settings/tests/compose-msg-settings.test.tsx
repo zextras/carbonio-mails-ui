@@ -7,18 +7,14 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { UpdateSettingsProps } from 'types/settings/index.d';
 import ComposeMessage from 'views/settings/compose-msg-settings';
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key) => key)
-}));
 
 describe('compose-msg-settings', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	const settingObjectEmpty: Record<string, string> = {
@@ -153,8 +149,8 @@ describe('compose-msg-settings', () => {
 
 	function getMockUpdateSettings(
 		settingObject: Record<string, string>
-	): jest.Mock<void, [changedKeyValue: UpdateSettingsProps]> {
-		return jest.fn((changedKeyValue) => {
+	): Mock<(value: any) => void> {
+		return vi.fn((changedKeyValue) => {
 			const { name, value } = changedKeyValue.target;
 			const updatedSettings = { ...settingObject, [name]: value as string };
 			Object.assign(settingObject, updatedSettings);

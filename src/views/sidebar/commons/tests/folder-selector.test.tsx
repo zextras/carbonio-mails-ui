@@ -38,7 +38,7 @@ describe('Folder selector', () => {
 			allowRootSelection: false,
 			showSharedAccounts: false,
 			selectedFolderId: FOLDERS.INBOX,
-			onFolderSelected: jest.fn()
+			onFolderSelected: vi.fn()
 		};
 		setupTest(<FolderSelector {...props} />);
 
@@ -74,7 +74,7 @@ describe('Folder selector', () => {
 				showSpamFolder: true,
 				showTrashFolder: true,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -104,7 +104,7 @@ describe('Folder selector', () => {
 				showSpamFolder: true,
 				showTrashFolder: true,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -138,7 +138,7 @@ describe('Folder selector', () => {
 				showSpamFolder: true,
 				showTrashFolder: true,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -161,7 +161,7 @@ describe('Folder selector', () => {
 			const props: FolderSelectorProps = {
 				allowRootSelection: false,
 				showSharedAccounts: true,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -181,7 +181,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: true,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			const filterInput = screen.getByTestId('folder-name-filter');
@@ -203,7 +203,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: true,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -231,7 +231,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 				selectedFolderId: FOLDERS.INBOX,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -251,7 +251,7 @@ describe('Folder selector', () => {
 			const props: FolderSelectorProps = {
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -284,7 +284,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -304,7 +304,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -325,7 +325,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 				showTrashFolder: true,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -343,7 +343,7 @@ describe('Folder selector', () => {
 			const props: FolderSelectorProps = {
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -364,7 +364,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 				showTrashFolder: true,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -384,7 +384,7 @@ describe('Folder selector', () => {
 			const props: FolderSelectorProps = {
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
@@ -403,7 +403,7 @@ describe('Folder selector', () => {
 				allowRootSelection: false,
 				showSharedAccounts: false,
 				showSpamFolder: true,
-				onFolderSelected: jest.fn()
+				onFolderSelected: vi.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();

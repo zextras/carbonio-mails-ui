@@ -5,9 +5,11 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { CONTACT_TYPES } from '@zextras/carbonio-ui-commons';
 import { keyBy } from 'lodash';
 import moment from 'moment';
 
+import { ContactInputItem } from '../../../types';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
 import { Query } from 'views/search/types/types';
@@ -17,7 +19,6 @@ import {
 	updateQueryChips,
 	getQueryToBe
 } from 'views/search/utils';
-import { CONTACT_TYPES } from '@zextras/carbonio-ui-commons';
 
 describe('generateQueryString', () => {
 	const query = [
@@ -94,7 +95,7 @@ describe('updateQueryChips', () => {
 	it('should update query chips when query is not empty and isInvalidQuery is false', () => {
 		const query = [{ label: 'has:attachment' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -113,7 +114,7 @@ describe('updateQueryChips', () => {
 	it('should not update query chips when query is empty', () => {
 		const query = [] as Array<QueryChip>;
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -123,7 +124,7 @@ describe('updateQueryChips', () => {
 	it('should not update query chips when query is not empty but isInvalidQuery is true', () => {
 		const query = [{ label: 'has:attachment' }];
 		const isInvalidQuery = true;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -135,7 +136,7 @@ describe('updateQueryChips', () => {
 			{ label: 'has:attachment', isGeneric: true },
 			{ label: 'is:unread', isQueryFilter: true }
 		];
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 		updateQueryChips(query, false, updateQuery);
 
 		expect(updateQuery).not.toHaveBeenCalled();
@@ -144,7 +145,7 @@ describe('updateQueryChips', () => {
 	it('should not call updateQuery if no chips were modified', () => {
 		const mockQuery = [{ label: 'unknown:field' }, { label: 'has:attachment', isGeneric: true }];
 
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(mockQuery, false, updateQuery);
 
@@ -154,7 +155,7 @@ describe('updateQueryChips', () => {
 	it('should handle from: prefix in updateQueryChips', () => {
 		const query = [{ label: 'from:test@example.com' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -173,7 +174,7 @@ describe('updateQueryChips', () => {
 	it('should handle to: prefix in updateQueryChips', () => {
 		const query = [{ label: 'to:recipient@example.com' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -426,5 +427,88 @@ describe('getAdvancedFiltersDefaultValues', () => {
 		expect(result.keywordInput).toHaveLength(1);
 		expect(result.keywordInput[0].value).toBe('yuliya');
 		expect(result.keywordInput[0].label).toBe('yuliya');
+	});
+});
+
+describe('getQueryToBe', () => {
+	const defaultValues = getAdvancedFiltersDefaultValues([], true);
+	const contactMail = 'user@companyname.com';
+	const contactFilter = [
+		{
+			id: contactMail,
+			label: contactMail,
+			value: {
+				id: contactMail,
+				firstName: 'Firstname',
+				lastName: 'Lastname',
+				fullName: 'Firstname Lastname',
+				company: 'CompanyName',
+				email: contactMail,
+				type: 'CONTACT' as const,
+				originalContactEmail: `"Firstname Lastname" <${contactMail}>`
+			},
+			error: false,
+			actions: []
+		}
+	];
+	const getContactFilterWithPrefix = (prefix: 'from:' | 'to:'): ContactInputItem[] => [
+		{
+			id: `${prefix}${contactMail}`,
+			label: `${prefix}${contactMail}`,
+			value: {
+				id: `${prefix}${contactMail}`,
+				email: `${prefix}${contactMail}`,
+				type: 'CONTACT'
+			}
+		}
+	];
+	it('should return from: prefix followed by user mail in label and value when from field is valued', () => {
+		const queryToBe = getQueryToBe({ ...defaultValues, receivedFrom: contactFilter });
+
+		expect(queryToBe).toEqual([
+			expect.objectContaining({
+				label: `from:${contactMail}`,
+				value: `from:${contactMail}`
+			})
+		]);
+	});
+
+	it('should return to: prefix followed by user mail in label and value when to field is valued', () => {
+		const queryToBe = getQueryToBe({ ...defaultValues, sentTo: contactFilter });
+
+		expect(queryToBe).toEqual([
+			expect.objectContaining({
+				label: `to:${contactMail}`,
+				value: `to:${contactMail}`
+			})
+		]);
+	});
+
+	it('should not add from: prefix in from field if already available', () => {
+		const queryToBe = getQueryToBe({
+			...defaultValues,
+			receivedFrom: getContactFilterWithPrefix('from:')
+		});
+
+		expect(queryToBe).toEqual([
+			expect.objectContaining({
+				label: `from:${contactMail}`,
+				value: `from:${contactMail}`
+			})
+		]);
+	});
+
+	it('should not add to: prefix in to field if already available', () => {
+		const queryToBe = getQueryToBe({
+			...defaultValues,
+			sentTo: getContactFilterWithPrefix('to:')
+		});
+
+		expect(queryToBe).toEqual([
+			expect.objectContaining({
+				label: `to:${contactMail}`,
+				value: `to:${contactMail}`
+			})
+		]);
 	});
 });

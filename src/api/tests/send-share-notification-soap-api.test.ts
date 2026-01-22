@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -10,11 +11,11 @@ describe('sendShareNotificationSoapApi', () => {
 	const mockResponse = { success: true };
 
 	beforeEach(() => {
-		global.fetch = jest.fn();
+		global.fetch = vi.fn();
 	});
 
 	it('handles successful share notification', async () => {
-		(global.fetch as jest.Mock).mockResolvedValueOnce({
+		(global.fetch as Mock).mockResolvedValueOnce({
 			json: async () => mockResponse
 		});
 
@@ -36,7 +37,7 @@ describe('sendShareNotificationSoapApi', () => {
 	});
 
 	it('handles error during share notification', async () => {
-		(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+		(global.fetch as Mock).mockRejectedValueOnce(new Error('Error'));
 
 		const result = await sendShareNotificationSoapApi({
 			contacts: [{ email: 'test@example.com' }],
@@ -53,7 +54,7 @@ describe('sendShareNotificationSoapApi', () => {
 	});
 
 	it('handles empty standard message', async () => {
-		(global.fetch as jest.Mock).mockResolvedValueOnce({
+		(global.fetch as Mock).mockResolvedValueOnce({
 			json: async () => mockResponse
 		});
 
@@ -71,8 +72,8 @@ describe('sendShareNotificationSoapApi', () => {
 	});
 
 	it('handles multiple contacts', async () => {
-		(global.fetch as jest.Mock).mockResolvedValue({
-			json: jest.fn().mockResolvedValue(mockResponse)
+		(global.fetch as Mock).mockResolvedValue({
+			json: vi.fn().mockResolvedValue(mockResponse)
 		});
 
 		const result = await sendShareNotificationSoapApi({

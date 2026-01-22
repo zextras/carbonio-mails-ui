@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -9,16 +10,16 @@ import { selectPersonalCertificate } from 'api/select-personal-certificate-api';
 describe('selectPersonalCertificate', () => {
 	const apiURL = '/service/extension/encryption/smime/personal/select';
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('should return data when the API call is successful and response is ok', async () => {
-		global.fetch = jest.fn(() =>
+		global.fetch = vi.fn(() =>
 			Promise.resolve({
 				ok: true,
 				json: () => Promise.resolve({})
 			})
-		) as jest.Mock;
+		) as Mock;
 
 		const result = await selectPersonalCertificate('password123', 'id123');
 		expect(result).toEqual({ data: expect.any(Object) });
@@ -32,9 +33,9 @@ describe('selectPersonalCertificate', () => {
 	it('should return an error when the API call is unsuccessful', async () => {
 		const statusText = 'Bad Request';
 		const mockResponse = { ok: false, status: 404, statusText };
-		global.fetch = jest.fn(() => Promise.resolve(mockResponse)) as jest.Mock;
+		global.fetch = vi.fn(() => Promise.resolve(mockResponse)) as Mock;
 
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((message) => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation((message) => {
 			/* mock implementation */
 		});
 

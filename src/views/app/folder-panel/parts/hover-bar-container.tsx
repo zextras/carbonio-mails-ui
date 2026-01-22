@@ -12,16 +12,15 @@ export const HoverBarContainer = styled(Container)<{ $hoverBackground: PaletteCo
 	right: 0;
 	display: none;
 	position: absolute;
+	width: fit-content;
+	height: 45%;
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover}
+		${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover} 1rem,
+		${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover} 100%
 	);
-	width: calc(100% - 4rem);
-	height: 45%;
-
-	& > * {
-		margin-top: ${({ theme }): string => theme.sizes.padding.small};
-		margin-right: ${({ theme }): string => theme.sizes.padding.small};
-	}
+	padding-right: 0.5rem;
+	padding-left: 2rem;
+	padding-top: 0.5rem;
 `;

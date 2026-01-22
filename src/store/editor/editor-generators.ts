@@ -63,6 +63,7 @@ const labels = {
 /**
  *
  */
+// FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
 export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
@@ -85,6 +86,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -215,6 +217,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		id: editorId,
 		unsavedAttachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients,
@@ -286,6 +289,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -354,6 +358,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -413,6 +418,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		id: editorId,
 		unsavedAttachments: attachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -463,6 +469,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -507,6 +514,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {

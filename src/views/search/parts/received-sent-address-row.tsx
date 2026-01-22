@@ -15,10 +15,20 @@ import { FormValuesControlProps } from 'views/search/types/types';
 export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();
 
-	const chipLabelFactory = useCallback<NonNullable<ContactInputProps['chipLabelFactory']>>(
+	const fromChipLabelFactory = useCallback<NonNullable<ContactInputProps['chipLabelFactory']>>(
 		(value, defaultLabel): string => {
 			if (value.type === CONTACT_TYPES.CONTACT) {
-				return value.email;
+				return value.email.startsWith('from:') ? value.email : `from:${value.email}`;
+			}
+			return defaultLabel;
+		},
+		[]
+	);
+
+	const toChipLabelFactory = useCallback<NonNullable<ContactInputProps['chipLabelFactory']>>(
+		(value, defaultLabel): string => {
+			if (value.type === CONTACT_TYPES.CONTACT) {
+				return value.email.startsWith('to:') ? value.email : `to:${value.email}`;
 			}
 			return defaultLabel;
 		},
@@ -37,7 +47,7 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 							placeholder={t('label.from', 'From')}
 							onChange={onChange}
 							defaultValue={value}
-							chipLabelFactory={chipLabelFactory}
+							chipLabelFactory={fromChipLabelFactory}
 						/>
 					)}
 				/>
@@ -52,7 +62,7 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 							placeholder={t('label.to', 'To')}
 							onChange={onChange}
 							defaultValue={value}
-							chipLabelFactory={chipLabelFactory}
+							chipLabelFactory={toChipLabelFactory}
 						/>
 					)}
 				/>

@@ -26,6 +26,7 @@ export type EditorsStateTypeV2 = {
 	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
 	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']) => void;
+	setIsDirty: (id: MailsEditorV2['id'], isDirty: MailsEditorV2['isDirty']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
 	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	setRequestReadReceipt: (
@@ -83,6 +84,8 @@ export type EditorsStateTypeV2 = {
 		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
 	) => void;
 	setTextProvider: (id: MailsEditorV2['id'], textProvider: EditorTextProvider) => void;
+	getEditorByDraftId: (draftId: string) => MailsEditorV2 | null;
+	getEditorsByDraftsId: (draftsId: Array<string>) => Array<MailsEditorV2 & { did: string }>;
 };
 
 export type MsgStateType = {

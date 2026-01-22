@@ -24,7 +24,7 @@ describe('useConvSetSpam', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvSetSpamDescriptor, {
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+				initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 			});
 
 			expect(descriptor).toEqual({
@@ -45,7 +45,7 @@ describe('useConvSetSpam', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvSetSpamFn, {
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+				initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 			});
 
 			expect(functions).toEqual({
@@ -67,7 +67,7 @@ describe('useConvSetSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
+					initialProps: [{ ids, folderId: folder.id }]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -76,13 +76,13 @@ describe('useConvSetSpam', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+					initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 				});
 
 				await act(async () => {
@@ -106,12 +106,12 @@ describe('useConvSetSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetSpamFn, {
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
 					functions.execute();
-					jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				const requestParameter = await apiInterceptor;
@@ -119,6 +119,23 @@ describe('useConvSetSpam', () => {
 				expect(requestParameter.action.op).toBe('spam');
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
+			});
+
+			it('should call onActionComplete when provided after the conversation is marked as spam', async () => {
+				const onActionComplete = vi.fn();
+				createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction');
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvSetSpamFn, {
+					initialProps: [{ ids, folderId: FOLDERS.INBOX, onActionComplete }]
+				});
+				await act(async () => {
+					functions.execute();
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(ids);
 			});
 		});
 	});

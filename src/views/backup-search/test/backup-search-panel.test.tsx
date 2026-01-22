@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
@@ -16,18 +17,18 @@ import { useBackupSearchStore } from 'store/backup-search/store';
 import { DeletedMessageFromAPI } from 'types/index.d';
 import { BackupSearchPanel } from 'views/backup-search/parts/backup-search-panel';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useParams: vi.fn()
 }));
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getFolder: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	getFolder: vi.fn()
 }));
 
 function mockItemIdParam(itemId: string | undefined): void {
-	(useParams as jest.Mock).mockReturnValue({ itemId });
+	(useParams as Mock).mockReturnValue({ itemId });
 }
 
 function setStoredMessages(storedMessages: DeletedMessageFromAPI[]): void {
@@ -51,7 +52,7 @@ function aDeletedMessageWith(overrides: Partial<DeletedMessageFromAPI>): Deleted
 
 describe('Backup search panel', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	it('shows fallback title and description without itemId param', () => {
@@ -77,7 +78,7 @@ describe('Backup search panel', () => {
 		mockItemIdParam(testMessageId);
 		const generateFolder1 = generateFolder({ name: 'Inbox' });
 
-		(getFolder as jest.Mock).mockReturnValue(generateFolder1);
+		(getFolder as Mock).mockReturnValue(generateFolder1);
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,
@@ -108,7 +109,7 @@ describe('Backup search panel', () => {
 	it('handle message details renders with unknown folder id', () => {
 		const testMessageId = '1';
 		mockItemIdParam(testMessageId);
-		(getFolder as jest.Mock).mockReturnValue(undefined);
+		(getFolder as Mock).mockReturnValue(undefined);
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,

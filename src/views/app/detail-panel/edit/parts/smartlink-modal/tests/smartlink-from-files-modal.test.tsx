@@ -20,18 +20,20 @@ import { generateEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 
 describe('SmartlinkFromFilesModal', () => {
-	const mockOnClose = jest.fn();
+	const mockOnClose = vi.fn();
 	const fileNode1: FileNode = {
 		id: '1',
 		name: 'file1.txt',
 		size: 5000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	};
 	const fileNode2: FileNode = {
 		id: '2',
 		name: 'file2.txt',
 		size: 5000,
-		mime_type: faker.system.mimeType()
+		mime_type: faker.system.mimeType(),
+		__typename: 'File'
 	};
 
 	it('renders modal with header, text, and footer buttons', () => {
@@ -79,13 +81,13 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('in richText mode', () => {
 		it('correctly adds the smartlink url before the signature', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue({ url: 'url1' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			const getLinkSpy = vi.fn().mockResolvedValue({ url: 'url1' });
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 
@@ -133,16 +135,16 @@ describe('SmartlinkFromFilesModal', () => {
 			expect(errorSnackbar).toBeInTheDocument();
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -200,16 +202,16 @@ describe('SmartlinkFromFilesModal', () => {
 	});
 	describe('in plainText mode', () => {
 		it('correctly adds multiple smartlink urls at the end of the document', async () => {
-			const getLinkSpy = jest
+			const getLinkSpy = vi
 				.fn()
 				.mockResolvedValueOnce({ url: 'url1' })
 				.mockResolvedValueOnce({ url: 'url2' });
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 
 			createSoapAPIInterceptor('SaveDraft');
@@ -246,13 +248,13 @@ describe('SmartlinkFromFilesModal', () => {
 
 	describe('on api failure', () => {
 		it('shows error snackbar and closes on API failure', async () => {
-			const getLinkSpy = jest.fn().mockRejectedValue(new Error('API failure'));
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			const getLinkSpy = vi.fn().mockRejectedValue(new Error('API failure'));
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 
@@ -278,13 +280,13 @@ describe('SmartlinkFromFilesModal', () => {
 		});
 
 		it('handles missing public link URL', async () => {
-			const getLinkSpy = jest.fn().mockResolvedValue(null);
-			useIntegratedFunction.mockImplementation((integratedFunctionId) => {
+			const getLinkSpy = vi.fn().mockResolvedValue(null);
+			useIntegratedFunction.mockImplementation((integratedFunctionId: any) => {
 				if (integratedFunctionId === 'get-link') {
 					return [getLinkSpy, true];
 				}
 
-				return [jest.fn(), true];
+				return [vi.fn(), true];
 			});
 			createSoapAPIInterceptor('SaveDraft');
 

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Tooltip } from '@zextras/carbonio-design-system';
 
 import { HeaderNavigationActionItem } from 'hooks/use-preview-header-navigation';
 
@@ -15,12 +15,11 @@ export const NavigationIconButton = ({
 	item: HeaderNavigationActionItem;
 }): React.JSX.Element => (
 	<Tooltip label={item.tooltipLabel}>
-		<IconButton
+		<Button
 			onClick={item.action}
-			customSize={{
-				iconSize: 'medium',
-				paddingSize: 'small'
-			}}
+			size="medium"
+			type="ghost"
+			color={'gray0'}
 			disabled={item.disabled}
 			icon={item.icon}
 		/>

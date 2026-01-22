@@ -15,18 +15,23 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map, some } from 'lodash';
+import { filter, map, partition, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
+import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
+import {
+	isValidFileNode,
+	useUploadFromFiles,
+	UseUploadFromFilesResult
+} from './edit-utils-hooks/use-upload-from-files';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
-import { useKeepOrDiscardDraft } from './parts/delete-draft';
-import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
+import { EditViewFooter } from './parts/edit-view-footer';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { OptionsDropdown } from './parts/options-dropdown';
@@ -34,6 +39,10 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
+import { DraftTrashedEvent } from '../../../../event-bus/events/draft-trashed';
+import { useEventSubscribe } from '../../../../event-bus/use-event-subscribe';
+import { isFulfilled } from '../../../../helpers/promises';
+import { useEditorIsDirty } from '../../../../store/editor/hooks/statuses';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
@@ -50,16 +59,15 @@ import {
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
-	useEditorDraftSaveProcessStatus,
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
-	useEditorDid,
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
-	useEditorRecipients
+	useEditorRecipients,
+	useEditorDid
 } from 'store/editor';
 import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
 import { isValidEmail } from 'views/search/parts/utils';
@@ -88,6 +96,7 @@ function evaluateSendDisabledReason(
 	return sendDisabledReason;
 }
 
+const MemoizedFooter = memo(EditViewFooter);
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -141,7 +150,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	const { did: draftId } = useEditorDid(editorId);
+	const isDirty = useEditorIsDirty(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
@@ -150,6 +159,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
+	const { did: draftId } = useEditorDid(editorId);
+	const subscribeBusEvent = useEventSubscribe();
 
 	const {
 		recipients: { to, cc, bcc }
@@ -159,18 +170,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[bcc, cc, to]
 	);
 
-	useEffect(() => {
-		if (!draftId) saveDraft();
-	}, [draftId, saveDraft]);
-
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
-	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
-	const keepOrDiscardDraft = useKeepOrDiscardDraft();
-
+	// Check for SMiME enablement
 	useEffect(() => {
 		if (!isCarbonioCE) {
 			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
@@ -195,6 +200,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[closeController]
 	);
 
+	// Subscribe to draft deletion events to close the edit view when the draft is deleted elsewhere
+	useEffect(() => {
+		subscribeBusEvent(DraftTrashedEvent.EventName, (details) => {
+			if (details.draftId === draftId) {
+				close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
+			}
+		});
+	}, [close, draftId, subscribeBusEvent]);
+
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
 	}, [saveDraft]);
@@ -203,22 +217,24 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		ref,
 		() => ({
 			closeEditView: (): void => {
-				if (!draftId) {
-					return;
+				/**
+				 * If the editor is modified, we need to save the draft before closing the editor
+				 * Otherwise, we can just delete the editor
+				 */
+				if (isDirty) {
+					saveDraft({
+						onComplete: () => {
+							deleteEditor({ id: editorId });
+						}
+					});
+				} else {
+					deleteEditor({ id: editorId });
 				}
 
-				keepOrDiscardDraft({
-					onConfirm: (): void => {
-						saveDraft();
-						deleteEditor({ id: editorId });
-						close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
-					},
-					draftId,
-					editorId
-				});
+				close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
 			}
 		}),
-		[close, draftId, editorId, keepOrDiscardDraft, saveDraft]
+		[close, editorId, isDirty, saveDraft]
 	);
 
 	const onSendCountdownTick = useCallback(
@@ -282,33 +298,103 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const processDragOver = (event: React.DragEvent): void => {
-		const eventType = event.dataTransfer?.types;
-		// Only show drop zone for file attachments, not for text, contacts, or other content
-		if (eventType?.includes('contact') || !eventType?.includes('Files')) {
-			setDropZoneEnabled(false);
-			return;
-		}
+	const { addUploadedAttachment, savedStandardAttachments } = useEditorAttachments(editorId);
 
-		event.preventDefault();
-		setDropZoneEnabled(true);
-	};
+	const onUploadFromFilesComplete = useCallback(
+		(filesNodes: UseUploadFromFilesResult) => {
+			filesNodes.forEach((filesNode) => {
+				isFulfilled(filesNode) &&
+					addUploadedAttachment({
+						attachmentId: filesNode.value.attachmentId,
+						fileName: filesNode.value.fileName,
+						contentType: filesNode.value.contentType,
+						size: filesNode.value.size
+					});
+			});
+		},
+		[addUploadedAttachment]
+	);
 
-	const handleDragOver = useCallback((event: React.DragEvent) => processDragOver(event), []);
-	const handleEditorDragOver = useCallback((event: DragEvent) => {
-		const reactEvent = {
-			...event,
-			preventDefault: () => event.preventDefault(),
-			dataTransfer: event.dataTransfer
-		} as unknown as React.DragEvent<HTMLElement>;
-		processDragOver(reactEvent);
-	}, []);
+	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
+		onComplete: onUploadFromFilesComplete
+	});
+
+	const processDragOver = useCallback(
+		(event: React.DragEvent): void => {
+			const eventType = event.dataTransfer?.types;
+			// Only show drop zone for file attachments, not for text, contacts, or other content
+			if (
+				eventType?.includes('contact') ||
+				(!eventType?.includes('Files') &&
+					(!eventType?.includes('mail-attachment') || !isUploadFromFiles))
+			) {
+				setDropZoneEnabled(false);
+				return;
+			}
+
+			event.preventDefault();
+			setDropZoneEnabled(true);
+		},
+		[isUploadFromFiles]
+	);
+
+	const handleDragOver = useCallback(
+		(event: React.DragEvent) => processDragOver(event),
+		[processDragOver]
+	);
+	const handleEditorDragOver = useCallback(
+		(event: DragEvent) => {
+			const reactEvent = {
+				...event,
+				preventDefault: () => event.preventDefault(),
+				dataTransfer: event.dataTransfer
+			} as unknown as React.DragEvent<HTMLElement>;
+			processDragOver(reactEvent);
+		},
+		[processDragOver]
+	);
+
+	const { addFilesFromFiles } = useFilesAttachmentOrSmartlink({
+		editorId,
+		onUploadFiles: uploadFromFiles
+	});
 
 	// TODO complete with new attachment management
 	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
+
+			if (isUploadFromFiles && event.dataTransfer?.types.includes('mail-attachment')) {
+				try {
+					const data = event.dataTransfer.getData('mail-attachment');
+					if (data) {
+						const parsedData = JSON.parse(data);
+						if (Array.isArray(parsedData) && parsedData.length > 0) {
+							const validatedFileNodes = parsedData.filter(isValidFileNode);
+							const [files, folder] = partition(
+								validatedFileNodes,
+								(fileNode) => fileNode.__typename === 'File'
+							);
+							if (folder.length > 0) {
+								createSnackbar({
+									key: `warning-on-folder-attachment`,
+									severity: 'warning',
+									label: t(
+										'message.snackbar.folderAttachmentNotSupported',
+										'Folder attachments are not supported and were not added'
+									),
+									hideButton: true
+								});
+							}
+							addFilesFromFiles(files);
+							return;
+						}
+					}
+				} catch (error) {
+					console.error('Failed to parse mail-attachment data:', error);
+				}
+			}
 			const fileList = event?.dataTransfer?.files;
 			if (!fileList) {
 				return;
@@ -317,7 +403,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			const files = buildArrayFromFileList(fileList);
 			addLocalFiles(files);
 		},
-		[addLocalFiles]
+		[addFilesFromFiles, addLocalFiles, createSnackbar, isUploadFromFiles]
 	);
 
 	const handleDragLeave = useCallback((event: DragEvent): void => {
@@ -327,16 +413,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const flexStart = 'flex-start';
 
-	const { savedStandardAttachments } = useEditorAttachments(editorId);
-
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
 				onError: onSendError
 			});
+			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 		};
 		checkSubjectAndAttachment({
 			editorId,
@@ -517,7 +601,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		},
 		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
 	);
-	const sendDisabled = !sendAllowedStatus?.allowed || !draftId || invalidRecipientsPresent;
+
+	const onDraftDeleted = useCallback((): void => {
+		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
+	}, [close]);
+
+	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
@@ -525,88 +614,92 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 
 	return (
-		<Container
-			data-testid={'edit-view-editor'}
-			mainAlignment={flexStart}
-			height={'fit'}
-			crossAlignment={flexStart}
-			padding={{ all: 'large' }}
-			background={'gray5'}
-			onDragOver={handleDragOver}
-		>
-			{dropZoneEnabled && (
-				<DropZoneAttachment
-					onDragOverEvent={handleDragOver}
-					onDropEvent={handleDrop}
-					onDragLeaveEvent={handleDragLeave}
-				/>
-			)}
-			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
-				{/* Header start */}
+		<Container flexGrow={1} height="100%" mainAlignment={flexStart} crossAlignment={flexStart}>
+			<Container
+				data-testid={'edit-view-editor'}
+				mainAlignment={flexStart}
+				flexGrow={1}
+				crossAlignment={flexStart}
+				padding={{ horizontal: 'large', top: 'large', bottom: 'none' }}
+				background={'gray5'}
+				style={{ overflowY: 'scroll' }}
+				onDragOver={handleDragOver}
+			>
+				{dropZoneEnabled && (
+					<DropZoneAttachment
+						onDragOverEvent={handleDragOver}
+						onDropEvent={handleDrop}
+						onDragLeaveEvent={handleDragLeave}
+					/>
+				)}
+				<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
+					{/* Header start */}
 
-				<GapRow
-					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
-					orientation="horizontal"
-					width="fill"
-					gap={'medium'}
-				>
-					{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
+					<GapRow
+						mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
+						orientation="horizontal"
+						width="fill"
+						gap={'medium'}
+					>
+						{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
 
-					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
-						<MemoizedAddAttachmentsDropdown editorId={editorId} />
-						<MemoizedChangeSignaturesDropdown editorId={editorId} />
-						<MemoizedOptionsDropdown
-							editorId={editorId}
-							onSmimeOptionChange={(isSmimeSelected: boolean): void =>
-								isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
-							}
-							onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
-								isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
-							}
-							isSmimeEnabled={isSmimeEnabled}
-						/>
-						<Tooltip
-							label={saveDraftAllowedStatus?.reason}
-							disabled={saveDraftAllowedStatus?.allowed}
-						>
-							<Button
-								data-testid="BtnSaveMail"
-								type="outlined"
-								onClick={onSaveClick}
-								label={`${t('label.save', 'Save')}`}
-								disabled={!saveDraftAllowedStatus?.allowed}
+						<GapRow mainAlignment={'flex-end'} gap={'medium'} padding={{ top: 'small' }}>
+							<MemoizedAddAttachmentsDropdown editorId={editorId} />
+							<MemoizedChangeSignaturesDropdown editorId={editorId} />
+							<MemoizedOptionsDropdown
+								editorId={editorId}
+								onSmimeOptionChange={(isSmimeSelected: boolean): void =>
+									isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
+								}
+								onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
+									isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
+								}
+								isSmimeEnabled={isSmimeEnabled}
 							/>
-						</Tooltip>
-						<EditViewSendButtons
-							onSendLater={onSendLaterClick}
-							onSendNow={onSendClick}
-							disabled={sendDisabled}
-							tooltip={sendDisabledReason ?? ''}
-						/>
+							<Tooltip
+								label={saveDraftAllowedStatus?.reason}
+								disabled={saveDraftAllowedStatus?.allowed}
+							>
+								<Button
+									data-testid="BtnSaveMail"
+									type="outlined"
+									onClick={onSaveClick}
+									label={`${t('label.save', 'Save')}`}
+									disabled={!saveDraftAllowedStatus?.allowed}
+								/>
+							</Tooltip>
+							<EditViewSendButtons
+								onSendLater={onSendLaterClick}
+								onSendNow={onSendClick}
+								disabled={sendDisabled}
+								tooltip={sendDisabledReason ?? ''}
+							/>
+						</GapRow>
 					</GapRow>
-				</GapRow>
 
-				{/* Header end */}
+					{/* Header end */}
 
-				<SendToYourselfWarningBanner editorId={editorId} />
-				<GapContainer
-					mainAlignment={flexStart}
-					crossAlignment={flexStart}
-					background={'white'}
-					padding={{ all: 'small' }}
-					gap={'small'}
-				>
-					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<MemoizedRecipientsRows editorId={editorId} />
-					</Container>
-					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<MemoizedSubjectRow editorId={editorId} />
-					</Container>
-					<EditAttachmentsBlock editorId={editorId} />
-					<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
-					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
+					<SendToYourselfWarningBanner editorId={editorId} />
+					<GapContainer
+						mainAlignment={flexStart}
+						crossAlignment={flexStart}
+						background={'gray6'}
+						padding={{ all: 'small' }}
+						gap={'small'}
+						height={'fill'}
+					>
+						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+							<MemoizedRecipientsRows editorId={editorId} />
+						</Container>
+						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+							<MemoizedSubjectRow editorId={editorId} />
+						</Container>
+						<EditAttachmentsBlock editorId={editorId} />
+						<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
+					</GapContainer>
 				</GapContainer>
-			</GapContainer>
+			</Container>
+			<MemoizedFooter editorId={editorId} onDraftDeleted={onDraftDeleted} />
 		</Container>
 	);
 });

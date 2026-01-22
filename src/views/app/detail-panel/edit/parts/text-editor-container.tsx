@@ -8,10 +8,10 @@ import React, { FC } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
+import { PlainTextEditorContainer } from './plain-text-editor-container';
+import { RichTextEditorContainer } from './rich-text-editor-container';
 import { useEditorIsRichText } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
-import { PlainTextEditorContainer } from 'views/app/detail-panel/edit/parts/plain-text-editor-container';
-import { RichTextEditorContainer } from 'views/app/detail-panel/edit/parts/rich-text-editor-container';
 
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];
@@ -21,12 +21,15 @@ export type TextEditorContainerProps = {
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({ editorId, onDragOver }) => {
 	const { isRichText } = useEditorIsRichText(editorId);
 
+	const containerHeight = isRichText ? '100%' : 'fit';
+
 	return (
 		<Container
-			height="fit"
-			padding={{ all: 'small' }}
+			data-testid={'TextEditorContainer'}
+			height={containerHeight}
 			background={'gray6'}
-			crossAlignment="flex-end"
+			crossAlignment="flex-start"
+			mainAlignment="flex-start"
 		>
 			{isRichText ? (
 				<RichTextEditorContainer editorId={editorId} onDragOver={onDragOver} />

@@ -109,7 +109,7 @@ describe('useMsgMoveToTrash', () => {
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {
-				const apiCallSpy = jest.fn();
+				const apiCallSpy = vi.fn();
 				createSoapAPIInterceptor<MsgActionRequest>('MsgAction').then(apiCallSpy);
 
 				const {
@@ -123,6 +123,29 @@ describe('useMsgMoveToTrash', () => {
 				});
 
 				expect(apiCallSpy).not.toHaveBeenCalled();
+			});
+
+			it('should call onActionComplete when provided after moving messages to trash', async () => {
+				const onActionComplete = vi.fn();
+				createSoapAPIInterceptor('MsgAction');
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgMoveToTrashFn, {
+					initialProps: [
+						{
+							ids: messagesId,
+							messageFolderId: FOLDERS.INBOX,
+							onActionComplete
+						}
+					]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(onActionComplete).toHaveBeenCalledWith(messagesId);
 			});
 		});
 	});

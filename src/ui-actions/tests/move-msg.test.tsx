@@ -7,23 +7,17 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { makeListItemsVisible, setupTest } from '@test-setup';
+import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
 import { MoveMessage } from 'ui-actions/move-msg';
-
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
-}));
 
 describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -37,7 +31,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -49,7 +43,7 @@ describe('MoveMsg', () => {
 
 		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={jest.fn()} isRestore />
+				<MoveMessage folderId={sourceFolder} selectedIDs={msgIds} onClose={vi.fn()} isRestore />
 			);
 
 			setupTest(component);
@@ -64,7 +58,7 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -86,13 +80,12 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
 				{}
@@ -108,9 +101,6 @@ describe('MoveMsg', () => {
 
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
-
-			const mockCreateSnackbar = jest.fn((arg) => arg);
-			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -127,13 +117,12 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
@@ -159,12 +148,9 @@ describe('MoveMsg', () => {
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
+
 		it('should show an error snackbar when the API call fails ', async () => {
 			populateFoldersStore();
-
-			const mockCreateSnackbar = jest.fn((arg) => arg);
-
-			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			createSoapAPIInterceptor<MsgActionRequest, ErrorSoapBodyResponse>(
@@ -176,13 +162,12 @@ describe('MoveMsg', () => {
 				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
 
 			const { user } = setupTest(component);
-			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
@@ -201,11 +186,50 @@ describe('MoveMsg', () => {
 				await user.click(button);
 			});
 
-			expect(mockCreateSnackbar).toHaveBeenCalledWith(
-				expect.objectContaining({
-					label: 'Something went wrong, please try again'
-				})
+			expect(screen.getByText('Something went wrong, please try again')).toBeVisible();
+		});
+
+		it('should call the onMoveComplete callback when the move is successful', async () => {
+			const onMoveComplete = vi.fn();
+			populateFoldersStore();
+			const destinationFolder = FOLDERS.INBOX;
+			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+				action: {
+					id: msgIds.join(','),
+					op: 'move'
+				}
+			});
+
+			const component = (
+				<MoveMessage
+					folderId={sourceFolder}
+					selectedIDs={msgIds}
+					onClose={vi.fn()}
+					isRestore={false}
+					onMoveComplete={onMoveComplete}
+				/>
 			);
+
+			const { user } = setupTest(component);
+
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`,
+				{}
+			);
+
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
+
+			const button = screen.getByRole('button', {
+				name: /Move/
+			});
+
+			await act(async () => {
+				await user.click(button);
+			});
+
+			expect(onMoveComplete).toHaveBeenCalledWith(msgIds);
 		});
 	});
 });

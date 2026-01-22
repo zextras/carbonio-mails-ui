@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
@@ -21,7 +22,12 @@ export const ConversationMessagePreviewWrapper = ({
 	isExpanded: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
-	const { message, messageStatus } = useCompleteMessageOrFetch(convMessageId);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
+	const { message, messageStatus } = useCompleteMessageOrFetch({
+		messageId: convMessageId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
 	const navigate = useNavigate();
 
 	const { folderId } = useParams();

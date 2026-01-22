@@ -60,6 +60,8 @@ export type MessageListComponentProps = {
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
+	// callback to be executed after any action that moves messages (to trash, to folder, etc.)
+	onMessagesMoved?: (messagesIds: Array<string>) => void;
 };
 
 export const MessageListComponent = memo(function MessageListComponent({
@@ -71,6 +73,7 @@ export const MessageListComponent = memo(function MessageListComponent({
 	selectedIds,
 	folderId,
 	messageIds,
+	onMessagesMoved,
 	draggedIds,
 	isSearchModule,
 	isSelectModeOn,
@@ -110,7 +113,11 @@ export const MessageListComponent = memo(function MessageListComponent({
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
 				>
-					<MessagesMultipleSelectionActions ids={selectedIds} folderId={folderId} />
+					<MessagesMultipleSelectionActions
+						ids={selectedIds}
+						folderId={folderId}
+						onMessagesMoved={onMessagesMoved}
+					/>
 				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (

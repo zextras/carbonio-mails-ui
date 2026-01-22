@@ -6,16 +6,15 @@
 import React, { FC, memo, MouseEventHandler, useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { useShouldReplaceHistory } from '../../../../hooks/use-should-replace-history';
-import { EditViewActions } from 'constants/index';
+import { useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
 import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
+import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
@@ -42,12 +41,12 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const shouldReplaceHistory = useShouldReplaceHistory(completeMessage);
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
 		folderId
 	});
+
+	const editDraft = useMsgEditDraftFn(itemId, completeMessage.isScheduled, folderId);
 
 	const setAsRead = useMsgSetReadFn({
 		ids: [itemId],
@@ -56,34 +55,35 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		folderId
 	});
 
+	const markAsReadHandler = useMarkAsReadOnClick({
+		isRead: completeMessage.read,
+		action: setAsRead,
+		conditions: [completeMessage.isComplete ?? true]
+	});
+
 	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
-				setAsRead.canExecute() && setAsRead.execute();
-			}
+			markAsReadHandler();
 			navigate(`../message/${completeMessage.id}`, { replace: true });
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, navigate, setAsRead]
+		[completeMessage.id, markAsReadHandler, navigate]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}
-			const { id, isDraft } = completeMessage;
+			const { isDraft } = completeMessage;
 			if (isDraft) {
-				createEditBoard({
-					action: EditViewActions.EDIT_AS_DRAFT,
-					actionTargetId: id
-				});
+				editDraft.canExecute() && editDraft.execute();
 				return;
 			}
 			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
-		[previewOnSeparatedWindow, completeMessage]
+		[previewOnSeparatedWindow, completeMessage, editDraft]
 	);
 
 	return (
@@ -110,14 +110,20 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					/>
 				</MessageListItemActionWrapper>
 			) : (
-				<SearchMessageListItemCore
-					completeMessage={completeMessage}
-					selected={selected}
-					selecting={selecting}
-					onSelect={onSelect}
-					index={index}
-					folderId={folderId}
-				/>
+				<Container
+					onClick={onClick}
+					onDoubleClick={onDoubleClick}
+					data-testid={`MessageListItemWithoutActions-${completeMessage.id}`}
+				>
+					<SearchMessageListItemCore
+						completeMessage={completeMessage}
+						selected={selected}
+						selecting={selecting}
+						onSelect={onSelect}
+						index={index}
+						folderId={folderId}
+					/>
+				</Container>
 			)}
 		</Container>
 	);

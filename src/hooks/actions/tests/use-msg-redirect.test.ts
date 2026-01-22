@@ -81,7 +81,7 @@ describe('useMsgRedirect', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Redirect e-mail`)).toBeVisible();
@@ -99,7 +99,7 @@ describe('useMsgRedirect', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Redirect e-mail`)).not.toBeInTheDocument();

@@ -16,10 +16,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { find, includes, isEmpty, reduce } from 'lodash';
+import { find, includes, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
@@ -114,7 +115,6 @@ export const SearchMessageListItemCore = ({
 		[completeMessage.tags, tagsFromStore]
 	);
 
-	const fragmentLabel = useMemo(() => ` - ${completeMessage.fragment}`, [completeMessage.fragment]);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
 		if (typeof completeMessage.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -133,14 +133,6 @@ export const SearchMessageListItemCore = ({
 	);
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-	const subject = useMemo(
-		() => completeMessage.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[completeMessage.subject, t]
-	);
-	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(completeMessage.fragment) ? completeMessage.fragment : subject),
-		[subject, completeMessage.fragment]
-	);
 
 	const scheduledTime = useMemo(
 		() =>
@@ -223,39 +215,11 @@ export const SearchMessageListItemCore = ({
 								</Padding>
 							</Tooltip>
 						)}
-						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-							<Row
-								wrap="nowrap"
-								takeAvailableSpace
-								mainAlignment="flex-start"
-								crossAlignment="baseline"
-							>
-								<Text
-									data-testid="Subject"
-									weight={textReadValues.weight}
-									color={completeMessage.subject ? 'text' : 'secondary'}
-								>
-									{subject}
-								</Text>
-
-								{!isEmpty(completeMessage.fragment) && (
-									<Row
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										padding={{ left: 'extrasmall' }}
-									>
-										<Text
-											data-testid="Fragment"
-											size="small"
-											color="secondary"
-											weight={textReadValues.weight}
-										>
-											{fragmentLabel}
-										</Text>
-									</Row>
-								)}
-							</Row>
-						</Tooltip>
+						<MessageSubjectRow
+							subject={completeMessage.subject}
+							read={completeMessage.read}
+							fragment={completeMessage.fragment}
+						/>
 					</Row>
 					<Row>
 						{completeMessage.urgent && (

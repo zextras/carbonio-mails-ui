@@ -10,8 +10,8 @@ import { screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { setupEditorStore } from '__test__/generators/editor-store';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/index.d';
 import {
 	TextEditorContainer,
@@ -20,7 +20,7 @@ import {
 
 // Mock the RichTextEditorContainer component
 // noinspection JSUnusedGlobalSymbols
-jest.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => ({
+vi.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => ({
 	RichTextEditorContainer: ({ editorId }: { editorId: string }): React.JSX.Element => (
 		<div data-testid="MailEditorWrapper">Composer with RichText for {editorId}</div>
 	)
@@ -56,13 +56,52 @@ describe('TextEditorContainer', () => {
 		expect(screen.getByTestId('MailEditorWrapper')).toBeInTheDocument();
 		expect(screen.getByText(`Composer with RichText for ${editor.id}`)).toBeInTheDocument();
 	});
+
+	it('should set container height to "100%" when in rich text mode', () => {
+		const editor = generateNewMessageEditor();
+		const editors: Array<MailsEditorV2> = [
+			{ ...editor, isRichText: true, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }
+		];
+		setupEditorStore({ editors });
+		setUpMocks();
+
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
+
+		const containerElement = screen.getByTestId('TextEditorContainer');
+		expect(containerElement).toBeInTheDocument();
+
+		expect(containerElement).toHaveStyle({ height: '100%' });
+	});
+
+	it('should set container height to "fit" when in plain text mode', () => {
+		const editor = generateNewMessageEditor();
+		const editors = [
+			{
+				...editor,
+				isRichText: false,
+				text: { plainText: 'PlainText', richText: '<p>RichText</p>' }
+			}
+		];
+		setupEditorStore({ editors });
+		setUpMocks();
+
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
+
+		const containerElement = screen.getByTestId('TextEditorContainer');
+		expect(containerElement).toBeInTheDocument();
+		expect(containerElement).toHaveStyle({ height: 'fit' });
+	});
 });
 
 const createMockTextEditorContainerProps = (
 	overrides: Partial<TextEditorContainerProps> = {}
 ): TextEditorContainerProps => ({
 	editorId: 'editor-123',
-	onDragOver: jest.fn(),
+	onDragOver: vi.fn(),
 	...overrides
 });
 

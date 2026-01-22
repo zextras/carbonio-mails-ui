@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { isEmpty } from 'lodash';
+
+import { INJECTED_DESCRIPTION_DECORATOR } from '../../../../../constants';
 import { Folder } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -27,3 +30,6 @@ export const getFolderPath = (
 			.join(' / ') ?? ''
 	);
 };
+
+export const showFragment = (fragment: string | undefined): boolean =>
+	!isEmpty(fragment) && !fragment?.includes(INJECTED_DESCRIPTION_DECORATOR);

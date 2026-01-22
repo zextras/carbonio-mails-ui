@@ -7,23 +7,23 @@ import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { isDraft, isSpam } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetSpamFunctionsParameter = {
 	ids: Array<string>;
-	shouldReplaceHistory: boolean;
 	folderId: string;
+	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
 export const useConvSetSpamFn = ({
 	ids,
-	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvSetSpamFunctionsParameter): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
@@ -33,13 +33,13 @@ export const useConvSetSpamFn = ({
 		[folderId]
 	);
 
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 	const execute = useCallback((): void => {
 		let notCanceled = true;
 
 		const infoSnackbar = (hideButton = false): void => {
 			createSnackbar({
-				key: `trash-${ids}`,
+				key: `spam-${ids}`,
 				replace: true,
 				severity: 'info',
 				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
@@ -58,35 +58,38 @@ export const useConvSetSpamFn = ({
 					operation: 'spam',
 					ids
 				}).then((res) => {
-					if (!('Fault' in res) && shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
-					}
 					if ('Fault' in res) {
 						createSnackbar({
-							key: `trash-${ids}`,
+							key: `spam-${ids}`,
 							replace: true,
 							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});
+						return;
+					}
+
+					onActionComplete && onActionComplete(ids);
+					if (currentConversation && ids.includes(currentConversation.id)) {
+						closeConversationPanel();
 					}
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, navigate, shouldReplaceHistory, t]);
+	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvSetSpamDescriptor = ({
 	ids,
-	shouldReplaceHistory,
-	folderId
+	folderId,
+	onActionComplete
 }: ConvSetSpamFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvSetSpamFn({
 		ids,
-		shouldReplaceHistory,
-		folderId
+		folderId,
+		onActionComplete
 	});
 	const [t] = useTranslation();
 	return {
