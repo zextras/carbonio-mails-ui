@@ -207,7 +207,7 @@ describe.each`
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
 					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent('label.no_subject_with_tags');
+					expect(subjectLabel).toHaveTextContent('<No Subject>');
 				} else {
 					expect(subjectLabel).not.toBeInTheDocument();
 				}
