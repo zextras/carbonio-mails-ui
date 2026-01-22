@@ -36,8 +36,10 @@ const getTranslatedLabelFromValue = (
 	return value;
 };
 
-const isValid = (val: string | undefined, options: Record<string, { value: string }>): boolean =>
-	!!val && Object.values(options).some((opt) => opt.value === val);
+const isValid = (
+	val: string | undefined,
+	options: Record<string, { value: string | undefined }>
+): boolean => !!val && Object.values(options).some((opt) => opt.value === val);
 
 export const SortAndFilterHeaderComponent = ({
 	folderId
@@ -136,7 +138,7 @@ export const SortAndFilterHeaderComponent = ({
 				<Padding right="medium" />
 				<Tooltip
 					placement="top"
-					label={t('label.reset_to_sort_by_date', 'Reset to “Sort by: Date”')}
+					label={t('label.reset_sort_and_filter_to_default', 'Reset to default')}
 				>
 					<Button
 						type="ghost"

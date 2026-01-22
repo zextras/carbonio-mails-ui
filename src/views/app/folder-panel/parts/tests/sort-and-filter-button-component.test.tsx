@@ -15,6 +15,11 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
 
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	...vi.importActual('@zextras/carbonio-ui-soap-lib'),
+	soapFetchV2: vi.fn().mockResolvedValue({ Body: {} })
+}));
+
 describe('Sort and filter button component', () => {
 	it('should render a dropdown wrapper with a visible button', async () => {
 		setupTest(<SortAndFilterButtonComponent folderId={FOLDER_ID} />);
@@ -33,18 +38,19 @@ describe('Sort and filter button component', () => {
 		await user.click(screen.getByTestId('icon: AzListOutline'));
 
 		expect(screen.getByTestId('dropdown-popper-list')).toBeVisible();
-		await user.click(screen.getByText('Important'));
+		await user.click(screen.getByText('All (Default)'));
 		expect(screen.getByTestId('dropdown-popper-list')).toBeVisible();
 	});
 
 	const FILTER_OPTION = [
+		{ label: 'All (Default)', value: undefined },
 		{ label: 'Unread', value: 'read' },
 		{ label: 'Important', value: 'priority' },
 		{ label: 'Flagged', value: 'flag' },
 		{ label: 'Attachment', value: 'attach' }
 	];
 	const SORT_OPTION = [
-		{ label: 'Date', value: 'date' },
+		{ label: 'Date (Default)', value: 'date' },
 		{ label: 'Subject', value: 'subj' },
 		{ label: 'From', value: 'name' },
 		{ label: 'Size', value: 'size' }
@@ -78,13 +84,15 @@ describe('Sort and filter button component', () => {
 			await user.click(screen.getByTestId(icon));
 			await user.click(screen.getByText(filterLabel));
 
+			const expectedPref = filterValue
+				? `${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
+				: `${FOLDER_ID}:${sortValue}-${directionValue}`;
+
 			expect(soapFetchV2).toHaveBeenCalledWith(
 				'ModifyPrefs',
 				expect.objectContaining({
 					_attrs: {
-						zimbraPrefSortOrder: expect.stringContaining(
-							`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
-						)
+						zimbraPrefSortOrder: expect.stringContaining(expectedPref)
 					}
 				})
 			);
