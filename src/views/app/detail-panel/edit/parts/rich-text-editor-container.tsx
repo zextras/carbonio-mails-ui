@@ -152,24 +152,24 @@ export const RichTextEditorContainer = ({
 				const url = inlineAttachment.downloadServiceUrl;
 				if (!url) return;
 				// get the updated image in order to avoid TinyMCE caching issues
-				const blob = await fetch(url).then((r) => r.blob());
-				const objectUrl = URL.createObjectURL(blob);
+				// const blob = await fetch(url).then((r) => r.blob());
+				// const objectUrl = URL.createObjectURL(blob);
 
 				const img = `&nbsp;<img alt="Inline attachment"
                 data-pnsrc="${inlineAttachment.cidUrl}"
                 data-mce-src="${inlineAttachment.cidUrl}"
-                src="${objectUrl}" /><br/>`;
+                src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
 
 				editor?.activeEditor?.insertContent(img);
 			};
 
-			const handleSaveComplete = (inlineAttachment?: InlineAttachment): void => {
+			const addAttachmentInEditor = (inlineAttachment?: InlineAttachment): void => {
 				const editor = tinymce;
 				inlineAttachment && insertSingleInlineAttachment(editor, inlineAttachment);
 			};
 
 			addInlineAttachments(files, {
-				onSaveComplete: handleSaveComplete
+				onAttachmentUploadComplete: addAttachmentInEditor
 			});
 		},
 		[addInlineAttachments]

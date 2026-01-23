@@ -6,7 +6,7 @@
 import { useCallback } from 'react';
 
 import { t } from '@zextras/carbonio-shell-ui';
-import { omit, reject } from 'lodash';
+import { reject } from 'lodash';
 
 import {
 	uploadAttachmentsApi,
@@ -63,8 +63,8 @@ type EditorAttachmentHook = {
 	}) => UnsavedAttachment;
 	addInlineAttachments: (
 		files: Array<File>,
-		options?: UploadCallbacks & {
-			onSaveComplete?: (inlineAttachment?: {
+		options?: {
+			onAttachmentUploadComplete?: (inlineAttachment?: {
 				contentId: string | undefined;
 				cidUrl: string | undefined;
 				downloadServiceUrl: string | undefined;
@@ -234,8 +234,8 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 
 	const addInlineAttachments = (
 		files: Array<File>,
-		callbacks?: UploadCallbacks & {
-			onSaveComplete?: (inlineAttachment?: {
+		callbacks?: {
+			onAttachmentUploadComplete?: (inlineAttachment?: {
 				contentId: string | undefined;
 				cidUrl: string | undefined;
 				downloadServiceUrl: string | undefined;
@@ -246,7 +246,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			onUploadComplete: (file: File, uploadId: string, attachmentId: string): void => {
 				const editor = getEditor({ id: editorId });
 				if (!editor) {
-					callbacks?.onSaveComplete && callbacks.onSaveComplete();
+					callbacks?.onAttachmentUploadComplete && callbacks.onAttachmentUploadComplete();
 					return;
 				}
 				const contentId = `${uploadId}@carbonio`;
@@ -256,7 +256,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 					downloadServiceUrl: composeAttachmentDownloadUrlFromAttachmentId(attachmentId)
 				};
 
-				callbacks?.onSaveComplete && callbacks.onSaveComplete(inlineInfo);
+				callbacks?.onAttachmentUploadComplete && callbacks.onAttachmentUploadComplete(inlineInfo);
 			}
 		};
 
