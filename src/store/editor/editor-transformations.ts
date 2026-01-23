@@ -196,7 +196,7 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 									}
 								},
 								...savedInlineAttachment.map((inlineAttachment) => ({
-									ci: inlineAttachment.contentId,
+									ci: inlineAttachment.contentId && removeAngleBrackets(inlineAttachment.contentId),
 									ct: inlineAttachment.contentType,
 									attach: {
 										mp: [
@@ -209,7 +209,7 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 								})),
 								// keep this order saved -> unsaved
 								...unsavedInlineAttachment.map((inlineAttachment) => ({
-									ci: inlineAttachment.contentId,
+									ci: inlineAttachment.contentId && removeAngleBrackets(inlineAttachment.contentId),
 									ct: inlineAttachment.contentType,
 									attach: { aid: inlineAttachment.aid }
 								}))
