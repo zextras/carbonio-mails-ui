@@ -163,9 +163,13 @@ export const RichTextEditorContainer = ({
 				editor?.activeEditor?.insertContent(img);
 			};
 
-			const handleSaveComplete = (inlineAttachment?: InlineAttachment): void => {
+			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
 				const editor = tinymce;
-				inlineAttachment && insertSingleInlineAttachment(editor, inlineAttachment);
+				const insertPromises = inlineAttachments.map((inlineAttachment) =>
+					insertSingleInlineAttachment(editor, inlineAttachment)
+				);
+
+				Promise.all(insertPromises).catch(console.error);
 			};
 
 			addInlineAttachments(files, {
