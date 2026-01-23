@@ -152,7 +152,7 @@ describe('useEditorAttachments', () => {
 			await waitFor(() => {
 				expect(onSaveComplete).toHaveBeenCalledWith([
 					{
-						contentId,
+						contentId: `<${contentId}>`,
 						cidUrl: `cid:${contentId}`,
 						downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
 					}
