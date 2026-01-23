@@ -151,7 +151,7 @@ const getAttachmentsFromParts = (mailPart: Array<MailMessagePart>): Attachments 
 						? results.blockAttachments.push(item)
 						: results.inlineAttachments.push(item);
 					// Not referenced in HTML but marked inline -> change to attachment
-					``;
+					// TODO: double check this condition
 				} else if (item.cd === 'inline' && item.filename) {
 					results.blockAttachments.push(item);
 				} else if (item.contentType === 'message/rfc822' && !item.filename) {
