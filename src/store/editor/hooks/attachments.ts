@@ -14,12 +14,16 @@ import {
 	UploadCallbacks
 } from 'api/upload-attachments-api';
 import { TIMEOUTS } from 'constants/index';
-import { composeAttachmentDownloadUrlFromUploadID as composeAttachmentDownloadUrlFromAttachmentId } from 'helpers/attachments';
+import { composeAttachmentDownloadUrl } from 'helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
+import {
+	filterUnsavedAttachmentsByUploadId,
+	getSavedInlineAttachmentsByContentId
+} from 'store/editor/editor-utils';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
 import { getEditor } from 'store/editor/hooks/editors';
-import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
@@ -64,11 +68,13 @@ type EditorAttachmentHook = {
 	addInlineAttachments: (
 		files: Array<File>,
 		options?: UploadCallbacks & {
-			onSaveComplete?: (inlineAttachment?: {
-				contentId: string | undefined;
-				cidUrl: string | undefined;
-				downloadServiceUrl: string | undefined;
-			}) => void;
+			onSaveComplete?: (
+				inlineAttachments: Array<{
+					contentId: string | undefined;
+					cidUrl: string | undefined;
+					downloadServiceUrl: string | undefined;
+				}>
+			) => void;
 		}
 	) => Array<UnsavedAttachment>;
 	removeSavedAttachment: (partName: string) => void;
@@ -165,14 +171,36 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	const addAndSaveGenericAttachments = (
 		files: Array<File>,
 		areInline: boolean,
-		callbacks?: UploadAttachmentsOptions
+		callbacks?: UploadAttachmentsOptions & {
+			onSaveComplete?: (savedContentIds: Array<string>) => void;
+		}
 	): Array<UnsavedAttachment> => {
 		const customizedCallbacks = {
 			...callbacks,
 			onUploadsEnd: (completedUploadsId: Array<string>, failedUploadsId: Array<string>): void => {
 				const editor = getEditor({ id: editorId });
 				if (editor) {
-					debouncedSaveDraft(editorId);
+					const uploadedUnsavedAttachments = filterUnsavedAttachmentsByUploadId(
+						editor.unsavedAttachments,
+						completedUploadsId
+					);
+
+					const uploadedContentIds: Array<string> = [];
+					uploadedUnsavedAttachments.forEach((uploadedUnsavedAttachment) => {
+						if (
+							uploadedUnsavedAttachment.isInline === areInline &&
+							uploadedUnsavedAttachment.contentId
+						) {
+							uploadedContentIds.push(uploadedUnsavedAttachment.contentId);
+						}
+					});
+
+					const saveDraftOptions: SaveDraftOptions = {
+						onComplete: (): void => {
+							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
+						}
+					};
+					debouncedSaveDraft(editorId, saveDraftOptions);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -235,26 +263,36 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	const addInlineAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks & {
-			onSaveComplete?: (inlineAttachment?: {
-				contentId: string | undefined;
-				cidUrl: string | undefined;
-				downloadServiceUrl: string | undefined;
-			}) => void;
+			onSaveComplete?: (
+				inlineAttachments: Array<{
+					contentId: string | undefined;
+					cidUrl: string | undefined;
+					downloadServiceUrl: string | undefined;
+				}>
+			) => void;
 		}
 	): Array<UnsavedAttachment> => {
 		const customizedCallbacks = {
-			onUploadComplete: (file: File, uploadId: string, attachmentId: string): void => {
+			...omit(callbacks, 'onSaveComplete'),
+			onSaveComplete: (savedContentIds: Array<string>): void => {
 				const editor = getEditor({ id: editorId });
 				if (!editor) {
-					callbacks?.onSaveComplete && callbacks.onSaveComplete();
+					callbacks?.onSaveComplete && callbacks.onSaveComplete([]);
 					return;
 				}
-				const contentId = `${uploadId}@carbonio`;
-				const inlineInfo = {
-					contentId,
-					cidUrl: contentId ? (composeCidUrlFromContentId(contentId) ?? undefined) : undefined,
-					downloadServiceUrl: composeAttachmentDownloadUrlFromAttachmentId(attachmentId)
-				};
+
+				const savedInlineAttachments = getSavedInlineAttachmentsByContentId(
+					savedContentIds,
+					editor.savedAttachments
+				);
+
+				const inlineInfo = savedInlineAttachments.map((savedInlineAttachment) => ({
+					contentId: savedInlineAttachment.contentId,
+					cidUrl: savedInlineAttachment.contentId
+						? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
+						: undefined,
+					downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
+				}));
 
 				callbacks?.onSaveComplete && callbacks.onSaveComplete(inlineInfo);
 			}
