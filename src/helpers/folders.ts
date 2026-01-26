@@ -222,7 +222,7 @@ export const isInboxSubfolder = ({
 
 /**
  * Tells if a folder is a subfolder of the sent folder
- * @param folderId
+ * @param folder
  */
 export const isSentOrItsSubfolder = (folder: Folder | undefined): boolean => {
 	if (!folder) {
@@ -236,6 +236,24 @@ export const isSentOrItsSubfolder = (folder: Folder | undefined): boolean => {
 	}
 
 	return path.toLowerCase().startsWith('/sent/') || path.toLowerCase() === '/sent';
+};
+
+/**
+ * Tells if a folder is a subfolder of the trash folder
+ * @param folder
+ */
+export const isTrashOrItsSubfolder = (folder: Folder | undefined): boolean => {
+	if (!folder) {
+		return false;
+	}
+
+	const path = folder.absFolderPath;
+
+	if (!path) {
+		return false;
+	}
+
+	return path.toLowerCase().startsWith('/trash/') || path.toLowerCase() === '/trash';
 };
 
 /**

@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from 'views/app/folder-panel/parts/participants-name';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type SearchConversationListItemCoreProps = {
@@ -133,7 +133,7 @@ export const SearchConversationListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsName item={conversation} textValues={textReadValues} />
+					<ParticipantsString item={conversation} />
 					<RowInfo item={conversation} tags={tags} />
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">

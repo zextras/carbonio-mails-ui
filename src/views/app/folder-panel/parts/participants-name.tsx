@@ -5,26 +5,18 @@
  */
 import React, { useMemo } from 'react';
 
-import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { Row, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { reduce, trimStart, uniqBy } from 'lodash';
+import { every, filter, find, map, reduce, trimStart, uniq, uniqBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import { participantToString } from '../../../../commons/utils';
+import { isConversation } from '../../../../helpers/messages';
+import { getConversationMessages } from '../../../../store/emails/store';
 import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
-import { participantToString } from 'commons/utils';
-import {
-	IncompleteMessage,
-	NormalizedConversation,
-	Participant,
-	TextReadValuesProps
-} from 'types/index.d';
-
-export type ParticipantsNameProps = {
-	item: NormalizedConversation | IncompleteMessage;
-	isSearchModule?: boolean;
-	textValues?: TextReadValuesProps;
-};
+import { MailMessage, NormalizedConversation, Participant } from 'types/index.d';
 
 function removeReplyToParticipants(
 	participants: Array<Participant> | undefined
@@ -33,87 +25,103 @@ function removeReplyToParticipants(
 	return participants.filter((p) => p.type !== ParticipantRole.REPLY_TO);
 }
 
-export const ParticipantsName = ({
-	item,
-	textValues,
-	isSearchModule = false
-}: ParticipantsNameProps): React.JSX.Element => {
+export type ParticipantRoleType = (typeof ParticipantRole)[keyof typeof ParticipantRole];
+
+const useParticipantRole = (item: MailMessage | NormalizedConversation): ParticipantRoleType => {
 	const account = useUserAccount();
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+	return useMemo(() => {
+		if (isConversation(item)) {
+			const me = filter(item.participants, ['address', account?.name]);
+			const iAmInFrom = !!find(me, ['type', ParticipantRole.FROM]);
+			const iAmInTo = !!find(me, ['type', ParticipantRole.TO]);
+			if (folderId) {
+				if (folderId === FOLDERS.INBOX) {
+					return ParticipantRole.FROM;
+				}
+				if (folderId === FOLDERS.SENT) {
+					return ParticipantRole.TO;
+				}
+				if (iAmInFrom && iAmInTo) {
+					return ParticipantRole.FROM;
+				}
+				if (iAmInFrom && !iAmInTo) {
+					return ParticipantRole.TO;
+				}
+			}
+			const messagesParents = map(getConversationMessages(item.id), 'parent');
+			const uniqParents = uniq(messagesParents);
+			const inDraftsOrSent = every(
+				uniqParents,
+				(id) => id === FOLDERS.DRAFTS || id === FOLDERS.SENT
+			);
+			const inInbox = every(uniqParents, (id) => id === FOLDERS.INBOX);
+			if (inDraftsOrSent) {
+				return ParticipantRole.TO;
+			}
+			if (inInbox) {
+				return ParticipantRole.FROM;
+			}
+			if (iAmInFrom && iAmInTo) {
+				return ParticipantRole.FROM;
+			}
+			if (iAmInFrom && !iAmInTo) {
+				return ParticipantRole.TO;
+			}
+			return ParticipantRole.FROM;
+		}
+		if (item.parent === FOLDERS.INBOX) {
+			return ParticipantRole.FROM;
+		}
+		if (item.parent === FOLDERS.DRAFTS || item.parent === FOLDERS.SENT) {
+			return ParticipantRole.TO;
+		}
+		return ParticipantRole.FROM;
+	}, [account?.name, folderId, item]);
+};
 
+const useParticipantsString = ({
+	item
+}: {
+	item: NormalizedConversation | MailMessage;
+}): string => {
+	const account = useUserAccount();
+	const [t] = useTranslation();
+
+	const participantRole = useParticipantRole(item);
 	const participantsWithoutReplyTo = removeReplyToParticipants(item.participants);
 
-	/*	const participantsString = useMemo(() => {
-		const participants = participantsWithoutReplyTo.filter((p) => {
-			if (isConversation(item)) return true;
-			if (
-				folderId !== FOLDERS.SENT &&
-				folderId !== FOLDERS.DRAFTS &&
-				!isSearchModule &&
-				!isSentOrItsSubfolder(folder)
-			)
-				return p.type === ParticipantRole.FROM; // Not sent or drafts
-			if (!isSearchModule && (isSentOrItsSubfolder(folder) || folderId === FOLDERS.SENT))
-				return p.type === ParticipantRole.TO; // sent
-			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
-			return true; // keep all
-		});
-		const meIndex = findIndex(participants, ['address', account?.name]);
-		if (meIndex >= 0) {
-			// swap index me will be at first
-			const activeParticipant = participants[0];
-			participants[0] = participants[meIndex];
-			participants[meIndex] = activeParticipant;
+	return useMemo(() => {
+		const activeParticipants = participantsWithoutReplyTo.filter((p) => p.type === participantRole);
+		const participantsToReduce = uniqBy(activeParticipants, (em) => em.address);
+		if (participantsToReduce.length === 0) {
+			return t('recipient.toField.missing', `[Empty 'To' Field]`);
 		}
-
-		return reduce(
-			uniqBy(participants, (em) => em.address),
-			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
-			''
-		);
-	}, [account, folder, folderId, isSearchModule, item, participantsWithoutReplyTo]); */
-
-	const participantsString = useMemo(() => {
-		const participants = participantsWithoutReplyTo.filter((p) => {
-			if (folderId === FOLDERS.SENT || folderId === FOLDERS.DRAFTS) {
-				return p.type === ParticipantRole.TO;
-			}
-			return p.type === ParticipantRole.FROM;
-		});
-		const participantsToReduce = uniqBy(participants, (em) => em.address);
 		return reduce(
 			participantsToReduce,
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, participantsWithoutReplyTo]);
+	}, [account, participantRole, participantsWithoutReplyTo, t]);
+};
 
+export const ParticipantsString = ({
+	item
+}: {
+	item: NormalizedConversation | MailMessage;
+}): React.JSX.Element => {
+	const participantsString = useParticipantsString({ item });
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{!isSearchModule && folderId === FOLDERS.DRAFTS && (
-				<Padding right="small">
-					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
-				</Padding>
-			)}
-			{participantsString.length > 0 ? (
-				<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-					<Text
-						data-testid="participants-name-label"
-						color={textValues?.color}
-						weight={textValues?.weight}
-					>
-						{participantsString}
-					</Text>
-				</Tooltip>
-			) : (
+			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
 				<Text
-					data-testid="participants-empty-label"
-					color={textValues?.color}
-					weight={textValues?.weight}
+					data-testid="participants-name-label"
+					color={item.read ? 'text' : 'primary'}
+					weight={item.read ? 'regular' : 'bold'}
 				>
-					{t('recipient.toField.missing', `[Empty 'To' Field]`)}
+					{participantsString}
 				</Text>
-			)}
+			</Tooltip>
 		</Row>
 	);
 };
