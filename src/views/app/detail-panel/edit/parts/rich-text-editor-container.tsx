@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
@@ -12,7 +12,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
-import { useEditorIsDirty, useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -20,7 +20,12 @@ import {
 	generateUserPreferenceStyles,
 	UserPreferenceStyle
 } from 'helpers/user-preference-styles';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
+import {
+	useEditorAttachments,
+	useEditorsStore,
+	useEditorText,
+	useEditorTextProvider
+} from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -55,15 +60,9 @@ export const RichTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
-	const isDirty = useEditorIsDirty(editorId);
-	const isDirtyRef = useRef(isDirty);
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
 	const timeoutId = useRef<NodeJS.Timeout>();
-
-	useEffect(() => {
-		isDirtyRef.current = isDirty;
-	}, [isDirty]);
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
 	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
@@ -146,13 +145,13 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		if (isDirtyRef.current) {
+		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
 			saveEditor();
 		}
 
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider]);
+	}, [editorId, saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
