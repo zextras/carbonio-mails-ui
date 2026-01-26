@@ -531,6 +531,7 @@ export const SORTING_OPTIONS = {
 } as const;
 
 export const FILTER_OPTIONS = {
+	all: { label: 'all', value: undefined },
 	unread: { label: 'unread', value: 'read' },
 	important: { label: 'important', value: 'priority' },
 	flagged: { label: 'flagged', value: 'flag' },
@@ -575,6 +576,9 @@ export const MAIL_SENSITIVITY_HEADER = {
 	// eslint-disable-next-line sonarjs/no-duplicate-string
 	companyConfidential: 'Company-Confidential'
 } as const;
+
+export const INJECTED_DESCRIPTION_DECORATOR =
+	'-:::_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_::_:_::-';
 
 // noinspection JSUnusedGlobalSymbols
 export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
