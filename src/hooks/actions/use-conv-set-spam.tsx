@@ -35,6 +35,9 @@ export const useConvSetSpamFn = ({
 
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 	const execute = useCallback((): void => {
+		if (!canExecute()) {
+			return;
+		}
 		convActionEmailStoreAction({
 			operation: 'spam',
 			ids
@@ -64,7 +67,15 @@ export const useConvSetSpamFn = ({
 				hideButton: true
 			});
 		});
-	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
+	}, [
+		canExecute,
+		closeConversationPanel,
+		createSnackbar,
+		currentConversation,
+		ids,
+		onActionComplete,
+		t
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

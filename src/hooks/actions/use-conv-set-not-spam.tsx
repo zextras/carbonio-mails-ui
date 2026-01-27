@@ -32,6 +32,9 @@ export const useConvSetNotSpamFn = ({
 	const canExecute = useCallback((): boolean => isSpam(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
+		if (!canExecute()) {
+			return;
+		}
 		convActionEmailStoreAction({
 			operation: '!spam',
 			ids
@@ -57,12 +60,23 @@ export const useConvSetNotSpamFn = ({
 				key: `trash-${ids}`,
 				replace: true,
 				severity: 'info',
-				label: t('messages.snackbar.marked_as_non_spam', "You've marked this e-mail as Not Spam"),
+				label: t(
+					'messages.snackbar.conversation_marked_as_non_spam',
+					'Conversation marked as Not Spam'
+				),
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
 		});
-	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
+	}, [
+		canExecute,
+		closeConversationPanel,
+		createSnackbar,
+		currentConversation,
+		ids,
+		onActionComplete,
+		t
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
