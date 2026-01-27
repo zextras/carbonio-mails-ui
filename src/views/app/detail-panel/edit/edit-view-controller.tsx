@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Button, Container } from '@zextras/carbonio-design-system';
 import {
@@ -23,6 +23,13 @@ import { useMessageById } from 'store/emails/store';
 import type { EditViewActionsType, MailMessage } from 'types/index.d';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
+
+type EditorContextValue = {
+	isDirty: boolean;
+	setDirty?: (value: boolean) => void;
+};
+
+export const EditorContext = createContext<EditorContextValue>({ isDirty: false });
 
 const parseAndValidateParams = (
 	action?: string,
@@ -180,12 +187,19 @@ const EditViewController = (): React.JSX.Element => {
 		}
 	}, [id, isMessageLoadingRequired]);
 
+	const isDirty = useRef(false);
+	const setDirty = (value?: boolean): void => {
+		isDirty.current = value ?? true;
+	};
+
 	return isMessageLoadingRequired ? (
 		<Container>
 			<Button loading disabled label="" type="ghost" onClick={noop} />
 		</Container>
 	) : (
-		<MemoizedEditViewControllerCore entityId={id} action={action} message={message} />
+		<EditorContext.Provider value={{ isDirty: isDirty.current, setDirty }}>
+			<MemoizedEditViewControllerCore entityId={id} action={action} message={message} />
+		</EditorContext.Provider>
 	);
 };
 export default EditViewController;

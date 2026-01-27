@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef } from 'react';
+
+import React, { useCallback, useContext, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
@@ -12,7 +13,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
-import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { EditorContext } from '../edit-view-controller';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -20,12 +21,7 @@ import {
 	generateUserPreferenceStyles,
 	UserPreferenceStyle
 } from 'helpers/user-preference-styles';
-import {
-	useEditorAttachments,
-	useEditorsStore,
-	useEditorText,
-	useEditorTextProvider
-} from 'store/editor';
+import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -59,7 +55,7 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): JSX.Element => {
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
-	const { setDirty } = useEditorSetDirty(editorId);
+	const { isDirty, setDirty } = useContext(EditorContext);
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
 	const timeoutId = useRef<NodeJS.Timeout>();
@@ -85,7 +81,7 @@ export const RichTextEditorContainer = ({
 			if (!composerRef.current) {
 				return;
 			}
-			setDirty();
+			setDirty?.(true);
 			composerRef.current.setContent(value.richText);
 		},
 		[setDirty]
@@ -128,7 +124,7 @@ export const RichTextEditorContainer = ({
 	}, [prefs, cleanupUnusedAttachments, setText]);
 
 	const onTextChange = useCallback(() => {
-		setDirty();
+		setDirty?.(true);
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
@@ -145,13 +141,13 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
+		if (isDirty) {
 			saveEditor();
 		}
 
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [editorId, saveEditor, setTextProvider]);
+	}, [isDirty, saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {

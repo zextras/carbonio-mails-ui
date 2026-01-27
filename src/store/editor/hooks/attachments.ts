@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { t } from '@zextras/carbonio-shell-ui';
 import { omit, reject } from 'lodash';
 
+import { EditorContext } from '../../../views/app/detail-panel/edit/edit-view-controller';
 import {
 	uploadAttachmentsApi,
 	UploadAttachmentsOptions,
@@ -23,7 +24,7 @@ import {
 } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
@@ -85,7 +86,7 @@ type EditorAttachmentHook = {
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
-	const { setDirty } = useEditorSetDirty(editorId);
+	const { setDirty } = useContext(EditorContext);
 	const notifyUploadError = useNotifyUploadError();
 
 	const unsavedStandardAttachments = reject(
@@ -201,7 +202,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
-					setDirty();
+					setDirty?.(true);
 					debouncedSaveDraft(saveDraftOptions);
 				}
 
@@ -238,7 +239,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		} satisfies UnsavedAttachment;
 		addUnsavedAttachments(editorId, [unsavedAttachment]);
 		computeAndUpdateEditorStatus(editorId);
-		setDirty();
+		setDirty?.(true);
 		debouncedSaveDraft();
 
 		return unsavedAttachment;
@@ -315,7 +316,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		});
 		computeAndUpdateEditorStatus(editorId);
-		setDirty();
+		setDirty?.(true);
 		debouncedSaveDraft();
 	};
 	return {
@@ -325,20 +326,20 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
-			setDirty();
+			setDirty?.(true);
 			debouncedSaveDraft();
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
-			setDirty();
+			setDirty?.(true);
 			debouncedSaveDraft();
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
-			setDirty();
+			setDirty?.(true);
 			debouncedSaveDraft();
 		},
 		addStandardAttachments,

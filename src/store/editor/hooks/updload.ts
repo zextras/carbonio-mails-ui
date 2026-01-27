@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
+import { EditorContext } from '../../../views/app/detail-panel/edit/edit-view-controller';
 import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
 
@@ -16,7 +17,7 @@ export const useEditorUploadProcess = (
 	uploadId: string
 ): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
-	const { setDirty } = useEditorSetDirty(editorId);
+	const { setDirty } = useContext(EditorContext);
 	const attachmentStateInfo = useEditorsStore((state) => {
 		const unsavedAttachment = selectUnsavedAttachmentByUploadId(state, editorId, uploadId);
 		if (!unsavedAttachment) {
@@ -44,7 +45,7 @@ export const useEditorUploadProcess = (
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
 				computeAndUpdateEditorStatus(editorId);
-				setDirty();
+				setDirty?.(true);
 				debouncedSaveDraft();
 			}
 		};

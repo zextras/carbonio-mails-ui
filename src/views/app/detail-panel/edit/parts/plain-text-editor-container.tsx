@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { ChangeEvent, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
-import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { EditorContext } from '../edit-view-controller';
 import { plainTextToHTML } from 'commons/utils';
 import { useEditorText, useEditorTextProvider } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
@@ -25,7 +25,7 @@ export const PlainTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const { prefs } = useUserSettings();
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { setDirty } = useEditorSetDirty(editorId);
+	const { setDirty } = useContext(EditorContext);
 	const text = useMemo(() => getText().plainText, [getText]);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const initialValueRef = useRef(text);
@@ -47,7 +47,7 @@ export const PlainTextEditorContainer = ({
 			if (!textAreaRef.current) {
 				return;
 			}
-			setDirty();
+			setDirty?.(true);
 			textAreaRef.current.value = value.plainText;
 		},
 		[setDirty]
@@ -66,7 +66,7 @@ export const PlainTextEditorContainer = ({
 
 	const onTextChange = useCallback(
 		(ev: ChangeEvent<HTMLTextAreaElement>): void => {
-			setDirty();
+			setDirty?.(true);
 			debounceSetText(ev);
 		},
 		[debounceSetText, setDirty]
