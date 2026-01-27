@@ -25,7 +25,7 @@ import { generateMessage, populateMessagesInEmailStore } from '__test__/generato
 import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
-	getConversationMessages,
+	getConversationMessages, getConversationMessagesParents,
 	getUseEmailStoreAndHooksForTesting,
 	handleConvActionResponse,
 	handleDeleteAttachments,
@@ -471,6 +471,45 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 
+	describe('getConversationMessagesParents', () => {
+		it('should return messages  parents from conversation', async () => {
+			const conversationId = '1';
+
+			await waitFor(() => {
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: conversationId
+					},
+					messageIds: ['10', '22', '35']
+				});
+			});
+
+			await waitFor(() => {
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{ id: '10', cid: conversationId, folderId: FOLDERS.INBOX },
+						{ id: '22', cid: conversationId, folderId: FOLDERS.TRASH },
+						{ id: '35', cid: conversationId, folderId: FOLDERS.DRAFTS }
+					]
+				});
+			});
+
+			const messagesParents = getConversationMessagesParents(conversationId);
+
+			expect(messagesParents).toHaveLength(3);
+			expect(messagesParents[0]).toBe(FOLDERS.INBOX);
+			expect(messagesParents[1]).toBe(FOLDERS.TRASH);
+			expect(messagesParents[2]).toBe(FOLDERS.DRAFTS);
+		});
+
+		it('should return an empty array if conversation or messages are missing', () => {
+			const conversationId = 'non-existent-id';
+
+			const messagesParents = getConversationMessagesParents(conversationId);
+
+			expect(messagesParents).toHaveLength(0);
+		});
+	});
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messageIds: [] })], false);
