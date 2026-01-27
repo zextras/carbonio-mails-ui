@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 
-import { Row, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { Account, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { reduce, trimStart, uniqBy } from 'lodash';
@@ -123,8 +123,16 @@ export const ParticipantsString = ({
 	item: NormalizedConversation | MailMessage;
 }): React.JSX.Element => {
 	const participantsString = useParticipantsString({ item });
+	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+	const [t] = useTranslation();
+
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
+			{(folderId ?? (item as MailMessage)?.parent) === FOLDERS.DRAFTS && (
+				<Padding right="small">
+					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
+				</Padding>
+			)}
 			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
 				<Text
 					data-testid="participants-name-label"
