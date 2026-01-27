@@ -174,6 +174,7 @@ export const RichTextEditorContainer = ({
                 src="${objectUrl}" /><br/>`;
 
 				editor?.activeEditor?.insertContent(img);
+				onTextChange();
 			};
 
 			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
@@ -189,22 +190,26 @@ export const RichTextEditorContainer = ({
 				onSaveComplete: handleSaveComplete
 			});
 		},
-		[addInlineAttachments]
+		[addInlineAttachments, onTextChange]
 	);
 
-	function createPasteHandler(editor: Editor, editorID: string) {
-		return (event: ClipboardEvent): void => {
-			const editViewWrapper = document.querySelector(
-				'[data-testid="edit-view-editor"]'
-			)?.parentElement;
-			handleEditorPaste(editor, editorID, event);
+	const createPasteHandler = useCallback(
+		(editor: Editor, editorID: string) =>
+			async (event: ClipboardEvent): Promise<void> => {
+				const editViewWrapper = document.querySelector(
+					'[data-testid="edit-view-editor"]'
+				)?.parentElement;
+				await handleEditorPaste(editor, editorID, event);
 
-			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-			if (editViewWrapper) {
-				editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
-			}
-		};
-	}
+				// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+				if (editViewWrapper) {
+					editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
+				}
+
+				onTextChange();
+			},
+		[onTextChange]
+	);
 
 	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
 	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
@@ -334,6 +339,7 @@ export const RichTextEditorContainer = ({
 			}
 		};
 	}, [
+		createPasteHandler,
 		editorId,
 		onComposerClose,
 		onComposerInit,
