@@ -31,12 +31,14 @@ const resolveParticipantRole = ({
 	inInbox,
 	inDraftsOrSent,
 	userAddress,
-	participants
+	participants,
+	isMessageView
 }: {
 	inInbox: boolean;
 	inDraftsOrSent: boolean;
 	userAddress: Account['name'];
 	participants: Participant[] | undefined;
+	isMessageView: boolean;
 }): ParticipantRoleType => {
 	if (inDraftsOrSent) return ParticipantRole.TO;
 	if (inInbox) return ParticipantRole.FROM;
@@ -49,7 +51,10 @@ const resolveParticipantRole = ({
 		(p) => p.address === userAddress && p.type === ParticipantRole.TO
 	);
 
-	return iAmInFrom && !iAmInTo ? ParticipantRole.TO : ParticipantRole.FROM;
+	if (iAmInFrom && iAmInTo) {
+		return isMessageView ? ParticipantRole.TO : ParticipantRole.FROM;
+	}
+	return iAmInFrom ? ParticipantRole.TO : ParticipantRole.FROM;
 };
 
 const getFolderContext = (
@@ -87,7 +92,8 @@ export const useParticipantRole = (
 			inInbox,
 			inDraftsOrSent,
 			userAddress: account?.name,
-			participants: item.participants
+			participants: item.participants,
+			isMessageView: !isConversation(item)
 		});
 	}, [account?.name, folderId, item]);
 };

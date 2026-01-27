@@ -708,7 +708,7 @@ describe('ParticipantsName component', () => {
 				});
 				expect(screen.getByText(secondParticipant)).toBeVisible();
 			});
-			test('if user is in both will show from participants', async () => {
+			test('if user is in both will show to participants', async () => {
 				const account: Account = useUserAccount();
 				const secondParticipant = 'randomuser@test.com';
 				const messages = populateMessagesInEmailStore({
@@ -728,7 +728,7 @@ describe('ParticipantsName component', () => {
 					initialEntries: [`/search/message/${messages[0].id}`],
 					path: '/search/message/:messageId'
 				});
-				expect(screen.getByText('label.me')).toBeVisible();
+				expect(screen.getByText(`label.me, ${secondParticipant}`)).toBeVisible();
 			});
 		});
 	});
