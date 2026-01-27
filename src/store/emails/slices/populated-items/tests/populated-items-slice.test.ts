@@ -25,7 +25,8 @@ import { generateMessage, populateMessagesInEmailStore } from '__test__/generato
 import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
-	getConversationMessages, getConversationMessagesParents,
+	getConversationMessages,
+	getConversationMessagesParents,
 	getUseEmailStoreAndHooksForTesting,
 	handleConvActionResponse,
 	handleDeleteAttachments,
