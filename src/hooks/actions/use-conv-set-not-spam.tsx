@@ -57,7 +57,7 @@ export const useConvSetNotSpamFn = ({
 				closeConversationPanel();
 			}
 			createSnackbar({
-				key: `trash-${ids}`,
+				key: `not-spam-${ids}`,
 				replace: true,
 				severity: 'info',
 				label: t(
