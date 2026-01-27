@@ -113,7 +113,7 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 
 	isUploading = false;
 	if (uploadQueue.length > 0) {
-		processNextUpload(editor, editorId);
+		await processNextUpload(editor, editorId);
 	} else {
 		editor.setProgressState(false);
 	}
@@ -147,11 +147,11 @@ function getImageFilesFromClipboard(clipboardData: DataTransfer): File[] {
 		.filter((file): file is File => file !== null);
 }
 
-export const handleEditorPaste = (
+export const handleEditorPaste = async (
 	editor: Editor,
 	editorId: string,
 	event: ClipboardEvent
-): void => {
+): Promise<void> => {
 	const { clipboardData } = event;
 	if (!clipboardData) return;
 
@@ -177,7 +177,7 @@ export const handleEditorPaste = (
 		uploadQueue.push(...imageFiles);
 
 		if (!isUploading) {
-			processNextUpload(editor, editorId);
+			await processNextUpload(editor, editorId);
 		}
 	}
 	// If there are no images, or we have table content, allow default paste
