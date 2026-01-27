@@ -21,52 +21,6 @@ type ConvRestoreFunctionsParameter = {
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
-const useRestoreConversation = (ids: Array<string>, folderId: string): (() => void) => {
-	const createSnackbar = useSnackbar();
-	const inSearchModule = useInSearchModule();
-	const [t] = useTranslation();
-	const { openConversationPanel, currentConversation } = useConversationDetailPanelControls();
-
-	return useCallback(() => {
-		convActionEmailStoreAction({
-			operation: `move`,
-			ids,
-			parent: folderId
-		}).then((res) => {
-			if (!('Fault' in res)) {
-				if (currentConversation && !inSearchModule) {
-					openConversationPanel(currentConversation.id);
-				}
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					severity: 'success',
-					hideButton: true,
-					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
-					autoHideTimeout: 3000
-				});
-			} else {
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again.'),
-					autoHideTimeout: 3000
-				});
-			}
-		});
-	}, [
-		createSnackbar,
-		currentConversation,
-		folderId,
-		ids,
-		inSearchModule,
-		openConversationPanel,
-		t
-	]);
-};
-
 export const useConvMoveToTrashFn = ({
 	ids,
 	folderId = FOLDERS.INBOX,
@@ -74,7 +28,6 @@ export const useConvMoveToTrashFn = ({
 }: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const createSnackbar = useSnackbar();
-	const restoreConversation = useRestoreConversation(ids, folderId);
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
@@ -98,10 +51,9 @@ export const useConvMoveToTrashFn = ({
 					key: `trash-${ids}`,
 					replace: true,
 					severity: 'info',
-					actionLabel: t('label.undo', 'Undo'),
 					label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
-					autoHideTimeout: 5000,
-					onActionClick: restoreConversation
+					autoHideTimeout: 3000,
+					hideButton: true
 				});
 			} else {
 				createSnackbar({
@@ -122,7 +74,6 @@ export const useConvMoveToTrashFn = ({
 		inSearchModule,
 		createSnackbar,
 		t,
-		restoreConversation,
 		closeConversationPanel
 	]);
 
