@@ -62,7 +62,7 @@ export const useConvSetSpamFn = ({
 				key: `spam-${ids}`,
 				replace: true,
 				severity: 'info',
-				label: t('messages.snackbar.marked_as_spam', "You've marked this e-mail as Spam"),
+				label: t('messages.snackbar.conversation_marked_as_spam', 'Conversation marked as Spam'),
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
