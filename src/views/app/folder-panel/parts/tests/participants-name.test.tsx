@@ -16,7 +16,7 @@ import { populateConversationInEmailStore } from '__test__/generators/generateCo
 import { ParticipantsString } from 'views/app/folder-panel/parts/participants-name';
 
 describe('ParticipantsName component', () => {
-	test('a conversation with multiple messages inside inbox folder will show from participants', async () => {
+	test('conversation view, a conversation with multiple messages inside inbox folder will show from participants', async () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const { conversation } = await waitFor(() =>
@@ -46,7 +46,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	test('a conversation with single message inside inbox folder will show from participants', async () => {
+	test('conversation view, a conversation with single message inside inbox folder will show from participants', async () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const { conversation } = await waitFor(() =>
@@ -72,7 +72,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	describe('a message inside a conversation will show depend on the folder it is contained in', () => {
+	describe('conversation view, a message inside a conversation will show depend on the folder it is contained in', () => {
 		test('if it is contained in inbox will show from participants', async () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -152,7 +152,7 @@ describe('ParticipantsName component', () => {
 			expect(screen.getByText(secondParticipant)).toBeVisible();
 		});
 	});
-	test('a conversation with multiple messages inside sent folder will show to participants', async () => {
+	test('conversation view, a conversation with multiple messages inside sent folder will show to participants', async () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const { conversation } = await waitFor(() =>
@@ -182,7 +182,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	test('a conversation with single message inside sent folder will show to participants', async () => {
+	test('conversation view, a conversation with single message inside sent folder will show to participants', async () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const { conversation } = await waitFor(() =>
@@ -208,7 +208,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	test('a message inside inbox folder will show from participants', () => {
+	test('message view, a message inside inbox folder will show from participants', () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const messages = populateMessagesInEmailStore({
@@ -227,7 +227,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	test('a message inside sent folder will show to participants', () => {
+	test('message view, a message inside sent folder will show to participants', () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const messages = populateMessagesInEmailStore({
@@ -246,7 +246,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	test('a message inside draft folder will show to participants', () => {
+	test('message view, a message inside draft folder will show to participants', () => {
 		const account: Account = useUserAccount();
 		const secondParticipant = 'randomuser@test.com';
 		const messages = populateMessagesInEmailStore({
@@ -265,7 +265,7 @@ describe('ParticipantsName component', () => {
 		});
 		expect(screen.getByText(secondParticipant)).toBeVisible();
 	});
-	describe('a conversation with multiple messages inside any other folder (exclude sent, inbox, draft, include trash)', () => {
+	describe('conversation view, a conversation with multiple messages inside any other folder (exclude sent, inbox, draft, include trash)', () => {
 		test('if user is sender will show to participants', async () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -371,7 +371,7 @@ describe('ParticipantsName component', () => {
 			expect(screen.getByText(`label.me, ${secondParticipant}`)).toBeVisible();
 		});
 	});
-	describe('a conversation with single message inside any other folder (exclude sent, inbox, draft, include trash) ', () => {
+	describe('conversation view, a conversation with single message inside any other folder (exclude sent, inbox, draft, include trash) ', () => {
 		test('if user is sender will show to participants', async () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -454,7 +454,7 @@ describe('ParticipantsName component', () => {
 			expect(screen.getByText(`label.me, ${secondParticipant}`)).toBeVisible();
 		});
 	});
-	describe('a conversation with multiple messages in search', () => {
+	describe('conversation view, a conversation with multiple messages in search', () => {
 		test('if all the messages are inside sent or draft it will show to participant', async () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -611,7 +611,7 @@ describe('ParticipantsName component', () => {
 			});
 		});
 	});
-	describe('a single message inside search will show participants depending its folder', () => {
+	describe('message view, a single message inside search will show participants depending its folder', () => {
 		test('sent folder will show to participants', () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -650,16 +650,16 @@ describe('ParticipantsName component', () => {
 			});
 			expect(screen.getByText(secondParticipant)).toBeVisible();
 		});
-		test('any other folder will show from participants', () => {
+		test('inbox folder will show from participants', () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
 			const messages = populateMessagesInEmailStore({
 				messageGeneratorParams: [
 					{
 						id: '11',
-						folderId: FOLDERS.INBOX,
-						from: { address: secondParticipant, type: ParticipantRole.FROM },
-						to: [{ address: account.name, type: ParticipantRole.TO }]
+						folderId: FOLDERS.DRAFTS,
+						to: [{ address: secondParticipant, type: ParticipantRole.TO }],
+						from: { address: account.name, type: ParticipantRole.FROM }
 					}
 				]
 			});
@@ -669,8 +669,70 @@ describe('ParticipantsName component', () => {
 			});
 			expect(screen.getByText(secondParticipant)).toBeVisible();
 		});
+		describe('any other folder will show depending its folder', () => {
+			test('if user is sender will show to participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const messages = populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{
+							id: '11',
+							folderId: FOLDERS.TRASH,
+							from: { address: account.name, type: ParticipantRole.FROM },
+							to: [{ address: secondParticipant, type: ParticipantRole.TO }]
+						}
+					]
+				});
+				setupTest(<ParticipantsString item={messages[0]} />, {
+					initialEntries: [`/search/message/${messages[0].id}`],
+					path: '/search/message/:messageId'
+				});
+				expect(screen.getByText(secondParticipant)).toBeVisible();
+			});
+			test('if user is receiver will show from participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const messages = populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{
+							id: '11',
+							folderId: FOLDERS.TRASH,
+							from: { address: secondParticipant, type: ParticipantRole.FROM },
+							to: [{ address: account.name, type: ParticipantRole.TO }]
+						}
+					]
+				});
+				setupTest(<ParticipantsString item={messages[0]} />, {
+					initialEntries: [`/search/message/${messages[0].id}`],
+					path: '/search/message/:messageId'
+				});
+				expect(screen.getByText(secondParticipant)).toBeVisible();
+			});
+			test('if user is in both will show from participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const messages = populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{
+							id: '11',
+							folderId: FOLDERS.TRASH,
+							from: { address: account.name, type: ParticipantRole.FROM },
+							to: [
+								{ address: account.name, type: ParticipantRole.TO },
+								{ address: secondParticipant, type: ParticipantRole.TO }
+							]
+						}
+					]
+				});
+				setupTest(<ParticipantsString item={messages[0]} />, {
+					initialEntries: [`/search/message/${messages[0].id}`],
+					path: '/search/message/:messageId'
+				});
+				expect(screen.getByText('label.me')).toBeVisible();
+			});
+		});
 	});
-	describe('a message inside a conversation will show depend on the folder it is contained in', () => {
+	describe('conversation view, a message inside a conversation will show depend on the folder it is contained in', () => {
 		test('if it is contained in inbox will show from participants', async () => {
 			const account: Account = useUserAccount();
 			const secondParticipant = 'randomuser@test.com';
@@ -748,6 +810,112 @@ describe('ParticipantsName component', () => {
 				path: '/search/conversation/:conversationId'
 			});
 			expect(screen.getByText(secondParticipant)).toBeVisible();
+		});
+		describe('if it is contained in any other folder will show depending where the user is', () => {
+			test('if user is sender will show to participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const { conversation } = await waitFor(() =>
+					populateConversationInEmailStore({
+						conversationParams: {
+							id: '1',
+							from: [{ address: account.name, type: ParticipantRole.FROM }],
+							to: [{ address: secondParticipant, type: ParticipantRole.TO }],
+							folderId: FOLDERS.TRASH
+						},
+						messageGeneratorParams: [
+							{
+								id: '11',
+								folderId: FOLDERS.TRASH
+							},
+							{
+								id: '12',
+								folderId: FOLDERS.SENT
+							}
+						]
+					})
+				);
+
+				setupTest(<ParticipantsString item={conversation} />, {
+					initialEntries: [`/folder/${FOLDERS.TRASH}/conversation/${conversation.id}`],
+					path: '/folder/:folderId/conversation/:conversationId'
+				});
+				expect(screen.getByText(secondParticipant)).toBeVisible();
+			});
+			test('if user is receiver will show from participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const { conversation } = await waitFor(() =>
+					populateConversationInEmailStore({
+						conversationParams: {
+							id: '1',
+							from: [{ address: secondParticipant, type: ParticipantRole.FROM }],
+							to: [{ address: account.name, type: ParticipantRole.TO }],
+							folderId: FOLDERS.TRASH
+						},
+						messageGeneratorParams: [
+							{
+								id: '11',
+								folderId: FOLDERS.TRASH
+							},
+							{
+								id: '12',
+								folderId: FOLDERS.SENT
+							}
+						]
+					})
+				);
+
+				setupTest(<ParticipantsString item={conversation} />, {
+					initialEntries: [`/folder/${FOLDERS.TRASH}/conversation/${conversation.id}`],
+					path: '/folder/:folderId/conversation/:conversationId'
+				});
+				expect(screen.getByText(secondParticipant)).toBeVisible();
+			});
+			test('if user is in both will show from participants', async () => {
+				const account: Account = useUserAccount();
+				const secondParticipant = 'randomuser@test.com';
+				const { conversation } = await waitFor(() =>
+					populateConversationInEmailStore({
+						conversationParams: {
+							id: '1',
+							from: [
+								{ address: account.name, type: ParticipantRole.FROM },
+								{ address: secondParticipant, type: ParticipantRole.FROM }
+							],
+							to: [
+								{ address: account.name, type: ParticipantRole.TO },
+								{ address: secondParticipant, type: ParticipantRole.TO }
+							],
+							folderId: FOLDERS.TRASH
+						},
+						messageGeneratorParams: [
+							{
+								id: '11',
+								folderId: FOLDERS.TRASH
+							},
+							{
+								id: '12',
+								folderId: FOLDERS.SENT
+							},
+							{
+								id: '13',
+								folderId: FOLDERS.INBOX
+							},
+							{
+								id: '14',
+								folderId: FOLDERS.SENT
+							}
+						]
+					})
+				);
+
+				setupTest(<ParticipantsString item={conversation} />, {
+					initialEntries: [`/folder/${FOLDERS.TRASH}/conversation/${conversation.id}`],
+					path: '/folder/:folderId/conversation/:conversationId'
+				});
+				expect(screen.getByText(`label.me, ${secondParticipant}`)).toBeVisible();
+			});
 		});
 	});
 });

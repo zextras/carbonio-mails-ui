@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 import { Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { Account, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { every, filter, find, map, reduce, trimStart, uniq, uniqBy } from 'lodash';
+import { map, reduce, some, trimStart, uniq, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
@@ -27,32 +27,45 @@ function removeReplyToParticipants(
 
 export type ParticipantRoleType = (typeof ParticipantRole)[keyof typeof ParticipantRole];
 
+const resolveParticipantRole = ({
+	inInbox,
+	inDraftsOrSent,
+	userAddress,
+	participants
+}: {
+	inInbox: boolean;
+	inDraftsOrSent: boolean;
+	userAddress: Account['name'];
+	participants: Participant[] | undefined;
+}): ParticipantRoleType => {
+	if (inDraftsOrSent) return ParticipantRole.TO;
+	if (inInbox) return ParticipantRole.FROM;
+
+	const me = participants?.filter((p) => p.address === userAddress);
+
+	const iAmInFrom = some(me, ['type', ParticipantRole.FROM]);
+	const iAmInTo = some(me, ['type', ParticipantRole.TO]);
+
+	if (iAmInFrom && !iAmInTo) return ParticipantRole.TO;
+	return ParticipantRole.FROM;
+};
+
 const getSearchConversationParticipantRole = ({
 	conversationId,
-	userParticipantRole
+	account,
+	participants
 }: {
 	conversationId: string;
-	userParticipantRole: Participant[];
+	account: Account;
+	participants: Participant[] | undefined;
 }): ParticipantRoleType => {
-	const messagesParents = map(getConversationMessages(conversationId), 'parent');
-	const uniqParents = uniq(messagesParents);
-	const inDraftsOrSent = every(uniqParents, (id) => id === FOLDERS.DRAFTS || id === FOLDERS.SENT);
-	const inInbox = every(uniqParents, (id) => id === FOLDERS.INBOX);
-	const iAmInFrom = !!find(userParticipantRole, ['type', ParticipantRole.FROM]);
-	const iAmInTo = !!find(userParticipantRole, ['type', ParticipantRole.TO]);
-	if (inDraftsOrSent) {
-		return ParticipantRole.TO;
-	}
-	if (inInbox) {
-		return ParticipantRole.FROM;
-	}
-	if (iAmInFrom && iAmInTo) {
-		return ParticipantRole.FROM;
-	}
-	if (iAmInFrom && !iAmInTo) {
-		return ParticipantRole.TO;
-	}
-	return ParticipantRole.FROM;
+	const parents = uniq(map(getConversationMessages(conversationId), 'parent'));
+	return resolveParticipantRole({
+		inInbox: parents.every((p) => p === FOLDERS.INBOX),
+		inDraftsOrSent: parents.every((p) => p === FOLDERS.DRAFTS || p === FOLDERS.SENT),
+		userAddress: account?.name,
+		participants
+	});
 };
 
 const getConversationParticipantRole = ({
@@ -63,32 +76,31 @@ const getConversationParticipantRole = ({
 }: {
 	account: Account;
 	participants: Participant[];
-	folderId: string | undefined;
+	folderId?: string;
 	conversationId: string;
 }): ParticipantRoleType => {
-	const me = filter(participants, ['address', account?.name]);
-	const iAmInFrom = !!find(me, ['type', ParticipantRole.FROM]);
-	const iAmInTo = !!find(me, ['type', ParticipantRole.TO]);
 	if (folderId) {
-		if (folderId === FOLDERS.INBOX) {
-			return ParticipantRole.FROM;
-		}
-		if (folderId === FOLDERS.SENT) {
-			return ParticipantRole.TO;
-		}
-		if (iAmInFrom && iAmInTo) {
-			return ParticipantRole.FROM;
-		}
-		if (iAmInFrom && !iAmInTo) {
-			return ParticipantRole.TO;
-		}
+		return resolveParticipantRole({
+			inInbox: folderId === FOLDERS.INBOX,
+			inDraftsOrSent: folderId === FOLDERS.DRAFTS || folderId === FOLDERS.SENT,
+			userAddress: account?.name,
+			participants
+		});
 	}
-	return getSearchConversationParticipantRole({ conversationId, userParticipantRole: me });
+
+	return getSearchConversationParticipantRole({
+		conversationId,
+		account,
+		participants
+	});
 };
 
-const useParticipantRole = (item: MailMessage | NormalizedConversation): ParticipantRoleType => {
+export const useParticipantRole = (
+	item: MailMessage | NormalizedConversation
+): ParticipantRoleType => {
 	const account = useUserAccount();
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+
 	return useMemo(() => {
 		if (isConversation(item)) {
 			return getConversationParticipantRole({
@@ -98,13 +110,13 @@ const useParticipantRole = (item: MailMessage | NormalizedConversation): Partici
 				conversationId: item.id
 			});
 		}
-		if (item.parent === FOLDERS.INBOX) {
-			return ParticipantRole.FROM;
-		}
-		if (item.parent === FOLDERS.DRAFTS || item.parent === FOLDERS.SENT) {
-			return ParticipantRole.TO;
-		}
-		return ParticipantRole.FROM;
+
+		return resolveParticipantRole({
+			inInbox: item.parent === FOLDERS.INBOX,
+			inDraftsOrSent: item.parent === FOLDERS.DRAFTS || item.parent === FOLDERS.SENT,
+			userAddress: account?.name,
+			participants: item.participants
+		});
 	}, [account, folderId, item]);
 };
 
