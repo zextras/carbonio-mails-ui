@@ -239,24 +239,6 @@ export const isSentOrItsSubfolder = (folder: Folder | undefined): boolean => {
 };
 
 /**
- * Tells if a folder is a subfolder of the trash folder
- * @param folder
- */
-export const isTrashOrItsSubfolder = (folder: Folder | undefined): boolean => {
-	if (!folder) {
-		return false;
-	}
-
-	const path = folder.absFolderPath;
-
-	if (!path) {
-		return false;
-	}
-
-	return path.toLowerCase().startsWith('/trash/') || path.toLowerCase() === '/trash';
-};
-
-/**
  * Returns the parent folder id of the given message.
  *
  * In most of the cases the id coincide with the "parent" property of
