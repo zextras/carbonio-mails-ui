@@ -51,7 +51,7 @@ export const useConvMoveToTrashFn = ({
 					key: `trash-${ids}`,
 					replace: true,
 					severity: 'info',
-					label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+					label: t('snackbar.conversation_moved_to_trash', 'Conversation moved to Trash'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
