@@ -24,7 +24,7 @@ import { SearchConversationListItem } from 'views/search/list/conversation/searc
 const conversationId = '-123';
 
 describe('SearchConversationListItem', () => {
-	it('should move the item to trash when clicking on Delete action when folder is INBOX', async () => {
+	it('should move the Conversation to trash when clicking on Delete action when folder is INBOX', async () => {
 		const customSettings: Partial<AccountSettings> = {
 			prefs: {
 				zimbraPrefGroupMailBy: 'conversation'
@@ -70,7 +70,7 @@ describe('SearchConversationListItem', () => {
 
 		expect(request.action).toStrictEqual({ id: conversationId, op: CONVACTIONS.TRASH });
 
-		const confirmationSnackBar = await screen.findByText('E-mail moved to Trash');
+		const confirmationSnackBar = await screen.findByText('Conversation moved to Trash');
 		expect(confirmationSnackBar).toBeVisible();
 	});
 
