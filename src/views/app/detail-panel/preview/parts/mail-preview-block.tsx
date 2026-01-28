@@ -90,6 +90,7 @@ const SpamInfoBanner = ({ message }: { message: MailMessage }): React.JSX.Elemen
 		</Container>
 	);
 };
+
 export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
@@ -98,11 +99,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 }) => (
 	<>
 		<SpamInfoBanner message={message} />
-		{message && (
-			<Row width="fill">
-				<PreviewHeader message={message} open={open} onClick={onClick} isEml={isEml} />
-			</Row>
-		)}
+		{message && <PreviewHeader message={message} open={open} onClick={onClick} isEml={isEml} />}
 		<ExternalMessageDisclaimer isEml={isEml} />
 	</>
 );

@@ -89,13 +89,40 @@ afterAll(() => {
 // Mock ResizeObserver
 Object.defineProperty(window, 'ResizeObserver', {
 	writable: true,
-	value: function ResizeObserverMock(): ResizeObserver {
+	value: vi.fn(function ResizeObserverMock(
+		this: ResizeObserver,
+		callback: ResizeObserverCallback
+	): ResizeObserver {
 		return {
-			observe: (): undefined => undefined,
-			unobserve: (): undefined => undefined,
-			disconnect: (): undefined => undefined
+			observe: (target: Element): void => {
+				// Trigger callback immediately with default dimensions
+				callback(
+					[
+						{
+							contentRect: {
+								width: 1920,
+								height: 1080,
+								top: 0,
+								left: 0,
+								bottom: 1080,
+								right: 1920,
+								x: 0,
+								y: 0,
+								toJSON: () => ''
+							} as DOMRectReadOnly,
+							target,
+							borderBoxSize: [] as any,
+							contentBoxSize: [] as any,
+							devicePixelContentBoxSize: [] as any
+						} as ResizeObserverEntry
+					],
+					this
+				);
+			},
+			unobserve: (): void => undefined,
+			disconnect: (): void => undefined
 		};
-	}
+	})
 });
 
 // mock a simplified Intersection Observer
