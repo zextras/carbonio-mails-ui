@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { t } from '@zextras/carbonio-shell-ui';
 import { omit, reject } from 'lodash';
@@ -96,290 +96,254 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		useEditorsStore((state) => state.editors[editorId].savedAttachments),
 		(x) => x.isInline && x.contentId !== undefined
 	);
-	const removeStandardAttachmentsInvoker = useEditorsStore.getState().clearStandardAttachments;
-	const removeSavedAttachmentsInvoker = useEditorsStore.getState().removeSavedAttachment;
-	const removeUnsavedAttachmentsInvoker = useEditorsStore.getState().removeUnsavedAttachment;
+	const removeStandardAttachmentsInvoker = useEditorsStore(
+		(state) => state.clearStandardAttachments
+	);
+	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
+	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
 
-	const addGenericUnsavedAttachments = useCallback(
-		(
-			files: Array<File>,
-			areInline: boolean,
-			callbacks?: UploadAttachmentsOptions
-		): Array<UnsavedAttachment> => {
-			const options: UploadAttachmentsOptions = {
-				onUploadProgress: (file: File, uploadId: string, percentage: number): void => {
-					const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
-					const status: AttachmentUploadProcessStatus = {
+	const addGenericUnsavedAttachments = (
+		files: Array<File>,
+		areInline: boolean,
+		callbacks?: UploadAttachmentsOptions
+	): Array<UnsavedAttachment> => {
+		const options: UploadAttachmentsOptions = {
+			onUploadProgress: (file: File, uploadId: string, percentage: number): void => {
+				const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
+				const status: AttachmentUploadProcessStatus = {
+					status: 'running',
+					progress: percentage
+				};
+				setUploadStatus(editorId, uploadId, status);
+				callbacks?.onUploadProgress && callbacks.onUploadProgress(file, uploadId, percentage);
+			},
+
+			onUploadError: (file: File, uploadId: string, error: string): void => {
+				const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
+				const status: AttachmentUploadProcessStatus = {
+					status: 'aborted',
+					abortReason: error
+				};
+				notifyUploadError(file);
+				setUploadStatus(editorId, uploadId, status);
+				computeAndUpdateEditorStatus(editorId);
+				callbacks?.onUploadError && callbacks.onUploadError(file, uploadId, error);
+			},
+
+			onUploadComplete: (file: File, uploadId: string, attachmentId: string): void => {
+				const setUploadCompleted = useEditorsStore.getState().setAttachmentUploadCompleted;
+				setUploadCompleted(editorId, uploadId, attachmentId);
+				computeAndUpdateEditorStatus(editorId);
+				callbacks?.onUploadComplete && callbacks.onUploadComplete(file, uploadId, attachmentId);
+			},
+
+			onUploadsEnd: (completedUploadsId, failedUploadsId): void => {
+				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
+			}
+		};
+
+		const uploadsResult = uploadAttachmentsApi(files, options);
+		const { addUnsavedAttachments } = useEditorsStore.getState();
+
+		const unsavedAttachments = uploadsResult.map<UnsavedAttachment>(
+			({ file, uploadId, abortController }) => {
+				const attachment: UnsavedAttachment = {
+					filename: file.name,
+					contentType: file.type,
+					size: file.size,
+					uploadId,
+					isInline: areInline,
+					uploadStatus: {
 						status: 'running',
-						progress: percentage
-					};
-					setUploadStatus(editorId, uploadId, status);
-					callbacks?.onUploadProgress && callbacks.onUploadProgress(file, uploadId, percentage);
-				},
-
-				onUploadError: (file: File, uploadId: string, error: string): void => {
-					const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
-					const status: AttachmentUploadProcessStatus = {
-						status: 'aborted',
-						abortReason: error
-					};
-					notifyUploadError(file);
-					setUploadStatus(editorId, uploadId, status);
-					computeAndUpdateEditorStatus(editorId);
-					callbacks?.onUploadError && callbacks.onUploadError(file, uploadId, error);
-				},
-
-				onUploadComplete: (file: File, uploadId: string, attachmentId: string): void => {
-					const setUploadCompleted = useEditorsStore.getState().setAttachmentUploadCompleted;
-					setUploadCompleted(editorId, uploadId, attachmentId);
-					computeAndUpdateEditorStatus(editorId);
-					callbacks?.onUploadComplete && callbacks.onUploadComplete(file, uploadId, attachmentId);
-				},
-
-				onUploadsEnd: (completedUploadsId, failedUploadsId): void => {
-					callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
-				}
-			};
-
-			const uploadsResult = uploadAttachmentsApi(files, options);
-			const { addUnsavedAttachments } = useEditorsStore.getState();
-
-			const unsavedAttachments = uploadsResult.map<UnsavedAttachment>(
-				({ file, uploadId, abortController }) => {
-					const attachment: UnsavedAttachment = {
-						filename: file.name,
-						contentType: file.type,
-						size: file.size,
-						uploadId,
-						isInline: areInline,
-						uploadStatus: {
-							status: 'running',
-							progress: 0
-						},
-						uploadAbortController: abortController
-					};
-					areInline && (attachment.contentId = `${attachment.uploadId}@carbonio`);
-					return attachment;
-				}
-			);
-			addUnsavedAttachments(editorId, unsavedAttachments);
-			computeAndUpdateEditorStatus(editorId);
-
-			return unsavedAttachments;
-		},
-		[editorId, notifyUploadError]
-	);
-
-	const addAndSaveGenericAttachments = useCallback(
-		(
-			files: Array<File>,
-			areInline: boolean,
-			callbacks?: UploadAttachmentsOptions & {
-				onSaveComplete?: (savedContentIds: Array<string>) => void;
+						progress: 0
+					},
+					uploadAbortController: abortController
+				};
+				areInline && (attachment.contentId = `${attachment.uploadId}@carbonio`);
+				return attachment;
 			}
-		): Array<UnsavedAttachment> => {
-			const customizedCallbacks = {
-				...callbacks,
-				onUploadsEnd: (completedUploadsId: Array<string>, failedUploadsId: Array<string>): void => {
-					const editor = getEditor({ id: editorId });
-					if (editor) {
-						const uploadedUnsavedAttachments = filterUnsavedAttachmentsByUploadId(
-							editor.unsavedAttachments,
-							completedUploadsId
-						);
+		);
+		addUnsavedAttachments(editorId, unsavedAttachments);
+		computeAndUpdateEditorStatus(editorId);
 
-						const uploadedContentIds: Array<string> = [];
-						uploadedUnsavedAttachments.forEach((uploadedUnsavedAttachment) => {
-							if (
-								uploadedUnsavedAttachment.isInline === areInline &&
-								uploadedUnsavedAttachment.contentId
-							) {
-								uploadedContentIds.push(uploadedUnsavedAttachment.contentId);
-							}
-						});
+		return unsavedAttachments;
+	};
 
-						const saveDraftOptions: SaveDraftOptions = {
-							onComplete: (): void => {
-								callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
-							}
-						};
-						setDirty();
-						debouncedSaveDraft(saveDraftOptions);
-					}
-
-					callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
-				}
-			};
-
-			return addGenericUnsavedAttachments(files, areInline, customizedCallbacks);
-		},
-		[addGenericUnsavedAttachments, debouncedSaveDraft, editorId, setDirty]
-	);
-
-	const addAndSaveUploadedAttachment = useCallback(
-		({
-			attachmentId,
-			fileName,
-			contentType,
-			size
-		}: {
-			attachmentId: string;
-			fileName: string;
-			contentType: string;
-			size: number;
-		}): UnsavedAttachment => {
-			const { addUnsavedAttachments } = useEditorsStore.getState();
-
-			const unsavedAttachment = {
-				filename: fileName,
-				contentType,
-				size,
-				aid: attachmentId,
-				isInline: false,
-				uploadStatus: {
-					status: 'completed',
-					progress: 0
-				}
-			} satisfies UnsavedAttachment;
-			addUnsavedAttachments(editorId, [unsavedAttachment]);
-			computeAndUpdateEditorStatus(editorId);
-			setDirty();
-			debouncedSaveDraft();
-
-			return unsavedAttachment;
-		},
-		[editorId, setDirty, debouncedSaveDraft]
-	);
-
-	const addStandardAttachments = useCallback(
-		(files: Array<File>, callbacks?: UploadCallbacks): Array<UnsavedAttachment> =>
-			addAndSaveGenericAttachments(files, false, callbacks),
-		[addAndSaveGenericAttachments]
-	);
-
-	const addUploadedAttachment = useCallback(
-		({
-			attachmentId,
-			fileName,
-			contentType,
-			size
-		}: {
-			attachmentId: string;
-			fileName: string;
-			contentType: string;
-			size: number;
-		}): UnsavedAttachment =>
-			addAndSaveUploadedAttachment({ attachmentId, fileName, contentType, size }),
-		[addAndSaveUploadedAttachment]
-	);
-
-	const addInlineAttachments = useCallback(
-		(
-			files: Array<File>,
-			callbacks?: UploadCallbacks & {
-				onSaveComplete?: (
-					inlineAttachments: Array<{
-						contentId: string | undefined;
-						cidUrl: string | undefined;
-						downloadServiceUrl: string | undefined;
-					}>
-				) => void;
-			}
-		): Array<UnsavedAttachment> => {
-			const customizedCallbacks = {
-				...omit(callbacks, 'onSaveComplete'),
-				onSaveComplete: (savedContentIds: Array<string>): void => {
-					const editor = getEditor({ id: editorId });
-					if (!editor) {
-						callbacks?.onSaveComplete && callbacks.onSaveComplete([]);
-						return;
-					}
-
-					const savedInlineAttachments = getSavedInlineAttachmentsByContentId(
-						savedContentIds,
-						editor.savedAttachments
+	const addAndSaveGenericAttachments = (
+		files: Array<File>,
+		areInline: boolean,
+		callbacks?: UploadAttachmentsOptions & {
+			onSaveComplete?: (savedContentIds: Array<string>) => void;
+		}
+	): Array<UnsavedAttachment> => {
+		const customizedCallbacks = {
+			...callbacks,
+			onUploadsEnd: (completedUploadsId: Array<string>, failedUploadsId: Array<string>): void => {
+				const editor = getEditor({ id: editorId });
+				if (editor) {
+					const uploadedUnsavedAttachments = filterUnsavedAttachmentsByUploadId(
+						editor.unsavedAttachments,
+						completedUploadsId
 					);
 
-					const inlineInfo = savedInlineAttachments.map((savedInlineAttachment) => ({
-						contentId: savedInlineAttachment.contentId,
-						cidUrl: savedInlineAttachment.contentId
-							? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
-							: undefined,
-						downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
-					}));
+					const uploadedContentIds: Array<string> = [];
+					uploadedUnsavedAttachments.forEach((uploadedUnsavedAttachment) => {
+						if (
+							uploadedUnsavedAttachment.isInline === areInline &&
+							uploadedUnsavedAttachment.contentId
+						) {
+							uploadedContentIds.push(uploadedUnsavedAttachment.contentId);
+						}
+					});
 
-					callbacks?.onSaveComplete && callbacks.onSaveComplete(inlineInfo);
+					const saveDraftOptions: SaveDraftOptions = {
+						onComplete: (): void => {
+							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
+						}
+					};
+					setDirty();
+					debouncedSaveDraft(saveDraftOptions);
 				}
-			};
 
-			return addAndSaveGenericAttachments(files, true, customizedCallbacks);
-		},
-		[addAndSaveGenericAttachments, editorId]
-	);
+				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
+			}
+		};
 
-	const keepOnlyInlineAttachments = useCallback(
-		(usedCids: string[]): void => {
-			const editor = getEditor({ id: editorId });
-			if (!editor) return;
+		return addGenericUnsavedAttachments(files, areInline, customizedCallbacks);
+	};
 
-			editor.savedAttachments.forEach((att) => {
-				if (att.isInline && att.contentId) {
-					const cidUrl = composeCidUrlFromContentId(att.contentId);
-					if (cidUrl && !usedCids.includes(cidUrl)) {
-						useEditorsStore.getState().removeSavedAttachment(editorId, att.partName);
-					}
+	const addAndSaveUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment => {
+		const { addUnsavedAttachments } = useEditorsStore.getState();
+
+		const unsavedAttachment = {
+			filename: fileName,
+			contentType,
+			size,
+			aid: attachmentId,
+			isInline: false,
+			uploadStatus: {
+				status: 'completed',
+				progress: 0
+			}
+		} satisfies UnsavedAttachment;
+		addUnsavedAttachments(editorId, [unsavedAttachment]);
+		computeAndUpdateEditorStatus(editorId);
+		setDirty();
+		debouncedSaveDraft();
+
+		return unsavedAttachment;
+	};
+
+	const addStandardAttachments = (
+		files: Array<File>,
+		callbacks?: UploadCallbacks
+	): Array<UnsavedAttachment> => addAndSaveGenericAttachments(files, false, callbacks);
+
+	const addUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment =>
+		addAndSaveUploadedAttachment({ attachmentId, fileName, contentType, size });
+
+	const addInlineAttachments = (
+		files: Array<File>,
+		callbacks?: UploadCallbacks & {
+			onSaveComplete?: (
+				inlineAttachments: Array<{
+					contentId: string | undefined;
+					cidUrl: string | undefined;
+					downloadServiceUrl: string | undefined;
+				}>
+			) => void;
+		}
+	): Array<UnsavedAttachment> => {
+		const customizedCallbacks = {
+			...omit(callbacks, 'onSaveComplete'),
+			onSaveComplete: (savedContentIds: Array<string>): void => {
+				const editor = getEditor({ id: editorId });
+				if (!editor) {
+					callbacks?.onSaveComplete && callbacks.onSaveComplete([]);
+					return;
 				}
-			});
+
+				const savedInlineAttachments = getSavedInlineAttachmentsByContentId(
+					savedContentIds,
+					editor.savedAttachments
+				);
+
+				const inlineInfo = savedInlineAttachments.map((savedInlineAttachment) => ({
+					contentId: savedInlineAttachment.contentId,
+					cidUrl: savedInlineAttachment.contentId
+						? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
+						: undefined,
+					downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
+				}));
+
+				callbacks?.onSaveComplete && callbacks.onSaveComplete(inlineInfo);
+			}
+		};
+
+		return addAndSaveGenericAttachments(files, true, customizedCallbacks);
+	};
+	const keepOnlyInlineAttachments = (usedCids: string[]): void => {
+		const editor = getEditor({ id: editorId });
+		if (!editor) return;
+
+		editor.savedAttachments.forEach((att) => {
+			if (att.isInline && att.contentId) {
+				const cidUrl = composeCidUrlFromContentId(att.contentId);
+				if (cidUrl && !usedCids.includes(cidUrl)) {
+					useEditorsStore.getState().removeSavedAttachment(editorId, att.partName);
+				}
+			}
+		});
+		computeAndUpdateEditorStatus(editorId);
+		setDirty();
+		debouncedSaveDraft();
+	};
+	return {
+		hasStandardAttachments: unsavedStandardAttachments.length + savedStandardAttachments.length > 0,
+		unsavedStandardAttachments,
+		savedStandardAttachments,
+		removeUnsavedAttachment: (uploadId: string): void => {
+			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
 			setDirty();
 			debouncedSaveDraft();
 		},
-		[debouncedSaveDraft, editorId, setDirty]
-	);
 
-	return useMemo(
-		() => ({
-			hasStandardAttachments:
-				unsavedStandardAttachments.length + savedStandardAttachments.length > 0,
-			unsavedStandardAttachments,
-			savedStandardAttachments,
-			removeUnsavedAttachment: (uploadId: string): void => {
-				removeUnsavedAttachmentsInvoker(editorId, uploadId);
-				computeAndUpdateEditorStatus(editorId);
-				setDirty();
-				debouncedSaveDraft();
-			},
-
-			removeSavedAttachment: (partName: string): void => {
-				removeSavedAttachmentsInvoker(editorId, partName);
-				computeAndUpdateEditorStatus(editorId);
-				setDirty();
-				debouncedSaveDraft();
-			},
-			removeStandardAttachments: (): void => {
-				removeStandardAttachmentsInvoker(editorId);
-				computeAndUpdateEditorStatus(editorId);
-				setDirty();
-				debouncedSaveDraft();
-			},
-			addStandardAttachments,
-			addInlineAttachments,
-			addUploadedAttachment,
-			keepOnlyInlineAttachments
-		}),
-		[
-			unsavedStandardAttachments,
-			savedStandardAttachments,
-			editorId,
-			removeUnsavedAttachmentsInvoker,
-			removeSavedAttachmentsInvoker,
-			removeStandardAttachmentsInvoker,
-			debouncedSaveDraft,
-			setDirty,
-			addStandardAttachments,
-			addInlineAttachments,
-			addUploadedAttachment,
-			keepOnlyInlineAttachments
-		]
-	);
+		removeSavedAttachment: (partName: string): void => {
+			removeSavedAttachmentsInvoker(editorId, partName);
+			computeAndUpdateEditorStatus(editorId);
+			setDirty();
+			debouncedSaveDraft();
+		},
+		removeStandardAttachments: (): void => {
+			removeStandardAttachmentsInvoker(editorId);
+			computeAndUpdateEditorStatus(editorId);
+			setDirty();
+			debouncedSaveDraft();
+		},
+		addStandardAttachments,
+		addInlineAttachments,
+		addUploadedAttachment,
+		keepOnlyInlineAttachments
+	};
 };
