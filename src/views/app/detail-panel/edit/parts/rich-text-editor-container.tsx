@@ -12,7 +12,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
-import { useEditorIsDirty, useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -20,7 +20,12 @@ import {
 	generateUserPreferenceStyles,
 	UserPreferenceStyle
 } from 'helpers/user-preference-styles';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
+import {
+	useEditorAttachments,
+	useEditorsStore,
+	useEditorText,
+	useEditorTextProvider
+} from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -55,8 +60,6 @@ export const RichTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
-	const isDirty = useEditorIsDirty(editorId);
-
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
 	const timeoutId = useRef<NodeJS.Timeout>();
@@ -142,12 +145,13 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		if (isDirty) {
+		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
 			saveEditor();
 		}
+
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider, isDirty]);
+	}, [editorId, saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
@@ -170,6 +174,7 @@ export const RichTextEditorContainer = ({
                 src="${objectUrl}" /><br/>`;
 
 				editor?.activeEditor?.insertContent(img);
+				onTextChange();
 			};
 
 			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
@@ -185,22 +190,26 @@ export const RichTextEditorContainer = ({
 				onSaveComplete: handleSaveComplete
 			});
 		},
-		[addInlineAttachments]
+		[addInlineAttachments, onTextChange]
 	);
 
-	function createPasteHandler(editor: Editor, editorID: string) {
-		return (event: ClipboardEvent): void => {
-			const editViewWrapper = document.querySelector(
-				'[data-testid="edit-view-editor"]'
-			)?.parentElement;
-			handleEditorPaste(editor, editorID, event);
+	const createPasteHandler = useCallback(
+		(editor: Editor, editorID: string) =>
+			async (event: ClipboardEvent): Promise<void> => {
+				const editViewWrapper = document.querySelector(
+					'[data-testid="edit-view-editor"]'
+				)?.parentElement;
+				await handleEditorPaste(editor, editorID, event);
 
-			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-			if (editViewWrapper) {
-				editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
-			}
-		};
-	}
+				// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+				if (editViewWrapper) {
+					editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
+				}
+
+				onTextChange();
+			},
+		[onTextChange]
+	);
 
 	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
 	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
@@ -330,6 +339,7 @@ export const RichTextEditorContainer = ({
 			}
 		};
 	}, [
+		createPasteHandler,
 		editorId,
 		onComposerClose,
 		onComposerInit,
