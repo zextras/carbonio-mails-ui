@@ -7,12 +7,13 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { Account, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { reduce, trimStart, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { participantToString } from '../../../../commons/utils';
+import { getFolderOwnerAccountName, isDraft, isInbox, isSent } from '../../../../helpers/folders';
 import { isConversation } from '../../../../helpers/messages';
 import { getConversationMessagesParents } from '../../../../store/emails/store';
 import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
@@ -32,16 +33,20 @@ const resolveParticipantRole = ({
 	inDraftsOrSent,
 	userAddress,
 	participants,
-	isMessageView
+	isAMessageSentByMe
 }: {
 	inInbox: boolean;
 	inDraftsOrSent: boolean;
 	userAddress: Account['name'];
 	participants: Participant[] | undefined;
-	isMessageView: boolean;
+	isAMessageSentByMe: boolean;
 }): ParticipantRoleType => {
 	if (inDraftsOrSent) return ParticipantRole.TO;
 	if (inInbox) return ParticipantRole.FROM;
+
+	if (isAMessageSentByMe) {
+		return isAMessageSentByMe ? ParticipantRole.TO : ParticipantRole.FROM;
+	}
 
 	const iAmInFrom = !!participants?.some(
 		(p) => p.address === userAddress && p.type === ParticipantRole.FROM
@@ -52,7 +57,7 @@ const resolveParticipantRole = ({
 	);
 
 	if (iAmInFrom && iAmInTo) {
-		return isMessageView ? ParticipantRole.TO : ParticipantRole.FROM;
+		return ParticipantRole.FROM;
 	}
 	return iAmInFrom ? ParticipantRole.TO : ParticipantRole.FROM;
 };
@@ -66,24 +71,28 @@ const getFolderContext = (
 } => {
 	if (!isConversation(item)) {
 		return {
-			inInbox: item.parent === FOLDERS.INBOX,
-			inDraftsOrSent: item.parent === FOLDERS.DRAFTS || item.parent === FOLDERS.SENT
+			inInbox: isInbox(item.parent),
+			inDraftsOrSent: isDraft(item.parent) || isSent(item.parent)
 		};
 	}
 
 	const folderIds = folderId ? [folderId] : getConversationMessagesParents(item.id);
 
 	return {
-		inInbox: folderIds.every((p) => p === FOLDERS.INBOX),
-		inDraftsOrSent: folderIds.every((p) => p === FOLDERS.DRAFTS || p === FOLDERS.SENT)
+		inInbox: folderIds.every((p) => isInbox(p)),
+		inDraftsOrSent: folderIds.every((p) => isDraft(p) || isSent(p))
 	};
 };
 
 export const useParticipantRole = (
 	item: MailMessage | NormalizedConversation
 ): ParticipantRoleType => {
-	const account = useUserAccount();
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+	const folderRoots = getRootsMap();
+	const userAddress = getFolderOwnerAccountName(
+		folderId ?? (item as MailMessage)?.parent,
+		folderRoots
+	);
 
 	return useMemo(() => {
 		const { inInbox, inDraftsOrSent } = getFolderContext(item, folderId);
@@ -91,11 +100,11 @@ export const useParticipantRole = (
 		return resolveParticipantRole({
 			inInbox,
 			inDraftsOrSent,
-			userAddress: account?.name,
+			userAddress,
 			participants: item.participants,
-			isMessageView: !isConversation(item)
+			isAMessageSentByMe: isConversation(item) ? false : item.isSentByMe
 		});
-	}, [account?.name, folderId, item]);
+	}, [folderId, item, userAddress]);
 };
 
 const useParticipantsString = ({
@@ -134,7 +143,7 @@ export const ParticipantsString = ({
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{(folderId ?? (item as MailMessage)?.parent) === FOLDERS.DRAFTS && (
+			{isDraft(folderId ?? (item as MailMessage)?.parent) && (
 				<Padding right="small">
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
