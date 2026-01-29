@@ -10,7 +10,7 @@ import { useEditorsStore } from '../store';
 import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions } from 'constants/index';
-import { generateEditor } from 'store/editor/editor-generators';
+import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
 import { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
 
 vi.mock('@zextras/carbonio-shell-ui', async () => ({
@@ -250,10 +250,7 @@ describe('generateEditor', () => {
 				const draftEditorId = draftEditor.id;
 				useEditorsStore.getState().addEditor(draftEditorId, draftEditor);
 
-				const resumedEditor = generateEditor({
-					action: EditViewActions.RESUME,
-					id: draftEditor?.id
-				});
+				const resumedEditor = resumeEditor(draftEditor?.id);
 
 				expect(resumedEditor?.isUrgent).toBe(true);
 			});
