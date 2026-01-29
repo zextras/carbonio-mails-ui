@@ -12,7 +12,8 @@ import {
 	Button,
 	Tooltip,
 	useModal,
-	Padding
+	Padding,
+	AnyColor
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
@@ -24,6 +25,8 @@ import { PROCESS_STATUS } from '../../../../../constants';
 import { useMsgMoveToTrashDescriptor } from '../../../../../hooks/actions/use-msg-move-to-trash';
 import { useEditorDid, useEditorDraftSaveProcessStatus } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types/editor';
+
+const DIVIDER_COLOR: AnyColor = 'gray2';
 
 type EditViewFooterProps = {
 	editorId: MailsEditorV2['id'];
@@ -58,11 +61,6 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	const isDeleteDisabled = useMemo<boolean>(
 		(): boolean => draftSaveStatus?.status === PROCESS_STATUS.RUNNING,
 		[draftSaveStatus?.status]
-	);
-
-	const buttonColor = useMemo<string>(
-		() => (isDeleteDisabled ? 'secondary' : 'secondary.focus'),
-		[isDeleteDisabled]
 	);
 
 	const draftSavedStatusMessage = useMemo<string>((): string => {
@@ -107,7 +105,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 
 	return (
 		<FooterContainer data-testid="edit-view-footer">
-			<Divider />
+			<Divider color={DIVIDER_COLOR} />
 			<Container
 				orientation="horizontal"
 				mainAlignment="flex-end"
@@ -117,12 +115,12 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 			>
 				<Text color="gray1">{draftSavedStatusMessage}</Text>
 				<Padding left="0.5rem" />
-				<Divider orientation="vertical" />
+				<Divider color={DIVIDER_COLOR} orientation="vertical" />
 				<Tooltip label={t('editView.footer.deleteDraft', 'Delete draft')}>
 					<Button
 						type="ghost"
 						size="extralarge"
-						color={buttonColor}
+						color="gray0"
 						icon="Trash2Outline"
 						onClick={onDeleteClick}
 						disabled={isDeleteDisabled}
