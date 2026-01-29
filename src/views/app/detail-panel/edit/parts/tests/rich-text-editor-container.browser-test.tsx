@@ -32,9 +32,7 @@ describe('rich-text-editor-container', () => {
 
 		await renderInBrowser(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
-		// eslint-disable-next-line testing-library/prefer-screen-queries
 		const frame = page.frameLocator(page.getByTitle('Rich Text Area'));
-		// eslint-disable-next-line testing-library/prefer-screen-queries
 		await expect.element(frame.getByText('Hello, World!')).toBeVisible();
 	});
 });

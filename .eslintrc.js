@@ -16,6 +16,14 @@ module.exports = {
 				'testing-library/prefer-user-event': 'error',
 				'import/no-extraneous-dependencies': 'off'
 			}
+		},
+		{
+			// enable eslint-plugin-testing-library rules or preset only for test files
+			files: ['**/?(*.)+(browser-test).[jt]s?(x)'],
+			extends: ['plugin:testing-library/dom'],
+			rules: {
+				'testing-library/prefer-screen-queries': 'off'
+			}
 		}
 	],
 	rules: {
