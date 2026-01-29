@@ -29,8 +29,13 @@ import {
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
 
-type Option = {
+type SortOption = {
 	value: string;
+	label: string;
+};
+
+type FilterOption = {
+	value: string | undefined;
 	label: string;
 };
 
@@ -52,7 +57,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId, prefSortOrder]
 	);
 
-	const sortingOptions: Option[] = useMemo(
+	const sortingOptions: SortOption[] = useMemo(
 		() => [
 			SORTING_OPTIONS.date,
 			SORTING_OPTIONS.subject,
@@ -62,8 +67,9 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId]
 	);
 
-	const filteringOptions: Option[] = useMemo(
+	const filteringOptions: FilterOption[] = useMemo(
 		() => [
+			FILTER_OPTIONS.all,
 			FILTER_OPTIONS.unread,
 			FILTER_OPTIONS.important,
 			FILTER_OPTIONS.flagged,
@@ -130,41 +136,58 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 
 	const filterItems: DropdownItem[] = useMemo(
 		() =>
-			filteringOptions.map(({ value, label }) => ({
-				id: `filter-${value}`,
-				label: capitalize(t(`sorting_dropdown.${label}`, label)),
-				selected: filterType === value,
-				onClick: (): void => {
-					updateSortAndFilterSettings({
-						folderId,
-						prefSortOrder,
-						sortType,
-						sortDirection,
-						filter: value
-					});
-				},
-				icon: getRadioIcon(filterType, value)
-			})),
+			filteringOptions.map(({ value, label }) => {
+				const isDefaultFilter = value === undefined;
+				const isSelected = (filterType === undefined && isDefaultFilter) || filterType === value;
+				const translatedLabel = capitalize(t(`sorting_dropdown.${label}`, label));
+				const labelWithDefault = isDefaultFilter
+					? `${translatedLabel} (${t('sorting_dropdown.default', 'Default')})`
+					: translatedLabel;
+
+				return {
+					id: `filter-${value ?? 'all'}`,
+					label: labelWithDefault,
+					selected: isSelected,
+					onClick: (): void => {
+						updateSortAndFilterSettings({
+							folderId,
+							prefSortOrder,
+							sortType,
+							sortDirection,
+							filter: value
+						});
+					},
+					icon: getRadioIcon(isSelected ? 'selected' : 'not-selected', 'selected')
+				};
+			}),
 		[filterType, sortDirection, sortType, filteringOptions, folderId, prefSortOrder, t]
 	);
 
 	const sortItems: DropdownItem[] = useMemo(
 		() =>
-			sortingOptions.map(({ value, label }) => ({
-				id: `sort-${value}`,
-				label: capitalize(t(`sorting_dropdown.${label}`, label)),
-				selected: sortType === value,
-				onClick: (): void => {
-					updateSortAndFilterSettings({
-						folderId,
-						prefSortOrder,
-						sortType: value,
-						sortDirection,
-						filter: filterType
-					});
-				},
-				icon: getRadioIcon(sortType, value)
-			})),
+			sortingOptions.map(({ value, label }) => {
+				const isDefaultSort = value === 'date';
+				const translatedLabel = capitalize(t(`sorting_dropdown.${label}`, label));
+				const labelWithDefault = isDefaultSort
+					? `${translatedLabel} (${t('sorting_dropdown.default', 'Default')})`
+					: translatedLabel;
+
+				return {
+					id: `sort-${value}`,
+					label: labelWithDefault,
+					selected: sortType === value,
+					onClick: (): void => {
+						updateSortAndFilterSettings({
+							folderId,
+							prefSortOrder,
+							sortType: value,
+							sortDirection,
+							filter: filterType
+						});
+					},
+					icon: getRadioIcon(sortType, value)
+				};
+			}),
 		[filterType, sortDirection, sortType, folderId, prefSortOrder, sortingOptions, t]
 	);
 
@@ -222,6 +245,7 @@ export const SortAndFilterButtonComponent = ({
 			placement="top"
 		>
 			<Dropdown
+				disableAutoFocus
 				items={dropdownItems}
 				multiple
 				itemPaddingBetween="large"

@@ -15,12 +15,12 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
+import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
 import { EditViewActions } from 'constants/index';
-import { generateEditor } from 'store/editor/editor-generators';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { useMessageById } from 'store/emails/store';
-import type { EditViewActionsType, MailMessage } from 'types/index.d';
+import type { EditViewActionsType, MailsEditorV2 } from 'types/index.d';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 
@@ -53,47 +53,17 @@ const isActionRequiringMessage = (action: EditViewActionsType): boolean =>
 type EditViewControllerCoreProps = {
 	action: EditViewActionsType;
 	entityId?: string;
-	message?: MailMessage;
+	// message?: MailMessage;
+	editor: MailsEditorV2;
 };
 
 const MemoizedEditView = memo(EditView);
 
-const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entityId, message }) => {
+const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => {
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const editViewRef = useRef<EditViewHandle>(null);
 	const isCloseRequestFromEditor = useRef<boolean>(false);
-
-	/*
-	 * If the current component is running inside a board
-	 * its context is examined to get an existing editor id
-	 * and to try to resume it. This will prevent the reset
-	 * of the editor when the board re-renders.
-	 *
-	 * Otherwise a new editor is generated and added using
-	 * the given parameters
-	 */
-	const existingEditorId = board.context?.editorId;
-	if (existingEditorId) {
-		action = EditViewActions.RESUME;
-		entityId = existingEditorId;
-	}
-
-	// Create or resume editor
-	const compositionData = board.context?.compositionData;
-	const editor = generateEditor({
-		action,
-		id: entityId,
-		message,
-		compositionData
-	});
-	if (!editor) {
-		throw new Error('No editor provided');
-	}
-
-	if (action !== EditViewActions.RESUME) {
-		addEditor({ id: editor.id, editor });
-	}
 
 	const updateBoard = useMemo(() => boardUtilities?.updateBoard, [boardUtilities?.updateBoard]);
 
@@ -180,12 +150,51 @@ const EditViewController = (): React.JSX.Element => {
 		}
 	}, [id, isMessageLoadingRequired]);
 
-	return isMessageLoadingRequired ? (
+	/*
+	 * If the current component is running inside a board
+	 * its context is examined to get an existing editor id
+	 * and to try to resume it. This will prevent the reset
+	 * of the editor when the board re-renders.
+	 *
+	 * Otherwise a new editor is generated and added using
+	 * the given parameters
+	 */
+	const existingEditorId = boardContext?.editorId;
+	const compositionData = boardContext?.compositionData;
+
+	// Create or resume editor
+	const editor = useMemo(() => {
+		if (existingEditorId) {
+			return resumeEditor(existingEditorId);
+		}
+
+		if (action === EditViewActions.RESUME && id) {
+			return resumeEditor(id);
+		}
+
+		if (isMessageLoadingRequired) {
+			return null;
+		}
+
+		const generatedEditor = generateEditor({
+			action,
+			id,
+			message,
+			compositionData
+		});
+		if (generatedEditor) {
+			addEditor({ id: generatedEditor.id, editor: generatedEditor });
+		}
+
+		return generatedEditor;
+	}, [action, compositionData, existingEditorId, id, isMessageLoadingRequired, message]);
+
+	return editor ? (
+		<MemoizedEditViewControllerCore entityId={id} action={action} editor={editor} />
+	) : (
 		<Container>
 			<Button loading disabled label="" type="ghost" onClick={noop} />
 		</Container>
-	) : (
-		<MemoizedEditViewControllerCore entityId={id} action={action} message={message} />
 	);
 };
 export default EditViewController;

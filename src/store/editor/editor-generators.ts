@@ -544,6 +544,11 @@ export type GenerateEditorParams = {
 	compositionData?: EditorPrefillData;
 };
 
+export const resumeEditor = (id: string): MailsEditorV2 | null => {
+	const editor = getEditor({ id });
+	return editor ?? null;
+};
+
 /**
  * Generate a new editor structure for the given action and message id
  * @param action
@@ -557,11 +562,6 @@ export const generateEditor = ({
 	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
-		case EditViewActions.RESUME:
-			if (!id) {
-				throw new Error('Cannot resume editor without an editor id');
-			}
-			return getEditor({ id });
 		case EditViewActions.NEW:
 			return generateNewMessageEditor();
 		case EditViewActions.REPLY:
