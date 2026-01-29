@@ -8,7 +8,7 @@ import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'rea
 import { Badge, Chip, Container, Padding, Popover, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Tag, useRunSearchIntegration } from '@zextras/carbonio-ui-commons';
-import { isArray, map } from 'lodash';
+import { map } from 'lodash';
 
 const Separator = (): React.JSX.Element => (
 	<Padding horizontal="extrasmall">
@@ -22,7 +22,7 @@ const CompactViewTags = ({
 	tags,
 	triggerSearch
 }: {
-	tags?: Tag[];
+	tags: Tag[];
 	triggerSearch: (tagToSearch: Tag) => void;
 }): ReactElement | null => {
 	const [open, setOpen] = useState(false);
@@ -33,7 +33,7 @@ const CompactViewTags = ({
 		setOpen(true);
 	};
 
-	if (!isArray(tags) || tags.length === 0) {
+	if (tags.length === 0) {
 		return null;
 	}
 
@@ -55,7 +55,7 @@ const CompactViewTags = ({
 					<Separator />
 					<Badge
 						ref={popOverRef}
-						color="gray6"
+						color="text"
 						maxValue={tags.length - 1}
 						value={tags.length}
 						onClick={toggleOpen}
@@ -98,10 +98,10 @@ const ExpandedViewTags = ({
 	tags,
 	triggerSearch
 }: {
-	tags?: Tag[];
+	tags: Tag[];
 	triggerSearch: (tagToSearch: Tag) => void;
 }): ReactElement | null => {
-	if (!isArray(tags) || tags.length === 0) {
+	if (tags.length === 0) {
 		return null;
 	}
 
@@ -134,7 +134,7 @@ export const TagsInExpandedHeader = ({
 	isWide
 }: {
 	isEml?: boolean;
-	tags?: Tag[];
+	tags: Tag[];
 	open: boolean;
 	isWide: boolean;
 }): ReactElement | undefined => {
@@ -164,7 +164,7 @@ export const TagsInExpandedHeader = ({
 		[runSearch]
 	);
 
-	return !isEml && isArray(tags) && tags.length > 0 && open ? (
+	return !isEml && tags.length > 0 && open ? (
 		<Container
 			data-testid="tags-in-expanded-header"
 			orientation="horizontal"

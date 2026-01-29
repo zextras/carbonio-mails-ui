@@ -3,35 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	ReactElement,
-	SyntheticEvent,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, ReactElement, SyntheticEvent, useCallback, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import {
-	Avatar,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Text,
-	getColor
-} from '@zextras/carbonio-design-system';
-import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import {
-	ParticipantRole,
-	Tag,
-	ZIMBRA_STANDARD_COLORS,
-	useSortedTagsArray
-} from '@zextras/carbonio-ui-commons';
-import { filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { Avatar, Container, Padding, Row, Text, getColor } from '@zextras/carbonio-design-system';
+import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { find, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
@@ -44,6 +22,8 @@ import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-
 import { TagsInExpandedHeader } from './header-tags';
 import { PreviewHeaderActions } from './preview-header-actions';
 import { participantToString } from 'commons/utils';
+import { useContainerWidth } from './utils';
+import { useGetTagsList } from 'ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;
@@ -68,31 +48,6 @@ const fallbackContact = {
 	fullName: ''
 };
 
-export const useContainerWidth = (
-	ref: React.RefObject<HTMLDivElement>,
-	threshold: number
-): boolean => {
-	const [width, setWidth] = useState(0);
-
-	const handleResize = useCallback((entries: ResizeObserverEntry[]): void => {
-		setWidth(entries[0].contentRect.width);
-	}, []);
-
-	useEffect(() => {
-		if (!ref.current) return;
-
-		const observer = new ResizeObserver(handleResize);
-
-		observer.observe(ref.current);
-
-		return (): void => {
-			observer?.disconnect();
-		};
-	}, [ref, handleResize]);
-
-	return width >= threshold;
-};
-
 export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	message,
 	onClick,
@@ -105,7 +60,8 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const isWide = useContainerWidth(containerRef, 720);
-	const tagsFromStore = useSortedTagsArray();
+	const tags = useGetTagsList(message.tags);
+	// console.log(message);
 
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const senderContact = find(message.participants, ['type', 's']);
@@ -118,79 +74,6 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
-
-	const tags = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc: Tag[], v) => {
-					if (includes(message.tags, v.id)) {
-						acc.push({
-							...v,
-							// TODO: align the use of the property with the type exposed by the shell
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
-							label: v.name,
-							customComponent: (
-								<Row takeAvailableSpace mainAlignment="flex-start">
-									<Row takeAvailableSpace mainAlignment="space-between">
-										<Row mainAlignment="flex-end">
-											<Padding right="small">
-												<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex} />
-											</Padding>
-										</Row>
-										<Row takeAvailableSpace mainAlignment="flex-start">
-											<Text>{v.name}</Text>
-										</Row>
-									</Row>
-								</Row>
-							)
-						});
-					} else if (message.tags?.length > 0 && !includes(message.tags, v.id)) {
-						forEach(
-							filter(message.tags, (tn) => tn?.includes('nil:')),
-							(tagNotInList) => {
-								acc.push({
-									id: tagNotInList,
-									name: tagNotInList.split(':')[1],
-									label: t('label.not_in_list', {
-										name: tagNotInList.split(':')[1],
-										defaultValue: '{{name}} - Not in your tag list'
-									}),
-									// TODO: align the use of the property with the type exposed by the shell
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									color: ZIMBRA_STANDARD_COLORS[0].hex,
-									customComponent: (
-										<Row takeAvailableSpace mainAlignment="flex-start">
-											<Row takeAvailableSpace mainAlignment="space-between">
-												<Row mainAlignment="flex-end">
-													<Padding right="small">
-														<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[0].hex} />
-													</Padding>
-												</Row>
-												<Row takeAvailableSpace mainAlignment="flex-start">
-													<Text>
-														{t('label.not_in_list', {
-															name: tagNotInList.split(':')[1],
-															defaultValue: '{{name}} - Not in your tag list'
-														})}
-													</Text>
-												</Row>
-											</Row>
-										</Row>
-									)
-								});
-							}
-						);
-					}
-					return uniqBy(acc, 'id');
-				},
-				[]
-			),
-		[message.tags, tagsFromStore]
-	);
 
 	return (
 		<Row width="fill">
@@ -265,7 +148,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 													</>
 												) : (
 													<Row takeAvailableSpace mainAlignment="flex-start" wrap="nowrap">
-														<ContactChip contact={mainContact} isExpanded={true} />
+														<ContactChip contact={mainContact} isExpanded={false} />
 													</Row>
 												))}
 										</Row>

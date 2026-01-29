@@ -14,13 +14,11 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import { every } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import { Tag } from 'types';
 import { MailMessage } from 'types/messages';
-import { useTagExist } from 'ui-actions/tag-actions';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import { getCompactDateLabel, getTimeLabel } from 'commons/utils';
 
@@ -42,23 +40,12 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 	const [showDropdown, setShowDropdown] = useState(false);
 
 	const attachments = retrieveAttachmentsType(message, 'attachment');
-	const isTagInStore = useTagExist(tags);
 
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 
 	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags[0].color : undefined), [tags]);
 
-	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
-
-	const showTagIcon = useMemo(
-		() =>
-			message.tags &&
-			message.tags?.length !== 0 &&
-			!showMultiTagIcon &&
-			isTagInStore &&
-			every(message.tags, (tn) => tn !== ''),
-		[isTagInStore, message.tags, showMultiTagIcon]
-	);
+	const showMultiTagIcon = useMemo(() => tags?.length > 1, [tags]);
 
 	const scheduledTime = useMemo(
 		() =>
@@ -100,14 +87,7 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 
 	return (
 		<Row wrap="nowrap" mainAlignment="flex-end">
-			{showTagIcon && (
-				<Padding left="small">
-					<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
-						<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
-					</Tooltip>
-				</Padding>
-			)}
-			{showMultiTagIcon && (
+			{showMultiTagIcon ? (
 				<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
 					<Padding left="small">
 						<Button
@@ -119,6 +99,12 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 						/>
 					</Padding>
 				</Dropdown>
+			) : (
+				<Padding left="small">
+					<Tooltip label={tags?.[0]?.name} disabled={showMultiTagIcon}>
+						<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
+					</Tooltip>
+				</Padding>
 			)}
 			{message.hasAttachment && attachments.length > 0 && (
 				<Padding left="small">

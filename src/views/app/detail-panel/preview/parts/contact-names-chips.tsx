@@ -115,7 +115,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 					<Separator />
 					<Badge
 						ref={popOverRef}
-						color="gray6"
+						color="text"
 						maxValue={contacts.length - 1}
 						value={contacts.length}
 						onClick={toggleOpen}

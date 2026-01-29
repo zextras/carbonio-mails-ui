@@ -22,7 +22,7 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	DeleteTagModal
 } from '@zextras/carbonio-ui-commons';
-import { find, reduce, some } from 'lodash';
+import { filter, find, forEach, orderBy, reduce, some } from 'lodash';
 
 import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
 import { ArgumentType } from 'types/tags';
@@ -37,17 +37,16 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownIt
 			e.stopPropagation();
 		}
 		const id = Date.now().toString();
-		createModal &&
-			createModal(
-				{
-					id,
-					onClose: (): void => {
-						closeModal?.(id);
-					},
-					children: <CreateUpdateTagModal onClose={(): void => closeModal && closeModal(id)} />
+		createModal?.(
+			{
+				id,
+				onClose: (): void => {
+					closeModal?.(id);
 				},
-				true
-			);
+				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} />
+			},
+			true
+		);
 	}
 });
 
@@ -60,23 +59,16 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): Dropdow
 			e.stopPropagation();
 		}
 		const id = Date.now().toString();
-		createModal &&
-			createModal(
-				{
-					id,
-					onClose: (): void => {
-						closeModal?.(id);
-					},
-					children: (
-						<CreateUpdateTagModal
-							onClose={(): void => closeModal && closeModal(id)}
-							tag={tag}
-							editMode
-						/>
-					)
+		createModal?.(
+			{
+				id,
+				onClose: (): void => {
+					closeModal?.(id);
 				},
-				true
-			);
+				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} tag={tag} editMode />
+			},
+			true
+		);
 	}
 });
 
@@ -89,17 +81,16 @@ export const deleteTag = ({ createModal, closeModal, tag }: ArgumentType): Dropd
 			e.stopPropagation();
 		}
 		const id = Date.now().toString();
-		createModal &&
-			createModal(
-				{
-					id,
-					onClose: (): void => {
-						closeModal?.(id);
-					},
-					children: <DeleteTagModal onClose={(): void => closeModal && closeModal(id)} tag={tag} />
+		createModal?.(
+			{
+				id,
+				onClose: (): void => {
+					closeModal?.(id);
 				},
-				true
-			);
+				children: <DeleteTagModal onClose={(): void => closeModal?.(id)} tag={tag} />
+			},
+			true
+		);
 	}
 });
 
@@ -195,3 +186,66 @@ export const useTagExist = (tags: Array<Tag>): boolean => {
 		[tags, tagsArrayFromStore]
 	);
 };
+
+export const useGetTagsList = (msgTags?: string[]): Tag[] => {
+	const tagsFromStore = useTagsArrayFromStore();
+	return reduce(
+		tagsFromStore,
+		(acc: Tag[], tag) => {
+			if (msgTags?.includes(tag.id)) {
+				acc.push({
+					...tag,
+					// TODO: align the use of the property with the type exposed by the shell
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					color: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
+					label: tag.name
+				});
+			} else {
+				forEach(
+					filter(msgTags, (tagName) => tagName?.includes('nil:')),
+					(tagNotInList: string) => {
+						acc.push({
+							id: tagNotInList,
+							name: t('label.not_in_list', {
+								name: tagNotInList.split(':')[1],
+								defaultValue: '{{name}} - Not in your tag list'
+							}),
+							// TODO: align the use of the property with the type exposed by the shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							color: ZIMBRA_STANDARD_COLORS[0].hex
+						});
+					}
+				);
+			}
+			return acc;
+		},
+		[]
+	);
+};
+
+// export const useTagsExistFromIds = (tagIds: string[]): Tag[] => {
+// 	const tagsArrayFromStore = useTags();
+// 	const sortedTags = orderBy(
+// 		Object.values(tagsArrayFromStore),
+// 		(tag: Tag) => tag.name.toLowerCase(),
+// 		'asc'
+// 	);
+
+// 	return useMemo(
+// 		() =>
+// 			reduce(
+// 				tagIds,
+// 				(acc: Tag[], tagId: string) => {
+// 					const tag = find(tagsArrayFromStore, { id: tagId });
+// 					acc.push({
+// 						...tag
+// 					} as Tag);
+// 					return acc;
+// 				},
+// 				[]
+// 			),
+// 		[tagIds, sortedTags]
+// 	);
+// };
