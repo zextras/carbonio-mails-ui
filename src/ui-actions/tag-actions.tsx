@@ -22,7 +22,7 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	DeleteTagModal
 } from '@zextras/carbonio-ui-commons';
-import { filter, find, forEach, orderBy, reduce, some } from 'lodash';
+import { filter, find, forEach, reduce, some } from 'lodash';
 
 import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
 import { ArgumentType } from 'types/tags';
@@ -224,28 +224,3 @@ export const useGetTagsList = (msgTags?: string[]): Tag[] => {
 		[]
 	);
 };
-
-// export const useTagsExistFromIds = (tagIds: string[]): Tag[] => {
-// 	const tagsArrayFromStore = useTags();
-// 	const sortedTags = orderBy(
-// 		Object.values(tagsArrayFromStore),
-// 		(tag: Tag) => tag.name.toLowerCase(),
-// 		'asc'
-// 	);
-
-// 	return useMemo(
-// 		() =>
-// 			reduce(
-// 				tagIds,
-// 				(acc: Tag[], tagId: string) => {
-// 					const tag = find(tagsArrayFromStore, { id: tagId });
-// 					acc.push({
-// 						...tag
-// 					} as Tag);
-// 					return acc;
-// 				},
-// 				[]
-// 			),
-// 		[tagIds, sortedTags]
-// 	);
-// };

@@ -61,7 +61,6 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const isWide = useContainerWidth(containerRef, 720);
 	const tags = useGetTagsList(message.tags);
-	// console.log(message);
 
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const senderContact = find(message.participants, ['type', 's']);
