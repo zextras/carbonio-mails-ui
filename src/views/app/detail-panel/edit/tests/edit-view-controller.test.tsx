@@ -11,8 +11,8 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { setupTest } from '@test-setup';
-import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { setupTest, screen } from '@test-setup';
+import { updateBoardContext, useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -26,6 +26,8 @@ import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
+import { Edit } from '@mui/icons-material';
+import { updateMessages } from '../../../../../store/emails/store';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),
@@ -162,4 +164,49 @@ describe('EditViewController', () => {
 			);
 		}
 	);
+
+	it("shouldn't unmount the editor when the message is updated", async () => {
+		const message = populateMessagesInEmailStore({
+			messagesNumber: 1,
+			messageGeneratorParams: [
+				{
+					cid: 'conversation-id-1234',
+					isComplete: true
+				}
+			]
+		})[0];
+
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: message.id
+		});
+		useBoard.mockReturnValue(boardMock);
+
+		await act(async () => setupTest(<EditViewController />));
+
+		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
+
+		expect(updateBoardContext).toHaveBeenCalledTimes(1);
+		const updateContext = updateBoardContext.mock.calls[0][1];
+
+		// Update the board context to simulate re-opening the editor
+		useBoard.mockReturnValue({
+			...boardMock,
+			context: updateContext
+		});
+
+		// Update the message conversation id and the isComplete flag to simulate
+		// the need to reload the message
+		act(() => {
+			updateMessages([
+				{
+					...message,
+					conversation: 'new-conversation-id-5678',
+					isComplete: false
+				}
+			]);
+		});
+
+		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
+	});
 });
