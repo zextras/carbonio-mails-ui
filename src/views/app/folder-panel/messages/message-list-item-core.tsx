@@ -26,7 +26,7 @@ import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from '../parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type MessageListItemCoreProps = {
@@ -160,11 +160,7 @@ export const MessageListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsName
-						item={message}
-						textValues={textReadValues}
-						isSearchModule={isSearchModule}
-					/>
+					<ParticipantsString item={message} />
 					<Row>
 						{showTagIcon && (
 							<Padding left="small">
