@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { Account, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { getRootsMap, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { reduce, trimStart, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -83,17 +83,6 @@ const resolveMessageRole = (item: MailMessage): ParticipantRoleType => {
 	return item.isSentByMe ? ParticipantRole.TO : ParticipantRole.FROM;
 };
 
-const useParticipantRole = (item: MailMessage | NormalizedConversation): ParticipantRoleType => {
-	const { folderId } = useParams<DetailPanelRoutesParams>();
-
-	return useMemo(() => {
-		if (isConversation(item)) {
-			return resolveConversationRole(item, folderId);
-		}
-		return resolveMessageRole(item);
-	}, [folderId, item]);
-};
-
 const useParticipantsString = ({
 	item
 }: {
@@ -101,8 +90,14 @@ const useParticipantsString = ({
 }): string => {
 	const account = useUserAccount();
 	const [t] = useTranslation();
+	const { folderId } = useParams<DetailPanelRoutesParams>();
 
-	const participantRole = useParticipantRole(item);
+	const participantRole = useMemo(() => {
+		if (isConversation(item)) {
+			return resolveConversationRole(item, folderId);
+		}
+		return resolveMessageRole(item);
+	}, [folderId, item]);
 
 	return useMemo(() => {
 		const activeParticipants = item.participants?.filter((p) => p.type === participantRole);

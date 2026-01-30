@@ -16,6 +16,7 @@ import { populateConversationInEmailStore } from '__test__/generators/generateCo
 import { ParticipantsString } from '../participants-string';
 import { omit } from 'lodash';
 import { useTheme } from '@zextras/carbonio-design-system';
+import { randomUUID } from 'node:crypto';
 
 describe('ParticipantsString', () => {
 	/* ==================================================
@@ -108,6 +109,24 @@ describe('ParticipantsString', () => {
 						from: { address: participantName, type: ParticipantRole.FROM },
 						to: [{ address: userName, type: ParticipantRole.TO }],
 						isSentByMe: false
+					}
+				]
+			});
+			setupTest(<ParticipantsString item={messages[0]} />);
+			expect(screen.getByText(participantName)).toBeVisible();
+		});
+		test('all of the above apply also for shared accounts', () => {
+			const userName: Account['name'] = useUserAccount().name;
+			const participantName = 'randomuser@test.com';
+			const folderId = `${randomUUID()}:${FOLDERS.INBOX}`;
+
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{
+						id: '11',
+						folderId,
+						from: { address: participantName, type: ParticipantRole.FROM },
+						to: [{ address: userName, type: ParticipantRole.TO }]
 					}
 				]
 			});
