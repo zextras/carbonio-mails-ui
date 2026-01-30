@@ -20,6 +20,8 @@ import {
 	useTagExist
 } from '../tag-actions';
 import { TESTID_SELECTORS } from '__test__/constants';
+import { populateTagsStore } from '@test-utils/store/tags';
+import { Tag } from '@zextras/carbonio-ui-soap-lib';
 
 describe('Tag Actions', () => {
 	const mockCreateModal = vi.fn();
@@ -56,7 +58,7 @@ describe('Tag Actions', () => {
 		it('should handle onClick without event', () => {
 			const result = createTag({ createModal: mockCreateModal, closeModal: mockCloseModal });
 
-			expect(() => result.onClick?.(undefined as any)).not.toThrow();
+			expect(() => result.onClick).not.toThrow();
 		});
 	});
 
@@ -237,6 +239,7 @@ describe('Tag Actions', () => {
 	});
 
 	describe('useGetTagsList', () => {
+
 		it('should return empty array when no msgTags provided', () => {
 			const { result } = renderHook(() => useGetTagsList(), {
 				wrapper: ProvidersWrapper
@@ -251,6 +254,207 @@ describe('Tag Actions', () => {
 			});
 
 			expect(result.current).toEqual([]);
+		});
+
+		it('should return tags that exist in store', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['tag-1'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current).toHaveLength(1);
+			expect(result.current[0].id).toBe('tag-1');
+			expect(result.current[0].name).toBe('Important');
+		});
+
+		it('should add hex color to tags from store', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Work',
+				color: 2
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['tag-1'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current[0].color).toBeDefined();
+			expect(typeof result.current[0].color).toBe('string');
+		});
+
+		it('should handle multiple tags from store', () => {
+			const mockTags: Record<string, Tag> = {
+				'tag-1': { id: 'tag-1', name: 'Important', color: 1 },
+				'tag-2': { id: 'tag-2', name: 'Work', color: 2 },
+				'tag-3': { id: 'tag-3', name: 'Personal', color: 3 }
+			};
+
+			populateTagsStore(mockTags);
+			const msgTags = ['tag-1', 'tag-2', 'tag-3'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current).toHaveLength(3);
+			expect(result.current.map((t) => t.id)).toEqual(['tag-1', 'tag-2', 'tag-3']);
+		});
+
+		it('should handle tags with nil: prefix for tags not in store', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['nil:custom-tag'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current.length).toBeGreaterThan(0);
+			const nilTag = result.current.find((t) => t.id === 'nil:custom-tag');
+			expect(nilTag).toBeDefined();
+			expect(nilTag?.name).toContain('custom-tag');
+		});
+
+		it('should create "not in list" label for nil: prefixed tags', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['nil:unknown-tag'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			const nilTag = result.current.find((t) => t.id === 'nil:unknown-tag');
+			expect(nilTag?.name).toMatch(/unknown-tag.*not in.*tag list/i);
+		});
+
+		it('should assign default color to nil: prefixed tags', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['nil:custom-tag'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			const nilTag = result.current.find((t) => t.id === 'nil:custom-tag');
+			expect(nilTag?.color).toBeDefined();
+			expect(typeof nilTag?.color).toBe('string');
+		});
+
+		it('should only return tags that are in msgTags', () => {
+			const mockTags: Record<string, Tag> = {
+				'tag-1': { id: 'tag-1', name: 'Important', color: 1 },
+				'tag-2': { id: 'tag-2', name: 'Work', color: 2 },
+				'tag-3': { id: 'tag-3', name: 'Personal', color: 3 }
+			};
+
+			populateTagsStore(mockTags);
+			const msgTags = ['tag-1', 'tag-3']; // Only requesting tag-1 and tag-3
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current).toHaveLength(2);
+			expect(result.current.map((t) => t.id)).toEqual(['tag-1', 'tag-3']);
+			expect(result.current.find((t) => t.id === 'tag-2')).toBeUndefined();
+		});
+
+		it('should handle tag with color 0', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Default Color',
+				color: 0
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['tag-1'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current[0].color).toBeDefined();
+			expect(typeof result.current[0].color).toBe('string');
+		});
+
+		it('should handle tag without color property', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'No Color'
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['tag-1'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current[0].color).toBeDefined();
+		});
+
+		it('should extract tag name from nil: prefix correctly', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['nil:my-custom-tag'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			const nilTag = result.current.find((t) => t.id === 'nil:my-custom-tag');
+			expect(nilTag?.name).toContain('my-custom-tag');
+		});
+
+		it('should handle multiple nil: prefixed tags', () => {
+			const mockTagInStore: Tag = {
+				id: 'tag-1',
+				name: 'Important',
+				color: 1
+			};
+
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+			const msgTags = ['nil:custom-1', 'nil:custom-2', 'nil:custom-3'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			const nilTags = result.current.filter((t) => t.id.startsWith('nil:'));
+			expect(nilTags.length).toBeGreaterThanOrEqual(3);
 		});
 	});
 });

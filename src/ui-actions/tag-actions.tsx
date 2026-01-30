@@ -27,6 +27,7 @@ import { filter, find, forEach, reduce, some } from 'lodash';
 import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
 import { ArgumentType } from 'types/tags';
 import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
+import { useTranslation } from 'react-i18next';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,
@@ -188,7 +189,9 @@ export const useTagExist = (tags: Array<Tag>): boolean => {
 };
 
 export const useGetTagsList = (msgTags?: string[]): Tag[] => {
+	const [t] = useTranslation();
 	const tagsFromStore = useTagsArrayFromStore();
+
 	return reduce(
 		tagsFromStore,
 		(acc: Tag[], tag) => {
