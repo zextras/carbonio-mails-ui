@@ -25,7 +25,7 @@ import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsString } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type SearchMessageListItemCoreProps = {

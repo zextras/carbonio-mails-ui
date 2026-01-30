@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsString } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type SearchConversationListItemCoreProps = {
