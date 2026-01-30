@@ -63,16 +63,16 @@ describe('Attachments visualization', () => {
 	it('renders the label correctly', async () => {
 		setupTest(<ContactNameChip {...props} isWide={true} />);
 		const expectedLabel = screen.getByText(label);
-		expect(expectedLabel).toBeInTheDocument();
+		expect(expectedLabel).toBeVisible();
 	});
 
 	it('renders each contact with the correct name and address', async () => {
 		setupTest(<ContactNameChip {...props} isWide={true} />);
 
 		contacts.forEach((contact) => {
-			expect(screen.getByTestId(`chip-${contact.address}`)).toBeInTheDocument();
-			expect(screen.getByText(generateChipName(contact))).toBeInTheDocument();
-			expect(screen.getByText(contact.address)).toBeInTheDocument();
+			expect(screen.getByTestId(`chip-${contact.address}`)).toBeVisible();
+			expect(screen.getByText(generateChipName(contact))).toBeVisible();
+			expect(screen.getByText(contact.address)).toBeVisible();
 		});
 	});
 
@@ -89,6 +89,142 @@ describe('Attachments visualization', () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide={true} />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
 		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, expect.anything());
+	});
+});
+
+describe('Compact view (isWide: false)', () => {
+	it('renders only the first contact chip in compact view', () => {
+		setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Only the first contact chip should be visible
+		expect(screen.getByTestId(`chip-${contacts[0].address}`)).toBeVisible();
+		expect(screen.getByText(contacts[0].address)).toBeVisible();
+	});
+
+	it('does not initially render other contacts in compact view', () => {
+		setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Second contact should not be visible initially
+		expect(screen.queryByText(generateChipName(contacts[1]))).not.toBeInTheDocument();
+	});
+
+	it('shows badge with correct count of remaining contacts', () => {
+		setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		expect(badge).toBeVisible();
+	});
+
+	it('does not show badge when only one contact exists', () => {
+		const singleContactProps = {
+			...props,
+			contacts: [contacts[0]]
+		};
+
+		setupTest(<ContactNameChip {...singleContactProps} isWide={false} />);
+
+		expect(screen.queryByText(/^\+/)).not.toBeInTheDocument();
+	});
+
+	it('opens popover when badge is clicked', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		await user.click(badge);
+
+		// After clicking badge, remaining contacts should be visible
+		expect(screen.getByText(generateChipName(contacts[1]))).toBeVisible();
+		expect(screen.getByText(contacts[1].address)).toBeVisible();
+	});
+
+	it('displays all remaining contacts in popover', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		await user.click(badge);
+
+		// All contacts except the first should be in the popover
+		contacts.slice(1).forEach((contact) => {
+			expect(screen.getByText(generateChipName(contact))).toBeVisible();
+			expect(screen.getByText(contact.address)).toBeVisible();
+		});
+	});
+
+	it('calls sendMsg when Send e-mail icon in first chip is clicked', async () => {
+		const sendIcon = /icon: EmailOutline/i;
+
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+		await user.click(screen.getByRoleWithIcon('button', { icon: sendIcon }));
+		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
+	});
+
+	it('calls copyEmailToClipboard when Copy icon in first chip is clicked', async () => {
+		const copyIcon = /icon: Copy/i;
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+		await user.click(screen.getByRoleWithIcon('button', { icon: copyIcon }));
+		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, expect.anything());
+	});
+
+	it('can interact with contacts inside popover', async () => {
+		const sendIcon = /icon: EmailOutline/i;
+
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Open popover
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		await user.click(badge);
+
+		// Click send email on a contact in the popover
+		const sendButtons = screen.getAllByRoleWithIcon('button', { icon: sendIcon });
+		await user.click(sendButtons[1]); // First button is the main chip, second is in popover
+
+		expect(sendMsg).toHaveBeenCalledWith(contacts[1]);
+	});
+
+	it('shows expanded avatar for contacts in popover', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Open popover
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		await user.click(badge);
+
+		// Contacts in popover should have expanded chips (with avatars)
+		expect(screen.getByText(generateChipName(contacts[1]))).toBeVisible();
+	});
+
+	it('handles many contacts in compact view', () => {
+		const manyContacts = Array.from({ length: 10 }, (_, i) => ({
+			...partcipant1,
+			address: `user${i}@example.com`,
+			email: `user${i}@example.com`,
+			name: `User ${i}`,
+			fullName: `User ${i} Name`
+		}));
+
+		const manyContactsProps = {
+			...props,
+			contacts: manyContacts
+		};
+
+		setupTest(<ContactNameChip {...manyContactsProps} isWide={false} />);
+
+		expect(screen.getByText('+9')).toBeVisible();
+	});
+
+	it('stops event propagation when badge is clicked', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText(`+${contacts.length - 1}`);
+		const stopPropagation = vi.fn();
+
+		badge.addEventListener('click', (e) => {
+			stopPropagation();
+		});
+
+		await user.click(badge);
+
+		// Popover should be open
+		expect(screen.getByText(generateChipName(contacts[1]))).toBeVisible();
 	});
 });
 
