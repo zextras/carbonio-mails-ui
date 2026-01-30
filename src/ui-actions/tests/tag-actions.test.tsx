@@ -239,7 +239,6 @@ describe('Tag Actions', () => {
 	});
 
 	describe('useGetTagsList', () => {
-
 		it('should return empty array when no msgTags provided', () => {
 			const { result } = renderHook(() => useGetTagsList(), {
 				wrapper: ProvidersWrapper
