@@ -6,9 +6,9 @@
 import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 
 import { Badge, Chip, Container, Padding, Popover, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
 import { Tag, useRunSearchIntegration } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 const Separator = (): React.JSX.Element => (
 	<Padding horizontal="extrasmall">
@@ -42,6 +42,7 @@ const CompactViewTags = ({
 			<Chip
 				key={tags[0].id}
 				label={tags[0].name}
+				ref={popOverRef}
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore // TODO: fix type in Tag interface
 				avatarBackground={tags[0].color}
@@ -53,16 +54,11 @@ const CompactViewTags = ({
 			{tags.length > 1 && (
 				<>
 					<Separator />
-					<Badge
-						ref={popOverRef}
-						color="text"
-						maxValue={tags.length - 1}
-						value={tags.length}
-						onClick={toggleOpen}
-					/>
+					<Badge color="text" maxValue={tags.length - 1} value={tags.length} onClick={toggleOpen} />
 					<Popover
 						open={open}
 						anchorEl={popOverRef}
+						placement="bottom-start"
 						disablePortal
 						styleAsModal
 						onClose={(): void => setOpen(false)}
@@ -138,6 +134,7 @@ export const TagsInExpandedHeader = ({
 	open: boolean;
 	isWide: boolean;
 }): ReactElement | undefined => {
+	const [t] = useTranslation();
 	const tagLabel = useMemo(() => t('label.tags', 'Tags'), []);
 
 	const runSearch = useRunSearchIntegration();

@@ -108,13 +108,12 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 	};
 
 	return (
-		<Row data-testid={`chip-${contacts[0].address}`}>
+		<Row data-testid={`chip-${contacts[0].address}`} ref={popOverRef}>
 			<ContactChip contact={contacts[0]} isExpanded={false} />
 			{contacts.length > 1 && (
 				<>
 					<Separator />
 					<Badge
-						ref={popOverRef}
 						color="text"
 						maxValue={contacts.length - 1}
 						value={contacts.length}
@@ -123,7 +122,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 					<Popover
 						open={open}
 						anchorEl={popOverRef}
-						placement="bottom"
+						placement="bottom-start"
 						disablePortal
 						styleAsModal
 						onClose={(): void => setOpen(false)}
