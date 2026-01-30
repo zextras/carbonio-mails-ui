@@ -70,12 +70,19 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 
 		if (draftSaveStatus?.status === PROCESS_STATUS.COMPLETED) {
 			const isSameDay = draftSaveStatus?.lastSaveTimestamp?.getDay() === new Date().getDay();
-			const dateFormat = isSameDay ? 'LTS' : 'L LTS';
+			const formattedDate = moment(draftSaveStatus?.lastSaveTimestamp).format('L');
+			const formattedTime = moment(draftSaveStatus?.lastSaveTimestamp).format('LT');
 
-			return t('editView.footer.draftSavedAt', {
-				timestamp: moment(draftSaveStatus?.lastSaveTimestamp).format(dateFormat),
-				defaultValue: 'Draft saved at {{timestamp}}'
-			});
+			return isSameDay
+				? t('editView.footer.draftSaveTime', {
+						time: formattedTime,
+						defaultValue: 'Draft saved at {{time}}'
+					})
+				: t('editView.footer.draftSaveDateTime', {
+						date: formattedDate,
+						time: formattedTime,
+						defaultValue: 'Draft saved on {{date}} at {{time}}'
+					});
 		}
 
 		if (!isDraftSaved) {

@@ -103,8 +103,7 @@ describe('EditViewFooter', () => {
 			const lastSaveTimestamp = new Date(Date.now() - 1000 * 60); // 1 minute ago
 			const formattedTime = lastSaveTimestamp.toLocaleTimeString([], {
 				hour: 'numeric',
-				minute: '2-digit',
-				second: '2-digit'
+				minute: '2-digit'
 			});
 			const editor: MailsEditorV2 = {
 				...generateNewMessageEditor(),
@@ -130,8 +129,7 @@ describe('EditViewFooter', () => {
 			});
 			const formattedTime = lastSaveTimestamp.toLocaleString([], {
 				hour: 'numeric',
-				minute: '2-digit',
-				second: '2-digit'
+				minute: '2-digit'
 			});
 
 			const editor: MailsEditorV2 = {
@@ -146,7 +144,7 @@ describe('EditViewFooter', () => {
 
 			setupTest(<EditViewFooter editorId={editor.id} />);
 
-			expect(screen.getByText(`Draft saved at ${formattedDate} ${formattedTime}`)).toBeVisible();
+			expect(screen.getByText(`Draft saved on ${formattedDate} at ${formattedTime}`)).toBeVisible();
 		});
 
 		it('should render an enabled delete button', () => {
