@@ -116,7 +116,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 					<Badge
 						color="text"
 						maxValue={contacts.length - 1}
-						value={contacts.length}
+						value={`+${contacts.length - 1}`}
 						onClick={toggleOpen}
 					/>
 					<Popover

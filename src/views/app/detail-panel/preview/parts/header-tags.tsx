@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useRef, useState } from 'react';
 
 import { Badge, Chip, Container, Padding, Popover, Text } from '@zextras/carbonio-design-system';
 import { Tag, useRunSearchIntegration } from '@zextras/carbonio-ui-commons';
@@ -54,7 +54,12 @@ const CompactViewTags = ({
 			{tags.length > 1 && (
 				<>
 					<Separator />
-					<Badge color="text" maxValue={tags.length - 1} value={tags.length} onClick={toggleOpen} />
+					<Badge
+						color="text"
+						maxValue={tags.length - 1}
+						value={`+${tags.length - 1}`}
+						onClick={toggleOpen}
+					/>
 					<Popover
 						open={open}
 						anchorEl={popOverRef}
