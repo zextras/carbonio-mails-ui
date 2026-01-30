@@ -127,4 +127,32 @@ describe('Search', () => {
 			expect(receivedRequest.query).toBe('inId:"1" has:attachment');
 		});
 	});
+
+	describe('sortBy changeDate', () => {
+		it('should send changeDateAsc as-is when sortBy is changeDateAsc', async () => {
+			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+			searchSoapApi({
+				folderId: '1',
+				limit: 10,
+				sortBy: 'changeDateAsc'
+			});
+
+			const receivedRequest = await interceptor;
+			expect(receivedRequest.sortBy).toBe('changeDateAsc');
+		});
+
+		it('should send changeDateDesc as-is when sortBy is changeDateDesc', async () => {
+			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+			searchSoapApi({
+				folderId: '1',
+				limit: 10,
+				sortBy: 'changeDateDesc'
+			});
+
+			const receivedRequest = await interceptor;
+			expect(receivedRequest.sortBy).toBe('changeDateDesc');
+		});
+	});
 });

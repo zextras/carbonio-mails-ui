@@ -60,6 +60,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 	const sortingOptions: SortOption[] = useMemo(
 		() => [
 			SORTING_OPTIONS.date,
+			SORTING_OPTIONS.changeDate,
 			SORTING_OPTIONS.subject,
 			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from,
 			SORTING_OPTIONS.size
