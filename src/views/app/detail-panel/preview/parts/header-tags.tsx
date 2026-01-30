@@ -135,7 +135,7 @@ export const TagsInExpandedHeader = ({
 	isWide: boolean;
 }): ReactElement | undefined => {
 	const [t] = useTranslation();
-	const tagLabel = useMemo(() => t('label.tags', 'Tags'), []);
+	const tagLabel = t('label.tags', 'Tags');
 
 	const runSearch = useRunSearchIntegration();
 
