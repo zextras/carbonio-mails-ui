@@ -35,48 +35,47 @@ export const useConvSetSpamFn = ({
 
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 	const execute = useCallback((): void => {
-		let notCanceled = true;
+		if (!canExecute()) {
+			return;
+		}
+		convActionEmailStoreAction({
+			operation: 'spam',
+			ids
+		}).then((res) => {
+			if ('Fault' in res) {
+				createSnackbar({
+					key: `spam-${ids}`,
+					replace: true,
+					severity: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+				return;
+			}
 
-		const infoSnackbar = (hideButton = false): void => {
+			onActionComplete && onActionComplete(ids);
+			if (currentConversation && ids.includes(currentConversation.id)) {
+				closeConversationPanel();
+			}
 			createSnackbar({
 				key: `spam-${ids}`,
 				replace: true,
 				severity: 'info',
-				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
+				label: t('messages.snackbar.conversation_marked_as_spam', 'Conversation marked as Spam'),
 				autoHideTimeout: 3000,
-				hideButton,
-				actionLabel: t('label.undo', 'Undo'),
-				onActionClick: (): void => {
-					notCanceled = false;
-				}
+				hideButton: true
 			});
-		};
-		infoSnackbar();
-		setTimeout((): void => {
-			if (notCanceled) {
-				convActionEmailStoreAction({
-					operation: 'spam',
-					ids
-				}).then((res) => {
-					if ('Fault' in res) {
-						createSnackbar({
-							key: `spam-${ids}`,
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000
-						});
-						return;
-					}
-
-					onActionComplete && onActionComplete(ids);
-					if (currentConversation && ids.includes(currentConversation.id)) {
-						closeConversationPanel();
-					}
-				});
-			}
-		}, 3000);
-	}, [closeConversationPanel, createSnackbar, currentConversation, ids, onActionComplete, t]);
+		});
+	}, [
+		canExecute,
+		closeConversationPanel,
+		createSnackbar,
+		currentConversation,
+		ids,
+		onActionComplete,
+		t
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
