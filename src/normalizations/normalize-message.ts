@@ -375,10 +375,13 @@ export const haveReadReceipt = (
  * Extracts and maps flags from a SOAP message to a Flags object.
  * */
 const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNullable<unknown> => {
-	if (isNil(m?.f)) {
+
+	// if changed tag names are present, ignore flags
+	if (typeof(m?.tn) !== 'undefined'  && !m?.f) {
 		return {};
 	}
-	const flags = m.f;
+
+	const flags = m?.f ? m.f : '';
 	return {
 		read: !/u/.test(flags),
 		hasAttachment: /a/.test(flags),
