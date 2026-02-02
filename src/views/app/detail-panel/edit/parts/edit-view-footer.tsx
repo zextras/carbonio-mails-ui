@@ -123,7 +123,9 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 				gap="0.5rem"
 				padding={{ right: '0.5rem' }}
 			>
-				<Text color="gray1">{draftSavedStatusMessage}</Text>
+				<Text size="small" color="gray1">
+					{draftSavedStatusMessage}
+				</Text>
 				<Padding left="0.5rem" />
 				<Divider color={DIVIDER_COLOR} orientation="vertical" />
 				<Tooltip label={t('editView.footer.deleteDraft', 'Delete draft')}>
