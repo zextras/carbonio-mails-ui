@@ -3,20 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { updateSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { updateSettings } from '@zextras/carbonio-shell-ui';
 import { isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
-import type {
-	FilterOption,
-	FolderSortOrder,
-	SortAndFilterState,
-	SortDirection,
-	SortOption
-} from '../types';
-import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from '../constants';
-import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import type { FolderSortOrder, SortDirection } from '../types';
+import { FILTER_OPTIONS, SORTING_OPTIONS } from '../constants';
 import { TFunction } from 'i18next';
 
 /**

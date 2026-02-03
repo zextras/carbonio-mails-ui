@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { isTrash } from '@zextras/carbonio-ui-commons';
-import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { SORTING_DIRECTION, SORTING_OPTIONS, FILTER_OPTIONS } from '../../../../constants';
