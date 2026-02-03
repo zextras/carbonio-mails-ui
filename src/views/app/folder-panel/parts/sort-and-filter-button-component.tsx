@@ -28,16 +28,7 @@ import {
 	parseMessageSortingOptions,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
-
-type SortOption = {
-	value: string;
-	label: string;
-};
-
-type FilterOption = {
-	value: string | undefined;
-	label: string;
-};
+import type { SortOption, FilterOption } from '../../../../types';
 
 function getRadioIcon(option: string | undefined, value: string): string {
 	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';

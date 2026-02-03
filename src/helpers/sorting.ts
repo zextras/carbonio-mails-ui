@@ -7,6 +7,8 @@ import { updateSettings } from '@zextras/carbonio-shell-ui';
 import { isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
+import type { FolderSortOrder, SortDirection } from '../types';
+
 /**
  * Returns sortType, sortDirection and sortOrder for the given folder
  *
@@ -18,20 +20,14 @@ import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib
  * sortDirection: the sort direction for the given folder,
  */
 
-const fallbackSortOrder = {
+const fallbackSortOrder: FolderSortOrder = {
 	sortType: 'date',
-	sortDirection: 'Desc' as 'Asc' | 'Desc'
+	sortDirection: 'Desc' as SortDirection
 };
 
-const trashFolderSortOrder = {
+const trashFolderSortOrder: FolderSortOrder = {
 	sortType: 'changeDate',
-	sortDirection: 'Desc' as 'Asc' | 'Desc'
-};
-
-export type FolderSortOrder = {
-	sortType: string;
-	sortDirection: 'Asc' | 'Desc';
-	filterType?: string;
+	sortDirection: 'Desc' as SortDirection
 };
 
 export const getFilterQuery = (filter: string | undefined, folderId: string): string => {
@@ -79,13 +75,13 @@ export function parseMessageSortingOptions(
 	if (parameters?.length === 2) {
 		return {
 			sortType: parameters[0],
-			sortDirection: parameters[1] as 'Asc' | 'Desc'
+			sortDirection: parameters[1] as SortDirection
 		};
 	}
 	if (parameters?.length === 3) {
 		return {
 			sortType: parameters[0],
-			sortDirection: parameters[1] as 'Asc' | 'Desc',
+			sortDirection: parameters[1] as SortDirection,
 			filterType: parameters[2]
 		};
 	}

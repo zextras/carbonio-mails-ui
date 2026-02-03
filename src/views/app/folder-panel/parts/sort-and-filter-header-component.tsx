@@ -24,6 +24,7 @@ import {
 	parseMessageSortingOptions,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
+import type { SortOption, FilterOption, SortAndFilterState } from '../../../../types';
 
 const getTranslatedLabelFromValue = (
 	value: string | null | undefined,
@@ -39,8 +40,18 @@ const getTranslatedLabelFromValue = (
 
 const isValid = (
 	val: string | undefined,
-	options: Record<string, { value: string | undefined }>
+	options: Record<string, SortOption | FilterOption>
 ): boolean => !!val && Object.values(options).some((opt) => opt.value === val);
+
+const getDefaultSortAndFilterState = (folderId: string): SortAndFilterState => {
+	const isTrashFolder = isTrash(folderId);
+
+	return {
+		sortType: isTrashFolder ? SORTING_OPTIONS.changeDate.value : SORTING_OPTIONS.date.value,
+		sortDirection: SORTING_DIRECTION.DESCENDING,
+		filterType: undefined
+	};
+};
 
 export const SortAndFilterHeaderComponent = ({
 	folderId
@@ -60,19 +71,10 @@ export const SortAndFilterHeaderComponent = ({
 		[folderId, prefSortOrder]
 	);
 
-	const defaultSortAndFilterState = useMemo((): {
-		sortType: string;
-		sortDirection: string;
-		filterType: string | undefined;
-	} => {
-		const isTrashFolder = isTrash(folderId);
-
-		return {
-			sortType: isTrashFolder ? SORTING_OPTIONS.changeDate.value : SORTING_OPTIONS.date.value,
-			sortDirection: SORTING_DIRECTION.DESCENDING,
-			filterType: undefined as string | undefined
-		};
-	}, [folderId]);
+	const defaultSortAndFilterState = useMemo<SortAndFilterState>(
+		() => getDefaultSortAndFilterState(folderId),
+		[folderId]
+	);
 
 	const sortType = useMemo(
 		() =>
