@@ -26,7 +26,6 @@ import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
-import { Edit } from '@mui/icons-material';
 import { updateMessages } from '../../../../../store/emails/store';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
