@@ -120,7 +120,6 @@ describe('getTranslatedSortFilterLabel integration', () => {
 			});
 			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
-			// Should fallback to default and not render
 			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 		});
 
@@ -131,7 +130,6 @@ describe('getTranslatedSortFilterLabel integration', () => {
 			});
 			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
-			// Should fallback to default and not render
 			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 		});
 
@@ -142,7 +140,6 @@ describe('getTranslatedSortFilterLabel integration', () => {
 			});
 			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
-			// Should fallback to default and not render
 			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 		});
 
@@ -153,7 +150,6 @@ describe('getTranslatedSortFilterLabel integration', () => {
 			});
 			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
-			// Should fallback to default and not render
 			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
 		});
 
