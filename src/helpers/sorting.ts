@@ -159,12 +159,12 @@ export const getTranslatedSortFilterLabel = (
 	if (!value) return '';
 	const sortOpt = Object.values(SORTING_OPTIONS).find((opt) => opt.value === value);
 	if (sortOpt) {
-		const translationKey = sortOpt.label.replace(/ /g, '_');
+		const translationKey = sortOpt.label.replaceAll(' ', '_');
 		return t(`sorting_dropdown.${translationKey}`, sortOpt.label);
 	}
 	const filterOpt = Object.values(FILTER_OPTIONS).find((opt) => opt.value === value);
 	if (filterOpt) {
-		const translationKey = filterOpt.label.replace(/ /g, '_');
+		const translationKey = filterOpt.label.replaceAll(' ', '_');
 		return t(`sorting_dropdown.${translationKey}`, filterOpt.label);
 	}
 	return value;
