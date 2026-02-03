@@ -14,7 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -60,7 +60,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 	const sortingOptions: SortOption[] = useMemo(
 		() => [
 			SORTING_OPTIONS.date,
-			...(folderId === FOLDERS.TRASH ? [SORTING_OPTIONS.changeDate] : []),
+			...(isTrash(folderId) ? [SORTING_OPTIONS.changeDate] : []),
 			SORTING_OPTIONS.subject,
 			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from,
 			SORTING_OPTIONS.size
@@ -167,9 +167,9 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 	const sortItems: DropdownItem[] = useMemo(
 		() =>
 			sortingOptions.map(({ value, label }) => {
+				const isTrashFolder = isTrash(folderId);
 				const isDefaultSort =
-					(folderId === FOLDERS.TRASH && value === 'changeDate') ||
-					(folderId !== FOLDERS.TRASH && value === 'date');
+					(isTrashFolder && value === 'changeDate') || (!isTrashFolder && value === 'date');
 				const translatedLabel = capitalize(t(`sorting_dropdown.${label}`, label));
 				const labelWithDefault = isDefaultSort
 					? `${translatedLabel} (${t('sorting_dropdown.default', 'Default')})`
