@@ -46,7 +46,7 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 		}: {
 			status: 'open' | 'closed';
 		}): Promise<void> => {
-			const spamMessage = 'You’ve marked this e-mail as Spam';
+			const spamMessage = 'Conversation marked as Spam';
 			if (status === 'open') {
 				await screen.findByText(spamMessage);
 			} else {
@@ -61,7 +61,7 @@ export const conversationTestUtilities = (id: string): ConversationTestUtilities
 		}: {
 			status: 'open' | 'closed';
 		}): Promise<void> => {
-			const notSpamMessage = 'You’ve marked this e-mail as Not Spam';
+			const notSpamMessage = 'Conversation marked as Not Spam';
 			if (status === 'open') {
 				await screen.findByText(notSpamMessage);
 			} else {
