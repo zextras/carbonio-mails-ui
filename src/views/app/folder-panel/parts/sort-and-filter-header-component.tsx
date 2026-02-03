@@ -59,10 +59,7 @@ export const SortAndFilterHeaderComponent = ({
 		[folderId, prefSortOrder]
 	);
 
-	const defaultSortAndFilterState = useMemo<SortAndFilterState>(
-		() => getDefaultSortAndFilterState(folderId),
-		[folderId]
-	);
+	const defaultSortAndFilterState = getDefaultSortAndFilterState(folderId);
 
 	const sortType = useMemo(
 		() =>
@@ -99,18 +96,11 @@ export const SortAndFilterHeaderComponent = ({
 		[sortType, filterType, defaultSortAndFilterState]
 	);
 
-	const currentFilterLabel = useMemo(
-		() =>
-			filterType
-				? `${t('label.show', 'Show')}: ${getTranslatedSortFilterLabel(filterType, t)}`
-				: '',
-		[filterType, t]
-	);
+	const currentFilterLabel = filterType
+		? `${t('label.show', 'Show')}: ${getTranslatedSortFilterLabel(filterType, t)}`
+		: '';
 
-	const currentSortLabel = useMemo(
-		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedSortFilterLabel(sortType, t)}`,
-		[sortType, t]
-	);
+	const currentSortLabel = `${t('label.sort_by', 'Sort by')}: ${getTranslatedSortFilterLabel(sortType, t)}`;
 
 	if (!hasModifiedState) return null;
 	return (
