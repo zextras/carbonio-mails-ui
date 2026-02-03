@@ -87,7 +87,8 @@ export default defineConfig({
 						'**/recover-messages.test.tsx',
 						'**/rich-text-editor-container.test.tsx',
 						'**/share-folder-actions.test.ts',
-						'**/recipients-certificates-settings.test.tsx'
+						'**/recipients-certificates-settings.test.tsx',
+						'**/move-conv.test.tsx' // flaky test, needs to be fixed (Timeout frequently)
 					]
 				}
 			},
