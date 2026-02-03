@@ -526,7 +526,7 @@ export const SORTING_OPTIONS = {
 	from: { label: 'from', value: 'name' },
 	to: { label: 'to', value: 'rcpt' },
 	date: { label: 'date', value: 'date' },
-	changeDate: { label: 'change_date', value: 'changeDate' },
+	changeDate: { label: 'last modified', value: 'changeDate' },
 	subject: { label: 'subject', value: 'subj' },
 	size: { label: 'size', value: 'size' }
 } as const;
