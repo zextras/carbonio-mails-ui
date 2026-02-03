@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { updateSettings } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, isTrash, JSNS } from '@zextras/carbonio-ui-commons';
+import { isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 /**
