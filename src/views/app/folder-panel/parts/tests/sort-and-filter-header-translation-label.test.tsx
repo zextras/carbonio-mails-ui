@@ -111,4 +111,74 @@ describe('getTranslatedSortFilterLabel integration', () => {
 		expect(screen.queryByText(/Show:/i)).not.toBeInTheDocument();
 		expect(screen.getByText('label.sort_by: sorting_dropdown.subject')).toBeInTheDocument();
 	});
+
+	describe('corner cases', () => {
+		it('should handle empty string sortType gracefully', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: '',
+				filterType: undefined
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should fallback to default and not render
+			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
+		});
+
+		it('should handle null sortType gracefully', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: null,
+				filterType: undefined
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should fallback to default and not render
+			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
+		});
+
+		it('should handle undefined sortType gracefully', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: undefined,
+				filterType: undefined
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should fallback to default and not render
+			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
+		});
+
+		it('should handle unknown sortType value', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: 'unknown_sort_type',
+				filterType: undefined
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should fallback to default and not render
+			expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
+		});
+
+		it('should handle unknown filterType value', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: SORTING_OPTIONS.subject.value,
+				filterType: 'unknown_filter_type'
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should render with just sort label (filter is invalid so defaults to undefined)
+			expect(screen.getByTestId('sorting-options-container')).toBeInTheDocument();
+			expect(screen.getByText('label.sort_by: sorting_dropdown.subject')).toBeInTheDocument();
+			expect(screen.queryByText(/label.show:/i)).not.toBeInTheDocument();
+		});
+
+		it('should handle labels with spaces correctly', () => {
+			(parseMessageSortingOptions as Mock).mockReturnValue({
+				sortType: SORTING_OPTIONS.changeDate.value, // 'last modified' has one space
+				filterType: undefined
+			});
+			setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+			// Should convert 'last modified' to 'last_modified'
+			expect(screen.getByText('label.sort_by: sorting_dropdown.last_modified')).toBeInTheDocument();
+		});
+	});
 });
