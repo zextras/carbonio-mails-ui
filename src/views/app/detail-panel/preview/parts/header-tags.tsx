@@ -100,32 +100,33 @@ const CompactViewTags = ({
 						disablePortal
 						style={{ maxHeight: '300px' }}
 					>
-						<Button
-							onClick={toggleOpen}
-							style={{ position: 'absolute', top: '8px', right: '8px' }}
-							size="small"
-							color="text"
-							type="ghost"
-							icon="CloseOutline"
-						/>
-						<Container
-							style={{ overflowY: 'auto' }}
-							crossAlignment="flex-start"
-							padding={{ all: 'small' }}
-							gap="0.5rem"
-						>
-							{map(tags.slice(1), (tag) => (
-								<Chip
-									key={tag.id}
-									label={tag?.name}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore // TODO: fix type in Tag interface
-									avatarBackground={tag.color}
-									background="gray2"
-									avatarIcon="Tag"
-									onClick={(): void => triggerSearch(tag)}
+						<Container orientation="horizontal" crossAlignment="flex-start">
+							<Container
+								padding={{ vertical: 'small', left: 'small' }}
+								gap="0.5rem"
+							>
+								{map(tags.slice(1), (tag, index) => (
+									<Chip
+										key={tag.id}
+										label={tag?.name}
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore // TODO: fix type in Tag interface
+										avatarBackground={tag.color}
+										background="gray2"
+										avatarIcon="Tag"
+										onClick={(): void => triggerSearch(tag)}
+									/>
+								))}
+							</Container>
+							<Container>
+								<Button
+									onClick={toggleOpen}
+									size="small"
+									color="text"
+									type="ghost"
+									icon="CloseOutline"
 								/>
-							))}
+							</Container>
 						</Container>
 					</Popover>
 				</>

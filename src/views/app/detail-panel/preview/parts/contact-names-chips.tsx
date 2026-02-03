@@ -176,7 +176,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 						style={{ maxHeight: '300px' }}
 					>
 						<Container orientation="horizontal" crossAlignment="flex-start">
-							<Container padding={{ all: 'small' }} gap="0.5rem">
+							<Container padding={{ vertical: 'small', left: 'small' }} gap="0.5rem">
 								{map(contacts.slice(1), (contact, index) => (
 									<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
 										<Text color="secondary" size="small">
