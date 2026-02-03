@@ -15,6 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { isTrash } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
@@ -59,38 +60,53 @@ export const SortAndFilterHeaderComponent = ({
 		[folderId, prefSortOrder]
 	);
 
-	const defaultState = useMemo(
-		() => ({
-			type: SORTING_OPTIONS.date.value,
-			direction: SORTING_DIRECTION.DESCENDING,
-			filter: undefined as string | undefined
-		}),
-		[]
-	);
+	const defaultSortAndFilterState = useMemo((): {
+		sortType: string;
+		sortDirection: string;
+		filterType: string | undefined;
+	} => {
+		const isTrashFolder = isTrash(folderId);
+
+		return {
+			sortType: isTrashFolder ? SORTING_OPTIONS.changeDate.value : SORTING_OPTIONS.date.value,
+			sortDirection: SORTING_DIRECTION.DESCENDING,
+			filterType: undefined as string | undefined
+		};
+	}, [folderId]);
 
 	const sortType = useMemo(
-		() => (isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultState.type),
-		[rawSortType, defaultState.type]
+		() =>
+			isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultSortAndFilterState.sortType,
+		[rawSortType, defaultSortAndFilterState.sortType]
 	);
 
 	const filterType = useMemo(
-		() => (isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultState.filter),
-		[rawFilterType, defaultState.filter]
+		() =>
+			isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultSortAndFilterState.filterType,
+		[rawFilterType, defaultSortAndFilterState.filterType]
 	);
 
 	const resetToDefaultState = useCallback(() => {
 		updateSortAndFilterSettings({
 			folderId,
 			prefSortOrder,
-			sortType: defaultState.type,
-			sortDirection: defaultState.direction,
-			filter: defaultState.filter
+			sortType: defaultSortAndFilterState.sortType,
+			sortDirection: defaultSortAndFilterState.sortDirection,
+			filter: defaultSortAndFilterState.filterType
 		});
-	}, [defaultState.direction, defaultState.filter, defaultState.type, folderId, prefSortOrder]);
+	}, [
+		defaultSortAndFilterState.sortDirection,
+		defaultSortAndFilterState.filterType,
+		defaultSortAndFilterState.sortType,
+		folderId,
+		prefSortOrder
+	]);
 
 	const hasModifiedState = useMemo(
-		() => sortType !== defaultState.type || filterType !== defaultState.filter,
-		[sortType, filterType, defaultState]
+		() =>
+			sortType !== defaultSortAndFilterState.sortType ||
+			filterType !== defaultSortAndFilterState.filterType,
+		[sortType, filterType, defaultSortAndFilterState]
 	);
 
 	const currentFilterLabel = useMemo(
