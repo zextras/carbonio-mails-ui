@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useRef, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 
 import {
 	Row,
@@ -12,8 +12,9 @@ import {
 	Chip,
 	Container,
 	Padding,
-	Badge,
-	Popover
+	Popover,
+	Button,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
@@ -21,6 +22,12 @@ import { map } from 'lodash';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import type { Participant } from 'types/index.d';
 import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
+import styled from '@emotion/styled';
+import { useTranslation } from 'react-i18next';
+
+const BadgeButton = styled(Button)`
+	padding: 0.125rem 0.5rem;
+`;
 
 export function generateChipName(contact: Participant): string {
 	const chipName = contact.fullName ?? contact.name ?? '';
@@ -50,6 +57,22 @@ export const ContactChip: FC<{
 }> = ({ contact, isExpanded }): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
 
+	const handleSendMsg = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+			e.stopPropagation();
+			sendMsg(contact);
+		},
+		[contact]
+	);
+
+	const handleCopyEmailToClipboard = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+			e.stopPropagation();
+			copyEmailToClipboard(contact.address, createSnackbar);
+		},
+		[contact, createSnackbar]
+	);
+
 	return (
 		<Chip
 			label={contact.address}
@@ -63,7 +86,7 @@ export const ContactChip: FC<{
 					type: 'button',
 					icon: 'EmailOutline',
 					background: 'gray3',
-					onClick: () => sendMsg(contact)
+					onClick: handleSendMsg
 				},
 				{
 					id: 'action2',
@@ -71,7 +94,7 @@ export const ContactChip: FC<{
 					type: 'button',
 					icon: 'Copy',
 					background: 'gray3',
-					onClick: () => copyEmailToClipboard(contact.address, createSnackbar)
+					onClick: handleCopyEmailToClipboard
 				}
 			]}
 		/>
@@ -99,44 +122,80 @@ const PlainView = ({ contacts }: { contacts: Participant[] }): ReactElement => (
 );
 
 const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement => {
+	const [t] = useTranslation();
+
 	const [open, setOpen] = useState(false);
 	const popOverRef = useRef(null);
 
-	const toggleOpen = (ev: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-		ev.stopPropagation();
-		setOpen(true);
-	};
+	const moreLabel = useMemo(
+		() =>
+			t('tooltip.view_more', {
+				count: contacts.length - 1,
+				defaultValue_one: 'View {{count}} more item',
+				defaultValue_other: 'View {{count}} more items'
+			}),
+		[t, contacts]
+	);
+
+	const toggleOpen = useCallback(
+		(ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
+			ev.stopPropagation();
+			setOpen(!open);
+		},
+		[open]
+	);
+
+	const handleClose = useCallback(() => {
+		setOpen(false);
+	}, []);
 
 	return (
-		<Row data-testid={`chip-${contacts[0].address}`} ref={popOverRef}>
+		<Row data-testid={`chip-${contacts[0].address}`}>
 			<ContactChip contact={contacts[0]} isExpanded={false} />
 			{contacts.length > 1 && (
 				<>
 					<Separator />
-					<Badge
-						color="text"
-						maxValue={contacts.length - 1}
-						value={`+${contacts.length - 1}`}
-						onClick={toggleOpen}
-					/>
+					<Tooltip label={moreLabel}>
+						<BadgeButton
+							ref={popOverRef}
+							onClick={toggleOpen}
+							size="small"
+							backgroundColor="gray2"
+							labelColor="text"
+							label={`+${contacts.length - 1}`}
+							shape="round"
+						/>
+					</Tooltip>
 					<Popover
 						open={open}
 						anchorEl={popOverRef}
-						placement="bottom-start"
-						disablePortal
+						placement="bottom-end"
+						onClose={handleClose}
 						styleAsModal
-						onClose={(): void => setOpen(false)}
+						disablePortal
+						style={{ maxHeight: '300px' }}
 					>
-						<Container style={{ overflowY: 'auto' }} padding={{ all: 'small' }} gap="0.5rem">
-							{map(contacts.slice(1), (contact, index) => (
-								<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
-									<Text color="secondary" size="small">
-										{generateChipName(contact)}
-									</Text>
-									<Padding right="extrasmall" />
-									<ContactChip contact={contact} isExpanded={true} />
-								</Container>
-							))}
+						<Container orientation="horizontal" crossAlignment="flex-start">
+							<Container padding={{ all: 'small' }} gap="0.5rem">
+								{map(contacts.slice(1), (contact, index) => (
+									<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
+										<Text color="secondary" size="small">
+											{generateChipName(contact)}
+										</Text>
+										<Padding right="extrasmall" />
+										<ContactChip contact={contact} isExpanded={true} />
+									</Container>
+								))}
+							</Container>
+							<Container>
+								<Button
+									onClick={toggleOpen}
+									size="small"
+									color="text"
+									type="ghost"
+									icon="CloseOutline"
+								/>
+							</Container>
 						</Container>
 					</Popover>
 				</>

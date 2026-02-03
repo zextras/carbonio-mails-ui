@@ -3,12 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 
-import { Badge, Chip, Container, Padding, Popover, Text } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	Chip,
+	Container,
+	Padding,
+	Popover,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { Tag, useRunSearchIntegration } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import styled from '@emotion/styled';
+
+const BadgeButton = styled(Button)`
+	padding: 0.125rem 0.5rem;
+`;
 
 const Separator = (): React.JSX.Element => (
 	<Padding horizontal="extrasmall">
@@ -25,13 +38,27 @@ const CompactViewTags = ({
 	tags: Tag[];
 	triggerSearch: (tagToSearch: Tag) => void;
 }): ReactElement | null => {
+	const [t] = useTranslation();
 	const [open, setOpen] = useState(false);
 	const popOverRef = useRef(null);
 
-	const toggleOpen = (ev: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-		ev.stopPropagation();
-		setOpen(true);
-	};
+	const toggleOpen = useCallback(
+		(ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
+			ev.stopPropagation();
+			setOpen(!open);
+		},
+		[open]
+	);
+
+	const moreLabel = useMemo(
+		() =>
+			t('tooltip.view_more', {
+				count: tags.length - 1,
+				defaultValue_one: 'View {{count}} more item',
+				defaultValue_other: 'View {{count}} more items'
+			}),
+		[t, tags.length]
+	);
 
 	if (tags.length === 0) {
 		return null;
@@ -42,7 +69,6 @@ const CompactViewTags = ({
 			<Chip
 				key={tags[0].id}
 				label={tags[0].name}
-				ref={popOverRef}
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore // TODO: fix type in Tag interface
 				avatarBackground={tags[0].color}
@@ -54,22 +80,35 @@ const CompactViewTags = ({
 			{tags.length > 1 && (
 				<>
 					<Separator />
-					<Badge
-						color="text"
-						maxValue={tags.length - 1}
-						value={`+${tags.length - 1}`}
-						onClick={toggleOpen}
-					/>
+					<Tooltip label={moreLabel}>
+						<BadgeButton
+							ref={popOverRef}
+							onClick={toggleOpen}
+							size="small"
+							backgroundColor="gray2"
+							labelColor="text"
+							label={`+${tags.length - 1}`}
+							shape="round"
+						/>
+					</Tooltip>
 					<Popover
 						open={open}
 						anchorEl={popOverRef}
-						placement="bottom-start"
-						disablePortal
-						styleAsModal
+						placement="bottom-end"
 						onClose={(): void => setOpen(false)}
+						styleAsModal
+						disablePortal
+						style={{ maxHeight: '300px' }}
 					>
+						<Button
+							onClick={toggleOpen}
+							style={{ position: 'absolute', top: '8px', right: '8px' }}
+							size="small"
+							color="text"
+							type="ghost"
+							icon="CloseOutline"
+						/>
 						<Container
-							maxHeight="500px"
 							style={{ overflowY: 'auto' }}
 							crossAlignment="flex-start"
 							padding={{ all: 'small' }}
