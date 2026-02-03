@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments } from '../../helpers/attachments';
 import { convertHtmlToPlainText } from 'commons/utilities';
-import { EditViewActions, NO_ACCOUNT_NAME } from 'constants/index';
+import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/index';
 import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
@@ -461,6 +461,10 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
+	const draftSaveProcessStatus = {
+		status: PROCESS_STATUS.COMPLETED,
+		lastSaveTimestamp: new Date(originalMessage.date)
+	};
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
@@ -481,7 +485,9 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		text,
 		requestReadReceipt: isRequestReadReceipt,
 		did: originalMessage.id,
-		size: originalMessage.size
+		size: originalMessage.size,
+		originalMessage,
+		draftSaveProcessStatus
 	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
