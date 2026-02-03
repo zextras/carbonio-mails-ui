@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { updateSettings } from '@zextras/carbonio-shell-ui';
-import { JSNS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 /**
@@ -20,6 +20,11 @@ import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib
 
 const fallbackSortOrder = {
 	sortType: 'date',
+	sortDirection: 'Desc' as 'Asc' | 'Desc'
+};
+
+const trashFolderSortOrder = {
+	sortType: 'changeDate',
 	sortDirection: 'Desc' as 'Asc' | 'Desc'
 };
 
@@ -64,8 +69,11 @@ export function parseMessageSortingOptions(
 	folderId: string,
 	prefSortOrder?: string
 ): FolderSortOrder {
+	const isTrashFolder = isTrash(folderId);
+	const defaultSortOrder = isTrashFolder ? trashFolderSortOrder : fallbackSortOrder;
+
 	if (!prefSortOrder || !folderId) {
-		return fallbackSortOrder;
+		return defaultSortOrder;
 	}
 	const { parameters } = findFolderEntry(prefSortOrder ?? '', folderId);
 	if (parameters?.length === 2) {
@@ -81,7 +89,7 @@ export function parseMessageSortingOptions(
 			filterType: parameters[2]
 		};
 	}
-	return fallbackSortOrder;
+	return defaultSortOrder;
 }
 
 function modifySettingString(
