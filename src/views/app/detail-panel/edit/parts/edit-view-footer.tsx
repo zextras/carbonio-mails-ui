@@ -12,7 +12,8 @@ import {
 	Button,
 	Tooltip,
 	useModal,
-	Padding
+	Padding,
+	AnyColor
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
@@ -24,6 +25,8 @@ import { PROCESS_STATUS } from '../../../../../constants';
 import { useMsgMoveToTrashDescriptor } from '../../../../../hooks/actions/use-msg-move-to-trash';
 import { useEditorDid, useEditorDraftSaveProcessStatus } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types/editor';
+
+const DIVIDER_COLOR: AnyColor = 'gray2';
 
 type EditViewFooterProps = {
 	editorId: MailsEditorV2['id'];
@@ -60,21 +63,26 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 		[draftSaveStatus?.status]
 	);
 
-	const buttonColor = useMemo<string>(
-		() => (isDeleteDisabled ? 'secondary' : 'secondary.focus'),
-		[isDeleteDisabled]
-	);
-
 	const draftSavedStatusMessage = useMemo<string>((): string => {
 		if (draftSaveStatus?.status === PROCESS_STATUS.RUNNING) {
 			return t('editView.footer.draftSaving', 'Saving...');
 		}
 
 		if (draftSaveStatus?.status === PROCESS_STATUS.COMPLETED) {
-			return t('editView.footer.draftSavedAt', {
-				time: moment(draftSaveStatus?.lastSaveTimestamp).format('LTS'),
-				defaultValue: 'Draft saved at {{time}}'
-			});
+			const isSameDay = draftSaveStatus?.lastSaveTimestamp?.getDay() === new Date().getDay();
+			const formattedDate = moment(draftSaveStatus?.lastSaveTimestamp).format('L');
+			const formattedTime = moment(draftSaveStatus?.lastSaveTimestamp).format('LT');
+
+			return isSameDay
+				? t('editView.footer.draftSaveTime', {
+						time: formattedTime,
+						defaultValue: 'Draft saved at {{time}}'
+					})
+				: t('editView.footer.draftSaveDateTime', {
+						date: formattedDate,
+						time: formattedTime,
+						defaultValue: 'Draft saved on {{date}} at {{time}}'
+					});
 		}
 
 		if (!isDraftSaved) {
@@ -107,7 +115,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 
 	return (
 		<FooterContainer data-testid="edit-view-footer">
-			<Divider />
+			<Divider color={DIVIDER_COLOR} />
 			<Container
 				orientation="horizontal"
 				mainAlignment="flex-end"
@@ -115,14 +123,16 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 				gap="0.5rem"
 				padding={{ right: '0.5rem' }}
 			>
-				<Text color="gray1">{draftSavedStatusMessage}</Text>
+				<Text size="small" color="gray1">
+					{draftSavedStatusMessage}
+				</Text>
 				<Padding left="0.5rem" />
-				<Divider orientation="vertical" />
+				<Divider color={DIVIDER_COLOR} orientation="vertical" />
 				<Tooltip label={t('editView.footer.deleteDraft', 'Delete draft')}>
 					<Button
 						type="ghost"
 						size="extralarge"
-						color={buttonColor}
+						color="gray0"
 						icon="Trash2Outline"
 						onClick={onDeleteClick}
 						disabled={isDeleteDisabled}
