@@ -99,8 +99,12 @@ describe('EditViewFooter', () => {
 	});
 
 	describe('Draft saved', () => {
-		it('should render the last saved timestamp', () => {
+		it('should render the time of the last save if it is within the current day', () => {
 			const lastSaveTimestamp = new Date(Date.now() - 1000 * 60); // 1 minute ago
+			const formattedTime = lastSaveTimestamp.toLocaleTimeString([], {
+				hour: 'numeric',
+				minute: '2-digit'
+			});
 			const editor: MailsEditorV2 = {
 				...generateNewMessageEditor(),
 				did: draftId,
@@ -113,7 +117,34 @@ describe('EditViewFooter', () => {
 
 			setupTest(<EditViewFooter editorId={editor.id} />);
 
-			expect(screen.getByText(/Draft saved at/i)).toBeVisible();
+			expect(screen.getByText(`Draft saved at ${formattedTime}`)).toBeVisible();
+		});
+
+		it('should render the date and time of the last save if it is not within the current day', () => {
+			const lastSaveTimestamp = new Date(Date.now() - 1000 * 60 * 60 * 24); // 1 day ago
+			const formattedDate = lastSaveTimestamp.toLocaleString([], {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit'
+			});
+			const formattedTime = lastSaveTimestamp.toLocaleString([], {
+				hour: 'numeric',
+				minute: '2-digit'
+			});
+
+			const editor: MailsEditorV2 = {
+				...generateNewMessageEditor(),
+				did: draftId,
+				draftSaveProcessStatus: {
+					status: PROCESS_STATUS.COMPLETED,
+					lastSaveTimestamp
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditViewFooter editorId={editor.id} />);
+
+			expect(screen.getByText(`Draft saved on ${formattedDate} at ${formattedTime}`)).toBeVisible();
 		});
 
 		it('should render an enabled delete button', () => {

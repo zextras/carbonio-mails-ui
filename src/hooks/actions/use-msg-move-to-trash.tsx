@@ -110,7 +110,7 @@ export const useMsgMoveToTrashFn = ({
 								{t('messages.confirm_delete_draft', {
 									defaultValue_one: 'Are you sure you want to delete this draft?',
 									defaultValue_other:
-										'One or more of these drafts are currently open in editors. Are you sure you want to delete them?',
+										'One or more drafts are open in the editor. Are you sure you want to delete them?',
 									count: ids.length
 								})}
 							</Text>

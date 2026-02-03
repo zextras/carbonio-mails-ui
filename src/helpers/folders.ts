@@ -222,7 +222,7 @@ export const isInboxSubfolder = ({
 
 /**
  * Tells if a folder is a subfolder of the sent folder
- * @param folderId
+ * @param folder
  */
 export const isSentOrItsSubfolder = (folder: Folder | undefined): boolean => {
 	if (!folder) {

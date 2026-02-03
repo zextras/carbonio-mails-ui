@@ -112,9 +112,8 @@ describe('useConvSetNotSpam', () => {
 					initialProps: [{ ids, folderId: FOLDERS.SPAM }]
 				});
 
-				act(() => {
+				await act(async () => {
 					functions.execute();
-					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				const requestParameter = await apiInterceptor;
@@ -135,7 +134,6 @@ describe('useConvSetNotSpam', () => {
 				});
 				await act(async () => {
 					functions.execute();
-					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				expect(onActionComplete).toHaveBeenCalledWith(ids);
