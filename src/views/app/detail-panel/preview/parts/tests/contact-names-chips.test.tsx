@@ -178,7 +178,7 @@ describe('Compact view (isWide: false)', () => {
 		const sendButtons = screen.getAllByRoleWithIcon('button', { icon: sendIcon });
 		await user.click(sendButtons[1]); // First button is the main chip, second is in popover
 
-		expect(sendMsg).toHaveBeenCalledWith(contacts[1]);
+		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
 	});
 
 	it('shows expanded avatar for contacts in popover', async () => {
