@@ -59,7 +59,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
-	const isWide = useContainerWidth(containerRef, 720);
+	const isWide = useContainerWidth(containerRef, 550);
 	const tags = useGetTagsList(message.tags);
 
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;

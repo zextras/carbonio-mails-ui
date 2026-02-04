@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useRef, useState } from 'react';
 
 import {
 	Button,
@@ -43,22 +43,14 @@ const CompactViewTags = ({
 	const popOverRef = useRef(null);
 
 	const toggleOpen = useCallback(
-		(ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
-			ev.stopPropagation();
+		(ev?: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
+			ev?.stopPropagation();
 			setOpen(!open);
 		},
 		[open]
 	);
 
-	const moreLabel = useMemo(
-		() =>
-			t('tooltip.view_more', {
-				count: tags.length - 1,
-				defaultValue_one: 'View {{count}} more item',
-				defaultValue_other: 'View {{count}} more items'
-			}),
-		[t, tags.length]
-	);
+	const moreLabel = t('tooltip.view_more', 'View all items in this list');
 
 	if (tags.length === 0) {
 		return null;
@@ -95,17 +87,18 @@ const CompactViewTags = ({
 						open={open}
 						anchorEl={popOverRef}
 						placement="bottom-end"
-						onClose={(): void => setOpen(false)}
+						onClose={toggleOpen}
 						styleAsModal
 						disablePortal
 						style={{ maxHeight: '300px' }}
 					>
 						<Container orientation="horizontal" crossAlignment="flex-start">
 							<Container
+								crossAlignment="flex-start"
 								padding={{ vertical: 'small', left: 'small' }}
 								gap="0.5rem"
 							>
-								{map(tags.slice(1), (tag, index) => (
+								{map(tags, (tag) => (
 									<Chip
 										key={tag.id}
 										label={tag?.name}

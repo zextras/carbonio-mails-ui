@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useRef, useState } from 'react';
 
 import {
 	Row,
@@ -127,15 +127,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 	const [open, setOpen] = useState(false);
 	const popOverRef = useRef(null);
 
-	const moreLabel = useMemo(
-		() =>
-			t('tooltip.view_more', {
-				count: contacts.length - 1,
-				defaultValue_one: 'View {{count}} more item',
-				defaultValue_other: 'View {{count}} more items'
-			}),
-		[t, contacts]
-	);
+	const moreLabel = t('tooltip.view_more', 'View all items in this list');
 
 	const toggleOpen = useCallback(
 		(ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
@@ -177,7 +169,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 					>
 						<Container orientation="horizontal" crossAlignment="flex-start">
 							<Container padding={{ vertical: 'small', left: 'small' }} gap="0.5rem">
-								{map(contacts.slice(1), (contact, index) => (
+								{map(contacts, (contact, index) => (
 									<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
 										<Text color="secondary" size="small">
 											{generateChipName(contact)}
