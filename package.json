@@ -72,6 +72,7 @@
 		"eslint-plugin-testing-library": "^5.10.1",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"eslint-stats": "^1.0.1",
+		"is-ci": "^3.0.1",
 		"jsdom": "20.0.3",
 		"msw": "^2.2.3",
 		"npm": "^10.5.0",
