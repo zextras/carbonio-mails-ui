@@ -49,6 +49,9 @@ export async function searchSoapApi({
 			queryPart.push('has:attachment');
 			finalsortBy = 'sizeDesc';
 			break;
+		case 'changeDateAsc':
+		case 'changeDateDesc':
+			break;
 		default:
 			break;
 	}
