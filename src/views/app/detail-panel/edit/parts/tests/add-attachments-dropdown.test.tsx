@@ -22,10 +22,11 @@ import {
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
-import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { generateNewMessageEditor, generateReplyMsgEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/index';
 import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
 import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
+import { generateMessage } from '../../../../../../__test__/generators/generateMessage';
 
 type FilesUploadResult = { attachmentId: string };
 
@@ -426,6 +427,158 @@ describe('AddAttachmentsDropdown', () => {
 			// No modal should appear
 			const modal = screen.queryByTestId('convert-to-smartlink-modal');
 			expect(modal).not.toBeInTheDocument();
+		});
+	});
+
+	describe('Original Attachments', () => {
+		it('should not display original attachments option for new message', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
+		});
+
+		it('should not display original attachments option when replying to message without attachments', async () => {
+			const originalMessage = generateMessage({});
+			const editor = generateReplyMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
+		});
+
+		it('should display original attachments option when replying to message with attachments', async () => {
+			const attachments = [
+				{
+					name: '1',
+					contentType: 'multipart/mixed',
+					size: 500,
+					parts: [
+						{
+							name: '1.1',
+							contentType: 'text/plain',
+							size: 100
+						},
+						{
+							name: '1.2',
+							disposition: 'attachment' as const,
+							contentType: 'application/pdf',
+							filename: 'document.pdf',
+							size: 200
+						}
+					]
+				}
+			];
+			const originalMessage = generateMessage({ parts: attachments });
+			const editor = generateReplyMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			expect(screen.getByText('composer.attachment.add_original')).toBeVisible();
+		});
+
+		it('should add original attachments to editor when clicking the option', async () => {
+			const attachmentParts = [
+				{
+					name: '1',
+					contentType: 'multipart/mixed',
+					size: 500,
+					parts: [
+						{
+							name: '1.1',
+							contentType: 'text/plain',
+							size: 100
+						},
+						{
+							name: '1.2',
+							disposition: 'attachment' as const,
+							contentType: 'application/pdf',
+							filename: 'document.pdf',
+							size: 200
+						}
+					]
+				}
+			];
+			const originalMessage = generateMessage({ parts: attachmentParts });
+			const editor = generateReplyMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			// Initially, editor should have no saved standard attachments
+			const initialEditor = getEditor({ id: editor.id });
+			const initialStandardAttachments = initialEditor?.savedAttachments.filter(
+				(att) => !att.isInline && !att.contentId
+			);
+			expect(initialStandardAttachments).toHaveLength(0);
+
+			// Click dropdown and select original attachments option
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			await user.click(screen.getByText('composer.attachment.add_original'));
+
+			// Now editor should have the original attachments
+			const updatedEditor = getEditor({ id: editor.id });
+			const standardAttachments = updatedEditor?.savedAttachments.filter(
+				(att) => !att.isInline && !att.contentId
+			);
+			expect(standardAttachments).toBeDefined();
+			expect(standardAttachments!.length).toBeGreaterThan(0);
+		});
+
+		it('should only add standard attachments and not inline attachments from original message', async () => {
+			const attachmentsStandardAndInline = [
+				{
+					name: '1',
+					contentType: 'multipart/mixed',
+					size: 700,
+					parts: [
+						{
+							name: '1.1',
+							contentType: 'text/html',
+							size: 100
+						},
+						{
+							name: '1.2',
+							disposition: 'attachment' as const,
+							contentType: 'application/pdf',
+							filename: 'document.pdf',
+							size: 200
+						},
+						{
+							name: '1.3',
+							disposition: 'inline' as const,
+							contentType: 'image/png',
+							filename: 'image.png',
+							ci: '<image123@mail>',
+							size: 300
+						}
+					]
+				}
+			];
+			const originalMessage = generateMessage({ parts: attachmentsStandardAndInline });
+			const editor = generateReplyMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			await user.click(screen.getByText('composer.attachment.add_original'));
+
+			const updatedEditor = getEditor({ id: editor.id });
+			const addedAttachments = updatedEditor?.savedAttachments.filter(
+				(att) => !att.isInline && !att.contentId
+			);
+
+			expect(addedAttachments!.length).toBeGreaterThan(0);
+
+			addedAttachments?.forEach((att) => {
+				expect(att.isInline).toBeFalsy();
+				expect(att.contentId).toBeUndefined();
+			});
 		});
 	});
 });
