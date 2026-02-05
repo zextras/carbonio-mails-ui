@@ -144,14 +144,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			id: 'localAttachment',
 			icon: 'MonitorOutline',
 			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onLocalFileClick,
-			customComponent: (
-				<>
-					<Icon icon="MonitorOutline" size="medium" />
-					<Padding horizontal="extrasmall" />
-					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-				</>
-			)
+			onClick: onLocalFileClick
 		};
 
 		const filesNodeAction: DropdownItem | undefined =
