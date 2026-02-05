@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -24,7 +24,7 @@ type UseEditorOriginalAttachmentsResult = {
  * This hook checks if the current editor action is a reply and if the original message has attachments.
  *
  * @param editorId - The ID of the editor
- * @returns An object containing hasOriginalAttachments flag and addOriginalAttachments function
+ * @returns An object containing originalMessageHasAttachments flag and addOriginalAttachmentsToEditor function
  */
 export const useEditorOriginalAttachments = ({
 	editorId
