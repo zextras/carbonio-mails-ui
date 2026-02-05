@@ -56,9 +56,9 @@ export const useEditorOriginalAttachments = ({
 		);
 
 		const store = useEditorsStore.getState();
-		standardAttachments.forEach((attachment) => {
+		for (const attachment of standardAttachments) {
 			store.addSavedAttachment(editorId, attachment);
-		});
+		}
 	}, [originalMessage, editorId]);
 
 	return {
