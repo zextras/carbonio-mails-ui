@@ -437,6 +437,7 @@ describe('AddAttachmentsDropdown', () => {
 			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
+			// sonarjs/no-assertions
 			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
 		});
 
@@ -447,6 +448,7 @@ describe('AddAttachmentsDropdown', () => {
 			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
+			// sonarjs/no-assertions
 			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
 		});
 
