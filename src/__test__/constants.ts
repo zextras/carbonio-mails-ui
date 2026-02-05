@@ -106,7 +106,9 @@ export const TESTID_SELECTORS = {
 		deletePermanently: 'icon: DeletePermanentlyOutline',
 		deleteDraft: 'icon: Trash2Outline'
 	},
-
+	composer: {
+		attachmentAddOriginal: 'composer.attachment.add_original'
+	},
 	signatureEditor: 'signature-editor',
 	signaturesList: 'signatures-list'
 };

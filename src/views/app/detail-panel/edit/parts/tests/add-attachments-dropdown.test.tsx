@@ -438,7 +438,9 @@ describe('AddAttachmentsDropdown', () => {
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
 
-			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
+			expect(
+				screen.queryByText(TESTID_SELECTORS.composer.attachmentAddOriginal)
+			).not.toBeInTheDocument();
 		});
 
 		it('should not display original attachments option when replying to message without attachments', async () => {
@@ -449,7 +451,9 @@ describe('AddAttachmentsDropdown', () => {
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
 
-			expect(screen.queryByText('composer.attachment.original')).not.toBeInTheDocument();
+			expect(
+				screen.queryByText(TESTID_SELECTORS.composer.attachmentAddOriginal)
+			).not.toBeInTheDocument();
 		});
 
 		it('should display original attachments option when replying to message with attachments', async () => {
@@ -480,7 +484,7 @@ describe('AddAttachmentsDropdown', () => {
 			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
-			expect(screen.getByText('composer.attachment.add_original')).toBeVisible();
+			expect(screen.getByText(TESTID_SELECTORS.composer.attachmentAddOriginal)).toBeVisible();
 		});
 
 		it('should add original attachments to editor when clicking the option', async () => {
@@ -520,7 +524,7 @@ describe('AddAttachmentsDropdown', () => {
 			// Click dropdown and select original attachments option
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
-			await user.click(screen.getByText('composer.attachment.add_original'));
+			await user.click(screen.getByText(TESTID_SELECTORS.composer.attachmentAddOriginal));
 
 			// Now editor should have the original attachments
 			const updatedEditor = getEditor({ id: editor.id });
@@ -568,7 +572,7 @@ describe('AddAttachmentsDropdown', () => {
 
 			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
 			await user.click(dropdownIcon);
-			await user.click(screen.getByText('composer.attachment.add_original'));
+			await user.click(screen.getByText(TESTID_SELECTORS.composer.attachmentAddOriginal));
 
 			const updatedEditor = getEditor({ id: editor.id });
 			const addedAttachments = updatedEditor?.savedAttachments.filter(
@@ -581,6 +585,36 @@ describe('AddAttachmentsDropdown', () => {
 				expect(att.isInline).toBeFalsy();
 				expect(att.contentId).toBeUndefined();
 			});
+		});
+		it('should not display original attachments option if the originalMessage in editor is undefined', async () => {
+			const attachmentParts = [
+				{
+					name: '1',
+					contentType: 'multipart/mixed',
+					size: 200,
+					parts: [
+						{
+							name: '1.1',
+							disposition: 'attachment' as const,
+							contentType: 'application/pdf',
+							filename: 'document.pdf',
+							size: 200
+						}
+					]
+				}
+			];
+			const originalMessage = generateMessage({ parts: attachmentParts });
+			let editor = generateReplyMsgEditor(originalMessage);
+			editor = { ...editor, originalMessage: undefined };
+
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+
+			expect(
+				screen.queryByText(TESTID_SELECTORS.composer.attachmentAddOriginal)
+			).not.toBeInTheDocument();
 		});
 	});
 });
