@@ -221,7 +221,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				)}
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-				<Dropdown items={actionsItems} display="inline-block">
+				<Dropdown disableAutoFocus items={actionsItems} display="inline-block">
 					<Button size="large" icon="AttachOutline" onClick={noop} type={'ghost'} color={'gray0'} />
 				</Dropdown>
 			</Tooltip>
