@@ -9,6 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { EditViewActions } from 'constants/index';
 import { buildSavedAttachments } from 'helpers/attachments';
 import { useEditorsStore } from 'store/editor/store';
+import { forEach } from 'lodash';
 
 type UseEditorOriginalAttachmentsArgs = {
 	editorId: string;
@@ -56,9 +57,9 @@ export const useEditorOriginalAttachments = ({
 		);
 
 		const store = useEditorsStore.getState();
-		for (const attachment of standardAttachments) {
+		forEach(standardAttachments, (attachment) => {
 			store.addSavedAttachment(editorId, attachment);
-		}
+		});
 	}, [originalMessage, editorId]);
 
 	return {
