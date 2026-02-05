@@ -32,6 +32,7 @@ import { useMsgSetUnflagDescriptor } from 'hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from 'hooks/actions/use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from 'hooks/actions/use-msg-show-original';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
+import {isItemRead} from "../../views/app/folder-panel/parts/utils/utils";
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
@@ -89,13 +90,13 @@ export const useMsgActions = ({
 		ids: [message.id],
 		shouldReplaceHistory,
 		folderId,
-		isMessageRead: message.read
+		isMessageRead: isItemRead(message.read)
 	});
 	const messageUnreadDescriptor = useMsgSetUnreadDescriptor({
 		ids: [message.id],
 		shouldReplaceHistory,
 		folderId,
-		isMessageRead: message.read
+		isMessageRead: isItemRead(message.read)
 	});
 	const flagDescriptor = useMsgSetFlagDescriptor([message.id], message.flagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], message.flagged);

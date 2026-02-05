@@ -21,7 +21,7 @@ export type NormalizedConversation = {
 	participants: Participant[];
 	subject: string;
 	fragment: string;
-	read: boolean;
+	read?: boolean;
 	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;

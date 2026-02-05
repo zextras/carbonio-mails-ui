@@ -20,6 +20,7 @@ import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MessageListItemProps } from 'types/index.d';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
+import { isItemRead } from '../parts/utils/utils';
 
 export const MessageListItem = memo(function MessageListItem({
 	message,
@@ -47,7 +48,7 @@ export const MessageListItem = memo(function MessageListItem({
 	const setAsRead = useMsgSetReadFn({
 		ids: [message.id],
 		shouldReplaceHistory,
-		isMessageRead: message.read,
+		isMessageRead: isItemRead(message.read),
 		folderId: firstChildFolderId
 	});
 
@@ -68,7 +69,7 @@ export const MessageListItem = memo(function MessageListItem({
 	);
 
 	const markAsReadHandler = useMarkAsReadOnClick({
-		isRead: message.read,
+		isRead: isItemRead(message.read),
 		action: setAsRead,
 		conditions: [message.isComplete]
 	});

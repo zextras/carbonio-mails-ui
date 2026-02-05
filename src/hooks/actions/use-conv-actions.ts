@@ -29,6 +29,7 @@ import { useConvSetUnreadDescriptor } from 'hooks/actions/use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from 'hooks/actions/use-conv-show-original';
 import { useConversationMessages } from 'store/emails/store';
 import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
+import {isItemRead} from "../../views/app/folder-panel/parts/utils/utils";
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
@@ -99,12 +100,12 @@ export const useConvActions = ({
 	const setAsReadDescriptor = useConvSetReadDescriptor({
 		ids: [conversation.id],
 		folderId,
-		isConversationRead: conversation.read
+		isConversationRead: isItemRead(conversation.read)
 	});
 	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
 		folderId,
-		isConversationRead: conversation.read
+		isConversationRead: isItemRead(conversation.read)
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);

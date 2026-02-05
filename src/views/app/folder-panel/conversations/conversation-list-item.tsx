@@ -22,6 +22,7 @@ import { NormalizedConversation } from 'types/conversations/index.d';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
 import { ConversationMessagesList } from 'views/app/folder-panel/conversations/conversation-messages-list';
+import {isItemRead} from "../parts/utils/utils";
 
 export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
@@ -65,7 +66,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
-		isConversationRead: conversation.read,
+		isConversationRead: isItemRead(conversation.read),
 		folderId: folderId ?? ''
 	});
 
@@ -115,7 +116,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	);
 
 	const markConvAsReadHandler = useMarkAsReadOnClick({
-		isRead: conversation.read,
+		isRead: isItemRead(conversation.read),
 		action: markAsRead,
 		conditions: [!shouldFetchConversation()]
 	});

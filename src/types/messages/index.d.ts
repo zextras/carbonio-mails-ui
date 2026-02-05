@@ -32,7 +32,7 @@ export type IncompleteMessage = MailHeaders & {
 	did?: string;
 	parent: string;
 	conversation: string;
-	read: boolean;
+	read?: boolean;
 	size: number;
 	hasAttachment: boolean;
 	flagged: boolean;

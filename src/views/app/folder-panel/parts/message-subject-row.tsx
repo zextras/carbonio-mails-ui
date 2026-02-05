@@ -8,6 +8,7 @@ import React from 'react';
 import { MessageFragment } from './message-fragment';
 import { SubjectText } from './subject-text';
 import { SubjectTooltip } from './subject-tooltip';
+import { MailMessage } from '../../../../types';
 
 export const MessageSubjectRow = ({
 	subject,
@@ -15,9 +16,9 @@ export const MessageSubjectRow = ({
 	read,
 	isConvChildren = false
 }: {
-	subject: string;
-	fragment: string | undefined;
-	read: boolean;
+	subject: MailMessage['subject'];
+	fragment: MailMessage['fragment'];
+	read: MailMessage['read'];
 	isConvChildren?: boolean;
 }): React.JSX.Element => (
 	<SubjectTooltip subject={subject} fragment={fragment}>

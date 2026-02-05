@@ -23,6 +23,7 @@ import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsString } from '../parts/participants-string';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
+import { isItemRead } from '../parts/utils/utils';
 
 type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
@@ -93,13 +94,13 @@ export const ConversationListItemCore = ({
 		[conversation]
 	);
 
-	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof conversation.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return conversation.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [conversation.read]);
+	const textReadValues: TextReadValuesProps = useMemo(
+		() =>
+			isItemRead(conversation.read)
+				? { color: 'text', weight: 'regular', badge: 'read' }
+				: { color: 'primary', weight: 'bold', badge: 'unread' },
+		[conversation.read]
+	);
 
 	const renderBadge = useMemo(() => {
 		if (conversation.messagesInConversation === 1 || conversation?.messageIds?.length === 1)

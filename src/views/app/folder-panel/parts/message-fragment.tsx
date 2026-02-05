@@ -7,7 +7,8 @@ import React, { useMemo } from 'react';
 
 import { Row, Text } from '@zextras/carbonio-design-system';
 
-import { showFragment } from './utils/utils';
+import { isItemRead, showFragment } from './utils/utils';
+import { MailMessage } from '../../../../types';
 
 export const MessageFragment = ({
 	isConvChildren,
@@ -15,17 +16,14 @@ export const MessageFragment = ({
 	read
 }: {
 	isConvChildren: boolean;
-	fragment: string | undefined;
-	read: boolean;
+	fragment: MailMessage['fragment'];
+	read: MailMessage['read'];
 }): React.JSX.Element | null => {
 	const fragmentLabel = useMemo(
 		() => (isConvChildren ? fragment : ` - ${fragment}`),
 		[fragment, isConvChildren]
 	);
-	const weight = useMemo<'regular' | 'bold'>(() => {
-		if (typeof read === 'undefined') return 'regular';
-		return read ? 'regular' : 'bold';
-	}, [read]);
+	const weight = useMemo<'regular' | 'bold'>(() => (isItemRead(read) ? 'regular' : 'bold'), [read]);
 	if (!showFragment(fragment)) return null;
 	return (
 		<Row takeAvailableSpace mainAlignment="flex-start" padding={{ left: 'extrasmall' }}>

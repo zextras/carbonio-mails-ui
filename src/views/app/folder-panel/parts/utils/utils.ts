@@ -7,7 +7,7 @@
 import { isEmpty } from 'lodash';
 
 import { INJECTED_DESCRIPTION_DECORATOR } from '../../../../../constants';
-import { Folder } from 'types/index.d';
+import { Folder, MailMessage, NormalizedConversation } from 'types/index.d';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 export const getFolderPath = (
@@ -33,3 +33,8 @@ export const getFolderPath = (
 
 export const showFragment = (fragment: string | undefined): boolean =>
 	!isEmpty(fragment) && !fragment?.includes(INJECTED_DESCRIPTION_DECORATOR);
+
+export const isItemRead = (read: NormalizedConversation['read'] | MailMessage['read']): boolean => {
+	if (typeof read === 'undefined') return true;
+	return read;
+};

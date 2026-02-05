@@ -17,6 +17,7 @@ import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { MailMessage } from 'types/index.d';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
+import { isItemRead } from '../../../app/folder-panel/parts/utils/utils';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;
@@ -51,12 +52,12 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const setAsRead = useMsgSetReadFn({
 		ids: [itemId],
 		shouldReplaceHistory,
-		isMessageRead: completeMessage.read,
+		isMessageRead: isItemRead(completeMessage.read),
 		folderId
 	});
 
 	const markAsReadHandler = useMarkAsReadOnClick({
-		isRead: completeMessage.read,
+		isRead: isItemRead(completeMessage.read),
 		action: setAsRead,
 		conditions: [completeMessage.isComplete ?? true]
 	});
