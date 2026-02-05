@@ -17,15 +17,16 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { find, includes, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import { MessageSubjectRow } from '../parts/message-subject-row';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from '../parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type MessageListItemCoreProps = {
@@ -110,10 +111,6 @@ export const MessageListItemCore = ({
 		[message.tags, tagsFromStore]
 	);
 
-	const fragmentLabel = useMemo(
-		() => (isConvChildren ? message.fragment : ` - ${message.fragment}`),
-		[message.fragment, isConvChildren]
-	);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
 		if (typeof message.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -128,14 +125,6 @@ export const MessageListItemCore = ({
 	);
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-	const subject = useMemo(
-		() => message.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[message.subject]
-	);
-	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(message.fragment) ? message.fragment : subject),
-		[subject, message.fragment]
-	);
 
 	const scheduledTime = useMemo(
 		() =>
@@ -171,11 +160,7 @@ export const MessageListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsName
-						item={message}
-						textValues={textReadValues}
-						isSearchModule={isSearchModule}
-					/>
+					<ParticipantsString item={message} />
 					<Row>
 						{showTagIcon && (
 							<Padding left="small">
@@ -219,41 +204,12 @@ export const MessageListItemCore = ({
 								</Padding>
 							</Tooltip>
 						)}
-						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-							<Row
-								wrap="nowrap"
-								takeAvailableSpace
-								mainAlignment="flex-start"
-								crossAlignment="baseline"
-							>
-								{!isConvChildren && (
-									<Text
-										data-testid="Subject"
-										weight={textReadValues.weight}
-										color={message.subject ? 'text' : 'secondary'}
-									>
-										{subject}
-									</Text>
-								)}
-
-								{!isEmpty(message.fragment) && (
-									<Row
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										padding={{ left: 'extrasmall' }}
-									>
-										<Text
-											data-testid="Fragment"
-											size="small"
-											color="secondary"
-											weight={textReadValues.weight}
-										>
-											{fragmentLabel}
-										</Text>
-									</Row>
-								)}
-							</Row>
-						</Tooltip>
+						<MessageSubjectRow
+							subject={message.subject}
+							read={message.read}
+							fragment={message.fragment}
+							isConvChildren={isConvChildren}
+						/>
 					</Row>
 					<Row>
 						{message.urgent && (

@@ -12,16 +12,16 @@ import {
 	Icon,
 	Padding,
 	Row,
-	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
 import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type SearchConversationListItemCoreProps = {
@@ -88,15 +88,6 @@ export const SearchConversationListItemCore = ({
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
 		[open, t]
 	);
-	const subject = useMemo(
-		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[conversation.subject, t]
-	);
-	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
-		[subject, conversation.fragment]
-	);
-
 	const badgeTotalConversationMessages = useCallback(
 		(): number => conversation.messagesInConversation,
 		[conversation]
@@ -142,7 +133,7 @@ export const SearchConversationListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsName item={conversation} textValues={textReadValues} />
+					<ParticipantsString item={conversation} />
 					<RowInfo item={conversation} tags={tags} />
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
@@ -158,23 +149,11 @@ export const SearchConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-
-					<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-						<Row
-							wrap="nowrap"
-							takeAvailableSpace
-							mainAlignment="flex-start"
-							crossAlignment="baseline"
-						>
-							<Text
-								data-testid="Subject"
-								weight={textReadValues.weight}
-								color={conversation.subject ? 'text' : 'secondary'}
-							>
-								{subject}
-							</Text>
-						</Row>
-					</Tooltip>
+					<ConversationSubjectRow
+						subject={conversation.subject}
+						read={conversation.read}
+						fragment={conversation.fragment}
+					/>
 					<Row>
 						{conversation.urgent && (
 							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />

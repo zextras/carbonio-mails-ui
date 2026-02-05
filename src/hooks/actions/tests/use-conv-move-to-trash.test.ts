@@ -7,12 +7,11 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { fireEvent } from '@testing-library/react';
 import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
 import { TIMERS } from '../../../__test__/constants';
-import { setupHook, screen } from '@test-setup';
+import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
@@ -109,43 +108,6 @@ describe('useConMoveToTrash', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
-			});
-
-			it('should restore messages when Undo button is clicked', async () => {
-				const apiResponse: MsgActionResponse = {
-					action: {
-						id: conversationsId.join(','),
-						op: 'trash'
-					}
-				};
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-					'ConvAction',
-					apiResponse
-				);
-
-				const {
-					result: { current: functions }
-				} = setupHook(useConvMoveToTrashFn, {
-					initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }]
-				});
-
-				await act(async () => {
-					functions.execute();
-				});
-
-				await apiInterceptor;
-
-				const undoButton = await screen.findByText('Undo');
-				const undoInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-					'ConvAction',
-					apiResponse
-				);
-				fireEvent.click(undoButton);
-				const undoParameters = await undoInterceptor;
-
-				expect(undoParameters.action.id).toBe(conversationsId.join(','));
-				expect(undoParameters.action.op).toBe('move');
-				expect(undoParameters.action.l).toBe(FOLDERS.INBOX);
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {

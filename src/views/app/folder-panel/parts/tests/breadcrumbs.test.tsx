@@ -126,11 +126,19 @@ describe('Breadcrumbs sorting', () => {
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		forEach(sortingOptionsWithoutSize, (option) => {
-			if (option.label !== SORTING_OPTIONS.to.label)
+			if (
+				option.label !== SORTING_OPTIONS.to.label &&
+				option.label !== SORTING_OPTIONS.changeDate.label
+			) {
+				// Date option has "(Default)" suffix
+				const expectedText =
+					option.label === SORTING_OPTIONS.date.label
+						? `${capitalize(option.label)} (Default)`
+						: capitalize(option.label);
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+					within(screen.getByTestId(dropdownRegex)).getByText(expectedText)
 				).toBeInTheDocument();
-			else {
+			} else {
 				const excludedOptionRegexPattern = new RegExp(
 					`sorting_dropdown.${SORTING_OPTIONS.to.label}`,
 					'i'
@@ -153,11 +161,20 @@ describe('Breadcrumbs sorting', () => {
 		if (sortIcon) await user.click(sortIcon);
 		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
 		forEach(sortingOptionsWithoutSize, (option) => {
-			if (option.label !== SORTING_OPTIONS.from.label)
+			// Exclude both FROM and changeDate options in SENT folder
+			if (
+				option.label !== SORTING_OPTIONS.from.label &&
+				option.label !== SORTING_OPTIONS.changeDate.label
+			) {
+				// Date option has "(Default)" suffix
+				const expectedText =
+					option.label === SORTING_OPTIONS.date.label
+						? `${capitalize(option.label)} (Default)`
+						: capitalize(option.label);
 				expect(
-					within(screen.getByTestId(dropdownRegex)).getByText(capitalize(option.label))
+					within(screen.getByTestId(dropdownRegex)).getByText(expectedText)
 				).toBeInTheDocument();
-			else {
+			} else {
 				const excludedOptionRegexPattern = new RegExp(
 					`sorting_dropdown.${SORTING_OPTIONS.from.value}`,
 					'i'

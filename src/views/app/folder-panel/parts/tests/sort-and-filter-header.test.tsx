@@ -16,7 +16,9 @@ import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers
 vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
-vi.mock('helpers/sorting', () => ({
+
+vi.mock('helpers/sorting', async () => ({
+	...(await vi.importActual('helpers/sorting')),
 	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
@@ -81,5 +83,19 @@ describe('Sort and Filter Header Component', () => {
 		setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
 
 		expect(screen.queryByTestId('sorting-options-container')).not.toBeInTheDocument();
+	});
+
+	it('should display correct tooltip on reset button', async () => {
+		(parseMessageSortingOptions as Mock).mockReturnValue({
+			sortType: SORTING_OPTIONS.subject.value,
+			filterType: FILTER_OPTIONS.unread.value
+		});
+		const { user } = setupTest(<SortAndFilterHeaderComponent folderId={FOLDER_ID} />);
+
+		const resetButton = screen.getByRole('button', { name: /Reset/i });
+
+		await user.hover(resetButton);
+
+		expect(await screen.findByText('Reset to default')).toBeInTheDocument();
 	});
 });

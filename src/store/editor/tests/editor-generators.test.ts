@@ -9,8 +9,8 @@ import { vi } from 'vitest';
 import { useEditorsStore } from '../store';
 import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { EditViewActions } from 'constants/index';
-import { generateEditor } from 'store/editor/editor-generators';
+import { EditViewActions, PROCESS_STATUS } from 'constants/index';
+import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
 import { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
 
 vi.mock('@zextras/carbonio-shell-ui', async () => ({
@@ -22,8 +22,10 @@ vi.mock('@zextras/carbonio-shell-ui', async () => ({
 	t: vi.fn((_key: string, fallback: string) => fallback)
 }));
 describe('generateEditor', () => {
+	const messageDate = new Date();
 	const message = {
 		...generateMessage(),
+		date: messageDate.getTime(),
 		participants: [
 			{
 				type: 'f',
@@ -97,6 +99,13 @@ describe('generateEditor', () => {
 
 		test('should use message.originalId', () => {
 			expect(result?.originalId).toEqual('test-orig-id');
+		});
+
+		test('that it sets the correct draftSave status based on the last save timestamp', () => {
+			expect(result?.draftSaveProcessStatus).toEqual({
+				status: PROCESS_STATUS.COMPLETED,
+				lastSaveTimestamp: messageDate
+			});
 		});
 	});
 
@@ -250,10 +259,7 @@ describe('generateEditor', () => {
 				const draftEditorId = draftEditor.id;
 				useEditorsStore.getState().addEditor(draftEditorId, draftEditor);
 
-				const resumedEditor = generateEditor({
-					action: EditViewActions.RESUME,
-					id: draftEditor?.id
-				});
+				const resumedEditor = resumeEditor(draftEditor?.id);
 
 				expect(resumedEditor?.isUrgent).toBe(true);
 			});
