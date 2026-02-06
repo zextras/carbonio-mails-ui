@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Button, Dropdown, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { isNil, map, noop } from 'lodash';
@@ -17,9 +17,13 @@ import { MailMessage } from 'types/index.d';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
+	isWide: boolean;
 };
 
-export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
+	message,
+	isWide
+}): ReactElement => {
 	const [t] = useTranslation();
 	const shouldReplaceHistory = useShouldReplaceHistory(message);
 
@@ -53,7 +57,63 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
 
-	const actions = [
+	const actions = useMemo(() => {
+		const moreDropdownItems = [
+			normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
+			normalizeDropdownActionItem(flagDescriptor),
+			normalizeDropdownActionItem(unflagDescriptor),
+			normalizeDropdownActionItem(markAsSpamDescriptor),
+			normalizeDropdownActionItem(markAsNotSpamDescriptor),
+			tagItem,
+			normalizeDropdownActionItem(moveToFolderDescriptor),
+			normalizeDropdownActionItem(createAppointmentDescriptor),
+			normalizeDropdownActionItem(printDescriptor),
+			normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+			normalizeDropdownActionItem(redirectDescriptor),
+			normalizeDropdownActionItem(editAsNewDescriptor),
+			normalizeDropdownActionItem(showOriginalDescriptor),
+			normalizeDropdownActionItem(downloadEmlDescriptor)
+		].filter((action) => !action.disabled);
+
+		const moreAction = {
+			id: 'More',
+			icon: 'MoreVertical',
+			label: t('tooltip.moreActions', 'More actions'),
+			items: moreDropdownItems
+		};
+
+		if (isWide) {
+			return [
+				replyDescriptor,
+				replyAllDescriptor,
+				forwardDescriptor,
+				editDraftDescriptor,
+				moveToTrashDescriptor,
+				deletePermanentlyDescriptor,
+				messageReadDescriptor,
+				messageUnreadDescriptor,
+				moreAction
+			];
+		}
+
+		return [
+			{
+				...moreAction,
+				items: [
+					normalizeDropdownActionItem(replyDescriptor),
+					normalizeDropdownActionItem(replyAllDescriptor),
+					normalizeDropdownActionItem(forwardDescriptor),
+					normalizeDropdownActionItem(editDraftDescriptor),
+					normalizeDropdownActionItem(moveToTrashDescriptor),
+					normalizeDropdownActionItem(deletePermanentlyDescriptor),
+					normalizeDropdownActionItem(messageReadDescriptor),
+					normalizeDropdownActionItem(messageUnreadDescriptor),
+					...moreDropdownItems
+				]
+			}
+		];
+	}, [
+		isWide,
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
@@ -62,28 +122,22 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
 		messageUnreadDescriptor,
-		{
-			id: 'More',
-			icon: 'MoreVertical',
-			label: t('tooltip.moreActions', 'More actions'),
-			items: [
-				normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
-				normalizeDropdownActionItem(flagDescriptor),
-				normalizeDropdownActionItem(unflagDescriptor),
-				normalizeDropdownActionItem(markAsSpamDescriptor),
-				normalizeDropdownActionItem(markAsNotSpamDescriptor),
-				tagItem,
-				normalizeDropdownActionItem(moveToFolderDescriptor),
-				normalizeDropdownActionItem(createAppointmentDescriptor),
-				normalizeDropdownActionItem(printDescriptor),
-				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
-				normalizeDropdownActionItem(redirectDescriptor),
-				normalizeDropdownActionItem(editAsNewDescriptor),
-				normalizeDropdownActionItem(showOriginalDescriptor),
-				normalizeDropdownActionItem(downloadEmlDescriptor)
-			].filter((action) => !action.disabled)
-		}
-	];
+		forwardAsAttachmentDescriptor,
+		flagDescriptor,
+		unflagDescriptor,
+		markAsSpamDescriptor,
+		markAsNotSpamDescriptor,
+		tagItem,
+		moveToFolderDescriptor,
+		createAppointmentDescriptor,
+		printDescriptor,
+		previewOnSeparatedWindowDescriptor,
+		redirectDescriptor,
+		editAsNewDescriptor,
+		showOriginalDescriptor,
+		downloadEmlDescriptor,
+		t
+	]);
 
 	const stopPropagationWrapperForButton =
 		<E extends KeyboardEvent | React.MouseEvent<HTMLButtonElement>>(handler: (event: E) => void) =>

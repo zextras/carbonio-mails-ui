@@ -104,7 +104,8 @@ export const TESTID_SELECTORS = {
 		navigatePrevious: 'icon: ArrowIosBack',
 		trash: 'icon: Trash2Outline',
 		deletePermanently: 'icon: DeletePermanentlyOutline',
-		deleteDraft: 'icon: Trash2Outline'
+		deleteDraft: 'icon: Trash2Outline',
+		square: 'icon: Square'
 	},
 	composer: {
 		attachmentAddOriginal: 'composer.attachment.add_original'

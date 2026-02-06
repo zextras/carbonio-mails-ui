@@ -7,6 +7,7 @@ import { TFunction } from 'i18next';
 
 import { VALID_MAIL_AUTHENTICATION_HEADERS } from 'constants/index';
 import { MailAuthenticationHeaders, Sensitivity } from 'types/index.d';
+import { useCallback, useEffect, useState } from 'react';
 
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,
@@ -66,3 +67,28 @@ export function getMailSensitivityLabel(t: TFunction, sensitivity: Sensitivity):
 			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
 	}
 }
+
+export const useContainerWidth = (
+	ref: React.RefObject<HTMLDivElement>,
+	threshold: number
+): boolean => {
+	const [width, setWidth] = useState(0);
+
+	const handleResize = useCallback((entries: ResizeObserverEntry[]): void => {
+		setWidth(entries[0].contentRect.width);
+	}, []);
+
+	useEffect(() => {
+		if (!ref.current) return undefined;
+
+		const observer = new ResizeObserver(handleResize);
+
+		observer.observe(ref.current);
+
+		return (): void => {
+			observer?.disconnect();
+		};
+	}, [ref, handleResize]);
+
+	return width >= threshold;
+};
