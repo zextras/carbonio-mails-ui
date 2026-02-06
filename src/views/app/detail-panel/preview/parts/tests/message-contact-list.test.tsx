@@ -33,7 +33,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('MessageContactList', () => {
 		});
 
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={vi.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />
 		);
 
 		const contactsListToggleIcon = screen.getByTestId('contacs-list-toggle-icon');
@@ -93,7 +93,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={vi.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />
 		);
 		const toggleDownIcon = await screen.findByTestId('icon: ChevronDown');
 		expect(toggleDownIcon).toBeInTheDocument();
@@ -114,6 +114,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>
 			);
 
@@ -137,6 +138,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={linkFolder.id}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${linkFolder.id}/message/${message.id}`],
@@ -168,6 +170,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={message.parent}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${message.parent}/message/${message.id}`],
@@ -194,6 +197,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${FOLDERS.INBOX}/message/${message.id}`],
@@ -231,6 +235,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={inboxFolder.id}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${inboxFolder.id}/message/${message.id}`],
@@ -269,6 +274,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>
 			);
 
@@ -286,6 +292,7 @@ describe('MessageContactList', () => {
 					message={message}
 					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${message.parent}/message/${message.id}`],

@@ -24,6 +24,15 @@ export const getTimeLabel = (date: number): string => {
 	return momentDate.format('L LT');
 };
 
+export const getCompactDateLabel = (date: number): string => {
+	const zimbraPrefLocale = getUserLocale();
+	const momentDate = moment(date).locale(zimbraPrefLocale);
+	if (momentDate.isSame(new Date(), 'day')) {
+		return momentDate.format('LT');
+	}
+	return momentDate.format('MM/DD');
+};
+
 export const participantToString = (
 	participant: Partial<{ fullName: string; name: string; address: string }> | undefined,
 	accounts: Array<Account>
