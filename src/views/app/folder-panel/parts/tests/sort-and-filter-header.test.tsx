@@ -16,7 +16,9 @@ import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers
 vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
-vi.mock('helpers/sorting', () => ({
+
+vi.mock('helpers/sorting', async () => ({
+	...(await vi.importActual('helpers/sorting')),
 	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
