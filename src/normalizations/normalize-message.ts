@@ -372,7 +372,25 @@ export const haveReadReceipt = (
 };
 
 /**
- * Extracts and maps flags from a SOAP message to a Flags object.
+ * Parses a flag string and maps it to a Flags object.
+ * @param flags - The flag string to parse
+ * @returns Flags object with parsed flag values
+ */
+const parseFlagsString = (flags: string): Flags => ({
+	read: !/u/.test(flags),
+	hasAttachment: /a/.test(flags),
+	flagged: /f/.test(flags),
+	urgent: /!/.test(flags),
+	isDeleted: /x/.test(flags),
+	isDraft: /d/.test(flags),
+	isForwarded: /w/.test(flags),
+	isSentByMe: /s/.test(flags),
+	isInvite: /v/.test(flags),
+	isReplied: /r/.test(flags)
+});
+
+/**
+ * Extracts and maps flags from a partial  SOAP message from Notify to a Flags object, returning an empty object if no flags are present.
  * */
 const getNotifyFlags = (
 	m: SoapPartialIncompleteMessage | undefined
@@ -380,40 +398,19 @@ const getNotifyFlags = (
 	if (isNil(m?.f)) {
 		return {};
 	}
-	const flags = m.f;
-	return {
-		read: !/u/.test(flags),
-		hasAttachment: /a/.test(flags),
-		flagged: /f/.test(flags),
-		urgent: /!/.test(flags),
-		isDeleted: /x/.test(flags),
-		isDraft: /d/.test(flags),
-		isForwarded: /w/.test(flags),
-		isSentByMe: /s/.test(flags),
-		isInvite: /v/.test(flags),
-		isReplied: /r/.test(flags)
-	};
+	return parseFlagsString(m.f);
 };
 
+/**
+ * Extracts and maps flags from a SOAP message to a Flags object. If flags is undefined or empty, it returns a default object with read set to true.
+ * */
 const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
 	const defaultFlag = { read: true };
 
 	if (isNil(m?.f) || m.f === '') {
 		return defaultFlag;
 	}
-	const flags = m?.f;
-	return {
-		read: !/u/.test(flags),
-		hasAttachment: /a/.test(flags),
-		flagged: /f/.test(flags),
-		urgent: /!/.test(flags),
-		isDeleted: /x/.test(flags),
-		isDraft: /d/.test(flags),
-		isForwarded: /w/.test(flags),
-		isSentByMe: /s/.test(flags),
-		isInvite: /v/.test(flags),
-		isReplied: /r/.test(flags)
-	};
+	return parseFlagsString(m.f);
 };
 
 export const normalizeMailMessageFromSoap = (
