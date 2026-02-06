@@ -22,6 +22,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
+import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorText } from 'store/editor/index';
@@ -55,6 +56,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { getText, setText } = useEditorText(editorId);
 	const { addUploadedAttachment } = useEditorAttachments(editorId);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
+	const { originalMessageHasAttachments, addOriginalAttachmentsToEditor } =
+		useEditorOriginalAttachments({ editorId });
 
 	const addFilesFromLocal = useCallback(
 		async (fileList: FileList) => {
@@ -141,14 +144,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			id: 'localAttachment',
 			icon: 'MonitorOutline',
 			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onLocalFileClick,
-			customComponent: (
-				<>
-					<Icon icon="MonitorOutline" size="medium" />
-					<Padding horizontal="extrasmall" />
-					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-				</>
-			)
+			onClick: onLocalFileClick
 		};
 
 		const filesNodeAction: DropdownItem | undefined =
@@ -175,9 +171,20 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 					}
 				: undefined;
 
-		return compact([localFileAction, filesNodeAction, filesLinkAction]);
+		const originalAttachmentsAction: DropdownItem | undefined = originalMessageHasAttachments
+			? {
+					id: 'originalAttachments',
+					icon: 'AttachOutline',
+					label: t('composer.attachment.add_original', 'Add original attachment(s)'),
+					onClick: addOriginalAttachmentsToEditor
+				}
+			: undefined;
+
+		return compact([localFileAction, filesNodeAction, filesLinkAction, originalAttachmentsAction]);
 	}, [
 		onLocalFileClick,
+		originalMessageHasAttachments,
+		addOriginalAttachmentsToEditor,
 		isUploadFromFiles,
 		uploadFromFilesSelectionConfig,
 		isSelectNodesAvailable,
@@ -207,7 +214,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				)}
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-				<Dropdown items={actionsItems} display="inline-block">
+				<Dropdown disableAutoFocus items={actionsItems} display="inline-block">
 					<Button size="large" icon="AttachOutline" onClick={noop} type={'ghost'} color={'gray0'} />
 				</Dropdown>
 			</Tooltip>
