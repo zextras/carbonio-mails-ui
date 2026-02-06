@@ -374,11 +374,34 @@ export const haveReadReceipt = (
 /**
  * Extracts and maps flags from a SOAP message to a Flags object.
  * */
-const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNullable<unknown> => {
+const getNotifyFlags = (
+	m: SoapPartialIncompleteMessage | undefined
+): Flags | NonNullable<unknown> => {
 	if (isNil(m?.f)) {
 		return {};
 	}
 	const flags = m.f;
+	return {
+		read: !/u/.test(flags),
+		hasAttachment: /a/.test(flags),
+		flagged: /f/.test(flags),
+		urgent: /!/.test(flags),
+		isDeleted: /x/.test(flags),
+		isDraft: /d/.test(flags),
+		isForwarded: /w/.test(flags),
+		isSentByMe: /s/.test(flags),
+		isInvite: /v/.test(flags),
+		isReplied: /r/.test(flags)
+	};
+};
+
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
+	const defaultFlag = { read: true };
+
+	if (isNil(m?.f) || m.f === '') {
+		return defaultFlag;
+	}
+	const flags = m?.f;
 	return {
 		read: !/u/.test(flags),
 		hasAttachment: /a/.test(flags),
@@ -448,14 +471,12 @@ export const normalizeMailMessageFromSoap = (
 export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
 	normalizeMailMessageFromSoap(m, true);
 
-export const normalizePartialIncompleteMessageFromSoap = (
-	m: SoapPartialIncompleteMessage
-): PartialIncompleteMessage => {
+const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
 	)[0];
 
-	const normalizedMailHeaders: MailHeaders = {
+	return {
 		signature: m?.signature,
 		messageIsFromExternalDomain: m._attrs
 			? getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount)
@@ -468,8 +489,11 @@ export const normalizePartialIncompleteMessageFromSoap = (
 			? getMessageIsFromDistributionListFromAPI(m._attrs)
 			: undefined
 	};
+};
+
+export const normalizePartialData = (m: SoapPartialIncompleteMessage): IncompleteMessage =>
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
-	const partialData = <IncompleteMessage>omitBy(
+	<IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
 			date: m.d,
@@ -490,13 +514,18 @@ export const normalizePartialIncompleteMessageFromSoap = (
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
 			autoSendTime: m.autoSendTime,
-			...getFlags(m),
 			// TODO: this function is accepting undefined values and assuming defaults
 			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
 			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
-			...normalizedMailHeaders
+			...normalizeMailHeaders(m)
 		},
 		isNil
 	);
-	return { ...partialData, id: m.id };
+
+export const normalizePartialIncompleteMessageFromSoapNotify = (
+	m: SoapPartialIncompleteMessage
+): PartialIncompleteMessage => {
+	const partialData = normalizePartialData(m);
+	const flags = getNotifyFlags(m);
+	return { ...partialData, ...flags, id: m.id };
 };
