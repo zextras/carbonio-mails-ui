@@ -132,7 +132,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 					</Container>
 				</Container>
 			</FormSubSection>
-			<FormSubSection label={t('label.read_receipt', 'Read receipt')}>
+			<FormSubSection label={t('label.composing_messages_read_receipt', 'Read receipt')}>
 				<Switch
 					label={t('label.always_request_read_receipts', 'Always request read receipts')}
 					value={settingsObj.zimbraPrefMailRequestReadReceipts === 'TRUE'}
@@ -148,7 +148,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 				<Text size="small">
 					{t(
 						'label.read_receipt_description',
-						'Get notified when recipients open your emails. This applies to all messages unless changed manually'
+						'Get notified when recipients open your emails. This applies to all messages unless changed manually.'
 					)}
 				</Text>
 			</FormSubSection>

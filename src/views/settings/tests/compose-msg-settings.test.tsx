@@ -158,7 +158,7 @@ describe('compose-msg-settings', () => {
 				{}
 			);
 
-			expect(screen.getByText('label.read_receipt')).toBeInTheDocument();
+			expect(screen.getByText('label.composing_messages_read_receipt')).toBeInTheDocument();
 			expect(screen.getByText('label.always_request_read_receipts')).toBeInTheDocument();
 			expect(screen.getByText('label.read_receipt_description')).toBeInTheDocument();
 		});
