@@ -72,7 +72,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	);
 	return (
 		<FormSection id={sectionTitle.id} label={sectionTitle.label}>
-			<FormSubSection label={t('labels.compose_colin', 'Compose')}>
+			<FormSubSection label={t('labels.compose', 'Compose')}>
 				<Container crossAlignment="baseline" height="fit">
 					<Container crossAlignment="flex-start" mainAlignment="flex-start">
 						<Container crossAlignment="flex-start" mainAlignment="flex-start">

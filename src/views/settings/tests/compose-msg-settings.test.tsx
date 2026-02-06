@@ -34,7 +34,7 @@ describe('compose-msg-settings', () => {
 		);
 
 		expect(screen.getByText('labels.composing_messages')).toBeInTheDocument();
-		expect(screen.getByText('labels.compose_colin')).toBeInTheDocument();
+		expect(screen.getByText('labels.compose')).toBeInTheDocument();
 		expect(screen.getByLabelText('label.as_html')).toBeInTheDocument();
 		expect(screen.getByLabelText('label.as_text')).toBeInTheDocument();
 		expect(screen.getByText('settings.font')).toBeInTheDocument();
