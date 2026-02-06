@@ -7,9 +7,14 @@
 import { getTags } from '@zextras/carbonio-ui-commons';
 import { filter, find, isNil } from 'lodash';
 
-const getTagIdsFromName = (names: string | undefined): Array<string> => {
+/**
+ * Converts the list of string tag names from soapResponse into an array of tag IDs.
+ * If a tag name exists, the ID is returned; otherwise, returns 'nil:tagName'.
+ */
+const getTagIdsFromName = (names: string): Array<string> => {
 	const tags = getTags();
-	return (names?.split(',') ?? [])
+	return names
+		.split(',')
 		.map((name) => name.trim())
 		.filter((name) => name)
 		.map((name) => {
@@ -34,5 +39,9 @@ export const getTagIds = (
 		return filter(t.split(','), (tag) => tag.trim() !== '');
 	}
 
-	return getTagIdsFromName(tn);
+	if (!isNil(tn)) {
+		return getTagIdsFromName(tn);
+	}
+
+	return [];
 };
