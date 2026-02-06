@@ -494,9 +494,11 @@ const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	};
 };
 
-const normalizePartialData = (m: SoapPartialIncompleteMessage): IncompleteMessage =>
+export const normalizePartialIncompleteMessageFromSoapNotify = (
+	m: SoapPartialIncompleteMessage
+): PartialIncompleteMessage => {
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
-	<IncompleteMessage>omitBy(
+	const partialMessageData = <IncompleteMessage>omitBy(
 		{
 			...createBaseNormalizedMessage(m),
 			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
@@ -506,11 +508,6 @@ const normalizePartialData = (m: SoapPartialIncompleteMessage): IncompleteMessag
 		},
 		isNil
 	);
-
-export const normalizePartialIncompleteMessageFromSoapNotify = (
-	m: SoapPartialIncompleteMessage
-): PartialIncompleteMessage => {
-	const partialData = normalizePartialData(m);
 	const flags = getNotifyFlags(m);
-	return { ...partialData, ...flags, id: m.id };
+	return { ...partialMessageData, ...flags, id: m.id };
 };
