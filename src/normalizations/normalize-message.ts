@@ -304,13 +304,8 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 		acc
 	);
 
-const generateBody = (
-	mp: Array<SoapMailMessagePart>,
-	id: string
-): {
-	contentType: string;
-	content: string;
-} => findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
+const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
+	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
 const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {
@@ -413,6 +408,35 @@ const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
 	return parseFlagsString(m.f);
 };
 
+/**
+ * Creates the base normalized message object with common properties shared across different normalization functions.
+ * @param m - SOAP message to normalize
+ * @returns Base object with common normalized properties
+ */
+const createBaseNormalizedMessage = (
+	m: SoapPartialIncompleteMessage
+): Partial<IncompleteMessage> => ({
+	conversation: m.cid,
+	date: m.d,
+	size: m.s,
+	parent: m.l,
+	replyType: m.rt,
+	originalId: m.origid,
+	fragment: m.fr,
+	subject: m.su,
+	participants: m.e
+		? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
+		: undefined,
+	tags: getTagIds(m.t, m.tn),
+	parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
+	attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
+	invite: m.inv,
+	shr: m.shr,
+	body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
+	autoSendTime: m.autoSendTime,
+	isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined
+});
+
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean
@@ -433,32 +457,14 @@ export const normalizeMailMessageFromSoap = (
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(
 		{
-			conversation: m.cid,
+			...createBaseNormalizedMessage(m),
 			id: m.id,
-			date: m.d,
-			size: m.s,
-			parent: m.l,
-			replyType: m.rt,
-			originalId: m.origid,
-			fragment: m.fr,
-			subject: m.su,
-			participants: m.e
-				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
-				: undefined,
-			tags: getTagIds(m.t, m.tn),
-			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
-			invite: m.inv,
-			shr: m.shr,
-			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isComplete,
 			isScheduled: !!m.autoSendTime,
-			autoSendTime: m.autoSendTime,
 			...getFlags(m),
 			isReadReceiptRequested: m.e
 				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 				: undefined,
-			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders
 		},
 		isNil
@@ -488,32 +494,14 @@ const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	};
 };
 
-export const normalizePartialData = (m: SoapPartialIncompleteMessage): IncompleteMessage =>
+const normalizePartialData = (m: SoapPartialIncompleteMessage): IncompleteMessage =>
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	<IncompleteMessage>omitBy(
 		{
-			conversation: m.cid,
-			date: m.d,
-			size: m.s,
-			parent: m.l,
-			replyType: m.rt,
-			originalId: m.origid,
-			fragment: m.fr,
-			subject: m.su,
-			participants: m.e
-				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
-				: undefined,
-			tags: getTagIds(m.t, m.tn),
-			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
-			invite: m.inv,
-			shr: m.shr,
-			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
+			...createBaseNormalizedMessage(m),
 			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
-			autoSendTime: m.autoSendTime,
 			// TODO: this function is accepting undefined values and assuming defaults
 			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
-			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
 			...normalizeMailHeaders(m)
 		},
 		isNil
