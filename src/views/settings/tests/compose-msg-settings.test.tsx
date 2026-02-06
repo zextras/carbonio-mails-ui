@@ -21,7 +21,8 @@ describe('compose-msg-settings', () => {
 		zimbraPrefHtmlEditorDefaultFontFamily: '',
 		zimbraPrefHtmlEditorDefaultFontSize: '',
 		zimbraPrefHtmlEditorDefaultFontColor: '',
-		zimbraPrefComposeFormat: ''
+		zimbraPrefComposeFormat: '',
+		zimbraPrefMailRequestReadReceipts: ''
 	};
 
 	it('should render correctly', async () => {
@@ -147,6 +148,69 @@ describe('compose-msg-settings', () => {
 		expect(screen.getByRole('radio', { name: 'label.as_html' })).not.toBeChecked();
 	});
 
+	describe('Read Receipt section', () => {
+		it('should render the Read Receipt section with switch and description', () => {
+			const settingObject = generateSettingObject();
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			expect(screen.getByText('label.read_receipt')).toBeInTheDocument();
+			expect(screen.getByText('label.always_request_read_receipts')).toBeInTheDocument();
+			expect(screen.getByText('label.read_receipt_description')).toBeInTheDocument();
+		});
+
+		it('should call updateSettings when Read Receipt switch is toggled on', async () => {
+			const settingObject = generateSettingObject();
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			const { user } = setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			const switchElement = screen.getByText('label.always_request_read_receipts');
+			await user.click(switchElement);
+
+			await waitFor(() =>
+				expect(mockUpdateSettings).toHaveBeenCalledWith({
+					target: {
+						name: 'zimbraPrefMailRequestReadReceipts',
+						value: 'TRUE'
+					}
+				})
+			);
+		});
+
+		it('should call updateSettings when Read Receipt switch is toggled off', async () => {
+			const settingObject = {
+				...generateSettingObject(),
+				zimbraPrefMailRequestReadReceipts: 'TRUE'
+			};
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			const { user } = setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			const switchElement = screen.getByText('label.always_request_read_receipts');
+			await user.click(switchElement);
+
+			await waitFor(() =>
+				expect(mockUpdateSettings).toHaveBeenCalledWith({
+					target: {
+						name: 'zimbraPrefMailRequestReadReceipts',
+						value: 'FALSE'
+					}
+				})
+			);
+		});
+	});
+
 	function getMockUpdateSettings(
 		settingObject: Record<string, string>
 	): Mock<(value: any) => void> {
@@ -162,7 +226,8 @@ describe('compose-msg-settings', () => {
 			zimbraPrefHtmlEditorDefaultFontFamily: 'arial, helvetica, sans-serif',
 			zimbraPrefHtmlEditorDefaultFontSize: '12pt',
 			zimbraPrefHtmlEditorDefaultFontColor: '#24cb77',
-			zimbraPrefComposeFormat: 'html'
+			zimbraPrefComposeFormat: 'html',
+			zimbraPrefMailRequestReadReceipts: 'FALSE'
 		};
 	}
 });

@@ -11,14 +11,15 @@ import {
 	FormSubSection,
 	RadioGroup,
 	Radio,
-	FormSection
+	FormSection,
+	Switch,
+	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { ColorPicker } from 'commons/color-picker';
 import { UpdateSettingsProps } from 'types/index.d';
-import Heading from 'views/settings/components/settings-heading';
 import { getFontSizesOptions, findLabel, getFonts } from 'views/settings/components/utils';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { composingMsgSubSection } from 'views/settings/subsections';
@@ -71,20 +72,10 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	);
 	return (
 		<FormSection id={sectionTitle.id} label={sectionTitle.label}>
-			<FormSubSection>
-				<Container crossAlignment="baseline">
-					<Container
-						orientation="horizontal"
-						crossAlignment="flex-start"
-						mainAlignment="flex-start"
-					>
-						<Container
-							width="fit"
-							orientation="horizontal"
-							crossAlignment="flex-start"
-							mainAlignment="flex-start"
-						>
-							<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />
+			<FormSubSection label={t('labels.compose_colin', 'Compose')}>
+				<Container crossAlignment="baseline" height="fit">
+					<Container crossAlignment="flex-start" mainAlignment="flex-start">
+						<Container crossAlignment="flex-start" mainAlignment="flex-start">
 							<RadioGroup
 								style={{ width: '100%' }}
 								value={settingsObj?.zimbraPrefComposeFormat}
@@ -94,8 +85,8 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 									});
 								}}
 							>
-								<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
 								<Radio width="100%" label={t('label.as_text', 'As Text')} value="text" />
+								<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
 							</RadioGroup>
 						</Container>
 						<Container
@@ -140,6 +131,26 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						</Container>
 					</Container>
 				</Container>
+			</FormSubSection>
+			<FormSubSection label={t('label.read_receipt', 'Read receipt')}>
+				<Switch
+					label={t('label.always_request_read_receipts', 'Always request read receipts')}
+					value={settingsObj.zimbraPrefMailRequestReadReceipts === 'TRUE'}
+					onClick={(): void =>
+						updateSettings({
+							target: {
+								name: 'zimbraPrefMailRequestReadReceipts',
+								value: settingsObj.zimbraPrefMailRequestReadReceipts === 'TRUE' ? 'FALSE' : 'TRUE'
+							}
+						})
+					}
+				/>
+				<Text size="small">
+					{t(
+						'label.read_receipt_description',
+						'Get notified when recipients open your emails. This applies to all messages unless changed manually'
+					)}
+				</Text>
 			</FormSubSection>
 		</FormSection>
 	);

@@ -50,7 +50,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 				<Text
 					size="small"
 					// eslint-disable-next-line no-nested-ternary
-					color={open || focus ? 'primary' : disabled ? 'gray2' : 'secondary'}
+					color={disabled ? 'gray2' : open || focus ? 'primary' : 'secondary'}
 				>
 					{label}
 				</Text>
@@ -60,7 +60,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		<Icon
 			size="large"
 			icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-			color={open || focus ? 'primary' : 'secondary'}
+			color={disabled ? 'gray2' : open || focus ? 'primary' : 'secondary'}
 			style={{ alignSelf: 'center' }}
 		/>
 	</ColorContainer>
