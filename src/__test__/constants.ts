@@ -107,7 +107,9 @@ export const TESTID_SELECTORS = {
 		deleteDraft: 'icon: Trash2Outline',
 		square: 'icon: Square'
 	},
-
+	composer: {
+		attachmentAddOriginal: 'composer.attachment.add_original'
+	},
 	signatureEditor: 'signature-editor',
 	signaturesList: 'signatures-list'
 };
