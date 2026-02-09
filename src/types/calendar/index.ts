@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-type MatchingReplyIdentity = {
+export type MatchingReplyIdentity = {
 	address: string;
 	name: string;
 	identityId: string | undefined;

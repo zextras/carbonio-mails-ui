@@ -8,7 +8,7 @@ import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { SortBy } from '@zextras/carbonio-ui-commons';
 
-import { NormalizedConversation } from 'types/conversations/index.d';
+import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages/index.d';
 import { ErrorType, SearchRequestStatus } from 'types/state/index.d';
 import { AdvancedFilterModalFormValues, Query } from 'views/search/types/types';

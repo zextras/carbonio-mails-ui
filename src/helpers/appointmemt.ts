@@ -13,7 +13,7 @@ import {
 	getRecipientReplyIdentity
 } from 'helpers/identities';
 import { retrieveALL, retrieveCC } from 'store/editor-slice-utils';
-import { Attendee, MatchingReplyIdentity, SenderType } from 'types/calendar/index.d';
+import { Attendee, MatchingReplyIdentity, SenderType } from 'types/calendar';
 import type { MailMessage } from 'types/index.d';
 
 /**

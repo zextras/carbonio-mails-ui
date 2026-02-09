@@ -20,13 +20,6 @@ import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import type {
-	Filter,
-	ApiFilterAction,
-	AllFiltersTest,
-	FilterTest,
-	FilterActions
-} from 'types/index.d';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
 import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
@@ -35,6 +28,7 @@ import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-condi
 import { findRowKey, getTestComponent } from 'views/settings/filters/parts/get-test-component';
 import { getButtonInfo } from 'views/settings/filters/parts/utils';
 import { capitalise } from 'views/sidebar/utils';
+import { AllFiltersTest, ApiFilterAction, Filter, FilterActions, FilterTest } from 'types/filters';
 
 type ModifyFilterModalProps = {
 	onClose: () => void;

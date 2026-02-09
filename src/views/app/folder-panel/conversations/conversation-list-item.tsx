@@ -18,7 +18,7 @@ import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
-import { NormalizedConversation } from 'types/conversations/index.d';
+import { NormalizedConversation } from 'types/conversations';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
 import { ConversationMessagesList } from 'views/app/folder-panel/conversations/conversation-messages-list';
