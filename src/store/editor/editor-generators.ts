@@ -353,7 +353,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
-		action: EditViewActions.REPLY,
+		action: EditViewActions.FORWARD,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
 		unsavedAttachments: [],
@@ -413,7 +413,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
-		action: EditViewActions.REPLY,
+		action: EditViewActions.FORWARD_AS_ATTACHMENT,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
 		unsavedAttachments: attachments,
