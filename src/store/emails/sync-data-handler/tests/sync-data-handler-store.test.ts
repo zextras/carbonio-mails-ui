@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {act, renderHook, waitFor} from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import type { Mock } from 'vitest';
 
@@ -24,11 +24,11 @@ import {
 	useMessageIndexSlice
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
-import { useConversationListByFolder } from "../../../../hooks/use-conversations-list-by-folder";
-import { FOLDERS, useFolderStore } from "@zextras/carbonio-ui-commons";
-import { setupHook } from "@test-setup";
-import * as shell from "@zextras/carbonio-shell-ui";
-import { generateFolders } from "@test-utils/folders/folders-generator";
+import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
+import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
+import { setupHook } from '@test-setup';
+import * as shell from '@zextras/carbonio-shell-ui';
+import { generateFolders } from '@test-utils/folders/folders-generator';
 
 vi.mock('@zextras/carbonio-ui-commons', async () => ({
 	...(await vi.importActual('@zextras/carbonio-ui-commons')),
@@ -96,32 +96,45 @@ describe('handleNotifyMessagesCreated', () => {
 			const { conversation: firstConv, messages: firstConvMessages } = await waitFor(() =>
 				populateConversationInEmailStore({
 					conversationParams: { id: '123', folderId: FOLDERS.INBOX },
-					messageGeneratorParams: [{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 30) }]
+					messageGeneratorParams: [
+						{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 30) }
+					]
 				})
 			);
 			const { conversation: secondConv, messages: secondConvMessages } = await waitFor(() =>
 				populateConversationInEmailStore({
 					conversationParams: { id: '124', folderId: FOLDERS.INBOX },
-					messageGeneratorParams: [{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 50) }]
+					messageGeneratorParams: [
+						{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 50) }
+					]
 				})
 			);
 			await act(async () => {
 				await appendConversationsToConversationIndexSlice([firstConv, secondConv], 100, false);
-			})
+			});
 			await act(async () => {
 				await setMessagesInEmailStore([...firstConvMessages, ...secondConvMessages], false);
-			})
+			});
 
-			const { result } = setupHook(useConversationListByFolder, { initialProps: [FOLDERS.INBOX]});
+			const { result } = setupHook(useConversationListByFolder, { initialProps: [FOLDERS.INBOX] });
 
-			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([firstConv.id, secondConv.id]);
-			const newMessage = generateMessage({ id: '2', receiveDate: new Date().valueOf(), cid: secondConv.id });
+			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([
+				firstConv.id,
+				secondConv.id
+			]);
+			const newMessage = generateMessage({
+				id: '2',
+				receiveDate: new Date().valueOf(),
+				cid: secondConv.id
+			});
 
 			await act(async () => {
 				await handleNotifyMessagesCreated([newMessage]);
-
-			})
-			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([secondConv.id, firstConv.id]);
+			});
+			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([
+				secondConv.id,
+				firstConv.id
+			]);
 		});
 	});
 

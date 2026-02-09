@@ -6,7 +6,7 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import {filter, find, forEach, orderBy} from 'lodash';
+import { filter, find, forEach, orderBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
@@ -220,7 +220,9 @@ function handleNotifyMessagesCreated(
 				};
 
 				// conversationListIndex must be recalculated when a message update a conversation date by user preferences to sort the array by date
-				state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(state.populatedItemsSlice.conversations);
+				state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
+					state.populatedItemsSlice.conversations
+				);
 			}
 		});
 	}
