@@ -22,7 +22,7 @@ import { NormalizedConversation } from 'types/conversations/index.d';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
 import { ConversationMessagesList } from 'views/app/folder-panel/conversations/conversation-messages-list';
-import {isItemRead} from "../parts/utils/utils";
+import { isItemRead } from '../parts/utils/utils';
 
 export type ConversationListItemProps = {
 	conversation: NormalizedConversation;

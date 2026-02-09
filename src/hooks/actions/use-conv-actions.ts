@@ -29,7 +29,7 @@ import { useConvSetUnreadDescriptor } from 'hooks/actions/use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from 'hooks/actions/use-conv-show-original';
 import { useConversationMessages } from 'store/emails/store';
 import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
-import {isItemRead} from "../../views/app/folder-panel/parts/utils/utils";
+import { isItemRead } from '../../views/app/folder-panel/parts/utils/utils';
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;

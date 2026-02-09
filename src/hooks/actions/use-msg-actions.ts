@@ -32,7 +32,7 @@ import { useMsgSetUnflagDescriptor } from 'hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from 'hooks/actions/use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from 'hooks/actions/use-msg-show-original';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
-import {isItemRead} from "../../views/app/folder-panel/parts/utils/utils";
+import { isItemRead } from '../../views/app/folder-panel/parts/utils/utils';
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;

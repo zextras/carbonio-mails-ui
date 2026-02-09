@@ -24,7 +24,7 @@ import {
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
-import {isItemRead} from "../../../app/folder-panel/parts/utils/utils";
+import { isItemRead } from '../../../app/folder-panel/parts/utils/utils';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
