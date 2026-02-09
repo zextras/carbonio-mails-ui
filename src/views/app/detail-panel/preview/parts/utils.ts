@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useCallback, useEffect, useState } from 'react';
+
 import { TFunction } from 'i18next';
 
 import { VALID_MAIL_AUTHENTICATION_HEADERS } from 'constants/index';
-import { MailAuthenticationHeaders, Sensitivity } from 'types/index.d';
-import { useCallback, useEffect, useState } from 'react';
+import { MailAuthenticationHeaders, Sensitivity } from 'types/messages';
 
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,

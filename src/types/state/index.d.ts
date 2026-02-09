@@ -8,7 +8,7 @@ import { type API_REQUEST_STATUS } from 'constants/index';
 import type { SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import type { Conversation } from 'types/conversations';
 import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from 'types/editor/index.d';
-import { type MailMessage } from 'types/messages/index.d';
+import { type MailMessage } from 'types/messages';
 
 export type MailsStateType = {
 	conversations: ConversationsStateType;

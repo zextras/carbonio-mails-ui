@@ -7,7 +7,7 @@ import type { Folder } from '@zextras/carbonio-ui-commons';
 
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from 'constants/index';
 import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
-import type { MailMessage } from 'types/messages/index.d';
+import type { MailMessage } from 'types/messages';
 import type { Participant } from 'types/participant/index.d';
 
 /**
