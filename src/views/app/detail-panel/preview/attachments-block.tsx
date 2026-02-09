@@ -255,7 +255,8 @@ const Attachment = ({
 			allowFolders: true,
 			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
-			maxSelection: 1
+			maxSelection: 1,
+			canSelectOpenedFolder: true
 		}),
 		[confirmAction, isAValidDestination, t]
 	);
@@ -583,7 +584,8 @@ const AttachmentsBlock = ({
 			allowFolders: true,
 			canCreateFolder: true,
 			isValidSelection: isAValidDestination,
-			maxSelection: 1
+			maxSelection: 1,
+			canSelectOpenedFolder: true
 		}),
 		[confirmAction, isAValidDestination, t]
 	);

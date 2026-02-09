@@ -7,10 +7,10 @@ import React, { FC, ReactElement, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { getColor, Tooltip, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
 
 import type { Participant, MailMessage } from 'types/index.d';
+import { useTranslation } from 'react-i18next';
 
 const StyledText = styled.span<{ $isRead?: string | boolean; $color?: string }>`
 	padding: 0 0.125rem;
@@ -22,9 +22,11 @@ const StyledText = styled.span<{ $isRead?: string | boolean; $color?: string }>`
 	font-weight: ${({ theme, $isRead }): number =>
 		$isRead ? theme.fonts.weight.regular : theme.fonts.weight.bold};
 `;
+
 const OnBehalfOfDisplayer: FC<{
 	compProps: { senderContact: Participant; mainContact: Participant; message: MailMessage };
 }> = ({ compProps: { senderContact, mainContact, message } }): ReactElement => {
+	const [t] = useTranslation();
 	const [mainContactFullName, mainContactAddress] = useMemo(
 		() => [capitalize(mainContact.fullName || mainContact.name), mainContact.address],
 		[mainContact]
@@ -34,7 +36,7 @@ const OnBehalfOfDisplayer: FC<{
 		[senderContact]
 	);
 
-	const behalfOfLabel = useMemo(() => t('label.behalf_of', 'behalf of'), []);
+	const behalfOfLabel = t('label.behalf_of', 'behalf of');
 
 	const messageLabel = useMemo(
 		(): React.JSX.Element => (
