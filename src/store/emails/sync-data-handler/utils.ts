@@ -219,7 +219,7 @@ function handleNotifyMessagesCreated(
 					...conv
 				};
 
-				// conversationListIndex must be recalculated when a message update a conversation date by user preferences to sort the array by date
+				// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
 				state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
 					state.populatedItemsSlice.conversations
 				);
