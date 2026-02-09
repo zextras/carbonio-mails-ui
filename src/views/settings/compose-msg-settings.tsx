@@ -20,7 +20,13 @@ import { map } from 'lodash';
 
 import { ColorPicker } from 'commons/color-picker';
 import { UpdateSettingsProps } from 'types/index.d';
-import { getFontSizesOptions, findLabel, getFonts } from 'views/settings/components/utils';
+import {
+	getFontSizesOptions,
+	findLabel,
+	getFonts,
+	prefToBool,
+	boolToPref
+} from 'views/settings/components/utils';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { composingMsgSubSection } from 'views/settings/subsections';
 
@@ -135,12 +141,12 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 			<FormSubSection label={t('label.composing_messages_read_receipt', 'Read receipt')}>
 				<Switch
 					label={t('label.always_request_read_receipts', 'Always request read receipts')}
-					value={settingsObj.zimbraPrefMailRequestReadReceipts === 'TRUE'}
+					value={prefToBool(settingsObj.zimbraPrefMailRequestReadReceipts)}
 					onClick={(): void =>
 						updateSettings({
 							target: {
 								name: 'zimbraPrefMailRequestReadReceipts',
-								value: settingsObj.zimbraPrefMailRequestReadReceipts === 'TRUE' ? 'FALSE' : 'TRUE'
+								value: boolToPref(!prefToBool(settingsObj.zimbraPrefMailRequestReadReceipts))
 							}
 						})
 					}

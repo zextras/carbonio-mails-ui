@@ -22,7 +22,7 @@ describe('compose-msg-settings', () => {
 		zimbraPrefHtmlEditorDefaultFontSize: '',
 		zimbraPrefHtmlEditorDefaultFontColor: '',
 		zimbraPrefComposeFormat: '',
-		zimbraPrefMailRequestReadReceipts: ''
+		zimbraPrefMailRequestReadReceipts: 'FALSE'
 	};
 
 	it('should render correctly', async () => {
@@ -172,8 +172,7 @@ describe('compose-msg-settings', () => {
 				{}
 			);
 
-			const switchElement = screen.getByText('label.always_request_read_receipts');
-			await user.click(switchElement);
+			await user.click(screen.getByTestId('icon: ToggleLeftOutline'));
 
 			await waitFor(() =>
 				expect(mockUpdateSettings).toHaveBeenCalledWith({
@@ -197,8 +196,7 @@ describe('compose-msg-settings', () => {
 				{}
 			);
 
-			const switchElement = screen.getByText('label.always_request_read_receipts');
-			await user.click(switchElement);
+			await user.click(screen.getByTestId('icon: ToggleRight'));
 
 			await waitFor(() =>
 				expect(mockUpdateSettings).toHaveBeenCalledWith({
