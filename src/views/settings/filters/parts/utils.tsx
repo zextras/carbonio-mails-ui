@@ -10,7 +10,8 @@ import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
 import { FilterAction, FilterActions } from 'types/filters';
-import { ACTION_OPTION_KEYS, ACTION_OPTIONS } from 'views/settings/filters/constants';
+import { ACTION_OPTIONS } from 'views/settings/filters/constants';
+import type { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
 import { ActionMarkAsComponent } from 'views/settings/filters/parts/filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from 'views/settings/filters/parts/filter-actions/action-move-to-folder-component';
 import { ActionRedirectToComponent } from 'views/settings/filters/parts/filter-actions/action-redirect-to-component';

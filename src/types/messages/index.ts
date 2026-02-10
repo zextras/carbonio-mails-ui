@@ -6,8 +6,8 @@
 
 import { SENSITIVITY_VALUES } from 'constants/index';
 import type { MailsEditorV2 } from 'types/editor/index.d';
-import { Participant } from 'types/participant';
-import { PrefsType } from 'types/settings';
+import type { Participant } from 'types/participant';
+import type { PrefsType } from 'types/settings';
 import { SaveDraftResponse, MessageSignature } from 'types/soap/index.d';
 
 export type MailAuthenticationHeader = { value: string; pass: boolean };
