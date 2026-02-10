@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
@@ -26,45 +26,48 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 	open,
 	focus,
 	disabled
-}): ReactElement => (
-	<ColorContainer
-		orientation="horizontal"
-		width="fill"
-		crossAlignment="center"
-		mainAlignment="space-between"
-		borderRadius="half"
-		background="gray5"
-		padding={{
-			all: 'extrasmall'
-		}}
-		$disabled={disabled}
-		minHeight="3rem"
-	>
-		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
-			<Row
-				orientation="vertical"
-				crossAlignment="flex-start"
-				mainAlignment="flex-start"
-				padding={{ left: 'small' }}
-			>
-				<Text
-					size="small"
-					// eslint-disable-next-line no-nested-ternary
-					color={open || focus ? 'primary' : disabled ? 'gray2' : 'secondary'}
+}): ReactElement => {
+	const color = useMemo(() => {
+		if (disabled) return 'gray2';
+		if (open || focus) return 'primary';
+		return 'secondary';
+	}, [disabled, open, focus]);
+
+	return (
+		<ColorContainer
+			orientation="horizontal"
+			width="fill"
+			crossAlignment="center"
+			mainAlignment="space-between"
+			borderRadius="half"
+			background="gray5"
+			padding={{ all: 'extrasmall' }}
+			$disabled={disabled}
+			minHeight="3rem"
+		>
+			<Row width="100%" takeAvailableSpace mainAlignment="space-between">
+				<Row
+					orientation="vertical"
+					crossAlignment="flex-start"
+					mainAlignment="flex-start"
+					padding={{ left: 'small' }}
 				>
-					{label}
-				</Text>
-				<TextUpperCase color={disabled ? 'gray2' : 'text'}>{selected?.[0]?.label}</TextUpperCase>
+					<Text size="small" color={color}>
+						{label}
+					</Text>
+					<TextUpperCase color={disabled ? 'gray2' : 'text'}>{selected?.[0]?.label}</TextUpperCase>
+				</Row>
 			</Row>
-		</Row>
-		<Icon
-			size="large"
-			icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-			color={open || focus ? 'primary' : 'secondary'}
-			style={{ alignSelf: 'center' }}
-		/>
-	</ColorContainer>
-);
+
+			<Icon
+				size="large"
+				icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+				color={color}
+				style={{ alignSelf: 'center' }}
+			/>
+		</ColorContainer>
+	);
+};
 
 type GetItemsReturnType = Array<{ label: string; value: any; customComponent: ReactElement }>;
 const getItems = (items: Array<{ label: string; value: any }>): GetItemsReturnType =>
