@@ -90,7 +90,7 @@ export function parseMessageSortingOptions(
 	return defaultSortOrder;
 }
 
-function modifySettingString(
+/* export function modifySettingString(
 	zimbraPrefSortOrder: string,
 	prefToUpdate: string,
 	folderId: string
@@ -106,6 +106,35 @@ function modifySettingString(
 		return prefToUpdate.concat(`,${zimbraPrefSortOrder}`);
 	}
 	const re = new RegExp(`(^|,)${currentFolder}(?=,|$)`);
+	return zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
+} */
+
+function escapeRegex(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function modifySettingString(
+	zimbraPrefSortOrder: string,
+	prefToUpdate: string,
+	folderId: string
+): string {
+	if (prefToUpdate.endsWith('date-Desc')) {
+		const safeFolderId = escapeRegex(folderId);
+		const re = new RegExp(`(^|,)${safeFolderId}:[^,]*`, 'g');
+
+		const updatedSort = zimbraPrefSortOrder.replace(re, '').replace(/^,|,,|,$/g, '');
+		return updatedSort === 'BDLV' ? '' : updatedSort;
+	}
+
+	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
+
+	if (!currentFolder) {
+		return prefToUpdate.concat(`,${zimbraPrefSortOrder}`);
+	}
+
+	const safeCurrentFolder = escapeRegex(currentFolder);
+	const re = new RegExp(`(^|,)${safeCurrentFolder}(?=,|$)`, 'g');
+
 	return zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
 }
 
