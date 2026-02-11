@@ -90,25 +90,6 @@ export function parseMessageSortingOptions(
 	return defaultSortOrder;
 }
 
-/* export function modifySettingString(
-	zimbraPrefSortOrder: string,
-	prefToUpdate: string,
-	folderId: string
-): string {
-	if (prefToUpdate.endsWith('date-Desc')) {
-		return zimbraPrefSortOrder
-			.split(',')
-			.filter((item) => !item.startsWith(folderId))
-			.join(',');
-	}
-	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
-	if (!currentFolder) {
-		return prefToUpdate.concat(`,${zimbraPrefSortOrder}`);
-	}
-	const re = new RegExp(`(^|,)${currentFolder}(?=,|$)`);
-	return zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
-} */
-
 function escapeRegex(str: string): string {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
