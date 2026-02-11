@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { IncompleteMessage, MailMessage } from 'types/messages/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 

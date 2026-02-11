@@ -9,8 +9,9 @@ import React from 'react';
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterAction, FilterActions } from 'types/index.d';
+import { FilterAction, FilterActions } from 'types/filters';
 import { ACTION_OPTIONS } from 'views/settings/filters/constants';
+import type { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
 import { ActionMarkAsComponent } from 'views/settings/filters/parts/filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from 'views/settings/filters/parts/filter-actions/action-move-to-folder-component';
 import { ActionRedirectToComponent } from 'views/settings/filters/parts/filter-actions/action-redirect-to-component';
@@ -344,7 +345,7 @@ export const getActionComponent = (
 	return undefined;
 };
 
-export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
+export const getActionsInitialValues = (t: TFunction): Record<ACTION_OPTION_KEYS, FilterAction> => {
 	const markAsOptions = getMarkAsOptions(t);
 	return {
 		[ACTION_OPTIONS.KEEP]: { actionKeep: [{}] },
@@ -361,7 +362,7 @@ export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterA
 };
 
 export const getActionTranslations =
-	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
+	(isIncoming: boolean): ((t: TFunction) => Record<ACTION_OPTION_KEYS, string>) =>
 	(t: TFunction) => ({
 		[ACTION_OPTIONS.KEEP]: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')

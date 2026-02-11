@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
-
 const TEST_CONDITIONS = [
 	'bodyTest',
 	'addressTest',
@@ -32,7 +30,7 @@ export type AllFiltersTest = { condition: string } & Partial<
 	Record<(typeof TEST_CONDITIONS)[number], Array<FilterTest>>
 >;
 
-type ApiFilterAction = {
+export type ApiFilterAction = {
 	actionRedirect?: Array<ActionRedirect>;
 	actionTag?: Array<ActionTag>;
 	actionFlag?: Array<ActionFlag>;
@@ -73,15 +71,19 @@ export type MarkAsOption = {
 type ActionFileInto = {
 	folderPath?: string;
 };
+
 type ActionRedirect = {
 	a?: string;
 };
+
 type ActionFlag = {
 	flagName?: string;
 };
+
 type ActionTag = {
 	tagName?: string;
 };
+
 // TODO: refactor the code and remove me after I'm not anymore needed
 type CommonAction = {
 	id?: string;
@@ -90,24 +92,31 @@ type CommonAction = {
 	label?: string;
 	value?: string;
 };
+
 type FilterKeep = CommonAction & {
 	actionKeep: [Record<string, never>];
 };
-type FilterRedirect = CommonAction & {
+
+export type FilterRedirect = CommonAction & {
 	actionRedirect: [ActionRedirect];
 };
-type FilterFlag = CommonAction & {
+
+export type FilterFlag = CommonAction & {
 	actionFlag: [ActionFlag];
 };
-type FilterFileInto = CommonAction & {
+
+export type FilterFileInto = CommonAction & {
 	actionFileInto: [ActionFileInto];
 };
+
 type FilterDiscard = CommonAction & {
 	actionDiscard: [Record<string, never>];
 };
-type FilterTag = CommonAction & {
+
+export type FilterTag = CommonAction & {
 	actionTag: [ActionTag];
 };
+
 type FilterStop = CommonAction & {
 	actionStop: [Record<string, never>];
 };
@@ -129,5 +138,3 @@ export type FilterActionsProps = {
 };
 
 export type FilterActions = Array<FilterAction>;
-
-export type ActionKey = (typeof ACTION_OPTION_KEYS)[number];
