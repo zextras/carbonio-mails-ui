@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { MailMessage } from 'types/messages/index.d';
+import type { MailMessage } from 'types/messages';
 import { MailVerificationHeader } from 'types/soap/soap';
 import { SoapMailMessage } from 'types/soap/soap-mail-message';
 import { ZimbraRequest } from 'types/soap/zimbra-request';

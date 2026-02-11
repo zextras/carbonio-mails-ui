@@ -7,7 +7,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { MAIL_SENSITIVITY_HEADER } from 'constants/index';
-import { MailAuthenticationHeader } from 'types/index.d';
+import { MailAuthenticationHeader } from 'types/messages';
 import {
 	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel,

@@ -9,9 +9,9 @@ import React, { useCallback, useMemo } from 'react';
 import { getTags } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 
-import { FilterTag, MailFilterTag } from 'types/index.d';
 import { ShowTag } from 'views/settings/filters/parts/filter-actions/show-tag';
 import { ActionComponentProps } from 'views/settings/filters/types';
+import { FilterTag, MailFilterTag } from 'types/filters';
 
 export const ActionTagComponent = ({
 	value,
