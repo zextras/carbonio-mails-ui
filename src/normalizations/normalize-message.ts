@@ -304,13 +304,8 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 		acc
 	);
 
-const generateBody = (
-	mp: Array<SoapMailMessagePart>,
-	id: string
-): {
-	contentType: string;
-	content: string;
-} => findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
+const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
+	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
 const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {
@@ -372,26 +367,75 @@ export const haveReadReceipt = (
 };
 
 /**
- * Extracts and maps flags from a SOAP message to a Flags object.
+ * Parses a flag string and maps it to a Flags object.
+ * @param flags - The flag string to parse
+ * @returns Flags object with parsed flag values
+ */
+const parseFlagsString = (flags: string): Flags => ({
+	read: !/u/.test(flags),
+	hasAttachment: /a/.test(flags),
+	flagged: /f/.test(flags),
+	urgent: /!/.test(flags),
+	isDeleted: /x/.test(flags),
+	isDraft: /d/.test(flags),
+	isForwarded: /w/.test(flags),
+	isSentByMe: /s/.test(flags),
+	isInvite: /v/.test(flags),
+	isReplied: /r/.test(flags)
+});
+
+/**
+ * Extracts and maps flags from a partial  SOAP message from Notify to a Flags object, returning an empty object if no flags are present.
  * */
-const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | NonNullable<unknown> => {
+const getNotifyFlags = (
+	m: SoapPartialIncompleteMessage | undefined
+): Flags | NonNullable<unknown> => {
 	if (isNil(m?.f)) {
 		return {};
 	}
-	const flags = m.f;
-	return {
-		read: !/u/.test(flags),
-		hasAttachment: /a/.test(flags),
-		flagged: /f/.test(flags),
-		urgent: /!/.test(flags),
-		isDeleted: /x/.test(flags),
-		isDraft: /d/.test(flags),
-		isForwarded: /w/.test(flags),
-		isSentByMe: /s/.test(flags),
-		isInvite: /v/.test(flags),
-		isReplied: /r/.test(flags)
-	};
+	return parseFlagsString(m.f);
 };
+
+/**
+ * Extracts and maps flags from a SOAP message to a Flags object. If flags is undefined or empty, it returns a default object with read set to true.
+ * */
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
+	const defaultFlag = { read: true };
+
+	if (isNil(m?.f) || m.f === '') {
+		return defaultFlag;
+	}
+	return parseFlagsString(m.f);
+};
+
+/**
+ * Creates the base normalized message object with common properties shared across different normalization functions.
+ * @param m - SOAP message to normalize
+ * @returns Base object with common normalized properties
+ */
+const createBaseNormalizedMessage = (
+	m: SoapPartialIncompleteMessage
+): Partial<IncompleteMessage> => ({
+	conversation: m.cid,
+	date: m.d,
+	size: m.s,
+	parent: m.l,
+	replyType: m.rt,
+	originalId: m.origid,
+	fragment: m.fr,
+	subject: m.su,
+	participants: m.e
+		? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
+		: undefined,
+	tags: getTagIds(m.t, m.tn),
+	parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
+	attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
+	invite: m.inv,
+	shr: m.shr,
+	body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
+	autoSendTime: m.autoSendTime,
+	isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined
+});
 
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
@@ -413,32 +457,14 @@ export const normalizeMailMessageFromSoap = (
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(
 		{
-			conversation: m.cid,
+			...createBaseNormalizedMessage(m),
 			id: m.id,
-			date: m.d,
-			size: m.s,
-			parent: m.l,
-			replyType: m.rt,
-			originalId: m.origid,
-			fragment: m.fr,
-			subject: m.su,
-			participants: m.e
-				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
-				: undefined,
-			tags: getTagIds(m.t, m.tn),
-			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
-			invite: m.inv,
-			shr: m.shr,
-			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isComplete,
 			isScheduled: !!m.autoSendTime,
-			autoSendTime: m.autoSendTime,
 			...getFlags(m),
 			isReadReceiptRequested: m.e
 				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 				: undefined,
-			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders
 		},
 		isNil
@@ -448,14 +474,12 @@ export const normalizeMailMessageFromSoap = (
 export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
 	normalizeMailMessageFromSoap(m, true);
 
-export const normalizePartialIncompleteMessageFromSoap = (
-	m: SoapPartialIncompleteMessage
-): PartialIncompleteMessage => {
+const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
 	)[0];
 
-	const normalizedMailHeaders: MailHeaders = {
+	return {
 		signature: m?.signature,
 		messageIsFromExternalDomain: m._attrs
 			? getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount)
@@ -468,35 +492,22 @@ export const normalizePartialIncompleteMessageFromSoap = (
 			? getMessageIsFromDistributionListFromAPI(m._attrs)
 			: undefined
 	};
+};
+
+export const normalizePartialIncompleteMessageFromSoapNotify = (
+	m: SoapPartialIncompleteMessage
+): PartialIncompleteMessage => {
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
-	const partialData = <IncompleteMessage>omitBy(
+	const partialMessageData = <IncompleteMessage>omitBy(
 		{
-			conversation: m.cid,
-			date: m.d,
-			size: m.s,
-			parent: m.l,
-			replyType: m.rt,
-			originalId: m.origid,
-			fragment: m.fr,
-			subject: m.su,
-			participants: m.e
-				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
-				: undefined,
-			tags: getTagIds(m.t, m.tn),
-			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
-			invite: m.inv,
-			shr: m.shr,
-			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
+			...createBaseNormalizedMessage(m),
 			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
-			autoSendTime: m.autoSendTime,
-			...getFlags(m),
 			// TODO: this function is accepting undefined values and assuming defaults
 			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
-			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
-			...normalizedMailHeaders
+			...normalizeMailHeaders(m)
 		},
 		isNil
 	);
-	return { ...partialData, id: m.id };
+	const flags = getNotifyFlags(m);
+	return { ...partialMessageData, ...flags, id: m.id };
 };

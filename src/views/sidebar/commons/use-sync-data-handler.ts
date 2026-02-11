@@ -24,7 +24,7 @@ import {
 } from 'normalizations/normalize-conversation';
 import {
 	normalizeMailMessageFromSoap,
-	normalizePartialIncompleteMessageFromSoap
+	normalizePartialIncompleteMessageFromSoapNotify
 } from 'normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
@@ -121,7 +121,7 @@ function processModifiedNotifications(notify: SoapNotify): void {
 	const modifiedMessages = notify.modified?.m as Array<SoapPartialIncompleteMessage>;
 	if (modifiedMessages) {
 		const messages = map(modifiedMessages, (message) =>
-			normalizePartialIncompleteMessageFromSoap(message)
+			normalizePartialIncompleteMessageFromSoapNotify(message)
 		);
 		handleNotifyMessagesModified(messages);
 	}
