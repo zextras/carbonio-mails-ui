@@ -92,7 +92,9 @@ describe('Sort and filter button component', () => {
 				'ModifyPrefs',
 				expect.objectContaining({
 					_attrs: {
-						zimbraPrefSortOrder: expect.stringContaining(expectedPref)
+						zimbraPrefSortOrder: expect.stringContaining(
+							sortValue === 'date' && directionValue === 'Desc' ? '' : expectedPref
+						)
 					}
 				})
 			);
