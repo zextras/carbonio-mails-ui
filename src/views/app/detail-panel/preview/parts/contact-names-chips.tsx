@@ -4,26 +4,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useRef, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Row,
 	Text,
 	Chip,
 	Container,
 	Padding,
-	Popover,
 	Button,
+	DropdownItem,
+	Dropdown,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { map, noop } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import type { Participant } from 'types/index.d';
 import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
-import styled from '@emotion/styled';
-import { useTranslation } from 'react-i18next';
 
 const BadgeButton = styled(Button)`
 	padding: 0.125rem 0.5rem;
@@ -56,6 +56,7 @@ export const ContactChip: FC<{
 	isExpanded: boolean;
 }> = ({ contact, isExpanded }): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
 
 	const handleSendMsg = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
@@ -114,7 +115,7 @@ const PlainView = ({ contacts }: { contacts: Participant[] }): ReactElement => (
 					{generateChipName(contact)}
 				</Text>
 				<Padding right="extrasmall" />
-				<ContactChip contact={contact} isExpanded={true} />
+				<ContactChip contact={contact} isExpanded />
 				{index !== contacts.length - 1 && <Separator />}
 			</Row>
 		))}
@@ -122,24 +123,40 @@ const PlainView = ({ contacts }: { contacts: Participant[] }): ReactElement => (
 );
 
 const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement => {
-	const [t] = useTranslation();
+	const { createSnackbar } = useUiUtilities();
 
-	const [open, setOpen] = useState(false);
-	const popOverRef = useRef(null);
+	const [t] = useTranslation();
 
 	const moreLabel = t('tooltip.view_more', 'View all items in this list');
 
-	const toggleOpen = useCallback(
-		(ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
-			ev.stopPropagation();
-			setOpen(!open);
+	const handleCopyEmailToClipboard = useCallback(
+		(e: React.SyntheticEvent<HTMLElement> | KeyboardEvent, contact: Participant) => {
+			e.stopPropagation();
+			copyEmailToClipboard(contact.address, createSnackbar);
 		},
-		[open]
+		[createSnackbar]
 	);
 
-	const handleClose = useCallback(() => {
-		setOpen(false);
-	}, []);
+	const options: DropdownItem[] = useMemo(
+		() => [
+			...map(contacts, (contact, index) => ({
+				id: 'da',
+				label: contact.name,
+				onClick: (ev: React.SyntheticEvent<HTMLElement> | KeyboardEvent) =>
+					handleCopyEmailToClipboard(ev, contact),
+				customComponent: (
+					<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
+						<Text color="secondary" size="small">
+							{generateChipName(contact)}
+						</Text>
+						<Padding right="extrasmall" />
+						<ContactChip contact={contact} isExpanded />
+					</Container>
+				)
+			}))
+		],
+		[contacts, handleCopyEmailToClipboard]
+	);
 
 	return (
 		<Row data-testid={`chip-${contacts[0].address}`}>
@@ -148,48 +165,22 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 				<>
 					<Separator />
 					<Tooltip label={moreLabel}>
-						<BadgeButton
-							ref={popOverRef}
-							onClick={toggleOpen}
-							size="small"
-							backgroundColor="gray2"
-							labelColor="text"
-							label={`+${contacts.length - 1}`}
-							shape="round"
-						/>
+						<Dropdown
+							disableAutoFocus
+							items={options}
+							data-testid="options-dropdown"
+							maxWidth="500px"
+						>
+							<BadgeButton
+								onClick={noop}
+								size="small"
+								backgroundColor="gray2"
+								labelColor="text"
+								label={`+${contacts.length - 1}`}
+								shape="round"
+							/>
+						</Dropdown>
 					</Tooltip>
-					<Popover
-						open={open}
-						anchorEl={popOverRef}
-						placement="bottom-end"
-						onClose={handleClose}
-						styleAsModal
-						disablePortal
-						style={{ maxHeight: '300px' }}
-					>
-						<Container orientation="horizontal" crossAlignment="flex-start">
-							<Container padding={{ vertical: 'small', left: 'small' }} gap="0.5rem">
-								{map(contacts, (contact, index) => (
-									<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
-										<Text color="secondary" size="small">
-											{generateChipName(contact)}
-										</Text>
-										<Padding right="extrasmall" />
-										<ContactChip contact={contact} isExpanded={true} />
-									</Container>
-								))}
-							</Container>
-							<Container>
-								<Button
-									onClick={toggleOpen}
-									size="small"
-									color="text"
-									type="ghost"
-									icon="CloseOutline"
-								/>
-							</Container>
-						</Container>
-					</Popover>
 				</>
 			)}
 		</Row>
