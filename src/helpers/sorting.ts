@@ -100,7 +100,9 @@ export function modifySettingString(
 			new RegExp(`(?:^|,)${folderId}:[^,]*`, 'g'),
 			''
 		);
-		const cleaned = removedFolder.replaceAll(/^(?:,)|(?:,,)|(?:,$)/g, '');
+
+		const cleaned = removedFolder.replaceAll(/(?:^,|,,|,$)/g, '');
+
 		return cleaned === 'BDLV' ? '' : cleaned;
 	}
 
