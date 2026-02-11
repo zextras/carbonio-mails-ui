@@ -6,7 +6,7 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach } from 'lodash';
+import { filter, find, forEach, orderBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
@@ -189,6 +189,14 @@ function handleNotifyMessagesCreated(
 		return Array.from(new Set([...convMessagesIds, message.id]));
 	}
 
+	function getOrderedConversationListIndex(
+		conversations: Record<string, NormalizedConversation>
+	): Array<string> {
+		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
+		const preference = sortOrder === 'dateDesc' ? 'desc' : 'asc';
+		return orderBy(conversations, 'date', preference).map((conv) => conv.id);
+	}
+
 	function addMessagesToConversation(state: EmailsStoreState): void {
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
@@ -210,6 +218,11 @@ function handleNotifyMessagesCreated(
 					...state.populatedItemsSlice.conversations,
 					...conv
 				};
+
+				// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
+				state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
+					state.populatedItemsSlice.conversations
+				);
 			}
 		});
 	}
