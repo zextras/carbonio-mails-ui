@@ -6,7 +6,8 @@
 
 import { includes, isEmpty, trim } from 'lodash';
 
-import { MailAuthenticationHeaders, Sensitivity, SoapIncompleteMessage } from 'types/index.d';
+import { MailAuthenticationHeaders, Sensitivity } from 'types/messages';
+import { SoapIncompleteMessage } from 'types/soap';
 
 function getDomainFromEmail(email: string): string {
 	return email.split('@')[1];

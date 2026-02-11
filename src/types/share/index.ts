@@ -8,7 +8,7 @@ import type { Grant } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 
-import type { Participant } from 'types/participant/index.d';
+import type { Participant } from 'types/participant';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;

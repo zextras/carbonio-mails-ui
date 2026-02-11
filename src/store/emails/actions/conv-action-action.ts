@@ -6,7 +6,7 @@
 
 import { convActionSoapApi } from 'api/index';
 import { handleConvActionResponse, optimisticallyHandleConvActions } from 'store/emails/store';
-import { ConvActionParameters } from 'types/conversations/index.d';
+import { ConvActionParameters } from 'types/conversations';
 
 export async function convActionEmailStoreAction({
 	ids,
