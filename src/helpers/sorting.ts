@@ -96,11 +96,12 @@ export function modifySettingString(
 	folderId: string
 ): string {
 	if (prefToUpdate.endsWith('date-Desc')) {
-		const re = new RegExp(`(^|,)${folderId}:[^,]*`, 'g');
-
-		const updatedSort = zimbraPrefSortOrder.replaceAll(re, '');
-		const removeExtraComma = updatedSort.replace(/^,|,,|,$/g, '');
-		return removeExtraComma === 'BDLV' ? '' : removeExtraComma;
+		const removedFolder = zimbraPrefSortOrder.replaceAll(
+			new RegExp(`(?:^|,)${folderId}:[^,]*`, 'g'),
+			''
+		);
+		const cleaned = removedFolder.replaceAll(/^(?:,)|(?:,,)|(?:,$)/g, '');
+		return cleaned === 'BDLV' ? '' : cleaned;
 	}
 
 	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
@@ -109,9 +110,10 @@ export function modifySettingString(
 		return `${prefToUpdate},${zimbraPrefSortOrder}`;
 	}
 
-	const re = new RegExp(`(^|,)${currentFolder}(?=,|$)`, 'g');
-
-	return zimbraPrefSortOrder.replaceAll(re, `$1${prefToUpdate}`);
+	return zimbraPrefSortOrder.replaceAll(
+		new RegExp(`(^|,)${currentFolder}(?=,|$)`, 'g'),
+		`$1${prefToUpdate}`
+	);
 }
 
 export function updateSortAndFilterSettings({
