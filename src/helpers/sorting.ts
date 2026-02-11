@@ -6,10 +6,10 @@
 import { updateSettings } from '@zextras/carbonio-shell-ui';
 import { isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
-
-import type { FolderSortOrder, SortDirection } from '../types';
-import { FILTER_OPTIONS, SORTING_OPTIONS } from '../constants';
 import { TFunction } from 'i18next';
+
+import { FILTER_OPTIONS, SORTING_OPTIONS } from '../constants';
+import type { FolderSortOrder, SortDirection } from '../types';
 
 /**
  * Returns sortType, sortDirection and sortOrder for the given folder
@@ -93,14 +93,20 @@ export function parseMessageSortingOptions(
 function modifySettingString(
 	zimbraPrefSortOrder: string,
 	prefToUpdate: string,
-	folderId?: string
+	folderId: string
 ): string {
-	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId ?? '');
-	if (!currentFolder) {
-		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
-		return replacedString.concat(`,${prefToUpdate},BDLV`);
+	if (prefToUpdate.endsWith('date-Desc')) {
+		return zimbraPrefSortOrder
+			.split(',')
+			.filter((item) => !item.startsWith(folderId))
+			.join(',');
 	}
-	return zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
+	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
+	if (!currentFolder) {
+		return prefToUpdate.concat(`,${zimbraPrefSortOrder}`);
+	}
+	const re = new RegExp(`(^|,)${currentFolder}(?=,|$)`);
+	return zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
 }
 
 export function updateSortAndFilterSettings({
