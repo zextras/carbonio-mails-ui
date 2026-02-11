@@ -90,33 +90,28 @@ export function parseMessageSortingOptions(
 	return defaultSortOrder;
 }
 
-function escapeRegex(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 export function modifySettingString(
 	zimbraPrefSortOrder: string,
 	prefToUpdate: string,
 	folderId: string
 ): string {
 	if (prefToUpdate.endsWith('date-Desc')) {
-		const safeFolderId = escapeRegex(folderId);
-		const re = new RegExp(`(^|,)${safeFolderId}:[^,]*`, 'g');
+		const re = new RegExp(`(^|,)${folderId}:[^,]*`, 'g');
 
-		const updatedSort = zimbraPrefSortOrder.replace(re, '').replace(/^,|,,|,$/g, '');
-		return updatedSort === 'BDLV' ? '' : updatedSort;
+		const updatedSort = zimbraPrefSortOrder.replaceAll(re, '');
+		const removeExtraComma = updatedSort.replace(/^,|,,|,$/g, '');
+		return removeExtraComma === 'BDLV' ? '' : removeExtraComma;
 	}
 
 	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
 
 	if (!currentFolder) {
-		return prefToUpdate.concat(`,${zimbraPrefSortOrder}`);
+		return `${prefToUpdate},${zimbraPrefSortOrder}`;
 	}
 
-	const safeCurrentFolder = escapeRegex(currentFolder);
-	const re = new RegExp(`(^|,)${safeCurrentFolder}(?=,|$)`, 'g');
+	const re = new RegExp(`(^|,)${currentFolder}(?=,|$)`, 'g');
 
-	return zimbraPrefSortOrder.replace(re, `$1${prefToUpdate}`);
+	return zimbraPrefSortOrder.replaceAll(re, `$1${prefToUpdate}`);
 }
 
 export function updateSortAndFilterSettings({
