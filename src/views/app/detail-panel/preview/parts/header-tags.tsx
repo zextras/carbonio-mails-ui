@@ -41,13 +41,27 @@ const CompactViewTags = ({
 }): ReactElement | null => {
 	const [t] = useTranslation();
 
-	const moreLabel = t('tooltip.view_more', 'View all items in this list');
+	const moreLabel = t('tooltip.view_more', {
+		defaultValue_one: 'View {{count}} more item',
+		defaultValue_other: 'View {{count}} more items',
+		count: tags.length - 1
+	});
+
+	const handleClickComponent = useCallback(
+		(e: React.SyntheticEvent<HTMLElement> | KeyboardEvent, tag: Tag) => {
+			e.stopPropagation();
+			triggerSearch(tag);
+		},
+		[triggerSearch]
+	);
 
 	const options: DropdownItem[] = useMemo(
 		() => [
-			...map(tags, (tag) => ({
-				id: 'da',
+			...map(tags.slice(1), (tag, index) => ({
+				id: `tag-${index}`,
 				label: tag.name,
+				onClick: (e: React.SyntheticEvent<HTMLElement> | KeyboardEvent) =>
+					handleClickComponent(e, tag),
 				customComponent: (
 					<Chip
 						key={tag.id}
@@ -62,7 +76,7 @@ const CompactViewTags = ({
 				)
 			}))
 		],
-		[tags, triggerSearch]
+		[handleClickComponent, tags, triggerSearch]
 	);
 
 	if (tags.length === 0) {

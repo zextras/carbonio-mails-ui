@@ -127,7 +127,11 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 
 	const [t] = useTranslation();
 
-	const moreLabel = t('tooltip.view_more', 'View all items in this list');
+	const moreLabel = t('tooltip.view_more', {
+		defaultValue_one: 'View {{count}} more item',
+		defaultValue_other: 'View {{count}} more items',
+		count: contacts.length - 1
+	});
 
 	const handleCopyEmailToClipboard = useCallback(
 		(e: React.SyntheticEvent<HTMLElement> | KeyboardEvent, contact: Participant) => {
@@ -139,8 +143,8 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 
 	const options: DropdownItem[] = useMemo(
 		() => [
-			...map(contacts, (contact, index) => ({
-				id: 'da',
+			...map(contacts.slice(1), (contact, index) => ({
+				id: `contact-${index}`,
 				label: contact.name,
 				onClick: (ev: React.SyntheticEvent<HTMLElement> | KeyboardEvent) =>
 					handleCopyEmailToClipboard(ev, contact),
