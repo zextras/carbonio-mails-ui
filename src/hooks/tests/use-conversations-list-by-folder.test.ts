@@ -7,8 +7,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import type { Mock } from 'vitest';
 
+import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {

@@ -8,10 +8,11 @@ import React from 'react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import type { Mock } from 'vitest';
 
+import { parseMessageSortingOptions } from '../../../../../helpers/parseMessageSortingOptions';
 import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
 import { screen, setupTest } from '@test-setup';
 import { FILTER_OPTIONS, SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
-import { parseMessageSortingOptions, updateSortAndFilterSettings } from 'helpers/sorting';
+import { updateSortAndFilterSettings } from 'helpers/sorting';
 
 vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()

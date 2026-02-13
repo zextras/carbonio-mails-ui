@@ -19,9 +19,9 @@ import { isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { SORTING_DIRECTION, SORTING_OPTIONS, FILTER_OPTIONS } from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
 import {
 	getTranslatedSortFilterLabel,
-	parseMessageSortingOptions,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
 import type { SortOption, FilterOption, SortAndFilterState } from '../../../../types';

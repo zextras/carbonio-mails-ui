@@ -9,7 +9,7 @@ import produce from 'immer';
 import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { parseMessageSortingOptions } from '../../../helpers/sorting';
+import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import {
 	EmailsStoreState,

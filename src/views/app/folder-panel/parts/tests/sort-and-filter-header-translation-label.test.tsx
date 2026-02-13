@@ -7,10 +7,10 @@ import React from 'react';
 
 import type { Mock } from 'vitest';
 
+import { parseMessageSortingOptions } from '../../../../../helpers/parseMessageSortingOptions';
 import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
 import { screen, setupTest } from '@test-setup';
 import { FILTER_OPTIONS, SORTING_OPTIONS } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 
 const FOLDER_ID = 'test-folder';
 

@@ -11,10 +11,10 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
 
+import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOptions';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
 import {
 	resetMessagesAndPopulatedItems,
