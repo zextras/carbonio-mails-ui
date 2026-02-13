@@ -89,7 +89,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 					<Container orientation="horizontal">
 						<Container
 							width="fit"
-							height={isContactListExpand && !isWide ? '-webkit-fill-available' : 'fit'}
+							height={isContactListExpand && !isWide ? '100%' : 'fit'}
 							mainAlignment={isContactListExpand && !isWide ? 'flex-start' : 'center'}
 							padding={{ all: 'small' }}
 						>
