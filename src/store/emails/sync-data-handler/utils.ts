@@ -6,9 +6,10 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach, orderBy } from 'lodash';
+import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
+import { parseMessageSortingOptions } from '../../../helpers/sorting';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import {
 	EmailsStoreState,
@@ -190,11 +191,12 @@ function handleNotifyMessagesCreated(
 	}
 
 	function getOrderedConversationListIndex(
-		conversations: Record<string, NormalizedConversation>
+		conversations: Record<string, NormalizedConversation>,
+		folderId: string
 	): Array<string> {
-		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
-		const preference = sortOrder === 'dateDesc' ? 'desc' : 'asc';
-		return orderBy(conversations, 'date', preference).map((conv) => conv.id);
+		const sortOrder = getUserSettings()?.prefs?.zimbraPrefSortOrder as string;
+		const { sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
+		return orderBy(conversations, 'date', toLower(sortDirection)).map((conv) => conv.id);
 	}
 
 	function addMessagesToConversation(state: EmailsStoreState): void {
@@ -219,10 +221,16 @@ function handleNotifyMessagesCreated(
 					...conv
 				};
 
-				// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
-				state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
-					state.populatedItemsSlice.conversations
-				);
+				const match = window.location.pathname.match(/\/folder\/([^/]+)(?:\/|$)/);
+
+				const folderId = match?.[1];
+				if (folderId) {
+					// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
+					state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
+						state.populatedItemsSlice.conversations,
+						folderId
+					);
+				}
 			}
 		});
 	}
