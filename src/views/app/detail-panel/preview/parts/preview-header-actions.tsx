@@ -16,11 +16,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+
+import { MailMsgPreviewActions } from './mail-message-preview-actions';
+import { getCompactDateLabel, getTimeLabel } from 'commons/utils';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import { Tag } from 'types';
 import { MailMessage } from 'types/messages';
-import { MailMsgPreviewActions } from './mail-message-preview-actions';
-import { getCompactDateLabel, getTimeLabel } from 'commons/utils';
 
 type PreviewHeaderActions = {
 	message: MailMessage;

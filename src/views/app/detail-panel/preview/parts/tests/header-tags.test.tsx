@@ -9,8 +9,8 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
-import { setupTest } from '@test-setup';
 import { TagsInExpandedHeader } from '../header-tags';
+import { setupTest } from '@test-setup';
 
 const mockRunSearch = vi.fn();
 
@@ -168,38 +168,38 @@ describe('HeaderTags', () => {
 				);
 			});
 
-			it('should open popover when badge is clicked', async () => {
+			it('should open dropdown when badge is clicked', async () => {
 				const { user } = setupTest(<TagsInExpandedHeader tags={mockTags} open isWide={false} />);
 
 				const badge = screen.getByText('+2');
 				await user.click(badge);
 
-				// Check that remaining tags are visible in popover
+				// Check that remaining tags are visible in dropdown
 				expect(screen.getByText('Work')).toBeVisible();
 				expect(screen.getByText('Personal')).toBeVisible();
 			});
 
-			it('should close popover when clicking outside', async () => {
+			it('should close dropdown when clicking outside', async () => {
 				const { user } = setupTest(<TagsInExpandedHeader tags={mockTags} open isWide={false} />);
 
 				const badge = screen.getByText('+2');
 				await user.click(badge);
 
-				// Verify popover is open
+				// Verify dropdown is open
 				expect(screen.getByText('Work')).toBeVisible();
 
-				// Close popover by clicking the badge again or using escape
-				// Note: The actual closing behavior depends on the Popover implementation
+				// Close dropdown by clicking the badge again or using escape
+				// Note: The actual closing behavior depends on the dropdown implementation
 			});
 
-			it('should trigger search for tags in popover', async () => {
+			it('should trigger search for tags in dropdown', async () => {
 				const { user } = setupTest(<TagsInExpandedHeader tags={mockTags} open isWide={false} />);
 
-				// Open popover
+				// Open dropdown
 				const badge = screen.getByText('+2');
 				await user.click(badge);
 
-				// Click on a tag in the popover
+				// Click on a tag in the dropdown
 				const workTag = screen.getByText('Work');
 				await user.click(workTag);
 

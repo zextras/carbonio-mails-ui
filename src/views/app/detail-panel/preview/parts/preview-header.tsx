@@ -12,18 +12,18 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { TagsInExpandedHeader } from './header-tags';
+import { PreviewHeaderActions } from './preview-header-actions';
+import { useContainerWidth } from './utils';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
+import { participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
 import type { MailMessage } from 'types/index.d';
+import { useGetTagsList } from 'ui-actions/tag-actions';
 import { ContactChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
 import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
-import { TagsInExpandedHeader } from './header-tags';
-import { PreviewHeaderActions } from './preview-header-actions';
-import { participantToString } from 'commons/utils';
-import { useContainerWidth } from './utils';
-import { useGetTagsList } from 'ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;
@@ -89,7 +89,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 					<Container orientation="horizontal">
 						<Container
 							width="fit"
-							height={isContactListExpand && !isWide ? '-webkit-fill-available' : 'fit'}
+							height={isContactListExpand && !isWide ? '100%' : 'fit'}
 							mainAlignment={isContactListExpand && !isWide ? 'flex-start' : 'center'}
 							padding={{ all: 'small' }}
 						>
@@ -143,7 +143,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 												(isWide ? (
 													<>
 														<Padding left="small" />
-														<ContactChip contact={mainContact} isExpanded={true} />
+														<ContactChip contact={mainContact} isExpanded />
 													</>
 												) : (
 													<Row takeAvailableSpace mainAlignment="flex-start" wrap="nowrap">
