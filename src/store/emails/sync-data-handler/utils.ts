@@ -221,7 +221,8 @@ function handleNotifyMessagesCreated(
 					...conv
 				};
 
-				const match = window.location.pathname.match(/\/folder\/([^/]+)(?:\/|$)/);
+				const regex = /\/folder\/([^/]+)(?:\/|$)/;
+				const match = regex.exec(globalThis.location.pathname);
 
 				const folderId = match?.[1];
 				if (folderId) {
