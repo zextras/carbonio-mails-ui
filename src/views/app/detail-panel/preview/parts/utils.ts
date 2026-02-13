@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { TFunction } from 'i18next';
 
@@ -73,23 +73,37 @@ export const useContainerWidth = (
 	ref: React.RefObject<HTMLDivElement>,
 	threshold: number
 ): boolean => {
-	const [width, setWidth] = useState(0);
-
-	const handleResize = useCallback((entries: ResizeObserverEntry[]): void => {
-		setWidth(entries[0].contentRect.width);
-	}, []);
+	const [isWide, setIsWide] = useState(true);
 
 	useEffect(() => {
 		if (!ref.current) return undefined;
 
-		const observer = new ResizeObserver(handleResize);
+		const fallbackMargin = 1; // Prevents flickering at the boundary
 
+		const handleResize = (entries: ResizeObserverEntry[]): void => {
+			const currentWidth = entries[0].contentRect.width;
+
+			// Use fallback margin: different thresholds for growing vs shrinking
+			setIsWide((prevIsWide) => {
+				if (prevIsWide) {
+					// Currently wide, require dropping below threshold - margin to switch to narrow
+					return currentWidth >= threshold - fallbackMargin;
+				}
+				// Currently narrow, require exceeding threshold + margin to switch to wide
+				return currentWidth >= threshold + fallbackMargin;
+			});
+		};
+
+		const observer = new ResizeObserver(handleResize);
 		observer.observe(ref.current);
+
+		const initialWidth = ref.current.offsetWidth;
+		setIsWide(initialWidth === 0 ? true : initialWidth >= threshold);
 
 		return (): void => {
 			observer?.disconnect();
 		};
-	}, [ref, handleResize]);
+	}, [ref, threshold]);
 
-	return width >= threshold;
+	return isWide;
 };

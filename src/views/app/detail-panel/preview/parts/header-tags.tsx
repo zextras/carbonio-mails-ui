@@ -3,21 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Button,
 	Chip,
 	Container,
+	Dropdown,
+	DropdownItem,
 	Padding,
-	Popover,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Tag, useRunSearchIntegration } from '@zextras/carbonio-ui-commons';
-import { map } from 'lodash';
+import { map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from '@emotion/styled';
 
 const BadgeButton = styled(Button)`
 	padding: 0.125rem 0.5rem;
@@ -39,18 +40,44 @@ const CompactViewTags = ({
 	triggerSearch: (tagToSearch: Tag) => void;
 }): ReactElement | null => {
 	const [t] = useTranslation();
-	const [open, setOpen] = useState(false);
-	const popOverRef = useRef(null);
 
-	const toggleOpen = useCallback(
-		(ev?: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent): void => {
-			ev?.stopPropagation();
-			setOpen(!open);
+	const moreLabel = t('tooltip.view_more', {
+		defaultValue_one: 'View {{count}} more item',
+		defaultValue_other: 'View {{count}} more items',
+		count: tags.length - 1
+	});
+
+	const handleClickComponent = useCallback(
+		(e: React.SyntheticEvent<HTMLElement> | KeyboardEvent, tag: Tag) => {
+			e.stopPropagation();
+			triggerSearch(tag);
 		},
-		[open]
+		[triggerSearch]
 	);
 
-	const moreLabel = t('tooltip.view_more', 'View all items in this list');
+	const options: DropdownItem[] = useMemo(
+		() => [
+			...map(tags.slice(1), (tag, index) => ({
+				id: `tag-${index}`,
+				label: tag.name,
+				onClick: (e: React.SyntheticEvent<HTMLElement> | KeyboardEvent) =>
+					handleClickComponent(e, tag),
+				customComponent: (
+					<Chip
+						key={tag.id}
+						label={tag?.name}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore // TODO: fix type in Tag interface
+						avatarBackground={tag.color}
+						background="gray2"
+						avatarIcon="Tag"
+						onClick={(): void => triggerSearch(tag)}
+					/>
+				)
+			}))
+		],
+		[handleClickComponent, tags, triggerSearch]
+	);
 
 	if (tags.length === 0) {
 		return null;
@@ -73,55 +100,23 @@ const CompactViewTags = ({
 				<>
 					<Separator />
 					<Tooltip label={moreLabel}>
-						<BadgeButton
-							ref={popOverRef}
-							onClick={toggleOpen}
-							size="small"
-							backgroundColor="gray2"
-							labelColor="text"
-							label={`+${tags.length - 1}`}
-							shape="round"
-						/>
+						<Dropdown
+							disableAutoFocus
+							items={options}
+							data-testid="options-dropdown"
+							maxWidth="500px"
+						>
+							<BadgeButton
+								data-testid="options-dropdown-icon"
+								onClick={noop}
+								size="small"
+								backgroundColor="gray2"
+								labelColor="text"
+								label={`+${tags.length - 1}`}
+								shape="round"
+							/>
+						</Dropdown>
 					</Tooltip>
-					<Popover
-						open={open}
-						anchorEl={popOverRef}
-						placement="bottom-end"
-						onClose={toggleOpen}
-						styleAsModal
-						disablePortal
-						style={{ maxHeight: '300px' }}
-					>
-						<Container orientation="horizontal" crossAlignment="flex-start">
-							<Container
-								crossAlignment="flex-start"
-								padding={{ vertical: 'small', left: 'small' }}
-								gap="0.5rem"
-							>
-								{map(tags, (tag) => (
-									<Chip
-										key={tag.id}
-										label={tag?.name}
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore // TODO: fix type in Tag interface
-										avatarBackground={tag.color}
-										background="gray2"
-										avatarIcon="Tag"
-										onClick={(): void => triggerSearch(tag)}
-									/>
-								))}
-							</Container>
-							<Container>
-								<Button
-									onClick={toggleOpen}
-									size="small"
-									color="text"
-									type="ghost"
-									icon="CloseOutline"
-								/>
-							</Container>
-						</Container>
-					</Popover>
 				</>
 			)}
 		</>
