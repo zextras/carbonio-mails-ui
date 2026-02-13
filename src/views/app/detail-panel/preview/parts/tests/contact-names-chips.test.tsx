@@ -55,19 +55,19 @@ const props = {
 
 describe('Attachments visualization', () => {
 	it('renders the contact names component with the exact number of chips', async () => {
-		setupTest(<ContactNameChip {...props} isWide={true} />);
+		setupTest(<ContactNameChip {...props} isWide />);
 		const chips = screen.getAllByTestId('chip-', { exact: false });
 		expect(chips.length).toBe(contacts.length);
 	});
 
 	it('renders the label correctly', async () => {
-		setupTest(<ContactNameChip {...props} isWide={true} />);
+		setupTest(<ContactNameChip {...props} isWide />);
 		const expectedLabel = screen.getByText(label);
 		expect(expectedLabel).toBeVisible();
 	});
 
 	it('renders each contact with the correct name and address', async () => {
-		setupTest(<ContactNameChip {...props} isWide={true} />);
+		setupTest(<ContactNameChip {...props} isWide />);
 
 		contacts.forEach((contact) => {
 			expect(screen.getByTestId(`chip-${contact.address}`)).toBeVisible();
@@ -79,14 +79,14 @@ describe('Attachments visualization', () => {
 	it('calls sendMsg when Send e-mail icon is clicked', async () => {
 		const sendIcon = /icon: EmailOutline/i;
 
-		const { user } = setupTest(<ContactNameChip {...props} isWide={true} />);
+		const { user } = setupTest(<ContactNameChip {...props} isWide />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: sendIcon })[0]);
 		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
 	});
 
 	it('calls copyEmailToClipboard when Copy icon is clicked', async () => {
 		const copyIcon = /icon: Copy/i;
-		const { user } = setupTest(<ContactNameChip {...props} isWide={true} />);
+		const { user } = setupTest(<ContactNameChip {...props} isWide />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
 		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, expect.anything());
 	});
@@ -126,7 +126,7 @@ describe('Compact view (isWide: false)', () => {
 		expect(screen.queryByText(/^\+/)).not.toBeInTheDocument();
 	});
 
-	it('opens popover when badge is clicked', async () => {
+	it('opens dropdown when badge is clicked', async () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
 
 		const badge = screen.getByText(`+${contacts.length - 1}`);
@@ -137,13 +137,13 @@ describe('Compact view (isWide: false)', () => {
 		expect(screen.getByText(contacts[1].address)).toBeVisible();
 	});
 
-	it('displays all remaining contacts in popover', async () => {
+	it('displays all remaining contacts in dropdown', async () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
 
 		const badge = screen.getByText(`+${contacts.length - 1}`);
 		await user.click(badge);
 
-		// All contacts except the first should be in the popover
+		// All contacts except the first should be in the dropdown
 		contacts.slice(1).forEach((contact) => {
 			expect(screen.getByText(generateChipName(contact))).toBeVisible();
 			expect(screen.getByText(contact.address)).toBeVisible();
@@ -165,30 +165,30 @@ describe('Compact view (isWide: false)', () => {
 		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, expect.anything());
 	});
 
-	it('can interact with contacts inside popover', async () => {
+	it('can interact with contacts inside dropdown', async () => {
 		const sendIcon = /icon: EmailOutline/i;
 
 		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
 
-		// Open popover
+		// Open dropdown
 		const badge = screen.getByText(`+${contacts.length - 1}`);
 		await user.click(badge);
 
-		// Click send email on a contact in the popover
+		// Click send email on a contact in the dropdown
 		const sendButtons = screen.getAllByRoleWithIcon('button', { icon: sendIcon });
-		await user.click(sendButtons[1]); // First button is the main chip, second is in popover
+		await user.click(sendButtons[1]); // First button is the main chip, second is in dropdown
 
-		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
+		expect(sendMsg).toHaveBeenCalledWith(contacts[1]);
 	});
 
-	it('shows expanded avatar for contacts in popover', async () => {
+	it('shows expanded avatar for contacts in dropdown', async () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
 
-		// Open popover
+		// Open dropdown
 		const badge = screen.getByText(`+${contacts.length - 1}`);
 		await user.click(badge);
 
-		// Contacts in popover should have expanded chips (with avatars)
+		// Contacts in dropdown should have expanded chips (with avatars)
 		expect(screen.getByText(generateChipName(contacts[1]))).toBeVisible();
 	});
 
@@ -215,15 +215,9 @@ describe('Compact view (isWide: false)', () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
 
 		const badge = screen.getByText(`+${contacts.length - 1}`);
-		const stopPropagation = vi.fn();
-
-		badge.addEventListener('click', (e) => {
-			stopPropagation();
-		});
-
 		await user.click(badge);
 
-		// Popover should be open
+		// dropdown should be open
 		expect(screen.getByText(generateChipName(contacts[1]))).toBeVisible();
 	});
 });
@@ -257,5 +251,35 @@ describe('generateChipName', () => {
 		const contact = { ...partcipant1, name: '', fullName: '' };
 		const result = generateChipName(contact);
 		expect(result).toBe('');
+	});
+});
+
+describe('CompactView handleCopyEmailToClipboard', () => {
+	it('should call copyEmailToClipboard with correct contact address and createSnackbar', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Open dropdown to access contacts
+		const badge = screen.getByText('+1');
+		await user.click(badge);
+
+		const copyIcon = /icon: Copy/i;
+		const copyButtons = screen.getAllByRoleWithIcon('button', { icon: copyIcon });
+		await user.click(copyButtons[1]);
+
+		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[1].address, expect.any(Function));
+	});
+
+	it('should handle SyntheticEvent properly in handleCopyEmailToClipboard', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText('+1');
+		await user.click(badge);
+
+		const copyIcon = /icon: Copy/i;
+		const copyButtons = screen.getAllByRoleWithIcon('button', { icon: copyIcon });
+
+		await user.click(copyButtons[1]);
+
+		expect(copyEmailToClipboard).toHaveBeenCalledTimes(1);
 	});
 });

@@ -10,9 +10,9 @@ import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { generateMessage } from '__test__/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from 'views/app/detail-panel/preview/mail-preview';
 
 /**
