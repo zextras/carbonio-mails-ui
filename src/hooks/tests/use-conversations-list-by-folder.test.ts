@@ -26,7 +26,6 @@ vi.mock('store/emails/store', () => ({
 	useConversationsIdsByFolder: vi.fn()
 }));
 vi.mock('helpers/sorting', () => ({
-	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('mockQuery')
 }));
 vi.mock('@zextras/carbonio-shell-ui', () => ({

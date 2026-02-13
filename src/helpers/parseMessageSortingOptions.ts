@@ -50,7 +50,7 @@ export function parseMessageSortingOptions(
 	if (!prefSortOrder || !folderId) {
 		return defaultSortOrder;
 	}
-	const { parameters } = findFolderEntry(prefSortOrder ?? '', folderId);
+	const { parameters } = findFolderEntry(prefSortOrder, folderId);
 	if (parameters?.length === 2) {
 		return {
 			sortType: parameters[0],

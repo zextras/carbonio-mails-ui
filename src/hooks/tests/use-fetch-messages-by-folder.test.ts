@@ -33,7 +33,6 @@ vi.mock('../../store/emails/store', async () => ({
 }));
 vi.mock('../../helpers/sorting', async () => ({
 	...(await vi.importActual('../../helpers/sorting')),
-	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('inId:"2"')
 }));
 vi.mock('../../helpers/parseMessageSortingOptions');
