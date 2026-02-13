@@ -253,3 +253,33 @@ describe('generateChipName', () => {
 		expect(result).toBe('');
 	});
 });
+
+describe('CompactView handleCopyEmailToClipboard', () => {
+	it('should call copyEmailToClipboard with correct contact address and createSnackbar', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		// Open dropdown to access contacts
+		const badge = screen.getByText('+1');
+		await user.click(badge);
+
+		const copyIcon = /icon: Copy/i;
+		const copyButtons = screen.getAllByRoleWithIcon('button', { icon: copyIcon });
+		await user.click(copyButtons[1]);
+
+		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[1].address, expect.any(Function));
+	});
+
+	it('should handle SyntheticEvent properly in handleCopyEmailToClipboard', async () => {
+		const { user } = setupTest(<ContactNameChip {...props} isWide={false} />);
+
+		const badge = screen.getByText('+1');
+		await user.click(badge);
+
+		const copyIcon = /icon: Copy/i;
+		const copyButtons = screen.getAllByRoleWithIcon('button', { icon: copyIcon });
+
+		await user.click(copyButtons[1]);
+
+		expect(copyEmailToClipboard).toHaveBeenCalledTimes(1);
+	});
+});
