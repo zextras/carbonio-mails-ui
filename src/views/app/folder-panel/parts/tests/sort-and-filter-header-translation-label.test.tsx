@@ -16,9 +16,9 @@ const FOLDER_ID = 'test-folder';
 
 vi.mock('helpers/sorting', async () => ({
 	...(await vi.importActual('helpers/sorting')),
-	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
+vi.mock('helpers/parseMessageSortingOptions');
 
 describe('getTranslatedSortFilterLabel integration', () => {
 	beforeAll(() => {

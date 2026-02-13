@@ -20,9 +20,10 @@ vi.mock('@zextras/carbonio-shell-ui', () => ({
 
 vi.mock('helpers/sorting', async () => ({
 	...(await vi.importActual('helpers/sorting')),
-	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
+
+vi.mock('helpers/parseMessageSortingOptions');
 
 describe('Sort and Filter Header Component', () => {
 	beforeEach(() => {

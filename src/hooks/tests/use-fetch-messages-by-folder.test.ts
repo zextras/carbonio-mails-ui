@@ -36,6 +36,7 @@ vi.mock('../../helpers/sorting', async () => ({
 	parseMessageSortingOptions: vi.fn(),
 	getFilterQuery: vi.fn().mockReturnValue('inId:"2"')
 }));
+vi.mock('../../helpers/parseMessageSortingOptions');
 
 describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
