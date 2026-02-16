@@ -51,7 +51,13 @@ export const getAvailableAddresses = (): Array<AvailableAddress> => {
 	// Adds the email addresses of all the delegation accounts
 	if (account?.rights?.targets) {
 		account.rights.targets.forEach((target) => {
-			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf' || target.right === 'sendAsDistList' || target.right === 'sendOnBehalfOfDistList')) {
+			if (
+				target.target &&
+				(target.right === 'sendAs' ||
+					target.right === 'sendOnBehalfOf' ||
+					target.right === 'sendAsDistList' ||
+					target.right === 'sendOnBehalfOfDistList')
+			) {
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {
