@@ -5,7 +5,7 @@
  */
 import { describe, it } from 'vitest';
 
-import { modifySettingString } from 'helpers/sorting';
+import { modifySettingString } from '../sorting';
 
 describe('modifySettingString', () => {
 	describe('Delete behavior', () => {
