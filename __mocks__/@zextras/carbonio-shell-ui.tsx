@@ -7,7 +7,6 @@
 import React, { FC, ReactNode } from 'react';
 
 import type * as shell from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { generateAccount } from '@test-utils/accounts/account-generator';
@@ -113,4 +112,5 @@ export const JSNS = {
 	sync: 'urn:zimbraSync'
 };
 
+export const getNotificationManager = vi.fn();
 export const IS_FOCUS_MODE = false;

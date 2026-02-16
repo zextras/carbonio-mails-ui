@@ -10,7 +10,7 @@ import { generateMessageFromAPI } from '../../__test__/generators/api';
 import { MailMessagePart, SoapMailMessagePart } from '../../types';
 import {
 	normalizeMailMessageFromSoap,
-	normalizePartialIncompleteMessageFromSoap
+	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
 
 describe('normalize-message.ts', () => {
@@ -236,13 +236,13 @@ describe('normalize-message.ts', () => {
 				id: '111'
 			};
 
-			const result = normalizePartialIncompleteMessageFromSoap(input);
+			const result = normalizePartialIncompleteMessageFromSoapNotify(input);
 
 			expect(result).toEqual({ id: '111' }); // read flag, since it has a default fallback
 		});
 
 		it('should return flag read: true when the flag is empty', () => {
-			const result = normalizePartialIncompleteMessageFromSoap({ id: '111', f: '' });
+			const result = normalizePartialIncompleteMessageFromSoapNotify({ id: '111', f: '' });
 			expect(result).toEqual({
 				id: '111',
 				flagged: false,
@@ -263,7 +263,7 @@ describe('normalize-message.ts', () => {
 			['should not return flag read when the flag is missing', { id: '111' }]
 		])('%s', (_desc, input) => {
 			it('returns { id }', () => {
-				const result = normalizePartialIncompleteMessageFromSoap(input);
+				const result = normalizePartialIncompleteMessageFromSoapNotify(input);
 				expect(result).toEqual({ id: '111' });
 			});
 		});

@@ -10,13 +10,13 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ActionKey, FilterAction } from 'types/index.d';
-import { ACTION_OPTIONS } from 'views/settings/filters/constants';
+import { FilterAction } from 'types/filters';
+import { ACTION_OPTION_KEYS, ACTION_OPTIONS } from 'views/settings/filters/constants';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getActionComponent, getActionsInitialValues } from 'views/settings/filters/parts/utils';
 
 export type FilterActionRowProps = {
-	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
+	getOptionsTranslations: (t: TFunction) => Record<ACTION_OPTION_KEYS, string>;
 	mailForwardingEnabled: 'TRUE' | 'FALSE';
 	selectedAction: FilterAction;
 	onActionSwitch: (action: FilterAction) => void;
@@ -73,7 +73,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 	const initialValuesOnSwitchAction = getActionsInitialValues(t);
 	const onSwitchAction = useCallback(
-		(str: ActionKey) => {
+		(str: ACTION_OPTION_KEYS) => {
 			const newAction = initialValuesOnSwitchAction[str];
 			onActionSwitch(newAction);
 		},
