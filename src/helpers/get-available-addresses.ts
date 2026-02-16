@@ -5,9 +5,8 @@
  */
 import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { AvailableAddress } from '@zextras/carbonio-ui-commons';
-import { isArray } from 'lodash';
-
 import { NO_ACCOUNT_NAME } from 'constants/index';
+import { isArray } from 'lodash';
 
 /**
  * Retrieves the available email addresses for the user, including:
@@ -51,7 +50,13 @@ export const getAvailableAddresses = (): Array<AvailableAddress> => {
 	// Adds the email addresses of all the delegation accounts
 	if (account?.rights?.targets) {
 		account.rights.targets.forEach((target) => {
-			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf' || target.right === 'sendAsDistList' || target.right === 'sendOnBehalfOfDistList')) {
+			if (
+				target.target &&
+				(target.right === 'sendAs' ||
+					target.right === 'sendOnBehalfOf' ||
+					target.right === 'sendAsDistList' ||
+					target.right === 'sendOnBehalfOfDistList')
+			) {
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {

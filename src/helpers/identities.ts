@@ -6,12 +6,11 @@
 import { Account, getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import type { Folders } from '@zextras/carbonio-ui-commons';
 import { getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { TFunction } from 'i18next';
-import { filter, findIndex, flatten, map, remove } from 'lodash';
-
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getFolderIdParts, getMessageOwnerAccountName } from 'helpers/folders';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { TFunction } from 'i18next';
+import { filter, findIndex, flatten, map, remove } from 'lodash';
 import type { MailMessage, Participant } from 'types/index.d';
 
 /**
@@ -245,7 +244,6 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 		)
 	);
 
-
 	const delegationIdentitiesDL = flatten(
 		map(delegationDistList, (ele) =>
 			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
@@ -262,7 +260,7 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 		)
 	);
 
-	const uniqueIdentityList: IdentityDescriptor[] = [...identities ];
+	const uniqueIdentityList: IdentityDescriptor[] = [...identities];
 
 	if (delegationIdentities?.length) {
 		map(delegationIdentities, (ele: IdentityDescriptor) => {
