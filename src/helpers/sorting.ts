@@ -27,17 +27,32 @@ export const getFilterQuery = (filter: string | undefined, folderId: string): st
 	}
 };
 
-function modifySettingString(
+export function modifySettingString(
 	zimbraPrefSortOrder: string,
 	prefToUpdate: string,
-	folderId?: string
+	folderId: string
 ): string {
-	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId ?? '');
-	if (!currentFolder) {
-		const replacedString = zimbraPrefSortOrder.replace(',BDLV', '');
-		return replacedString.concat(`,${prefToUpdate},BDLV`);
+	if (prefToUpdate.endsWith('date-Desc')) {
+		const removedFolder = zimbraPrefSortOrder.replaceAll(
+			new RegExp(`(?:^|,)${folderId}:[^,]*`, 'g'),
+			''
+		);
+
+		const cleaned = removedFolder.replaceAll(/^,|,,|,$/g, '');
+
+		return cleaned === 'BDLV' ? '' : cleaned;
 	}
-	return zimbraPrefSortOrder.replace(currentFolder, prefToUpdate);
+
+	const { currentFolder } = findFolderEntry(zimbraPrefSortOrder, folderId);
+
+	if (!currentFolder) {
+		return `${prefToUpdate},${zimbraPrefSortOrder}`;
+	}
+
+	return zimbraPrefSortOrder.replaceAll(
+		new RegExp(`(^|,)${currentFolder}(?=,|$)`, 'g'),
+		`$1${prefToUpdate}`
+	);
 }
 
 export function updateSortAndFilterSettings({
