@@ -1,5 +1,4 @@
 import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
-import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -8,6 +7,7 @@ import type { Mock } from 'vitest';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import type { Mock } from 'vitest';
 
 describe('getAvailableAddresses', () => {
 	const primaryAccountAddress = 'primary@example.com';
@@ -164,7 +164,60 @@ describe('getAvailableAddresses', () => {
 		const result = getAvailableAddresses();
 
 		expect(result).toEqual([
-			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress }
+			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress },
+			{
+				address: 'delegation1@example.com',
+				ownerAccount: 'delegation1@example.com',
+				right: 'sendAsDistList',
+				type: 'delegation'
+			},
+			{
+				address: 'delegation3@example.com',
+				ownerAccount: 'delegation3@example.com',
+				right: 'sendOnBehalfOfDistList',
+				type: 'delegation'
+			}
+		]);
+	});
+
+	it('should return distribution list address and no delegation addresses when the delegation rights are different then sendAs and sendOnBehalfOf', () => {
+		(getUserAccount as Mock).mockReturnValue({
+			name: primaryAccountAddress,
+			rights: {
+				targets: [
+					{
+						right: 'sendAsDistList',
+						target: [{ type: 'dl', email: [{ addr: 'delegation1@example.com' }] }]
+					},
+					{
+						right: 'viewFreeBusy',
+						target: [{ type: 'dl', email: [{ addr: 'delegation2@example.com' }] }]
+					},
+					{
+						right: 'sendOnBehalfOfDistList',
+						target: [{ type: 'dl', email: [{ addr: 'delegation3@example.com' }] }]
+					}
+				]
+			}
+		});
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
+
+		const result = getAvailableAddresses();
+
+		expect(result).toEqual([
+			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress },
+			{
+				address: 'delegation1@example.com',
+				ownerAccount: primaryAccountAddress,
+				right: 'sendAsDistList',
+				type: 'delegation'
+			},
+			{
+				address: 'delegation3@example.com',
+				ownerAccount: primaryAccountAddress,
+				right: 'sendOnBehalfOfDistList',
+				type: 'delegation'
+			}
 		]);
 	});
 });

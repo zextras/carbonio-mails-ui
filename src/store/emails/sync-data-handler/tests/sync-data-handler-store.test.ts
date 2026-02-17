@@ -29,6 +29,9 @@ import {
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
 
+beforeEach(() => {
+	window.history.pushState({}, '', `/folder/${FOLDERS.INBOX}`);
+});
 describe('handleNotifyMessagesCreated', () => {
 	describe('addMessagesToMessageSlice', () => {
 		it('should add messages to populatedItemsSlice.messages', async () => {
@@ -59,7 +62,7 @@ describe('handleNotifyMessagesCreated', () => {
 				props: [],
 				prefs: {
 					zimbraPrefLocale: 'en',
-					zimbraPrefConversationOrder: 'dateDesc'
+					zimbraPrefSortOrder: '2:date-Desc'
 				}
 			});
 			const folders = generateFolders();
@@ -87,7 +90,9 @@ describe('handleNotifyMessagesCreated', () => {
 				await setMessagesInEmailStore([...firstConvMessages, ...secondConvMessages], false);
 			});
 
-			const { result } = setupHook(useConversationListByFolder, { initialProps: [FOLDERS.INBOX] });
+			const { result } = setupHook(useConversationListByFolder, {
+				initialProps: [FOLDERS.INBOX]
+			});
 
 			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([
 				firstConv.id,

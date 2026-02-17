@@ -6,8 +6,9 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { getFilterQuery, parseMessageSortingOptions } from 'helpers/sorting';
 import { SortDirection } from '../../types';
+import { parseMessageSortingOptions } from '../parseMessageSortingOptions';
+import { getFilterQuery } from 'helpers/sorting';
 
 const minimalDefaultSortingSettings = {
 	sortType: 'date',
