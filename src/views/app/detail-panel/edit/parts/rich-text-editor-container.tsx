@@ -321,6 +321,7 @@ export const RichTextEditorContainer = ({
 				const handlePaste = createPasteHandler(editor, editorId);
 				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
+				editor.on('change', onTextChange);
 				editor.on('remove', onComposerClose);
 
 				// Handle drag over events
