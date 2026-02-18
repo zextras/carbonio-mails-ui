@@ -76,4 +76,7 @@ const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	);
 };
 
+// This needs to be a non-named (default) export so it can be
+// dynamically imported and used by React Router or other consumers (like shell-ui)
+// expecting a default export.
 export default Sidebar;
