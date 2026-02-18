@@ -55,7 +55,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 	);
 });
 
-export const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
+const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	const accordions = useFolders();
 
 	return (
@@ -75,3 +75,5 @@ export const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 		</ThemeProvider>
 	);
 };
+
+export default Sidebar;
