@@ -9,11 +9,11 @@ import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
+import Sidebar from '../sidebar/sidebar';
 import { setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
-import { Sidebar } from 'views/sidebar/sidebar';
 
 describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 	beforeEach(() => {
