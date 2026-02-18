@@ -6,14 +6,14 @@
 
 import React from 'react';
 
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import Sidebar from '../sidebar/sidebar';
 import { setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
+import Sidebar from 'views/sidebar/sidebar';
 
 describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 	beforeEach(() => {
@@ -33,16 +33,11 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				path: '/mails/*'
 			});
 
-			await waitFor(() => {
-				const inboxFolderElement = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-				expect(inboxFolderElement).toBeInTheDocument();
-			});
+			const inboxFolderElement = await screen.findByTestId(
+				`accordion-folder-item-${FOLDERS.INBOX}`
+			);
 
-			await waitFor(() => {
-				expect(
-					within(screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`)).getByText('37')
-				).toBeInTheDocument();
-			});
+			expect(within(inboxFolderElement).getByText('37')).toBeInTheDocument();
 		});
 	});
 
@@ -53,15 +48,9 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				path: '/mails/*'
 			});
 
-			await waitFor(() => {
-				const draftsFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
-				expect(draftsFolder).toBeInTheDocument();
-			});
+			const draftsElement = await screen.findByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
 
-			await waitFor(() => {
-				const draftsElement = screen.getByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
-				expect(within(draftsElement).getByText('13')).toBeInTheDocument();
-			});
+			expect(within(draftsElement).getByText('13')).toBeInTheDocument();
 		});
 	});
 
@@ -72,16 +61,23 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				path: '/mails/*'
 			});
 
-			await waitFor(() => {
-				const rootFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
-				expect(rootFolder).toBeInTheDocument();
+			const rootFolder = await screen.findByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
+
+			const badgeElements = within(rootFolder).getByText('72');
+			expect(badgeElements).toBeInTheDocument();
+		});
+	});
+
+	describe('Badge Counter Visibility Based on Count Value', () => {
+		it('should not display badge when count is 0 or undefined', async () => {
+			setupTest(<Sidebar expanded />, {
+				initialEntries: [`/mails/folder/${FOLDERS.USER_ROOT}`],
+				path: '/mails/*'
 			});
 
-			await waitFor(() => {
-				const rootFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
-				const badgeElements = within(rootFolder).getByText('72');
-				expect(badgeElements).toBeInTheDocument();
-			});
+			const rootFolder = await screen.findByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
+
+			expect(rootFolder).toBeInTheDocument();
 		});
 	});
 });
