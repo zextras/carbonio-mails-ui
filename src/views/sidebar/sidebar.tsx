@@ -19,7 +19,7 @@ import { useFolders } from 'hooks/use-folders';
 import { useGetTagsAccordion } from 'hooks/use-get-tags-accordions';
 import { themeMuiExtension } from 'theme/theme-mui';
 import type { SidebarComponentProps } from 'types/sidebar/index.d';
-import AccordionCustomComponent from 'views/sidebar/accordion-custom-component';
+import { AccordionCustomComponent } from 'views/sidebar/accordion-custom-component';
 import { ButtonFindShares } from 'views/sidebar/button-find-shares';
 import CollapsedSideBarItems from 'views/sidebar/collapsed-sidebar-items';
 
