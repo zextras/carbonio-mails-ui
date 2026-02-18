@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -26,8 +26,8 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 		populateFoldersStore();
 	});
 
-	describe('Badge Display for Regular Folders', () => {
-		it('should display inbox folder with badge counter capability', async () => {
+	describe('Badge Display for Regular Folders - Unread Count', () => {
+		it('should display inbox folder with unread badge counter (37)', async () => {
 			setupTest(<Sidebar expanded />, {
 				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
 				path: '/mails/*'
@@ -37,45 +37,17 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				const inboxFolderElement = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
 				expect(inboxFolderElement).toBeInTheDocument();
 			});
-		});
-
-		it('should display sent folder with badge counter capability', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.SENT}`],
-				path: '/mails/*'
-			});
 
 			await waitFor(() => {
-				const sentFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.SENT}`);
-				expect(sentFolder).toBeInTheDocument();
+				expect(
+					within(screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`)).getByText('37')
+				).toBeInTheDocument();
 			});
 		});
+	});
 
-		it('should display spam folder with badge counter capability', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.SPAM}`],
-				path: '/mails/*'
-			});
-
-			await waitFor(() => {
-				const spamFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.SPAM}`);
-				expect(spamFolder).toBeInTheDocument();
-			});
-		});
-
-		it('should display trash folder with badge counter capability', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.TRASH}`],
-				path: '/mails/*'
-			});
-
-			await waitFor(() => {
-				const trashFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.TRASH}`);
-				expect(trashFolder).toBeInTheDocument();
-			});
-		});
-
-		it('should display drafts folder with badge counter capability', async () => {
+	describe('Badge Display for Draft Folder - Total Message Count', () => {
+		it('should display drafts folder with total message badge counter (13), not unread', async () => {
 			setupTest(<Sidebar expanded />, {
 				initialEntries: [`/mails/folder/${FOLDERS.DRAFTS}`],
 				path: '/mails/*'
@@ -85,13 +57,18 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				const draftsFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
 				expect(draftsFolder).toBeInTheDocument();
 			});
+
+			await waitFor(() => {
+				const draftsElement = screen.getByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
+				expect(within(draftsElement).getByText('13')).toBeInTheDocument();
+			});
 		});
 	});
 
-	describe('Badge Display for Root/Account Folder', () => {
-		it('should display root folder with unread count from all subfolders', async () => {
+	describe('Badge Display for Root/Account Folder - Total Unread from Subfolders', () => {
+		it('should display root folder with aggregated unread count from subfolders (72)', async () => {
 			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.USER_ROOT}`],
+				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
 				path: '/mails/*'
 			});
 
@@ -99,73 +76,12 @@ describe('Sidebar Folder Accordion Badge Counters - Integration Tests', () => {
 				const rootFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
 				expect(rootFolder).toBeInTheDocument();
 			});
-		});
-
-		it('should display root folder even when no subfolders have unread messages', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.USER_ROOT}`],
-				path: '/mails/*'
-			});
 
 			await waitFor(() => {
 				const rootFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
-				expect(rootFolder).toBeInTheDocument();
+				const badgeElements = within(rootFolder).getByText('72');
+				expect(badgeElements).toBeInTheDocument();
 			});
-		});
-	});
-
-	describe('Badge Counter Visibility and Behavior', () => {
-		it('should render accordion items with proper structure for badge display', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
-				path: '/mails/*'
-			});
-
-			await waitFor(() => {
-				const inboxFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-				expect(inboxFolder).toBeInTheDocument();
-				// Badge counter will only show if count > 0 based on badgeCount logic
-			});
-		});
-
-		it('should render accordion items with correct icon and styling', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
-				path: '/mails/*'
-			});
-
-			await waitFor(() => {
-				const inboxFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-				expect(inboxFolder).toBeInTheDocument();
-			});
-		});
-	});
-
-	describe('Accordion Expansion and Child Folders', () => {
-		it('should display all child folders under root folder in expanded state', async () => {
-			setupTest(<Sidebar expanded />, {
-				initialEntries: [`/mails/folder/${FOLDERS.USER_ROOT}`],
-				path: '/mails/*'
-			});
-
-			await waitFor(() => {
-				expect(
-					screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`)
-				).toBeInTheDocument();
-			});
-
-			// All system folders should be visible as children of root
-			const inboxFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-			const draftsFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.DRAFTS}`);
-			const sentFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.SENT}`);
-			const trashFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.TRASH}`);
-			const spamFolder = screen.getByTestId(`accordion-folder-item-${FOLDERS.SPAM}`);
-
-			expect(inboxFolder).toBeInTheDocument();
-			expect(draftsFolder).toBeInTheDocument();
-			expect(sentFolder).toBeInTheDocument();
-			expect(trashFolder).toBeInTheDocument();
-			expect(spamFolder).toBeInTheDocument();
 		});
 	});
 });
