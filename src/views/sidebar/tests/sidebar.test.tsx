@@ -19,7 +19,7 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 import { setMessagesInEmailStore } from 'store/emails/store';
 import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
-import Sidebar from 'views/sidebar/sidebar';
+import { Sidebar } from 'views/sidebar/sidebar';
 
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
