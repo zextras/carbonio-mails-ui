@@ -64,8 +64,6 @@ describe('PreviewHeaderActions', () => {
 
 			const tagIcon = screen.getByTestId(TESTID_SELECTORS.icons.tag);
 			expect(tagIcon).toBeVisible();
-
-			expect(tagIcon).toHaveAttribute('data-testid', TESTID_SELECTORS.icons.tag);
 		});
 
 		it('should display multiple tags icon when there are multiple tags', () => {
@@ -87,25 +85,6 @@ describe('PreviewHeaderActions', () => {
 
 			// After clicking, the dropdown should be open
 			expect(tagIcon).toBeVisible();
-		});
-
-		it('should render correct tag icon for single tag', () => {
-			const message = generateMessage();
-			const singleTag = [mockTags[0]];
-
-			setupTest(<PreviewHeaderActions message={message} tags={singleTag} open={false} isWide />);
-
-			const iconElement = screen.getByTestId(TESTID_SELECTORS.icons.tag);
-			expect(iconElement).toBeInTheDocument();
-		});
-
-		it('should render correct tag icon for multiple tags', () => {
-			const message = generateMessage();
-
-			setupTest(<PreviewHeaderActions message={message} tags={mockTags} open={false} isWide />);
-
-			const iconElement = screen.getByTestId(TESTID_SELECTORS.icons.tagsMore);
-			expect(iconElement).toBeInTheDocument();
 		});
 
 		it('should display flag icon when message is flagged', () => {
