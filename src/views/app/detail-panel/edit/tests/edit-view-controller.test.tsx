@@ -41,6 +41,16 @@ const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoar
 	context: contextModel
 });
 
+const messageMock = populateMessagesInEmailStore({
+	messagesNumber: 1,
+	messageGeneratorParams: [
+		{
+			cid: 'conversation-id-1234',
+			isComplete: true
+		}
+	]
+})[0];
+
 describe('EditViewController', () => {
 	beforeAll(() => {
 		createSoapAPIInterceptor('SaveDraft');
@@ -81,7 +91,7 @@ describe('EditViewController', () => {
 		});
 		useBoard.mockReturnValue(boardMock);
 		const apiCallFlag = vi.fn();
-		createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
+		createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
 
 		await act(async () => setupTest(<EditViewController />));
 
@@ -99,6 +109,13 @@ describe('EditViewController', () => {
 	`(
 		`should not call the getMsg API if the action is $action but the required  message is fully loaded`,
 		async ({ action }) => {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: {
+					zimbraPrefComposeFormat: 'html'
+				}
+			});
 			const messages = populateMessagesInEmailStore({
 				messageGeneratorParams: [{ truncated: false, isComplete: true }]
 			});
@@ -109,7 +126,7 @@ describe('EditViewController', () => {
 			});
 			useBoard.mockReturnValue(boardMock);
 			const apiCallFlag = vi.fn();
-			createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
+			createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
 
 			await act(async () => setupTest(<EditViewController />));
 
