@@ -198,13 +198,17 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 		[]
 	);
 
+	const subfolderUnreadCount = useMemo(
+		() => (folderHasChildren(folder) ? getTotalUnreadCountInSubfolders(folder) : 0),
+		[folder]
+	);
+
 	const accordionItem = useMemo(() => {
-		const hasSubfolderUnreads =
-			folderHasChildren(folder) && getTotalUnreadCountInSubfolders(folder) > 0;
+		const hasSubfolderUnreads = subfolderUnreadCount > 0;
 
 		let accountLevelBadgeCount: number | undefined;
 		if (isRoot(folder.id)) {
-			accountLevelBadgeCount = badgeCount(getTotalUnreadCountInSubfolders(folder));
+			accountLevelBadgeCount = badgeCount(subfolderUnreadCount);
 		} else {
 			accountLevelBadgeCount = badgeCount(isDraft(folder.id) ? folder.n : folder?.u);
 		}
@@ -222,7 +226,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 			to: `/folder/${folder.id}`,
 			textProps
 		};
-	}, [folder, accountName, badgeType, textProps]);
+	}, [folder, accountName, badgeType, textProps, subfolderUnreadCount]);
 
 	const accordionItemToolTip = useMemo(() => {
 		const folderLabel =
@@ -230,12 +234,11 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 				? accountName
 				: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name });
 
-		const subfolderUnread = folderHasChildren(folder) ? getTotalUnreadCountInSubfolders(folder) : 0;
-		const hasSubfolderUnread = subfolderUnread > 0;
+		const hasSubfolderUnread = subfolderUnreadCount > 0;
 
 		if (isRoot(folder.id) && hasSubfolderUnread) {
 			return `${folderLabel} (${t('tooltip.account_unread_count', {
-				count: subfolderUnread,
+				count: subfolderUnreadCount,
 				defaultValue_one: '{{count}} unread mail',
 				defaultValue: '{{count}} unread mails'
 			})})`;
@@ -243,14 +246,14 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 
 		if (hasSubfolderUnread) {
 			return `${folderLabel} (${t('tooltip.subfolder_unread_count', {
-				count: subfolderUnread,
+				count: subfolderUnreadCount,
 				defaultValue_one: '{{count}} unread mail in subfolders',
 				defaultValue: '{{count}} unread mails in subfolders'
 			})})`;
 		}
 
 		return folderLabel;
-	}, [folder, accountName]);
+	}, [folder, accountName, subfolderUnreadCount]);
 
 	const statusIcon = useMemo(() => {
 		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
