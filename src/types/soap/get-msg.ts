@@ -12,7 +12,7 @@ export type GetMsgRequest = ZimbraRequest & {
 	m: {
 		id: string;
 		part?: string;
-		html: boolean;
+		html: boolean | 0 | 1;
 		needExp: 0 | 1;
 		max?: number;
 		header: Array<{ n: MailVerificationHeader }>;
