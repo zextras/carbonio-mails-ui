@@ -22,11 +22,12 @@ import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import {
 	Folder,
 	FOLDERS,
+	isRoot,
 	isSystemFolder,
 	OnDropActionProps,
 	ROOT_NAME
 } from '@zextras/carbonio-ui-commons';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { isDraft } from 'helpers/folders';
@@ -72,7 +73,7 @@ const DropDenyOverlayContainer = styled(Container)<{ $folder: Folder }>`
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
-const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
+export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const { displayName, name } = useUserAccount();
 	const accountName = displayName ?? name;
@@ -200,6 +201,11 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const accordionItem = useMemo(() => {
 		const hasSubfolderUnreads =
 			folderHasChildren(folder) && getTotalUnreadCountInSubfolders(folder) > 0;
+
+		const accountLevelBadgeCount = isRoot(folder.id)
+			? badgeCount(getTotalUnreadCountInSubfolders(folder))
+			: badgeCount(isDraft(folder.id) ? folder.n : folder?.u);
+
 		return {
 			...folder,
 			label:
@@ -208,7 +214,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 					: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
 			icon: getFolderIconName(folder, hasSubfolderUnreads) ?? undefined,
 			iconColor: getFolderIconColor(folder),
-			badgeCounter: badgeCount(isDraft(folder.id) ? folder.n : folder?.u),
+			badgeCounter: accountLevelBadgeCount,
 			badgeType,
 			to: `/folder/${folder.id}`,
 			textProps
@@ -224,14 +230,20 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		const subfolderUnread = folderHasChildren(folder) ? getTotalUnreadCountInSubfolders(folder) : 0;
 		const hasSubfolderUnread = subfolderUnread > 0;
 
+		if (isRoot(folder.id) && hasSubfolderUnread) {
+			return `${folderLabel} (${t('tooltip.account_unread_count', {
+				count: subfolderUnread,
+				defaultValue_one: '{{count}} unread mail',
+				defaultValue: '{{count}} unread mails'
+			})})`;
+		}
+
 		if (hasSubfolderUnread) {
-			return `${folderLabel} (${t(
-				'tooltip.subfolder_unread_status',
-				'{{count}} unread mails in subfolders',
-				{
-					count: subfolderUnread
-				}
-			)})`;
+			return `${folderLabel} (${t('tooltip.subfolder_unread_count', {
+				count: subfolderUnread,
+				defaultValue_one: '{{count}} unread mail in subfolders',
+				defaultValue: '{{count}} unread mails in subfolders'
+			})})`;
 		}
 
 		return folderLabel;
@@ -274,7 +286,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 				<Padding left="small">
 					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
 				</Padding>
-				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+				<Tooltip label={accordionItemToolTip} placement="right" maxWidth="100%">
 					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem} />
 				</Tooltip>
 			</FittedRow>
@@ -345,5 +357,3 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		</StyledWrapper>
 	);
 };
-
-export default AccordionCustomComponent;
