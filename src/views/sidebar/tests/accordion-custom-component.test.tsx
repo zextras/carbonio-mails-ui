@@ -28,11 +28,10 @@ describe('accordion-custom-component', () => {
 
 	it('should show the InboxOutline icon for the inbox folder when there are no subfolders', () => {
 		const inboxFolder = generateFolder({ id: FOLDERS.INBOX, isLink: false, children: [] });
-		assert(inboxFolder, 'Inbox folder should be defined');
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(inboxItem.querySelector('svg')).toHaveAttribute('data-testid', 'icon: InboxOutline');
 	});
@@ -50,7 +49,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByText(String(inboxFolder?.u ?? ''))).toBeInTheDocument();
 	});
 
@@ -67,7 +66,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByText('999+')).toBeInTheDocument();
 	});
 
@@ -94,7 +93,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByTestId('icon: InboxOutlineWithDot')).toBeInTheDocument();
 	});
 
@@ -105,6 +104,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={brokenLinkFolder} />);
 		const folderAccordionItem = screen.queryByTestId(`accordion-folder-item-${folderLink.id}`);
+
 		expect(folderAccordionItem).not.toBeInTheDocument();
 	});
 
