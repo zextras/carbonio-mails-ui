@@ -11,8 +11,8 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
+import { useBoard, getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
 import { setupTest } from '@test-setup';
-import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -66,7 +66,7 @@ describe('EditViewController', () => {
 		${EditViewActions.MAIL_TO}
 		${EditViewActions.COMPOSE}
 		${EditViewActions.PREFILL_COMPOSE}
-	`(`should not call the getMsg API if the action does is $action`, async ({ action }) => {
+	`(`should not call the getMsg API when the action preformed is $action`, async ({ action }) => {
 		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });
 
@@ -162,4 +162,38 @@ describe('EditViewController', () => {
 			);
 		}
 	);
+	it('should call getMsg API when the preferred body format is not available', async () => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: {
+				zimbraPrefComposeFormat: 'plain'
+			}
+		});
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ truncated: false, isComplete: true }]
+		});
+
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: messages[0].id
+		});
+		useBoard.mockReturnValue(boardMock);
+		const soapMessage = getSoapMailMessage(messages[0].id);
+		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: [soapMessage]
+		});
+
+		await act(async () => setupTest(<EditViewController />));
+
+		const getMsgRequest = await getMsgInterceptor;
+
+		expect(getMsgRequest).toEqual(
+			expect.objectContaining({
+				m: expect.objectContaining({
+					id: messages[0].id
+				})
+			})
+		);
+	});
 });

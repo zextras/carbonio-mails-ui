@@ -554,23 +554,6 @@ describe('retrieveReplyTo', () => {
 				const html = extractedBody.richText;
 				expect(html).toEqual(htmlContent);
 			});
-			it('html should return plain text if no html', () => {
-				const plainText = 'Plain boring text';
-				const message: MailMessage = {
-					...mailMessage,
-					parts: [
-						{
-							contentType: 'text/plain',
-							size: 0,
-							content: plainText,
-							name: 'Plain body'
-						}
-					]
-				};
-				const extractedBody = extractBody(message);
-				const html = extractedBody.richText;
-				expect(html).toEqual(plainText);
-			});
 			it('should replace dfsrc with src in html message', () => {
 				const htmlContent = '<div>dfsrc<p>Hello there </p></div>';
 				const message: MailMessage = {
@@ -606,40 +589,6 @@ describe('retrieveReplyTo', () => {
 				const extractedBody = extractBody(message);
 				const plain = extractedBody.plainText;
 				expect(plain).toEqual(plainText);
-			});
-			it('plain should return html if no plain text', () => {
-				const htmlBody = '<p>Hello</p>';
-				const message: MailMessage = {
-					...mailMessage,
-					parts: [
-						{
-							contentType: 'text/html',
-							size: 0,
-							content: htmlBody,
-							name: 'HTML body'
-						}
-					]
-				};
-				const extractedBody = extractBody(message);
-				const plain = extractedBody.plainText;
-				expect(plain).toEqual(htmlBody);
-			});
-			it('should replace \n with <br> in plain text', () => {
-				const plainText = 'Plain \n boring \n text';
-				const message: MailMessage = {
-					...mailMessage,
-					parts: [
-						{
-							contentType: 'text/plain',
-							size: 0,
-							content: plainText,
-							name: 'Plain body'
-						}
-					]
-				};
-				const extractedBody = extractBody(message);
-				const plain = extractedBody.plainText;
-				expect(plain).toEqual('Plain <br/> boring <br/> text');
 			});
 		});
 
