@@ -71,7 +71,7 @@ describe('EditViewController', () => {
 		${EditViewActions.MAIL_TO}
 		${EditViewActions.COMPOSE}
 		${EditViewActions.PREFILL_COMPOSE}
-	`(`should not call the getMsg API when the action preformed is $action`, async ({ action }) => {
+	`(`should not call the getMsg API when the action performed is $action`, async ({ action }) => {
 		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });
 
