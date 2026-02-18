@@ -222,7 +222,7 @@ export const extractBody = (msg: MailMessage): ExtractedBody => {
 		}
 	}
 
-	return { richText: html ?? '', plainText: text ?? '' };
+	return { richText: html ?? text ?? '', plainText: text ?? html ?? '' };
 };
 
 type Labels = {
