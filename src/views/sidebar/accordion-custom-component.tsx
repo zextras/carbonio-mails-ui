@@ -202,9 +202,12 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 		const hasSubfolderUnreads =
 			folderHasChildren(folder) && getTotalUnreadCountInSubfolders(folder) > 0;
 
-		const accountLevelBadgeCount = isRoot(folder.id)
-			? badgeCount(getTotalUnreadCountInSubfolders(folder))
-			: badgeCount(isDraft(folder.id) ? folder.n : folder?.u);
+		let accountLevelBadgeCount: number | undefined;
+		if (isRoot(folder.id)) {
+			accountLevelBadgeCount = badgeCount(getTotalUnreadCountInSubfolders(folder));
+		} else {
+			accountLevelBadgeCount = badgeCount(isDraft(folder.id) ? folder.n : folder?.u);
+		}
 
 		return {
 			...folder,
