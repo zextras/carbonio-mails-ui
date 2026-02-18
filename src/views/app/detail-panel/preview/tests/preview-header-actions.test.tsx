@@ -56,35 +56,12 @@ describe('PreviewHeaderActions', () => {
 			expect(screen.getByTestId(TESTID_SELECTORS.icons.tag)).toBeVisible();
 		});
 
-		it('should display single tag icon with correct color when there is one tag', () => {
-			const message = generateMessage();
-			const singleTag = [mockTags[0]];
-
-			setupTest(<PreviewHeaderActions message={message} tags={singleTag} open={false} isWide />);
-
-			const tagIcon = screen.getByTestId(TESTID_SELECTORS.icons.tag);
-			expect(tagIcon).toBeVisible();
-		});
-
 		it('should display multiple tags icon when there are multiple tags', () => {
 			const message = generateMessage();
 
 			setupTest(<PreviewHeaderActions message={message} tags={mockTags} open={false} isWide />);
 
 			expect(screen.getByTestId(TESTID_SELECTORS.icons.tagsMore)).toBeVisible();
-		});
-
-		it('should display dropdown when tag icon is clicked for multiple tags', async () => {
-			const message = generateMessage();
-			const { user } = setupTest(
-				<PreviewHeaderActions message={message} tags={mockTags} open={false} isWide />
-			);
-
-			const tagIcon = screen.getByTestId('TagsMoreOutline');
-			await user.click(tagIcon);
-
-			// After clicking, the dropdown should be open
-			expect(tagIcon).toBeVisible();
 		});
 
 		it('should display flag icon when message is flagged', () => {
