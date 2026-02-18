@@ -6,12 +6,11 @@
 import { Account, getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import type { Folders } from '@zextras/carbonio-ui-commons';
 import { getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { TFunction } from 'i18next';
-import { filter, findIndex, flatten, map, remove } from 'lodash';
-
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getFolderIdParts, getMessageOwnerAccountName } from 'helpers/folders';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { TFunction } from 'i18next';
+import { filter, findIndex, flatten, map, remove } from 'lodash';
 import type { MailMessage, Participant } from 'types/index.d';
 
 /**
@@ -224,6 +223,11 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 		(rts) => rts.right === 'sendAs' || rts.right === 'sendOnBehalfOf'
 	);
 
+	const delegationDistList = filter(
+		account?.rights?.targets,
+		(rts) => rts.right === 'sendAsDistList' || rts.right === 'sendOnBehalfOfDistList'
+	);
+
 	const delegationIdentities = flatten(
 		map(delegationAccounts, (ele) =>
 			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
@@ -240,12 +244,39 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 		)
 	);
 
+	const delegationIdentitiesDL = flatten(
+		map(delegationDistList, (ele) =>
+			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
+				ownerAccount: account?.name ?? NO_ACCOUNT_NAME,
+				receivingAddress: item.email[0].addr,
+				id: generateIdentityId(item.email[0].addr, ele.right),
+				identityName: item.d,
+				identityDisplayName: item.d,
+				fromDisplay: item.d,
+				fromAddress: item.email[0].addr,
+				type: 'delegation',
+				right: ele.right
+			}))
+		)
+	);
+
 	const uniqueIdentityList: IdentityDescriptor[] = [...identities];
+
 	if (delegationIdentities?.length) {
 		map(delegationIdentities, (ele: IdentityDescriptor) => {
 			const uniqIdentity = findIndex(identities, { fromAddress: ele.fromAddress });
 			if (uniqIdentity < 0) uniqueIdentityList.push(ele);
 		});
+	}
+
+	if (delegationDistList?.length) {
+		map(delegationIdentitiesDL, (ele: IdentityDescriptor) => {
+			const uniqIdentity = findIndex(identities, { fromAddress: ele.fromAddress });
+			if (uniqIdentity < 0) uniqueIdentityList.push(ele);
+		});
+	}
+
+	if (delegationDistList?.length || delegationIdentities?.length) {
 		return uniqueIdentityList;
 	}
 

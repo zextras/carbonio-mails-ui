@@ -11,8 +11,13 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { useBoard, getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
-import { setupTest } from '@test-setup';
+import { updateMessages } from '../../../../../store/emails/store';
+import { setupTest, screen } from '@test-setup';
+import {
+	updateBoardContext,
+	useBoard,
+	getUserSettings
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -195,5 +200,57 @@ describe('EditViewController', () => {
 				})
 			})
 		);
+	});
+
+	it("shouldn't unmount the editor when the message is updated", async () => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: {
+				zimbraPrefComposeFormat: 'html'
+			}
+		});
+		const message = populateMessagesInEmailStore({
+			messagesNumber: 1,
+			messageGeneratorParams: [
+				{
+					cid: 'conversation-id-1234',
+					isComplete: true
+				}
+			]
+		})[0];
+
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: message.id
+		});
+		useBoard.mockReturnValue(boardMock);
+
+		await act(async () => setupTest(<EditViewController />));
+
+		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
+
+		expect(updateBoardContext).toHaveBeenCalledTimes(1);
+		const updateContext = updateBoardContext.mock.calls[0][1];
+
+		// Update the board context to simulate re-opening the editor
+		useBoard.mockReturnValue({
+			...boardMock,
+			context: updateContext
+		});
+
+		// Update the message conversation id and the isComplete flag to simulate
+		// the need to reload the message
+		act(() => {
+			updateMessages([
+				{
+					...message,
+					conversation: 'new-conversation-id-5678',
+					isComplete: false
+				}
+			]);
+		});
+
+		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
 	});
 });
