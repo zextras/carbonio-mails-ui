@@ -82,7 +82,8 @@ export function getMessageDecryptEmailStoreAction(
 }
 
 export function getFullMessageEmailStoreAction(
-	messageId: string
+	messageId: string,
+	html?: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }));
 }

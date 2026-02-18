@@ -209,7 +209,7 @@ type ExtractedBody = {
 export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
-	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
+	const text = textArr?.[0];
 	let html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
 	// Inline CSS styles from <head> <style> tags to preserve formatting
@@ -222,7 +222,7 @@ export const extractBody = (msg: MailMessage): ExtractedBody => {
 		}
 	}
 
-	return { richText: html ?? text ?? '', plainText: text ?? html ?? '' };
+	return { richText: html ?? '', plainText: text ?? '' };
 };
 
 type Labels = {
