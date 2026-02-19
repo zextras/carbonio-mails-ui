@@ -607,68 +607,51 @@ describe('retrieveReplyTo', () => {
 				const plain = extractedBody.plainText;
 				expect(plain).toEqual(plainText);
 			});
-		});
-		it('plain should return html if no plain text', () => {
-			const htmlBody = '<p>Hello</p>';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/html',
-						size: 0,
-						content: htmlBody,
-						name: 'HTML body'
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			expect(plain).toEqual(htmlBody);
-		});
-		it('should replace \r and \r\n with \n in plain text', () => {
-			const plainText = 'Plain \r\n boring \r text';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/plain',
-						size: 0,
-						content: plainText,
-						name: 'Plain body'
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			expect(plain).toEqual('Plain \n boring \n text');
-		});
-		it('plain should return html if no plain text', () => {
-			const htmlBody = '<p>Hello</p>';
-			const message: MailMessage = {
-				...mailMessage,
-				parts: [
-					{
-						contentType: 'text/html',
-						size: 0,
-						content: htmlBody,
-						name: 'HTML body'
-					}
-				]
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			expect(plain).toEqual(htmlBody);
-		});
-		it('should return empty string if no plain text', () => {
-			const message: MailMessage = {
-				...mailMessage,
-				parts: []
-			};
-			const extractedBody = extractBody(message);
-			const plain = extractedBody.plainText;
-			const html = extractedBody.richText;
-			expect(plain).toEqual('');
-			expect(html).toEqual('');
+			it('should replace \r and \r\n with \n in plain text', () => {
+				const plainText = 'Plain \r\n boring \r text';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual('Plain \n boring \n text');
+			});
+			it('plain should return html if no plain text', () => {
+				const htmlBody = '<p>Hello</p>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/html',
+							size: 0,
+							content: htmlBody,
+							name: 'HTML body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				expect(plain).toEqual(htmlBody);
+			});
+			it('should return empty string if no plain text', () => {
+				const message: MailMessage = {
+					...mailMessage,
+					parts: []
+				};
+				const extractedBody = extractBody(message);
+				const plain = extractedBody.plainText;
+				const html = extractedBody.richText;
+				expect(plain).toEqual('');
+				expect(html).toEqual('');
+			});
 		});
 	});
 });
