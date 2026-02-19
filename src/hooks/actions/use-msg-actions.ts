@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import { useParams } from 'react-router-dom';
 
+import { useMsgArchiveDescriptor } from './use-msg-archive';
 import { getParentFolderId } from 'helpers/folders';
 import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
 import { useMsgCreateAppointmentDescriptor } from 'hooks/actions/use-msg-create-appointment';
@@ -62,6 +63,7 @@ type MessageActionsReturnType = {
 	editAsNewDescriptor: UIActionDescriptor;
 	showOriginalDescriptor: UIActionDescriptor;
 	downloadEmlDescriptor: UIActionDescriptor;
+	archiveDescriptor: UIActionDescriptor;
 };
 
 export const useMsgActions = ({
@@ -124,6 +126,10 @@ export const useMsgActions = ({
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message, folderId);
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);
+	const archiveDescriptor = useMsgArchiveDescriptor({
+		folderId,
+		messageId: message.id
+	});
 
 	const redirectDescriptor = useMsgRedirectDescriptor(message.id, folderId);
 	const editDraftDescriptor = useMsgEditDraftDescriptor(message.id, message.isScheduled, folderId);
@@ -160,13 +166,15 @@ export const useMsgActions = ({
 			editDraftDescriptor,
 			editAsNewDescriptor,
 			showOriginalDescriptor,
-			downloadEmlDescriptor
+			downloadEmlDescriptor,
+			archiveDescriptor
 		}),
 		[
 			applyTagDescriptor,
 			createAppointmentDescriptor,
 			deletePermanentlyDescriptor,
 			downloadEmlDescriptor,
+			archiveDescriptor,
 			editAsNewDescriptor,
 			editDraftDescriptor,
 			flagDescriptor,

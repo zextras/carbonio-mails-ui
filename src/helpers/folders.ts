@@ -141,7 +141,7 @@ export const isA = (folderId: string | undefined, folderType: keyof Folders): bo
 export const isRoot = (folderId: string): boolean => isA(folderId, FOLDERS.USER_ROOT);
 
 /**
- * Tells if a folder with the given id is am inbox folder
+ * Tells if a folder with the given id is an inbox folder
  * @param folderId
  */
 export const isInbox = (folderId: string): boolean => isA(folderId, FOLDERS.INBOX);
@@ -159,7 +159,7 @@ export const isTrash = (folderId: string): boolean => isA(folderId, FOLDERS.TRAS
 export const isSpam = (folderId: string): boolean => isA(folderId, FOLDERS.SPAM);
 
 /**
- * Tells if a folder with the given id is a spam folder
+ * Tells if a folder with the given id is a sent folder
  * @param folderId
  */
 export const isSent = (folderId: string): boolean => isA(folderId, FOLDERS.SENT);
@@ -169,6 +169,18 @@ export const isSent = (folderId: string): boolean => isA(folderId, FOLDERS.SENT)
  * @param folderId
  */
 export const isDraft = (folderId: string): boolean => isA(folderId, FOLDERS.DRAFTS);
+
+/**
+ * Tells if a folder with the given id is an archive folder
+ * @param folderId
+ */
+export const isArchive = (folderId: string): boolean => isA(folderId, FOLDERS.ARCHIVE);
+
+/**
+ * Tells if the system archive folder is available to use
+ */
+export const isSystemArchiveAvailable = (): boolean =>
+	Boolean(useFolderStore.getState()?.folders?.[FOLDERS.ARCHIVE]);
 
 /**
  * Tells if a folder is a trashed folder
