@@ -86,13 +86,14 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 		setShowDropdown(false);
 	}, []);
 
-	return (
-		<Row wrap="nowrap" mainAlignment="flex-end">
-			{showMultiTagIcon ? (
+	const showTagsInHeader = useMemo(() => {
+		if (tags.length === 0) return null;
+		if (showMultiTagIcon) {
+			return (
 				<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
 					<Padding left="small">
 						<Button
-							data-testid="TagIcon"
+							data-testid={tagIcon}
 							icon={tagIcon}
 							type="ghost"
 							color={'gray0'}
@@ -100,13 +101,20 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 						/>
 					</Padding>
 				</Dropdown>
-			) : (
-				<Padding left="small">
-					<Tooltip label={tags?.[0]?.name} disabled={showMultiTagIcon}>
-						<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
-					</Tooltip>
-				</Padding>
-			)}
+			);
+		}
+		return (
+			<Padding left="small">
+				<Tooltip label={tags?.[0]?.name} disabled={showMultiTagIcon}>
+					<Icon icon={tagIcon} color={`${tagIconColor}`} />
+				</Tooltip>
+			</Padding>
+		);
+	}, [tags, showMultiTagIcon, tagIcon, tagIconColor, showDropdown, onDropdownClose, onIconClick]);
+
+	return (
+		<Row wrap="nowrap" mainAlignment="flex-end">
+			{showTagsInHeader}
 			{message.hasAttachment && attachments.length > 0 && (
 				<Padding left="small">
 					<Icon icon="AttachOutline" />
@@ -114,7 +122,7 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 			)}
 			{message.flagged && (
 				<Padding left="small">
-					<Icon color="error" icon="Flag" data-testid="FlagIcon" />
+					<Icon color="error" icon="Flag" />
 				</Padding>
 			)}
 			{dateSection}
