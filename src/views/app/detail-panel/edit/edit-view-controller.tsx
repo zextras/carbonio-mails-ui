@@ -17,7 +17,7 @@ import {
 import { includes, noop } from 'lodash';
 
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
-import { extractBody } from '../../../../store/editor-slice-utils';
+import { findBodyPart } from '../../../../store/editor-slice-utils';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
@@ -144,10 +144,11 @@ const EditViewController = (): React.JSX.Element => {
 			return true;
 		}
 
-		const body = extractBody(message);
+		const text = findBodyPart(message.parts, 'text/plain');
+		const html = findBodyPart(message.parts, 'text/html');
 		const isRichText = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
 
-		return isRichText ? !body.richText : !body.plainText;
+		return isRichText ? !html.length : !text.length;
 	}, [isMessageRequired, message]);
 
 	/**
