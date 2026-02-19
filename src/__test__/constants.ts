@@ -106,6 +106,9 @@ export const TESTID_SELECTORS = {
 		deletePermanently: 'icon: DeletePermanentlyOutline',
 		deleteDraft: 'icon: Trash2Outline',
 		square: 'icon: Square',
+		tag: 'icon: Tag',
+		tagsMore: 'icon: TagsMoreOutline',
+		flag: 'icon: Flag',
 		archive: 'icon: ArchiveOutline'
 	},
 	composer: {
