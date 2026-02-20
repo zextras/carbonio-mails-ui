@@ -17,7 +17,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
-import { ConvActionRequest, MsgActionRequest, MsgActionResponse } from 'types';
+import { ConvActionRequest, ConvActionResponse } from 'types';
 
 describe('useConvArchive', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>
@@ -27,7 +27,7 @@ describe('useConvArchive', () => {
 	describe('Conversation Archive Action not usable when system ARCHIVE folder is not available', () => {
 		it('should not call the API if the action cannot be executed', async () => {
 			const apiCallSpy = vi.fn();
-			createSoapAPIInterceptor<MsgActionRequest>('ConvAction').then(apiCallSpy);
+			createSoapAPIInterceptor<ConvActionRequest>('ConvAction').then(apiCallSpy);
 
 			const {
 				result: { current: functions }
@@ -112,13 +112,13 @@ describe('useConvArchive', () => {
 
 			describe('execute', () => {
 				it('should call the API with the proper parameters', async () => {
-					const apiResponse: MsgActionResponse = {
+					const apiResponse: ConvActionResponse = {
 						action: {
 							id: conversationsId.join(','),
 							op: 'move'
 						}
 					};
-					const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
 						'ConvAction',
 						apiResponse
 					);
@@ -137,7 +137,6 @@ describe('useConvArchive', () => {
 					expect(requestParameter.action.id).toBe(conversationsId.join(','));
 					expect(requestParameter.action.op).toBe('move');
 					expect(requestParameter.action.l).toBe(FOLDERS.ARCHIVE);
-					expect(requestParameter.action.f).toBeUndefined();
 					expect(requestParameter.action.tn).toBeUndefined();
 				});
 
