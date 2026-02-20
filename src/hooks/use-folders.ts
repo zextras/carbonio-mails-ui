@@ -27,7 +27,10 @@ export const getSortCriteria = (folder: Folder): string => {
 	if (id === FOLDERS.TRASH) {
 		return (Number.parseFloat(FOLDERS.LAST_SYSTEM_FOLDER_POSITION) - 1).toString();
 	}
-	return Number.parseInt(id ?? '', 10) < 18 ? `   ${id}` : folder.name.toLowerCase();
+	const higherThanSystemFolders = Number.parseInt(FOLDERS.LAST_SYSTEM_FOLDER_POSITION, 10) + 1;
+	return Number.parseInt(id ?? '', 10) < higherThanSystemFolders
+		? `   ${id}`
+		: folder.name.toLowerCase();
 };
 
 /**
