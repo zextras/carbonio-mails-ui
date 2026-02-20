@@ -127,7 +127,6 @@ export const useMsgActions = ({
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message, folderId);
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);
 	const archiveDescriptor = useMsgArchiveDescriptor({
-		folderId,
 		messagesIds: [message.id]
 	});
 

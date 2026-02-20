@@ -145,8 +145,7 @@ export const useConvActions = ({
 	});
 
 	const archiveDescriptor = useConvArchiveDescriptor({
-		conversationIds: [conversation.id],
-		folderId
+		conversationIds: [conversation.id]
 	});
 
 	return useMemo(
