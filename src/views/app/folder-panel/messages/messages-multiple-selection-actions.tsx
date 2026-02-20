@@ -72,6 +72,13 @@ export const MessagesMultipleSelectionActions = ({
 		routeFolderId,
 		onActionComplete
 	});
+
+	const moveToArchive = useMsgArchiveDescriptor({
+		messagesIds: ids,
+		folderId,
+		onActionComplete
+	});
+
 	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, folderId, onActionComplete });
 	const applyTagDescriptor = useMsgApplyTagDescriptor({
 		ids,
@@ -82,11 +89,7 @@ export const MessagesMultipleSelectionActions = ({
 
 	const flagDescriptor = useMsgSetFlagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
-	const msgArchiveDescriptor = useMsgArchiveDescriptor({
-		messagesIds: ids,
-		folderId,
-		onActionComplete
-	});
+
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, ids, onActionComplete });
 	const setAsSpam = useMsgSetSpamDescriptor({
 		ids,
@@ -104,6 +107,7 @@ export const MessagesMultipleSelectionActions = ({
 	const actions = [
 		setAsRead,
 		setAsUnread,
+		moveToArchive,
 		moveToTrash,
 		deletePermanently,
 		{
@@ -113,7 +117,6 @@ export const MessagesMultipleSelectionActions = ({
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),
-				normalizeDropdownActionItem(msgArchiveDescriptor),
 				normalizeDropdownActionItem(moveToFolderDescriptor),
 				tagItem,
 				normalizeDropdownActionItem(setAsSpam),

@@ -110,6 +110,7 @@ export const ConversationsMultipleSelectionActions = ({
 	const actions = [
 		setAsRead,
 		setAsUnread,
+		convArchiveDescriptor,
 		moveToTrash,
 		deletePermanently,
 		{
@@ -119,7 +120,6 @@ export const ConversationsMultipleSelectionActions = ({
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),
-				normalizeDropdownActionItem(convArchiveDescriptor),
 				normalizeDropdownActionItem(moveToFolderDescriptor),
 				tagItem,
 				normalizeDropdownActionItem(setAsSpam),
