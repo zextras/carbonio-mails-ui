@@ -456,4 +456,27 @@ describe('useFolderActions', () => {
 		expect(newAction.disabled).toBe(true);
 		expect(editAction.disabled).toBe(true);
 	});
+
+	it('should disable the  move, delete and edit actions for the archive folder', async () => {
+		const folder = {
+			...defaultFolder,
+			id: FOLDERS.ARCHIVE
+		} as Folder;
+
+		const { result: actions } = renderHook(() => useFolderActions(folder));
+
+		const moveAction = actions.current.find(
+			(action) => action.id === FolderActionsType.MOVE
+		) as FolderActionsProps;
+		const deleteAction = actions.current.find(
+			(action) => action.id === FolderActionsType.DELETE
+		) as FolderActionsProps;
+		const editAction = actions.current.find(
+			(action) => action.id === FolderActionsType.EDIT
+		) as FolderActionsProps;
+
+		expect(moveAction.disabled).toBe(true);
+		expect(deleteAction.disabled).toBe(true);
+		expect(editAction.disabled).toBe(true);
+	});
 });
