@@ -183,6 +183,21 @@ export const isSystemArchiveAvailable = (): boolean =>
 	Boolean(useFolderStore.getState()?.folders?.[FOLDERS.ARCHIVE]);
 
 /**
+ * Returns the archive folder id for the given folder
+ * If the folder belongs to a shared account, returns the shared account's archive folder
+ * Otherwise returns the main account's archive folder
+ * @param folderId - the folder id (can be from main or shared account)
+ * @returns the archive folder id (with zid if from shared account, without zid for main account)
+ */
+export const getArchiveFolderId = (folderId: string): string => {
+	const { zid } = getFolderIdParts(folderId);
+	if (zid) {
+		return `${zid}:${FOLDERS.ARCHIVE}`;
+	}
+	return FOLDERS.ARCHIVE;
+};
+
+/**
  * Tells if a folder is a trashed folder
  * @param folder
  * @param folderId

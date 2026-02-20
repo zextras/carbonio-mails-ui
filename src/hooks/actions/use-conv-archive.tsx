@@ -6,11 +6,10 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
-import { isArchive, isSystemArchiveAvailable } from 'helpers/folders';
+import { getArchiveFolderId, isArchive, isSystemArchiveAvailable } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -43,7 +42,7 @@ export const useConvArchiveFn = ({
 		convActionEmailStoreAction({
 			operation: `move`,
 			ids: conversationIds,
-			parent: FOLDERS.ARCHIVE
+			parent: getArchiveFolderId(folderId)
 		}).then((res) => {
 			if ('Fault' in res) {
 				createSnackbar({
