@@ -6,7 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
@@ -17,20 +17,15 @@ import { useInSearchModule } from 'ui-actions/utils';
 import { useConversationDetailPanelControls } from 'views/app/detail-panel/detail-panel-controls-hooks';
 
 type ConvArchiveFunctionsParameter = {
-	folderId: string;
 	conversationIds: string[];
 	onActionComplete?: (conversationsIds: string[]) => void;
 };
 
 export const useConvArchiveFn = ({
-	folderId = FOLDERS.ARCHIVE,
 	conversationIds,
 	onActionComplete
 }: ConvArchiveFunctionsParameter): ActionFn => {
-	const canExecute = useCallback(
-		(): boolean => isSystemArchiveAvailable() && !isTrash(folderId),
-		[folderId]
-	);
+	const canExecute = useCallback((): boolean => isSystemArchiveAvailable(), []);
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
@@ -41,8 +36,9 @@ export const useConvArchiveFn = ({
 			return;
 		}
 		convActionEmailStoreAction({
-			operation: `archive`,
-			ids: conversationIds
+			operation: `move`,
+			ids: conversationIds,
+			parent: FOLDERS.ARCHIVE
 		}).then((res) => {
 			if ('Fault' in res) {
 				createSnackbar({
@@ -88,12 +84,10 @@ export const useConvArchiveFn = ({
 
 export const useConvArchiveDescriptor = ({
 	conversationIds,
-	folderId,
 	onActionComplete
 }: ConvArchiveFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvArchiveFn({
 		conversationIds,
-		folderId,
 		onActionComplete
 	});
 	const [t] = useTranslation();

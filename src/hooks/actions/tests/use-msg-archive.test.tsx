@@ -30,7 +30,7 @@ describe('useMsgArchive', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgArchiveFn, {
-				initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
+				initialProps: [{ messagesIds: messagesId }]
 			});
 
 			act(() => functions.execute());
@@ -49,7 +49,7 @@ describe('useMsgArchive', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgArchiveDescriptor, {
-					initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
+					initialProps: [{ messagesIds: messagesId }]
 				});
 
 				expect(descriptor).toEqual({
@@ -67,7 +67,7 @@ describe('useMsgArchive', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgArchiveFn, {
-					initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
+					initialProps: [{ messagesIds: messagesId }]
 				});
 
 				expect(functions).toEqual({
@@ -82,14 +82,14 @@ describe('useMsgArchive', () => {
 					${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
 					${FOLDERS_DESCRIPTORS.SENT}         | ${true}
 					${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
-					${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
+					${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
 					${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 					${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
-				`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				`(`should return $assertion if the folder is $folder.desc`, ({ assertion }) => {
 					const {
 						result: { current: functions }
 					} = setupHook(useMsgArchiveFn, {
-						initialProps: [{ messagesIds: messagesId, folderId: folder.id }]
+						initialProps: [{ messagesIds: messagesId }]
 					});
 
 					expect(functions.canExecute()).toEqual(assertion);
@@ -101,7 +101,7 @@ describe('useMsgArchive', () => {
 					const apiResponse: MsgActionResponse = {
 						action: {
 							id: messagesId.join(','),
-							op: 'archive'
+							op: 'move'
 						}
 					};
 					const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -112,7 +112,7 @@ describe('useMsgArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useMsgArchiveFn, {
-						initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
+						initialProps: [{ messagesIds: messagesId }]
 					});
 
 					await act(async () => {
@@ -121,27 +121,10 @@ describe('useMsgArchive', () => {
 
 					const requestParameter = await apiInterceptor;
 					expect(requestParameter.action.id).toBe(messagesId.join(','));
-					expect(requestParameter.action.op).toBe('archive');
-					expect(requestParameter.action.l).toBeUndefined();
+					expect(requestParameter.action.op).toBe('move');
+					expect(requestParameter.action.l).toBe(FOLDERS.ARCHIVE);
 					expect(requestParameter.action.f).toBeUndefined();
 					expect(requestParameter.action.tn).toBeUndefined();
-				});
-
-				it('should not call the API if the action cannot be executed', async () => {
-					const apiCallSpy = vi.fn();
-					createSoapAPIInterceptor<MsgActionRequest>('MsgAction').then(apiCallSpy);
-
-					const {
-						result: { current: functions }
-					} = setupHook(useMsgArchiveFn, {
-						initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.TRASH }]
-					});
-
-					await act(async () => {
-						functions.execute();
-					});
-
-					expect(apiCallSpy).not.toHaveBeenCalled();
 				});
 
 				it('should call onActionComplete when provided after archiving messages', async () => {
@@ -154,7 +137,6 @@ describe('useMsgArchive', () => {
 						initialProps: [
 							{
 								messagesIds: messagesId,
-								folderId: FOLDERS.INBOX,
 								onActionComplete
 							}
 						]

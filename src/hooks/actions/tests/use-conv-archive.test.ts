@@ -10,11 +10,11 @@ import { faker } from '@faker-js/faker';
 import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor } from '../../../__test__/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../__test__/mocks/store/folders';
 import { useConvArchiveDescriptor, useConvArchiveFn } from '../use-conv-archive';
 import { setupHook } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { ConvActionRequest, MsgActionRequest, MsgActionResponse } from 'types';
@@ -32,7 +32,7 @@ describe('useConvArchive', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvArchiveFn, {
-				initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
+				initialProps: [{ conversationIds: conversationsId }]
 			});
 
 			act(() => functions.execute());
@@ -52,7 +52,7 @@ describe('useConvArchive', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvArchiveDescriptor, {
-					initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
+					initialProps: [{ conversationIds: conversationsId }]
 				});
 
 				expect(descriptor).toEqual({
@@ -70,7 +70,7 @@ describe('useConvArchive', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvArchiveFn, {
-					initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
+					initialProps: [{ conversationIds: conversationsId }]
 				});
 
 				expect(functions).toEqual({
@@ -85,14 +85,14 @@ describe('useConvArchive', () => {
 					${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
 					${FOLDERS_DESCRIPTORS.SENT}         | ${true}
 					${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
-					${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
+					${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
 					${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 					${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
-				`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				`(`should return $assertion if the folder is $folder.desc`, ({ assertion }) => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId, folderId: folder.id }]
+						initialProps: [{ conversationIds: conversationsId }]
 					});
 
 					expect(functions.canExecute()).toEqual(assertion);
@@ -104,7 +104,7 @@ describe('useConvArchive', () => {
 					const apiResponse: MsgActionResponse = {
 						action: {
 							id: conversationsId.join(','),
-							op: 'archive'
+							op: 'move'
 						}
 					};
 					const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -115,7 +115,7 @@ describe('useConvArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.ARCHIVE }]
+						initialProps: [{ conversationIds: conversationsId }]
 					});
 
 					await act(async () => {
@@ -124,25 +124,10 @@ describe('useConvArchive', () => {
 
 					const requestParameter = await apiInterceptor;
 					expect(requestParameter.action.id).toBe(conversationsId.join(','));
-					expect(requestParameter.action.op).toBe('archive');
-					expect(requestParameter.action.l).toBeUndefined();
+					expect(requestParameter.action.op).toBe('move');
+					expect(requestParameter.action.l).toBe(FOLDERS.ARCHIVE);
 					expect(requestParameter.action.f).toBeUndefined();
 					expect(requestParameter.action.tn).toBeUndefined();
-				});
-
-				it('should not call the API if the action cannot be executed', async () => {
-					const apiCallSpy = vi.fn();
-					createSoapAPIInterceptor<MsgActionRequest>('ConvAction').then(apiCallSpy);
-
-					const {
-						result: { current: functions }
-					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.TRASH }]
-					});
-
-					act(() => functions.execute());
-
-					expect(apiCallSpy).not.toHaveBeenCalled();
 				});
 
 				it('should call onActionComplete when provided after successful archive', async () => {
@@ -152,9 +137,7 @@ describe('useConvArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [
-							{ folderId: FOLDERS.INBOX, conversationIds: conversationsId, onActionComplete }
-						]
+						initialProps: [{ conversationIds: conversationsId, onActionComplete }]
 					});
 
 					await act(async () => {
