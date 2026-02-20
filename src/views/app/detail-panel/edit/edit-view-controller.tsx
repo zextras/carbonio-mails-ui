@@ -11,11 +11,13 @@ import {
 	closeBoard,
 	t,
 	useBoard,
-	useBoardHooks
+	useBoardHooks,
+	getUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
+import { findBodyPart } from '../../../../store/editor-slice-utils';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
@@ -135,10 +137,19 @@ const EditViewController = (): React.JSX.Element => {
 
 	const message = useMessageById(id ?? '');
 
-	const isMessageLoadingRequired = useMemo<boolean>(
-		(): boolean => isMessageRequired && (!message?.isComplete || message?.body?.truncated === true),
-		[isMessageRequired, message?.body?.truncated, message?.isComplete]
-	);
+	const isMessageLoadingRequired = useMemo<boolean>(() => {
+		if (!isMessageRequired) return false;
+
+		if (!message?.isComplete || message.body?.truncated) {
+			return true;
+		}
+
+		const text = findBodyPart(message.parts, 'text/plain');
+		const html = findBodyPart(message.parts, 'text/html');
+		const isRichText = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
+
+		return isRichText ? !html.length : !text.length;
+	}, [isMessageRequired, message]);
 
 	/**
 	 * Load the original message if it's required and is not
@@ -146,7 +157,10 @@ const EditViewController = (): React.JSX.Element => {
 	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
-			getFullMessageEmailStoreAction(id);
+			const userSettings = getUserSettings();
+			const prefs = userSettings?.prefs ?? {};
+			const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+			getFullMessageEmailStoreAction(id, isRichText);
 		}
 	}, [id, isMessageLoadingRequired]);
 
