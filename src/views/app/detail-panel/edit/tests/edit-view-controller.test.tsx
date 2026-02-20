@@ -11,8 +11,13 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
+import { updateMessages } from '../../../../../store/emails/store';
 import { setupTest, screen } from '@test-setup';
-import { updateBoardContext, useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	updateBoardContext,
+	useBoard,
+	getUserSettings
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -26,7 +31,6 @@ import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
-import { updateMessages } from '../../../../../store/emails/store';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),
@@ -36,6 +40,16 @@ const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoar
 	title: faker.word.noun(),
 	context: contextModel
 });
+
+const messageMock = populateMessagesInEmailStore({
+	messagesNumber: 1,
+	messageGeneratorParams: [
+		{
+			cid: 'conversation-id-1234',
+			isComplete: true
+		}
+	]
+})[0];
 
 describe('EditViewController', () => {
 	beforeAll(() => {
@@ -67,7 +81,7 @@ describe('EditViewController', () => {
 		${EditViewActions.MAIL_TO}
 		${EditViewActions.COMPOSE}
 		${EditViewActions.PREFILL_COMPOSE}
-	`(`should not call the getMsg API if the action does is $action`, async ({ action }) => {
+	`(`should not call the getMsg API when the action performed is $action`, async ({ action }) => {
 		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });
 
@@ -77,7 +91,7 @@ describe('EditViewController', () => {
 		});
 		useBoard.mockReturnValue(boardMock);
 		const apiCallFlag = vi.fn();
-		createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
+		createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
 
 		await act(async () => setupTest(<EditViewController />));
 
@@ -95,6 +109,13 @@ describe('EditViewController', () => {
 	`(
 		`should not call the getMsg API if the action is $action but the required  message is fully loaded`,
 		async ({ action }) => {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: {
+					zimbraPrefComposeFormat: 'html'
+				}
+			});
 			const messages = populateMessagesInEmailStore({
 				messageGeneratorParams: [{ truncated: false, isComplete: true }]
 			});
@@ -105,7 +126,7 @@ describe('EditViewController', () => {
 			});
 			useBoard.mockReturnValue(boardMock);
 			const apiCallFlag = vi.fn();
-			createSoapAPIInterceptor('GetMsg').finally(() => apiCallFlag({} as GetMsgRequest));
+			createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
 
 			await act(async () => setupTest(<EditViewController />));
 
@@ -163,8 +184,49 @@ describe('EditViewController', () => {
 			);
 		}
 	);
+	it('should call getMsg API when the preferred body format is not available', async () => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: {
+				zimbraPrefComposeFormat: 'plain'
+			}
+		});
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ truncated: false, isComplete: true }]
+		});
+
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: messages[0].id
+		});
+		useBoard.mockReturnValue(boardMock);
+		const soapMessage = getSoapMailMessage(messages[0].id);
+		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: [soapMessage]
+		});
+
+		await act(async () => setupTest(<EditViewController />));
+
+		const getMsgRequest = await getMsgInterceptor;
+
+		expect(getMsgRequest).toEqual(
+			expect.objectContaining({
+				m: expect.objectContaining({
+					id: messages[0].id
+				})
+			})
+		);
+	});
 
 	it("shouldn't unmount the editor when the message is updated", async () => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: {
+				zimbraPrefComposeFormat: 'html'
+			}
+		});
 		const message = populateMessagesInEmailStore({
 			messagesNumber: 1,
 			messageGeneratorParams: [
