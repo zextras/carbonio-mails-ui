@@ -11,6 +11,7 @@ import { filter, intersection, map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import { useMsgArchiveDescriptor } from '../../../../hooks/actions/use-msg-archive';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
 import { useMsgDeletePermanentlyDescriptor } from 'hooks/actions/use-msg-delete-permanently';
@@ -81,6 +82,11 @@ export const MessagesMultipleSelectionActions = ({
 
 	const flagDescriptor = useMsgSetFlagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
+	const msgArchiveDescriptor = useMsgArchiveDescriptor({
+		messagesIds: ids,
+		folderId,
+		onActionComplete
+	});
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, ids, onActionComplete });
 	const setAsSpam = useMsgSetSpamDescriptor({
 		ids,
@@ -107,6 +113,7 @@ export const MessagesMultipleSelectionActions = ({
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),
+				normalizeDropdownActionItem(msgArchiveDescriptor),
 				normalizeDropdownActionItem(moveToFolderDescriptor),
 				tagItem,
 				normalizeDropdownActionItem(setAsSpam),
