@@ -40,9 +40,11 @@ describe('useMsgArchive', () => {
 	});
 
 	describe('useMsgArchive when system Archive folder is available', () => {
-		populateFoldersStore({
-			view: FOLDER_VIEW.message,
-			customFolders: [generateFolder({ id: FOLDERS.ARCHIVE, name: 'Archive', deletable: false })]
+		beforeEach(() => {
+			populateFoldersStore({
+				view: FOLDER_VIEW.message,
+				customFolders: [generateFolder({ id: FOLDERS.ARCHIVE, name: 'Archive', deletable: false })]
+			});
 		});
 		describe('Descriptor', () => {
 			it('Should return an object with specific id, icon, label and 2 functions', () => {
