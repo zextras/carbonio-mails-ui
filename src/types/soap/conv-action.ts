@@ -18,8 +18,7 @@ export type ConvActionOperation =
 	| 'delete'
 	| 'spam'
 	| '!spam'
-	| 'update'
-	| 'archive';
+	| 'update';
 
 export type ConvActionRequest = ZimbraRequest & {
 	action: {

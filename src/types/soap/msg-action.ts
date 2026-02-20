@@ -17,8 +17,7 @@ export type MsgActionOperation =
 	| 'delete'
 	| 'spam'
 	| '!spam'
-	| 'update'
-	| 'archive';
+	| 'update';
 
 export type MsgActionRequest = ZimbraRequest & {
 	action: {
