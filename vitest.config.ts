@@ -14,6 +14,10 @@ const junitReporter: ['junit', { outputFile: string; console: boolean }] = [
 	{ outputFile: 'junit.xml', console: false }
 ];
 
+process.env.LANG = 'en_US.UTF-8';
+process.env.LC_ALL = 'en_US.UTF-8';
+process.env.TZ = 'Europe/Berlin';
+
 export default defineConfig({
 	plugins: [
 		react({
