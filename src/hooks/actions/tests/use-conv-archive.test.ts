@@ -32,7 +32,7 @@ describe('useConvArchive', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvArchiveFn, {
-				initialProps: [{ conversationIds: conversationsId }]
+				initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
 			});
 
 			act(() => functions.execute());
@@ -52,7 +52,7 @@ describe('useConvArchive', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvArchiveDescriptor, {
-					initialProps: [{ conversationIds: conversationsId }]
+					initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				expect(descriptor).toEqual({
@@ -70,7 +70,7 @@ describe('useConvArchive', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvArchiveFn, {
-					initialProps: [{ conversationIds: conversationsId }]
+					initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
 				});
 
 				expect(functions).toEqual({
@@ -88,14 +88,25 @@ describe('useConvArchive', () => {
 					${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
 					${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 					${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
-				`(`should return $assertion if the folder is $folder.desc`, ({ assertion }) => {
+					${FOLDERS_DESCRIPTORS.ARCHIVE}      | ${false}
+				`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId }]
+						initialProps: [{ conversationIds: conversationsId, folderId: folder.id }]
 					});
 
 					expect(functions.canExecute()).toEqual(assertion);
+				});
+
+				it('should return false when conversations are already in the Archive folder - archive action should not appear', () => {
+					const {
+						result: { current: functions }
+					} = setupHook(useConvArchiveFn, {
+						initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.ARCHIVE }]
+					});
+
+					expect(functions.canExecute()).toBe(false);
 				});
 			});
 
@@ -115,7 +126,7 @@ describe('useConvArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId }]
+						initialProps: [{ conversationIds: conversationsId, folderId: FOLDERS.INBOX }]
 					});
 
 					await act(async () => {
@@ -137,7 +148,13 @@ describe('useConvArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useConvArchiveFn, {
-						initialProps: [{ conversationIds: conversationsId, onActionComplete }]
+						initialProps: [
+							{
+								conversationIds: conversationsId,
+								folderId: FOLDERS.INBOX,
+								onActionComplete
+							}
+						]
 					});
 
 					await act(async () => {

@@ -30,7 +30,7 @@ describe('useMsgArchive', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgArchiveFn, {
-				initialProps: [{ messagesIds: messagesId }]
+				initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
 			});
 
 			act(() => functions.execute());
@@ -49,7 +49,7 @@ describe('useMsgArchive', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgArchiveDescriptor, {
-					initialProps: [{ messagesIds: messagesId }]
+					initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
 				});
 
 				expect(descriptor).toEqual({
@@ -67,7 +67,7 @@ describe('useMsgArchive', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgArchiveFn, {
-					initialProps: [{ messagesIds: messagesId }]
+					initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
 				});
 
 				expect(functions).toEqual({
@@ -85,14 +85,25 @@ describe('useMsgArchive', () => {
 					${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
 					${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
 					${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
-				`(`should return $assertion if the folder is $folder.desc`, ({ assertion }) => {
+					${FOLDERS_DESCRIPTORS.ARCHIVE}      | ${false}
+				`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 					const {
 						result: { current: functions }
 					} = setupHook(useMsgArchiveFn, {
-						initialProps: [{ messagesIds: messagesId }]
+						initialProps: [{ messagesIds: messagesId, folderId: folder.id }]
 					});
 
 					expect(functions.canExecute()).toEqual(assertion);
+				});
+
+				it('should return false when messages are already in the Archive folder - archive action should not appear', () => {
+					const {
+						result: { current: functions }
+					} = setupHook(useMsgArchiveFn, {
+						initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.ARCHIVE }]
+					});
+
+					expect(functions.canExecute()).toBe(false);
 				});
 			});
 
@@ -112,7 +123,7 @@ describe('useMsgArchive', () => {
 					const {
 						result: { current: functions }
 					} = setupHook(useMsgArchiveFn, {
-						initialProps: [{ messagesIds: messagesId }]
+						initialProps: [{ messagesIds: messagesId, folderId: FOLDERS.INBOX }]
 					});
 
 					await act(async () => {
@@ -137,6 +148,7 @@ describe('useMsgArchive', () => {
 						initialProps: [
 							{
 								messagesIds: messagesId,
+								folderId: FOLDERS.INBOX,
 								onActionComplete
 							}
 						]
