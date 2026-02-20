@@ -10,7 +10,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
-import { isSystemArchiveAvailable } from 'helpers/folders';
+import { isArchive, isSystemArchiveAvailable } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -18,14 +18,19 @@ import { useConversationDetailPanelControls } from 'views/app/detail-panel/detai
 
 type ConvArchiveFunctionsParameter = {
 	conversationIds: string[];
+	folderId: string;
 	onActionComplete?: (conversationsIds: string[]) => void;
 };
 
 export const useConvArchiveFn = ({
 	conversationIds,
+	folderId,
 	onActionComplete
 }: ConvArchiveFunctionsParameter): ActionFn => {
-	const canExecute = useCallback((): boolean => isSystemArchiveAvailable(), []);
+	const canExecute = useCallback(
+		(): boolean => isSystemArchiveAvailable() && !isArchive(folderId),
+		[folderId]
+	);
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
@@ -84,10 +89,12 @@ export const useConvArchiveFn = ({
 
 export const useConvArchiveDescriptor = ({
 	conversationIds,
+	folderId,
 	onActionComplete
 }: ConvArchiveFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvArchiveFn({
 		conversationIds,
+		folderId,
 		onActionComplete
 	});
 	const [t] = useTranslation();

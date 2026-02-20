@@ -10,7 +10,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
-import { isSystemArchiveAvailable } from 'helpers/folders';
+import { isArchive, isSystemArchiveAvailable } from 'helpers/folders';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -18,14 +18,19 @@ import { useConversationDetailPanelControls } from 'views/app/detail-panel/detai
 
 type MsgArchiveFunctionsParameter = {
 	messagesIds: string[];
+	folderId: string;
 	onActionComplete?: (messagesIds: string[]) => void;
 };
 
 export const useMsgArchiveFn = ({
 	messagesIds,
+	folderId,
 	onActionComplete
 }: MsgArchiveFunctionsParameter): ActionFn => {
-	const canExecute = useCallback((): boolean => isSystemArchiveAvailable(), []);
+	const canExecute = useCallback(
+		(): boolean => isSystemArchiveAvailable() && !isArchive(folderId),
+		[folderId]
+	);
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
@@ -84,10 +89,12 @@ export const useMsgArchiveFn = ({
 
 export const useMsgArchiveDescriptor = ({
 	messagesIds,
+	folderId,
 	onActionComplete
 }: MsgArchiveFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgArchiveFn({
 		messagesIds,
+		folderId,
 		onActionComplete
 	});
 	const [t] = useTranslation();
