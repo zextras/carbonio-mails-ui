@@ -14,7 +14,7 @@ import { isArchive, isSystemArchiveAvailable } from 'helpers/folders';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
-import { useConversationDetailPanelControls } from 'views/app/detail-panel/detail-panel-controls-hooks';
+import { useMessageDetailPanelControls } from 'views/app/detail-panel/detail-panel-controls-hooks';
 
 type MsgArchiveFunctionsParameter = {
 	messagesIds: string[];
@@ -34,7 +34,7 @@ export const useMsgArchiveFn = ({
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
-	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
+	const { closeMessagePanel, currentMessage } = useMessageDetailPanelControls();
 
 	const execute = useCallback((): void => {
 		if (!canExecute()) {
@@ -56,12 +56,8 @@ export const useMsgArchiveFn = ({
 				});
 			} else {
 				onActionComplete?.(messagesIds);
-				if (
-					currentConversation &&
-					!inSearchModule &&
-					messagesIds.includes(currentConversation.id)
-				) {
-					closeConversationPanel();
+				if (currentMessage && !inSearchModule && messagesIds.includes(currentMessage.id)) {
+					closeMessagePanel();
 				}
 				createSnackbar({
 					key: `archive-${messagesIds.join(',')}`,
@@ -75,13 +71,13 @@ export const useMsgArchiveFn = ({
 		});
 	}, [
 		canExecute,
+		closeMessagePanel,
+		createSnackbar,
+		currentMessage,
+		inSearchModule,
 		messagesIds,
 		onActionComplete,
-		currentConversation,
-		inSearchModule,
-		createSnackbar,
-		t,
-		closeConversationPanel
+		t
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
