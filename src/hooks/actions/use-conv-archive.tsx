@@ -62,11 +62,15 @@ export const useConvArchiveFn = ({
 				) {
 					closeConversationPanel();
 				}
+				const snackbarLabel =
+					conversationIds.length === 1
+						? t('snackbar.conversation_moved_to_archive', 'Conversation moved to Archive')
+						: t('snackbar.conversations_moved_to_archive', 'Conversations moved to Archive');
 				createSnackbar({
 					key: `archive-${conversationIds.join('-')}`,
 					replace: true,
 					severity: 'info',
-					label: t('snackbar.conversation_moved_to_archive', 'Conversation moved to Archive'),
+					label: snackbarLabel,
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -74,13 +78,14 @@ export const useConvArchiveFn = ({
 		});
 	}, [
 		canExecute,
+		closeConversationPanel,
 		conversationIds,
-		onActionComplete,
-		currentConversation,
-		inSearchModule,
 		createSnackbar,
-		t,
-		closeConversationPanel
+		currentConversation,
+		folderId,
+		inSearchModule,
+		onActionComplete,
+		t
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);

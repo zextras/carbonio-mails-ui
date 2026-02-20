@@ -58,11 +58,15 @@ export const useMsgArchiveFn = ({
 				if (currentMessage && !inSearchModule && messagesIds.includes(currentMessage.id)) {
 					closeMessagePanel();
 				}
+				const snackbarLabel =
+					messagesIds.length === 1
+						? t('snackbar.message_moved_to_archive', 'E-mail moved to Archive')
+						: t('snackbar.messages_moved_to_archive', 'E-mails moved to Archive');
 				createSnackbar({
 					key: `archive-${messagesIds.join(',')}`,
 					replace: true,
 					severity: 'info',
-					label: t('snackbar.message_moved_to_archive', 'E-mail moved to Archive'),
+					label: snackbarLabel,
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
