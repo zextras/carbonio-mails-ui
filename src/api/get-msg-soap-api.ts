@@ -14,10 +14,11 @@ export async function getMsgSoapApi({
 	msgId,
 	max,
 	part,
-	shouldMarkAsRead
+	shouldMarkAsRead,
+	html = true
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	const message: GetMsgRequest['m'] = {
-		html: 1,
+		html,
 		id: msgId,
 		needExp: 1,
 		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
