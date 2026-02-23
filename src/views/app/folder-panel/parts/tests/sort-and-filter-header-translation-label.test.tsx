@@ -7,18 +7,18 @@ import React from 'react';
 
 import type { Mock } from 'vitest';
 
+import { parseMessageSortingOptions } from '../../../../../helpers/parseMessageSortingOptions';
 import { SortAndFilterHeaderComponent } from '../sort-and-filter-header-component';
 import { screen, setupTest } from '@test-setup';
 import { FILTER_OPTIONS, SORTING_OPTIONS } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 
 const FOLDER_ID = 'test-folder';
 
 vi.mock('helpers/sorting', async () => ({
 	...(await vi.importActual('helpers/sorting')),
-	parseMessageSortingOptions: vi.fn(),
 	updateSortAndFilterSettings: vi.fn()
 }));
+vi.mock('helpers/parseMessageSortingOptions');
 
 describe('getTranslatedSortFilterLabel integration', () => {
 	beforeAll(() => {

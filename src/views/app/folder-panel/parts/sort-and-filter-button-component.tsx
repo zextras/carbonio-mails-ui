@@ -24,10 +24,8 @@ import {
 	SORTING_DIRECTION,
 	SORTING_OPTIONS
 } from '../../../../constants';
-import {
-	parseMessageSortingOptions,
-	updateSortAndFilterSettings
-} from '../../../../helpers/sorting';
+import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
+import { updateSortAndFilterSettings } from '../../../../helpers/sorting';
 import type { SortOption, FilterOption } from '../../../../types';
 
 function getRadioIcon(option: string | undefined, value: string): string {

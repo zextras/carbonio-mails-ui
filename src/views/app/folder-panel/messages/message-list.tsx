@@ -12,10 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageShortcutsRegister } from './message-shortcuts-register';
+import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
 import type { FolderPanelRouteParams } from '../../../../types/routes';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { MessageListComponent } from 'views/app/folder-panel/messages/message-list-component';

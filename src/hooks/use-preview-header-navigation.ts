@@ -10,8 +10,8 @@ import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import { parseMessageSortingOptions } from '../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from 'constants/index';
-import { parseMessageSortingOptions } from 'helpers/sorting';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import {

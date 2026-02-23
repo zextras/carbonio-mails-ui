@@ -105,7 +105,10 @@ export const TESTID_SELECTORS = {
 		trash: 'icon: Trash2Outline',
 		deletePermanently: 'icon: DeletePermanentlyOutline',
 		deleteDraft: 'icon: Trash2Outline',
-		square: 'icon: Square'
+		square: 'icon: Square',
+		tag: 'icon: Tag',
+		tagsMore: 'icon: TagsMoreOutline',
+		flag: 'icon: Flag'
 	},
 	composer: {
 		attachmentAddOriginal: 'composer.attachment.add_original'

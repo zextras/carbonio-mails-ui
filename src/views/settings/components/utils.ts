@@ -12,6 +12,9 @@ import { filter, find, isEqual, isObject, map, reduce, transform } from 'lodash'
 
 import { NO_SIGNATURE_ID } from 'helpers/signatures';
 
+export const boolToPref = (value: boolean): string => (value ? 'TRUE' : 'FALSE');
+export const prefToBool = (value: string): boolean => value === 'TRUE';
+
 const arraysProps = [
 	'zimbraPrefMailTrustedSenderList',
 	'amavisWhitelistSender',

@@ -9,9 +9,9 @@ import React, { useCallback } from 'react';
 import { CONTACT_TYPES, ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { v4 as uuidv4 } from 'uuid';
 
-import { FilterRedirect } from 'types/index.d';
 import { RedirectTo } from 'views/settings/filters/parts/filter-actions/redirect-to';
 import { ActionComponentProps } from 'views/settings/filters/types';
+import { FilterRedirect } from 'types/filters';
 
 export const ActionRedirectToComponent = ({
 	value,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { BACKUP_SEARCH_STATUS } from 'constants/index';
-import { SearchBackupDeletedMessagesAPIProps, DeletedMessageFromAPI } from 'types/api/index.d';
+import { SearchBackupDeletedMessagesAPIProps, DeletedMessageFromAPI } from 'types/api';
 
 export type BackupSearchStatus = (typeof BACKUP_SEARCH_STATUS)[keyof typeof BACKUP_SEARCH_STATUS];
 
