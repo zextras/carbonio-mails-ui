@@ -67,6 +67,7 @@ describe('useConMoveToTrash', () => {
 				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
 				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
 				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
+				${FOLDERS_DESCRIPTORS.ARCHIVE}      | ${true}
 				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
 			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 				const {

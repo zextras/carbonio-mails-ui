@@ -108,7 +108,8 @@ export const TESTID_SELECTORS = {
 		square: 'icon: Square',
 		tag: 'icon: Tag',
 		tagsMore: 'icon: TagsMoreOutline',
-		flag: 'icon: Flag'
+		flag: 'icon: Flag',
+		archive: 'icon: ArchiveOutline'
 	},
 	composer: {
 		attachmentAddOriginal: 'composer.attachment.add_original'
