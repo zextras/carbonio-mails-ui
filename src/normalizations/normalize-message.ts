@@ -533,5 +533,5 @@ export const normalizePartialIncompleteMessageFromSoapNotify = (
 		...normalizeMailHeaders(m)
 	});
 	const flags = getNotifyFlags(m);
-	return { ...partialMessageData, ...(flags ?? {}), id: m.id };
+	return { ...partialMessageData, ...flags, id: m.id };
 };
