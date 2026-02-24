@@ -22,7 +22,7 @@ type ReadReceiptModalProps = {
 	readReceiptSetting: string | undefined | number | Array<string | number>;
 };
 
-const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
+export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	open,
 	onClose,
 	message,
@@ -95,5 +95,3 @@ const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 		</CustomModal>
 	);
 };
-
-export default ReadReceiptModal;
