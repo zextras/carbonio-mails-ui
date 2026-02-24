@@ -14,7 +14,7 @@ import { SendLaterModal } from 'views/app/detail-panel/edit/parts/send-later-mod
 
 describe('send-later-modal', () => {
 	it('all elements of the component are visible', async () => {
-		const closeModal = jest.fn();
+		const closeModal = vi.fn();
 
 		setupTest(
 			<SendLaterModal onClose={(): void => closeModal()} onAutoSendTimeSelected={noop} />,

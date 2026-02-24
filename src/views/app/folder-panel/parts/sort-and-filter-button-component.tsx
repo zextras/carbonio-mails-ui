@@ -14,7 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { capitalize, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -24,15 +24,9 @@ import {
 	SORTING_DIRECTION,
 	SORTING_OPTIONS
 } from '../../../../constants';
-import {
-	parseMessageSortingOptions,
-	updateSortAndFilterSettings
-} from '../../../../helpers/sorting';
-
-type Option = {
-	value: string;
-	label: string;
-};
+import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
+import { updateSortAndFilterSettings } from '../../../../helpers/sorting';
+import type { SortOption, FilterOption } from '../../../../types';
 
 function getRadioIcon(option: string | undefined, value: string): string {
 	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';
@@ -52,9 +46,10 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId, prefSortOrder]
 	);
 
-	const sortingOptions: Option[] = useMemo(
+	const sortingOptions: SortOption[] = useMemo(
 		() => [
 			SORTING_OPTIONS.date,
+			...(isTrash(folderId) ? [SORTING_OPTIONS.changeDate] : []),
 			SORTING_OPTIONS.subject,
 			folderId === FOLDERS.SENT ? SORTING_OPTIONS.to : SORTING_OPTIONS.from,
 			SORTING_OPTIONS.size
@@ -62,8 +57,9 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 		[folderId]
 	);
 
-	const filteringOptions: Option[] = useMemo(
+	const filteringOptions: FilterOption[] = useMemo(
 		() => [
+			FILTER_OPTIONS.all,
 			FILTER_OPTIONS.unread,
 			FILTER_OPTIONS.important,
 			FILTER_OPTIONS.flagged,
@@ -130,41 +126,60 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 
 	const filterItems: DropdownItem[] = useMemo(
 		() =>
-			filteringOptions.map(({ value, label }) => ({
-				id: `filter-${value}`,
-				label: capitalize(t(`sorting_dropdown.${label}`, label)),
-				selected: filterType === value,
-				onClick: (): void => {
-					updateSortAndFilterSettings({
-						folderId,
-						prefSortOrder,
-						sortType,
-						sortDirection,
-						filter: value
-					});
-				},
-				icon: getRadioIcon(filterType, value)
-			})),
+			filteringOptions.map(({ value, label }) => {
+				const isDefaultFilter = value === undefined;
+				const isSelected = (filterType === undefined && isDefaultFilter) || filterType === value;
+				const translatedLabel = capitalize(t(`sorting_dropdown.${label}`, label));
+				const labelWithDefault = isDefaultFilter
+					? `${translatedLabel} (${t('sorting_dropdown.default', 'Default')})`
+					: translatedLabel;
+
+				return {
+					id: `filter-${value ?? 'all'}`,
+					label: labelWithDefault,
+					selected: isSelected,
+					onClick: (): void => {
+						updateSortAndFilterSettings({
+							folderId,
+							prefSortOrder,
+							sortType,
+							sortDirection,
+							filter: value
+						});
+					},
+					icon: getRadioIcon(isSelected ? 'selected' : 'not-selected', 'selected')
+				};
+			}),
 		[filterType, sortDirection, sortType, filteringOptions, folderId, prefSortOrder, t]
 	);
 
 	const sortItems: DropdownItem[] = useMemo(
 		() =>
-			sortingOptions.map(({ value, label }) => ({
-				id: `sort-${value}`,
-				label: capitalize(t(`sorting_dropdown.${label}`, label)),
-				selected: sortType === value,
-				onClick: (): void => {
-					updateSortAndFilterSettings({
-						folderId,
-						prefSortOrder,
-						sortType: value,
-						sortDirection,
-						filter: filterType
-					});
-				},
-				icon: getRadioIcon(sortType, value)
-			})),
+			sortingOptions.map(({ value, label }) => {
+				const isTrashFolder = isTrash(folderId);
+				const isDefaultSort =
+					(isTrashFolder && value === 'changeDate') || (!isTrashFolder && value === 'date');
+				const translatedLabel = capitalize(t(`sorting_dropdown.${label}`, label));
+				const labelWithDefault = isDefaultSort
+					? `${translatedLabel} (${t('sorting_dropdown.default', 'Default')})`
+					: translatedLabel;
+
+				return {
+					id: `sort-${value}`,
+					label: labelWithDefault,
+					selected: sortType === value,
+					onClick: (): void => {
+						updateSortAndFilterSettings({
+							folderId,
+							prefSortOrder,
+							sortType: value,
+							sortDirection,
+							filter: filterType
+						});
+					},
+					icon: getRadioIcon(sortType, value)
+				};
+			}),
 		[filterType, sortDirection, sortType, folderId, prefSortOrder, sortingOptions, t]
 	);
 
@@ -222,6 +237,7 @@ export const SortAndFilterButtonComponent = ({
 			placement="top"
 		>
 			<Dropdown
+				disableAutoFocus
 				items={dropdownItems}
 				multiple
 				itemPaddingBetween="large"

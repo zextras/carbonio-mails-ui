@@ -24,7 +24,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 			m: [generateCompleteMessageFromAPI()],
 			more: false
 		};
-		const appendMessagesSpy = jest.spyOn(storeHooks, 'appendMessagesToMessagesSlice');
+		const appendMessagesSpy = vi.spyOn(storeHooks, 'appendMessagesToMessagesSlice');
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
@@ -65,7 +65,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const searchResponse = {
 			Fault: {}
 		};
-		const updateMessagesResultsLoadingStatusSpy = jest.spyOn(
+		const updateMessagesResultsLoadingStatusSpy = vi.spyOn(
 			storeHooks,
 			'updateMessagesResultsLoadingStatus'
 		);
@@ -94,7 +94,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 	});
 
 	it('should handle 500 errors gracefully', async () => {
-		const updateMessagesResultsLoadingStatusSpy = jest.spyOn(
+		const updateMessagesResultsLoadingStatusSpy = vi.spyOn(
 			storeHooks,
 			'updateMessagesResultsLoadingStatus'
 		);
@@ -123,7 +123,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 	});
 
 	it('should not load more results if hasMore is false', async () => {
-		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
@@ -148,7 +148,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 	it('should not load more results if already loading', async () => {
 		const loadingMore = { current: true };
 
-		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const searchSpy = vi.spyOn(searchSoapApi, 'searchSoapApi');
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,

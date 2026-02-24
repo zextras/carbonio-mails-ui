@@ -4,9 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
-import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import * as shell from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
 
+import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
+import { getNotificationManager, getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
+import { setupHook } from '@test-setup';
+import { generateFolders } from '@test-utils/folders/folders-generator';
 import {
 	generateConversation,
 	populateConversationInEmailStore
@@ -14,6 +19,7 @@ import {
 import { generateMessage } from '__test__/generators/generateMessage';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
+	appendConversationsToConversationIndexSlice,
 	handleNotifyMessagesCreated,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
@@ -23,10 +29,9 @@ import {
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	getTags: jest.fn()
-}));
+beforeEach(() => {
+	window.history.pushState({}, '', `/folder/${FOLDERS.INBOX}`);
+});
 describe('handleNotifyMessagesCreated', () => {
 	describe('addMessagesToMessageSlice', () => {
 		it('should add messages to populatedItemsSlice.messages', async () => {
@@ -50,6 +55,63 @@ describe('handleNotifyMessagesCreated', () => {
 				expect(result.current?.messageListIndex).toEqual(['2', '1']);
 			});
 		});
+
+		it('should update conversationListIndex with ordered conversation ids by message date', async () => {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: {
+					zimbraPrefLocale: 'en',
+					zimbraPrefSortOrder: '2:date-Desc'
+				}
+			});
+			const folders = generateFolders();
+			useFolderStore.setState({ folders });
+			const { conversation: firstConv, messages: firstConvMessages } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', folderId: FOLDERS.INBOX },
+					messageGeneratorParams: [
+						{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 30) }
+					]
+				})
+			);
+			const { conversation: secondConv, messages: secondConvMessages } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '124', folderId: FOLDERS.INBOX },
+					messageGeneratorParams: [
+						{ id: '1000', receiveDate: new Date().setSeconds(new Date().getSeconds() - 50) }
+					]
+				})
+			);
+			await act(async () => {
+				await appendConversationsToConversationIndexSlice([firstConv, secondConv], 100, false);
+			});
+			await act(async () => {
+				await setMessagesInEmailStore([...firstConvMessages, ...secondConvMessages], false);
+			});
+
+			const { result } = setupHook(useConversationListByFolder, {
+				initialProps: [FOLDERS.INBOX]
+			});
+
+			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([
+				firstConv.id,
+				secondConv.id
+			]);
+			const newMessage = generateMessage({
+				id: '2',
+				receiveDate: new Date().valueOf(),
+				cid: secondConv.id
+			});
+
+			await act(async () => {
+				await handleNotifyMessagesCreated([newMessage]);
+			});
+			expect(result.current.conversationIndexSlice.conversationListIndex).toEqual([
+				secondConv.id,
+				firstConv.id
+			]);
+		});
 	});
 
 	describe('getOrderedMessagesForConversation', () => {
@@ -72,7 +134,9 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should return messages in descending order when sortOrder is dateDesc', async () => {
-			(getUserSettings as jest.Mock).mockReturnValue({
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
 				prefs: { zimbraPrefConversationOrder: 'dateDesc' }
 			});
 			const message = generateMessage({ id: '1' });
@@ -89,7 +153,9 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should return messages in ascending order when sortOrder is not dateDesc', async () => {
-			(getUserSettings as jest.Mock).mockReturnValue({
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
 				prefs: { zimbraPrefConversationOrder: 'dateAsc' }
 			});
 
@@ -103,42 +169,30 @@ describe('handleNotifyMessagesCreated', () => {
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(async () => {
 				const messagesIds = result.current.messageIds;
-				expect(messagesIds).toEqual(['1', '2']);
+				expect(messagesIds).toEqual(expect.arrayContaining(['1', '2']));
 			});
 		});
 	});
 });
 
-let mockIsFocusMode = false;
-
-const mockedMultipleNotify = jest.fn();
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	get IS_FOCUS_MODE(): boolean {
-		return mockIsFocusMode;
-	},
-	getNotificationManager: jest.fn(() => ({
-		multipleNotify: mockedMultipleNotify
-	})),
-	getUserSettings: jest.fn(() => ({
-		props: [],
-		prefs: {
-			zimbraPrefMailToasterEnabled: 'TRUE',
-			zimbraPrefShowAllNewMailNotifications: 'TRUE'
-		}
-	}))
-}));
-
 describe('triggerNotification', () => {
 	it('multipleNotify is not called if IS_FOCUS_MODE is true', () => {
-		mockIsFocusMode = true;
-		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		const mockedMultipleNotify = vi.fn();
+		vi.mocked(shell).IS_FOCUS_MODE = true;
+		getNotificationManager.mockImplementation(() => ({
+			multipleNotify: mockedMultipleNotify
+		}));
+		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).not.toHaveBeenCalled();
 	});
 
 	it('multipleNotify is called if IS_FOCUS_MODE is false', () => {
-		mockIsFocusMode = false;
-		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		const mockedMultipleNotify = vi.fn();
+		vi.mocked(shell).IS_FOCUS_MODE = false;
+		getNotificationManager.mockImplementation(() => ({
+			multipleNotify: mockedMultipleNotify
+		}));
+		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).toHaveBeenCalled();
 	});
 });

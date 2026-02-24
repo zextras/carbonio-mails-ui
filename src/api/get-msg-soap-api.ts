@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { JSNS } from '@zextras/carbonio-shell-ui';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
@@ -13,10 +14,11 @@ export async function getMsgSoapApi({
 	msgId,
 	max,
 	part,
-	shouldMarkAsRead
+	shouldMarkAsRead,
+	html = true
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	const message: GetMsgRequest['m'] = {
-		html: 1,
+		html,
 		id: msgId,
 		needExp: 1,
 		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
@@ -28,7 +30,7 @@ export async function getMsgSoapApi({
 	}
 
 	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
-		_jsns: 'urn:zimbraMail',
+		_jsns: JSNS.mail,
 		m: message
 	});
 }

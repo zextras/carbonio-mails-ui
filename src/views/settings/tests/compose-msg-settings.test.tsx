@@ -7,25 +7,22 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { UpdateSettingsProps } from 'types/settings/index.d';
 import ComposeMessage from 'views/settings/compose-msg-settings';
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	t: jest.fn((key) => key)
-}));
 
 describe('compose-msg-settings', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	const settingObjectEmpty: Record<string, string> = {
 		zimbraPrefHtmlEditorDefaultFontFamily: '',
 		zimbraPrefHtmlEditorDefaultFontSize: '',
 		zimbraPrefHtmlEditorDefaultFontColor: '',
-		zimbraPrefComposeFormat: ''
+		zimbraPrefComposeFormat: '',
+		zimbraPrefMailRequestReadReceipts: 'FALSE'
 	};
 
 	it('should render correctly', async () => {
@@ -37,7 +34,7 @@ describe('compose-msg-settings', () => {
 		);
 
 		expect(screen.getByText('labels.composing_messages')).toBeInTheDocument();
-		expect(screen.getByText('labels.compose_colin')).toBeInTheDocument();
+		expect(screen.getByText('labels.compose')).toBeInTheDocument();
 		expect(screen.getByLabelText('label.as_html')).toBeInTheDocument();
 		expect(screen.getByLabelText('label.as_text')).toBeInTheDocument();
 		expect(screen.getByText('settings.font')).toBeInTheDocument();
@@ -151,10 +148,71 @@ describe('compose-msg-settings', () => {
 		expect(screen.getByRole('radio', { name: 'label.as_html' })).not.toBeChecked();
 	});
 
+	describe('Read Receipt section', () => {
+		it('should render the Read Receipt section with switch and description', () => {
+			const settingObject = generateSettingObject();
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			expect(screen.getByText('label.composing_messages_read_receipt')).toBeInTheDocument();
+			expect(screen.getByText('label.always_request_read_receipts')).toBeInTheDocument();
+			expect(screen.getByText('label.read_receipt_description')).toBeInTheDocument();
+		});
+
+		it('should call updateSettings when Read Receipt switch is toggled on', async () => {
+			const settingObject = generateSettingObject();
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			const { user } = setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			await user.click(screen.getByTestId('icon: ToggleLeftOutline'));
+
+			await waitFor(() =>
+				expect(mockUpdateSettings).toHaveBeenCalledWith({
+					target: {
+						name: 'zimbraPrefMailRequestReadReceipts',
+						value: 'TRUE'
+					}
+				})
+			);
+		});
+
+		it('should call updateSettings when Read Receipt switch is toggled off', async () => {
+			const settingObject = {
+				...generateSettingObject(),
+				zimbraPrefMailRequestReadReceipts: 'TRUE'
+			};
+			const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
+			const { user } = setupTest(
+				<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+				{}
+			);
+
+			await user.click(screen.getByTestId('icon: ToggleRight'));
+
+			await waitFor(() =>
+				expect(mockUpdateSettings).toHaveBeenCalledWith({
+					target: {
+						name: 'zimbraPrefMailRequestReadReceipts',
+						value: 'FALSE'
+					}
+				})
+			);
+		});
+	});
+
 	function getMockUpdateSettings(
 		settingObject: Record<string, string>
-	): jest.Mock<void, [changedKeyValue: UpdateSettingsProps]> {
-		return jest.fn((changedKeyValue) => {
+	): Mock<(value: any) => void> {
+		return vi.fn((changedKeyValue) => {
 			const { name, value } = changedKeyValue.target;
 			const updatedSettings = { ...settingObject, [name]: value as string };
 			Object.assign(settingObject, updatedSettings);
@@ -166,7 +224,8 @@ describe('compose-msg-settings', () => {
 			zimbraPrefHtmlEditorDefaultFontFamily: 'arial, helvetica, sans-serif',
 			zimbraPrefHtmlEditorDefaultFontSize: '12pt',
 			zimbraPrefHtmlEditorDefaultFontColor: '#24cb77',
-			zimbraPrefComposeFormat: 'html'
+			zimbraPrefComposeFormat: 'html',
+			zimbraPrefMailRequestReadReceipts: 'FALSE'
 		};
 	}
 });

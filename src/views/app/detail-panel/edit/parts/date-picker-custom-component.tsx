@@ -6,7 +6,7 @@
 import React, { FC, useEffect, useState, forwardRef, MouseEvent } from 'react';
 
 import styled from '@emotion/styled';
-import { Row, IconButton, Input } from '@zextras/carbonio-design-system';
+import { Row, Input, Button } from '@zextras/carbonio-design-system';
 
 type CustomComponentProps = {
 	value: string | number;
@@ -49,12 +49,12 @@ export const DatePickerCustomComponent: FC<CustomComponentProps> = forwardRef(
 				</Row>
 
 				<CustomButtonWrapper>
-					<IconButton
+					<Button
 						icon="CalendarOutline"
 						size="large"
 						onClick={onClick}
-						backgroundColor="transparent"
-						iconColor="text"
+						type={'ghost'}
+						color={'gray0'}
 					/>
 				</CustomButtonWrapper>
 			</CustomInputWrapper>

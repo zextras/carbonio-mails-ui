@@ -96,15 +96,24 @@ export const TESTID_SELECTORS = {
 	icons: {
 		attachmentDropdown: 'icon: AttachOutline',
 		chevronDown: 'icon: ChevronDownOutline',
+		chevronUp: 'icon: ChevronUpOutline',
 		layoutVerticalSplit: 'icon: LayoutOutline',
 		layoutHorizontalSplit: 'icon: BottomViewOutline',
 		layoutNoSplit: 'icon: ViewOffOutline',
 		navigateNext: 'icon: ArrowIosForward',
 		navigatePrevious: 'icon: ArrowIosBack',
 		trash: 'icon: Trash2Outline',
-		deletePermanently: 'icon: DeletePermanentlyOutline'
+		deletePermanently: 'icon: DeletePermanentlyOutline',
+		deleteDraft: 'icon: Trash2Outline',
+		square: 'icon: Square',
+		tag: 'icon: Tag',
+		tagsMore: 'icon: TagsMoreOutline',
+		flag: 'icon: Flag',
+		archive: 'icon: ArchiveOutline'
 	},
-
+	composer: {
+		attachmentAddOriginal: 'composer.attachment.add_original'
+	},
 	signatureEditor: 'signature-editor',
 	signaturesList: 'signatures-list'
 };

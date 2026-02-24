@@ -15,29 +15,31 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'i18next';
+import { isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { SORTING_DIRECTION, SORTING_OPTIONS, FILTER_OPTIONS } from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
 import {
-	parseMessageSortingOptions,
+	getTranslatedSortFilterLabel,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
+import type { SortOption, FilterOption, SortAndFilterState } from '../../../../types';
 
-const getTranslatedLabelFromValue = (
-	value: string | null | undefined,
-	t: TFunction<'translation', undefined, 'translation'>
-): string => {
-	if (!value) return '';
-	const sortOpt = Object.values(SORTING_OPTIONS).find((opt) => opt.value === value);
-	if (sortOpt) return t(`sorting_dropdown.${sortOpt.label}`, sortOpt.label);
-	const filterOpt = Object.values(FILTER_OPTIONS).find((opt) => opt.value === value);
-	if (filterOpt) return t(`sorting_dropdown.${filterOpt.label}`, filterOpt.label);
-	return value;
+const isValid = (
+	val: string | undefined,
+	options: Record<string, SortOption | FilterOption>
+): boolean => !!val && Object.values(options).some((opt) => opt.value === val);
+
+const getDefaultSortAndFilterState = (folderId: string): SortAndFilterState => {
+	const isTrashFolder = isTrash(folderId);
+
+	return {
+		sortType: isTrashFolder ? SORTING_OPTIONS.changeDate.value : SORTING_OPTIONS.date.value,
+		sortDirection: SORTING_DIRECTION.DESCENDING,
+		filterType: undefined
+	};
 };
-
-const isValid = (val: string | undefined, options: Record<string, { value: string }>): boolean =>
-	!!val && Object.values(options).some((opt) => opt.value === val);
 
 export const SortAndFilterHeaderComponent = ({
 	folderId
@@ -57,50 +59,48 @@ export const SortAndFilterHeaderComponent = ({
 		[folderId, prefSortOrder]
 	);
 
-	const defaultState = useMemo(
-		() => ({
-			type: SORTING_OPTIONS.date.value,
-			direction: SORTING_DIRECTION.DESCENDING,
-			filter: undefined as string | undefined
-		}),
-		[]
-	);
+	const defaultSortAndFilterState = getDefaultSortAndFilterState(folderId);
 
 	const sortType = useMemo(
-		() => (isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultState.type),
-		[rawSortType, defaultState.type]
+		() =>
+			isValid(rawSortType, SORTING_OPTIONS) ? rawSortType : defaultSortAndFilterState.sortType,
+		[rawSortType, defaultSortAndFilterState.sortType]
 	);
 
 	const filterType = useMemo(
-		() => (isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultState.filter),
-		[rawFilterType, defaultState.filter]
+		() =>
+			isValid(rawFilterType, FILTER_OPTIONS) ? rawFilterType : defaultSortAndFilterState.filterType,
+		[rawFilterType, defaultSortAndFilterState.filterType]
 	);
 
 	const resetToDefaultState = useCallback(() => {
 		updateSortAndFilterSettings({
 			folderId,
 			prefSortOrder,
-			sortType: defaultState.type,
-			sortDirection: defaultState.direction,
-			filter: defaultState.filter
+			sortType: defaultSortAndFilterState.sortType,
+			sortDirection: defaultSortAndFilterState.sortDirection,
+			filter: defaultSortAndFilterState.filterType
 		});
-	}, [defaultState.direction, defaultState.filter, defaultState.type, folderId, prefSortOrder]);
+	}, [
+		defaultSortAndFilterState.sortDirection,
+		defaultSortAndFilterState.filterType,
+		defaultSortAndFilterState.sortType,
+		folderId,
+		prefSortOrder
+	]);
 
 	const hasModifiedState = useMemo(
-		() => sortType !== defaultState.type || filterType !== defaultState.filter,
-		[sortType, filterType, defaultState]
-	);
-
-	const currentFilterLabel = useMemo(
 		() =>
-			filterType ? `${t('label.show', 'Show')}: ${getTranslatedLabelFromValue(filterType, t)}` : '',
-		[filterType, t]
+			sortType !== defaultSortAndFilterState.sortType ||
+			filterType !== defaultSortAndFilterState.filterType,
+		[sortType, filterType, defaultSortAndFilterState]
 	);
 
-	const currentSortLabel = useMemo(
-		() => `${t('label.sort_by', 'Sort by')}: ${getTranslatedLabelFromValue(sortType, t)}`,
-		[sortType, t]
-	);
+	const currentFilterLabel = filterType
+		? `${t('label.show', 'Show')}: ${getTranslatedSortFilterLabel(filterType, t)}`
+		: '';
+
+	const currentSortLabel = `${t('label.sort_by', 'Sort by')}: ${getTranslatedSortFilterLabel(sortType, t)}`;
 
 	if (!hasModifiedState) return null;
 	return (
@@ -136,7 +136,7 @@ export const SortAndFilterHeaderComponent = ({
 				<Padding right="medium" />
 				<Tooltip
 					placement="top"
-					label={t('label.reset_to_sort_by_date', 'Reset to “Sort by: Date”')}
+					label={t('label.reset_sort_and_filter_to_default', 'Reset to default')}
 				>
 					<Button
 						type="ghost"

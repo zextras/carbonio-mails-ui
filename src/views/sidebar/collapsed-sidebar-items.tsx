@@ -5,7 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
-import { IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { Link } from 'react-router-dom';
 
@@ -27,11 +27,12 @@ const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 					placement="right"
 				>
 					<Padding all="extrasmall">
-						<IconButton
-							customSize={{ iconSize: 'large', paddingSize: 'small' }}
+						<Button
+							size="large"
 							icon={folderIconLabel ?? ''}
-							customIconColor={folderIconColor}
 							onClick={(): null => null}
+							color={folderIconColor}
+							type={'ghost'}
 						/>
 					</Padding>
 				</Tooltip>

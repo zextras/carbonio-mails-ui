@@ -5,14 +5,27 @@
  */
 import React, { useCallback, useMemo, useRef } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 import { Composer } from '@zextras/carbonio-ui-text-composer';
 import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
+import { editorUtils } from './editor-utils';
+import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
-import { useEditorAttachments, useEditorText, useEditorTextProvider } from 'store/editor';
+import {
+	applyUserPreferenceStyles,
+	generateUserPreferenceStyles,
+	UserPreferenceStyle
+} from 'helpers/user-preference-styles';
+import {
+	useEditorAttachments,
+	useEditorsStore,
+	useEditorText,
+	useEditorTextProvider
+} from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -32,19 +45,27 @@ type InlineAttachment = {
 
 export const SAVE_EDITOR_DELAY = 2000;
 
+function getUserPreferenceStyle(prefs: AccountSettingsPrefs): UserPreferenceStyle {
+	return {
+		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+	};
+}
+
 export const RichTextEditorContainer = ({
 	editorId,
 	onDragOver
 }: TextEditorContainerProps): JSX.Element => {
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
-
+	const { setDirty } = useEditorSetDirty(editorId);
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(text);
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments, removeInlineAttachments } = useEditorAttachments(editorId);
+	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
 
 	const { prefs } = useUserSettings();
 
@@ -59,12 +80,16 @@ export const RichTextEditorContainer = ({
 		return { plainText, richText };
 	}, []);
 
-	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
-		if (!composerRef.current) {
-			return;
-		}
-		composerRef.current.setContent(value.richText);
-	}, []);
+	const onExternalTextChanges = useCallback(
+		(value: MailsEditorV2['text']): void => {
+			if (!composerRef.current) {
+				return;
+			}
+			setDirty();
+			composerRef.current.setContent(value.richText);
+		},
+		[setDirty]
+	);
 
 	const onComposerInit = useCallback(
 		(_evt: Event, composer: Editor) => {
@@ -80,17 +105,10 @@ export const RichTextEditorContainer = ({
 	const cleanupUnusedAttachments = useCallback(
 		(html: string) => {
 			if (!composerRef.current) return;
-
-			const doc = new DOMParser().parseFromString(html, 'text/html');
-
-			// collect all used attachment IDs
-			const usedCids = Array.from(doc.querySelectorAll('img[data-pnsrc], img[src^="cid:"]'))
-				.map((img) => img.getAttribute('data-pnsrc') || img.getAttribute('src'))
-				.filter((cid): cid is string => Boolean(cid));
-
-			removeInlineAttachments(usedCids);
+			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: html });
+			keepOnlyInlineAttachments(usedCids);
 		},
-		[removeInlineAttachments]
+		[keepOnlyInlineAttachments]
 	);
 
 	const saveEditor = useCallback(() => {
@@ -99,13 +117,18 @@ export const RichTextEditorContainer = ({
 		}
 
 		const plainText = composerRef.current.getContent({ format: 'text' });
-		const richText = composerRef.current.getContent({ format: 'html' });
+		let richText = composerRef.current.getContent({ format: 'html' });
+
+		const style = getUserPreferenceStyle(prefs);
+
+		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
 		cleanupUnusedAttachments(richText);
 		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [cleanupUnusedAttachments, setText]);
+	}, [prefs, cleanupUnusedAttachments, setText]);
 
 	const onTextChange = useCallback(() => {
+		setDirty();
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
 		}
@@ -119,13 +142,16 @@ export const RichTextEditorContainer = ({
 			composerRef.current?.setDirty(false);
 			alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
-	}, [saveEditor]);
+	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		saveEditor();
+		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
+			saveEditor();
+		}
+
 		composerRef.current = undefined;
 		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider]);
+	}, [editorId, saveEditor, setTextProvider]);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
@@ -148,6 +174,7 @@ export const RichTextEditorContainer = ({
                 src="${objectUrl}" /><br/>`;
 
 				editor?.activeEditor?.insertContent(img);
+				onTextChange();
 			};
 
 			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
@@ -163,40 +190,60 @@ export const RichTextEditorContainer = ({
 				onSaveComplete: handleSaveComplete
 			});
 		},
-		[addInlineAttachments]
+		[addInlineAttachments, onTextChange]
 	);
 
-	function createPasteHandler(editor: Editor, editorID: string) {
-		return (event: ClipboardEvent): void => {
-			const editViewWrapper = document.querySelector(
-				'[data-testid="edit-view-editor"]'
-			)?.parentElement;
-			const editViewWrapperPrevScrollTop = editViewWrapper?.scrollTop;
+	const createPasteHandler = useCallback(
+		(editor: Editor, editorID: string) =>
+			async (event: ClipboardEvent): Promise<void> => {
+				const editViewWrapper = document.querySelector(
+					'[data-testid="edit-view-editor"]'
+				)?.parentElement;
+				await handleEditorPaste(editor, editorID, event);
 
-			handleEditorPaste(editor, editorID, event);
+				// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
+				if (editViewWrapper) {
+					editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
+				}
 
-			// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-			if (editViewWrapper) {
-				editViewWrapper.scrollTop = editViewWrapperPrevScrollTop ?? 0;
-			}
-		};
-	}
+				onTextChange();
+			},
+		[onTextChange]
+	);
 
-	function setupResizeObserver(editor: Editor): MutationObserver {
-		const mutationObserver = new MutationObserver(() => {
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
+	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
+		const boardElement = document.querySelector('[data-testid="MailEditorWrapper"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new ResizeObserver(() => {
+			editor.dispatch('ResizeWindow');
+		});
+		observer.observe(boardElement);
+
+		return observer;
+	}, []);
+
+	// Allow the TinyMCE stick toolbar to remain fixed when the board is moved
+	const setupMutationObserver = useCallback((editor: Editor): MutationObserver | null => {
+		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+		if (!boardElement) {
+			return null;
+		}
+
+		const observer = new MutationObserver(() => {
 			editor.dispatch('ResizeWindow');
 		});
 
-		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-		if (boardElement) {
-			mutationObserver.observe(boardElement, {
-				attributes: true,
-				attributeFilter: ['style']
-			});
-		}
+		observer.observe(boardElement, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
 
-		return mutationObserver;
-	}
+		return observer;
+	}, []);
 
 	const composerCustomOptions = useMemo(() => {
 		const fontSizesOptions = getFontSizesOptions();
@@ -207,41 +254,45 @@ export const RichTextEditorContainer = ({
 			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
 			.join('');
 
+		const style = getUserPreferenceStyle(prefs);
+		const userPreferenceStyles = generateUserPreferenceStyles(style);
+
 		return {
 			base_url: `${BASE_PATH}`,
 			toolbar_sticky: true,
 			ui_mode: 'split',
 			font_size_formats: fontSizesOptionsToString,
 			font_family_formats: fontsOptionsToString,
-			content_style: `
-			p { margin: 0; }
-			body *:not(.signature-div):not(.signature-div *) {
-				color: ${prefs?.zimbraPrefHtmlEditorDefaultFontColor};
-				font-size: ${prefs?.zimbraPrefHtmlEditorDefaultFontSize};
-				font-family: ${prefs?.zimbraPrefHtmlEditorDefaultFontFamily};
-			}`,
+			preview_styles: false,
+			content_css: false,
+			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
+			style_formats: [
+				// Headers
+				{ title: 'Heading 1', format: 'h1' },
+				{ title: 'Heading 2', format: 'h2' },
+				{ title: 'Heading 3', format: 'h3' },
+				{ title: 'Heading 4', format: 'h4' },
+				{ title: 'Heading 5', format: 'h5' },
+				{ title: 'Heading 6', format: 'h6' },
+				{ title: '' },
+				// Blocks
+				{ title: 'Paragraph', format: 'p' },
+				{ title: 'Pre', format: 'pre' },
+				{ title: 'Blockquote', format: 'blockquote' }
+			],
 			plugins: [
-				'advlist',
-				'autolink',
-				'lists',
-				'link',
-				'image',
-				'charmap',
-				'preview',
-				'anchor',
-				'searchreplace',
-				'code',
-				'fullscreen',
-				'insertdatetime',
-				'media',
-				'table',
-				'code',
-				'help',
-				'quickbars',
-				'directionality',
-				'autoresize',
-				'visualblocks',
-				'emoticons'
+				'advlist', // Enhances list functionality
+				'lists', // List support (bullist/numlist)
+				'link', // Link insertion
+				'image', // Image handling
+				'table', // Table support
+				'code', // Code view
+				'charmap', // Special characters
+				'quickbars', // Context toolbars
+				'directionality', // LTR/RTL support
+				'autoresize', // Auto-resize editor
+				'visualblocks', // Show block boundaries
+				'emoticons' // Emoji support
 			],
 			toolbar: [
 				// Fonts
@@ -255,7 +306,7 @@ export const RichTextEditorContainer = ({
 				// Lists and indentation
 				'bullist numlist',
 				// Insert elements
-				'link table insertfile image imageSelector emoticons',
+				'link table insertfile image imageSelector charmap emoticons',
 				// View and blocks
 				'visualblocks code'
 			].join(' | '),
@@ -270,6 +321,7 @@ export const RichTextEditorContainer = ({
 				const handlePaste = createPasteHandler(editor, editorId);
 				editor.on('paste', handlePaste);
 				editor.on('input', onTextChange);
+				editor.on('change', onTextChange);
 				editor.on('remove', onComposerClose);
 
 				// Handle drag over events
@@ -279,42 +331,39 @@ export const RichTextEditorContainer = ({
 					});
 				}
 
-				const mutationObserver = setupResizeObserver(editor);
+				const resizeObserver = setupResizeObserver(editor);
+				const mutationObserver = setupMutationObserver(editor);
 				return () => {
-					mutationObserver.disconnect();
+					resizeObserver?.disconnect();
+					mutationObserver?.disconnect();
 				};
 			}
 		};
 	}, [
+		createPasteHandler,
 		editorId,
 		onComposerClose,
 		onComposerInit,
 		onDragOver,
 		onTextChange,
-		prefs?.zimbraPrefHtmlEditorDefaultFontColor,
-		prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		prefs?.zimbraPrefHtmlEditorDefaultFontSize
+		prefs,
+		setupMutationObserver,
+		setupResizeObserver
 	]);
 
 	return (
-		<Container
-			background={'gray6'}
-			mainAlignment="flex-start"
-			style={{ minHeight: 0, overflow: 'hidden' }}
-		>
-			<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-				<Composer
-					initialValue={initialValue.current}
-					onFileSelect={onInlineAttachmentsSelected}
-					customInitOptions={composerCustomOptions}
-					accountSettingsPrefs={{
-						zimbraPrefLocale: prefs?.zimbraPrefLocale,
-						zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-						zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-						zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-					}}
-				/>
-			</StyledComp.EditorWrapper>
-		</Container>
+		<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
+			<Composer
+				initialValue={initialValue.current}
+				onFileSelect={onInlineAttachmentsSelected}
+				customInitOptions={composerCustomOptions}
+				accountSettingsPrefs={{
+					zimbraPrefLocale: prefs?.zimbraPrefLocale,
+					zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+					zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+					zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+				}}
+			/>
+		</StyledComp.EditorWrapper>
 	);
 };

@@ -5,8 +5,9 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { editSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { updateSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { JSNS, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { filter, forEach, isArray, some } from 'lodash';
 
 import { getFlattenedAttachmentParts } from '../../../helpers/attachments';
@@ -102,10 +103,17 @@ const useExternalImages = (
 					: settingsPrefs.zimbraPrefMailTrustedSenderList.split(',');
 			}
 
-			editSettings({
-				prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddresses, trustee] }
-			}).then((res) => {
-				if (res.type?.includes('fulfilled')) {
+			const zimbraPrefMailTrustedSenderList = [...trusteeAddresses, trustee];
+
+			soapFetchV2<
+				{ _attrs: AccountSettingsPrefs; _jsns: JSNS },
+				{ ModifyPrefsResponse: Record<string, unknown> }
+			>('ModifyPrefs', {
+				_jsns: JSNS.ACCOUNT,
+				_attrs: { zimbraPrefMailTrustedSenderList }
+			}).then((rawSoapResponse) => {
+				if (!('Fault' in rawSoapResponse.Body)) {
+					updateSettings({ prefs: { zimbraPrefMailTrustedSenderList } });
 					setShowExternalImages(true);
 				}
 			});

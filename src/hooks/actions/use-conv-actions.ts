@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { isTrash } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 
+import { useConvArchiveDescriptor } from './use-conv-archive';
 import { getFolderIdParts, getParentFolderId, isDraft } from 'helpers/folders';
 import { useConvApplyTagDescriptor } from 'hooks/actions/use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from 'hooks/actions/use-conv-delete-permanently';
@@ -32,7 +33,6 @@ import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
-	shouldReplaceHistory?: boolean;
 };
 
 type ConversationActionsReturnType = {
@@ -54,11 +54,11 @@ type ConversationActionsReturnType = {
 	printDescriptor: UIActionDescriptor;
 	previewOnSeparatedWindowDescriptor: UIActionDescriptor;
 	showOriginalDescriptor: UIActionDescriptor;
+	archiveDescriptor: UIActionDescriptor;
 };
 
 export const useConvActions = ({
-	conversation,
-	shouldReplaceHistory = false
+	conversation
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
@@ -112,12 +112,10 @@ export const useConvActions = ({
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);
 	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
 		ids: [conversation.id],
-		shouldReplaceHistory,
 		folderId
 	});
 
@@ -146,6 +144,11 @@ export const useConvActions = ({
 		folderId
 	});
 
+	const archiveDescriptor = useConvArchiveDescriptor({
+		conversationIds: [conversation.id],
+		folderId
+	});
+
 	return useMemo(
 		() => ({
 			replyDescriptor,
@@ -163,6 +166,7 @@ export const useConvActions = ({
 			applyTagDescriptor,
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
+			archiveDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
 			showOriginalDescriptor
@@ -185,7 +189,8 @@ export const useConvActions = ({
 			restoreFolderDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			showOriginalDescriptor,
+			archiveDescriptor
 		]
 	);
 };

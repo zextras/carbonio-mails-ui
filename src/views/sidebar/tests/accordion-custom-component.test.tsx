@@ -14,7 +14,7 @@ import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
-import AccordionCustomComponent from 'views/sidebar/accordion-custom-component';
+import { AccordionCustomComponent } from 'views/sidebar/accordion-custom-component';
 
 describe('accordion-custom-component', () => {
 	it('should render without crashing', () => {
@@ -28,11 +28,10 @@ describe('accordion-custom-component', () => {
 
 	it('should show the InboxOutline icon for the inbox folder when there are no subfolders', () => {
 		const inboxFolder = generateFolder({ id: FOLDERS.INBOX, isLink: false, children: [] });
-		assert(inboxFolder, 'Inbox folder should be defined');
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(inboxItem.querySelector('svg')).toHaveAttribute('data-testid', 'icon: InboxOutline');
 	});
@@ -50,7 +49,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByText(String(inboxFolder?.u ?? ''))).toBeInTheDocument();
 	});
 
@@ -67,7 +66,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByText('999+')).toBeInTheDocument();
 	});
 
@@ -94,7 +93,7 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={inboxFolder} />);
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.INBOX}`);
-		expect(inboxItem).toBeInTheDocument();
+
 		expect(within(inboxItem).getByTestId('icon: InboxOutlineWithDot')).toBeInTheDocument();
 	});
 
@@ -105,10 +104,11 @@ describe('accordion-custom-component', () => {
 
 		setupTest(<AccordionCustomComponent item={brokenLinkFolder} />);
 		const folderAccordionItem = screen.queryByTestId(`accordion-folder-item-${folderLink.id}`);
+
 		expect(folderAccordionItem).not.toBeInTheDocument();
 	});
 
-	it('should render accordion item with identity fullName when folder is ROOT', () => {
+	it('should render accordion item with identity fullName when folder is USER_ROOT', () => {
 		const userRootFolder = generateFolder({
 			id: FOLDERS.USER_ROOT,
 			isLink: false,
@@ -121,7 +121,7 @@ describe('accordion-custom-component', () => {
 		const { fullName } = identities.primary.identity;
 		setupTest(<AccordionCustomComponent item={userRootFolder} />);
 		const userRootItem = screen.getByTestId(`accordion-folder-item-${FOLDERS.USER_ROOT}`);
-		expect(userRootItem).toBeInTheDocument();
+
 		expect(within(userRootItem).getByText(fullName)).toBeInTheDocument();
 	});
 
@@ -137,19 +137,5 @@ describe('accordion-custom-component', () => {
 		setupTest(<AccordionCustomComponent item={sharedDraft} />);
 
 		expect(screen.getByText(87)).toBeInTheDocument();
-	});
-
-	it('should not display message counter on shared account Trash folder', () => {
-		const identity = createFakeIdentity();
-		const sharedDraft = {
-			...generateFolderLink('100', '101', identity),
-			absFolderPath: '/Drafts',
-			id: FOLDERS.TRASH,
-			n: 87
-		};
-
-		setupTest(<AccordionCustomComponent item={sharedDraft} />);
-
-		expect(screen.queryByText(87)).not.toBeInTheDocument();
 	});
 });

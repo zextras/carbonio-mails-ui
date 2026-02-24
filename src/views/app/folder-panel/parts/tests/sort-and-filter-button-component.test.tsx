@@ -6,12 +6,19 @@
 
 import React from 'react';
 
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
+
 import { SortAndFilterButtonComponent } from '../sort-and-filter-button-component';
 import { screen, setupTest } from '@test-setup';
-import { editSettings, useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const FOLDER_ID = '123';
+
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	...vi.importActual('@zextras/carbonio-ui-soap-lib'),
+	soapFetchV2: vi.fn().mockResolvedValue({ Body: {} })
+}));
 
 describe('Sort and filter button component', () => {
 	it('should render a dropdown wrapper with a visible button', async () => {
@@ -31,18 +38,19 @@ describe('Sort and filter button component', () => {
 		await user.click(screen.getByTestId('icon: AzListOutline'));
 
 		expect(screen.getByTestId('dropdown-popper-list')).toBeVisible();
-		await user.click(screen.getByText('Important'));
+		await user.click(screen.getByText('All (Default)'));
 		expect(screen.getByTestId('dropdown-popper-list')).toBeVisible();
 	});
 
 	const FILTER_OPTION = [
+		{ label: 'All (Default)', value: undefined },
 		{ label: 'Unread', value: 'read' },
 		{ label: 'Important', value: 'priority' },
 		{ label: 'Flagged', value: 'flag' },
 		{ label: 'Attachment', value: 'attach' }
 	];
 	const SORT_OPTION = [
-		{ label: 'Date', value: 'date' },
+		{ label: 'Date (Default)', value: 'date' },
 		{ label: 'Subject', value: 'subj' },
 		{ label: 'From', value: 'name' },
 		{ label: 'Size', value: 'size' }
@@ -76,13 +84,20 @@ describe('Sort and filter button component', () => {
 			await user.click(screen.getByTestId(icon));
 			await user.click(screen.getByText(filterLabel));
 
-			expect(editSettings).toHaveBeenCalledWith({
-				prefs: {
-					zimbraPrefSortOrder: expect.stringContaining(
-						`${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
-					)
-				}
-			});
+			const expectedPref = filterValue
+				? `${FOLDER_ID}:${sortValue}-${directionValue}-${filterValue}`
+				: `${FOLDER_ID}:${sortValue}-${directionValue}`;
+
+			expect(soapFetchV2).toHaveBeenCalledWith(
+				'ModifyPrefs',
+				expect.objectContaining({
+					_attrs: {
+						zimbraPrefSortOrder: expect.stringContaining(
+							sortValue === 'date' && directionValue === 'Desc' ? '' : expectedPref
+						)
+					}
+				})
+			);
 		}
 	);
 });

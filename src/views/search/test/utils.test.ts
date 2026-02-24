@@ -95,7 +95,7 @@ describe('updateQueryChips', () => {
 	it('should update query chips when query is not empty and isInvalidQuery is false', () => {
 		const query = [{ label: 'has:attachment' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -114,7 +114,7 @@ describe('updateQueryChips', () => {
 	it('should not update query chips when query is empty', () => {
 		const query = [] as Array<QueryChip>;
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -124,7 +124,7 @@ describe('updateQueryChips', () => {
 	it('should not update query chips when query is not empty but isInvalidQuery is true', () => {
 		const query = [{ label: 'has:attachment' }];
 		const isInvalidQuery = true;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -136,7 +136,7 @@ describe('updateQueryChips', () => {
 			{ label: 'has:attachment', isGeneric: true },
 			{ label: 'is:unread', isQueryFilter: true }
 		];
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 		updateQueryChips(query, false, updateQuery);
 
 		expect(updateQuery).not.toHaveBeenCalled();
@@ -145,7 +145,7 @@ describe('updateQueryChips', () => {
 	it('should not call updateQuery if no chips were modified', () => {
 		const mockQuery = [{ label: 'unknown:field' }, { label: 'has:attachment', isGeneric: true }];
 
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(mockQuery, false, updateQuery);
 
@@ -155,7 +155,7 @@ describe('updateQueryChips', () => {
 	it('should handle from: prefix in updateQueryChips', () => {
 		const query = [{ label: 'from:test@example.com' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
@@ -174,7 +174,7 @@ describe('updateQueryChips', () => {
 	it('should handle to: prefix in updateQueryChips', () => {
 		const query = [{ label: 'to:recipient@example.com' }];
 		const isInvalidQuery = false;
-		const updateQuery = jest.fn();
+		const updateQuery = vi.fn();
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 

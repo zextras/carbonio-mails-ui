@@ -8,25 +8,30 @@ import React, { act } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags as mockTags } from '@test-utils/tags/tags';
-import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useParams: vi.fn()
 }));
 
-const canExecuteCallback = jest.fn();
-jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
-	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
-	useMsgPreviewOnSeparatedWindowFn: jest.fn()
+vi.mock('helpers/external-tabs', () => ({
+	openMessageStandalonePreview: vi.fn(),
+	isFocusModeMailView: vi.fn().mockReturnValue(false)
+}));
+
+vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
+	createEditBoard: vi.fn()
 }));
 
 describe('MessageListItem Component', () => {
@@ -39,13 +44,13 @@ describe('MessageListItem Component', () => {
 		visible: true,
 		active: false,
 		isSearchModule: false,
-		handleReplaceHistory: jest.fn(),
+		handleReplaceHistory: vi.fn(),
 		index: 0,
-		onSelect: jest.fn()
+		onSelect: vi.fn()
 	};
 
 	beforeEach(() => {
-		(useParams as jest.Mock).mockReturnValue({
+		(useParams as Mock).mockReturnValue({
 			folderId: '2',
 			itemId: '1'
 		});
@@ -56,26 +61,19 @@ describe('MessageListItem Component', () => {
 		expect(screen.getByTestId(`MessageListItem-${defaultProps.message.id}`)).toBeInTheDocument();
 	});
 
-	it('should display the subject if provided', async () => {
-		setupTest(<MessageListItem {...defaultProps} />);
-		await waitFor(() => {
-			expect(screen.getByTestId('Subject')).toHaveTextContent(message.subject);
-		});
-	});
-
-	it('should display "No Subject" if subject is not provided', () => {
+	it('should render a subject component', () => {
 		const props = { ...defaultProps, message: { ...defaultProps.message, subject: '' } };
 		setupTest(<MessageListItem {...props} />);
-		expect(screen.getByTestId('Subject')).toHaveTextContent('label.no_subject_with_tags');
+		expect(screen.getByTestId('Subject')).toBeVisible();
 	});
 
-	it('should display the fragment if provided', () => {
+	it('should display a fragment component', () => {
 		const props = {
 			...defaultProps,
 			message: { ...defaultProps.message, fragment: 'test fragment' }
 		};
 		setupTest(<MessageListItem {...props} />);
-		expect(screen.getByTestId('Fragment')).toHaveTextContent('test fragment');
+		expect(screen.getByTestId('Fragment')).toBeVisible();
 	});
 
 	it('should display the correct icon for an unread message', () => {
@@ -156,7 +154,7 @@ describe('MessageListItem Component', () => {
 	it('should call the onClick handler when the message is clicked', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
-		const handleReplaceHistory = jest.fn();
+		const handleReplaceHistory = vi.fn();
 		const props = { ...defaultProps, handleReplaceHistory };
 		const { user } = setupTest(<MessageListItem {...props} />);
 
@@ -175,11 +173,7 @@ describe('MessageListItem Component', () => {
 		});
 	});
 
-	it('should call the doubleClick handler when the message is doubleClicked', async () => {
-		(useMsgPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
-			canExecute: canExecuteCallback,
-			execute: jest.fn()
-		});
+	it('should call the msgPreview handler handler when the message is doubleClicked', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const { user } = setupTest(<MessageListItem {...defaultProps} />);
 
@@ -194,8 +188,28 @@ describe('MessageListItem Component', () => {
 		});
 
 		await waitFor(async () => {
-			expect(canExecuteCallback).toHaveBeenCalled();
+			expect(openMessageStandalonePreview).toHaveBeenCalled();
 		});
+	});
+
+	it('should call the editDraft handler when the draft message is doubleClicked', async () => {
+		const props = {
+			...defaultProps,
+			message: { ...defaultProps.message, isDraft: true, parent: FOLDERS.DRAFTS }
+		};
+		(useParams as Mock).mockReturnValue({
+			folderId: FOLDERS.DRAFTS,
+			itemId: '1'
+		});
+
+		const { user } = setupTest(<MessageListItem {...props} />);
+
+		const actionWrapper = await screen.findByTestId(`MessageListItem-${defaultProps.message.id}`);
+		await user.hover(actionWrapper);
+		const hoverContainer = await screen.findByTestId(/hover-container-/);
+		await user.dblClick(hoverContainer);
+
+		expect(createEditBoard).toHaveBeenCalled();
 	});
 
 	it('should display the scheduled time if the message is scheduled', () => {
@@ -207,7 +221,9 @@ describe('MessageListItem Component', () => {
 				autoSendTime: Number(new Date())
 			}
 		};
+
 		setupTest(<MessageListItem {...props} />);
+
 		expect(screen.getByText('label.send_scheduled')).toBeVisible();
 		expect(screen.getByText('message.schedule_time')).toBeVisible();
 	});

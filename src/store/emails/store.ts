@@ -227,6 +227,11 @@ export function getConversationMessages(
 ): Array<MailMessage | IncompleteMessage> {
 	return populatedItemsSliceUtils.getConversationMessages(conversationId, useEmailsStore);
 }
+
+export function getConversationMessagesParents(conversationId: string): Array<string> {
+	return populatedItemsSliceUtils.getConversationMessagesParents(conversationId, useEmailsStore);
+}
+
 /**
  * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
  * and updates the emails store state.
@@ -657,11 +662,15 @@ export function getUseEmailStoreAndHooksForTesting(): {
 	setMessagesInSearchSlice: typeof setMessagesInSearchSlice;
 	usePopulatedItemsSlice: typeof usePopulatedItemsSlice;
 	resetConversationAndPopulatedItems: typeof resetConversationAndPopulatedItems;
+	resetMessagesAndPopulatedItems: typeof resetMessagesAndPopulatedItems;
+	resetSearchAndPopulatedItems: typeof resetSearchAndPopulatedItems;
 } {
 	return {
 		useEmailsStore,
 		setMessagesInSearchSlice,
 		usePopulatedItemsSlice,
-		resetConversationAndPopulatedItems
+		resetConversationAndPopulatedItems,
+		resetMessagesAndPopulatedItems,
+		resetSearchAndPopulatedItems
 	};
 }

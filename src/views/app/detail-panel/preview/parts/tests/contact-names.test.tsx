@@ -8,18 +8,15 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { Participant } from 'types/index.d';
 import ContactName from 'views/app/detail-panel/preview/parts/contact-names';
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useUserAccounts: jest.fn()
-}));
-
 describe('ContactName component', () => {
 	beforeEach(() => {
-		(useUserAccounts as jest.Mock).mockReturnValue([{ address: 'user@example.com' }]);
+		(useUserAccounts as Mock).mockReturnValue([{ address: 'user@example.com' }]);
 	});
 
 	it('renders contact names without overflow', () => {

@@ -28,8 +28,8 @@ describe('Displaying messages settings', () => {
 		setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
-				updateSettings={jest.fn()}
-				updateProps={jest.fn()}
+				updateSettings={vi.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -38,13 +38,13 @@ describe('Displaying messages settings', () => {
 	});
 
 	it('should update conversation sorting when a new option is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -58,13 +58,13 @@ describe('Displaying messages settings', () => {
 	});
 
 	it('should update check new mail interval when a new option is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -77,13 +77,13 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update display mail preference when a new option is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -96,13 +96,13 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update message selection preference when a new option is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -115,12 +115,12 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update unsend time when a new option is selected', async () => {
-		const updateProps = jest.fn();
+		const updateProps = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
-				updateSettings={jest.fn()}
+				updateSettings={vi.fn()}
 				updateProps={updateProps}
 				updatedProps={{}}
 			/>
@@ -140,13 +140,13 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update visualization options when a new radio button is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -158,13 +158,13 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update default mail search query on input change', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);
@@ -179,13 +179,13 @@ describe('Displaying messages settings', () => {
 		});
 	});
 	it('should update mark as read preference when a new radio button is selected', async () => {
-		const updateSettings = jest.fn();
+		const updateSettings = vi.fn();
 
 		const { user } = setupTest(
 			<DisplayMessagesSettings
 				settingsObj={settingsObj as Record<string, string>}
 				updateSettings={updateSettings}
-				updateProps={jest.fn()}
+				updateProps={vi.fn()}
 				updatedProps={{}}
 			/>
 		);

@@ -12,9 +12,9 @@ import { setupTest } from '@test-setup';
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 describe('EnterPasswordModal', () => {
-	const onClose = jest.fn();
-	const onPasswordReset = jest.fn();
-	const onConform = jest.fn();
+	const onClose = vi.fn();
+	const onPasswordReset = vi.fn();
+	const onConform = vi.fn();
 	describe('Enter Password', () => {
 		const headetTitle = 'Enter password';
 		it('should render the modal with the correct title', async () => {

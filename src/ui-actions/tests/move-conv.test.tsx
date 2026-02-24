@@ -6,10 +6,11 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -19,9 +20,9 @@ import { generateConversation } from '__test__/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
 import { MoveConversation } from 'ui-actions/move-conv';
 
-jest.mock('react-router-dom', () => ({
-	...jest.requireActual('react-router-dom'),
-	useNavigate: jest.fn()
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: vi.fn()
 }));
 
 describe('MoveConversation', () => {
@@ -34,12 +35,7 @@ describe('MoveConversation', () => {
 
 	it('renders expected title when in restore Mode', () => {
 		setupTest(
-			<MoveConversation
-				folderId={sourceFolder}
-				selectedIDs={convIds}
-				onClose={jest.fn()}
-				isRestore
-			/>
+			<MoveConversation folderId={sourceFolder} selectedIDs={convIds} onClose={vi.fn()} isRestore />
 		);
 		expect(screen.getByText('Restore')).toBeVisible();
 	});
@@ -49,7 +45,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
@@ -62,7 +58,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -78,7 +74,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -97,7 +93,7 @@ describe('MoveConversation', () => {
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
-					onClose={jest.fn()}
+					onClose={vi.fn()}
 					isRestore={false}
 				/>
 			);
@@ -106,18 +102,19 @@ describe('MoveConversation', () => {
 				`folder-accordion-item-${destinationFolder}`
 			);
 
-			await act(async () => {
-				await user.click(inboxFolderListItem);
+			await user.click(inboxFolderListItem);
+
+			await waitFor(() => {
+				const moveButton = screen.getByRole('button', {
+					name: /Move/
+				});
+				expect(moveButton).toBeEnabled();
 			});
-			const moveButton = screen.getByRole('button', {
-				name: /Move/
-			});
-			expect(moveButton).toBeEnabled();
 		});
 	});
 
 	it('calls onClose when "Cancel" button is clicked', async () => {
-		const onCloseFn = jest.fn();
+		const onCloseFn = vi.fn();
 		const { user } = setupTest(
 			<MoveConversation
 				folderId={sourceFolder}
@@ -146,24 +143,23 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
 		makeListItemsVisible();
 		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${destinationFolder}`,
-			{}
+			`folder-accordion-item-${destinationFolder}`
 		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		const request = await interceptor;
 		expect(request.action.id).toBe(convIds.join(','));
 		expect(request.action.op).toBe('move');
@@ -179,32 +175,29 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
 		makeListItemsVisible();
-		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{}
-		);
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
+
+		const button = await screen.findByRole('button', {
 			name: /Move/
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+
+		await user.click(button);
+
 		await interceptor;
 
 		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
 	});
 
 	it('navigates to folder on success', async () => {
-		const navigate = jest.fn();
-		(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
+		const navigate = vi.fn();
+		(reactRouterDom.useNavigate as Mock).mockReturnValue(navigate);
 		populateFoldersStore();
 
 		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
@@ -218,7 +211,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 			/>
 		);
@@ -228,16 +221,21 @@ describe('MoveConversation', () => {
 		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
 
 		await user.click(inboxFolderListItem);
-		await user.click(await screen.findByRole('button', { name: /Move/ }));
 
-		await expect(screen.findByText('Conversation successfully moved')).resolves.toBeInTheDocument();
+		const moveButton = await screen.findByRole('button', { name: /Move/ });
+		await waitFor(() => expect(moveButton).toBeEnabled());
+		await user.click(moveButton);
 
-		await user.click(await screen.findByRole('button', { name: /GO TO FOLDER/ }));
+		const successMessage = await screen.findByText('Conversation successfully moved');
+		expect(successMessage).toBeInTheDocument();
+
+		const goToFolderButton = await screen.findByRole('button', { name: /GO TO FOLDER/ });
+		await user.click(goToFolderButton);
 		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
 	});
 
 	it('should call onMoveComplete on success', async () => {
-		const onMoveComplete = jest.fn();
+		const onMoveComplete = vi.fn();
 		populateFoldersStore();
 
 		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
@@ -251,7 +249,7 @@ describe('MoveConversation', () => {
 			<MoveConversation
 				folderId={sourceFolder}
 				selectedIDs={convIds}
-				onClose={jest.fn()}
+				onClose={vi.fn()}
 				isRestore={false}
 				onMoveComplete={onMoveComplete}
 			/>

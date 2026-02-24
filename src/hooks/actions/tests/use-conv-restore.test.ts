@@ -129,7 +129,7 @@ describe('useConvRestore', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.getByText(`Restore`)).toBeVisible();
@@ -147,7 +147,7 @@ describe('useConvRestore', () => {
 				});
 
 				act(() => {
-					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
 				expect(screen.queryByText(`Restore`)).not.toBeInTheDocument();

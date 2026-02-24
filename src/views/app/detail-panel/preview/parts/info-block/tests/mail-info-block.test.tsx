@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
@@ -16,19 +15,6 @@ import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/
 import { IncompleteMessage } from 'types/index.d';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 
-// Mock useModal hook
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useModal: jest.fn()
-}));
-
-const mockCreateModal = jest.fn();
-const mockCloseModal = jest.fn();
-
-(useModal as jest.Mock).mockReturnValue({
-	createModal: mockCreateModal,
-	closeModal: mockCloseModal
-});
 const validSignature = {
 	type: 'S/MIME',
 	trusted: true,
@@ -39,11 +25,6 @@ const validSignature = {
 	message: 'valid issuer certificate',
 	messageCode: 'VALID',
 	valid: true
-};
-const authenticationHeaders = {
-	spf: { value: 'spf-value', pass: true },
-	dkim: { value: 'dkim-value', pass: true },
-	dmarc: { value: 'dmarc-value', pass: true }
 };
 
 const mockMsg: IncompleteMessage = {
@@ -73,20 +54,6 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText(showDetailLbl)).toBeInTheDocument();
 	});
 
-	// it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
-	// 	const mockMsg_: IncompleteMessage = {
-	// 		authenticationHeaders: {}
-	// 	} as IncompleteMessage;
-	//
-	// 	const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
-	//
-	// 	const icon = screen.getByTestId('mail-authentication-header-icon');
-	// 	expect(icon).toBeInTheDocument();
-	//
-	// 	await user.hover(icon);
-	// 	expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
-	// });
-
 	it('renders SmimeIcon when signature is present', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId('smime-icon')).toBeInTheDocument();
@@ -115,10 +82,8 @@ describe('MailInfoBlock', () => {
 	it('opens modal when "Show Details" link is clicked', async () => {
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
 
-		await act(async () => {
-			await user.click(screen.getByText(showDetailLbl));
-		});
-		expect(mockCreateModal).toHaveBeenCalled();
+		await user.click(screen.getByText(showDetailLbl));
+		expect(await screen.findByTestId('modal')).toBeInTheDocument();
 	});
 
 	it('does not render the show details link when no valid value is passed', () => {
@@ -132,21 +97,21 @@ describe('MailInfoBlock', () => {
 	});
 
 	it('render the Decrypt Message link when valid value is passed', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId(decryptMsgId)).toBeInTheDocument();
 	});
 
 	it('does not render the Decrypt Message link when CarbonioCE', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(true);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(true);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
 	});
 
 	it('does not render the Decrypt Message link when isSmimeEnabled is false', () => {
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
@@ -158,14 +123,13 @@ describe('MailInfoBlock', () => {
 			'/service/extension/encryption/password/exist',
 			HttpResponse.json({ status: 200 })
 		);
-		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		vi.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
 		useSmimePasswordStore.getState().updateSmimePassword('');
 		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
 		const decryptMsg = screen.getByTestId(decryptMsgId);
-		await act(async () => {
-			await user.click(decryptMsg);
-		});
-		expect(mockCreateModal).toHaveBeenCalled();
+		await user.click(decryptMsg);
+		expect(await screen.findByTestId('modal')).toBeInTheDocument();
 	});
 });

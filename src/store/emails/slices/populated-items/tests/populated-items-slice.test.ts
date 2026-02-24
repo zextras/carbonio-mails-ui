@@ -13,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
+import type { Mock } from 'vitest';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
@@ -25,6 +26,7 @@ import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
 	getConversationMessages,
+	getConversationMessagesParents,
 	getUseEmailStoreAndHooksForTesting,
 	handleConvActionResponse,
 	handleDeleteAttachments,
@@ -52,9 +54,9 @@ import {
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useTags: jest.fn()
+vi.mock('@zextras/carbonio-ui-commons', async () => ({
+	...(await vi.importActual('@zextras/carbonio-ui-commons')),
+	useTags: vi.fn()
 }));
 
 describe('store-populated-items-slice', () => {
@@ -470,6 +472,45 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 
+	describe('getConversationMessagesParents', () => {
+		it('should return messages  parents from conversation', async () => {
+			const conversationId = '1';
+
+			await waitFor(() => {
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: conversationId
+					},
+					messageIds: ['10', '22', '35']
+				});
+			});
+
+			await waitFor(() => {
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{ id: '10', cid: conversationId, folderId: FOLDERS.INBOX },
+						{ id: '22', cid: conversationId, folderId: FOLDERS.TRASH },
+						{ id: '35', cid: conversationId, folderId: FOLDERS.DRAFTS }
+					]
+				});
+			});
+
+			const messagesParents = getConversationMessagesParents(conversationId);
+
+			expect(messagesParents).toHaveLength(3);
+			expect(messagesParents[0]).toBe(FOLDERS.INBOX);
+			expect(messagesParents[1]).toBe(FOLDERS.TRASH);
+			expect(messagesParents[2]).toBe(FOLDERS.DRAFTS);
+		});
+
+		it('should return an empty array if conversation or messages are missing', () => {
+			const conversationId = 'non-existent-id';
+
+			const messagesParents = getConversationMessagesParents(conversationId);
+
+			expect(messagesParents).toHaveLength(0);
+		});
+	});
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messageIds: [] })], false);
@@ -735,7 +776,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should tag a message when operation is TAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1' });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -749,7 +790,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should untag a message when operation is UNTAG and tagName is provided', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({
@@ -763,7 +804,7 @@ describe('store-populated-items-slice', () => {
 		});
 
 		it('should not untag a message when operation is UNTAG but tagName is not provided or is undefined', async () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			(useTags as Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
 			updateMessages([message]);
 			optimisticallyHandleMessageActions({

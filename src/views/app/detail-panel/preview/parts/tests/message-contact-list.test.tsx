@@ -33,7 +33,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 
-		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
+		setupTest(<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />);
 
 		const toRow = screen.getByTestId('ContactNamesToRow');
 		expect(toRow).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('MessageContactList', () => {
 		});
 
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />
 		);
 
 		const contactsListToggleIcon = screen.getByTestId('contacs-list-toggle-icon');
@@ -93,7 +93,7 @@ describe('MessageContactList', () => {
 			cc: [ccParticipant]
 		});
 		const { user } = setupTest(
-			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+			<MessageContactList message={message} contactListExpandCB={vi.fn()} isWide={true} />
 		);
 		const toggleDownIcon = await screen.findByTestId('icon: ChevronDown');
 		expect(toggleDownIcon).toBeInTheDocument();
@@ -112,8 +112,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>
 			);
 
@@ -121,7 +122,7 @@ describe('MessageContactList', () => {
 			expect(badge).not.toBeInTheDocument();
 		});
 		it(`should not show badge if this message is displayed in the same shared folder`, async () => {
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 
 			const identity = createFakeIdentity();
 			const customFolder = generateFolder();
@@ -135,8 +136,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={linkFolder.id}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${linkFolder.id}/message/${message.id}`],
@@ -158,7 +160,7 @@ describe('MessageContactList', () => {
 			const root = generateSharedAccountsRoot([{ identity }], [accountFolder]);
 
 			populateFoldersStore({ additionalFolders: root });
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 
 			const message = generateMessage({
 				folderId: accountFolder.id
@@ -166,8 +168,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={message.parent}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${message.parent}/message/${message.id}`],
@@ -180,7 +183,7 @@ describe('MessageContactList', () => {
 		});
 		it(`should show badge if this message is displayed in a different shared folder`, async () => {
 			populateFoldersStore();
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 			const identity = createFakeIdentity();
 			const customFolder = generateFolder();
 			const linkFolder = generateFolderLink(customFolder.id, uuidv4.toString(), identity);
@@ -192,8 +195,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${FOLDERS.INBOX}/message/${message.id}`],
@@ -220,7 +224,7 @@ describe('MessageContactList', () => {
 			const root = generateSharedAccountsRoot([{ identity }], [inboxFolder, sentFolder]);
 
 			populateFoldersStore({ additionalFolders: root });
-			jest.mocked(shell).IS_FOCUS_MODE = false;
+			vi.mocked(shell).IS_FOCUS_MODE = false;
 
 			const message = generateMessage({
 				folderId: sentFolder.id
@@ -229,8 +233,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={inboxFolder.id}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${inboxFolder.id}/message/${message.id}`],
@@ -251,7 +256,7 @@ describe('MessageContactList', () => {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
 				/>
 			);
@@ -267,8 +272,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>
 			);
 
@@ -276,7 +282,7 @@ describe('MessageContactList', () => {
 			expect(badge).toBeVisible();
 		});
 		it(`should show badge if this message is displayed in focus mode`, async () => {
-			jest.mocked(shell).IS_FOCUS_MODE = true;
+			vi.mocked(shell).IS_FOCUS_MODE = true;
 			const message = generateMessage({
 				folderId: FOLDERS.INBOX
 			});
@@ -284,8 +290,9 @@ describe('MessageContactList', () => {
 			setupTest(
 				<MessageContactList
 					message={message}
-					contactListExpandCB={jest.fn()}
+					contactListExpandCB={vi.fn()}
 					folderId={FOLDERS.INBOX}
+					isWide={true}
 				/>,
 				{
 					initialEntries: [`/folder/${message.parent}/message/${message.id}`],

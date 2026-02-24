@@ -15,12 +15,14 @@ import {
 
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import {
 	getFolderIdParts,
 	getFolderOwnerAccountName,
 	getFoldersArray,
 	getParentFolderId,
+	getArchiveFolderId,
 	isDraft,
 	isInbox,
 	isInboxSubfolder,
@@ -29,7 +31,6 @@ import {
 	isTrash,
 	isTrashed
 } from 'helpers/folders';
-import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('Folder id', () => {
 	test('with zid', () => {
@@ -362,5 +363,35 @@ describe('getParentFolderId', () => {
 		populateFoldersStore();
 		const msg = generateMessage({ folderId: 'supercalifragilisticexpialidocious:42' });
 		expect(getParentFolderId(msg.parent)).toBeNull();
+	});
+});
+
+describe('getArchiveFolderId', () => {
+	test('if the folder is from the main account, returns the main account archive folder id', () => {
+		const folderId = FOLDERS.INBOX;
+		const archiveId = getArchiveFolderId(folderId);
+		expect(archiveId).toBe(FOLDERS.ARCHIVE);
+	});
+
+	test('if the folder is from a shared account, returns the shared account archive folder id', () => {
+		populateFoldersStore();
+		const sharedAccountIdentity = getMocksContext().identities.sendAs[0].identity;
+		const sharedAccountFolderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
+		const archiveId = getArchiveFolderId(sharedAccountFolderId);
+		expect(archiveId).toBe(`${sharedAccountIdentity.id}:${FOLDERS.ARCHIVE}`);
+	});
+
+	test('if the folder id is from trash folder in main account, returns main account archive folder id', () => {
+		const folderId = FOLDERS.TRASH;
+		const archiveId = getArchiveFolderId(folderId);
+		expect(archiveId).toBe(FOLDERS.ARCHIVE);
+	});
+
+	test('if the folder id is from trash folder in shared account, returns shared account archive folder id', () => {
+		populateFoldersStore();
+		const sharedAccountIdentity = getMocksContext().identities.sendAs[0].identity;
+		const sharedAccountTrashId = `${sharedAccountIdentity.id}:${FOLDERS.TRASH}`;
+		const archiveId = getArchiveFolderId(sharedAccountTrashId);
+		expect(archiveId).toBe(`${sharedAccountIdentity.id}:${FOLDERS.ARCHIVE}`);
 	});
 });

@@ -6,8 +6,9 @@
  */
 import React, { act } from 'react';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
@@ -15,19 +16,40 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { CONVACTIONS } from 'commons/utilities';
+import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
-describe('SearchMessageListItem', () => {
-	it('should delete the item when clicking on Delete action when in message mode', async () => {
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				zimbraPrefGroupMailBy: 'message'
-			}
-		};
-		const settings = generateSettings(customSettings);
-		useUserSettings.mockReturnValue(settings);
+vi.mock('helpers/external-tabs', () => ({
+	openMessageStandalonePreview: vi.fn(),
+	isFocusModeMailView: vi.fn().mockReturnValue(false)
+}));
 
+vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
+	createEditBoard: vi.fn()
+}));
+
+vi.mock('helpers/folders', async () => {
+	const actual = await vi.importActual('helpers/folders');
+	return {
+		...actual,
+		isDraft: vi.fn((folderId: string) => folderId === FOLDERS.DRAFTS)
+	};
+});
+
+describe('SearchMessageListItem', () => {
+	beforeEach(() => {
+		useUserSettings.mockReturnValue(
+			generateSettings({
+				prefs: {
+					zimbraPrefGroupMailBy: 'message'
+				}
+			})
+		);
+	});
+
+	it('should delete the item when clicking on Delete action when in message mode', async () => {
 		const messages = await waitFor(() => populateMessagesInEmailStore({}));
 		const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
 			action: { op: CONVACTIONS.TRASH, id: '100' }
@@ -39,7 +61,7 @@ describe('SearchMessageListItem', () => {
 				selecting={false}
 				active={false}
 				index={0}
-				onSelect={jest.fn()}
+				onSelect={vi.fn()}
 				selected={false}
 			/>
 		);
@@ -88,7 +110,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -118,7 +140,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -146,7 +168,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -177,7 +199,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -206,7 +228,7 @@ describe('SearchMessageListItem', () => {
 					selecting={false}
 					active={false}
 					index={0}
-					onSelect={jest.fn()}
+					onSelect={vi.fn()}
 					selected={false}
 				/>
 			);
@@ -217,6 +239,106 @@ describe('SearchMessageListItem', () => {
 			});
 
 			// No assertion needed as we are just ensuring no errors occur, if any calls were made, the test would fail
+		});
+	});
+
+	describe('double click behavior', () => {
+		it('should open message in standalone preview when double clicked', async () => {
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '301', isDraft: false }]
+			});
+
+			setupTest(
+				<SearchMessageListItem
+					completeMessage={messages[0]}
+					selecting={false}
+					active={false}
+					index={0}
+					onSelect={vi.fn()}
+					selected={false}
+				/>
+			);
+
+			const wrapper = await screen.findByTestId('MessageListItemWithoutActions-301');
+			await waitFor(() => {
+				fireEvent.doubleClick(wrapper);
+			});
+
+			expect(openMessageStandalonePreview).toHaveBeenCalledWith({
+				folderId: messages[0].parent,
+				messageId: '301'
+			});
+		});
+
+		it('should open edit board when double clicked on a draft', async () => {
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '302', isDraft: true, folderId: FOLDERS.DRAFTS }]
+			});
+
+			const { user } = setupTest(
+				<SearchMessageListItem
+					completeMessage={messages[0]}
+					selecting={false}
+					active={false}
+					index={0}
+					onSelect={vi.fn()}
+					selected={false}
+				/>
+			);
+
+			const messageWrapper = await screen.findByTestId('MessageListItem-302');
+			await user.hover(messageWrapper);
+
+			const hoverContainer = await screen.findByTestId('hover-container-302');
+			await user.dblClick(hoverContainer);
+
+			await waitFor(() => {
+				expect(createEditBoard).toHaveBeenCalledWith({
+					action: 'editAsDraft',
+					actionTargetId: '302'
+				});
+			});
+		});
+
+		it('should open warning dialog when double-clicking a scheduled draft message', async () => {
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{ id: '302', isDraft: true, folderId: FOLDERS.DRAFTS, isScheduled: true }
+				]
+			});
+
+			const { user } = setupTest(
+				<SearchMessageListItem
+					completeMessage={messages[0]}
+					selecting={false}
+					active={false}
+					index={0}
+					onSelect={vi.fn()}
+					selected={false}
+				/>
+			);
+
+			const messageWrapper = await screen.findByTestId('MessageListItem-302');
+			await user.hover(messageWrapper);
+
+			const hoverContainer = await screen.findByTestId('hover-container-302');
+			await user.dblClick(hoverContainer);
+
+			// Verify warning modal appears
+			const modal = await screen.findByTestId('modal');
+			expect(modal).toBeInTheDocument();
+
+			// Verify modal title
+			expect(within(modal).getByText('label.warning')).toBeInTheDocument();
+
+			// Verify modal message about delayed sending
+			expect(within(modal).getByText('messages.edit_schedule_warning')).toBeInTheDocument();
+
+			// Verify "Edit anyway" button exists
+			const editAnywayButton = within(modal).getByRole('button', {
+				name: 'action.edit_anyway'
+			});
+			expect(editAnywayButton).toBeInTheDocument();
 		});
 	});
 });

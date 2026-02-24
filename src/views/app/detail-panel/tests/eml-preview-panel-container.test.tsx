@@ -64,7 +64,7 @@ describe('EmlPreviewPanelContainer', () => {
 	});
 
 	it('should not set the window title if the focus mode is disabled', async () => {
-		jest.mocked(shell).IS_FOCUS_MODE = false;
+		vi.mocked(shell).IS_FOCUS_MODE = false;
 
 		await act(async () => {
 			setupTest(<EmlPreviewPanelContainer />, {
@@ -77,7 +77,7 @@ describe('EmlPreviewPanelContainer', () => {
 	});
 
 	it('should set the window title to the message subject if the focus mode is enabled', async () => {
-		jest.mocked(shell).IS_FOCUS_MODE = true;
+		vi.mocked(shell).IS_FOCUS_MODE = true;
 		populateFoldersStore();
 		await act(async () => {
 			setupTest(<EmlPreviewPanelContainer />, {

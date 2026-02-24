@@ -6,9 +6,10 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach } from 'lodash';
+import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
+import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import {
 	EmailsStoreState,
@@ -189,6 +190,15 @@ function handleNotifyMessagesCreated(
 		return Array.from(new Set([...convMessagesIds, message.id]));
 	}
 
+	function getOrderedConversationListIndex(
+		conversations: Record<string, NormalizedConversation>,
+		folderId: string
+	): Array<string> {
+		const sortOrder = getUserSettings()?.prefs?.zimbraPrefSortOrder as string;
+		const { sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
+		return orderBy(conversations, 'date', toLower(sortDirection)).map((conv) => conv.id);
+	}
+
 	function addMessagesToConversation(state: EmailsStoreState): void {
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
@@ -210,6 +220,18 @@ function handleNotifyMessagesCreated(
 					...state.populatedItemsSlice.conversations,
 					...conv
 				};
+
+				const regex = /\/folder\/([^/]+)(?:\/|$)/;
+				const match = regex.exec(globalThis.location.pathname);
+
+				const folderId = match?.[1];
+				if (folderId) {
+					// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
+					state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
+						state.populatedItemsSlice.conversations,
+						folderId
+					);
+				}
 			}
 		});
 	}

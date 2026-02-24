@@ -15,8 +15,8 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 describe('useEditorTextProvider', () => {
 	it('should return an object with the current textProvider and its setter', () => {
 		const textProvider = {
-			setCurrentText: jest.fn(),
-			getCurrentText: jest.fn()
+			setCurrentText: vi.fn(),
+			getCurrentText: vi.fn()
 		};
 		const editor = generateNewMessageEditor();
 		editor.textProvider = textProvider;
@@ -34,8 +34,8 @@ describe('useEditorTextProvider', () => {
 
 	it('should set the textProvider when the setter is called', () => {
 		const textProvider = {
-			setCurrentText: jest.fn(),
-			getCurrentText: jest.fn()
+			setCurrentText: vi.fn(),
+			getCurrentText: vi.fn()
 		};
 		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });

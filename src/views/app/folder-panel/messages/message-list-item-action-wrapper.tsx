@@ -26,6 +26,7 @@ type MessageListItemActionWrapperProps = {
 	active?: boolean;
 	item: MailMessage;
 };
+
 export const MessageListItemActionWrapper = ({
 	item,
 	active,
@@ -57,7 +58,8 @@ export const MessageListItemActionWrapper = ({
 		editDraftDescriptor,
 		editAsNewDescriptor,
 		showOriginalDescriptor,
-		downloadEmlDescriptor
+		downloadEmlDescriptor,
+		archiveDescriptor
 	} = useMsgActions({ message: item, shouldReplaceHistory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
@@ -78,6 +80,7 @@ export const MessageListItemActionWrapper = ({
 						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
 					]
 				},
+				normalizeDropdownActionItem(archiveDescriptor),
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(messageReadDescriptor),
@@ -99,38 +102,36 @@ export const MessageListItemActionWrapper = ({
 				normalizeDropdownActionItem(downloadEmlDescriptor)
 			].filter((action) => !action.disabled && !(draftItem && action.id === 'ForwardMenu')),
 		[
-			createAppointmentDescriptor,
-			deletePermanentlyDescriptor,
-			downloadEmlDescriptor,
-			editAsNewDescriptor,
-			editDraftDescriptor,
-			flagDescriptor,
+			replyDescriptor,
+			replyAllDescriptor,
+			t,
 			forwardDescriptor,
 			forwardAsAttachmentDescriptor,
-			markAsNotSpamDescriptor,
-			markAsSpamDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor,
 			messageReadDescriptor,
 			messageUnreadDescriptor,
-			moveToFolderDescriptor,
-			moveToTrashDescriptor,
-			previewOnSeparatedWindowDescriptor,
-			printDescriptor,
-			redirectDescriptor,
-			replyAllDescriptor,
-			replyDescriptor,
-			restoreFolderDescriptor,
-			showOriginalDescriptor,
-			tagItem,
+			flagDescriptor,
 			unflagDescriptor,
-			draftItem,
-			t
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			tagItem,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			createAppointmentDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			redirectDescriptor,
+			editDraftDescriptor,
+			editAsNewDescriptor,
+			showOriginalDescriptor,
+			downloadEmlDescriptor,
+			archiveDescriptor,
+			draftItem
 		]
 	);
 
 	const hoverActions = [
-		replyDescriptor,
-		replyAllDescriptor,
-		forwardDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
@@ -157,6 +158,7 @@ export const MessageListItemActionWrapper = ({
 					crossAlignment="center"
 					$hoverBackground={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${item.id}`}
+					gap={'0.25rem'}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>

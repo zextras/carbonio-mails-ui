@@ -73,7 +73,7 @@ describe('useMsgSetSpam', () => {
 
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
-				const callFlag = jest.fn();
+				const callFlag = vi.fn();
 				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {
@@ -108,7 +108,7 @@ describe('useMsgSetSpam', () => {
 
 				act(() => {
 					functions.execute();
-					jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				const requestParameter = await apiInterceptor;
@@ -120,7 +120,7 @@ describe('useMsgSetSpam', () => {
 			});
 
 			it('shold call onActionComplete when provided after setting messages as spam', async () => {
-				const onActionComplete = jest.fn();
+				const onActionComplete = vi.fn();
 				createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
 					action: {
 						id: ids.join(','),
@@ -138,7 +138,7 @@ describe('useMsgSetSpam', () => {
 
 				await act(async () => {
 					functions.execute();
-					jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 				});
 
 				expect(onActionComplete).toHaveBeenCalledWith(ids);

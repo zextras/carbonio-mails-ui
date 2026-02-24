@@ -354,6 +354,10 @@ export const MessageActionsDescriptors = {
 	APPLY_TAG: {
 		id: 'apply-tag',
 		desc: 'Apply tag'
+	},
+	ARCHIVE: {
+		id: 'message-archive',
+		desc: 'Move to archive'
 	}
 } as const;
 
@@ -429,6 +433,10 @@ export const ConversationActionsDescriptors = {
 	SHOW_SOURCE: {
 		id: 'conversation-show_original',
 		desc: 'Show original'
+	},
+	ARCHIVE: {
+		id: 'conversation-archive',
+		desc: 'Move to archive'
 	}
 } as const;
 
@@ -470,6 +478,10 @@ export const FOLDERS_DESCRIPTORS = {
 	USER_DEFINED: {
 		id: '1234567',
 		desc: 'user defined'
+	},
+	ARCHIVE: {
+		id: FOLDERS.ARCHIVE,
+		desc: 'archive'
 	}
 };
 
@@ -506,7 +518,8 @@ export const EditViewActions = {
 	MAIL_TO: 'mailTo',
 	COMPOSE: 'compose',
 	PREFILL_COMPOSE: 'prefillCompose',
-	RESUME: 'resume'
+	RESUME: 'resume',
+	ARCHIVE: 'archive'
 } as const;
 
 export const PROCESS_STATUS = {
@@ -518,18 +531,21 @@ export const PROCESS_STATUS = {
 export const EDIT_VIEW_CLOSING_REASONS = {
 	EXTERNAL_CLOSE_REQUEST: 'externalRequest',
 	MESSAGE_SENT: 'send',
-	MESSAGE_SEND_SCHEDULED: 'sendLater'
+	MESSAGE_SEND_SCHEDULED: 'sendLater',
+	DRAFT_DELETED: 'draftDeleted'
 } as const;
 
 export const SORTING_OPTIONS = {
 	from: { label: 'from', value: 'name' },
 	to: { label: 'to', value: 'rcpt' },
 	date: { label: 'date', value: 'date' },
+	changeDate: { label: 'last modified', value: 'changeDate' },
 	subject: { label: 'subject', value: 'subj' },
 	size: { label: 'size', value: 'size' }
 } as const;
 
 export const FILTER_OPTIONS = {
+	all: { label: 'all', value: undefined },
 	unread: { label: 'unread', value: 'read' },
 	important: { label: 'important', value: 'priority' },
 	flagged: { label: 'flagged', value: 'flag' },
@@ -574,6 +590,9 @@ export const MAIL_SENSITIVITY_HEADER = {
 	// eslint-disable-next-line sonarjs/no-duplicate-string
 	companyConfidential: 'Company-Confidential'
 } as const;
+
+export const INJECTED_DESCRIPTION_DECORATOR =
+	'-:::_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_::_:_::-';
 
 // noinspection JSUnusedGlobalSymbols
 export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];

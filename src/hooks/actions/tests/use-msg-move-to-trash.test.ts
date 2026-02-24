@@ -109,7 +109,7 @@ describe('useMsgMoveToTrash', () => {
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {
-				const apiCallSpy = jest.fn();
+				const apiCallSpy = vi.fn();
 				createSoapAPIInterceptor<MsgActionRequest>('MsgAction').then(apiCallSpy);
 
 				const {
@@ -126,7 +126,7 @@ describe('useMsgMoveToTrash', () => {
 			});
 
 			it('should call onActionComplete when provided after moving messages to trash', async () => {
-				const onActionComplete = jest.fn();
+				const onActionComplete = vi.fn();
 				createSoapAPIInterceptor('MsgAction');
 
 				const {

@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors, MAILS_ROUTE } from 'constants/index';
+import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
+import { ConversationActionsDescriptors } from 'constants/index';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import type { ActionFn, UIActionDescriptor } from 'types/index.d';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -21,44 +21,6 @@ type ConvRestoreFunctionsParameter = {
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 };
 
-const useRestoreConversation = (ids: Array<string>, folderId: string): (() => void) => {
-	const createSnackbar = useSnackbar();
-	const inSearchModule = useInSearchModule();
-	const [t] = useTranslation();
-	const navigate = useNavigate();
-
-	return useCallback(() => {
-		convActionEmailStoreAction({
-			operation: `move`,
-			ids,
-			parent: folderId
-		}).then((res) => {
-			if (!('Fault' in res)) {
-				if (!inSearchModule) {
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${ids[0]}`, { replace: true });
-				}
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					severity: 'success',
-					hideButton: true,
-					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
-					autoHideTimeout: 3000
-				});
-			} else {
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again.'),
-					autoHideTimeout: 3000
-				});
-			}
-		});
-	}, [createSnackbar, folderId, ids, inSearchModule, navigate, t]);
-};
-
 export const useConvMoveToTrashFn = ({
 	ids,
 	folderId = FOLDERS.INBOX,
@@ -66,10 +28,9 @@ export const useConvMoveToTrashFn = ({
 }: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const createSnackbar = useSnackbar();
-	const restoreConversation = useRestoreConversation(ids, folderId);
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
-	const navigate = useNavigate();
+	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const execute = useCallback((): void => {
 		if (!canExecute()) {
@@ -81,17 +42,18 @@ export const useConvMoveToTrashFn = ({
 		}).then((res) => {
 			if (!('Fault' in res)) {
 				onActionComplete && onActionComplete(ids);
-				if (!inSearchModule) {
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+				if (currentConversation && !inSearchModule) {
+					if (ids.includes(currentConversation.id)) {
+						closeConversationPanel();
+					}
 				}
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
 					severity: 'info',
-					actionLabel: t('label.undo', 'Undo'),
-					label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
-					autoHideTimeout: 5000,
-					onActionClick: restoreConversation
+					label: t('snackbar.conversation_moved_to_trash', 'Conversation moved to Trash'),
+					autoHideTimeout: 3000,
+					hideButton: true
 				});
 			} else {
 				createSnackbar({
@@ -108,12 +70,11 @@ export const useConvMoveToTrashFn = ({
 		canExecute,
 		ids,
 		onActionComplete,
+		currentConversation,
 		inSearchModule,
 		createSnackbar,
 		t,
-		restoreConversation,
-		navigate,
-		folderId
+		closeConversationPanel
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);

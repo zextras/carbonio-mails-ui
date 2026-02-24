@@ -3,52 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	ReactElement,
-	SyntheticEvent,
-	useCallback,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, ReactElement, SyntheticEvent, useCallback, useRef, useState } from 'react';
 
-import {
-	Avatar,
-	AvatarPropTypes,
-	Chip,
-	Container,
-	Dropdown,
-	Icon,
-	IconButton,
-	Padding,
-	Row,
-	Text,
-	Tooltip,
-	getColor
-} from '@zextras/carbonio-design-system';
-import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import {
-	ParticipantRole,
-	Tag,
-	ZIMBRA_STANDARD_COLORS,
-	useRunSearchIntegration,
-	useSortedTagsArray
-} from '@zextras/carbonio-ui-commons';
-import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
-import moment from 'moment';
-import { useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
+import { Avatar, Container, Padding, Row, Text, getColor } from '@zextras/carbonio-design-system';
+import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { find, isEmpty } from 'lodash';
+import { useParams } from 'react-router-dom';
 
+import { TagsInExpandedHeader } from './header-tags';
+import { PreviewHeaderActions } from './preview-header-actions';
+import { useContainerWidth } from './utils';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
-import { getTimeLabel, participantToString } from 'commons/utils';
+import { participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
-import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import type { MailMessage } from 'types/index.d';
-import { useTagExist } from 'ui-actions/tag-actions';
-import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
+import { useGetTagsList } from 'ui-actions/tag-actions';
+import { ContactChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
-import { MailMsgPreviewActions } from 'views/app/detail-panel/preview/parts/mail-message-preview-actions';
 import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
 import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
 
@@ -59,12 +32,6 @@ const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 		background: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
 	}
-`;
-
-const TagChip = styled(Chip)`
-	margin-left: ${({ theme }): string => theme.sizes.padding.extrasmall};
-	padding: 0.0625rem 0.5rem !important;
-	margin-bottom: 0.25rem;
 `;
 
 type PreviewHeaderProps = {
@@ -87,344 +54,138 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	open,
 	isEml
 }): ReactElement => {
-	const textRef = useRef<HTMLInputElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 	const accounts = useUserAccounts();
+	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
+	const isWide = useContainerWidth(containerRef, 550);
+	const tags = useGetTagsList(message.tags);
+
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
+	const senderContact = find(message.participants, ['type', 's']);
+
 	const _onClick = useCallback(
 		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
 		[onClick]
 	);
-	const attachments = retrieveAttachmentsType(message, 'attachment');
-	const senderContact = find(message.participants, ['type', 's']);
-	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelRoutesParams;
 
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
-	const tagsFromStore = useSortedTagsArray();
-	const tags = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc: Tag[], v) => {
-					if (includes(message.tags, v.id)) {
-						acc.push({
-							...v,
-							// TODO: align the use of the property with the type exposed by the shell
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
-							label: v.name,
-							customComponent: (
-								<Row takeAvailableSpace mainAlignment="flex-start">
-									<Row takeAvailableSpace mainAlignment="space-between">
-										<Row mainAlignment="flex-end">
-											<Padding right="small">
-												<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex} />
-											</Padding>
-										</Row>
-										<Row takeAvailableSpace mainAlignment="flex-start">
-											<Text>{v.name}</Text>
-										</Row>
-									</Row>
-								</Row>
-							)
-						});
-					} else if (message.tags?.length > 0 && !includes(message.tags, v.id)) {
-						forEach(
-							filter(message.tags, (tn) => tn?.includes('nil:')),
-							(tagNotInList) => {
-								acc.push({
-									id: tagNotInList,
-									name: tagNotInList.split(':')[1],
-									label: t('label.not_in_list', {
-										name: tagNotInList.split(':')[1],
-										defaultValue: '{{name}} - Not in your tag list'
-									}),
-									// TODO: align the use of the property with the type exposed by the shell
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									color: ZIMBRA_STANDARD_COLORS[0].hex,
-									customComponent: (
-										<Row takeAvailableSpace mainAlignment="flex-start">
-											<Row takeAvailableSpace mainAlignment="space-between">
-												<Row mainAlignment="flex-end">
-													<Padding right="small">
-														<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[0].hex} />
-													</Padding>
-												</Row>
-												<Row takeAvailableSpace mainAlignment="flex-start">
-													<Text>
-														{t('label.not_in_list', {
-															name: tagNotInList.split(':')[1],
-															defaultValue: '{{name}} - Not in your tag list'
-														})}
-													</Text>
-												</Row>
-											</Row>
-										</Row>
-									)
-								});
-							}
-						);
-					}
-					return uniqBy(acc, 'id');
-				},
-				[]
-			),
-		[message.tags, tagsFromStore]
-	);
-
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags[0].color : undefined), [tags]);
-
-	const tagLabel = useMemo(() => t('label.tags', 'Tags'), []);
-
-	const [showDropdown, setShowDropdown] = useState(false);
-	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
-		ev.stopPropagation();
-		setShowDropdown((o) => !o);
-	}, []);
-
-	const onDropdownClose = useCallback((): void => {
-		setShowDropdown(false);
-	}, []);
-
-	const isTagInStore = useTagExist(tags);
-
-	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
-	const showTagIcon = useMemo(
-		() =>
-			message.tags &&
-			message.tags?.length !== 0 &&
-			!showMultiTagIcon &&
-			isTagInStore &&
-			every(message.tags, (tn) => tn !== ''),
-		[isTagInStore, message.tags, showMultiTagIcon]
-	);
-
-	const runSearch = useRunSearchIntegration();
-
-	const triggerSearch = useCallback(
-		(tagToSearch: Tag) =>
-			runSearch?.(
-				[
-					{
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						avatarBackground: tagToSearch?.color,
-						avatarIcon: 'Tag',
-						background: 'gray2',
-						hasAvatar: true,
-						isGeneric: false,
-						isQueryFilter: true,
-						label: `tag:${tagToSearch?.name}`,
-						value: `tag:"${tagToSearch?.name}"`
-					}
-				],
-				'mails'
-			),
-		[runSearch]
-	);
-	const scheduledTime = useMemo(
-		() =>
-			t('message.schedule_mail', {
-				date: moment(message?.autoSendTime).format('DD/MM/YYYY'),
-				time: moment(message?.autoSendTime).format('HH:mm'),
-				defaultValue: 'Will be sent on: {{date}} at {{time}}'
-			}),
-		[message?.autoSendTime]
-	);
-
 	return (
-		<HoverContainer
-			height="fit"
-			mainAlignment="flex-start"
-			crossAlignment="flex-start"
-			background="gray6"
-			$isExpanded={open}
-			data-testid={`open-message-${message.id}`}
-			onClick={_onClick}
-		>
-			<Container height="fit" width="100%">
-				<Container orientation="horizontal">
-					<Container
-						orientation="vertical"
-						width="fit"
-						mainAlignment="flex-start"
-						padding={{ all: 'small' }}
-					>
-						<Avatar
-							label={mainContact.fullName || mainContact.address || getNoIdentityPlaceholder()}
-							colorLabel={mainContact.address || getNoIdentityPlaceholder()}
-							size="small"
-						/>
-					</Container>
-					<Row
-						height="fit"
-						width="calc(100% - 3rem)"
-						padding={{ vertical: 'small' }}
-						takeAvailableSpace
-					>
-						<Container orientation="horizontal" mainAlignment="space-between" width="fill">
-							<Row
-								// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
-								style={{
-									flexGrow: 1,
-									flexBasis: 'fit-content',
-									overflow: 'hidden',
-									whiteSpace: 'nowrap'
-								}}
-								mainAlignment="flex-start"
-								wrap="nowrap"
-							>
-								{isEmpty(senderContact) ? (
-									<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
-										<Text
-											data-testid="SenderText"
-											size={message.read ? 'small' : 'medium'}
-											color={message.read ? 'text' : 'primary'}
-											weight={message.read ? 'regular' : 'bold'}
-										>
-											{participantToString(mainContact, accounts)}
-										</Text>
+		<Row width="fill">
+			<HoverContainer
+				height="fit"
+				mainAlignment="flex-start"
+				crossAlignment="flex-start"
+				background="gray6"
+				$isExpanded={open}
+				data-testid={`open-message-${message.id}`}
+				onClick={_onClick}
+			>
+				<Container height="fit" width="100%" ref={containerRef}>
+					<Container orientation="horizontal">
+						<Container
+							width="fit"
+							height={isContactListExpand && !isWide ? '100%' : 'fit'}
+							mainAlignment={isContactListExpand && !isWide ? 'flex-start' : 'center'}
+							padding={{ all: 'small' }}
+						>
+							<Avatar
+								label={mainContact.fullName || mainContact.address || getNoIdentityPlaceholder()}
+								colorLabel={mainContact.address || getNoIdentityPlaceholder()}
+								size="small"
+							/>
+						</Container>
+						<Row height="fit" minHeight="32px" padding={{ vertical: 'small' }} takeAvailableSpace>
+							<Container orientation="horizontal" mainAlignment="space-between" width="fill">
+								<Row
+									style={{
+										overflow: 'hidden'
+									}}
+									mainAlignment="flex-start"
+									wrap="nowrap"
+								>
+									{isEmpty(senderContact) ? (
 										<Row
 											takeAvailableSpace
+											orientation={isContactListExpand && !isWide ? 'vertical' : 'horizontal'}
 											width="fit"
+											crossAlignment="flex-start"
 											mainAlignment="flex-start"
 											wrap="nowrap"
-											padding={{ left: 'small' }}
 										>
+											<Text
+												data-testid="SenderText"
+												size={message.read ? 'small' : 'medium'}
+												color={message.read ? 'text' : 'primary'}
+												weight={message.read ? 'regular' : 'bold'}
+											>
+												{participantToString(mainContact, accounts)}
+											</Text>
 											{!isContactListExpand && (
-												<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-													{mainContact.address}
-												</Text>
+												<Row
+													takeAvailableSpace
+													width="fit"
+													mainAlignment="flex-start"
+													wrap="nowrap"
+													padding={{ left: 'small' }}
+												>
+													<Text color="gray1" size={message.read ? 'small' : 'medium'}>
+														{mainContact.address}
+													</Text>
+												</Row>
 											)}
-											{isContactListExpand && mainContact.address && (
-												<ContactNameChip contacts={[mainContact]} label={''} />
-											)}
+											{isContactListExpand &&
+												mainContact.address &&
+												(isWide ? (
+													<>
+														<Padding left="small" />
+														<ContactChip contact={mainContact} isExpanded />
+													</>
+												) : (
+													<Row takeAvailableSpace mainAlignment="flex-start" wrap="nowrap">
+														<ContactChip contact={mainContact} isExpanded={false} />
+													</Row>
+												))}
 										</Row>
-									</Row>
-								) : (
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									<OnBehalfOfDisplayer compProps={{ senderContact, message, mainContact }} />
-								)}
-							</Row>
-
-							{!isEml && (
-								<Row
-									wrap="nowrap"
-									mainAlignment="flex-end"
-									// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
-									style={{
-										flexGrow: 1,
-										flexBasis: 'fit-content',
-										whiteSpace: 'nowrap',
-										overflow: 'hidden',
-										minWidth: '12.5rem'
-									}}
-								>
-									{showTagIcon && (
-										<Padding left="small">
-											<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
-												<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
-											</Tooltip>
-										</Padding>
+									) : (
+										<OnBehalfOfDisplayer compProps={{ senderContact, message, mainContact }} />
 									)}
-									{showMultiTagIcon && (
-										<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
-											<Padding left="small">
-												<IconButton data-testid="TagIcon" icon={tagIcon} onClick={onIconClick} />
-											</Padding>
-										</Dropdown>
-									)}
-									{message.hasAttachment && attachments.length > 0 && (
-										<Padding left="small">
-											<Icon icon="AttachOutline" />
-										</Padding>
-									)}
-									{message.flagged && (
-										<Padding left="small">
-											<Icon color="error" icon="Flag" data-testid="FlagIcon" />
-										</Padding>
-									)}
-									<Row ref={textRef} minWidth="fit" padding={{ horizontal: 'small' }}>
-										{message?.isScheduled ? (
-											<Text color="primary" data-testid="scheduledLabel" size="small">
-												{scheduledTime}
-											</Text>
-										) : (
-											<Text color="gray1" data-testid="DateLabel" size="extrasmall">
-												{getTimeLabel(message.date)}
-											</Text>
-										)}
-									</Row>
-
-									{open && message && <MailMsgPreviewActions message={message} />}
 								</Row>
-							)}
-						</Container>
-					</Row>
-				</Container>
-				{!isEml && tags?.length > 0 && open && (
-					<Container
-						orientation="horizontal"
-						crossAlignment="flex-start"
-						mainAlignment="flex-start"
-						padding={{ left: 'large' }}
-					>
-						<Padding left="extrasmall">
-							<Text color="secondary" size="small" overflow="break-word">
-								{tagLabel}:
-								{map(
-									tags,
-									(tag: {
-										label: string;
-										color: AvatarPropTypes['background'];
-										id: string;
-										name: string;
-									}) => (
-										<TagChip
-											key={tag.id}
-											label={tag?.label}
-											avatarBackground={tag.color}
-											background="gray2"
-											hasAvatar
-											avatarIcon="Tag"
-											onClick={(): void => triggerSearch(tag as Tag)}
-										/>
-									)
+								{!isEml && (
+									<PreviewHeaderActions message={message} tags={tags} open={open} isWide={isWide} />
 								)}
-							</Text>
-						</Padding>
+							</Container>
+						</Row>
 					</Container>
-				)}
-			</Container>
-			<Container
-				orientation="horizontal"
-				padding={{ horizontal: 'small' }}
-				mainAlignment="flex-start"
-			>
-				{!open && (
-					<Row padding={{ bottom: 'small' }}>
-						<Text color="secondary" size="small">
-							{message.fragment}
-						</Text>
-					</Row>
-				)}
-				{open && (
-					<MessageContactsList
-						message={message}
-						folderId={folderId}
-						contactListExpandCB={contactListExpandCB}
-					/>
-				)}
-			</Container>
-			<MailInfoBlock msg={message} />
-		</HoverContainer>
+					<TagsInExpandedHeader isEml={isEml} tags={tags} open={open} isWide={isWide} />
+				</Container>
+				<Container
+					orientation="horizontal"
+					padding={{ horizontal: 'small' }}
+					mainAlignment="flex-start"
+				>
+					{!open && (
+						<Row padding={{ bottom: 'small' }}>
+							<Text color="secondary" size="small">
+								{message.fragment}
+							</Text>
+						</Row>
+					)}
+					{open && (
+						<MessageContactsList
+							message={message}
+							folderId={folderId}
+							contactListExpandCB={contactListExpandCB}
+							isWide={isWide}
+						/>
+					)}
+				</Container>
+				<MailInfoBlock msg={message} />
+			</HoverContainer>
+		</Row>
 	);
 };

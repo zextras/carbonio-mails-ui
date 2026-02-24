@@ -210,7 +210,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				label:
 					getFolderIdParts(folder.id).id === FOLDERS.TRASH
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
-						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
+						: t('folder_panel.action.empty.folder_panel', 'Empty Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
@@ -371,6 +371,14 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 		case FOLDERS.TRASH:
 			return defaultFolderActions.map((action) =>
 				(action.id === FolderActionsType.MOVE && trashMessages.length === 0) ||
+				action.id === FolderActionsType.DELETE ||
+				action.id === FolderActionsType.EDIT
+					? { ...action, disabled: true }
+					: action
+			);
+		case FOLDERS.ARCHIVE:
+			return defaultFolderActions.map((action) =>
+				action.id === FolderActionsType.MOVE ||
 				action.id === FolderActionsType.DELETE ||
 				action.id === FolderActionsType.EDIT
 					? { ...action, disabled: true }

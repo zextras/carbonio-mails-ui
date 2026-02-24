@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, lazy, useRef } from 'react';
+import React, { lazy, Suspense, useRef } from 'react';
 
 import { ThemeProvider } from '@zextras/carbonio-design-system';
 import { useUpdateView } from '@zextras/carbonio-ui-commons';
 
+import { Spinner } from '../assets/spinner';
 import { themeMuiExtension } from '../theme/theme-mui';
-import { Spinner } from 'assets/spinner';
 import { FolderView } from 'views/folder-view';
 import { LayoutSelector } from 'views/layout-selector';
 

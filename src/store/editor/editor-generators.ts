@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments } from '../../helpers/attachments';
 import { convertHtmlToPlainText } from 'commons/utilities';
-import { EditViewActions, NO_ACCOUNT_NAME } from 'constants/index';
+import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/index';
 import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
@@ -63,6 +63,7 @@ const labels = {
 /**
  *
  */
+// FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
 export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
@@ -85,6 +86,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -215,6 +217,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		id: editorId,
 		unsavedAttachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients,
@@ -286,6 +289,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -349,11 +353,12 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
-		action: EditViewActions.REPLY,
+		action: EditViewActions.FORWARD,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -408,11 +413,12 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
-		action: EditViewActions.REPLY,
+		action: EditViewActions.FORWARD_AS_ATTACHMENT,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
 		unsavedAttachments: attachments,
 		savedAttachments: [],
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -455,6 +461,10 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
+	const draftSaveProcessStatus = {
+		status: PROCESS_STATUS.COMPLETED,
+		lastSaveTimestamp: new Date(originalMessage.date)
+	};
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
@@ -463,6 +473,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
+		isDirty: false,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -474,7 +485,9 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		text,
 		requestReadReceipt: isRequestReadReceipt,
 		did: originalMessage.id,
-		size: originalMessage.size
+		size: originalMessage.size,
+		originalMessage,
+		draftSaveProcessStatus
 	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -507,6 +520,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
+		isDirty: false,
 		isRichText,
 		isUrgent: false,
 		recipients: {
@@ -536,6 +550,11 @@ export type GenerateEditorParams = {
 	compositionData?: EditorPrefillData;
 };
 
+export const resumeEditor = (id: string): MailsEditorV2 | null => {
+	const editor = getEditor({ id });
+	return editor ?? null;
+};
+
 /**
  * Generate a new editor structure for the given action and message id
  * @param action
@@ -549,11 +568,6 @@ export const generateEditor = ({
 	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
-		case EditViewActions.RESUME:
-			if (!id) {
-				throw new Error('Cannot resume editor without an editor id');
-			}
-			return getEditor({ id });
 		case EditViewActions.NEW:
 			return generateNewMessageEditor();
 		case EditViewActions.REPLY:

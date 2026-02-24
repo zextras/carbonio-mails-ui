@@ -10,8 +10,10 @@ import moment from 'moment';
 
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
+import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
+import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -207,7 +209,7 @@ type ExtractedBody = {
 export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
-	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
+	const text = textArr?.[0]?.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 	let html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
 	// Inline CSS styles from <head> <style> tags to preserve formatting
@@ -317,11 +319,17 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	};
 };
 
+/**
+ * @deprecated Use applyUserPreferenceStyles from helpers/user-preference-styles.ts instead
+ * Wraps content with user preference styles applied via CSS, ensuring signature content is not affected.
+ * @param content - The HTML content to wrap
+ * @param style - User preference styles (font, fontSize, color)
+ * @returns HTML content with inlined styles
+ */
 export const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string =>
-	`<html><style>p {margin: 0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
 
 export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;

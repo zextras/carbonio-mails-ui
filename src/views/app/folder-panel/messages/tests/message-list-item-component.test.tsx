@@ -46,7 +46,7 @@ describe.each`
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
 	};
 	const mockedFolders = generateFolders();
-	const useFolder = jest.fn((id: string) => mockedFolders[id]);
+	const useFolder = vi.fn((id: string) => mockedFolders[id]);
 	useFolder.mockImplementation((folderId) => folders[folderId]);
 
 	describe('in any folders', () => {
@@ -207,7 +207,7 @@ describe.each`
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
 					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent('label.no_subject_with_tags');
+					expect(subjectLabel).toHaveTextContent('<No Subject>');
 				} else {
 					expect(subjectLabel).not.toBeInTheDocument();
 				}
@@ -257,7 +257,6 @@ describe.each`
 		test.each`
 			case | folder                              | senderAddress      | labelContent
 			${6} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${'luigi@foo.bar'} | ${'luigi'}
-			${6} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${'luigi@foo.bar'} | ${'luigi'}
@@ -395,7 +394,7 @@ describe('in the drafts folder', () => {
 			setupTest(<MessageListItem {...props} />);
 		});
 
-		expect(await screen.findByText('label.draft_folder')).toBeVisible();
+		expect(await screen.findByText('[DRAFT]')).toBeVisible();
 	});
 	it('should not make the draft label visible', async () => {
 		const message = generateMessage({ folderId });

@@ -4,40 +4,42 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { find } from 'lodash';
+import { vi } from 'vitest';
 
-import { EditViewActions } from 'constants/index';
-import { generateEditor } from 'store/editor/editor-generators';
-import { getEditor } from 'store/editor/hooks/editors';
+import { useEditorsStore } from '../store';
+import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { EditViewActionsType, MailMessage } from 'types/index.d';
+import { EditViewActions, PROCESS_STATUS } from 'constants/index';
+import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
+import { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
 
-jest.mock('store/editor/hooks/editors', () => ({
-	...jest.requireActual('store/editor/hooks/editors'),
-	getEditor: jest.fn()
-}));
-
-jest.mock('uuid', () => ({
-	v4: jest.fn(() => 'test-editor-id')
-}));
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserSettings: jest.fn(() => ({
+vi.mock('@zextras/carbonio-shell-ui', async () => ({
+	...(await vi.importActual('@zextras/carbonio-shell-ui')),
+	...shell,
+	getUserSettings: vi.fn(() => ({
 		prefs: { zimbraPrefComposeFormat: 'html' }
 	})),
-	t: jest.fn((_key: string, fallback: string) => fallback)
+	t: vi.fn((_key: string, fallback: string) => fallback)
 }));
-
-jest.mock('../../../helpers/identities', () => ({
-	getIdentityFromParticipant: jest.fn(() => ({ id: 'test-identity-id' })),
-	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' })),
-	getRecipientReplyIdentity: jest.fn(() => ({ id: 'recipient-reply-id' })),
-	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
-}));
-
 describe('generateEditor', () => {
+	const messageDate = new Date();
 	const message = {
 		...generateMessage(),
+		date: messageDate.getTime(),
+		participants: [
+			{
+				type: 'f',
+				email: 'from@me'
+			},
+			{
+				type: 't',
+				email: 'to@me'
+			},
+			{
+				type: 'c',
+				email: 'cc@me'
+			}
+		],
 		originalId: 'test-orig-id',
 		replyType: 'r'
 	} as MailMessage;
@@ -81,8 +83,6 @@ describe('generateEditor', () => {
 
 		test('should generate editor with correct properties', () => {
 			expect(result).toBeTruthy();
-			expect(result?.id).toBe('test-editor-id');
-			expect(result?.identityId).toBe('test-identity-id');
 			expect(result?.isRichText).toBe(true);
 		});
 
@@ -91,14 +91,21 @@ describe('generateEditor', () => {
 			expect(result?.text.richText).toContain(message.fragment);
 		});
 
-		test('should set correct recipients', () => {
-			expect(result?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
-			expect(result?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
+		test('should set correct recipients 1', () => {
+			expect(result?.recipients.to).toEqual([{ type: 't', email: 'to@me' }]);
+			expect(result?.recipients.cc).toEqual([{ type: 'c', email: 'cc@me' }]);
 			expect(result?.recipients.bcc).toEqual([]);
 		});
 
 		test('should use message.originalId', () => {
 			expect(result?.originalId).toEqual('test-orig-id');
+		});
+
+		test('that it sets the correct draftSave status based on the last save timestamp', () => {
+			expect(result?.draftSaveProcessStatus).toEqual({
+				status: PROCESS_STATUS.COMPLETED,
+				lastSaveTimestamp: messageDate
+			});
 		});
 	});
 
@@ -121,8 +128,6 @@ describe('generateEditor', () => {
 
 		test('should generate editor with correct properties', () => {
 			expect(editor).toBeTruthy();
-			expect(editor?.id).toBe('test-editor-id');
-			expect(editor?.identityId).toBe('test-identity-id');
 			expect(editor?.isRichText).toBe(true);
 		});
 
@@ -132,8 +137,8 @@ describe('generateEditor', () => {
 		});
 
 		test('should set correct recipients', () => {
-			expect(editor?.recipients.to).toEqual([find(message.participants, { type: 't' })]);
-			expect(editor?.recipients.cc).toEqual([find(message.participants, { type: 'cc' })]);
+			expect(editor?.recipients.to).toEqual([{ type: 't', email: 'to@me' }]);
+			expect(editor?.recipients.cc).toEqual([{ type: 'c', email: 'cc@me' }]);
 			expect(editor?.recipients.bcc).toEqual([]);
 		});
 
@@ -250,14 +255,11 @@ describe('generateEditor', () => {
 					action: EditViewActions.EDIT_AS_DRAFT,
 					id: 'test-id',
 					message: urgentMessage
-				});
+				}) as MailsEditorV2;
+				const draftEditorId = draftEditor.id;
+				useEditorsStore.getState().addEditor(draftEditorId, draftEditor);
 
-				(getEditor as jest.Mock).mockReturnValueOnce(draftEditor);
-
-				const resumedEditor = generateEditor({
-					action: EditViewActions.RESUME,
-					id: draftEditor?.id
-				});
+				const resumedEditor = resumeEditor(draftEditor?.id);
 
 				expect(resumedEditor?.isUrgent).toBe(true);
 			});

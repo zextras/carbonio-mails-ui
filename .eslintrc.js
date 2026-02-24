@@ -9,17 +9,20 @@ module.exports = {
 	overrides: [
 		{
 			// enable eslint-plugin-testing-library rules or preset only for test files
-			files: [
-				'**/__tests__/**/*.[jt]s?(x)',
-				'**/?(*.)+(spec|test).[jt]s?(x)',
-				'**/test-setup.tsx',
-				'jest-setup.ts'
-			],
+			files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)', '**/test-setup.tsx'],
 			extends: ['plugin:jest-dom/recommended', 'plugin:testing-library/react'],
 			rules: {
 				'testing-library/no-global-regexp-flag-in-query': 'error',
 				'testing-library/prefer-user-event': 'error',
 				'import/no-extraneous-dependencies': 'off'
+			}
+		},
+		{
+			// enable eslint-plugin-testing-library rules or preset only for test files
+			files: ['**/?(*.)+(browser-test).[jt]s?(x)'],
+			extends: ['plugin:testing-library/dom'],
+			rules: {
+				'testing-library/prefer-screen-queries': 'off'
 			}
 		}
 	],

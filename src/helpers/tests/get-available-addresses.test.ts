@@ -1,24 +1,19 @@
+import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
-
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserAccount: jest.fn(),
-	getUserSettings: jest.fn()
-}));
+import type { Mock } from 'vitest';
 
 describe('getAvailableAddresses', () => {
 	const primaryAccountAddress = 'primary@example.com';
 	it('should return primary account address when defined', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({ name: primaryAccountAddress });
-		(getUserSettings as jest.Mock).mockReturnValue({ attrs: {} });
+		(getUserAccount as Mock).mockReturnValue({ name: primaryAccountAddress });
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
 
 		const result = getAvailableAddresses();
 
@@ -28,8 +23,8 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address with no account name(NO_ACCOUNT_NAME) when account is null', () => {
-		(getUserAccount as jest.Mock).mockReturnValue(null);
-		(getUserSettings as jest.Mock).mockReturnValue({ attrs: {} });
+		(getUserAccount as Mock).mockReturnValue(null);
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
 
 		const result = getAvailableAddresses();
 
@@ -39,8 +34,8 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address and aliases when they are defined in zimbraMailAlias', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({ name: primaryAccountAddress });
-		(getUserSettings as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({ name: primaryAccountAddress });
+		(getUserSettings as Mock).mockReturnValue({
 			attrs: { zimbraMailAlias: ['alias1@example.com', 'alias2@example.com'] }
 		});
 
@@ -54,8 +49,8 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address and single alias when only one is defined in zimbraMailAlias', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({ name: primaryAccountAddress });
-		(getUserSettings as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({ name: primaryAccountAddress });
+		(getUserSettings as Mock).mockReturnValue({
 			attrs: { zimbraMailAlias: 'alias@example.com' }
 		});
 
@@ -68,7 +63,7 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address and delegation addresses when the delegation rights are defined', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			name: primaryAccountAddress,
 			rights: {
 				targets: [
@@ -83,7 +78,7 @@ describe('getAvailableAddresses', () => {
 				]
 			}
 		});
-		(getUserSettings as jest.Mock).mockReturnValue({ attrs: {} });
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
 
 		const result = getAvailableAddresses();
 
@@ -105,7 +100,7 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address, aliases, and delegation addresses', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			name: primaryAccountAddress,
 			rights: {
 				targets: [
@@ -119,7 +114,7 @@ describe('getAvailableAddresses', () => {
 				]
 			}
 		});
-		(getUserSettings as jest.Mock).mockReturnValue({
+		(getUserSettings as Mock).mockReturnValue({
 			attrs: { zimbraMailAlias: ['alias1@example.com', 'alias2@example.com'] }
 		});
 
@@ -145,7 +140,7 @@ describe('getAvailableAddresses', () => {
 	});
 
 	it('should return primary account address and no delegation addresses when the delegation rights are different then sendAs and sendOnBehalfOf', () => {
-		(getUserAccount as jest.Mock).mockReturnValue({
+		(getUserAccount as Mock).mockReturnValue({
 			name: primaryAccountAddress,
 			rights: {
 				targets: [
@@ -164,12 +159,65 @@ describe('getAvailableAddresses', () => {
 				]
 			}
 		});
-		(getUserSettings as jest.Mock).mockReturnValue({ attrs: {} });
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
 
 		const result = getAvailableAddresses();
 
 		expect(result).toEqual([
-			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress }
+			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress },
+			{
+				address: 'delegation1@example.com',
+				ownerAccount: 'delegation1@example.com',
+				right: 'sendAsDistList',
+				type: 'delegation'
+			},
+			{
+				address: 'delegation3@example.com',
+				ownerAccount: 'delegation3@example.com',
+				right: 'sendOnBehalfOfDistList',
+				type: 'delegation'
+			}
+		]);
+	});
+
+	it('should return distribution list address and no delegation addresses when the delegation rights are different then sendAs and sendOnBehalfOf', () => {
+		(getUserAccount as Mock).mockReturnValue({
+			name: primaryAccountAddress,
+			rights: {
+				targets: [
+					{
+						right: 'sendAsDistList',
+						target: [{ type: 'dl', email: [{ addr: 'delegation1@example.com' }] }]
+					},
+					{
+						right: 'viewFreeBusy',
+						target: [{ type: 'dl', email: [{ addr: 'delegation2@example.com' }] }]
+					},
+					{
+						right: 'sendOnBehalfOfDistList',
+						target: [{ type: 'dl', email: [{ addr: 'delegation3@example.com' }] }]
+					}
+				]
+			}
+		});
+		(getUserSettings as Mock).mockReturnValue({ attrs: {} });
+
+		const result = getAvailableAddresses();
+
+		expect(result).toEqual([
+			{ address: primaryAccountAddress, type: 'primary', ownerAccount: primaryAccountAddress },
+			{
+				address: 'delegation1@example.com',
+				ownerAccount: primaryAccountAddress,
+				right: 'sendAsDistList',
+				type: 'delegation'
+			},
+			{
+				address: 'delegation3@example.com',
+				ownerAccount: primaryAccountAddress,
+				right: 'sendOnBehalfOfDistList',
+				type: 'delegation'
+			}
 		]);
 	});
 });

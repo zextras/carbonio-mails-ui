@@ -17,9 +17,9 @@ import React, {
 
 import {
 	Badge,
+	Button,
 	Container,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
 	Text,
@@ -48,7 +48,8 @@ const MessageContactList: FC<{
 	message: MailMessage;
 	folderId?: string;
 	contactListExpandCB: (showMore: boolean) => void;
-}> = ({ message, folderId, contactListExpandCB }): ReactElement => {
+	isWide: boolean;
+}> = ({ message, folderId, contactListExpandCB, isWide }): ReactElement => {
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = useCallback(
@@ -122,20 +123,19 @@ const MessageContactList: FC<{
 			padding={{ bottom: 'small' }}
 		>
 			<Container
-				style={{ width: '1.5625rem', padding: '0 0.5rem 0 0' }}
+				minWidth="1.5625rem"
+				width="1.5625rem"
 				crossAlignment="baseline"
 				mainAlignment="space-between"
 				orientation="horizontal"
 			>
 				<Tooltip label={toggleExpandButtonLabel}>
-					<IconButton
-						size="small"
+					<Button
+						size={'small'}
+						type={'ghost'}
+						color={'gray0'}
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 						onClick={toggleOpen}
-						customSize={{
-							iconSize: 'small',
-							paddingSize: ''
-						}}
 						data-testid="contacs-list-toggle-icon"
 					/>
 				</Tooltip>
@@ -189,7 +189,7 @@ const MessageContactList: FC<{
 								padding={{ bottom: 'small' }}
 							>
 								{toContacts.length > 0 ? (
-									<ContactNameChip contacts={toContacts} label={labelTo} />
+									<ContactNameChip contacts={toContacts} label={labelTo} isWide={isWide} />
 								) : (
 									<EmptyToField labelTo={labelTo} />
 								)}
@@ -202,12 +202,12 @@ const MessageContactList: FC<{
 									mainAlignment="flex-start"
 									padding={{ bottom: 'small' }}
 								>
-									<ContactNameChip contacts={ccContacts} label={labelCc} />
+									<ContactNameChip contacts={ccContacts} label={labelCc} isWide={isWide} />
 								</Row>
 							)}
 							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
 								{bccContacts.length > 0 && (
-									<ContactNameChip contacts={bccContacts} label={labelBcc} />
+									<ContactNameChip contacts={bccContacts} label={labelBcc} isWide={isWide} />
 								)}
 							</Row>
 						</Container>

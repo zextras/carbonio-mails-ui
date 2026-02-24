@@ -59,6 +59,22 @@ function getConversationMessages(
 		.filter(Boolean);
 }
 
+function getConversationMessagesParents(
+	conversationId: string,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<string> {
+	const { populatedItemsSlice } = useEmailsStore.getState();
+	const conversation = populatedItemsSlice.conversations[conversationId];
+
+	if (!conversation?.messageIds) {
+		return [];
+	}
+
+	return conversation.messageIds
+		.map((messageId) => populatedItemsSlice.messages[messageId]?.parent)
+		.filter(Boolean);
+}
+
 // TODO: check this implementation. We found out the merge was handling data incorrectly.
 //  we decided to just override the data and not handle any complex logic in the store
 //  Check also updateMessages method as it may have the same issues
@@ -313,6 +329,7 @@ export const populatedItemsSliceUtils = {
 	updateMessages,
 	useConversationMessages,
 	getConversationMessages,
+	getConversationMessagesParents,
 	useMessagesByIds,
 	useConversationsByIds,
 	deleteMessagesFromConversation,

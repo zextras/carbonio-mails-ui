@@ -67,7 +67,7 @@ describe('useMsgShowOriginal', () => {
 		});
 
 		describe('execute', () => {
-			const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+			const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
 			it('should open a new window on a specific URL', async () => {
 				const batchResponse: Array<MailMessage> = [msg];

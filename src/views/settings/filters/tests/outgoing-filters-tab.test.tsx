@@ -13,11 +13,6 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { OutgoingFiltersTab } from 'views/settings/filters/outgoing-filters-tab';
 import { mockFilter } from 'views/settings/filters/tests/test-utils';
 
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
-}));
-
 describe('Outgoing Filters', () => {
 	it('should not contain "Apply" filter action', async () => {
 		createSoapAPIInterceptor('GetOutgoingFilterRules', {

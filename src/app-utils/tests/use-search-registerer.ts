@@ -12,8 +12,8 @@ import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
 
 describe('useSearchView', () => {
 	it('should add search view if integration is available', () => {
-		const addSearchViewFn = jest.fn();
-		jest.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
+		const addSearchViewFn = vi.fn();
+		vi.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
 			if (id === 'search-add-view') {
 				return [addSearchViewFn, true];
 			}
@@ -34,9 +34,9 @@ describe('useSearchView', () => {
 	});
 
 	it('should remove search view on unmount', () => {
-		const addSearchViewFn = jest.fn();
-		const removeSearchViewFn = jest.fn();
-		jest.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
+		const addSearchViewFn = vi.fn();
+		const removeSearchViewFn = vi.fn();
+		vi.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
 			if (id === 'search-add-view') {
 				return [addSearchViewFn, true];
 			}
@@ -53,8 +53,8 @@ describe('useSearchView', () => {
 	});
 
 	it('should not call addSearchView if integration is not available', () => {
-		const addSearchViewFn = jest.fn();
-		jest.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
+		const addSearchViewFn = vi.fn();
+		vi.spyOn(Shell, 'useIntegratedFunction').mockImplementation((id) => {
 			if (id === 'search-add-view') {
 				return [addSearchViewFn, false];
 			}
