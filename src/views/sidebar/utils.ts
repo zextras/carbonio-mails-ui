@@ -76,6 +76,9 @@ export const getFolderIconName = (
 			case FOLDERS.TRASH:
 				iconName = 'Trash2Outline';
 				break;
+			case FOLDERS.ARCHIVE:
+				iconName = 'ArchiveOutline';
+				break;
 			default:
 				iconName = 'FolderOutline';
 		}
@@ -95,7 +98,8 @@ export const useTranslatedSystemFolders = (): Array<string> => {
 			translate('folders.drafts', 'Drafts'),
 			translate('folders.trash', 'Trash'),
 			translate('folders.spam', 'Spam'),
-			translate('folders.junk', 'Junk')
+			translate('folders.junk', 'Junk'),
+			translate('folders.archive', 'Archive')
 		],
 		[translate]
 	);
@@ -121,6 +125,8 @@ export const getSystemFolderTranslatedName = ({ folderName }: GetSystemFolderPro
 				return t('folders.spam', 'Spam');
 			case 'Junk':
 				return t('folders.junk', 'Junk');
+			case 'Archive':
+				return t('folders.archive', 'Archive');
 			default:
 				return folderName;
 		}

@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { isTrash } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 
+import { useConvArchiveDescriptor } from './use-conv-archive';
 import { getFolderIdParts, getParentFolderId, isDraft } from 'helpers/folders';
 import { useConvApplyTagDescriptor } from 'hooks/actions/use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from 'hooks/actions/use-conv-delete-permanently';
@@ -53,6 +54,7 @@ type ConversationActionsReturnType = {
 	printDescriptor: UIActionDescriptor;
 	previewOnSeparatedWindowDescriptor: UIActionDescriptor;
 	showOriginalDescriptor: UIActionDescriptor;
+	archiveDescriptor: UIActionDescriptor;
 };
 
 export const useConvActions = ({
@@ -142,6 +144,11 @@ export const useConvActions = ({
 		folderId
 	});
 
+	const archiveDescriptor = useConvArchiveDescriptor({
+		conversationIds: [conversation.id],
+		folderId
+	});
+
 	return useMemo(
 		() => ({
 			replyDescriptor,
@@ -159,6 +166,7 @@ export const useConvActions = ({
 			applyTagDescriptor,
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
+			archiveDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
 			showOriginalDescriptor
@@ -181,7 +189,8 @@ export const useConvActions = ({
 			restoreFolderDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			showOriginalDescriptor,
+			archiveDescriptor
 		]
 	);
 };

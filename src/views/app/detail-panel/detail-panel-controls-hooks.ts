@@ -33,3 +33,28 @@ export const useConversationDetailPanelControls = (): ConversationDetailPanelCon
 		currentConversation: itemId ? { id: itemId } : undefined
 	};
 };
+
+type MessagePanelState = {
+	id: string;
+};
+type MessageDetailPanelControls = {
+	closeMessagePanel: () => void;
+	openMessagePanel: (toOpen: string) => void;
+	currentMessage?: MessagePanelState;
+};
+export const useMessageDetailPanelControls = (): MessageDetailPanelControls => {
+	const { folderId, itemId } = useParams<FolderPanelRouteParams>();
+	const navigate = useNavigate();
+
+	return {
+		closeMessagePanel: (): void => {
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+		},
+		openMessagePanel: (toOpen: string): void => {
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}/message/${toOpen}`, {
+				replace: true
+			});
+		},
+		currentMessage: itemId ? { id: itemId } : undefined
+	};
+};

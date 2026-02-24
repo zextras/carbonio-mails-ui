@@ -14,16 +14,23 @@ import { getFolderIdParts } from 'helpers/folders';
 /**
  * calculate the sorting criteria for a given folder
  * system folders are placed before user folders
- * the trash folder is always the last one
+ * the trash folder is always the second last one
+ * the archive folder is always the last one
  * @param folder
  * @returns the sorting criteria
  */
 export const getSortCriteria = (folder: Folder): string => {
 	const { id } = getFolderIdParts(folder.id);
-	if (id === FOLDERS.TRASH) {
+	if (id === FOLDERS.ARCHIVE) {
 		return FOLDERS.LAST_SYSTEM_FOLDER_POSITION;
 	}
-	return parseInt(id ?? '', 10) < 17 ? `   ${id}` : folder.name.toLowerCase();
+	if (id === FOLDERS.TRASH) {
+		return (Number.parseFloat(FOLDERS.LAST_SYSTEM_FOLDER_POSITION) - 1).toString();
+	}
+	const higherThanSystemFolders = Number.parseInt(FOLDERS.LAST_SYSTEM_FOLDER_POSITION, 10) + 1;
+	return Number.parseInt(id ?? '', 10) < higherThanSystemFolders
+		? `   ${id}`
+		: folder.name.toLowerCase();
 };
 
 /**
