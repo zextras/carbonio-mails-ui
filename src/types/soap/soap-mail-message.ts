@@ -3,39 +3,35 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { type MailVerificationHeader } from 'types/soap/soap';
-import { type SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
-type MailHeaderAttrs = {
-	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;
-};
+import { MessageSchema } from '../messages';
 
 export type SoapIncompleteMessage = {
-	readonly id: string;
-	cid: string; // Conversation id
-	mid?: string; // Message id
-	l: string; // Folder id
-	s: number; // Size
-	d: number; // Date
-	sd?: number; // Send date
-	rev?: number; // Revision
+	readonly id: MessageSchema['conversationId'];
+	cid: MessageSchema['conversationId']; // Conversation id
+	mid?: MessageSchema['messageId']; // Message id
+	l: MessageSchema['parent']; // Folder id
+	s: MessageSchema['size']; // Size
+	d: MessageSchema['date']; // Date
+	sd?: MessageSchema['sendDate']; // Send date
+	rev?: MessageSchema['revision']; // Revision
 	// Flags. (u)nread, (f)lagged, has (a)ttachment, (r)eplied, (s)ent by me,
 	// for(w)arded, calendar in(v)ite, (d)raft, IMAP-\Deleted (x), (n)otification sent,
 	// urgent (!), low-priority (?), priority (+)
-	f?: string; // Flags
-	origid?: string; // Original message id (for drafts)
-	tn?: string; // TagNames
-	t?: string; // TagIds
-	rt?: 'r' | 'w'; // ReplyType: r = replied, f = forwarded
-	su?: string; // Subject
-	fr?: string; // Fragment
-	e?: Array<SoapMailParticipant>; // Contacts
-	mp?: Array<SoapMailMessagePart>; // Parts
-	autoSendTime?: number; // Scheduled time
-	inv?: Array<any>; // Invite
-	shr?: Array<any>; // Shared
-	signature?: Array<MessageSignature>; // Signature
-	_attrs?: Partial<MailHeaderAttrs>; // MailHeader attrs
+	f?: MessageSchema['flags']; // Flags
+	origid?: MessageSchema['originalMessageId']; // Original message id (for drafts)
+	tn?: MessageSchema['tagNames']; // TagNames
+	t?: MessageSchema['tagIds']; // TagIds
+	rt?: MessageSchema['replyType']; // ReplyType: r = replied, f = forwarded
+	su?: MessageSchema['subject']; // Subject
+	fr?: MessageSchema['fragment']; // Fragment
+	e?: MessageSchema['participants']; // Contacts
+	mp?: MessageSchema['parts']; // Parts
+	autoSendTime?: MessageSchema['autoSendTime']; // Scheduled time
+	inv?: MessageSchema['invite']; // Invite
+	shr?: MessageSchema['shared']; // Shared
+	signature?: MessageSchema['signature']; // Signature
+	_attrs?: MessageSchema['headers']; // MailHeader attrs
 };
 
 export type MessageSignature = {
@@ -51,10 +47,10 @@ export type MessageSignature = {
 };
 
 export type SoapMailMessage = SoapIncompleteMessage & {
-	/** Contacts */ e: Array<SoapMailParticipant>;
-	/** Subject */ su: string;
-	/** Fragment */ fr: string;
-	/** Parts */ mp: Array<SoapMailMessagePart>;
+	/** Contacts */ e: MessageSchema['participants'];
+	/** Subject */ su: MessageSchema['subject'];
+	/** Fragment */ fr: MessageSchema['fragment'];
+	/** Parts */ mp: MessageSchema['parts'];
 };
 
 export type SoapMailMessagePart = {

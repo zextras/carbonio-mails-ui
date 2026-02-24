@@ -116,7 +116,7 @@ export const MailPreviewContent = ({
 							</Container>
 						)}
 						{!showAppointmentInvite && showShareInvite && (
-							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
+							<SharedInviteReply sharedContent={message.shr?.[0]?.content} mailMsg={message} />
 						)}
 						{!showAppointmentInvite && !showShareInvite && (
 							<MailMessageRenderer message={message} />

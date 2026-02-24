@@ -4,11 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Participant } from '../participant';
 import { SENSITIVITY_VALUES } from 'constants/index';
 import type { MailsEditorV2 } from 'types/editor/index.d';
-import type { Participant } from 'types/participant';
 import type { PrefsType } from 'types/settings';
-import { SaveDraftResponse, MessageSignature } from 'types/soap/index.d';
+import {
+	type MailVerificationHeader,
+	MessageSignature,
+	SaveDraftResponse,
+	SoapMailMessagePart,
+	SoapMailParticipant
+} from 'types/soap/index.d';
+
+type MailHeaderAttrs = {
+	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;
+};
 
 export type MailAuthenticationHeader = { value: string; pass: boolean };
 
@@ -18,49 +28,119 @@ export type MailAuthenticationHeaders = {
 	dmarc?: MailAuthenticationHeader;
 };
 
-export type MailHeaders = {
-	signature?: Array<MessageSignature>;
+/**
+ * Central catalog of all possible message properties.
+ *
+ * ⚠️ This type is NOT meant to be used directly as a runtime message shape.
+ * It acts as a single source of truth for property types.
+ *
+ * All concrete message types (e.g. SearchMessage, FullMessage, DraftMessage)
+ * must be derived from this schema
+ *
+ * If a property type changes, it should be updated here
+ * so all derived types automatically stay in sync.
+ *
+ */
+export type MessageSchema = {
+	readonly id: string;
+	conversationId: string;
+	messageId: string;
+	parent: string;
+	size: number;
+	date: number;
+	sendDate: number;
+	revision: number;
+	flags: string;
+	originalMessageId: string;
+	tagNames: string;
+	tagIds: string;
+	replyType: 'r' | 'w';
+	subject: string;
+	fragment: string;
+	participants: Array<SoapMailParticipant>;
+	parts: Array<SoapMailMessagePart>;
+	autoSendTime: number;
+	invite: Array<any>;
+	shared: Array<any>;
+	signature: Array<MessageSignature>;
+	headers: Partial<MailHeaderAttrs>;
+};
+
+/**
+ * Central catalog of all possible message computed properties.
+ * Here are collected all the properties manipulated and normalized by the frontend.
+ * If a new property is manipulated, it should be updated here.
+ */
+export type MessageComputedSchema = {
+	read: boolean;
+	hasAttachment: boolean;
+	flagged: boolean;
+	urgent: boolean;
+	isDeleted: boolean;
+	isSentByMe: boolean;
+	isForwarded: boolean;
+	isInvite: boolean;
+	isDraft: boolean;
+	isScheduled: boolean;
+	attachments: Array<AttachmentPart>;
+	tags: Array<string>;
+	parts: Array<MailMessagePart>;
+	participants: Array<Participant>;
+	body: BodyPart;
+	isComplete: boolean;
+	isReplied: boolean;
+	isReadReceiptRequested?: boolean;
+	isEncrypted: boolean;
 	messageIsFromExternalDomain?: boolean;
+	sensitivity: Sensitivity;
+	messageIdFromMailHeaders: string;
+	creationDateFromMailHeaders: string;
+	messageIsFromDistributionList: boolean;
+};
+
+export type MailHeaders = {
+	signature?: MessageSchema['signature'];
+	messageIsFromExternalDomain?: MessageComputedSchema['messageIsFromExternalDomain'];
 	// authenticationHeaders: MailAuthenticationHeaders;
-	sensitivity?: Sensitivity;
-	messageIdFromMailHeaders?: string;
-	creationDateFromMailHeaders?: string;
-	messageIsFromDistributionList?: boolean;
+	sensitivity?: MessageComputedSchema['sensitivity'];
+	messageIdFromMailHeaders?: MessageComputedSchema['messageIdFromMailHeaders'];
+	creationDateFromMailHeaders?: MessageComputedSchema['creationDateFromMailHeaders'];
+	messageIsFromDistributionList?: MessageComputedSchema['messageIsFromDistributionList'];
 };
 
 export type IncompleteMessage = MailHeaders & {
-	id: string;
+	id: MessageSchema['id'];
 	did?: string;
-	parent: string;
-	conversation: string;
-	read: boolean;
-	size: number;
-	hasAttachment?: boolean;
-	flagged?: boolean;
-	urgent?: boolean;
-	isDeleted?: boolean;
-	isSentByMe?: boolean;
-	isForwarded?: boolean;
-	isInvite?: boolean;
-	isDraft?: boolean;
-	isScheduled: boolean;
-	autoSendTime?: number;
-	originalId?: string;
-	replyType?: 'r' | 'w';
-	attachments?: Array<AttachmentPart>;
-	participants?: Array<Participant>;
-	date: number;
-	subject: string;
-	fragment?: string;
-	tags: string[];
-	parts: Array<MailMessagePart>;
-	body: BodyPart;
-	invite?: any;
-	shr?: any;
-	isComplete: boolean;
-	isReplied?: boolean;
-	isReadReceiptRequested?: boolean;
-	isEncrypted?: boolean;
+	parent: MessageSchema['parent'];
+	conversation: MessageSchema['conversationId'];
+	size: MessageSchema['size'];
+	autoSendTime?: MessageSchema['autoSendTime'];
+	originalId?: MessageSchema['originalMessageId'];
+	replyType?: MessageSchema['replyType'];
+	date: MessageSchema['date'];
+	subject: MessageSchema['subject'];
+	fragment?: MessageSchema['fragment'];
+	invite?: MessageSchema['invite'];
+	shr?: MessageSchema['shared'];
+	read: MessageComputedSchema['read'];
+	hasAttachment?: MessageComputedSchema['hasAttachment'];
+	flagged?: MessageComputedSchema['flagged'];
+	urgent?: MessageComputedSchema['urgent'];
+	isDeleted?: MessageComputedSchema['isDeleted'];
+	isSentByMe?: MessageComputedSchema['isSentByMe'];
+	isForwarded?: MessageComputedSchema['isForwarded'];
+	isInvite?: MessageComputedSchema['isInvite'];
+	isDraft?: MessageComputedSchema['isDraft'];
+	isScheduled: MessageComputedSchema['isScheduled'];
+	attachments?: MessageComputedSchema['attachments'];
+	tags: MessageComputedSchema['tags'];
+	parts: MessageComputedSchema['parts'];
+	participants?: MessageComputedSchema['participants'];
+	body: MessageComputedSchema['body'];
+	isComplete: MessageComputedSchema['isComplete'];
+	isReplied?: MessageComputedSchema['isReplied'];
+	isReadReceiptRequested?: MessageComputedSchema['isReadReceiptRequested'];
+	isEncrypted?: MessageComputedSchema['isEncrypted'];
 };
 
 export type MailMessagePart = {
@@ -98,10 +178,10 @@ export type AttachmentPart = {
 };
 
 export type MailMessage = IncompleteMessage & {
-	parts: Array<MailMessagePart>;
-	body: BodyPart;
-	parent: string;
-	isReadReceiptRequested?: boolean;
+	parts: MessageComputedSchema['parts'];
+	body: MessageComputedSchema['body'];
+	parent: MessageSchema['parent'];
+	isReadReceiptRequested?: MessageComputedSchema['isReadReceiptRequested'];
 };
 
 export type BodyPart = { contentType: string; content: string; truncated: boolean };

@@ -13,7 +13,6 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { find, forEach, isArray, isNil, map, orderBy, reduce } from 'lodash';
 
-import { MailMessageV2, SoapMailMessageV2 } from '../types/soap-message-type';
 import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
 import {
 	getCreationDateFromMailHeadersFromAPI,
@@ -28,10 +27,12 @@ import {
 	BodyPart,
 	IncompleteMessage,
 	MailHeaders,
+	MailMessage,
 	MailMessagePart,
 	Participant,
 	SoapEmailParticipantRole,
 	SoapIncompleteMessage,
+	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from 'types/index.d';
@@ -499,7 +500,7 @@ export const normalizeMailMessageFromSoap = (
 	});
 };
 
-export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessageV2): MailMessageV2 =>
+export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
 	normalizeMailMessageFromSoap(m, true);
 
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
