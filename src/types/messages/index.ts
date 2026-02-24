@@ -10,10 +10,10 @@ import type { MailsEditorV2 } from 'types/editor/index.d';
 import type { PrefsType } from 'types/settings';
 import {
 	type MailVerificationHeader,
-	MessageSignature,
-	SaveDraftResponse,
-	SoapMailMessagePart,
-	SoapMailParticipant
+	type MessageSignature,
+	type SaveDraftResponse,
+	type SoapMailMessagePart,
+	type SoapMailParticipant
 } from 'types/soap/index.d';
 
 type MailHeaderAttrs = {
@@ -69,7 +69,7 @@ export type MessageSchema = {
 /**
  * Central catalog of all possible message computed properties.
  * Here are collected all the properties manipulated and normalized by the frontend.
- * If a new property is manipulated, it should be updated here.
+ * If a new property is manipulated and its type or key change, it should be added here.
  */
 export type MessageComputedSchema = {
 	read: boolean;
