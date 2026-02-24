@@ -6,14 +6,14 @@
 import React, { FC, ReactElement, useCallback, useEffect } from 'react';
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
-import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
-import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { MailMessage } from 'types/index.d';
 
 import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
 import { updateMessages } from '../../../../store/emails/store';
+import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { MailMessage } from 'types/index.d';
 
 type ReadReceiptModalProps = {
 	open: boolean;
@@ -29,17 +29,20 @@ const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	readReceiptSetting
 }): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
+	const { prefs } = useUserSettings();
+	const isMarkManually = prefs?.zimbraPrefMarkMsgRead === '-1';
 
 	const onDoNotConfirm = useCallback(() => {
+		const flag = isMarkManually && !message?.read ? 'nu' : 'n';
 		msgActionEmailStoreAction({
 			operation: 'update',
 			ids: [message?.id],
-			flag: 'n'
+			flag
 		}).then(() => {
 			updateMessages([{ ...message, isReadReceiptRequested: false }]);
 		});
 		onClose();
-	}, [message, onClose]);
+	}, [isMarkManually, message, onClose]);
 
 	const onNotify = useCallback(() => {
 		sendDeliveryReportSoapApi(message.id).then(() => {
