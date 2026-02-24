@@ -97,8 +97,8 @@ export const useMsgActions = ({
 		folderId,
 		isMessageRead: message.read
 	});
-	const flagDescriptor = useMsgSetFlagDescriptor([message.id], message.flagged);
-	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], message.flagged);
+	const flagDescriptor = useMsgSetFlagDescriptor([message.id], !!message.flagged);
+	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], !!message.flagged);
 	const markAsSpamDescriptor = useMsgSetSpamDescriptor({
 		ids: [message.id],
 		shouldReplaceHistory,

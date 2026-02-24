@@ -475,7 +475,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		savedAttachments,
 		isDirty: false,
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: !!originalMessage.urgent,
 		recipients: {
 			to: retrieveTO(originalMessage),
 			cc: retrieveCCForEditNew(originalMessage),
