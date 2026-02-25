@@ -126,6 +126,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const attachItemColor = useAttachmentIconColor(attachment);
 	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
+	const isFilesAttachment = 'aid' in attachment && !('uploadId' in attachment);
+
 	const isUploading = useMemo<boolean>(
 		() => isUnsavedAttachment(attachment) && isAttachmentUploading(attachment),
 		[attachment]
@@ -163,7 +165,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				height="fit"
 				background={'gray3'}
 				data-testid={`attachment-container-${attachment.filename}`}
-				$hoverBarDisabled={isUploading}
+				$hoverBarDisabled={isUploading || isFilesAttachment}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -196,7 +198,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 						</Row>
 					</Row>
 				</Tooltip>
-				{!isSavedAttachment(attachment) && (
+				{!isSavedAttachment(attachment) && !isFilesAttachment && (
 					<AttachmentUploadStatus
 						data-testid={'attachmentuploadstatus-container'}
 						uploadStatus={{ status: 'running' }}
