@@ -14,6 +14,7 @@ import { ReadReceiptModal } from '../read-receipt-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateMessage } from '__test__/generators/generateMessage';
+import type { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 const baseMessageWithReadReadReceiptRequested = generateMessage({
 	id: '12345',
@@ -26,6 +27,12 @@ vi.mock('@zextras/carbonio-shell-ui', () => ({
 }));
 
 describe('ReadReceiptModal', () => {
+	beforeEach(() => {
+		(useUserSettings as Mock).mockReturnValue({
+			prefs: {}
+		});
+	});
+
 	it('renders modal with correct texts when open', () => {
 		createSoapAPIInterceptor<{ mid: string }>('SendDeliveryReport');
 		setupTest(
@@ -44,8 +51,11 @@ describe('ReadReceiptModal', () => {
 		expect(screen.getByText('Do not notify')).toBeInTheDocument();
 	});
 
-	// FIXME: Missing api call setup, test fails with error
-	it.skip('should call onClose when "do not notify" action is triggered', async () => {
+	it('should call onClose when "do not notify" action is triggered', async () => {
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
 		const mockOnClose = vi.fn();
 		const { user } = setupTest(
 			<ReadReceiptModal
@@ -60,6 +70,88 @@ describe('ReadReceiptModal', () => {
 		await user.click(doNotNotifyButton);
 
 		expect(mockOnClose).toHaveBeenCalledTimes(1);
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('n');
+	});
+
+	it('should send flag "nu" when "do not notify" is clicked and message is unread with "Mark manually" setting', async () => {
+		(useUserSettings as Mock).mockReturnValue({
+			prefs: { zimbraPrefMarkMsgRead: '-1' }
+		});
+
+		const unreadMessage = generateMessage({
+			id: '12345',
+			isReadReceiptRequested: true,
+			isRead: false
+		});
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal open onClose={vi.fn()} message={unreadMessage} readReceiptSetting="ask" />
+		);
+
+		const doNotNotifyButton = await screen.findByText('Do not notify');
+		await user.click(doNotNotifyButton);
+
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('nu');
+	});
+
+	it('should send flag "n" when "do not notify" is clicked and message is already read, even with "Mark manually" setting', async () => {
+		(useUserSettings as Mock).mockReturnValue({
+			prefs: { zimbraPrefMarkMsgRead: '-1' }
+		});
+
+		const readMessage = generateMessage({
+			id: '12345',
+			isReadReceiptRequested: true,
+			isRead: true
+		});
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal open onClose={vi.fn()} message={readMessage} readReceiptSetting="ask" />
+		);
+
+		const doNotNotifyButton = await screen.findByText('Do not notify');
+		await user.click(doNotNotifyButton);
+
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('n');
+	});
+
+	it('should send flag "n" when "do not notify" is clicked and default (non-manual) mark-as-read setting is active', async () => {
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal
+				open
+				onClose={vi.fn()}
+				message={baseMessageWithReadReadReceiptRequested}
+				readReceiptSetting="ask"
+			/>
+		);
+
+		const doNotNotifyButton = await screen.findByText('Do not notify');
+		await user.click(doNotNotifyButton);
+
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('n');
 	});
 
 	it('should call onClose when "notify" action is triggered', async () => {
