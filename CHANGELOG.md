@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.30.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.29.0...v1.30.0) (2026-02-26)
+
+
+### Features
+
+* **CO-3219:** enhance read receipt handling based on user settings ([007e238](https://github.com/zextras/carbonio-mails-ui/commit/007e238b05428f4ae82b27c2f345ead721e26ac7))
+* **CO-3219:** refactor ReadReceiptModal to use named export ([501fd86](https://github.com/zextras/carbonio-mails-ui/commit/501fd867cd044828a588a494d062a5a7a784eb39))
+
+
+### Bug Fixes
+
+* **CO-3219:** Read receipt handling based on user settings ([#1149](https://github.com/zextras/carbonio-mails-ui/issues/1149)) ([678a212](https://github.com/zextras/carbonio-mails-ui/commit/678a212079f2ab9b8ff8d82bc4f767a5d44374bb))
+
 ## [1.29.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.6...v1.29.0) (2026-02-24)
 
 
