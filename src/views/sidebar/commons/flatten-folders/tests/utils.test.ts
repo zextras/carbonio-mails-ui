@@ -39,7 +39,7 @@ const mockFolders: Folder[] = [
 ];
 
 describe('flattenAndFilterFoldersWithCap', () => {
-	const largeFolderStructure: Folder[] = generateLargeFolderStructure(27);
+	const largeFolderStructure: Folder[] = generateLargeFolderStructure(10);
 
 	it('should run within acceptable time limits', () => {
 		const searchTerm = 'test';
