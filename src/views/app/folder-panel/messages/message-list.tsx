@@ -18,6 +18,7 @@ import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import { SortBy } from 'types/sorting';
 import { MessageListComponent } from 'views/app/folder-panel/messages/message-list-component';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 import { MessageListItemComponent } from 'views/app/folder-panel/messages/message-list-item-component';
@@ -39,7 +40,8 @@ export const MessageList = (): React.JSX.Element => {
 		() => parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string),
 		[folderId, prefs.zimbraPrefSortOrder]
 	);
-	const sortOrder = useMemo(() => sortType.concat(sortDirection), [sortDirection, sortType]);
+	const sortOrder = useMemo<SortBy>(() => `${sortType}${sortDirection}`, [sortDirection, sortType]);
+
 	const {
 		deselectAll,
 		isSelectModeOn,
