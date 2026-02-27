@@ -16,6 +16,7 @@ import {
 	updateMessagesResultsLoadingStatus
 } from 'store/emails/store';
 import { SearchResponse } from 'types/index.d';
+import { SortBy } from 'types/sorting';
 
 function handleLoadMoreResults({
 	searchResponse,
@@ -41,7 +42,7 @@ export function useLoadMoreForMessageList({
 	filterType
 }: {
 	limit: number;
-	sortBy: string;
+	sortBy: SortBy;
 	folderId: string;
 	offset: number;
 	hasMore?: boolean;
