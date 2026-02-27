@@ -138,17 +138,30 @@ const EditViewController = (): React.JSX.Element => {
 	const message = useMessageById(id ?? '');
 
 	const isMessageLoadingRequired = useMemo<boolean>(() => {
-		if (!isMessageRequired) return false;
+		if (!isMessageRequired) {
+			return false;
+		}
 
 		if (!message?.isComplete || message.body?.truncated) {
 			return true;
 		}
+		const textParts = findBodyPart(message.parts, 'text/plain');
+		const htmlParts = findBodyPart(message.parts, 'text/html');
 
-		const text = findBodyPart(message.parts, 'text/plain');
-		const html = findBodyPart(message.parts, 'text/html');
+		const textPartsWithContent = textParts.filter((p) => !!p.content);
+		const htmlPartsWithContent = htmlParts.filter((p) => !!p.content);
 		const isRichText = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
 
-		return isRichText ? !html.length : !text.length;
+		if (isRichText) {
+			if (!htmlParts.length) {
+				return false;
+			}
+			return htmlPartsWithContent.length === 0;
+		}
+		if (!textParts.length) {
+			return false;
+		}
+		return textPartsWithContent.length === 0;
 	}, [isMessageRequired, message]);
 
 	/**
@@ -206,7 +219,7 @@ const EditViewController = (): React.JSX.Element => {
 	return editor ? (
 		<MemoizedEditViewControllerCore entityId={id} action={action} editor={editor} />
 	) : (
-		<Container>
+		<Container data-testid={'EditViewControllerLoader'}>
 			<Button loading disabled label="" type="ghost" onClick={noop} />
 		</Container>
 	);
