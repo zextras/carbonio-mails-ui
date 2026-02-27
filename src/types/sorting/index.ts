@@ -19,18 +19,8 @@ export type SortOptions =
 	| 'priority'
 	| 'id'
 	| 'read'
-	// TODO THIS SORT OPTION IS NOT DOCUMENTED IN THE BACKEND, FIND WHY AND ADD IT OR REMOVE IT
 	| 'changeDate'
 	| 'size';
-// 	// TODO THESE SORTING OPTIONS ARE NOT SUPPORTED BY THE BACKEND, FIND WHY AND REMOVE THEM
-// 	| 'taskDueAsc'
-// 	| 'taskDueDesc'
-// 	| 'taskStatusAsc'
-// 	| 'taskStatusDesc'
-// 	| 'taskPercCompletedAsc'
-// 	| 'taskPercCompletedDesc'
-// 	| 'durDesc'
-// 	| 'durAsc';
 
 // template literal type
 export type SortBy = `${SortOptions}${SortDirection}` | 'none';
