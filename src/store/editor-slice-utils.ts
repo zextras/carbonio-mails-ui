@@ -212,7 +212,7 @@ export function findBodyPart(
 			if (v.contentType === contentType) acc.push(v);
 			return v.parts ? findBodyPart(v.parts, contentType, acc2) : acc2;
 		},
-		acc2 as Array<MailMessagePart>
+		acc2
 	);
 }
 
