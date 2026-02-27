@@ -18,6 +18,7 @@ import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
+import { SortBy } from 'types/sorting';
 import { ConversationListComponent } from 'views/app/folder-panel/conversations/conversation-list-component';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
@@ -179,12 +180,12 @@ export const ConversationList = (): React.JSX.Element => {
 	);
 	const loadingMore = useRef<boolean>(false);
 	const { prefs } = useUserSettings();
-	const sortBy = useMemo(() => {
+	const sortBy = useMemo<SortBy>(() => {
 		const { sortType, sortDirection } = parseMessageSortingOptions(
 			folderId,
 			prefs.zimbraPrefSortOrder as string
 		);
-		return sortType.concat(sortDirection);
+		return `${sortType}${sortDirection}`;
 	}, [folderId, prefs.zimbraPrefSortOrder]);
 
 	const loadMoreCallback = useLoadMoreForConversationList({

@@ -27,7 +27,7 @@ import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-a
 import { shareFolderSoapApi } from 'api/share-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
-import { EditPermissionsModalProps } from 'types/sidebar/index.d';
+import { EditPermissionsModalProps } from 'types/sidebar';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
 
 // TODO refactor IRIS-4324
