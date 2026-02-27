@@ -8,12 +8,12 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
+import { MailMessageSignature } from '../../../../../../../../types';
 import { setupTest } from '@test-setup';
-import { MessageSignature } from 'types/index.d';
 import { SmimeSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/smime-subsection';
 
 describe('SmimeSubsection', () => {
-	const signature: MessageSignature = {
+	const signature: MailMessageSignature = {
 		type: 'S/MIME',
 		issuer: 'Test Certificate data',
 		email: 'demp@demo.zextras.io',
@@ -36,7 +36,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test('should display the details of the invalid certificate', async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			...signature,
 			message: 'Cannot find issuer certificate',
 			messageCode: 'INVALID'
@@ -50,7 +50,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test('should display the details of the untrusted certificate', async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'New Certificate',
@@ -72,7 +72,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test('should display the details of the expired certificate', async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'Demo Certificate',
@@ -95,7 +95,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test(`should display the details if Signer's certificate not found`, async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'Demo Certificate',
@@ -117,7 +117,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test(`should display the details if Issuer's certificate not found`, async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'Test demo Certificate',
@@ -139,7 +139,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test(`should display the details if error found`, async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'Test Certificate',
@@ -161,7 +161,7 @@ describe('SmimeSubsection', () => {
 	});
 
 	test(`should display the details of Signed By, Issuer and Validity`, async () => {
-		const customSignature: MessageSignature = {
+		const customSignature: MailMessageSignature = {
 			type: 'S/MIME',
 			trusted: true,
 			issuer: 'Test Certificate',

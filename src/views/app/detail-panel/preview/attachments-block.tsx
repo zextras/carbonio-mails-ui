@@ -40,12 +40,12 @@ import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachme
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
-import type {
-	AttachmentPart,
+import {
 	AttachmentType,
 	CopyToFileRequest,
 	CopyToFileResponse,
-	MailMessage
+	MailMessage,
+	MailMessageAttachment
 } from 'types/index.d';
 import {
 	ArrayOneOrMore,
@@ -480,7 +480,7 @@ const Attachment = ({
 };
 
 const copyToFiles = (
-	att: AttachmentPart,
+	att: MailMessageAttachment,
 	messageId: string,
 	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>

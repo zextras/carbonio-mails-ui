@@ -30,11 +30,10 @@ import {
 	MailMessage,
 	MailMessagePart,
 	Participant,
-	SoapEmailParticipantRole,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
-	SoapMailParticipant
+	SoapMessageParticipant
 } from 'types/index.d';
 import {
 	PartialIncompleteMessage,
@@ -307,7 +306,7 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
 	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
-const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
+const participantTypeFromSoap = (t: SoapMessageParticipant['t']): ParticipantRoleType => {
 	switch (t) {
 		case 'f':
 			return ParticipantRole.FROM;
@@ -330,7 +329,7 @@ const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleTy
 	}
 };
 
-export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
+export const normalizeParticipantsFromSoap = (e: SoapMessageParticipant): Participant => ({
 	type: participantTypeFromSoap(e.t),
 	address: e.a,
 	name: e.d || e.a,
@@ -341,7 +340,7 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 });
 
 export const haveReadReceipt = (
-	participants: Array<SoapMailParticipant>,
+	participants: SoapMailMessage['e'],
 	flags: string | undefined,
 	folderId: string
 ): boolean => {

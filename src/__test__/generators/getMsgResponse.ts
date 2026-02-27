@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 import { SoapResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import type { GetMsgResponse, Participant, SoapMailParticipant } from 'types';
+import { GetMsgResponse, Participant, SoapMessageParticipant } from 'types';
 
 /**
  *
@@ -20,7 +20,7 @@ const toUnixTimestamp = (date: Date): number => Math.floor(date.getTime() / 1000
  * Convert a Participant into a SoapMailParticipant
  * @param participant
  */
-const toSoapMailParticipant = (participant: Participant): SoapMailParticipant => ({
+const toSoapMailParticipant = (participant: Participant): SoapMessageParticipant => ({
 	a: participant.address,
 	d: participant.name,
 	p: participant.fullName ?? '',

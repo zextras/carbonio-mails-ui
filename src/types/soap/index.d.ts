@@ -12,7 +12,6 @@ export * from './search-conv';
 export * from './soap';
 export * from './soap-conversation';
 export * from './soap-mail-message';
-export * from './soap-mail-participant';
 export * from './sync';
 export * from './zimbra-request';
 export * from './save-draft';

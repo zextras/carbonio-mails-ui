@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { SoapMailMessage } from 'types/soap/soap-mail-message';
-import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 export type SoapConversation = {
 	readonly id: string;
@@ -23,7 +22,7 @@ export type SoapConversation = {
 	/** Messages */
 	m: SoapMailMessage[];
 	/** Email information for conversation participants */
-	e: SoapMailParticipant[];
+	e: SoapMailMessage['e'];
 	/** Subject */
 	su: string;
 	/** Fragment */

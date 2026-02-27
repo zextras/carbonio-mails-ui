@@ -34,18 +34,6 @@ export type SoapIncompleteMessage = {
 	_attrs?: MessageSchema['headers']; // MailHeader attrs
 };
 
-export type MessageSignature = {
-	email?: string;
-	issuer?: string;
-	message: string;
-	messageCode: string;
-	notBefore?: number;
-	notAfter?: number;
-	type?: string;
-	trusted?: boolean;
-	valid: boolean;
-};
-
 export type SoapMailMessage = SoapIncompleteMessage & {
 	/** Contacts */ e: MessageSchema['participants'];
 	/** Subject */ su: MessageSchema['subject'];

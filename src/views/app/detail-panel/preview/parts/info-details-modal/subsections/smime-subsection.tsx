@@ -10,11 +10,11 @@ import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { MessageSignature } from 'types/index.d';
+import { MailMessageSignature } from '../../../../../../../types';
 import { ErrorMessageCode } from 'views/app/detail-panel/preview/utils/index';
 
 type SmimeDetailsModalProps = {
-	signature: MessageSignature;
+	signature: MailMessageSignature;
 };
 
 export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JSX.Element => {

@@ -8,7 +8,7 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { Sensitivity } from 'types/index.d';
+import { MailMessage } from '../../../../../../types';
 import {
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel
@@ -17,7 +17,7 @@ import {
 export const MailSensitivityIcon = ({
 	sensitivity
 }: {
-	sensitivity: Sensitivity;
+	sensitivity: MailMessage['sensitivity'];
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	return (

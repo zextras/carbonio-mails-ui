@@ -13,7 +13,7 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
-	SoapMailParticipant
+	SoapMessageParticipant
 } from 'types';
 
 export function generateMessagePartFromAPI(
@@ -44,8 +44,8 @@ export function generateCompleteMessageFromAPI(
 }
 
 export function generateFromParticipantFromAPI(
-	params: Partial<SoapMailParticipant> = {}
-): SoapMailParticipant {
+	params: Partial<SoapMessageParticipant> = {}
+): SoapMessageParticipant {
 	return {
 		a: 'add@re.ss',
 		p: 'p',
@@ -55,8 +55,8 @@ export function generateFromParticipantFromAPI(
 }
 
 export function generateToParticipantFromAPI(
-	params: Partial<SoapMailParticipant> = {}
-): SoapMailParticipant {
+	params: Partial<SoapMessageParticipant> = {}
+): SoapMessageParticipant {
 	return {
 		a: 'add@re.ss',
 		p: 'p',

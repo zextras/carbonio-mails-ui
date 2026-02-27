@@ -7,16 +7,9 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { Folder } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 
-import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from 'constants/index';
 import { MailsEditorV2 } from 'types/editor/index.d';
 import { EmailAddresses } from 'types/soap/redirect-message-action';
 import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from 'types/soap/save-draft';
-
-export type MailVerificationHeader =
-	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];
-
-export type MailSensitivityHeader =
-	(typeof MAIL_SENSITIVITY_HEADER)[keyof typeof MAIL_SENSITIVITY_HEADER];
 
 export type IFolderView =
 	| 'search folder'
