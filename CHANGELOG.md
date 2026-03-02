@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.30.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.0...v1.30.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* update jenkins-lib-ui version to 1.0.9 ([ef7a98f](https://github.com/zextras/carbonio-mails-ui/commit/ef7a98f201778b787566e97216dafcfbb35d0f81))
+* update jenkins-lib-ui version to 1.0.9 ([03621c9](https://github.com/zextras/carbonio-mails-ui/commit/03621c9c286d5d92dca862327f902d4cabca3109))
+
 ## [1.30.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.29.0...v1.30.0) (2026-02-26)
 
 
