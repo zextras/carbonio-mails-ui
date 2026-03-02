@@ -8,14 +8,20 @@ import React from 'react';
 
 import { waitFor, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { capitalize } from 'lodash';
 
 import { mockLayoutStorage } from '../../__test__/layouts-utils';
 import { setupViewByConversation } from '../../__test__/setup-utils';
-import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../constants';
-import { SORTING_OPTIONS } from '../../constants';
+import {
+	MAILS_VIEW_LAYOUTS,
+	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS,
+	SORTING_OPTIONS
+} from '../../constants';
 import AppView from '../app-view';
 import { screen, setupTest } from '@test-setup';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 
 const waitForLazySpinnerToDisappear = (): Promise<void> =>
@@ -25,6 +31,11 @@ const waitForLazySpinnerToDisappear = (): Promise<void> =>
 		},
 		{ timeout: 10000 }
 	);
+
+vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
+	...vi.importActual('@zextras/carbonio-ui-soap-lib'),
+	soapFetchV2: vi.fn().mockResolvedValue({ Body: {} })
+}));
 
 describe('AppView sorting functionality', () => {
 	beforeEach(() => {
@@ -123,6 +134,128 @@ describe('AppView sorting functionality', () => {
 
 			const dateLabel = capitalize(SORTING_OPTIONS.date.label);
 			expect(within(dropdownList).getByText(`${dateLabel} (Default)`)).toBeInTheDocument();
+		});
+
+		describe('api call for sorting change', () => {
+			it('should call the API with date-Asc when user selects date sort and toggles to ascending in trash folder', async () => {
+				// Trash default is changeDate-Desc; user picks "date" then toggles direction to Asc
+				const settings = generateSettings({
+					prefs: {
+						zimbraPrefGroupMailBy: 'conversation',
+						zimbraPrefSortOrder: `${trashFolderId}:date-Desc`
+					}
+				});
+				useUserSettings.mockReturnValue(settings);
+
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${trashFolderId}`]
+				});
+				await waitForLazySpinnerToDisappear();
+
+				// Direction button shows ZaListOutline when current direction is Desc
+				await user.click(screen.getByTestId('icon: AzListOutline'));
+				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
+				await user.click(within(dropdownList).getByTestId('icon: ZaListOutline'));
+
+				expect(soapFetchV2).toHaveBeenCalledWith(
+					'ModifyPrefs',
+					expect.objectContaining({
+						_attrs: expect.objectContaining({
+							zimbraPrefSortOrder: expect.stringContaining(`${trashFolderId}:date-Asc`)
+						})
+					})
+				);
+			});
+
+			it('should call the API with date-Desc when user toggles back to descending after having chosen date sort in trash folder', async () => {
+				// User previously set date-Asc; toggling back to Desc must NOT fall back to changeDate-Desc
+				const settings = generateSettings({
+					prefs: {
+						zimbraPrefGroupMailBy: 'conversation',
+						zimbraPrefSortOrder: `${trashFolderId}:date-Asc`
+					}
+				});
+				useUserSettings.mockReturnValue(settings);
+
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${trashFolderId}`]
+				});
+				await waitForLazySpinnerToDisappear();
+
+				// Direction button shows AzListOutline when current direction is Asc
+				await user.click(screen.getByTestId('icon: ZaListOutline'));
+				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
+				await user.click(within(dropdownList).getByTestId('icon: AzListOutline'));
+
+				expect(soapFetchV2).toHaveBeenCalledWith(
+					'ModifyPrefs',
+					expect.objectContaining({
+						_attrs: expect.objectContaining({
+							zimbraPrefSortOrder: expect.stringContaining(`${trashFolderId}:date-Desc`)
+						})
+					})
+				);
+			});
+
+			it('should call the API without a trash folder entry when user resets to changeDate-Desc (the trash default)', async () => {
+				// After picking date-Asc, user switches back to changeDate sort — entry should be cleaned from prefs
+				const settings = generateSettings({
+					prefs: {
+						zimbraPrefGroupMailBy: 'conversation',
+						zimbraPrefSortOrder: `${trashFolderId}:date-Desc`
+					}
+				});
+				useUserSettings.mockReturnValue(settings);
+
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${trashFolderId}`]
+				});
+				await waitForLazySpinnerToDisappear();
+
+				await user.click(screen.getByTestId('icon: AzListOutline'));
+				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
+				const changeDateLabel = capitalize(SORTING_OPTIONS.changeDate.label);
+				await user.click(within(dropdownList).getByText(`${changeDateLabel} (Default)`));
+
+				expect(soapFetchV2).toHaveBeenCalledWith(
+					'ModifyPrefs',
+					expect.objectContaining({
+						_attrs: expect.objectContaining({
+							zimbraPrefSortOrder: expect.not.stringContaining(`${trashFolderId}:`)
+						})
+					})
+				);
+			});
+
+			it('should call the API with date-Desc when user selects date sort in non-trash folder', async () => {
+				const settings = generateSettings({
+					prefs: {
+						zimbraPrefGroupMailBy: 'conversation',
+						zimbraPrefSortOrder: `${inboxFolderId}:subj-Desc`
+					}
+				});
+				useUserSettings.mockReturnValue(settings);
+
+				const { user } = setupTest(<AppView />, {
+					initialEntries: [`/folder/${inboxFolderId}`]
+				});
+				await waitForLazySpinnerToDisappear();
+
+				await user.click(screen.getByTestId('icon: AzListOutline'));
+				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
+				const dateLabel = capitalize(SORTING_OPTIONS.date.label);
+				await user.click(within(dropdownList).getByText(`${dateLabel} (Default)`));
+
+				// Selecting the default (date-Desc) for inbox removes the entry from prefs
+				expect(soapFetchV2).toHaveBeenCalledWith(
+					'ModifyPrefs',
+					expect.objectContaining({
+						_attrs: expect.objectContaining({
+							zimbraPrefSortOrder: expect.not.stringContaining(`${inboxFolderId}:`)
+						})
+					})
+				);
+			});
 		});
 	});
 
