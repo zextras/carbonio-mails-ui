@@ -89,7 +89,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 				<Container
 					style={{ minWidth: '160px' }}
 					crossAlignment="center"
-					mainAlignment="space-between"
+					mainAlignment="flex-start"
 					width="fill"
 					orientation="horizontal"
 				>
