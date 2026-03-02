@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.31.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.1...v1.31.0) (2026-03-02)
+
+
+### Features
+
+* **CO-3249:** add integration tests for sorting behavior in trash folder and API interactions ([cb0c23d](https://github.com/zextras/carbonio-mails-ui/commit/cb0c23dbe6664679ce2a717f4ddf424787e2f942))
+* **CO-3249:** adjust main alignment in sort and filter button component ([22d95f7](https://github.com/zextras/carbonio-mails-ui/commit/22d95f736d62e8fb5a06336e144d818b4fee0dbd))
+* **CO-3249:** enhance modifySettingString to handle trash folder sorting behavior ([cff3001](https://github.com/zextras/carbonio-mails-ui/commit/cff3001d532ad25f30ace529d79e27c5bf99c8e3))
+* **CO-3249:** set maxHeight for dropdown in sort and filter button component ([9bd02a4](https://github.com/zextras/carbonio-mails-ui/commit/9bd02a4009a5412af511617c014e1ceb99dc860c))
+* **CO-3249:** update mock implementation for soapFetchV2 in sorting tests ([f1015a1](https://github.com/zextras/carbonio-mails-ui/commit/f1015a1c0bd1d1005a6817fcadad108a049a36cf))
+
+
+### Bug Fixes
+
+* **CO-3249:** correct comments for sorting direction in tests ([ee75096](https://github.com/zextras/carbonio-mails-ui/commit/ee75096c17f27fca495a8ebad53738d8aa999ea7))
+
 ### [1.30.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.0...v1.30.1) (2026-03-02)
 
 
