@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { describe, it } from 'vitest';
 
 import { modifySettingString } from '../sorting';
@@ -150,5 +151,48 @@ describe('modifySettingString', () => {
 
 			expect(result).toBe('10:date-Asc,20:size-Asc,BDLV');
 		});
+	});
+});
+
+describe('modifySettingString - trash folder behavior', () => {
+	const trashFolderId = FOLDERS.TRASH;
+
+	it('should NOT remove trash folder entry when updating to date-Desc (date-Desc is not the trash default)', () => {
+		const input = `${trashFolderId}:date-Asc,20:size-Asc,BDLV`;
+		const prefToUpdate = `${trashFolderId}:date-Desc`;
+
+		const result = modifySettingString(input, prefToUpdate, trashFolderId);
+
+		expect(result).toBe(`${trashFolderId}:date-Desc,20:size-Asc,BDLV`);
+	});
+
+	it('should remove trash folder entry when updating to changeDate-Desc (changeDate-Desc is the trash default)', () => {
+		const input = `${trashFolderId}:date-Asc,20:size-Asc,BDLV`;
+		const prefToUpdate = `${trashFolderId}:changeDate-Desc`;
+
+		const result = modifySettingString(input, prefToUpdate, trashFolderId);
+
+		expect(result).toBe('20:size-Asc,BDLV');
+	});
+
+	it('should insert trash folder entry for date-Asc when not already present', () => {
+		const input = '20:size-Asc,BDLV';
+		const prefToUpdate = `${trashFolderId}:date-Asc`;
+
+		const result = modifySettingString(input, prefToUpdate, trashFolderId);
+
+		expect(result).toBe(`${trashFolderId}:date-Asc,20:size-Asc,BDLV`);
+	});
+
+	it('should preserve date-Desc in trash folder when toggling direction back to Desc after having selected date sort', () => {
+		// User selected 'date' (non-default) in trash, then toggled back to Desc
+		// Previously this was a bug: date-Desc in trash was treated as "default" and removed
+		const input = `${trashFolderId}:date-Asc,BDLV`;
+		const prefToUpdate = `${trashFolderId}:date-Desc`;
+
+		const result = modifySettingString(input, prefToUpdate, trashFolderId);
+
+		// Should update, not remove the entry
+		expect(result).toBe(`${trashFolderId}:date-Desc,BDLV`);
 	});
 });
