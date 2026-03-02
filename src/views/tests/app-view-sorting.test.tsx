@@ -32,10 +32,15 @@ const waitForLazySpinnerToDisappear = (): Promise<void> =>
 		{ timeout: 10000 }
 	);
 
-vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
-	...vi.importActual('@zextras/carbonio-ui-soap-lib'),
-	soapFetchV2: vi.fn().mockResolvedValue({ Body: {} })
-}));
+vi.mock('@zextras/carbonio-ui-soap-lib', async () => {
+	const actual = await vi.importActual<typeof import('@zextras/carbonio-ui-soap-lib')>(
+		'@zextras/carbonio-ui-soap-lib'
+	);
+	return {
+		...actual,
+		soapFetchV2: vi.fn().mockResolvedValue({ Body: {} })
+	};
+});
 
 describe('AppView sorting functionality', () => {
 	beforeEach(() => {
