@@ -20,6 +20,7 @@ import {
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
 } from 'store/emails/store';
+import { SORT_BY } from 'types/sorting';
 
 vi.mock('../../../../api/search-soap-api');
 vi.mock('../../store');
@@ -40,7 +41,7 @@ describe('searchEmailStoreAction', () => {
 		limit: 50,
 		before: null,
 		types: 'message',
-		sortBy: 'dateDesc',
+		sortBy: SORT_BY.dateDesc,
 		query: 'test',
 		offset: 0,
 		locale: 'en',
