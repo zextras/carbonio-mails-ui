@@ -157,7 +157,7 @@ describe('AppView sorting functionality', () => {
 				});
 				await waitForLazySpinnerToDisappear();
 
-				// Direction button shows ZaListOutline when current direction is Desc
+				// Direction button shows AzListOutline when current direction is Desc
 				await user.click(screen.getByTestId('icon: AzListOutline'));
 				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
 				await user.click(within(dropdownList).getByTestId('icon: ZaListOutline'));
@@ -187,7 +187,7 @@ describe('AppView sorting functionality', () => {
 				});
 				await waitForLazySpinnerToDisappear();
 
-				// Direction button shows AzListOutline when current direction is Asc
+				// Direction button shows ZaListOutline when current direction is Asc
 				await user.click(screen.getByTestId('icon: ZaListOutline'));
 				const dropdownList = await screen.findByTestId(/dropdown-popper-list/i);
 				await user.click(within(dropdownList).getByTestId('icon: AzListOutline'));
@@ -203,7 +203,7 @@ describe('AppView sorting functionality', () => {
 			});
 
 			it('should call the API without a trash folder entry when user resets to changeDate-Desc (the trash default)', async () => {
-				// After picking date-Asc, user switches back to changeDate sort — entry should be cleaned from prefs
+				// After picking date-Desc, user switches back to changeDate sort — entry should be cleaned from prefs
 				const settings = generateSettings({
 					prefs: {
 						zimbraPrefGroupMailBy: 'conversation',
