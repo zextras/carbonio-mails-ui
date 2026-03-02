@@ -163,11 +163,17 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				mainAlignment="flex-start"
 				crossAlignment={'center'}
 				height="fit"
-				background={'gray3'}
+				background={isUnsavedAttachment(attachment) ? 'gray5' : 'gray3'}
 				data-testid={`attachment-container-${attachment.filename}`}
-				$hoverBarDisabled={isUploading || isFilesAttachment}
+				$hoverBarDisabled={isUploading || isUnsavedAttachment(attachment)}
 			>
-				<Tooltip label={t('action.preview', 'Preview')}>
+				<Tooltip
+					label={
+						isUnsavedAttachment(attachment)
+							? t('action.save_to_preview', 'Save to preview')
+							: t('action.preview', 'Click to preview')
+					}
+				>
 					<Row
 						padding={{ all: 'small' }}
 						mainAlignment="flex-start"
@@ -179,12 +185,15 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 						}}
 						takeAvailableSpace
 					>
-						<AttachmentExtension $background={attachmentExtensionColor}>
+						<AttachmentExtension
+							$background={attachmentExtensionColor}
+							disabled={isUnsavedAttachment(attachment)}
+						>
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
 							<Padding style={{ width: '100%' }} bottom="extrasmall">
-								<Text size={'small'}>
+								<Text size={'small'} disabled={isUnsavedAttachment(attachment)}>
 									{attachment.filename ||
 										t('label.attachement_unknown', {
 											mimeType: attachment?.contentType,
@@ -192,7 +201,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 										})}
 								</Text>
 							</Padding>
-							<Text color="gray1" size={'small'}>
+							<Text color="gray1" size={'small'} disabled={isUnsavedAttachment(attachment)}>
 								{sizeLabel}
 							</Text>
 						</Row>
