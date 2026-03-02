@@ -237,6 +237,7 @@ export const SortAndFilterButtonComponent = ({
 			placement="top"
 		>
 			<Dropdown
+				maxHeight={'100vh'}
 				disableAutoFocus
 				items={dropdownItems}
 				multiple
