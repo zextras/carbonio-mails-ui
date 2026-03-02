@@ -9,6 +9,7 @@ import { DropdownItem } from '@zextras/carbonio-design-system';
 import { intersection, map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { useConvArchiveDescriptor } from '../../../../hooks/actions/use-conv-archive';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useConvApplyTagDescriptor } from 'hooks/actions/use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from 'hooks/actions/use-conv-delete-permanently';
@@ -85,6 +86,12 @@ export const ConversationsMultipleSelectionActions = ({
 		selectedConversationsIds,
 		!atLeastOneConvIsUnflagged
 	);
+
+	const convArchiveDescriptor = useConvArchiveDescriptor({
+		conversationIds: selectedConversationsIds,
+		folderId,
+		onActionComplete
+	});
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
 		ids: selectedConversationsIds,
@@ -103,6 +110,7 @@ export const ConversationsMultipleSelectionActions = ({
 	const actions = [
 		setAsRead,
 		setAsUnread,
+		convArchiveDescriptor,
 		moveToTrash,
 		deletePermanently,
 		{

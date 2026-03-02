@@ -9,13 +9,14 @@ import { act } from 'react';
 import { renderHook } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import * as searchSoapApi from 'api/search-soap-api';
-import { API_REQUEST_STATUS } from 'constants/index';
-import * as storeHooks from 'store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateCompleteMessageFromAPI
 } from '__test__/generators/api';
+import * as searchSoapApi from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import * as storeHooks from 'store/emails/store';
+import { SORT_BY } from 'types/sorting';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 
 describe('useLoadMoreForMessagesSlice', () => {
@@ -30,7 +31,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -53,7 +54,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 			offset: 0,
 			query: 'inId:"inbox"',
 			recip: '2',
-			sortBy: 'date',
+			sortBy: SORT_BY.dateDesc,
 			types: 'message',
 			wantContent: 'full'
 		});
@@ -74,7 +75,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -103,7 +104,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -128,7 +129,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: false,
 				loadingMore,
@@ -152,7 +153,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForMessageList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,

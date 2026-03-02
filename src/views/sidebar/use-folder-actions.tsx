@@ -376,6 +376,14 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					? { ...action, disabled: true }
 					: action
 			);
+		case FOLDERS.ARCHIVE:
+			return defaultFolderActions.map((action) =>
+				action.id === FolderActionsType.MOVE ||
+				action.id === FolderActionsType.DELETE ||
+				action.id === FolderActionsType.EDIT
+					? { ...action, disabled: true }
+					: action
+			);
 		// customizable folders
 		default:
 			return folder.isLink

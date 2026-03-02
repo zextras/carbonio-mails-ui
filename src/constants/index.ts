@@ -354,6 +354,10 @@ export const MessageActionsDescriptors = {
 	APPLY_TAG: {
 		id: 'apply-tag',
 		desc: 'Apply tag'
+	},
+	ARCHIVE: {
+		id: 'message-archive',
+		desc: 'Move to archive'
 	}
 } as const;
 
@@ -429,6 +433,10 @@ export const ConversationActionsDescriptors = {
 	SHOW_SOURCE: {
 		id: 'conversation-show_original',
 		desc: 'Show original'
+	},
+	ARCHIVE: {
+		id: 'conversation-archive',
+		desc: 'Move to archive'
 	}
 } as const;
 
@@ -470,6 +478,10 @@ export const FOLDERS_DESCRIPTORS = {
 	USER_DEFINED: {
 		id: '1234567',
 		desc: 'user defined'
+	},
+	ARCHIVE: {
+		id: FOLDERS.ARCHIVE,
+		desc: 'archive'
 	}
 };
 
@@ -506,7 +518,8 @@ export const EditViewActions = {
 	MAIL_TO: 'mailTo',
 	COMPOSE: 'compose',
 	PREFILL_COMPOSE: 'prefillCompose',
-	RESUME: 'resume'
+	RESUME: 'resume',
+	ARCHIVE: 'archive'
 } as const;
 
 export const PROCESS_STATUS = {

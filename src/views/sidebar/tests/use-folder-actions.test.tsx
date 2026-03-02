@@ -16,7 +16,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { FolderActionsProps } from 'types/sidebar/index.d';
+import { FolderActionsProps } from 'types/sidebar';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 vi.mock('../../../api/folder-action-soap-api');
@@ -454,6 +454,29 @@ describe('useFolderActions', () => {
 		) as FolderActionsProps;
 
 		expect(newAction.disabled).toBe(true);
+		expect(editAction.disabled).toBe(true);
+	});
+
+	it('should disable the  move, delete and edit actions for the archive folder', async () => {
+		const folder = {
+			...defaultFolder,
+			id: FOLDERS.ARCHIVE
+		} as Folder;
+
+		const { result: actions } = renderHook(() => useFolderActions(folder));
+
+		const moveAction = actions.current.find(
+			(action) => action.id === FolderActionsType.MOVE
+		) as FolderActionsProps;
+		const deleteAction = actions.current.find(
+			(action) => action.id === FolderActionsType.DELETE
+		) as FolderActionsProps;
+		const editAction = actions.current.find(
+			(action) => action.id === FolderActionsType.EDIT
+		) as FolderActionsProps;
+
+		expect(moveAction.disabled).toBe(true);
+		expect(deleteAction.disabled).toBe(true);
 		expect(editAction.disabled).toBe(true);
 	});
 });
