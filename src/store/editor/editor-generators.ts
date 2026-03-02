@@ -199,17 +199,6 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		editorText: text,
 		newSignatureId: defaultIdentity.defaultSignatureId
 	});
-	// const unsavedAttachments: Array<UnsavedAttachment> = !compositionData?.aid
-	// 	? []
-	// 	: compositionData.aid.map(
-	// 			(aid: string): UnsavedAttachment => ({
-	// 				isInline: false,
-	// 				aid,
-	// 				filename: 'unnamed',
-	// 				size: 0,
-	// 				contentType: 'application/octet-stream'
-	// 			})
-	// 		);
 
 	const unsavedAttachments: Array<UnsavedAttachment> =
 		compositionData?.attachments?.map((att) => ({

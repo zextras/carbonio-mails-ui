@@ -1,0 +1,1934 @@
+[33mcommit 08f46da2fa857b45d27a2cf37ff9650306352cc8[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Mon Mar 2 16:13:52 2026 +0100
+
+    fix: editor generator with attachmnets from integration available
+
+[33mcommit 60249a3f87db4d51de6496b3b56b0e4898e948ba[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Feb 25 17:21:48 2026 +0100
+
+    wip: allow attach rednder, info still missing
+
+[33mcommit 413d2767a13e9be800f449fd18e9216d388a6fc7[m[33m ([m[1;31morigin/CO-3211-Convert-declarative-types[m[33m, [m[1;32mdevel[m[33m)[m
+Merge: 9993b5a8 03536c5c
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Tue Feb 24 14:55:39 2026 +0100
+
+    chore(release): 1.29.0
+
+[33mcommit 03536c5cf76f1feb594ac03b0dd268894fbe67f9[m[33m ([m[1;33mtag: [m[1;33mv1.29.0[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Tue Feb 24 11:12:44 2026 +0000
+
+    chore(release): 1.29.0
+
+[33mcommit 050f7efc2ff2d38018004fe4f610fa2fd6840511[m
+Merge: 9eb3b0e6 9993b5a8
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Tue Feb 24 12:01:46 2026 +0100
+
+    build: release 26.03.0
+
+[33mcommit 9993b5a8188e60a6158b8a0d59ac43df2668b482[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Tue Feb 24 10:12:57 2026 +0100
+
+    feat(CO-2786): add archive functionality for conversations and messages (#1144)
+
+[33mcommit 9efe21f1bc1ff1f6d728bf5d7f03327cd202bf52[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Mon Feb 23 15:11:41 2026 +0530
+
+    feat(CO-2106): Extend Unread Notification badges to Account level in the sidebar (#1143)
+
+[33mcommit 751f29cbd7a797828c8fd9cd32f979ad65b3ec73[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Fri Feb 20 14:31:37 2026 +0100
+
+    fix: editor will use proper text mime format (#1142)
+    
+    refs: CO-3159
+
+[33mcommit 76a96c7aebf89759ae40c6c0d9eaa34098d371bd[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Thu Feb 19 08:16:45 2026 +0100
+
+    fix(CO-3187): add tag icon display logic and corresponding tests (#1141)
+    
+    * fix: add tag icon display logic and corresponding tests
+    
+    * fix: pr comments
+    
+    * fix: pr comments
+
+[33mcommit f05d74c249a445c9c384ca1043bb5967b2ab8b0c[m
+Merge: 182665e6 a4105d53
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Wed Feb 18 14:33:14 2026 +0100
+
+    [co-3142] fix: editor style trigger savedraft
+    
+    [co-3142] fix: editor style trigger savedraft
+
+[33mcommit 182665e66b7a80f239ab9b6b6b5a6e103baf9b3e[m
+Merge: 8b5cd4a0 4977518d
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Wed Feb 18 12:37:35 2026 +0100
+
+    [CO-3116] implement tests and browser tests for latest fixes
+    
+    [CO-3116] implement tests and browser tests for latest fixes
+
+[33mcommit a4105d534e603cd02b0a1794a2eefa18e8f3c762[m[33m ([m[1;31morigin/CO-3142_editor_style_trigger_savedraft[m[33m, [m[1;32mCO-3142_editor_style_trigger_savedraft[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Feb 18 10:30:49 2026 +0100
+
+    fix: editor style trigger savedraft
+
+[33mcommit 4977518d51b0900ba8c5389468b99b8f8e392452[m[33m ([m[1;31morigin/CO-3116-Implement-tests-and-browser-tests-for-latest-fixes[m[33m, [m[1;32mCO-3116-Implement-tests-and-browser-tests-for-latest-fixes[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Tue Feb 17 10:02:40 2026 +0100
+
+    fix: revert test script
+
+[33mcommit 5ca27d2a18ec477ed826358451aee891e06f99b1[m
+Merge: ed832f35 8b5cd4a0
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Tue Feb 17 09:05:01 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 8b5cd4a03fe4d87aed2a84a5f521b393a3ebd6cd[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Mon Feb 16 15:56:26 2026 +0100
+
+    fix: apply sort and filtering to shared accounts (#1133)
+    
+    refs: CO-2952
+
+[33mcommit d5924452cf86551e05fb2f44806c866d0d9526a8[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Mon Feb 16 15:27:02 2026 +0100
+
+    fix(CO-2805): use sortOrder by folderId (#1138)
+
+[33mcommit 3651759e7fe0ddc525ab2e3a53607fb3e32cbea8[m
+Author: zextrasGiovanniDefacci <66628670+zextrasGiovanniDefacci@users.noreply.github.com>
+Date:   Mon Feb 16 11:49:35 2026 +0100
+
+    feat(CO-2787): add support to send with senddistList acl (#1137)
+
+[33mcommit ed832f358e82687fb31c418b7359e5f9e54a04df[m
+Merge: 6bdc6a7a 1961f6ff
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Mon Feb 16 09:52:23 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 1961f6ffcbb7d210045fd6c25c9f02490b5830f0[m
+Merge: 1895b0b1 0b9982ae
+Author: Marco <marco.pernigo.07@gmail.com>
+Date:   Fri Feb 13 16:44:44 2026 +0100
+
+    Merge pull request #1135 from zextras/renovate/zextras-jenkins-lib-ui-1.x
+    
+    chore(deps): update dependency zextras/jenkins-lib-ui to v1.0.6
+
+[33mcommit 0b9982ae6fd05a4459dbd74e8a194e63226eee85[m
+Merge: 062b679a 1895b0b1
+Author: Marco <marco.pernigo.07@gmail.com>
+Date:   Fri Feb 13 16:21:17 2026 +0100
+
+    Merge branch 'devel' into renovate/zextras-jenkins-lib-ui-1.x
+
+[33mcommit 1895b0b16c9cc8bafba4807c3adc4fe9fad0f622[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Fri Feb 13 16:08:35 2026 +0100
+
+    ci(CO-3172): update jenkins-lib-ui version to 1.0.6 to resolve build failure (#1139)
+
+[33mcommit 55b1b0d8561b24d14790cf1756a482877efbd856[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Fri Feb 13 14:46:54 2026 +0100
+
+    feat(CO-2278): simplify dropdown implementation and improve code readability in contact and tag components (#1132)
+
+[33mcommit 062b679a897322388a25af7b96f3f2fff5e7760d[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Fri Feb 13 03:39:31 2026 +0000
+
+    chore(deps): update dependency zextras/jenkins-lib-ui to v1.0.6
+
+[33mcommit 9cc4feb5512cacdfbe979800f89efd6f9b73f945[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Wed Feb 11 11:55:37 2026 +0100
+
+    fix(CO-3135): incorrect handling of message flags in soap notify (#1126)
+    
+    * fix: messages flags are updated properly
+    
+    * refactor: extract common logic among getNotifyFlags and getFlags functions
+    
+    * refactor: consolidate common properties into createBaseNormalizedMessage function
+    
+    * refactor: move normalizePartialData function inside normalizePartialIncompleteMessageFromSoapNotify
+    
+    ---------
+    
+    Co-authored-by: Keshav Bhatt <keshavnrj@gmail.com>
+
+[33mcommit 5786b7148765ed7893a28582f05506c0538f8eb4[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Wed Feb 11 10:37:52 2026 +0100
+
+    refactor: consolidate type imports to reduce type issues across the codebase (#1129)
+    
+    * refactor: consolidate type imports to reduce type issues across the codebase
+    
+    * refactor: reorganize type imports to streamline type management and reduce issues
+    
+    * refactor: update participant type imports to simplify paths and reduce type issues
+    
+    * refactor: update SignatureDescriptor import path to reduce type issues
+    
+    * refactor: update type imports to reduce type issues across multiple files
+
+[33mcommit cd9c323299c3a826a54750128d8b24926ac90a51[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Feb 10 18:49:02 2026 +0530
+
+    fix(CO-3160): adjust padding of editor toolbar for improved layout (#1128)
+
+[33mcommit f852e68379252c5d67155b8c465e7ff92503dd85[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Tue Feb 10 10:59:36 2026 +0100
+
+    fix: conversation list update when new message arrive (#1120)
+    
+    * fix: conversation list update when new message arrive
+
+[33mcommit 2f611df5e83619b32ae59862576b2f7382ecf249[m
+Author: Rodley <100950196+rodleyorosa@users.noreply.github.com>
+Date:   Tue Feb 10 09:10:42 2026 +0100
+
+    feat(CO-2848): add read receipt default setting
+    
+    Refs: CO-2848 (#1125)
+
+[33mcommit e9e19b5dc24c2887cbf1a6ae8297461b61b23a60[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Mon Feb 9 20:23:27 2026 +0530
+
+    chore(deps): update dependencies for carbonio-search-ui (#1127)
+
+[33mcommit 1986369b5063a85061d858374a3ea59733e20a86[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Fri Feb 6 20:46:38 2026 +0530
+
+    feat (CO-2784): Add option to include original attachments in email replies (#1123)
+    
+    * fix:  wrong action name in Forward and ForwardAsAttachment generators
+    
+    * feat: add custom hook to manage original attachments in replies
+    
+    * feat: add option to include original attachments in the attachments dropdown
+    
+    * fix: disable auto focus for attachments dropdown
+    
+    This prevent auto selection of item in dropdown items when user initially clicks the dropdown button
+    
+    * fix: remove unnecessary custom component for local attachment in dropdown
+    
+    * test: add tests for original attachments functionality in AddAttachmentsDropdown
+    
+    * chore: useEditorOriginalAttachments update js doc comment for to reflect rename changes
+    
+    * fix: refactor attachment processing loop to use for..of syntax
+    
+    * test: add sonarjs rule comments to clarify assertions in AddAttachmentsDropdown tests
+    
+    * fix: lint issues
+    
+    * test: update AddAttachmentsDropdown tests to use constants for original attachments text
+
+[33mcommit 6bdc6a7a311a8616e53a1dec2e727b1226b4e49b[m
+Merge: dd815161 732666a0
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Fri Feb 6 10:44:27 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 732666a0c7005ee243627e898de49264b13cd427[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Fri Feb 6 10:19:25 2026 +0100
+
+    refactor: [CO-2278] improve responsiveness of header displayer of message (#1114)
+    
+    * refactor: improve responsiveness of header displayer of message
+    
+    * refactor: tags creation on message header
+    
+    * chore: typo
+    
+    * style: fix position of tooltip
+    
+    * test: improve coverage
+    
+    * feat: improve badge string
+    
+    * test: add test
+    
+    * fix: typo
+    
+    * test: add test
+    
+    * fix: fix badge component
+    
+    * fix: padding close icon
+    
+    * fix: string
+    
+    * test: fix test
+
+[33mcommit dd815161c14bc5fd1ad68a8d11105b258dce4a33[m
+Merge: 82a76541 857a4bee
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Fri Feb 6 09:29:24 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 857a4bee2cb275e426e1ff3117ca4550ee6015e4[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Fri Feb 6 13:58:19 2026 +0530
+
+    fix(CO-3147): update @typescript-eslint packages to version 5.62.0 (#1124)
+    
+    This fixes CO-3147
+
+[33mcommit 82a76541d8ac74d38472d8adf0ee6cc8d35faead[m
+Merge: 3c1ba3c8 5d16cc50
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Fri Feb 6 09:27:53 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 5d16cc50d8ec6a82e32e937321c784fb18c16fa0[m
+Author: Rodley <100950196+rodleyorosa@users.noreply.github.com>
+Date:   Thu Feb 5 21:34:12 2026 +0100
+
+    feat: enable primary action on folder navigation
+    
+    Refs: CO-2936 (#1121)
+
+[33mcommit 37f38bb01c17c57a2063a6b3d83e9b2c51b1a80c[m
+Author: Zextras <bot@zextras.com>
+Date:   Thu Feb 5 14:14:29 2026 +0100
+
+    chore(deps): update dependency lodash to v4.17.23 [security] (#1108)
+    
+    * chore(deps): update dependency lodash to v4.17.23 [security]
+    
+    * chore(deps): update package-lock
+    
+    ---------
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit 1b4bf6842e95e06d6e5493d2fad7c510ead75b82[m
+Author: Zextras <bot@zextras.com>
+Date:   Thu Feb 5 11:54:06 2026 +0100
+
+    chore(deps): update dependency @vitejs/plugin-react to ^5.1.2 (#1087)
+    
+    * chore(deps): update dependency @vitejs/plugin-react to ^5.1.2
+    
+    * chore(deps): update package-lock
+    
+    ---------
+    
+    Co-authored-by: Dennis <31632342+CerDennis@users.noreply.github.com>
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit d8fa8d5f76cee298117fbce0356c7a9570e1bd8f[m
+Author: Zextras <bot@zextras.com>
+Date:   Thu Feb 5 10:44:35 2026 +0100
+
+    chore(deps): update dependency @types/lodash to ^4.17.23 (#1086)
+    
+    * chore(deps): update dependency @types/lodash to ^4.17.23
+    
+    * chore(deps): update package-lock
+    
+    ---------
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit c6b6af212766a97c8d177dd5795ecae15439deca[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Feb 4 20:01:53 2026 +0530
+
+    feat: [CO-3123] Add sorting by change date option for trash folder (#1119)
+    
+    * feat: add changeDate sorting option and related tests
+    
+    * feat: add changeDate in SORTING_OPTIONS const
+    
+    * feat: conditionally include changeDate sorting option for Trash folder
+    
+    * feat: update default sorting behavior for Trash folder to use changeDate
+    
+    refactor code for naming clarity.
+    
+    * feat: update default sort order for Trash folder to use changeDate
+    
+    * feat: refactor Trash folder sorting logic to use isTrash utility
+    
+    * chore: remove unused FOLDERS import from sorting.ts
+    
+    * test: exclude changeDate option from sorting in breadcrumbs tests
+    
+    * test: add sorting functionality tests for Trash folder in AppView
+    
+    * chore: consolidate all filter and sorting type in one places
+    
+    * feat: enhance translation function for sort and filter options
+    
+    * feat: move getTranslatedSortFilterLabel function to sorting.ts and update its implementation
+    
+    * refactor: remove unused imports and clean up sorting.ts
+    
+    * refactor: simplify default sort and filter state initialization and remove unnecessary useMemo calls
+    
+    * test: update sorting helper mock to include actual implementation
+    
+    * test: add integration tests for SortAndFilterHeaderComponent translation labels
+    
+    * fix: update space replacement in translation key generation to use replaceAll
+    
+    * test: add corner case handling for SortAndFilterHeaderComponent sorting and filtering
+    
+    * chore: add move-conv test to excluded vitest configuration as test is flaky
+    
+    * test: remove redundant comments in SortAndFilterHeaderComponent translation label tests
+
+[33mcommit 3c1ba3c8528ca0760d00cd706d57fc6bdc708592[m
+Author: Dennis <dennis.ceron@zextras.com>
+Date:   Wed Feb 4 14:14:27 2026 +0100
+
+    deps: update pakcage-lock
+
+[33mcommit 6336b5d504460752cbc42504ba1978bda75e6a4b[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Feb 4 12:58:47 2026 +0100
+
+    fix: is-ci dependency
+
+[33mcommit bee27a240ba0f45b94aac6f4d00fe6220492ad6d[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Tue Feb 3 13:07:57 2026 +0100
+
+    fix: removed unecessary import
+
+[33mcommit e415f8486744e043ca338e1227b155a748bd50e6[m
+Merge: 2be384d0 f085d1e8
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Tue Feb 3 13:06:03 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit f085d1e86032954e4f0ab442d950dbb0c4075123[m
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Tue Feb 3 10:50:09 2026 +0100
+
+    refactor: validation fixes
+
+[33mcommit 2be384d003e650298a9ec53eb58787e1c62f5810[m
+Merge: 4403e56c 3b554603
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Tue Feb 3 10:13:28 2026 +0100
+
+    Merge branch 'devel' into CO-3116-Implement-tests-and-browser-tests-for-latest-fixes
+
+[33mcommit 3b554603970b629e165174af8ba6370a4f6a443e[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Fri Jan 30 20:55:39 2026 +0530
+
+    feat: [CO-3104] remove Undo option when marking or unmarking conversations as Spam (#1113)
+    
+    * feat: refactor spam handling logic to remove unnecessary timeout and improve snackbar notifications
+    
+    * feat: streamline spam handling by removing unnecessary timeout and enhancing snackbar notifications
+    
+    * feat: enhance spam handling by adding execution guard and improving snackbar messages
+    
+    * feat: update snackbar message for marking conversation as spam
+    
+    * feat: update snackbar key for marking conversation as spam
+    
+    * test: fix tests/app-view-conversation-mode
+
+[33mcommit c21f58431461eb6cf177762761252683d80c1fe6[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Fri Jan 30 15:24:07 2026 +0100
+
+    Co 2300 update conversation participants string (#1112)
+    
+    refs: CO-2300
+
+[33mcommit 4403e56c729afa492d70e9c1b566fbeee0408f80[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Thu Jan 29 12:55:17 2026 +0100
+
+    test: add test for editor refresh
+
+[33mcommit 9f2c5ea35dfd8d4ab784f985774114553c3c3ef2[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Thu Jan 29 12:54:40 2026 +0100
+
+    chore: update vitedst configuration to allow using browser test in the pipeline + update eslint rules
+
+[33mcommit 75632d002c6fa08e0af2c5620a4547f9779ac717[m
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Thu Jan 29 10:07:25 2026 +0100
+
+    fix: avoid editor refresh when replying to a single message conversation
+
+[33mcommit b6dd42d67078a680bbbfb34c227b6a0908ee2c07[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Jan 28 15:02:07 2026 +0530
+
+    feat: [CO-3102] remove "undo" snackbar action from conversation deletion (#1111)
+    
+    * chore: update package-lock.json
+    
+    * feat: remove restoreConversation function and related tests
+    
+    * feat: update snackbar label for moving conversation to trash
+    
+    * feat: update test messages for moving conversation to trash
+
+[33mcommit e89bee790e0e3559cf375d99e6fef6c18f18d2f2[m
+Merge: c7cdf963 9a248f33
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Tue Jan 27 17:55:36 2026 +0100
+
+    Merge pull request #1106 from zextras/co-2981-attachments-lost-when-refresh-page
+    
+    [co-2981] fix: attachments lost when refresh page
+
+[33mcommit 9a248f33d98704a6e4a13c47efecbe7c3ac573d1[m
+Merge: 0eb90cd3 c7cdf963
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Tue Jan 27 17:38:55 2026 +0100
+
+    Merge branch 'devel' into co-2981-attachments-lost-when-refresh-page
+
+[33mcommit c7cdf96398185daffd9517c53ebe6f4b956557d7[m
+Merge: e4238e28 d1cb3fc0
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Tue Jan 27 15:46:29 2026 +0100
+
+    Merge pull request #1107 from zextras/CO-3078-email-content-lost
+    
+    [CO-3078] fix: Email content is partially lost
+
+[33mcommit 0eb90cd395fefa02c73e8888ff205d99ddc4a83a[m[33m ([m[1;31morigin/co-2981-attachments-lost-when-refresh-page[m[33m)[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Tue Jan 27 15:43:48 2026 +0100
+
+    fix: invoke text changed callback after inserting inline image from menu and from clipboard
+
+[33mcommit e4238e28234f2d6e97f912b1d3b081f9975e0a6e[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Jan 27 17:34:46 2026 +0530
+
+    chore: update package-lock.json (#1110)
+    
+    We probably left package-lock outdated after https://github.com/zextras/carbonio-mails-ui/pull/1069 and https://github.com/zextras/carbonio-mails-ui/pull/1070
+
+[33mcommit d1cb3fc004dfe21f0453fd9dbc4eb94ae3515245[m[33m ([m[1;31morigin/CO-3078-email-content-lost[m[33m, [m[1;32mCO-3078-email-content-lost[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Mon Jan 26 13:44:53 2026 +0100
+
+    fix: check dirty directly from editor store
+
+[33mcommit 10db35662c28b6614000b58f59ee7132cfdc5de0[m
+Merge: 29b445c7 01578efd
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Mon Jan 26 13:29:37 2026 +0100
+
+    Merge branch 'devel' into CO-3078-email-content-lost
+
+[33mcommit cae3f46a97953f9a3f8d2fe74ecf2a39e0721ef5[m
+Merge: 2c2883ba 01578efd
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Thu Jan 22 17:43:59 2026 +0100
+
+    Merge branch 'devel' into co-2981-attachments-lost-when-refresh-page
+
+[33mcommit 01578efd35c8ddd03be122fc94dc76ac99c71555[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Thu Jan 22 19:21:48 2026 +0530
+
+    feat: [CO-2871] Add "All" Default in Mails Filter Dropdown (#1104)
+    
+    * feat: add default filter option and improve label display in sorting and filtering
+    
+    * chore: remove sort-and-filter-button-component test from vitest configuration
+    
+    * feat: update sort and filter button component tests with default options
+    
+    * fix: update isValid function to support new type
+    
+    * feat: update breadcrumbs tests to display default option label for date sorting
+    
+    * feat: add disableAutoFocus prop to dropdown in sort and filter button component
+    
+    * chore: update tooltip label for reset action in sort and filter header
+    
+    * test: add tooltip display test for reset button in sort and filter header
+
+[33mcommit 9e926dc9851b38a0ef1feff9a37ec8092924ff42[m
+Author: Zextras <bot@zextras.com>
+Date:   Thu Jan 22 14:41:04 2026 +0100
+
+    chore(deps): update babel (#1069)
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit 948ad7159ae076b40644804614582a43e355911e[m
+Author: Zextras <bot@zextras.com>
+Date:   Thu Jan 22 12:52:46 2026 +0100
+
+    chore(deps): update commitlint to ^19.8.1 (#1070)
+    
+    * chore(deps): update commitlint to ^19.8.1
+    
+    * chore(deps): update package-lock and json
+    
+    ---------
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit fad9928db49eb0190547f88045705aaaaa6aa86c[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Thu Jan 22 10:31:53 2026 +0100
+
+    Merge pull request #1102 from zextras/CO-2920-remove-unwanted-characters
+    
+    feat: remove unwanted fragment from tooltip and message
+
+[33mcommit 2c2883ba40ede0882a65666a6a96e59efc0e99b0[m[33m ([m[1;32mco-2981-attachments-lost-when-refresh-page[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Jan 21 12:51:23 2026 +0100
+
+    fix: dependency
+
+[33mcommit 0d6827842fa908e3c774b178b197570435f6b176[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Jan 21 12:39:09 2026 +0100
+
+    fix: trigger autosave on pasted images
+
+[33mcommit 29b445c7469aca20715973e512b5248f054ba6bf[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Wed Jan 21 10:35:33 2026 +0100
+
+    fix: stale isDirty issue
+
+[33mcommit d2b472f187a29fdb0b329204b07ccb7f8faa4565[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Jan 21 14:21:39 2026 +0530
+
+    chore: composer stylesheet URL resolution causing invalid CSS request (#1103)
+
+[33mcommit beafc59e0d22be95553de5e3dbf6ed74199ad7f8[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Jan 20 20:24:45 2026 +0530
+
+    chore: [CO-3066] Deprecated IconButton -> Button migration (#1101)
+    
+    * feat: replace IconButton with Button in navigation icon component
+    
+    * feat: replace IconButton with Button in flat-root component
+    
+    * feat: replace IconButton with Button in preview header component
+    
+    * feat: replace IconButton with Button in collapsed sidebar items
+    
+    * feat: replace IconButton with Button in attachments block component
+    
+    * feat: replace IconButton with Button in edit view identity selector
+    
+    * feat: replace IconButton with Button in options dropdown component
+    
+    * feat: replace IconButton with Button in date picker custom component
+    
+    * feat: replace IconButton with Button in attachment preview component
+    
+    * feat: replace IconButton with Button in message contact list component
+    
+    * feat: replace IconButton with Button in attachment upload status component
+    
+    * feat: replace IconButton with Button in multiple selection actions panel
+    
+    * feat: replace IconButton with Button in banner view external images component
+    
+    * feat: replace IconButton with Button in change signatures dropdown component
+    
+    * feat: replace IconButton with Button in add attachments dropdown component
+    
+    * feat: add padding to GapRow in edit view component
+    
+    * chore: remove mistakenly added data-testid
+    
+    * feat: add chevron icons for identity selector dropdown toggle
+
+[33mcommit e3778e81704a4517deddb82f8edb2b3eb82a1b8d[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Fri Jan 16 22:07:09 2026 +0530
+
+    feat: [CO-2800] Improve the empty folder modal dialog (#1090)
+    
+    * test: add error snackbar display for API Fault in EmptyModal
+    
+    * feat: enhance empty modal with dynamic title and confirmation messages for Trash and Wipe actions
+    
+    * test: update empty modal tests for improved UI element verification and action handling
+    
+    * fix: update button type attribute for consistency in EmptyModal component
+    
+    * test: improve modal text verification in empty folder action tests
+    
+    * fix: update confirmation messages in EmptyModal for clarity and consistency
+    
+    * test: update empty modal tests for improved title formatting and divider verification
+    
+    * refactor: simplify trash folder check in EmptyModal component
+    
+    * chore: simplify title generation in EmptyModal component always use Empty
+    
+    * refactor: update button text for non-trash folder action in EmptyModal component
+    
+    * refactor: replace alert icon in EmptyModal component
+    
+    * refactor: update confirmation message for emptying selected folder in EmptyModal component
+    
+    * refactor: update message2 for emptying folder in EmptyModal component
+    
+    * refactor: update secondary label for cancel action in EmptyModal component
+    
+    * refactor: update labels and messages for empty folder actions in EmptyModal component
+    
+    * refactor: update secondary button type in EmptyModal component
+    
+    * refactor: update button labels and messages in EmptyModal component
+    
+    * refactor: update warning messages and button labels in EmptyModal component
+    
+    * refactor: update label in use-folder-actions test for empty modal
+    
+    * refactor: update label for empty folder action in use-folder-actions
+    
+    * fix: update snackbar message for folder emptying action
+    
+    * chore: remove padding from container
+    
+    * fix: adjust text sizes and container padding in empty modal
+    
+    * fix: increase text sizes in empty modal for better readability
+    
+    * fix: increase text sizes of modal title
+
+[33mcommit bf053e73ae6b48aae6327d81c4c533da89e82c56[m
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Tue Jan 13 17:32:21 2026 +0100
+
+    feat: improve draft save and deletion on composer
+
+[33mcommit 13daa5442df9215b8c32550a47623b28e47182e3[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Jan 13 21:00:19 2026 +0530
+
+    feat: [CO-3053] use panel control hook in Conversation actions (#1100)
+    
+    * chore: use panel control hook in conv-set-spam
+    
+    * chore: use panel control hook in conv-set-not-spam
+    
+    * chore: remove shouldReplaceHistory from spam action descriptors
+    
+    * test: add conversation mark as spam test
+    
+    * test: split app-view tests into message and conversation mode
+    
+    * test(conversation): add tests for not spam action
+    
+    * test(conversation): extract action utils
+    
+    * test(conversation): extract action utils
+    
+    - refactor test setup and timeout issues
+    
+    * refactor: cleanup shouldReplaceHistory usages
+    
+    * refactor: remove unused shouldReplaceHistory from useConvActions
+    
+    ---------
+    
+    Co-authored-by: Davide Frison <davide.frison@zextras.com>
+
+[33mcommit e3544531cc9802f62b2fa15f795e5e5bf75c5401[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Tue Jan 13 15:25:23 2026 +0100
+
+    test: [CO-2562] add support for browser mode tests (#1077)
+    
+    * test: add support for browser mode tests
+    
+    - adds test extend to allow using msw workers in tests
+    - adds browser mode tests
+    - adds configurations to setup browser mode
+    
+    * chore: generate package-lock.json
+    
+    * chore: latest shell
+    
+    * chore: fix type check on rich-text-editor-container.browser-test.tsx
+    
+    * chore: license fix for file
+    
+    * chore: same max worker
+    
+    * test: add plugin for unit tests
+    
+    * test: run only unit tests
+    
+    * test: skip same skipped tests as in devel
+    
+    * test: use nullish coalesce in interceptors.ts
+
+[33mcommit ee61963641d8aa40c41f082c63b01c7fcbc0eef6[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Mon Jan 12 15:34:25 2026 +0100
+
+    fix: [CO-3050] deleting conversation causes wrong navigation (#1098)
+    
+    * fix: add hook to abstract navigation and panel to close panel
+    
+    * test: add todo tests for move to trash
+    
+    * test: add tests to close conversation panel on deletion
+    
+    * feat: use conversationDetailPanelControls in undo trash action
+    
+    * test: first test for app-view
+    
+    disabled lazy loading temporarily
+    
+    * test: restructure
+    
+    * test: move unused/non-working data-testid + add test on conversation panel
+    
+    * test: add test matchers for conversation
+    
+    * test: simplify conversation deletion test by removing unused conversation
+    
+    * test: add test to ensure panel remains open when deleting a different conversation
+    
+    * chore: inline response in test
+    
+    * chore: minor adjustments
+    
+    * chore: add back lazy
+    
+    - lazy components require longer timeouts
+    
+    * test: refactor test utilities
+    
+    * test: remove unit test with spies
+    
+    - avoid mocking internal modules, we already have tests on app-view (integration) to test panel closes
+    
+    ---------
+    
+    Co-authored-by: Keshav Bhatt <keshavnrj@gmail.com>
+
+[33mcommit c626f53e8fdcdaacd2a6c58a2856410f6fa87632[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Fri Jan 9 10:51:58 2026 +0100
+
+    docs: add thirdparties and fix license (#1096)
+
+[33mcommit 29b7861ab7759d71f160c7977e35220aae3ac68b[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Thu Jan 8 20:34:15 2026 +0530
+
+    feat: [CO-2934] Mail Composer: Remove HTML5 Semantic Elements & Unused Plugins (#1093)
+    
+    * feat: enhance rich text editor configuration with structured style formats and optimized plugin list
+    
+    * chore: remove redundant comments
+
+[33mcommit 354ba92001ac0840b17b48fe6fd4f487ffb0072d[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Thu Jan 8 14:55:07 2026 +0530
+
+    fix: [CO-3026] Unable to edit a scheduled message as draft (#1089)
+    
+    * fix: pass correct messageId in actionTargetId while creating editor board
+    
+    update modal ID handling in message editing draft
+    
+    * fix: replace createEditBoard with useMsgEditDraftFn for editing draft messages
+    
+    * test: add tests for warning modal behavior in useMsgEditDraftFn
+    
+    * chore: remove template literal for actionTargetId in createEditBoard
+    
+    * test: add double-click handler for editing draft messages in MessageListItem
+    
+    * test: add double-click behavior for opening messages in standalone preview
+    
+    * test: update double-click behavior to open edit board for draft messages
+    
+    * test: add double-click behavior to open warning dialog for scheduled draft messages
+    
+    * test: refine test descriptions for message editing functionality
+    
+    * test: add test for edit action behavior to open warning dialog for scheduled draft messages in search view
+    
+    * test: enhance modal behavior tests for scheduled draft message editing
+    
+    * test: extract functions to keep the test suite DRY
+    
+    * test: add warning dialog test for double-clicking scheduled draft messages in search-message-list-item
+    
+    * chore: move test from search-view to search-message-panel
+
+[33mcommit 94f877fa028f94579712b23d5d19e4b088c7e8d7[m
+Author: Rodley <100950196+rodleyorosa@users.noreply.github.com>
+Date:   Wed Jan 7 11:35:55 2026 +0100
+
+    feat: improve hover action button size and blur effect
+    
+    Refs: CO-2927 (#1074)
+
+[33mcommit 783daf572a0728520fa180e96445d08a4f5bf9f1[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Wed Jan 7 10:20:12 2026 +0100
+
+    refactor: [CO-3019] pt.1 - editor save draft and selectors (#1084)
+    
+    * chore: remove unused function
+    
+    * refactor: move getDraftDelay in its only usage
+    
+    - rename store-utils.ts in store-selectors.ts
+    
+    * test: verify debounced save draft calls the save draft after 3 seconds
+    
+    * test: verify debounced save draft calls the save draft after 2 seconds
+    
+    * test: refactor save draft hooks tests
+    
+    * test: add tests for store-selectors
+    
+    * test: save-draft based on setting
+    
+    * test: add test on delay setting on save draft + add fixme
+    
+    * test: more tests on save-draft.test.ts
+    
+    * test: more tests on time units and save draft
+
+[33mcommit d91608e99e4b51f267a3f4f552cc211297afe5da[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Jan 6 16:09:38 2026 +0530
+
+    fix(ci): add sonarqube-scanner -devdependency to package.json (#1094)
+
+[33mcommit bc7d15fdb292828457dc077bb30a43bc864d2e10[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Dec 24 19:26:39 2025 +0530
+
+    fix: [CO-3029] update @zextras/carbonio-ui-text-composer to version 1.0.1-devel.2 (#1088)
+
+[33mcommit d16b061261a29ef680aa9f707d43bb0b8f3bf7c5[m
+Author: Dennis <31632342+CerDennis@users.noreply.github.com>
+Date:   Mon Dec 22 15:51:18 2025 +0100
+
+    fix(deps): upgrade node to v22 (#1085)
+    
+    * fix(deps): upgrade node to v22
+    
+    * fix(deps): build error
+
+[33mcommit 36bfbc232a2b8a97045980790f90b07c1c22fd86[m
+Merge: b3f87896 711369df
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Fri Dec 19 09:29:04 2025 +0100
+
+    Merge pull request #1083 from zextras/test/use-editor-attachments
+    
+    test: [CO-2999] Improve editor attachments tests
+
+[33mcommit 711369df10705d244ea74bb918d38651a2eba191[m[33m ([m[1;31morigin/test/use-editor-attachments[m[33m, [m[1;32mtest/use-editor-attachments[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 16:46:22 2025 +0100
+
+    test: remove bad test
+
+[33mcommit 7589d73ba08b927f5234f04cc4c814b9f0b49ec6[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 15:32:23 2025 +0100
+
+    test: remove bad test
+
+[33mcommit 7de27613b049643bbd96532930043d21bc555eee[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 15:31:45 2025 +0100
+
+    test: remove bad test
+
+[33mcommit eec538b3e343e5366a02bfba157c2c3e2ee793a9[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 15:22:35 2025 +0100
+
+    fix: code cleanup
+
+[33mcommit 40fef47ad69cd82069397bc481dc412328ad56b1[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 15:10:31 2025 +0100
+
+    fix: improved use Editor attachments tests
+
+[33mcommit d36edb41a8a5d3a78637734781bc6515af10dd48[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 13:14:44 2025 +0100
+
+    test: adjust upload end test (wip, missing interceptors)
+
+[33mcommit 950dc481df3fe89832dcf52cbdfe880520513ff7[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 13:13:24 2025 +0100
+
+    test: add other tests
+    
+    - just missing one on onUploadEnded
+
+[33mcommit 3b3f778b81923815554618eeb4199eceb682f1aa[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 13:01:09 2025 +0100
+
+    test: add test for aborted status
+
+[33mcommit b3215d25338094acfca6d6b484e1ddc713d4a6f4[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 12:50:17 2025 +0100
+
+    test: add test on inline attachment upload handling and callback
+
+[33mcommit bbc37d5bdfe8e3e4bd5bc95932591b0eedf42a96[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 12:36:44 2025 +0100
+
+    test: fix keepinline attachment test
+
+[33mcommit ce4fc4c0cbef639c6a6ee20a258b01d237587b0b[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Thu Dec 18 12:32:55 2025 +0100
+
+    test: reintroduce rich text editor tests
+
+[33mcommit 134905072b77caa4865795ecb8a73c1f68ac6527[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 11:43:33 2025 +0100
+
+    test: WIP on attachments
+
+[33mcommit ace0cf7a96a16427cfe4e97826ea3a8cf951525c[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Thu Dec 18 09:17:57 2025 +0100
+
+    test: add first test on remove unsaved attachments
+
+[33mcommit b3f8789644aa47b1b5ccfbd24fc7a6afc0a6eaf6[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Wed Dec 17 15:54:07 2025 +0100
+
+    refactor: extract rich text editor container cleanup and scrolltop function (#1080)
+    
+    * WIP: refactor of rich-text editor utility functions + tests
+    
+    * refactor: update to latest cleanup implementation
+    
+    * test: move tests to editor-utils.test.ts
+    
+    * refactor: rename utility function
+    
+    * test: update test name on cids
+
+[33mcommit 7cbd016dce46c5e993e76055fbc2830418018821[m
+Merge: 1e12fcf4 4aa073ec
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Fri Dec 12 17:35:18 2025 +0100
+
+    Merge pull request #1081 from zextras/version-bumper/v1.28.6-1
+    
+    Version bumper/v1.28.6 1
+
+[33mcommit 4aa073ec65c8b8869bf69bec9612a9208038776f[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Fri Dec 12 17:22:51 2025 +0100
+
+    build: fix dependencies
+
+[33mcommit d03fa31fc95855093067a2d64b155fd2b9675abb[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Fri Dec 12 17:18:39 2025 +0100
+
+    build: force dependencies
+
+[33mcommit c08d44f18757a42d2c05e4e7812d09c414fc9716[m
+Merge: 9eb3b0e6 1e12fcf4
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Fri Dec 12 17:16:09 2025 +0100
+
+    chore: merge from devel and conflicts resolution
+
+[33mcommit 9eb3b0e62570f26a06e7bb9685f42b17703170b2[m[33m ([m[1;33mtag: [m[1;33mv1.28.6[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Fri Dec 12 15:27:22 2025 +0000
+
+    chore(release): 1.28.6
+
+[33mcommit e26e4633b57423417411c5d629105e41a2a3c82d[m
+Merge: e2051d25 9b668268
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Fri Dec 12 16:19:43 2025 +0100
+
+    Merge pull request #1075 from zextras/CO-2944-After-moving-the-first-email-group-more-than-one-selecting-and-moving-a-second-email-group-into-different-folder-also-affect-the-first-group
+
+[33mcommit 9b6682688a7dc8959b41c7ad45578b0953da084c[m
+Merge: 1da8f459 e2051d25
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Fri Dec 12 16:09:24 2025 +0100
+
+    Merge branch 'release' into CO-2944-After-moving-the-first-email-group-more-than-one-selecting-and-moving-a-second-email-group-into-different-folder-also-affect-the-first-group
+
+[33mcommit e2051d25c3f6acf16d549e0f38d3c8feca200a79[m[33m ([m[1;33mtag: [m[1;33mv1.28.5[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Fri Dec 12 14:29:37 2025 +0000
+
+    chore(release): 1.28.5
+
+[33mcommit 1e12fcf48e3815a1504858294668b58f4c481bb3[m
+Merge: e4e1d5f0 a0c28427
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Fri Dec 12 15:28:57 2025 +0100
+
+    chore: back merge bumper 1.28.4 to devel (#1079)
+    
+    * fix:  imported same ModalHeader used in creation filter modal (#1015)
+    
+    * build: release 25.12.0
+    
+    * build: update dependencies
+    
+    * chore(release): 1.28.0
+    
+    * fix: update message flags from sync properly
+    
+    * chore(release): 1.28.1
+    
+    * [CO-2870] inline img deletion (#1055)
+    
+    * fix: improved usage of cleanup fn for unsaved attachments
+    * fix: pasted images are now showing the correct pics instead of wrong one
+    
+    * fix: fix advanced search results for from and to field
+    
+    * chore(release): 1.28.2
+    
+    * fix: show message badge only when folder name is available
+    
+    * chore: refactor messageFolder condition
+    
+    * fix: add tests for message list badge display
+    
+    * chore: add more tests to badge
+    
+    * chore: add tests for shared accounts
+    
+    * fix: update tests generators and tests
+    
+    * chore(release): 1.28.3
+    
+    * [co-2940]fix: pec attachments are now show correctly (#1073)
+    
+    * fix: pec attachments are now show correctly
+    
+    * test: coverage
+    
+    * chore(release): 1.28.4
+    
+    * fix: jest imports
+    
+    ---------
+    
+    Co-authored-by: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+    Co-authored-by: Luca Stauble <luca.stauble@gmail.com>
+    Co-authored-by: Luca Stauble <luca.stauble@zextras.com>
+    Co-authored-by: Zextras Bot <bot@zextras.com>
+    Co-authored-by: Gabriele Marino <gabriele.marino@zextras.com>
+    Co-authored-by: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+
+[33mcommit c10ddd2e2a8482c61b20d75d70ebd016d28d5fc8[m
+Merge: 031e98a0 62e12739
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Fri Dec 12 15:22:37 2025 +0100
+
+    Merge pull request #1078 from zextras/co-2940-fix
+    
+    fix[CO-2940]: added specific case for attachments with no html, no Content-ID and Disposition inline
+
+[33mcommit a0c28427c5feaebbf6a967cffb4f6ff0e0723e32[m[33m ([m[1;31morigin/chore/back-merge[m[33m)[m
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Fri Dec 12 15:17:44 2025 +0100
+
+    fix: jest imports
+
+[33mcommit df620aeacdeea0732b5b5c475b23667eddab2038[m
+Merge: e4e1d5f0 031e98a0
+Author: Davide Frison <davide.frison@zextras.com>
+Date:   Fri Dec 12 15:10:44 2025 +0100
+
+    Merge remote-tracking branch 'origin/version-bumper/v1.28.4-1' into chore/back-merge
+    
+    # Conflicts:
+    #       package-lock.json
+    #       package.json
+    #       src/views/app/detail-panel/edit/parts/rich-text-editor-container.tsx
+    #       src/views/app/detail-panel/edit/parts/tests/editor-paste-handler.test.ts
+    #       src/views/app/detail-panel/edit/parts/tests/rich-text-editor-container.test.tsx
+    #       src/views/search/test/advanced-filter-modal.test.tsx
+
+[33mcommit 1da8f459fe4d00baabc3bde667d4122f93876ec9[m
+Merge: 0df7579c 031e98a0
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Fri Dec 12 15:06:58 2025 +0100
+
+    chore: merge from release and conflicts resolution
+
+[33mcommit 0df7579c953f99e1885e92a1e7290da92d5feaaa[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Fri Dec 12 15:02:48 2025 +0100
+
+    fix: update multiple selection after selected messages are moved
+
+[33mcommit 62e127390e138e2756c8782e99cdd0395460a830[m[33m ([m[1;31morigin/co-2940-fix[m[33m, [m[1;32mco-2940-fix[m[33m)[m
+Author: FrancescoGottardi <gottardifrancesco92@gmail.com>
+Date:   Fri Dec 12 14:52:47 2025 +0100
+
+    fix: added speficic case for attachments with no html
+
+[33mcommit 031e98a06a7bb91d3c1a69a7aeec3a6cfb449d4a[m[33m ([m[1;33mtag: [m[1;33mv1.28.4[m[33m, [m[1;31morigin/version-bumper/v1.28.4-1[m[33m, [m[1;32mrelease[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Fri Dec 12 09:04:59 2025 +0000
+
+    chore(release): 1.28.4
+
+[33mcommit 3a47d1dd1c179d970cf00f7e3f17983d6df38465[m
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Thu Dec 11 14:25:24 2025 +0100
+
+    [co-2940]fix: pec attachments are now show correctly (#1073)
+    
+    * fix: pec attachments are now show correctly
+    
+    * test: coverage
+
+[33mcommit d41caf0c7ed0984bd073e2e35b2bef3c878c996d[m[33m ([m[1;31morigin/CO-2944-After-moving-the-first-email-group-more-than-one-selecting-and-moving-a-second-email-group-into-different-folder-also-affect-the-first-group[m[33m)[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Thu Dec 11 10:15:06 2025 +0100
+
+    test: add test for onMoveComplete callback
+
+[33mcommit 5692296e38a23704f2781a560bcd732ffa68bd1c[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Thu Dec 11 10:08:11 2025 +0100
+
+    fix: update multiple selection after selected conversations are moved
+
+[33mcommit e4e1d5f06a0baf46bb0896cc07948df702bd7386[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Dec 10 22:47:57 2025 +0530
+
+    feat: [CO-2935] Standardize composer content styling and inline in output (#1057)
+    
+    * fix: remove inline content styles from rich text editor configuration
+    
+    This prevents conflicting composer styling. for example: Unable to add Headings with distinguished font size
+    
+    * chore: lint fix
+    
+    * fix: preserve text color in HTML output
+    
+    * fix: disable preview styles in rich text editor configuration
+    
+    * fix: exclude signature div from rich text editor styles
+    
+    * fix: apply user preference styles in rich text editor
+    
+    * feat: add user preference styles for email content
+    
+    * feat: add custom content styles for composer
+    
+    * refactor: replace deprecated getHtmlWithPreAppliedStyled with applyUserPreferenceStyles
+    
+    * refactor: replace getHtmlWithPreAppliedStyled with applyUserPreferenceStyles
+    
+    * feat: enhance table styling and add caption support in content styles
+    
+    * refactor: simplify CSS selector for user preference styles
+    
+    * refactor: simplify comments in base content styles for clarity
+    
+    * refactor: improve link styling by specifying href attribute for better clarity
+    
+    * refactor: exclude links from user preference CSS rules for consistent styling
+    
+    * refactor: remove unused figure styles for cleaner content styles
+    
+    * refactor: enhance user preference styles by excluding additional elements for improved clarity
+    
+    * refactor: optimize comments in TinyMCE content styles for better clarity and organization
+    
+    * test: add unit tests for user preference styles functionality
+    
+    * refactor: remove max-width and height properties from image styles for cleaner CSS
+    
+    * chore: remove commented code
+    
+    * refactor: improve event handler registration and cleanup in RichTextEditorContainer tests
+    
+    * chore: remove RichTextEditorContainer test from vitest  exclusion configuration
+    
+    * chore: vitest configure JUnit reporter to not output in console
+    
+    * chore: enable coverage reporting in vitest configuration
+    
+    remove Text and Cobertura reporters.
+    
+    * chore: update JUnit reporter configuration to disable console output
+    
+    * feat: add back cobertura
+    
+    🐍
+    
+    * refactor: simplify new-modal tests for better readability and performance
+    
+    improve folder creation and readability
+    
+    * chore: revert rich-text-editor-container.test.tsx and add back to ignored test
+    
+    * fix: update dynamic import path for editor case to include file extension
+    
+    * refactor: simplify awaitDebouncedSaveDraft usage in edit-view tests
+    
+    * refactor: extract user preference style logic into a separate function
+
+[33mcommit 2d5b60eba1750540be58fae604bffb1ca1c5d41d[m[33m ([m[1;33mtag: [m[1;33mv1.28.3[m[33m, [m[1;31morigin/version-bumper/v1.28.3-1[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Tue Dec 9 15:55:18 2025 +0000
+
+    chore(release): 1.28.3
+
+[33mcommit d896cb9ded45ba903ac2ccd79dadf6ad6e551284[m
+Merge: 1b490d66 946ad48d
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Tue Dec 9 16:48:28 2025 +0100
+
+    Merge pull request #1067 from zextras/CO-2941-QA-FIX-Cannot-open-eml-attachments
+    
+    fix: show message badge only when folder name is available
+
+[33mcommit ef386db046b8596e45ffd6dd5150667d326d6ec8[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Dec 9 20:39:01 2025 +0530
+
+    chore: Enhance Vitest Configuration: Timers, Isolation, & Test Cleanup (#1071)
+    
+    * test: add back skipped tests pt.1 (#1060)
+    
+    * test: add back get-message.test.ts
+    
+    * test: add back html-message-renderer.test.tsx
+    
+    * test: add back html-message-renderer.test.tsx pt.2
+    
+    * test: add back editor-slice-utils.test.ts
+    
+    * test: add back editor-generators.test.ts
+    
+    * test: add back editor-generators.test.ts
+    
+    * test: add back recover-messages.test.tsx
+    
+    * test: add back recipients-certificate-settings test
+    
+    * test: add back get-message-with-existing-participants.test.ts
+    
+    * test: fix share-folder-actions.test.ts
+    
+    * test: skip tests breaking CI
+    
+    * test: fix app.test
+    
+    * Revert "test: fix app.test"
+    
+    This reverts commit 66f187ac21033becd007dc0258d293ef238d1f93.
+    
+    * chore: remove comment
+    
+    * chore: restore real timers after each test in vitest setup
+    
+    * chore: enhance fake timers setup to clear native timers in vitest
+    
+    * chore: update vitest configuration to improve test isolation and performance
+    
+    * test: refactor new-modal tests for improved readability and performance
+    
+    * chore: vitest configure JUnit reporter to not output in console + other cleanups (#1068)
+    
+    * chore: vitest configure JUnit reporter to not output in console
+    
+    * chore: enable coverage reporting in vitest configuration
+    
+    remove Text and Cobertura reporters.
+    
+    * chore: update JUnit reporter configuration to disable console output
+    
+    * feat: add back cobertura
+    
+    🐍
+    
+    * chore: vtest re-enable coverage
+    
+    * chore: add setsystemtime suggestions
+    
+    * chore: remove useRealTimers call in afterEach for better timer management
+    
+    * chore: remove setSystemTime call for improved timer handling
+    
+    * chore: simplify timer setup by removing parameters from useFakeTimers
+    
+    * chore: update @zextras/carbonio-ui-commons to version 2.0.1-devel.2
+    
+    * Revert "chore: simplify timer setup by removing parameters from useFakeTimers"
+    
+    This reverts commit 4fb05b00b3ff422cfd37977201395c938efc0851.
+    
+    * chore: replace act with waitFor in move conversation tests for better async handling
+    
+    * chore: update dynamic imports to include file extensions for consistency
+    
+    This removes warnings like:
+    
+    [vite] (client) warning: invalid import "./cases/getConv/getConv-${id}". A file extension must be included in the static part of the import.
+    
+    ---------
+    
+    Co-authored-by: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+
+[33mcommit 946ad48df776fd22a267ef6926bdb2c948383c4d[m[33m ([m[1;31morigin/CO-2941-QA-FIX-Cannot-open-eml-attachments[m[33m)[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Tue Dec 9 15:41:22 2025 +0100
+
+    fix: update tests generators and tests
+
+[33mcommit cf9e250da6eb8e3d000c628c6e5bda0e55e31eb7[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Tue Dec 9 10:09:55 2025 +0100
+
+    test: add back skipped tests pt.1 (#1060)
+    
+    * test: add back get-message.test.ts
+    
+    * test: add back html-message-renderer.test.tsx
+    
+    * test: add back html-message-renderer.test.tsx pt.2
+    
+    * test: add back editor-slice-utils.test.ts
+    
+    * test: add back editor-generators.test.ts
+    
+    * test: add back editor-generators.test.ts
+    
+    * test: add back recover-messages.test.tsx
+    
+    * test: add back recipients-certificate-settings test
+    
+    * test: add back get-message-with-existing-participants.test.ts
+    
+    * test: fix share-folder-actions.test.ts
+    
+    * test: skip tests breaking CI
+    
+    * test: fix app.test
+    
+    * Revert "test: fix app.test"
+    
+    This reverts commit 66f187ac21033becd007dc0258d293ef238d1f93.
+    
+    * chore: remove comment
+
+[33mcommit 75a3cf10da452062e767ae72459a17630181085e[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Fri Dec 5 17:02:05 2025 +0100
+
+    chore: add tests for shared accounts
+
+[33mcommit c7173f8c2c0194c4129f61106c4fb6c975c2f8a3[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Fri Dec 5 16:02:49 2025 +0100
+
+    chore: add more tests to badge
+
+[33mcommit b3d14b484cd8ea45f1c32e2c74ddf93c7633daf6[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Fri Dec 5 19:21:28 2025 +0530
+
+    chore: vitest configure JUnit reporter to not output in console + other cleanups (#1068)
+    
+    * chore: vitest configure JUnit reporter to not output in console
+    
+    * chore: enable coverage reporting in vitest configuration
+    
+    remove Text and Cobertura reporters.
+    
+    * chore: update JUnit reporter configuration to disable console output
+    
+    * feat: add back cobertura
+    
+    🐍
+
+[33mcommit 46f2dec7c48c1e755077d27dd26cb30ec62e53a1[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Fri Dec 5 14:49:14 2025 +0100
+
+    fix: add tests for message list badge display
+
+[33mcommit 79a7c8657c01d95658080e5899058264df363b7c[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Fri Dec 5 12:22:29 2025 +0100
+
+    chore: refactor messageFolder condition
+
+[33mcommit 77400727e9c906eac42d53945df253b1ffea2575[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Fri Dec 5 11:56:37 2025 +0100
+
+    fix: show message badge only when folder name is available
+
+[33mcommit e03fcef61e53acb0b1f82658b7a354efcacc6f79[m
+Author: Gianluca Boiano <491117+M0Rf30@users.noreply.github.com>
+Date:   Thu Dec 4 21:27:45 2025 +0100
+
+    chore: add renovate configuration (#1062)
+    
+    - Add renovate configuration based on detected tech stack
+    - Configure automated dependency updates
+    
+    Refs: IN-948
+
+[33mcommit 1b490d666ce09ba9ac87bbfc5bf3d99a9370b13f[m[33m ([m[1;33mtag: [m[1;33mv1.28.2[m[33m, [m[1;31morigin/version-bumper/v1.28.2-1[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Thu Dec 4 16:18:10 2025 +0000
+
+    chore(release): 1.28.2
+
+[33mcommit 2ab21345347c9e6690986f41422085c6ecbf2183[m
+Merge: b25c013b 1a09532b
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Thu Dec 4 17:09:14 2025 +0100
+
+    Merge pull request #1059 from zextras/CO-2907-QAFix-Incorrect-Email-Search-Results-in-Carbonio
+    
+    fix: fix advanced search results for from and to field
+
+[33mcommit 1a09532b1eee2a53a7aecdfdda3631c69e7a4e4f[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Wed Dec 3 16:37:14 2025 +0100
+
+    fix: fix advanced search results for from and to field
+
+[33mcommit c54b11d1ebe8db8a576411aa15aefd71c25c16b7[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Tue Dec 2 16:32:32 2025 +0100
+
+    refactor: vitest (#1052)
+    
+    * chore: use commons 2.0.1 and soap-ui-lib 1.0.3
+    
+    * chore: add vitest config and dependencies
+    
+    * wip: jest -> vi
+    
+    * refactor: replace other jest usages
+    
+    * refactor: replace other jest usages
+    
+    * refactor: replace other jest usages
+    
+    * refactor: mock import with type mock
+    
+    * refactor: move shell-ui mocks
+    
+    - tests are starting to run but fail
+    
+    * chore: remove jest libraries
+    
+    * chore: remove jest usages and @jest-setup alias
+    
+    * chore: add back jest-dom (needed for matchers)
+    
+    * chore: add back jest-dom (needed for matchers) pt.2
+    
+    * test: mock shell-ui
+    
+    * chore: add back emotion jest
+    
+    - not sure why we are using emotion jest in vitest
+    
+    * test: mock shell IS_FOCUS_MODE
+    
+    * test: fix usages of import actual with await
+    
+    * test: add fake timers before each
+    
+    * test: update mail-info-block.test.tsx
+    
+    * test: fix recipients-row.test.tsx
+    
+    * test: define BASE_PATH and 50% workers
+    
+    * test: import actual shell
+    
+    - with fully mocked shell tests hang
+    
+    * test: update shell mocks
+    
+    * fix: type-check
+    
+    * test: mock shell mp3 and carbonio svg
+    
+    * test: import actual ui soap lib and partially mock
+    
+    * test: skip hanging test for now + reset stores
+    
+    * test: reset conversation, mail and search stores
+    
+    * test: fix utils.test.ts
+    
+    * test: fix use-sync-data-handler.test.tsx
+    
+    * test: move-msg.test.tsx
+    
+    * test: cleanup
+    
+    * test: cleanup
+    
+    * test: add back legacy xml soap lib
+    
+    * test: fix get-available-addresses.test.ts
+    
+    * test: update edit-view-board.test.ts
+    
+    * test: skip hanging test
+    
+    * test: cleanup message-preview-panel-container.test.tsx
+    
+    * test: cleanup filter-manager.test.tsx
+    
+    * test: cleanup outgoing-filters-tab.test.tsx
+    
+    * test: fix upload-file-api.test.ts
+    
+    - use fetch instead of axios
+    TODO: test in browser
+    
+    * test: remove axios from editor-paste-handler.test.ts
+    
+    * test: update upload-file-to-files.test.ts to not use axios
+    
+    - updated als implementation to use fetch
+    
+    * test:skip failing tests
+    
+    * test: update sidebar.test.tsx
+    
+    * test: skip bad written tests in use-folder-actions.test.tsx
+    
+    - do not mix visual tests with spy
+    
+    * test: skip use-files-attachment-or-smartlink.test.tsx
+    
+    - these tests must be rewritten with actual modal interaction
+    
+    * test: update contact-names-chips.test.tsx
+    
+    * test: update edit-permissions-modal.test.tsx
+    
+    * test: update backup-search-list.test.tsx
+    
+    * test: update use-local-attachment-or-smartlink.test.tsx
+    
+    * test: update incoming-filters-tab.test.tsx
+    
+    * delete-all-attachments-soap-api.test.ts
+    
+    * test: update compose-msg-settings.test.tsx
+    
+    * test: update index.test.tsx
+    
+    * test: update select-identity-signature.test.tsx
+    
+    * test: update read-receipt-modal.test.tsx
+    
+    * test: skip tests on sidebar.test.tsx, send-msg.test.ts and create-filter-modal.test.tsx
+    
+    * test: skip remaining tests
+    
+    * test: skip sidebar test timing out
+    
+    * test: skip sidebar test timing out
+    
+    - skip sort-and-filter-button-component.test.tsx
+    
+    * test: run tests that can run with new settings
+    
+    * test: skip tests producing unhandled error
+    
+    * test: add coverage and junit reporter
+    
+    * test: add TZ
+    
+    * sonar: exclude __test__
+    
+    * sonar: expect text to be visible
+    
+    - add assertion
+    
+    * test: fix all use-folder-actions.test.tsx
+    
+    * test: remove commented out code in setup
+    
+    * test: update message-filter-tab.test.tsx
+
+[33mcommit 26a7b7da4b763e30ce58057a724257fd5c8203d8[m
+Author: Rodley <100950196+rodleyorosa@users.noreply.github.com>
+Date:   Mon Dec 1 14:35:05 2025 +0100
+
+    feat: improve hovering of the lists
+    
+    * feat: improve hovering of the lists
+    
+    Refs: CO-2114
+    
+    * feat: increase button size
+    
+    ---------
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit c9914c2405545d1a2995ee9aab2ba33767d913f9[m
+Author: Cataldo Mazzilli <cm@zextras.com>
+Date:   Mon Dec 1 12:56:47 2025 +0100
+
+    refactor: replace editSettings with ModifyPrefs request and updateSettings util
+    
+    Refs: CO-2363 (#1053)
+
+[33mcommit b25c013b374b24e6889343cfcd554d7112ebf9fc[m
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Thu Nov 27 17:43:07 2025 +0100
+
+    [CO-2870] inline img deletion (#1055)
+    
+    * fix: improved usage of cleanup fn for unsaved attachments
+    * fix: pasted images are now showing the correct pics instead of wrong one
+
+[33mcommit 15ae5d596c9879510ced4b762c4a1756cdcb7df6[m[33m ([m[1;33mtag: [m[1;33mv1.28.1[m[33m, [m[1;31morigin/version-bumper/v1.28.1-1[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Thu Nov 27 14:16:27 2025 +0000
+
+    chore(release): 1.28.1
+
+[33mcommit 7a99751fe0068ab1e79adcaf607e2818f10ccdf6[m
+Merge: a3ac06ec 18da9218
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Thu Nov 27 15:09:33 2025 +0100
+
+    fix: update message flags from sync properly (#1054)
+    
+    refs: CO-2849
+
+[33mcommit 18da9218179f800643c6777c0a2814c317a615a7[m[33m ([m[1;31morigin/CO-2849-markasread[m[33m)[m
+Author: Gabriele Marino <gabriele.marino@zextras.com>
+Date:   Wed Nov 26 11:33:17 2025 +0100
+
+    fix: update message flags from sync properly
+
+[33mcommit 69a9c6bbd22a58fbc859feb10c6be6b93cc47190[m
+Author: Davide Frison <36330277+frisonisland@users.noreply.github.com>
+Date:   Tue Nov 25 14:56:06 2025 +0100
+
+    chore: use commons 2.0.1 and soap-ui-lib 1.0.3 (#1051)
+
+[33mcommit b7ec60e3e57b5680fb64e3c8fd1204fa96d895a8[m
+Author: Marco <marco.pernigo.07@gmail.com>
+Date:   Wed Nov 19 17:27:39 2025 +0100
+
+    chore(ci): update jenkins-lib-ui to version 1.0.4 (#1046)
+    
+    Co-authored-by: Dennis <dennis.ceron@zextras.com>
+
+[33mcommit a3ac06ec5f2f4bd4c70041b6855b5a3157ffb61b[m[33m ([m[1;33mtag: [m[1;33mv1.28.0[m[33m, [m[1;31morigin/version-bumper/v1.28.0-1[m[33m)[m
+Author: Zextras Bot <bot@zextras.com>
+Date:   Wed Nov 19 11:01:42 2025 +0000
+
+    chore(release): 1.28.0
+
+[33mcommit cd7da494764aee23431648096b18a2fd606244cc[m
+Merge: a5a5b1ac cc8a5519
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Wed Nov 19 11:52:15 2025 +0100
+
+    build: release 25.12.0
+
+[33mcommit cc8a5519ab3b183c2452ea4ba4c05d69f881bbd4[m
+Merge: cc55a26c b364ed47
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Wed Nov 19 11:23:49 2025 +0100
+
+    Merge branch '202512-rc' of github.com:zextras/carbonio-mails-ui into 202512-rc
+
+[33mcommit cc55a26c2edcd2843e5f30487f1fee1714950605[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Wed Nov 19 11:23:31 2025 +0100
+
+    build: update dependencies
+
+[33mcommit b7394cf8ebd25a7101cc442ca16f677e8b89edda[m
+Merge: f65b8f22 a5a5b1ac
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Wed Nov 19 09:09:52 2025 +0100
+
+    Merge remote-tracking branch 'origin/release' into 202512-rc
+
+[33mcommit b364ed4795c17d094a60ad36ff05920b3e22ad00[m[33m ([m[1;31morigin/202512-rc[m[33m)[m
+Merge: f65b8f22 a5a5b1ac
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Tue Nov 18 18:05:03 2025 +0100
+
+    Merge branch 'release' into 202512-rc
+
+[33mcommit f65b8f22ecb35d082fb4033eb2da0d5752b07acf[m
+Author: Luca Stauble <luca.stauble@gmail.com>
+Date:   Tue Nov 18 17:54:54 2025 +0100
+
+    build: release 25.12.0
+
+[33mcommit 47bef27d7a6baa7ecdcf14a28a626ebd680a0923[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Tue Nov 18 21:32:40 2025 +0530
+
+    fix: composer editing area does not auto-expand in rich & plain text edit modes
+    
+    Refs: CO-2842
+
+[33mcommit d98efc12d5da7051b5fc2fe61878013c5bac4349[m
+Author: Cataldo Mazzilli <cm@zextras.com>
+Date:   Tue Nov 18 16:44:34 2025 +0100
+
+    feat: enhance drag-and-drop functionality for file attachments in email composer (#1045)
+
+[33mcommit f04891fc84dd94d50be6df58d713b397ef94eb66[m
+Author: Francesco Gottardi <37839534+FrancescoGottardi@users.noreply.github.com>
+Date:   Mon Nov 17 09:32:18 2025 +0100
+
+    fix: added sorting by size (#1042)
+
+[33mcommit cd228ef93526ee73cea96f69440b07b753db625d[m
+Author: Luca Stauble <luca.stauble@zextras.com>
+Date:   Thu Nov 13 09:57:12 2025 +0100
+
+    fix: disable keyboard shortcuts when file preview is open
+
+[33mcommit c50492d38f3167e737a45e819e032c74a2c0592a[m
+Author: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
+Date:   Wed Nov 12 18:47:07 2025 +0530
+
+    feat: [CO-2101] Refined “mark as read” behavior for Messages and Conversations (#1040)
+    
+    * feat: enable marking messages as read based on user settings in message previews
+    
+    * feat: update conversation fetching to mark messages as read based on user settings
+    
+    * feat: implement marking conversations as read based on user settings
+    
+    * feat: mark messages as read based on user settings when clicked
+    
+    * feat: implement hook to mark messages as read based on user settings and conditions
+    
+    * test: add unit tests for useMarkAsReadOnClick hook functionality
+    
+    * feat: integrate unified mark-as-read handler for conversation and message items in search
+    
+    * chore: rename read to shouldMarkAsRead parameter in search conversation API
+    
+    * test: remove redundant test for MsgActionRequest parameters in search view
+    
+    * test: add tests for read parameter handling in search conversation API
+    
+    * test: add tests for read parameter handling in getMsgSoapApi function
+    
+    * test: add navigation tests for useMsgSetUnread hook
+    
+    * doc: improve documentation for useCompleteConversationOrFetch function
+    
+    * refactor: reorganize imports in search-conversation-panel component
+    
+    * test: add test for action execution when unread and preference enabled
+    
+    * test: add tests for mark-as-read behavior in SearchMessageListItem component
+    
+    * test: update tests for click behavior in SearchMessageListItem component
+    
+    * test: add test for action execution when unread and preference enabled with undefined conditions
+    
+    * test: enhance SearchMessageListItem tests for delete and mark-as-read behaviors
+
+[33mcommit 185d533b5d0ace558fbc2d0ef64acd74d48b1b65[m
+Author: Gianluca Boiano <491117+M0Rf30@users.noreply.github.com>
+Date:   Tue Nov 11 08:42:30 2025 +0100
+
+    build: enable multi-platform Docker builds with BuildKit (#1039)
+    
+    Refs: IN-951
+
+[33mcommit 993a606512e11e7ca4a95eec28df2bee78559f02[m
+Author: Gabriele Marino <62339254+nubsthead@users.noreply.github.com>
+Date:   Thu Nov 6 10:25:07 2025 +0100
+
+    Co 1762 when sending a saved draft the draft gets deleted but the system still tries to visualize it without finding it (#1025)
+    
+    fix: close window in focus mode
+    fix: show message folder badge in focus mode
+    
+    ---------
+    
+    Co-authored-by: Keshav Bhatt <keshavbhatt@users.noreply.github.com>
