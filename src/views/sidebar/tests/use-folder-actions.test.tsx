@@ -16,7 +16,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import { FolderActionsProps } from 'types/sidebar/index.d';
+import { FolderActionsProps } from 'types/sidebar';
 import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 vi.mock('../../../api/folder-action-soap-api');

@@ -10,7 +10,7 @@ import { CreateModalFn, Theme } from '@zextras/carbonio-design-system';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { ItemType } from '@zextras/carbonio-ui-commons';
 
-import type { TagActionItemType } from 'types/tags/index.d';
+import type { TagActionItemType } from 'types/tags';
 
 export type ActionFn = {
 	execute: () => void;
