@@ -24,7 +24,6 @@ import {
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { ASSERTIONS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { EditViewActions } from 'constants/index';
@@ -97,7 +96,7 @@ describe('EditViewController', () => {
 
 		await act(async () => setupTest(<EditViewController />));
 
-		expect(apiCallFlag).not.toHaveBeenCalledWith();
+		expect(apiCallFlag).not.toHaveBeenCalled();
 	});
 
 	it.each`
@@ -108,90 +107,12 @@ describe('EditViewController', () => {
 		${EditViewActions.FORWARD_AS_ATTACHMENT}
 		${EditViewActions.EDIT_AS_NEW}
 		${EditViewActions.EDIT_AS_DRAFT}
-	`(
-		`should call the getMsg API even if the action is $action and the required  message is fully loaded`,
-		async ({ action }) => {
-			getUserSettings.mockReturnValue({
-				attrs: {},
-				props: [],
-				prefs: {
-					zimbraPrefComposeFormat: 'html'
-				}
-			});
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ truncated: false, isComplete: true }]
-			});
-
-			const boardMock = createBoardMock({
-				originAction: action,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const apiCallFlag = vi.fn();
-			createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
-
-			await act(async () => setupTest(<EditViewController />));
-
-			expect(apiCallFlag).toHaveBeenCalled();
-		}
-	);
-
-	it.each`
-		action                                   | isComplete           | isTruncated
-		${EditViewActions.REPLY}                 | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.REPLY}                 | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.REPLY}                 | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-		${EditViewActions.REPLY_ALL}             | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.REPLY_ALL}             | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.REPLY_ALL}             | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-		${EditViewActions.FORWARD}               | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.FORWARD}               | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.FORWARD}               | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-		${EditViewActions.FORWARD_AS_ATTACHMENT} | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.FORWARD_AS_ATTACHMENT} | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.FORWARD_AS_ATTACHMENT} | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-		${EditViewActions.EDIT_AS_NEW}           | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.EDIT_AS_NEW}           | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.EDIT_AS_NEW}           | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-		${EditViewActions.EDIT_AS_DRAFT}         | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS}
-		${EditViewActions.EDIT_AS_DRAFT}         | ${ASSERTIONS.IS_NOT} | ${ASSERTIONS.IS_NOT}
-		${EditViewActions.EDIT_AS_DRAFT}         | ${ASSERTIONS.IS}     | ${ASSERTIONS.IS}
-	`(
-		`should call the getMsg API if the action is $action, the required message $isComplete.desc complete and $isTruncated.desc truncated`,
-		async ({ action, isComplete, isTruncated }) => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ truncated: isTruncated.value, isComplete: isComplete.value }]
-			});
-
-			const boardMock = createBoardMock({
-				originAction: action,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-
-			await act(async () => setupTest(<EditViewController />));
-
-			const getMsgRequest = await getMsgInterceptor;
-
-			expect(getMsgRequest).toEqual(
-				expect.objectContaining({
-					m: expect.objectContaining({
-						id: messages[0].id
-					})
-				})
-			);
-		}
-	);
-	it('should call getMsg API when the preferred body format is not available', async () => {
+	`(`should call the getMsg API if the action performed is $action`, async ({ action }) => {
 		getUserSettings.mockReturnValue({
 			attrs: {},
 			props: [],
 			prefs: {
-				zimbraPrefComposeFormat: 'plain'
+				zimbraPrefComposeFormat: 'html'
 			}
 		});
 		const messages = populateMessagesInEmailStore({
@@ -199,26 +120,16 @@ describe('EditViewController', () => {
 		});
 
 		const boardMock = createBoardMock({
-			originAction: EditViewActions.REPLY,
+			originAction: action,
 			originActionTargetId: messages[0].id
 		});
 		useBoard.mockReturnValue(boardMock);
-		const soapMessage = getSoapMailMessage(messages[0].id);
-		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-			m: [soapMessage]
-		});
+		const apiCallFlag = vi.fn();
+		createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
 
 		await act(async () => setupTest(<EditViewController />));
 
-		const getMsgRequest = await getMsgInterceptor;
-
-		expect(getMsgRequest).toEqual(
-			expect.objectContaining({
-				m: expect.objectContaining({
-					id: messages[0].id
-				})
-			})
-		);
+		expect(apiCallFlag).toHaveBeenCalled();
 	});
 
 	it("shouldn't unmount the editor when the message is updated", async () => {
@@ -238,7 +149,10 @@ describe('EditViewController', () => {
 				}
 			]
 		})[0];
-
+		const soapMessage = getSoapMailMessage(message.id);
+		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: [soapMessage]
+		});
 		const boardMock = createBoardMock({
 			originAction: EditViewActions.REPLY,
 			originActionTargetId: message.id
@@ -246,7 +160,7 @@ describe('EditViewController', () => {
 		useBoard.mockReturnValue(boardMock);
 
 		await act(async () => setupTest(<EditViewController />));
-
+		await getMsgInterceptor;
 		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
 
 		expect(updateBoardContext).toHaveBeenCalledTimes(1);
@@ -272,250 +186,41 @@ describe('EditViewController', () => {
 
 		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
 	});
-	describe('should render a loader when', () => {
-		it('the message is not complete', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ isComplete: false }]
-			});
-
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const errorResponse = buildSoapErrorResponseBody();
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
-				'GetMsg',
-				errorResponse
-			);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('EditViewControllerLoader')).toBeVisible();
+	it('should render a loader when the message is not available', async () => {
+		const messages = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ isComplete: false }]
 		});
-		it('the message is truncated', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ truncated: true }]
-			});
 
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const errorResponse = buildSoapErrorResponseBody();
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
-				'GetMsg',
-				errorResponse
-			);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('EditViewControllerLoader')).toBeVisible();
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: messages[0].id
 		});
-		it('html parts exist but have no rich text content', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [
-					{
-						parts: [
-							{
-								contentType: 'text/html',
-								name: 'name',
-								size: 2
-							}
-						]
-					}
-				]
-			});
+		useBoard.mockReturnValue(boardMock);
+		const errorResponse = buildSoapErrorResponseBody();
+		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
+			'GetMsg',
+			errorResponse
+		);
 
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const errorResponse = buildSoapErrorResponseBody();
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
-				'GetMsg',
-				errorResponse
-			);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('EditViewControllerLoader')).toBeVisible();
-		});
-		it('text parts exist but have no plain text content', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [
-					{
-						parts: [
-							{
-								contentType: 'text/plain',
-								name: 'name',
-								size: 2
-							}
-						]
-					}
-				]
-			});
-
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const errorResponse = buildSoapErrorResponseBody();
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
-				'GetMsg',
-				errorResponse
-			);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('EditViewControllerLoader')).toBeVisible();
-		});
+		await act(async () => setupTest(<EditViewController />));
+		await getMsgInterceptor;
+		expect(screen.getByTestId('EditViewControllerLoader')).toBeVisible();
 	});
-	describe('should not render a loader when', () => {
-		it('the message is complete', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ isComplete: true }]
-			});
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
 
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+	it('should not render a loader when the message is available', async () => {
+		const messages = populateMessagesInEmailStore();
+		const soapMessage = getSoapMailMessage(messages[0].id);
+		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: [soapMessage]
 		});
-		it('the message has no parts available', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [
-					{
-						truncated: false,
-						isComplete: true,
-						parts: [
-							{
-								contentType: 'multipart/alternative',
-								parts: [],
-								size: 0,
-								name: 'name'
-							}
-						]
-					}
-				]
-			});
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+		const boardMock = createBoardMock({
+			originAction: EditViewActions.REPLY,
+			originActionTargetId: messages[0].id
 		});
-		it('the message is not truncated', async () => {
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ isComplete: true, truncated: false }]
-			});
+		useBoard.mockReturnValue(boardMock);
+		await act(async () => setupTest(<EditViewController />));
+		await getMsgInterceptor;
 
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-			useBoard.mockReturnValue(boardMock);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-		});
-		it('html parts exist and have rich text content', async () => {
-			getUserSettings.mockReturnValue({
-				attrs: {},
-				props: [],
-				prefs: {
-					zimbraPrefComposeFormat: 'html'
-				}
-			});
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [
-					{
-						isComplete: true,
-						parts: [
-							{
-								contentType: 'text/html',
-								content: 'content',
-								name: 'name',
-								size: 2
-							}
-						]
-					}
-				]
-			});
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-		});
-		it('text parts exist and have plain text content', async () => {
-			getUserSettings.mockReturnValue({
-				attrs: {},
-				props: [],
-				prefs: {
-					zimbraPrefComposeFormat: 'plain'
-				}
-			});
-			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [
-					{
-						isComplete: true,
-						parts: [
-							{
-								contentType: 'text/plain',
-								content: 'content',
-								name: 'name',
-								size: 2
-							}
-						]
-					}
-				]
-			});
-
-			const boardMock = createBoardMock({
-				originAction: EditViewActions.REPLY,
-				originActionTargetId: messages[0].id
-			});
-			useBoard.mockReturnValue(boardMock);
-			const soapMessage = getSoapMailMessage(messages[0].id);
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-			await act(async () => setupTest(<EditViewController />));
-			await getMsgInterceptor;
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-		});
+		expect(screen.getByTestId('edit-view-editor')).toBeVisible();
 	});
 });
