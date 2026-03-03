@@ -186,33 +186,18 @@ export function isHtml(parts: Array<MailMessagePart>): boolean {
 	return parts?.some(subtreeContainsHtmlParts) || false;
 }
 
-export function findBodyPartContent(
+export function findBodyPart(
 	msgPart: Array<MailMessagePart>,
-	contentType: string,
+	content: string,
 	acc2 = [] as Array<string>
 ): Array<string> {
 	return reduce(
 		msgPart,
 		(acc, v) => {
-			if (v.contentType === contentType && v.content) acc.push(v.content);
-			return v.parts ? findBodyPartContent(v.parts, contentType, acc2) : acc2;
+			if (v.contentType === content && v.content) acc.push(v.content);
+			return v.parts ? findBodyPart(v.parts, content, acc2) : acc2;
 		},
 		acc2 as Array<string>
-	);
-}
-
-export function findBodyPart(
-	msgPart: Array<MailMessagePart>,
-	contentType: string,
-	acc2 = [] as Array<MailMessagePart>
-): Array<MailMessagePart> {
-	return reduce(
-		msgPart,
-		(acc, v) => {
-			if (v.contentType === contentType) acc.push(v);
-			return v.parts ? findBodyPart(v.parts, contentType, acc2) : acc2;
-		},
-		acc2
 	);
 }
 
@@ -222,8 +207,8 @@ type ExtractedBody = {
 };
 
 export const extractBody = (msg: MailMessage): ExtractedBody => {
-	const textArr = findBodyPartContent(msg.parts, 'text/plain');
-	const htmlArr = findBodyPartContent(msg.parts, 'text/html');
+	const textArr = findBodyPart(msg.parts, 'text/plain');
+	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr?.[0]?.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 	let html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
