@@ -5,7 +5,7 @@
  */
 import { isTrash } from '@zextras/carbonio-ui-commons';
 
-import type { FolderSortOrder, SortDirection, SortOptions } from '../types';
+import { FolderSortOrder, SortDirection, SortOptions } from 'types/sorting';
 
 const fallbackSortOrder: FolderSortOrder = {
 	sortType: 'date',

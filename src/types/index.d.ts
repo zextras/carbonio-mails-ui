@@ -19,7 +19,5 @@ export * from './participant';
 export * from './search';
 export * from './share';
 export * from './soap';
-export * from './sorting';
 export * from './state';
-export * from './tags';
 export * from './utils';
