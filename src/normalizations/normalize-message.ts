@@ -528,7 +528,7 @@ export const normalizePartialIncompleteMessageFromSoapNotify = (
 ): PartialIncompleteMessage => {
 	const partialMessageData = removeNil({
 		...createBaseNormalizedMessage(m),
-		isScheduled: !!m.autoSendTime,
+		isScheduled: m.autoSendTime ? !!m.autoSendTime : undefined,
 		isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
 		...normalizeMailHeaders(m)
 	});
