@@ -19,7 +19,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { ColorPicker } from 'commons/color-picker';
-import { UpdateSettingsProps } from 'types/index.d';
+import { UpdateSettingsProps } from 'types/settings';
 import {
 	getFontSizesOptions,
 	findLabel,

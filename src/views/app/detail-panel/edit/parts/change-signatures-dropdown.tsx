@@ -11,7 +11,8 @@ import { map, noop, unescape } from 'lodash';
 
 import { getMailBodyWithSignature } from 'helpers/signatures';
 import { useEditorSignatureId, useEditorText } from 'store/editor/index';
-import { MailsEditorV2, SignItemType } from 'types/index.d';
+import { MailsEditorV2 } from 'types/index.d';
+import { SignItemType } from 'types/settings';
 
 export type SignaturesDropdownProps = {
 	editorId: MailsEditorV2['id'];

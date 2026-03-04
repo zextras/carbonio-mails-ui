@@ -17,7 +17,6 @@ export * from './folder';
 export * from './messages';
 export * from './participant';
 export * from './search';
-export * from './settings';
 export * from './share';
 export * from './soap';
 export * from './sorting';
