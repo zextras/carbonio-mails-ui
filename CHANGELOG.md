@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.0...v1.31.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* retrieve message when composing from it ([1e3b963](https://github.com/zextras/carbonio-mails-ui/commit/1e3b963dc06b453f15f21d274c42822d90d9ec05))
+* retrieve message when composing from it ([0cb8247](https://github.com/zextras/carbonio-mails-ui/commit/0cb8247da84f30075093a39bc5c8b2ffc10e8f44))
+* update tests ([9c9ad64](https://github.com/zextras/carbonio-mails-ui/commit/9c9ad645abc35a948aa03a893eb4b2f04fb02e6a))
+* user can reply to a message in any composing mode ([536384b](https://github.com/zextras/carbonio-mails-ui/commit/536384b34c0827f03fba6a1d3d7ea878d6102719))
+* user can reply to a message in any composing mode ([2fc260b](https://github.com/zextras/carbonio-mails-ui/commit/2fc260b275803387990dca87df66bf8ffd6588c8))
+
+## [1.31.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.1...v1.31.0) (2026-03-02)
+
+
+### Features
+
+* **CO-3249:** add integration tests for sorting behavior in trash folder and API interactions ([cb0c23d](https://github.com/zextras/carbonio-mails-ui/commit/cb0c23dbe6664679ce2a717f4ddf424787e2f942))
+* **CO-3249:** adjust main alignment in sort and filter button component ([22d95f7](https://github.com/zextras/carbonio-mails-ui/commit/22d95f736d62e8fb5a06336e144d818b4fee0dbd))
+* **CO-3249:** enhance modifySettingString to handle trash folder sorting behavior ([cff3001](https://github.com/zextras/carbonio-mails-ui/commit/cff3001d532ad25f30ace529d79e27c5bf99c8e3))
+* **CO-3249:** set maxHeight for dropdown in sort and filter button component ([9bd02a4](https://github.com/zextras/carbonio-mails-ui/commit/9bd02a4009a5412af511617c014e1ceb99dc860c))
+* **CO-3249:** update mock implementation for soapFetchV2 in sorting tests ([f1015a1](https://github.com/zextras/carbonio-mails-ui/commit/f1015a1c0bd1d1005a6817fcadad108a049a36cf))
+
+
+### Bug Fixes
+
+* **CO-3249:** correct comments for sorting direction in tests ([ee75096](https://github.com/zextras/carbonio-mails-ui/commit/ee75096c17f27fca495a8ebad53738d8aa999ea7))
+
+### [1.30.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.0...v1.30.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* update jenkins-lib-ui version to 1.0.9 ([ef7a98f](https://github.com/zextras/carbonio-mails-ui/commit/ef7a98f201778b787566e97216dafcfbb35d0f81))
+* update jenkins-lib-ui version to 1.0.9 ([03621c9](https://github.com/zextras/carbonio-mails-ui/commit/03621c9c286d5d92dca862327f902d4cabca3109))
+
+## [1.30.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.29.0...v1.30.0) (2026-02-26)
+
+
+### Features
+
+* **CO-3219:** enhance read receipt handling based on user settings ([007e238](https://github.com/zextras/carbonio-mails-ui/commit/007e238b05428f4ae82b27c2f345ead721e26ac7))
+* **CO-3219:** refactor ReadReceiptModal to use named export ([501fd86](https://github.com/zextras/carbonio-mails-ui/commit/501fd867cd044828a588a494d062a5a7a784eb39))
+
+
+### Bug Fixes
+
+* **CO-3219:** Read receipt handling based on user settings ([#1149](https://github.com/zextras/carbonio-mails-ui/issues/1149)) ([678a212](https://github.com/zextras/carbonio-mails-ui/commit/678a212079f2ab9b8ff8d82bc4f767a5d44374bb))
+
 ## [1.29.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.28.6...v1.29.0) (2026-02-24)
 
 

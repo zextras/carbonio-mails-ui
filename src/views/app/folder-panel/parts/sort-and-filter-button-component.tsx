@@ -89,7 +89,7 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 				<Container
 					style={{ minWidth: '160px' }}
 					crossAlignment="center"
-					mainAlignment="space-between"
+					mainAlignment="flex-start"
 					width="fill"
 					orientation="horizontal"
 				>
@@ -237,6 +237,7 @@ export const SortAndFilterButtonComponent = ({
 			placement="top"
 		>
 			<Dropdown
+				maxHeight={'100vh'}
 				disableAutoFocus
 				items={dropdownItems}
 				multiple

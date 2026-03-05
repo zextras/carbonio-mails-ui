@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { updateSettings } from '@zextras/carbonio-shell-ui';
-import { JSNS } from '@zextras/carbonio-ui-commons';
+import { isTrash, JSNS } from '@zextras/carbonio-ui-commons';
 import { AccountSettingsPrefs, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { TFunction } from 'i18next';
 
@@ -32,7 +32,9 @@ export function modifySettingString(
 	prefToUpdate: string,
 	folderId: string
 ): string {
-	if (prefToUpdate.endsWith('date-Desc')) {
+	const defaultSortSuffix = isTrash(folderId) ? 'changeDate-Desc' : 'date-Desc';
+
+	if (prefToUpdate.endsWith(defaultSortSuffix)) {
 		const removedFolder = zimbraPrefSortOrder.replaceAll(
 			new RegExp(`(?:^|,)${folderId}:[^,]*`, 'g'),
 			''

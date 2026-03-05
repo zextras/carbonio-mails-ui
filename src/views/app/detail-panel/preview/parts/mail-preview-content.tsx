@@ -15,7 +15,7 @@ import SharedInviteReply from 'integrations/shared-invite-reply/index';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import type { IncompleteMessage, MailMessage } from 'types/index.d';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
-import ReadReceiptModal from 'views/app/detail-panel/preview/read-receipt-modal';
+import { ReadReceiptModal } from 'views/app/detail-panel/preview/read-receipt-modal';
 
 type MailPreviewContentProps = {
 	message: MailMessage | IncompleteMessage;

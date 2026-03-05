@@ -17,6 +17,7 @@ import {
 	updateMessages
 } from 'store/emails/store';
 import { SearchResponse } from 'types/index.d';
+import { SortBy } from 'types/sorting';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 function handleLoadMoreResults({
@@ -47,7 +48,7 @@ export function useLoadMoreForConversationList({
 	filterType
 }: {
 	limit: number;
-	sortBy: string;
+	sortBy: SortBy;
 	folderId: string;
 	offset: number;
 	hasMore?: boolean;

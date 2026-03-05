@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button, Container } from '@zextras/carbonio-design-system';
 import {
@@ -16,13 +16,12 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
+import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
+import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
-import { findBodyPart } from '../../../../store/editor-slice-utils';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
-import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
-import { useMessageById } from 'store/emails/store';
-import type { EditViewActionsType, MailsEditorV2 } from 'types/index.d';
+import type { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 
@@ -125,6 +124,7 @@ const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
  */
 const EditViewController = (): React.JSX.Element => {
 	const boardContext = useBoard<EditViewBoardContext>().context;
+	const [message, setMessage] = useState<MailMessage | undefined>();
 	const { action, id } = parseAndValidateParams(
 		boardContext?.originAction,
 		boardContext?.originActionTargetId
@@ -135,32 +135,23 @@ const EditViewController = (): React.JSX.Element => {
 		[action, id]
 	);
 
-	const message = useMessageById(id ?? '');
-
-	const isMessageLoadingRequired = useMemo<boolean>(() => {
-		if (!isMessageRequired) return false;
-
-		if (!message?.isComplete || message.body?.truncated) {
-			return true;
-		}
-
-		const text = findBodyPart(message.parts, 'text/plain');
-		const html = findBodyPart(message.parts, 'text/html');
-		const isRichText = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
-
-		return isRichText ? !html.length : !text.length;
-	}, [isMessageRequired, message]);
+	const isMessageLoadingRequired = useMemo<boolean>(
+		(): boolean => isMessageRequired && !message,
+		[isMessageRequired, message]
+	);
 
 	/**
-	 * Load the original message if it's required and is not
-	 * in the store or is not complete
+	 * Load the original message with requested content part
+	 * if it is required by the action performed
 	 */
 	useEffect(() => {
-		if (isMessageLoadingRequired && !!id) {
-			const userSettings = getUserSettings();
-			const prefs = userSettings?.prefs ?? {};
-			const isRichText = prefs.zimbraPrefComposeFormat === 'html';
-			getFullMessageEmailStoreAction(id, isRichText);
+		if (!!id && isMessageLoadingRequired) {
+			const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
+			getMsgSoapApi({ msgId: id, html }).then((response) => {
+				if (response?.m?.[0]) {
+					setMessage(normalizeMailMessageFromSoap(response.m[0], true));
+				}
+			});
 		}
 	}, [id, isMessageLoadingRequired]);
 
@@ -206,7 +197,7 @@ const EditViewController = (): React.JSX.Element => {
 	return editor ? (
 		<MemoizedEditViewControllerCore entityId={id} action={action} editor={editor} />
 	) : (
-		<Container>
+		<Container data-testid={'EditViewControllerLoader'}>
 			<Button loading disabled label="" type="ghost" onClick={noop} />
 		</Container>
 	);

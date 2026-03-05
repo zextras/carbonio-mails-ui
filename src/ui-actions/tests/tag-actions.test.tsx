@@ -9,7 +9,6 @@ import React from 'react';
 import { renderHook, screen } from '@testing-library/react';
 import { ItemType } from '@zextras/carbonio-ui-commons';
 
-import { ProvidersWrapper, setupTest } from '@test-setup';
 import {
 	createTag,
 	deleteTag,
@@ -19,14 +18,16 @@ import {
 	useGetTagsList,
 	useTagExist
 } from '../tag-actions';
-import { TESTID_SELECTORS } from '__test__/constants';
+import { ProvidersWrapper, setupTest } from '@test-setup';
 import { populateTagsStore } from '@test-utils/store/tags';
-import { Tag } from '@zextras/carbonio-ui-soap-lib';
+import { TESTID_SELECTORS } from '__test__/constants';
+import { Tag } from 'types/tags';
 
 describe('Tag Actions', () => {
 	const mockCreateModal = vi.fn();
 	const mockCloseModal = vi.fn();
 	const mockTag: ItemType = {
+		CustomComponent: () => <div>Custom Component</div>,
 		id: 'tag-1',
 		name: 'Important',
 		label: 'Important',
