@@ -17,7 +17,7 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;

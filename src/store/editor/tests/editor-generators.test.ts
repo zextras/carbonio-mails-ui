@@ -11,7 +11,8 @@ import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions, PROCESS_STATUS } from 'constants/index';
 import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
-import { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
+import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
+import { MailMessage } from 'types/messages';
 
 vi.mock('@zextras/carbonio-shell-ui', async () => ({
 	...(await vi.importActual('@zextras/carbonio-shell-ui')),

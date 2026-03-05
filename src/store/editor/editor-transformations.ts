@@ -24,10 +24,10 @@ import {
 	filterUnsavedStandardAttachment
 } from 'store/editor/editor-utils';
 import { getCompleteMessageId } from 'store/utils';
+import { MailsEditorV2 } from 'types/editor';
 import {
 	MailAttachment,
 	MailAttachmentParts,
-	MailsEditorV2,
 	MsgAttach,
 	Participant,
 	SavedAttachment,

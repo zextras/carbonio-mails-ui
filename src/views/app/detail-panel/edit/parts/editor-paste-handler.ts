@@ -14,7 +14,8 @@ import { composeCidUrlFromContentId } from 'store/editor/editor-transformations'
 import { getSavedInlineAttachmentByContentId } from 'store/editor/editor-utils';
 import { getEditor, useEditorsStore } from 'store/editor/index';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
-import { MailsEditorV2, UnsavedAttachment } from 'types/index.d';
+import { UnsavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 
 type UploadImageResult = {
 	downloadServiceUrl: string;

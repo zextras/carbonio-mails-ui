@@ -12,7 +12,7 @@ import { setupTest, screen } from '@test-setup';
 import { handleGetSignaturesRequest } from '@test-utils/network/msw/handle-get-signatures';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { buildSignature } from '__test__/generators/signatures';
-import type { SignatureSettingsPropsType, SignItemType } from 'types/index.d';
+import { SignatureSettingsPropsType, SignItemType } from 'types/settings';
 import SignatureSettings from 'views/settings/signature-settings';
 
 // noinspection JSUnusedGlobalSymbols

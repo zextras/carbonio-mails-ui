@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 /**
  * Analyzes the given editor and updates in the store the allow status for the

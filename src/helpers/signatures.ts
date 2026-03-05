@@ -8,7 +8,7 @@ import { find, isEmpty, map } from 'lodash';
 
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { LineType } from 'commons/utils';
-import type { EditorText } from 'types/editor/index.d';
+import type { EditorText } from 'types/editor';
 import type { SignatureDescriptor } from 'types/signatures';
 
 const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';

@@ -11,7 +11,7 @@ import { setupHook } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { buildSignature } from '__test__/generators/signatures';
-import { SignItemType } from 'types/index.d';
+import { SignItemType } from 'types/settings';
 import {
 	getContentLengthErrorMessageKey,
 	getNameLengthErrorMessageKey,

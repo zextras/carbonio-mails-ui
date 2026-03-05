@@ -20,7 +20,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
 
-import type { InputProps } from 'types/index.d';
+import { InputProps } from 'types/settings';
 import { SendersListItem } from 'views/settings/components/senders-list-item';
 import LoadingShimmer from 'views/settings/filters/parts/loading-shimmer';
 import { trustedAddressesSubSection } from 'views/settings/subsections';

@@ -8,7 +8,6 @@ import { cloneDeep } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
-import { Signature } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import {
 	getMailBodyWithSignature,
@@ -17,6 +16,7 @@ import {
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL
 } from 'helpers/signatures';
+import { Signature } from 'types/settings';
 
 describe('Signatures', () => {
 	describe('getSignatures', () => {

@@ -6,7 +6,7 @@
 
 import React, { ReactElement } from 'react';
 
-import type { MailsEditor } from 'types/index.d';
+import { MailsEditor } from 'types/editor';
 
 type UseGetAttachItemsPropType = {
 	onFileClick: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
@@ -17,6 +17,7 @@ type UseGetAttachItemsPropType = {
 	setValue: (arg1: string, arg2: string) => void;
 	changeEditorText: (text: [string, string]) => void;
 };
+
 type UseGetAttachItemsReturnType = {
 	customComponent?: ReactElement;
 	label: string;

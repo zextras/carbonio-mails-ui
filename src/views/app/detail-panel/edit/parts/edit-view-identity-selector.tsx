@@ -28,7 +28,7 @@ import {
 } from 'helpers/identities';
 import { getMailBodyWithSignature } from 'helpers/signatures';
 import { useEditorIdentityId, useEditorSignatureId, useEditorText } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
