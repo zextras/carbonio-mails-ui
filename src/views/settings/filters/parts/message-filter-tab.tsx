@@ -10,7 +10,7 @@ import { filter, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { FilterRulesAPIResponse } from 'api/get-filters';
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 import Heading from 'views/settings/components/settings-heading';
 import { FilterList } from 'views/settings/filters/parts/filter-list';
 import { FilterManagerProps } from 'views/settings/filters/parts/filter-manager';

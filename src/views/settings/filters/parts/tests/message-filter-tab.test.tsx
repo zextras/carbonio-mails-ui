@@ -11,7 +11,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 
 import { setupTest } from '@test-setup';
 import { FilterRulesAPIResponse } from 'api/get-filters';
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
