@@ -76,6 +76,12 @@ export type ActionReturnType =
 	| ConvActionReturnType
 	| TagActionItemType;
 
+export type GetAttachmentsDownloadLinkProps = {
+	messageId: string;
+	messageSubject: string;
+	attachments: Array<string | undefined>;
+};
+
 /*
  * The "any" is inherited from the return type of the useMessageActions hook.
  * We define an alias, and then we will refactor the MessageAction type
