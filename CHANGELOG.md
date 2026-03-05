@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.0...v1.31.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* retrieve message when composing from it ([1e3b963](https://github.com/zextras/carbonio-mails-ui/commit/1e3b963dc06b453f15f21d274c42822d90d9ec05))
+* retrieve message when composing from it ([0cb8247](https://github.com/zextras/carbonio-mails-ui/commit/0cb8247da84f30075093a39bc5c8b2ffc10e8f44))
+* update tests ([9c9ad64](https://github.com/zextras/carbonio-mails-ui/commit/9c9ad645abc35a948aa03a893eb4b2f04fb02e6a))
+* user can reply to a message in any composing mode ([536384b](https://github.com/zextras/carbonio-mails-ui/commit/536384b34c0827f03fba6a1d3d7ea878d6102719))
+* user can reply to a message in any composing mode ([2fc260b](https://github.com/zextras/carbonio-mails-ui/commit/2fc260b275803387990dca87df66bf8ffd6588c8))
+
 ## [1.31.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.30.1...v1.31.0) (2026-03-02)
 
 
