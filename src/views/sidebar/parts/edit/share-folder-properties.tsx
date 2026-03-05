@@ -60,7 +60,6 @@ const Actions = ({
 }: ActionProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
-	// eslint-disable-next-line @typescript-eslint/ban-types
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
@@ -69,23 +68,25 @@ const Actions = ({
 	const { createSnackbar } = useUiUtilities();
 
 	const onResend = useCallback(() => {
-		sendShareNotificationSoapApi({
-			standardMessage: '',
-			contacts: [{ email: grant.d }],
-			folder,
-			accounts
-		}).then((res) => {
-			if (!('error' in (res as any))) {
-				createSnackbar({
-					key: `resend-${folder.id}`,
-					replace: true,
-					severity: 'info',
-					label: t('snackbar.share_resend', 'Share invite resent'),
-					autoHideTimeout: 2000,
-					hideButton: true
-				});
-			}
-		});
+		if (grant.d) {
+			sendShareNotificationSoapApi({
+				standardMessage: '',
+				contacts: [{ email: grant.d }],
+				folder,
+				accounts
+			}).then((res) => {
+				if (!('error' in (res as any))) {
+					createSnackbar({
+						key: `resend-${folder.id}`,
+						replace: true,
+						severity: 'info',
+						label: t('snackbar.share_resend', 'Share invite resent'),
+						autoHideTimeout: 2000,
+						hideButton: true
+					});
+				}
+			});
+		}
 	}, [accounts, createSnackbar, folder, grant.d]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);

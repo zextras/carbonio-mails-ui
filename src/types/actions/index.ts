@@ -6,11 +6,25 @@
 
 import React, { SyntheticEvent } from 'react';
 
-import { CreateModalFn, Theme } from '@zextras/carbonio-design-system';
-import type { Folder } from '@zextras/carbonio-ui-commons';
+import { CloseModalFn, CreateModalFn, Theme } from '@zextras/carbonio-design-system';
+import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
 import { ItemType } from '@zextras/carbonio-ui-commons';
 
 import type { TagActionItemType } from 'types/tags';
+
+export type SelectFoldersUIActionExecutionConfig = {
+	showSharedAccounts: boolean;
+	showThrashFolder: boolean;
+	showSpamFolder: boolean;
+	allowRootSelection: boolean;
+	allowFolderCreation: boolean;
+	title: string;
+	hintText: string;
+	confirmActionLabel: string;
+	confirmActionTooltip: string;
+	disabledConfirmActionTooltip: string;
+	selectedFolder?: Folder;
+};
 
 export type ActionFn = {
 	execute: () => void;
@@ -32,7 +46,6 @@ export type UIActionAggregator = ActionDescriptor & {
 
 export type ActionProps = {
 	folder: Folder;
-	// FIXME: IRIS-4953 Import the right type
 	grant: Grant;
 	setActiveModal: (arg: string) => void;
 	onMouseLeave: () => void;
@@ -50,7 +63,7 @@ export type UIActionExecutionParams<CompleteResult> = {
 	};
 };
 
-export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
+export type UIAction<ExecutionParams> = UIActionExecutionParams<ExecutionParams> & {
 	id: string;
 	icon: string;
 	label: string;
@@ -87,3 +100,20 @@ export type GetAttachmentsDownloadLinkProps = {
  * We define an alias, and then we will refactor the MessageAction type
  */
 export type MessageAction = any;
+
+export type Test<Folder> = {
+	id: string;
+	icon: string;
+	label: string;
+	openModal?: (params: Folder) => void;
+	config?: Partial<SelectFoldersUIActionExecutionConfig>;
+	uiUtilities?: {
+		closeModal: CloseModalFn;
+		createModal: CreateModalFn;
+	};
+	callbacks?: {
+		onComplete: (folder: Folder) => void;
+		onCancel?: () => void;
+		onError?: () => void;
+	};
+};
