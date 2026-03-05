@@ -16,12 +16,12 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { Folder, getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { Controller, UseFormSetValue } from 'react-hook-form';
 
 import { isSharedAccountFolder } from 'helpers/folders';
-import type { ChipOnAdd, Folder } from 'types/index.d';
+import { ChipOnAdd } from 'types/search';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 import {
 	AdvancedFilterModalFormValues,
@@ -163,16 +163,16 @@ export const TagFolderRow = ({
 							defaultValue={[]}
 							options={tagOptions}
 							value={value}
-							onChange={(chips) => {
+							onChange={(chips): void => {
 								const validChips = chips.filter((chip) => chip !== undefined);
 								onChange(validChips);
 							}}
-							onAdd={(label) => {
+							onAdd={(label): any => {
 								if (typeof label !== 'string') {
 									return undefined;
 								}
 								// fix typings on DS
-								return tagChipOnAdd(label, value) as any;
+								return tagChipOnAdd(label, value);
 							}}
 							disableOptions={false}
 							disabled

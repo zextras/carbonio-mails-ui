@@ -16,7 +16,7 @@ import {
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from 'store/emails/store';
-import { ConversationIndexSliceState } from 'types/index.d';
+import { ConversationIndexSliceState } from 'types/search';
 import { SortBy } from 'types/sorting';
 
 /**
