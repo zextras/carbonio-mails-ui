@@ -4,15 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Folder, Folders } from '@zextras/carbonio-ui-commons';
+import { ReactElement, SyntheticEvent } from 'react';
 
-type RegisterActionType = {
-	id: string;
-	label: string;
-	icon: string;
-	onClick: (ev: React.SyntheticEvent) => void;
-	disabled: boolean;
-};
+import type { Folder, Folders, ResFolder } from '@zextras/carbonio-ui-commons';
+import { Grant } from '@zextras/carbonio-ui-soap-lib';
+import { Dictionary } from 'lodash';
+
+import { ModalProps } from 'types/utils';
 
 export type ActionType = {
 	id: string;
@@ -77,6 +75,8 @@ export type GroupedShare = Dictionary<SharedObject[]>;
 
 export type EditPermissionsModalProps = ModalProps & {
 	editMode?: boolean;
+	goBack?: () => void;
+	grant: any; // TODO FIX Grant type
 };
 
 export type FolderActionsProps = {
@@ -90,7 +90,7 @@ export type FolderActionsProps = {
 export type ShareRevokeModalType = {
 	folder: Folder;
 	onClose?: () => void;
-	grant: GrantType;
+	grant: Grant;
 	goBack: () => void;
 };
 

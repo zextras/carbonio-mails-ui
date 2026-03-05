@@ -17,7 +17,7 @@ import {
 	useMessageIndexSlice,
 	useMessagesIdsByFolder
 } from 'store/emails/store';
-import { MessageIndexSliceState } from 'types/index.d';
+import { MessageIndexSliceState } from 'types/search';
 import { SortBy } from 'types/sorting';
 
 export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceState => {

@@ -61,7 +61,9 @@ export const useEditorTextProvider = (
 
 	const setTextProvider = useCallback(
 		(val: MailsEditorV2['textProvider']): void => {
-			setter(id, val);
+			if (val !== undefined) {
+				setter(id, val);
+			}
 		},
 		[id, setter]
 	);

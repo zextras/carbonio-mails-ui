@@ -25,12 +25,9 @@ import {
 	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from 'store/emails/store';
-import {
-	IncompleteMessage,
-	MailMessage,
-	SearchIndexSliceState,
-	SearchResponse
-} from 'types/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { SearchIndexSliceState } from 'types/search';
+import { SearchResponse } from 'types/soap/search';
 import { generateQueryString, updateQueryChips } from 'views/search/utils';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
@@ -42,11 +39,9 @@ type UseRunSearchProps = {
 };
 
 function handleFulFilledConversationResults({
-	searchResponse,
-	tags
+	searchResponse
 }: {
 	searchResponse: SearchResponse;
-	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) =>
 		mapToNormalizedConversation({ conversation: conv })
@@ -105,9 +100,8 @@ export function handleSearchResults({
 	if ('Fault' in searchResponse) {
 		return;
 	}
-	const tags = getTags();
 	if (searchResponse.c) {
-		handleFulFilledConversationResults({ searchResponse, tags });
+		handleFulFilledConversationResults({ searchResponse });
 		const messages = extractConvMessage(searchResponse.c);
 		setMessagesInEmailStore(messages);
 	}

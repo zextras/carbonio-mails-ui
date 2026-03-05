@@ -7,14 +7,15 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Controller } from 'react-hook-form';
+
 import {
 	attachmentTypeItemsConstant,
 	AttachmentTypeItemsConstantProps,
 	emailStatusItemsConstant,
 	EmailStatusItemsConstantProps
 } from 'constants/index';
-import { Controller } from 'react-hook-form';
-import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/index.d';
+import { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/search';
 import { FormValuesControlProps, KeywordState } from 'views/search/types/types';
 
 export const AttachmentTypeEmailStatusRow = ({
@@ -110,14 +111,14 @@ export const AttachmentTypeEmailStatusRow = ({
 							options={attachmentTypeOptions}
 							disableOptions={false}
 							background="gray5"
-							onAdd={(label) => {
+							onAdd={(label): any => {
 								if (typeof label !== 'string') {
 									return undefined;
 								}
 								// fix typings on DS
 								return attachmentTypeChipOnAdd(label, value) as any;
 							}}
-							onChange={(chips) => {
+							onChange={(chips): void => {
 								const validChips = chips.filter((chip) => chip !== undefined);
 								onChange(validChips);
 							}}
@@ -139,14 +140,14 @@ export const AttachmentTypeEmailStatusRow = ({
 							options={emailStatusOptions}
 							background="gray5"
 							disableOptions={false}
-							onAdd={(label) => {
+							onAdd={(label): any => {
 								if (typeof label !== 'string') {
 									return undefined;
 								}
 								// fix typings on DS
 								return emailStatusChipOnAdd(label, value) as any;
 							}}
-							onChange={(chips) => {
+							onChange={(chips): void => {
 								const validChips = chips.filter((chip) => chip !== undefined);
 								onChange(validChips);
 							}}

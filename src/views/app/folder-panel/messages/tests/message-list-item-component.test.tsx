@@ -19,7 +19,7 @@ import { ASSERTIONS } from '__test__/constants';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { setMessagesInEmailStore } from 'store/emails/store';
-import type { MessageListItemProps } from 'types/index.d';
+import { MessageListItemProps } from 'types/folder';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 describe.each`
