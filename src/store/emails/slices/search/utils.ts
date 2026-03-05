@@ -11,13 +11,9 @@ import { UseBoundStore, StoreApi } from 'zustand';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { deleteMessagesFromConversation } from 'store/emails/slices/populated-items/utils';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/search/search-slice';
-import {
-	EmailsStoreState,
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation,
-	SearchRequestStatus
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { EmailsStoreState, SearchRequestStatus } from 'types/search';
 
 function resetSearchAndPopulatedItems(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>

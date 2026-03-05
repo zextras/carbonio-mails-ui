@@ -5,12 +5,11 @@
  */
 import React, { useMemo } from 'react';
 
+import styled from '@emotion/styled';
 import { AccordionItem, Avatar, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
-import styled from '@emotion/styled';
+import { Folder, FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 
-import { Folder } from 'types/index.d';
 import { StatusIcon } from 'views/sidebar/commons/status-icon';
 import {
 	getFolderIconColor,

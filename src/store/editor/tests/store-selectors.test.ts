@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { generateNewEditor } from '../../../__test__/generators/editors';
-import { EditorsStateTypeV2 } from '../../../types';
 import { useEditorsStore } from '../store';
 import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
+import { EditorsStateTypeV2 } from 'types/state';
 
 describe('Store selectors', () => {
 	const uploadId = 'upload-100';

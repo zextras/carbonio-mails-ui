@@ -5,6 +5,7 @@
  */
 
 import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
+
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from 'constants/index';
 import {
 	AttachmentUploadProcessStatus,
