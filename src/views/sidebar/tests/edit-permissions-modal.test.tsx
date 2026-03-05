@@ -26,19 +26,16 @@ const defaultSetup = (): {
 	folder: ReturnType<typeof getFolder>;
 } => {
 	const folderId = FOLDERS.INBOX;
-	const grant = [
-		{
-			zid: '1',
-			gt: 'usr',
-			perm: 'r'
-		} as const
-	];
-
+	const grant = {
+		zid: '1',
+		gt: 'usr',
+		perm: 'r'
+	} as const;
 	populateFoldersStore();
 	const folder = getFolder(folderId);
 	const { user } = setupTest(
 		<EditPermissionsModal
-			folder={folder}
+			folder={folder!}
 			onClose={vi.fn()}
 			goBack={vi.fn()}
 			grant={grant}

@@ -7,11 +7,14 @@
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { SortBy } from '@zextras/carbonio-ui-commons';
+import API_REQUEST_STATUS from 'constants';
 
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
-import { ErrorType, SearchRequestStatus } from 'types/state/index.d';
 import { AdvancedFilterModalFormValues, Query } from 'views/search/types/types';
+
+type ApiRequestStatusKey = keyof typeof API_REQUEST_STATUS;
+export type SearchRequestStatus = (typeof API_REQUEST_STATUS)[ApiRequestStatusKey] | null;
 
 export type SearchListProps = {
 	searchResults: Array<string>;
@@ -167,6 +170,11 @@ export type ChipType = {
 	avatarIcon?: string;
 	avatarBackground?: ChipProps['background'];
 	hasError?: boolean;
+};
+
+export type ErrorType = {
+	code: string;
+	description?: string;
 };
 
 export type SearchIndexSliceState = {

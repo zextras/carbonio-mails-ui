@@ -13,13 +13,13 @@ import {
 	filterSavedInlineAttachment,
 	filterUnsavedInlineAttachment
 } from 'store/editor/editor-utils';
-import { EditorTextProvider, MailsEditorV2 } from 'types/editor';
 import {
 	AttachmentUploadProcessStatus,
-	EditorsStateTypeV2,
 	SavedAttachment,
 	UnsavedAttachment
-} from 'types/index.d';
+} from 'types/attachments';
+import { EditorTextProvider, MailsEditorV2 } from 'types/editor';
+import { EditorsStateTypeV2 } from 'types/state';
 
 export const useEditorsStore = create<EditorsStateTypeV2>()(
 	devtools(

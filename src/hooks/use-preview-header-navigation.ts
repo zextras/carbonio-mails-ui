@@ -20,7 +20,7 @@ import {
 	useMessageLoadingStatus,
 	useMessagesByIds
 } from 'store/emails/store';
-import { SearchRequestStatus } from 'types/index.d';
+import { SearchRequestStatus } from 'types/search';
 import { SortBy } from 'types/sorting';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';

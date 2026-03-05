@@ -12,7 +12,8 @@ import { map, noop } from 'lodash';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
-import type { IncompleteMessage, SearchRequestStatus } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
+import { SearchRequestStatus } from 'types/search';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 

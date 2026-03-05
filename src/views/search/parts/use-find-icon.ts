@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { SearchChipItem } from 'types/index.d';
+import { SearchChipItem } from 'types/search';
 
 export const findIconFromChip = (chip: SearchChipItem & { label: string }): SearchChipItem => {
 	switch (chip.label) {

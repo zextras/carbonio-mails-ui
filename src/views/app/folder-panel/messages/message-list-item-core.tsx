@@ -22,11 +22,12 @@ import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { MessageSubjectRow } from '../parts/message-subject-row';
+import { ParticipantsString } from '../parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
-import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
+import { TextReadValuesType } from 'types/folder';
+import { IncompleteMessage } from 'types/messages';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsString } from '../parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type MessageListItemCoreProps = {

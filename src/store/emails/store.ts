@@ -21,18 +21,16 @@ import { createSearchIndexSlice } from 'store/emails/slices/search/search-slice'
 import { searchSliceUtils } from 'store/emails/slices/search/utils';
 import { syncDataHandlerUtils } from 'store/emails/sync-data-handler/utils';
 import { createTaskQueueManager } from 'store/emails/task-management/create-task-queue-manager';
+import { ConvActionParameters, NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 import {
-	IncompleteMessage,
-	MailMessage,
 	EmailsStoreState,
-	NormalizedConversation,
-	SearchRequestStatus,
-	SearchIndexSliceState,
 	PopulatedItemsSliceState,
-	ConvActionResponse,
-	MsgActionParameters,
-	ConvActionParameters
-} from 'types/index.d';
+	SearchIndexSliceState,
+	SearchRequestStatus
+} from 'types/search';
+import { ConvActionResponse } from 'types/soap/conv-action';
+import { MsgActionParameters } from 'types/soap/msg-action';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
 type TaskManagement = {

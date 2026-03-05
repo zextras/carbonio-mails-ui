@@ -9,10 +9,10 @@ import { includes, uniqBy } from 'lodash';
 import { calcColor } from 'commons/utilities';
 import { getUserLocale } from 'commons/utils';
 import { getAttachmentExtension } from 'helpers/attachments';
+import { GetAttachmentsDownloadLinkProps } from 'types/actions';
 import { IconColors } from 'types/details-pannel';
 import { EditorAttachmentFiles } from 'types/editor';
 import { AttachmentPart } from 'types/messages';
-import { GetAttachmentsDownloadLinkProps } from 'types/utils';
 
 export const getLocationOrigin = (): string => window.location.origin;
 
