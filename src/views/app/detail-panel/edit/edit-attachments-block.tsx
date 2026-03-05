@@ -51,19 +51,13 @@ export const EditAttachmentsBlock: FC<{
 						wrap="wrap"
 						data-testid={'edit-attachments-block'}
 					>
-						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) =>
-							// FIXME: This ternary is a temporary fix. Remove once the backend is exposing the correct data
-							// REF IRIS-4205
-							attachment.filename !== 'unnamed' ? (
-								<AttachmentPreview
-									key={`att-${attachment.filename}-${index}`}
-									editorId={editorId}
-									attachment={attachment}
-								/>
-							) : (
-								<></>
-							)
-						)}
+						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) => (
+							<AttachmentPreview
+								key={`att-${attachment.filename}-${index}`}
+								editorId={editorId}
+								attachment={attachment}
+							/>
+						))}
 					</Container>
 					<Row mainAlignment="flex-start" padding={{ vertical: 'extrasmall' }}>
 						<Padding right="small">
