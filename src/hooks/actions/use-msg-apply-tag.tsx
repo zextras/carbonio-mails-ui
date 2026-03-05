@@ -13,12 +13,8 @@ import { MessageActionsDescriptors, TIMEOUTS } from 'constants/index';
 import { isSpam } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import {
-	MsgActionOperation,
-	MsgActionResponse,
-	UIActionAggregator,
-	UIActionDescriptor
-} from 'types/index.d';
+import { UIActionAggregator, UIActionDescriptor } from 'types/actions';
+import { MsgActionOperation, MsgActionResponse } from 'types/soap/msg-action';
 
 export const useMsgApplyTagSubDescriptors = ({
 	ids,

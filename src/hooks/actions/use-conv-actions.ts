@@ -29,7 +29,8 @@ import { useConvSetUnflagDescriptor } from 'hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from 'hooks/actions/use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from 'hooks/actions/use-conv-show-original';
 import { useConversationMessages } from 'store/emails/store';
-import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
+import { UIActionDescriptor, UIActionAggregator } from 'types/actions';
+import { NormalizedConversation } from 'types/conversations';
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;

@@ -5,7 +5,6 @@
  */
 
 export * from '@zextras/carbonio-ui-commons';
-export * from './actions';
 export * from './api';
 export * from './attachments';
 export * from './backup-search';

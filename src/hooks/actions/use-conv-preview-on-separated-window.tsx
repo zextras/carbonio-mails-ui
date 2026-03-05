@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isFocusModeMailView, openConversationStandalonePreview } from 'helpers/external-tabs';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
