@@ -143,14 +143,17 @@ const EditViewController = (): React.JSX.Element => {
 	);
 	const storeMessage = useMessageById(id ?? '');
 	/**
-	 * Load the original message with requested content part
-	 * if it is required by the action performed
+	 * Ensures the store message is loaded with the requested format.
+	 * Uses the cached store message when complete and not truncated,
+	 * otherwise retrieves it from the SOAP API.
 	 */
 	useEffect(() => {
-		if (!!id && isMessageLoadingRequired) {
+		if (id && isMessageLoadingRequired) {
 			const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
+			const canUseStoreMessage =
+				storeMessage?.html === html && storeMessage?.isComplete && !storeMessage?.body?.truncated;
 
-			if (storeMessage?.html === html && storeMessage.isComplete && !storeMessage.body.truncated) {
+			if (canUseStoreMessage) {
 				setMessage(storeMessage);
 			} else {
 				getMsgSoapApi({ msgId: id, html }).then((response) => {
