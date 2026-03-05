@@ -7,7 +7,6 @@
 export * from '@zextras/carbonio-ui-commons';
 export * from './api';
 export * from './attachments';
-export * from './backup-search';
 export * from './conversations';
 export * from './messages';
 export * from './participant';
