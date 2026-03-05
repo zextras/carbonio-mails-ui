@@ -22,7 +22,7 @@ import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { getFullMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { useMessageById } from 'store/emails/store';
-import type { EditViewActionsType, MailsEditorV2 } from 'types/index.d';
+import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 

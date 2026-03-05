@@ -17,7 +17,8 @@ import {
 	useEditorIdentityId,
 	useEditorToRecipients
 } from 'store/editor/index';
-import { MailsEditorV2, Participant } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
+import { Participant } from 'types/participant';
 import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row';
 
 export type RecipientsRowsProps = {

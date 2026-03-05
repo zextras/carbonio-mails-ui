@@ -36,15 +36,13 @@ import {
 	retrieveTO
 } from 'store/editor-slice-utils';
 import {
-	EditViewActionsType,
 	EditorPrefillData,
 	EditorRecipients,
 	EditorText,
-	MailMessage,
-	MailsEditorV2,
-	Participant,
-	UnsavedAttachment
-} from 'types/index.d';
+	EditViewActionsType,
+	MailsEditorV2
+} from 'types/editor';
+import { MailMessage, Participant, UnsavedAttachment } from 'types/index.d';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;

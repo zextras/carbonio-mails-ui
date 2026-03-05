@@ -8,7 +8,6 @@ import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { MailsEditorV2 } from '../../../../types';
 import { setupHook } from '@test-setup';
 import {
 	APIInterceptor,
@@ -17,6 +16,7 @@ import {
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorDraftSave, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { MailsEditorV2 } from 'types/editor';
 
 const setSaveDraftDelaySetting = (value: string | undefined): void => {
 	vi.spyOn(shell, 'getUserSettings').mockImplementation(

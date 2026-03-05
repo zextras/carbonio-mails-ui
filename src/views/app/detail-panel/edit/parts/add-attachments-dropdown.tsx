@@ -6,27 +6,18 @@
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
 import styled from '@emotion/styled';
-import {
-	Dropdown,
-	Row,
-	Text,
-	Tooltip,
-	Icon,
-	Padding,
-	DropdownItem,
-	Button
-} from '@zextras/carbonio-design-system';
+import { Dropdown, Row, Tooltip, DropdownItem, Button } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
-import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorText } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 import {
 	useGetPublicUrl,
 	UseGetPublicUrlRespType

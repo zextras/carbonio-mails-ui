@@ -12,11 +12,10 @@ import {
 	filterSavedInlineAttachment,
 	filterUnsavedInlineAttachment
 } from 'store/editor/editor-utils';
+import { EditorTextProvider, MailsEditorV2 } from 'types/editor';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
-	EditorTextProvider,
-	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
 } from 'types/index.d';

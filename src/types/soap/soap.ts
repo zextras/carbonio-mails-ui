@@ -5,10 +5,8 @@
  */
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { Folder } from '@zextras/carbonio-ui-commons';
-import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 
 import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import { MailsEditorV2 } from 'types/editor/index.d';
 import { EmailAddresses } from 'types/soap/redirect-message-action';
 import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from 'types/soap/save-draft';
 
@@ -287,12 +285,6 @@ export type GetConvParameters = {
 export type RedirectActionParameters = {
 	id: string;
 	e: EmailAddresses[];
-};
-
-export type SaveDraftNewParameters = {
-	data: MailsEditorV2;
-	prefs?: Partial<AccountSettingsPrefs>;
-	signal?: AbortSignal;
 };
 
 export type SaveDraftNewResult = {

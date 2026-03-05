@@ -11,7 +11,6 @@ export * from './attachments';
 export * from './backup-search';
 export * from './conversations';
 export * from './details-pannel';
-export * from './editor';
 export * from './filters';
 export * from './folder';
 export * from './messages';
