@@ -17,12 +17,9 @@ import {
 	useMessageById,
 	useMessageStatus
 } from 'store/emails/store';
-import {
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation,
-	SearchRequestStatus
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { SearchRequestStatus } from 'types/search';
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;

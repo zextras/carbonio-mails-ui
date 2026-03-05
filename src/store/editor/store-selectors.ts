@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { EditorsStateTypeV2, UnsavedAttachment } from 'types/index.d';
+import { UnsavedAttachment } from 'types/attachments';
+import { EditorsStateTypeV2 } from 'types/state';
 
 export const selectUnsavedAttachmentByUploadId = (
 	state: EditorsStateTypeV2,
