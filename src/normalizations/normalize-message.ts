@@ -29,13 +29,13 @@ import {
 	MailHeaders,
 	MailMessage,
 	MailMessagePart,
-	Participant,
 	SoapEmailParticipantRole,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from 'types/index.d';
+import { Participant } from 'types/participant';
 import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage

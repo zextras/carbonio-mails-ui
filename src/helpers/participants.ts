@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Participant } from 'types/index.d';
+
+import { Participant } from 'types/participant';
 
 /**
  * Compares the mandatory fields and then, if set, the optional fields

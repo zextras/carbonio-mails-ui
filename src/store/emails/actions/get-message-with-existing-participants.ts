@@ -12,7 +12,9 @@ import {
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
-import { GetMsgResponse, MailMessage, Participant } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
+import { GetMsgResponse } from 'types/soap/get-msg';
 
 async function handleRetrieveMessageWithParticipants(
 	messageId: string,
