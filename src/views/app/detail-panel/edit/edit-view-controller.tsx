@@ -19,6 +19,7 @@ import { includes, noop } from 'lodash';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
+import { useMessageById } from '../../../../store/emails/store';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
@@ -140,7 +141,7 @@ const EditViewController = (): React.JSX.Element => {
 		(): boolean => isMessageRequired && !message,
 		[isMessageRequired, message]
 	);
-
+	const storeMessage = useMessageById(id ?? '');
 	/**
 	 * Load the original message with requested content part
 	 * if it is required by the action performed
@@ -148,13 +149,18 @@ const EditViewController = (): React.JSX.Element => {
 	useEffect(() => {
 		if (!!id && isMessageLoadingRequired) {
 			const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
-			getMsgSoapApi({ msgId: id, html }).then((response) => {
-				if (response?.m?.[0]) {
-					setMessage(normalizeMailMessageFromSoap({ m: response.m[0], html, isComplete: true }));
-				}
-			});
+
+			if (storeMessage?.html === html && storeMessage.isComplete && !storeMessage.body.truncated) {
+				setMessage(storeMessage);
+			} else {
+				getMsgSoapApi({ msgId: id, html }).then((response) => {
+					if (response?.m?.[0]) {
+						setMessage(normalizeMailMessageFromSoap({ m: response.m[0], html, isComplete: true }));
+					}
+				});
+			}
 		}
-	}, [id, isMessageLoadingRequired]);
+	}, [id, isMessageLoadingRequired, storeMessage]);
 
 	/*
 	 * If the current component is running inside a board

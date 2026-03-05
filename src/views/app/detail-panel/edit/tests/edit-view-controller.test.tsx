@@ -13,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { HttpResponse } from 'msw';
 
 import { updateMessages } from '../../../../../store/emails/store';
+import { EditViewActionsType } from '../../../../../types/editor';
 import { setupTest, screen } from '@test-setup';
 import {
 	updateBoardContext,
@@ -24,6 +25,7 @@ import {
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { ASSERTIONS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { EditViewActions } from 'constants/index';
@@ -51,6 +53,70 @@ const messageMock = populateMessagesInEmailStore({
 		}
 	]
 })[0];
+
+const actions = [
+	EditViewActions.REPLY,
+	EditViewActions.REPLY_ALL,
+	EditViewActions.FORWARD,
+	EditViewActions.FORWARD_AS_ATTACHMENT,
+	EditViewActions.EDIT_AS_NEW,
+	EditViewActions.EDIT_AS_DRAFT
+];
+
+const completeness = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
+const truncatedStates = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
+const msgHtmlValue = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
+const prefValues = ['html', 'plain'];
+type TestCase = {
+	action: EditViewActionsType;
+	isComplete: typeof ASSERTIONS.IS;
+	isTruncated: typeof ASSERTIONS.IS;
+	pref: 'html' | 'plain';
+	isHtml: boolean;
+};
+
+const callApiDimensions = {
+	action: actions,
+	isComplete: completeness,
+	isTruncated: truncatedStates,
+	isHtml: msgHtmlValue,
+	pref: prefValues
+};
+
+const notCallApiDimensions = {
+	action: actions,
+	isHtml: msgHtmlValue,
+	pref: prefValues
+};
+
+const callApiCases = Object.entries(callApiDimensions)
+	.reduce<TestCase[]>(
+		(acc, [key, values]) =>
+			acc.flatMap((prev) =>
+				values.map((value) => ({
+					...prev,
+					[key]: value
+				}))
+			),
+		[{} as TestCase]
+	)
+	.filter(
+		({ pref, isHtml }) =>
+			!(pref === 'html' && isHtml === true) && !(pref === 'plain' && isHtml === false)
+	);
+
+const notCallApiCases = Object.entries(notCallApiDimensions)
+	.reduce<TestCase[]>(
+		(acc, [key, values]) =>
+			acc.flatMap((prev) =>
+				values.map((value) => ({
+					...prev,
+					[key]: value
+				}))
+			),
+		[{} as TestCase]
+	)
+	.filter(({ pref, isHtml }) => (pref === 'html') === isHtml);
 
 describe('EditViewController', () => {
 	beforeAll(() => {
@@ -99,38 +165,72 @@ describe('EditViewController', () => {
 		expect(apiCallFlag).not.toHaveBeenCalled();
 	});
 
-	it.each`
-		action
-		${EditViewActions.REPLY}
-		${EditViewActions.REPLY_ALL}
-		${EditViewActions.FORWARD}
-		${EditViewActions.FORWARD_AS_ATTACHMENT}
-		${EditViewActions.EDIT_AS_NEW}
-		${EditViewActions.EDIT_AS_DRAFT}
-	`(`should call the getMsg API if the action performed is $action`, async ({ action }) => {
-		getUserSettings.mockReturnValue({
-			attrs: {},
-			props: [],
-			prefs: {
-				zimbraPrefComposeFormat: 'html'
-			}
-		});
-		const messages = populateMessagesInEmailStore({
-			messageGeneratorParams: [{ truncated: false, isComplete: true }]
-		});
+	it.each(notCallApiCases)(
+		`should not call the getMsg API if the action is $action, the required message is complete and is not truncated and $isHtml.desc html and preference is $pref`,
+		async ({ action, pref, isHtml }) => {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: {
+					zimbraPrefComposeFormat: pref
+				}
+			});
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ truncated: false, isComplete: true, html: isHtml }]
+			});
 
-		const boardMock = createBoardMock({
-			originAction: action,
-			originActionTargetId: messages[0].id
-		});
-		useBoard.mockReturnValue(boardMock);
-		const apiCallFlag = vi.fn();
-		createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
+			const boardMock = createBoardMock({
+				originAction: action,
+				originActionTargetId: messages[0].id
+			});
+			useBoard.mockReturnValue(boardMock);
+			const apiCallFlag = vi.fn();
+			createSoapAPIInterceptor('GetMsg', messageMock).finally(apiCallFlag);
+			await act(async () => setupTest(<EditViewController />));
 
-		await act(async () => setupTest(<EditViewController />));
+			expect(apiCallFlag).not.toHaveBeenCalled();
+		}
+	);
 
-		expect(apiCallFlag).toHaveBeenCalled();
-	});
+	it.each(callApiCases)(
+		`should call the getMsg API if the action is $action, the required message $isComplete.desc complete and $isTruncated.desc truncated and $isHtml.desc html and preference is $pref`,
+		async ({ action, isComplete, isTruncated, pref, isHtml }) => {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: {
+					zimbraPrefComposeFormat: pref
+				}
+			});
+			const messages = populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{ truncated: isTruncated.value, isComplete: isComplete.value, html: isHtml }
+				]
+			});
+
+			const boardMock = createBoardMock({
+				originAction: action,
+				originActionTargetId: messages[0].id
+			});
+			useBoard.mockReturnValue(boardMock);
+			const soapMessage = getSoapMailMessage(messages[0].id);
+			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [soapMessage]
+			});
+
+			await act(async () => setupTest(<EditViewController />));
+
+			const getMsgRequest = await getMsgInterceptor;
+
+			expect(getMsgRequest).toEqual(
+				expect.objectContaining({
+					m: expect.objectContaining({
+						id: messages[0].id
+					})
+				})
+			);
+		}
+	);
 
 	it("shouldn't unmount the editor when the message is updated", async () => {
 		getUserSettings.mockReturnValue({
@@ -149,10 +249,7 @@ describe('EditViewController', () => {
 				}
 			]
 		})[0];
-		const soapMessage = getSoapMailMessage(message.id);
-		const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-			m: [soapMessage]
-		});
+
 		const boardMock = createBoardMock({
 			originAction: EditViewActions.REPLY,
 			originActionTargetId: message.id
@@ -160,7 +257,6 @@ describe('EditViewController', () => {
 		useBoard.mockReturnValue(boardMock);
 
 		await act(async () => setupTest(<EditViewController />));
-		await getMsgInterceptor;
 		expect(screen.getByRole('button', { name: /send/i })).toBeVisible();
 
 		expect(updateBoardContext).toHaveBeenCalledTimes(1);
