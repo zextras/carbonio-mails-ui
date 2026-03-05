@@ -21,7 +21,8 @@ import { normalizeMailMessageFromSoap } from '../../../../normalizations/normali
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
-import type { EditViewActionsType, MailMessage, MailsEditorV2 } from 'types/index.d';
+import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
+import { MailMessage } from 'types/messages';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 

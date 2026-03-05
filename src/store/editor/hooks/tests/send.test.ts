@@ -6,15 +6,15 @@
 import { act } from '@testing-library/react';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
-import { setupEditorStore } from '__test__/generators/editor-store';
-import { MailsEditorV2 } from '../../../../types';
 import { generateNewMessageEditor } from '../../editor-generators';
-import { computeAndUpdateEditorStatus } from '../statuses';
 import { useEditorSend } from '../send';
+import { computeAndUpdateEditorStatus } from '../statuses';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { createSoapAPIInterceptorWithError } from '__test__/generators/api';
+import { setupEditorStore } from '__test__/generators/editor-store';
+import { MailsEditorV2 } from 'types/editor';
 
 describe('send', () => {
 	it('should return an object with send and status', () => {

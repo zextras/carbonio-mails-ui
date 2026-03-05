@@ -23,14 +23,14 @@ import { GetSignaturesSoapApi, signatureRequest } from 'api/get-signatures-soap-
 import { TIMEOUTS } from 'constants/index';
 import { NO_SIGNATURE_ID } from 'helpers/signatures';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type {
+import {
 	AccountIdentity,
 	PrefsType,
 	PropsType,
-	SignItemType,
 	Signature,
+	SignItemType,
 	UpdateSettingsProps
-} from 'types/index.d';
+} from 'types/settings';
 import {
 	differenceIdentities,
 	differenceObject,
@@ -227,7 +227,7 @@ const SettingsView = (): React.JSX.Element => {
 		(signs: Array<Signature>) => {
 			const signaturesItems = map(
 				signs,
-				(item: Signature, idx) =>
+				(item: Signature) =>
 					({
 						label: item.name,
 						name: item.name,

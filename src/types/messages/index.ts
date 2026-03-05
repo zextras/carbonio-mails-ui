@@ -5,7 +5,7 @@
  */
 
 import { SENSITIVITY_VALUES } from 'constants/index';
-import type { MailsEditorV2 } from 'types/editor/index.d';
+import type { MailsEditorV2 } from 'types/editor';
 import type { Participant } from 'types/participant';
 import type { PrefsType } from 'types/settings';
 import { SaveDraftResponse, MessageSignature } from 'types/soap';

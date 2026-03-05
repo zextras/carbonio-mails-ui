@@ -16,8 +16,8 @@ import { setupTest, screen, setupHook } from '../../../../../../__test__/test-se
 import { FOLDER_ACTIONS } from '../../../../../../commons/utilities';
 import { PROCESS_STATUS } from '../../../../../../constants';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { MailsEditorV2 } from '../../../../../../types';
 import { EditViewFooter } from '../edit-view-footer';
+import { MailsEditorV2 } from 'types/editor';
 
 const getDraftDeleteBottom = (): HTMLElement =>
 	screen.getByRoleWithIcon('button', {

@@ -9,7 +9,8 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { EditViewActions } from '../../constants';
 import { getDefaultIdentity } from '../../helpers/identities';
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types';
+import type { SavedAttachment, UnsavedAttachment } from 'types';
+import { MailsEditorV2 } from 'types/editor';
 
 const alignState = (editor: MailsEditorV2): void => {
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);

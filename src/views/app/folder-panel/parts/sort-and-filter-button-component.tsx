@@ -26,7 +26,7 @@ import {
 } from '../../../../constants';
 import { parseMessageSortingOptions } from '../../../../helpers/parseMessageSortingOptions';
 import { updateSortAndFilterSettings } from '../../../../helpers/sorting';
-import type { SortOption, FilterOption } from '../../../../types';
+import { FilterOption, SortOption } from 'types/sorting';
 
 function getRadioIcon(option: string | undefined, value: string): string {
 	return option === value ? 'RadioButtonOn' : 'RadioButtonOff';
