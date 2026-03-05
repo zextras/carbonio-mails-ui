@@ -10,7 +10,8 @@ import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useEditorAttachments } from 'store/editor/index';
-import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from 'types/index.d';
+import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 import { AttachmentPreview } from 'views/app/detail-panel/edit/attachment-preview';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 

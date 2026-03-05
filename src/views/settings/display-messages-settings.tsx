@@ -23,7 +23,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { MAIL_APP_ID } from 'constants/index';
-import type { DisplayingMessagesSettingsProps } from 'types/index.d';
+import { DisplayingMessagesSettingsProps } from 'types/settings';
 import {
 	CheckNewMailOptions,
 	DisplayMailOptions,

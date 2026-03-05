@@ -5,6 +5,7 @@
  */
 
 import { Account } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
 
 export type PrefsType = {
 	zimbraPrefCalendarReminderMobile: string;
@@ -210,25 +211,11 @@ export type Signature = {
 	];
 };
 
-type AccountIdentity = Account['identities']['identity'][number];
+export type AccountIdentity = Account['identities']['identity'][number];
 
-type IdentityProps = AccountIdentity['_attrs'];
-// 	{
-// 	zimbraPrefForwardReplySignatureId: string;
-// 	zimbraPrefWhenSentToEnabled: string;
-// 	zimbraPrefWhenInFoldersEnabled: string;
-// 	zimbraPrefFromAddressType: string;
-// 	objectClass: string;
-// 	zimbraPrefFromAddress: string;
-// 	zimbraPrefFromDisplay: string;
-// 	zimbraPrefIdentityId: string;
-// 	zimbraPrefDefaultSignatureId: string;
-// 	zimbraCreateTimestamp: string;
-// 	zimbraPrefIdentityName: string;
-// 	zimbraPrefReplyToEnabled: string;
-// };
+export type IdentityProps = AccountIdentity['_attrs'];
 
-type SignatureSettingsPropsType = {
+export type SignatureSettingsPropsType = {
 	updatedIdentities: AccountIdentity[];
 	updateIdentities: (arg: {
 		target?: {
