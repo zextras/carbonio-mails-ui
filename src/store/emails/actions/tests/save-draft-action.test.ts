@@ -11,7 +11,8 @@ import { generateAccount } from '@test-utils/accounts/account-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateEditor } from 'store/editor/editor-generators';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
-import { MailsEditorV2, SaveDraftRequest } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
+import { SaveDraftRequest } from 'types/soap/save-draft';
 
 describe('saveDraftEmailStoreAction', () => {
 	describe('Reply-To', () => {

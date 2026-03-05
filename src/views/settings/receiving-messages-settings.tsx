@@ -17,7 +17,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
 import { MAIL_APP_ID } from 'constants/index';
-import type { ReceivingMessagesSettingsType } from 'types/index.d';
+import { ReceivingMessagesSettingsType } from 'types/settings';
 import {
 	NotifyFolderOpts,
 	ReadReceiptOpts,
