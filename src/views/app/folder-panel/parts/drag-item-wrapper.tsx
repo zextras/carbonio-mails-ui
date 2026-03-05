@@ -10,7 +10,8 @@ import { Drag } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 
 import { AppContext } from 'app-utils/app-context-initializer';
-import type { DragItemWrapperProps, MsgListDraggableItemType } from 'types/index.d';
+import { MsgListDraggableItemType } from 'types/folder';
+import { DragItemWrapperProps } from 'types/utils';
 
 type DragCheckProps = {
 	e: React.DragEvent;

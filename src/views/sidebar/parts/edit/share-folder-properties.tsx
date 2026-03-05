@@ -5,6 +5,7 @@
  */
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import styled from '@emotion/styled';
 import {
 	Button,
 	Chip,
@@ -14,20 +15,15 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Grant, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
-import styled from '@emotion/styled';
 
 import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { findLabel, ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
-import type {
-	ActionProps,
-	GranteeInfoProps,
-	GranteeProps,
-	ShareFolderPropertiesProps
-} from 'types/index.d';
+import { ActionProps } from 'types/actions';
+import { GranteeInfoProps, GranteeProps, ShareFolderPropertiesProps } from 'types/share';
 import { Context } from 'views/sidebar/parts/edit/edit-context';
 
 const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
