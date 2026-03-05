@@ -245,7 +245,6 @@ function handleDeleteAttachments(
 				if (message) {
 					const normalizeMsg = normalizeMailMessageFromSoap({
 						m: response.m[0],
-						html: message.html,
 						isComplete: true
 					});
 					populatedItemsSlice.messages[id] = {

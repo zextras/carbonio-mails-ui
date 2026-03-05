@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
@@ -13,15 +12,15 @@ import {
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
-import { MailMessage, Participant } from 'types/index.d';
+import { GetMsgResponse, MailMessage, Participant } from 'types/index.d';
 
 async function handleRetrieveMessageWithParticipants(
 	messageId: string,
+	apiCall: (id: string) => Promise<GetMsgResponse>,
 	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
-	const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await getMsgSoapApi({ msgId: messageId, max: 250_000, html }).catch(() => {
+	const response = await apiCall(messageId).catch(() => {
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 	});
 	if (!response || 'Fault' in response) {
@@ -29,17 +28,21 @@ async function handleRetrieveMessageWithParticipants(
 		return undefined;
 	}
 	const messages = map(response?.m ?? [], (msg) => ({
-		...normalizeCompleteMailMessageFromSoap(msg, html),
+		...normalizeCompleteMailMessageFromSoap(msg),
 		participants
 	}));
 	updateMessages(messages);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap({ m: response.m[0], html, isComplete: true });
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
 export function getMessageWithExistingParticipantsEmailStoreAction(
 	messageId: string,
 	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessageWithParticipants(messageId, participants);
+	return handleRetrieveMessageWithParticipants(
+		messageId,
+		(id) => getMsgSoapApi({ msgId: id, max: 250_000 }),
+		participants
+	);
 }

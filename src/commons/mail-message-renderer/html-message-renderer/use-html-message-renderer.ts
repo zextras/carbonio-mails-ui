@@ -262,7 +262,7 @@ export const useHtmlMessageRenderer = (message: MailMessage): HtmlMessageRendere
 	const loadFullMessage = useCallback(async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		try {
-			await getFullMessageEmailStoreAction(message.id, true);
+			await getFullMessageEmailStoreAction(message.id);
 		} finally {
 			setIsLoadingMessage(false);
 		}

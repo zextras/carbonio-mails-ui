@@ -506,10 +506,8 @@ export const normalizeMailMessageFromSoap = ({
 	});
 };
 
-export const normalizeCompleteMailMessageFromSoap = (
-	m: SoapMailMessage,
-	html: boolean
-): MailMessage => normalizeMailMessageFromSoap({ m, html, isComplete: true });
+export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
+	normalizeMailMessageFromSoap({ m, isComplete: true });
 
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(

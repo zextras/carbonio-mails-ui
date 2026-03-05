@@ -18,7 +18,7 @@ import {
 import { NormalizedConversation, SearchConvResponse } from 'types/index.d';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, true));
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
 	const conversation = getConversationById(conversationId);

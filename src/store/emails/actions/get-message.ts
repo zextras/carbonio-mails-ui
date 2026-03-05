@@ -17,7 +17,7 @@ import { updateMessages, updateMessageStatus } from 'store/emails/store';
 import { GetMsgResponse, MailMessage } from 'types/index.d';
 
 function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, true));
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
 }
 

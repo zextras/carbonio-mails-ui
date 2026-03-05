@@ -45,7 +45,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 				sender = getSenderByOwner(rooFolder?.owner);
 			}
 			if (!item?.isComplete) {
-				getMessageEmailStoreAction(item.id, true)
+				getMessageEmailStoreAction(item.id)
 					.then((message) => {
 						if (!message) return;
 						const mailHtmlBody = extractBody(message).richText;

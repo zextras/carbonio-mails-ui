@@ -27,8 +27,7 @@ export async function saveDraftEmailStoreAction({
 	if (result.m)
 		result.m.forEach((message) => {
 			const normalizedMessage = normalizeMailMessageFromSoap({
-				m: message,
-				html: editor.isRichText
+				m: message
 			});
 			updateMessages([normalizedMessage]);
 			updateMessageStatus(normalizedMessage.id, API_REQUEST_STATUS.fulfilled);
