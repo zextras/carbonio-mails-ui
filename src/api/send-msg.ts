@@ -77,7 +77,7 @@ export async function sendMsgFromEditor({
 		identity?.ownerAccount ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction(response.m[0].id);
+		getMessageEmailStoreAction(response.m[0].id, true);
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid });

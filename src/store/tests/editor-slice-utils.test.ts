@@ -97,6 +97,7 @@ const mailMessage: MailMessage = {
 		}
 	],
 	read: false,
+	html: true,
 	replyType: undefined,
 	sensitivity: undefined,
 	shr: undefined,

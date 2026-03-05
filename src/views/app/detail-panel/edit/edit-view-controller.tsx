@@ -149,7 +149,7 @@ const EditViewController = (): React.JSX.Element => {
 			const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
 			getMsgSoapApi({ msgId: id, html }).then((response) => {
 				if (response?.m?.[0]) {
-					setMessage(normalizeMailMessageFromSoap(response.m[0], true));
+					setMessage(normalizeMailMessageFromSoap({ m: response.m[0], html, isComplete: true }));
 				}
 			});
 		}

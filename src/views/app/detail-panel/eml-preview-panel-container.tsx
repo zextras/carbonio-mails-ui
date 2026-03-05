@@ -28,7 +28,7 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 			if (!response || 'Fault' in response) {
 				return;
 			}
-			setMessage(normalizeMailMessageFromSoap(response.m[0], true) as MailMessage);
+			setMessage(normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true }));
 		});
 	}, [message, messageId, part]);
 

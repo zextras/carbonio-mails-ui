@@ -17,7 +17,7 @@ import { updateMessages, updateMessageStatus } from 'store/emails/store';
 import { GetMsgResponse, MailMessage } from 'types/index.d';
 
 function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, true));
 	updateMessages(messages);
 }
 
@@ -35,7 +35,7 @@ async function handleRetrieveMessage(
 	}
 	handleGetMsgResponse(response);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
 async function handleDecryptRetrieveMessage(
@@ -60,7 +60,7 @@ async function handleDecryptRetrieveMessage(
 	}
 	handleGetMsgResponse(response);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
 export function getMessageEmailStoreAction(
