@@ -5,4 +5,3 @@
  */
 
 export * from '@zextras/carbonio-ui-commons';
-export * from './api';
