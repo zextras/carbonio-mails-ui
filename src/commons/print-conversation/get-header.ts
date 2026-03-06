@@ -12,7 +12,7 @@ import { getUserLocale } from '../utils';
 import { getAttachments } from 'commons/print-conversation/get-attachments';
 import { getParticipantHeader } from 'commons/print-conversation/get-participant-header';
 import { getSubject } from 'commons/print-conversation/get-subject';
-import { type MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 export function getHeader(msg: MailMessage, content: string): string {
 	const { participants, subject } = msg;

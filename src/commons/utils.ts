@@ -7,7 +7,7 @@ import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
 import moment from 'moment';
 
-import type { MailMessagePart } from 'types/index.d';
+import { MailMessagePart } from 'types/messages';
 
 // retrieves locale from preferences, fallbacks to "en" if no locale found.
 export const getUserLocale = (): string => {

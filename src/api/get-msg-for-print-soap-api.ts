@@ -8,11 +8,8 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isNull, map, omitBy } from 'lodash';
 
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type {
-	GetMsgForPrintParameter,
-	GetMsgResponse as GetMsgResponseType,
-	MailMessage
-} from 'types/index.d';
+import type { GetMsgForPrintParameter, GetMsgResponse as GetMsgResponseType } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 export const getMsgsForPrintSoapApi = async ({
 	ids,

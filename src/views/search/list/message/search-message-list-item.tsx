@@ -14,7 +14,7 @@ import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 

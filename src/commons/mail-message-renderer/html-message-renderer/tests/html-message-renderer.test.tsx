@@ -10,12 +10,13 @@ import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 
 import { updateMessages } from '../../../../store/emails/store';
-import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../../types';
+import { GetMsgRequest, GetMsgResponse } from '../../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { MailMessage } from 'types/messages';
 
 // Helper function to access shadow DOM elements
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
