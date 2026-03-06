@@ -6,5 +6,4 @@
 
 export * from '@zextras/carbonio-ui-commons';
 export * from './api';
-export * from './conversations';
 export * from './soap';

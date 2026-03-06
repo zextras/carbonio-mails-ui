@@ -17,7 +17,8 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateConversation } from '__test__/generators/generateConversation';
-import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 import { MoveConversation } from 'ui-actions/move-conv';
 
 vi.mock('react-router-dom', async () => ({

@@ -12,7 +12,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateConversation } from '__test__/generators/generateConversation';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvPrintDescriptor, useConvPrintFn } from 'hooks/actions/use-conv-print';
-import { NormalizedConversation } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
 
 describe('useConvPrint', () => {
 	describe('Descriptor', () => {
