@@ -4,11 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { GenericActionDescriptors } from 'constants/index';
-import {
-	getSelectFoldersUIAction,
-	mergeDefaultExecutionConfig,
-	SelectFoldersUIActionExecutionConfig
-} from 'ui-actions/select-folders';
+import { SelectFoldersUIActionExecutionConfig } from 'types/actions';
+import { getSelectFoldersUIAction, mergeDefaultExecutionConfig } from 'ui-actions/select-folders';
 
 describe('mergeDefaultExecutionConfig', () => {
 	it('returns the default values if no values are provided', () => {

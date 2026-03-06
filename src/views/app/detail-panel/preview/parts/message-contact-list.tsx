@@ -30,7 +30,8 @@ import { useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { filter, find } from 'lodash';
 
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
-import type { MailMessage, TextReadValuesProps } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { TextReadValuesProps } from 'types/utils';
 import ContactNames from 'views/app/detail-panel/preview/parts/contact-names';
 import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { getFolderTranslatedName } from 'views/sidebar/utils';

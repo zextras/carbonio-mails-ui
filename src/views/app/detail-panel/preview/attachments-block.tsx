@@ -40,13 +40,6 @@ import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachme
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
-import type {
-	AttachmentPart,
-	AttachmentType,
-	CopyToFileRequest,
-	CopyToFileResponse,
-	MailMessage
-} from 'types/index.d';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
@@ -58,6 +51,8 @@ import {
 	isDocument,
 	previewType
 } from 'views/app/detail-panel/preview/file-preview';
+import { AttachmentType, CopyToFileRequest, CopyToFileResponse } from 'types/details-pannel';
+import { AttachmentPart, MailMessage } from 'types/messages';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -331,7 +326,7 @@ const Attachment = ({
 						}
 					],
 					/** Extension of the file, shown as info */
-					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+					extension: att?.filename?.substring(att.filename.lastIndexOf('.') + 1),
 					/** Name of the file, shown as info */
 					filename: att.filename,
 					/** Size of the file, shown as info */
@@ -639,6 +634,9 @@ const AttachmentsBlock = ({
 						isEml={isEml}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
+						// TODO FIX TYPE ISSUE
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						att={att}
 					/>
 				))}

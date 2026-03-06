@@ -9,7 +9,8 @@ import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
+import { AttachmentUploadProcessStatus } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 
 export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],

@@ -24,7 +24,7 @@ import {
 	getTranslatedSortFilterLabel,
 	updateSortAndFilterSettings
 } from '../../../../helpers/sorting';
-import type { SortOption, FilterOption, SortAndFilterState } from '../../../../types';
+import { FilterOption, SortAndFilterState, SortOption } from 'types/sorting';
 
 const isValid = (
 	val: string | undefined,

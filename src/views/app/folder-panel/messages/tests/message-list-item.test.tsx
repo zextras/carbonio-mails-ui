@@ -16,7 +16,8 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags as mockTags } from '@test-utils/tags/tags';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { openMessageStandalonePreview } from 'helpers/external-tabs';
-import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
+import { MessageListItemProps } from 'types/folder';
+import { MsgActionRequest } from 'types/soap/msg-action';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 

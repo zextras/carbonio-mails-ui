@@ -5,7 +5,7 @@
  */
 
 import { EditViewActions } from 'constants/index';
-import { EditorPrefillData } from 'types/index.d';
+import { EditorPrefillData } from 'types/editor';
 import type { Participant } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 

@@ -10,7 +10,9 @@ import { Drag } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 
 import { AppContext } from 'app-utils/app-context-initializer';
-import type { DragItemWrapperProps, MsgListDraggableItemType } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { MsgListDraggableItemType } from 'types/folder';
+import { MailMessage } from 'types/messages';
 
 type DragCheckProps = {
 	e: React.DragEvent;
@@ -62,6 +64,18 @@ const DraggableItem: FC<DraggableItemProps> = ({
 	) : (
 		<>{children}</>
 	);
+
+type DragItemWrapperProps = {
+	// TODO fix the any type with the correct one, that should be either MailMessage or NormalizedConversation
+	item: MailMessage | NormalizedConversation | any;
+	selectedIds: Array<string>;
+	selectedItems: Record<string, boolean>;
+	deselectAll: () => void;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+	dragImageRef: React.RefObject<HTMLElement> | undefined;
+	dragAndDropIsDisabled: boolean;
+	children: React.ReactNode;
+};
 
 export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	item,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { useEditorsStore } from 'store/editor/store';
-import { MailsEditorV2 } from 'types';
+import { MailsEditorV2 } from 'types/editor';
 
 export function setupEditorStore({ editors }: { editors?: Array<MailsEditorV2> }): void {
 	if (editors) {

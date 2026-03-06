@@ -12,7 +12,7 @@ import { debounce } from 'lodash';
 import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { plainTextToHTML } from 'commons/utils';
 import { useEditorText, useEditorTextProvider } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 export const SAVE_EDITOR_DELAY = 2000;

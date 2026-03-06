@@ -76,6 +76,9 @@ const sharedFolderReplyFunc = ({
 }: AcceptSharedCalendarType): Promise<SaveDraftResponse> => {
 	const displayMessage = customMessage?.length > 0 ? customMessage : '';
 	return acceptSharedFolderReply({
+		// TODO FIX ATTACH TYPE ERROR
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		attach: [{ mp: [] }],
 		subject: isAccepted
 			? `Share Accepted: ${sharedFolderName} shared by ${owner}`

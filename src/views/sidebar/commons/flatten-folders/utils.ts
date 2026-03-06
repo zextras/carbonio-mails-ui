@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Folder } from 'types/index.d';
+import { Folder } from '@zextras/carbonio-ui-commons';
 
 export function flattenAndFilterFoldersWithCap(
 	folders: Array<Folder>,

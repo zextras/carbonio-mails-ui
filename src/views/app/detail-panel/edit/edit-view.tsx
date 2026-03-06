@@ -69,9 +69,10 @@ import {
 	useEditorRecipients,
 	useEditorDid
 } from 'store/editor';
-import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from 'types/editor';
 import { isValidEmail } from 'views/search/parts/utils';
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
+import { SaveDraftResponse } from 'types/soap/save-draft';
 
 export type EditViewProp = {
 	editorId: string;

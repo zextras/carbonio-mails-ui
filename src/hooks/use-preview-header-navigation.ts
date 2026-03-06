@@ -20,7 +20,8 @@ import {
 	useMessageLoadingStatus,
 	useMessagesByIds
 } from 'store/emails/store';
-import { SearchRequestStatus } from 'types/index.d';
+import { SearchRequestStatus } from 'types/search';
+import { SortBy } from 'types/sorting';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 
@@ -71,7 +72,7 @@ export const usePreviewHeaderNavigation = ({
 		() => parseMessageSortingOptions(folderId, settings.prefs.zimbraPrefSortOrder as string),
 		[folderId, settings.prefs.zimbraPrefSortOrder]
 	);
-	const sortOrder = useMemo(() => sortType.concat(sortDirection), [sortDirection, sortType]);
+	const sortOrder = useMemo<SortBy>(() => `${sortType}${sortDirection}`, [sortDirection, sortType]);
 
 	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 

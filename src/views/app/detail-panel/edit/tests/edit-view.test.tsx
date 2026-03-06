@@ -48,16 +48,15 @@ import {
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import type {
-	MailsEditorV2,
+import { MailsEditorV2 } from 'types/editor';
+import {
 	SaveDraftRequest,
 	SaveDraftResponse,
 	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from 'types';
+	SoapEmailMessagePartObj
+} from 'types/soap/save-draft';
 import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { SoapMailMessage, SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
