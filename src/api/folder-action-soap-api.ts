@@ -8,7 +8,7 @@ import { DataProps } from '@zextras/carbonio-ui-commons';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isEmpty, isNil, omitBy } from 'lodash';
 
-import { FolderActionResponse } from 'types/index.d';
+import { FolderActionResponse } from 'types/soap/soap';
 
 export type FolderActionProps = {
 	folder: Folder | DataProps | Omit<Folder, 'parent'>;

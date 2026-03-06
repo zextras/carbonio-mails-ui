@@ -7,7 +7,7 @@
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { omitBy, isNil } from 'lodash';
 
-import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 export const msgActionSoapApi = async ({
 	ids,

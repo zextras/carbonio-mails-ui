@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
+import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
 
 export function getSoapMailMessage(
 	messageId: string,

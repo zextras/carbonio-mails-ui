@@ -12,7 +12,7 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS, TIMEOUTS } from 'constants/index';
 import { useMsgSetNotSpamDescriptor, useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useMsgSetNotSpam', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>

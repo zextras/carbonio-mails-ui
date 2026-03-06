@@ -13,7 +13,7 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useMsgSetReadDescriptor, useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useMsgSetRead', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>

@@ -8,7 +8,7 @@ import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soa
 
 import { generateRequest } from 'store/editor-slice-utils';
 import { MailsEditor } from 'types/editor';
-import type { SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
+import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
 
 // TODO create a generic function to call sendMsg and remove this one
 // TODO probably the owner account should be set also here

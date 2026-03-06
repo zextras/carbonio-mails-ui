@@ -6,7 +6,7 @@
 
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import { SoapMailMessage } from 'types/index.d';
+import { SoapMailMessage } from 'types/soap/soap-mail-message';
 
 type RemoveAttachmentsProps = {
 	id: string;

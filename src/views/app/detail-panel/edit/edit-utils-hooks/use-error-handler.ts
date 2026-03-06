@@ -7,7 +7,7 @@
 import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
 
 import { TIMEOUTS } from 'constants/index';
-import { SaveDraftResponse } from 'types';
+import { SaveDraftResponse } from 'types/soap/save-draft';
 
 function isErrorAboutInvalidRecipient(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
 	return error?.Fault?.Detail?.Error?.Code === 'mail.SEND_ABORTED_ADDRESS_FAILURE';

@@ -17,7 +17,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
-import { ConvActionRequest, ConvActionResponse } from 'types';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 
 describe('useConvArchive', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>

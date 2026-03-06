@@ -8,8 +8,8 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isNull, map, omitBy } from 'lodash';
 
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type { GetMsgForPrintParameter, GetMsgResponse as GetMsgResponseType } from 'types/index.d';
 import { MailMessage } from 'types/messages';
+import { GetMsgForPrintParameter } from 'types/soap/get-msg';
 
 export const getMsgsForPrintSoapApi = async ({
 	ids,
@@ -30,7 +30,7 @@ export const getMsgsForPrintSoapApi = async ({
 			_jsns: 'urn:zimbraMail'
 		})),
 		_jsns: 'urn:zimbra'
-	})) as { GetMsgResponse: Array<GetMsgResponseType> };
+	})) as any; /* as { GetMsgResponse: Array<GetMsgResponseType> } */ // TODO FIX THIS TYPE
 	return map(GetMsgResponse, (re) => {
 		const msg = re.m[0];
 		return normalizeMailMessageFromSoap(msg, true) as MailMessage;
