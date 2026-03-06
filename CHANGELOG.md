@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.2...v1.31.3) (2026-03-06)
+
+
+### Bug Fixes
+
+* composer keeps plain text format in rich text editor ([1156a93](https://github.com/zextras/carbonio-mails-ui/commit/1156a93b637c45c7d5e10bfd56f7614270a8b5bd))
+* composer keeps plain text format in rich text editor ([87513c2](https://github.com/zextras/carbonio-mails-ui/commit/87513c2c40d71c28d89ddc09caa47d3fd9ee4301))
+
 ### [1.31.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.1...v1.31.2) (2026-03-05)
 
 
