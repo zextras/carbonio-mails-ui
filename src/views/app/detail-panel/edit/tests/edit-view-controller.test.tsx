@@ -13,7 +13,6 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { HttpResponse } from 'msw';
 
 import { updateMessages } from '../../../../../store/emails/store';
-import { EditViewActionsType } from '../../../../../types/editor';
 import { setupTest, screen } from '@test-setup';
 import {
 	updateBoardContext,
@@ -67,56 +66,47 @@ const completeness = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
 const truncatedStates = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
 const msgHtmlValue = [ASSERTIONS.IS, ASSERTIONS.IS_NOT];
 const prefValues = ['html', 'plain'];
+const displayPrefValues = ['TRUE', 'FALSE'];
 type TestCase = {
-	action: EditViewActionsType;
-	isComplete: typeof ASSERTIONS.IS;
-	isTruncated: typeof ASSERTIONS.IS;
-	pref: 'html' | 'plain';
-	isHtml: boolean;
+	action: (typeof actions)[number];
+	msgIsHtml: typeof ASSERTIONS.IS | typeof ASSERTIONS.IS_NOT;
+	isComplete: typeof ASSERTIONS.IS | typeof ASSERTIONS.IS_NOT;
+	isTruncated: typeof ASSERTIONS.IS | typeof ASSERTIONS.IS_NOT;
+	editPref: 'html' | 'plain';
+	displayHTMLPref: 'TRUE' | 'FALSE';
+	expectedApiCall: 'none' | 'fullStore' | 'soap';
 };
 
-const callApiDimensions = {
+const APIDimensions = {
 	action: actions,
 	isComplete: completeness,
 	isTruncated: truncatedStates,
-	isHtml: msgHtmlValue,
-	pref: prefValues
+	msgIsHtml: msgHtmlValue,
+	editPref: prefValues,
+	displayHTMLPref: displayPrefValues
 };
 
-const notCallApiDimensions = {
-	action: actions,
-	isHtml: msgHtmlValue,
-	pref: prefValues
+const shouldCallApi = (tc: TestCase): boolean => {
+	const editAsHtml = tc.editPref === 'html';
+	const canUseStoreMessage =
+		(tc.msgIsHtml === ASSERTIONS.IS ? editAsHtml : !editAsHtml) &&
+		tc.isComplete === ASSERTIONS.IS &&
+		tc.isTruncated === ASSERTIONS.IS_NOT;
+
+	return !canUseStoreMessage && actions.includes(tc.action);
 };
 
-const callApiCases = Object.entries(callApiDimensions)
-	.reduce<TestCase[]>(
+const shouldNotCallApi = (tc: TestCase): boolean => !shouldCallApi(tc);
+
+const generateCases = (dimensions: typeof APIDimensions): TestCase[] =>
+	Object.entries(dimensions).reduce<TestCase[]>(
 		(acc, [key, values]) =>
-			acc.flatMap((prev) =>
-				values.map((value) => ({
-					...prev,
-					[key]: value
-				}))
-			),
+			acc.flatMap((prev) => values.map((value) => ({ ...prev, [key]: value }))),
 		[{} as TestCase]
-	)
-	.filter(
-		({ pref, isHtml }) =>
-			!(pref === 'html' && isHtml === true) && !(pref === 'plain' && isHtml === false)
 	);
-
-const notCallApiCases = Object.entries(notCallApiDimensions)
-	.reduce<TestCase[]>(
-		(acc, [key, values]) =>
-			acc.flatMap((prev) =>
-				values.map((value) => ({
-					...prev,
-					[key]: value
-				}))
-			),
-		[{} as TestCase]
-	)
-	.filter(({ pref, isHtml }) => (pref === 'html') === isHtml);
+const allCases = generateCases(APIDimensions);
+const apiCases = allCases.filter(shouldCallApi);
+const noApiCases = allCases.filter(shouldNotCallApi);
 
 describe('EditViewController', () => {
 	beforeAll(() => {
@@ -165,18 +155,18 @@ describe('EditViewController', () => {
 		expect(apiCallFlag).not.toHaveBeenCalled();
 	});
 
-	it.each(notCallApiCases)(
-		`should not call the getMsg API if the action is $action, the required message is complete and is not truncated and $isHtml.desc html and preference is $pref`,
-		async ({ action, pref, isHtml }) => {
+	it.each(noApiCases)(
+		'[$action] should NOT call any API: msgIsHtml=$msgIsHtml.value, isComplete=$isComplete.value, isTruncated=$isTruncated.value, editPref=$editPref, displayHTMLPref=$displayHTMLPref',
+		async ({ action, editPref, msgIsHtml }) => {
 			getUserSettings.mockReturnValue({
 				attrs: {},
 				props: [],
 				prefs: {
-					zimbraPrefComposeFormat: pref
+					zimbraPrefComposeFormat: editPref
 				}
 			});
 			const messages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ truncated: false, isComplete: true, html: isHtml }]
+				messageGeneratorParams: [{ truncated: false, isComplete: true, html: msgIsHtml.value }]
 			});
 
 			const boardMock = createBoardMock({
@@ -192,19 +182,20 @@ describe('EditViewController', () => {
 		}
 	);
 
-	it.each(callApiCases)(
-		`should call the getMsg API if the action is $action, the required message $isComplete.desc complete and $isTruncated.desc truncated and $isHtml.desc html and preference is $pref`,
-		async ({ action, isComplete, isTruncated, pref, isHtml }) => {
+	it.each(apiCases)(
+		'[$action] should call API: msgIsHtml=$msgIsHtml.value, isComplete=$isComplete.value, isTruncated=$isTruncated.value, editPref=$editPref, displayHTMLPref=$displayHTMLPref',
+		async ({ action, isComplete, isTruncated, editPref, msgIsHtml, displayHTMLPref }) => {
 			getUserSettings.mockReturnValue({
 				attrs: {},
 				props: [],
 				prefs: {
-					zimbraPrefComposeFormat: pref
+					zimbraPrefComposeFormat: editPref,
+					zimbraPrefMessageViewHtmlPreferred: displayHTMLPref
 				}
 			});
 			const messages = populateMessagesInEmailStore({
 				messageGeneratorParams: [
-					{ truncated: isTruncated.value, isComplete: isComplete.value, html: isHtml }
+					{ truncated: isTruncated.value, isComplete: isComplete.value, html: msgIsHtml.value }
 				]
 			});
 

@@ -19,6 +19,7 @@ import { includes, noop } from 'lodash';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
+import { getFullMessageEmailStoreAction } from '../../../../store/emails/actions/get-message';
 import { useMessageById } from '../../../../store/emails/store';
 import { EditViewActions } from 'constants/index';
 import { addEditor, useEditorSubject } from 'store/editor/index';
@@ -149,16 +150,25 @@ const EditViewController = (): React.JSX.Element => {
 	 */
 	useEffect(() => {
 		if (id && isMessageLoadingRequired) {
-			const html = getUserSettings()?.prefs?.zimbraPrefComposeFormat === 'html';
+			const prefs = getUserSettings()?.prefs;
+			const editAsHtml = prefs?.zimbraPrefComposeFormat === 'html';
+			const displayAsHtml = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
 			const canUseStoreMessage =
-				storeMessage?.html === html && storeMessage?.isComplete && !storeMessage?.body?.truncated;
+				storeMessage?.html === editAsHtml &&
+				storeMessage?.isComplete &&
+				!storeMessage?.body?.truncated;
 
+			const canSaveMessageInStore = editAsHtml === displayAsHtml;
 			if (canUseStoreMessage) {
 				setMessage(storeMessage);
+			} else if (canSaveMessageInStore) {
+				getFullMessageEmailStoreAction(id, editAsHtml);
 			} else {
-				getMsgSoapApi({ msgId: id, html }).then((response) => {
+				getMsgSoapApi({ msgId: id, html: editAsHtml }).then((response) => {
 					if (response?.m?.[0]) {
-						setMessage(normalizeMailMessageFromSoap({ m: response.m[0], html, isComplete: true }));
+						setMessage(
+							normalizeMailMessageFromSoap({ m: response.m[0], html: editAsHtml, isComplete: true })
+						);
 					}
 				});
 			}
