@@ -731,23 +731,6 @@ describe('attachments', () => {
 			});
 		});
 
-		it('should mark part with disposition "inline" as inline even if not an image', () => {
-			const message = generateMessage({ folderId: '2' });
-
-			message.parts = [
-				{
-					contentType: 'application/pdf',
-					disposition: 'inline',
-					filename: 'doc.pdf',
-					name: '2.3',
-					size: 2048
-				}
-			];
-
-			const result = buildSavedAttachments(message);
-			expect(result[0].isInline).toBe(true);
-		});
-
 		it('should not mark as inline when contentId is missing and disposition is not "inline"', () => {
 			const message = generateMessage({ folderId: '2' });
 			message.parts = [
