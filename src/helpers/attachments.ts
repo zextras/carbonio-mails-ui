@@ -315,7 +315,7 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getFlattenedAttachmentParts(message);
-	return attachmentsParts.map<SavedAttachment>((part) => ({
+	return attachmentsParts.map((part) => ({
 		messageId: message.id,
 		isInline: isInlineDisposition(part.disposition) && !!part.ci,
 		contentId: (part.ci && removeAngleBrackets(part.ci)) ?? undefined,
