@@ -24,6 +24,7 @@ export type MessageGenerationParams = {
 	isRead?: boolean;
 	isFlagged?: boolean;
 	isComplete?: boolean;
+	html?: boolean;
 	isDeleted?: boolean;
 	isDraft?: boolean;
 	isForwarded?: boolean;
@@ -57,6 +58,7 @@ export const generateMessage = ({
 	isRead = false,
 	isFlagged = false,
 	isComplete = false,
+	html = true,
 	isDeleted = false,
 	isDraft = false,
 	isForwarded = false,
@@ -85,6 +87,7 @@ export const generateMessage = ({
 	id,
 	invite: undefined,
 	isComplete,
+	html,
 	isDeleted,
 	isDraft,
 	isForwarded,

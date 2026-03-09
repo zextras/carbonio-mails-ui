@@ -33,7 +33,7 @@ async function handleRetrieveMessageWithParticipants(
 	}));
 	updateMessages(messages);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
 export function getMessageWithExistingParticipantsEmailStoreAction(

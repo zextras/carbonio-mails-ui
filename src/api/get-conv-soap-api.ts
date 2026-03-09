@@ -52,7 +52,7 @@ export const getConvSoapApi = async ({
 
 	const conversation = normalizeConversations([result.c[0]]);
 	const messages = map(result.c[0].m, (item) =>
-		normalizeMailMessageFromSoap(item, false)
-	) as unknown as Array<IncompleteMessage>;
+		normalizeMailMessageFromSoap({ m: item, isComplete: false })
+	);
 	return { conversation, messages };
 };

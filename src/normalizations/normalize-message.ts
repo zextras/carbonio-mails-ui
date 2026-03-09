@@ -470,10 +470,15 @@ const removeNil = <T extends object>(obj: T): RemoveNil<T> => {
 	return result as unknown as RemoveNil<T>;
 };
 
-export const normalizeMailMessageFromSoap = (
-	m: SoapIncompleteMessage,
-	isComplete?: boolean
-): IncompleteMessage => {
+export const normalizeMailMessageFromSoap = ({
+	m,
+	html = true,
+	isComplete
+}: {
+	m: SoapIncompleteMessage;
+	html?: boolean;
+	isComplete?: boolean;
+}): IncompleteMessage => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
 	)[0];
@@ -491,6 +496,7 @@ export const normalizeMailMessageFromSoap = (
 		...createBaseNormalizedMessage(m),
 		id: m.id,
 		isComplete,
+		html,
 		isScheduled: !!m.autoSendTime,
 		...getFlags(m),
 		isReadReceiptRequested: m.e
@@ -500,8 +506,10 @@ export const normalizeMailMessageFromSoap = (
 	});
 };
 
-export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
-	normalizeMailMessageFromSoap(m, true);
+export const normalizeCompleteMailMessageFromSoap = (
+	m: SoapMailMessage,
+	html?: boolean
+): MailMessage => normalizeMailMessageFromSoap({ m, isComplete: true, html });
 
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(

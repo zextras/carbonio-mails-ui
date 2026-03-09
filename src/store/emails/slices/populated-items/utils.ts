@@ -238,7 +238,10 @@ function handleDeleteAttachments(
 			messageIds.forEach((id) => {
 				const message = populatedItemsSlice.messages[id];
 				if (message) {
-					const normalizeMsg = normalizeMailMessageFromSoap(response.m[0], true);
+					const normalizeMsg = normalizeMailMessageFromSoap({
+						m: response.m[0],
+						isComplete: true
+					});
 					populatedItemsSlice.messages[id] = {
 						...message,
 						parts: normalizeMsg.parts
