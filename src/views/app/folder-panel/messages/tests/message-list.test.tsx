@@ -9,6 +9,7 @@ import React from 'react';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import {
 	FOLDERS,
+	FolderState,
 	ParticipantRole,
 	useFolderStore,
 	useTagStore
@@ -23,7 +24,7 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
-import { FolderState, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 

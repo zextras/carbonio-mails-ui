@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -8,13 +7,13 @@
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
 import { getSetupServer } from '../vitest-setup';
+import { SoapConversation } from 'types/soap/soap-conversation';
 import {
-	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage,
-	SoapMailMessagePart,
-	SoapMailParticipant
-} from 'types';
+	SoapMailMessagePart
+} from 'types/soap/soap-mail-message';
+import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}
@@ -22,23 +21,6 @@ export function generateMessagePartFromAPI(
 	return {
 		part: 'part',
 		ct: 'ct',
-		...params
-	};
-}
-export const generateConvMessageFromAPI = generateCompleteMessageFromAPI;
-
-export function generateCompleteMessageFromAPI(
-	params: Partial<SoapMailMessage> = {}
-): SoapMailMessage {
-	return {
-		...generateMessageFromAPI({ id: '987', d: 987 }),
-		su: 'Subject',
-		fr: 'Fragment',
-		e: [
-			generateFromParticipantFromAPI({ a: 'from@loc.al' }),
-			generateToParticipantFromAPI({ a: 'to@loc.al' })
-		],
-		mp: [generateMessagePartFromAPI()],
 		...params
 	};
 }
@@ -77,6 +59,24 @@ export function generateMessageFromAPI(
 		...params
 	};
 }
+
+export function generateCompleteMessageFromAPI(
+	params: Partial<SoapMailMessage> = {}
+): SoapMailMessage {
+	return {
+		...generateMessageFromAPI({ id: '987', d: 987 }),
+		su: 'Subject',
+		fr: 'Fragment',
+		e: [
+			generateFromParticipantFromAPI({ a: 'from@loc.al' }),
+			generateToParticipantFromAPI({ a: 'to@loc.al' })
+		],
+		mp: [generateMessagePartFromAPI()],
+		...params
+	};
+}
+
+export const generateConvMessageFromAPI = generateCompleteMessageFromAPI;
 
 type HandlerRequest<T> = DefaultBodyType & {
 	Body: Record<string, T>;

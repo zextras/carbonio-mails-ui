@@ -11,7 +11,8 @@ import { getMsgsForPrintSoapApi } from 'api/index';
 import { getContentForPrint } from 'commons/print-conversation/print-conversation';
 import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft, isTrash } from 'helpers/folders';
-import type { ActionFn, MailMessage, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
+import { MailMessage } from 'types/messages';
 import { errorPage } from 'ui-actions/error-page';
 
 export const useMsgPrintFn = (message: MailMessage, folderId: string): ActionFn => {

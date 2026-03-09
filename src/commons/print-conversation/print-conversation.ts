@@ -11,7 +11,8 @@ import { getCompleteHTML } from 'commons/print-conversation/get-complete-html';
 import { getHeader } from 'commons/print-conversation/get-header';
 import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from 'commons/utils';
 import { findAttachments } from 'helpers/attachments';
-import { NormalizedConversation, type MailMessage } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
 
 function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 	return map(conversationMessage, (msg) => {

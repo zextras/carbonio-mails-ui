@@ -35,7 +35,9 @@ import {
 	updateMessages
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
-import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import {
 	HandleFoldersNotifyProps,
 	HandleTagsNotifyProps,

@@ -9,13 +9,12 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
-import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS, getFolder, SoapFolderAction } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { SoapFolderAction } from 'types/index.d';
 import { EmptyModal } from 'views/sidebar/empty-modal';
 
 describe('empty-modal', () => {

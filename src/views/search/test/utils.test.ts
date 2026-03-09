@@ -5,11 +5,10 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { CONTACT_TYPES } from '@zextras/carbonio-ui-commons';
+import { CONTACT_TYPES, ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { keyBy } from 'lodash';
 import moment from 'moment';
 
-import { ContactInputItem } from '../../../types';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
 import { Query } from 'views/search/types/types';

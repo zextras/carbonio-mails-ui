@@ -8,7 +8,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
-import { ISoapFolderObj } from 'types/index.d';
+import { ISoapFolderObj } from 'types/soap/soap';
 
 type MountpointSpecType = {
 	l?: string;

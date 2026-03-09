@@ -13,8 +13,8 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { Participant } from 'types';
 import { isValidEmail } from 'views/search/parts/utils';
+import { Participant } from 'types/participant';
 
 /**
  * Get the name for a contact based on available fields

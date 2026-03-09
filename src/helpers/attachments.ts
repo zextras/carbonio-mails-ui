@@ -15,15 +15,9 @@ import {
 	removeAngleBrackets
 } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
-import {
-	AbstractAttachment,
-	MailMessage,
-	MailMessagePart,
-	MailMessagePartWithDisposition,
-	SavedAttachment,
-	UnsavedAttachment
-} from 'types/index.d';
+import { AbstractAttachment, SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { EditorAttachmentFiles } from 'types/editor';
+import { MailMessage, MailMessagePart, MailMessagePartWithDisposition } from 'types/messages';
 
 /**
  * Content disposition types for email attachments

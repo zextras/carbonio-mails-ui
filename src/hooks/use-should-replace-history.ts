@@ -11,7 +11,6 @@ import { filter } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { useConversationMessages } from '../store/emails/store';
-import type { MailMessage, NormalizedConversation } from '../types';
 import type {
 	DetailPanelRoutesParams,
 	FolderPanelRouteParams,
@@ -21,6 +20,8 @@ import type {
 	SearchListPanelRouteParams,
 	SearchRoutesParams
 } from '../types/routes';
+import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
 
 const isItemAMessage = (item: MailMessage | NormalizedConversation): item is MailMessage =>
 	!!(item as MailMessage)?.conversation;

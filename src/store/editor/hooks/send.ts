@@ -14,7 +14,7 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/editor';
-import { SaveDraftResponse } from 'types/index.d';
+import { SaveDraftResponse } from 'types/soap/save-draft';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;

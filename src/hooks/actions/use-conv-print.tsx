@@ -12,7 +12,8 @@ import { getMsgsForPrintSoapApi } from 'api/index';
 import { getContentForPrint } from 'commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isDraft, isTrash } from 'helpers/folders';
-import { ActionFn, NormalizedConversation, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
+import { NormalizedConversation } from 'types/conversations';
 import { errorPage } from 'ui-actions/error-page';
 
 export const useConvPrintFn = (

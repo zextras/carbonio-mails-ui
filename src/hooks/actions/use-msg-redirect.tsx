@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft, isTrash } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import RedirectAction from 'ui-actions/redirect-message-action';
 
 export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn => {

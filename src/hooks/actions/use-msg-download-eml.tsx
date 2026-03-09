@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { getLocationOrigin } from 'views/app/detail-panel/preview/utils/index';
 
 export const useMsgDownloadEmlFn = (messageId: string, folderId: string): ActionFn => {

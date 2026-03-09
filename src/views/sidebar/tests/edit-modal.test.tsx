@@ -13,6 +13,7 @@ import {
 	FOLDERS,
 	FolderView,
 	getFolder,
+	SoapFolderAction,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
@@ -24,7 +25,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { BatchRequest, SoapFolderAction } from 'types/index.d';
+import { BatchRequest } from 'types/soap/soap';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 import { EditModal } from 'views/sidebar/edit-modal';
 

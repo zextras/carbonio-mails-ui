@@ -22,7 +22,7 @@ import { map, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
 
 const BadgeButton = styled(Button)`

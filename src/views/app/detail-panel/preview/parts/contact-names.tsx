@@ -12,7 +12,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { participantToString } from 'commons/utils';
-import type { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 
 const ContactSubText = styled(Text)`
 	padding: 0 0.125rem;

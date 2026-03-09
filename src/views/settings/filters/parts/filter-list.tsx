@@ -9,7 +9,7 @@ import React, { useCallback } from 'react';
 import { List, ListItem } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 import { FilterItem } from 'views/settings/filters/parts/filter-item';
 
 type FilterListProps = {

@@ -16,7 +16,7 @@ import {
 	getReferredContentIds
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type { MailMessagePart } from 'types';
+import { MailMessagePart } from 'types/messages';
 
 describe('attachments', () => {
 	describe('getFlattenedAttachmentParts', () => {

@@ -5,8 +5,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type { MailMessage } from '../../types';
 import { extractBody } from '../editor-slice-utils';
+import { MailMessage } from 'types/messages';
 
 describe('extractBody - style preservation', () => {
 	it('should preserve styles from head when extracting body for reply/forward', () => {

@@ -12,7 +12,7 @@ import { FOLDER_VIEW, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons'
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { FilterAction } from 'types/index.d';
+import { FilterAction } from 'types/filters';
 import {
 	FilterActionRow,
 	FilterActionRowProps

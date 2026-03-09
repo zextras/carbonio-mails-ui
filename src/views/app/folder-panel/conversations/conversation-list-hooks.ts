@@ -16,7 +16,7 @@ import {
 	updateConversationsResultsLoadingStatus,
 	updateMessages
 } from 'store/emails/store';
-import { SearchResponse } from 'types/index.d';
+import { SearchResponse } from 'types/soap/search';
 import { SortBy } from 'types/sorting';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 

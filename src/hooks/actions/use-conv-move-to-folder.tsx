@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isTrash } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { MoveConversation } from 'ui-actions/move-conv';
 
 export const useConvMoveToFolderFn = ({
