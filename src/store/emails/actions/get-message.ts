@@ -16,14 +16,15 @@ import {
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
 import { GetMsgResponse, MailMessage } from 'types/index.d';
 
-function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
+function handleGetMsgResponse(response: GetMsgResponse, html?: boolean): void {
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, html));
 	updateMessages(messages);
 }
 
 async function handleRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	html?: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -33,9 +34,9 @@ async function handleRetrieveMessage(
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
-	handleGetMsgResponse(response);
+	handleGetMsgResponse(response, html);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html });
 }
 
 async function handleDecryptRetrieveMessage(
@@ -60,7 +61,7 @@ async function handleDecryptRetrieveMessage(
 	}
 	handleGetMsgResponse(response);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
 export function getMessageEmailStoreAction(
@@ -85,5 +86,5 @@ export function getFullMessageEmailStoreAction(
 	messageId: string,
 	html?: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }));
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }), html);
 }

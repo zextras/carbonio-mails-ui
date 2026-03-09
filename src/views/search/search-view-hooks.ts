@@ -56,7 +56,7 @@ function handleFulFilledMessagesResults({
 	searchResponse: SearchResponse;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
-		normalizeMailMessageFromSoap(msg, false)
+		normalizeMailMessageFromSoap({ m: msg, isComplete: false })
 	);
 
 	setSearchResultsByMessage(normalizedMessages, searchResponse.more);
@@ -77,7 +77,7 @@ function handleLoadMoreResults({
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.c?.forEach((soapConversation) =>
 			soapConversation.m.forEach((soapMessage) =>
-				messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+				messages.push(normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false }))
 			)
 		);
 		appendConversations(conversations, offset, searchResponse.more);
@@ -86,7 +86,7 @@ function handleLoadMoreResults({
 	if (searchResponse.m) {
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.m?.forEach((soapMessage) =>
-			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+			messages.push(normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false }))
 		);
 		appendMessagesToSearch(messages, offset);
 	}
