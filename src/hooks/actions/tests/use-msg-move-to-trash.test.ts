@@ -17,7 +17,7 @@ import {
 	useMsgMoveToTrashDescriptor,
 	useMsgMoveToTrashFn
 } from 'hooks/actions/use-msg-move-to-trash';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useMsgMoveToTrash', () => {
 	populateFoldersStore();

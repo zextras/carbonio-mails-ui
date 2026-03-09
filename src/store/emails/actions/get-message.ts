@@ -14,7 +14,8 @@ import {
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
-import { GetMsgResponse, MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { GetMsgResponse } from 'types/soap/get-msg';
 
 function handleGetMsgResponse(response: GetMsgResponse, html?: boolean): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, html));

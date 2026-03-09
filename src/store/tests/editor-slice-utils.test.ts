@@ -10,7 +10,6 @@ import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui
 import type { Mock } from 'vitest';
 
 import { LineType } from '../../commons/utils';
-import { MailMessage } from '../../types';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
@@ -21,6 +20,7 @@ import {
 	retrieveCC,
 	retrieveReplyTo
 } from 'store/editor-slice-utils';
+import { MailMessage } from 'types/messages';
 
 vi.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: vi.fn()

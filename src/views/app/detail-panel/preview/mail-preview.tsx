@@ -8,7 +8,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 
 import { isFocusModeMailView } from 'helpers/external-tabs';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { MailPreviewBlock } from 'views/app/detail-panel/preview/parts/mail-preview-block';
 import { MailPreviewContent } from 'views/app/detail-panel/preview/parts/mail-preview-content';
 

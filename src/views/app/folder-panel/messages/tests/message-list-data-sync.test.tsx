@@ -15,7 +15,7 @@ import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateMessageFromAPI } from '__test__/generators/api';
-import { SearchRequest, SearchResponse } from 'types/index.d';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { MessageList } from 'views/app/folder-panel/messages/message-list';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';

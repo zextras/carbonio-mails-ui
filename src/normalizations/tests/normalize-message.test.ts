@@ -1,17 +1,15 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-// noinspection HtmlRequiredLangAttribute
-
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { generateMessageFromAPI } from '../../__test__/generators/api';
-import { MailMessagePart, SoapMailMessagePart } from '../../types';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
+import { MailMessagePart } from 'types/messages';
+import { SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 describe('normalize-message.ts', () => {
 	describe('Normalize message', () => {

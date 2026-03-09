@@ -12,6 +12,8 @@ import { noop } from 'lodash';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import { generateConversation } from '__test__/generators/generateConversation';
 import * as searchSoapApi from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
 import {
@@ -20,9 +22,7 @@ import {
 	useMessageById,
 	useSearchResults
 } from 'store/emails/store';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { SearchRequest, SearchResponse } from 'types/index.d';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { useLoadMoreForSearchSlice, useRunSearch } from 'views/search/search-view-hooks';
 
 describe('search view hooks', () => {

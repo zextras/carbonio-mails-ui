@@ -11,7 +11,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 import ContactName from 'views/app/detail-panel/preview/parts/contact-names';
 
 describe('ContactName component', () => {

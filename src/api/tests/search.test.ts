@@ -5,7 +5,7 @@
  */
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { searchSoapApi } from 'api/search-soap-api';
-import { SearchRequest } from 'types/index.d';
+import { SearchRequest } from 'types/soap/search';
 
 describe('Search', () => {
 	it('should send dateDesc filter if readDesc', async () => {

@@ -23,7 +23,8 @@ import {
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
 } from 'store/emails/store';
-import { SearchResponse, SearchSoapApiParams } from 'types/index.d';
+import { SearchSoapApiParams } from 'types/conversations';
+import { SearchResponse } from 'types/soap/search';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 const handleSearchSoapApiResults = ({

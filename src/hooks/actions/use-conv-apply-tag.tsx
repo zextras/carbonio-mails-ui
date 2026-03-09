@@ -15,12 +15,9 @@ import { ConversationActionsDescriptors, TIMEOUTS } from 'constants/index';
 import { isSpam } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
-import {
-	ConvActionParameters,
-	ConvActionResponse,
-	UIActionAggregator,
-	UIActionDescriptor
-} from 'types/index.d';
+import { UIActionAggregator, UIActionDescriptor } from 'types/actions';
+import { ConvActionParameters } from 'types/conversations';
+import { ConvActionResponse } from 'types/soap/conv-action';
 
 const createSnackbarMessage = (
 	createSnackbar: CreateSnackbarFn,

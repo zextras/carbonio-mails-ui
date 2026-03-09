@@ -6,7 +6,7 @@
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
-import { GetMsgRequest } from 'types/index.d';
+import { GetMsgRequest } from 'types/soap/get-msg';
 
 describe('GetMsg', () => {
 	it('should send max parameter if present', async () => {

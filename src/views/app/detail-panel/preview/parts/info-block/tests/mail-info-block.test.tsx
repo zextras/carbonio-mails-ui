@@ -12,7 +12,7 @@ import { HttpResponse } from 'msw';
 import { setupTest } from '@test-setup';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/store';
-import { IncompleteMessage } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 
 const validSignature = {

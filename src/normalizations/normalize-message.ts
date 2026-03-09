@@ -28,14 +28,15 @@ import {
 	IncompleteMessage,
 	MailHeaders,
 	MailMessage,
-	MailMessagePart,
-	Participant,
-	SoapEmailParticipantRole,
+	MailMessagePart
+} from 'types/messages';
+import { Participant } from 'types/participant';
+import {
 	SoapIncompleteMessage,
 	SoapMailMessage,
-	SoapMailMessagePart,
-	SoapMailParticipant
-} from 'types/index.d';
+	SoapMailMessagePart
+} from 'types/soap/soap-mail-message';
+import { SoapEmailParticipantRole, SoapMailParticipant } from 'types/soap/soap-mail-participant';
 import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage

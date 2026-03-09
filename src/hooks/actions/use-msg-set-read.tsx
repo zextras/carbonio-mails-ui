@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 type MsgSetReadFunctionsParameter = {
 	ids: Array<string>;

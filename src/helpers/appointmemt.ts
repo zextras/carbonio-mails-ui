@@ -14,7 +14,7 @@ import {
 } from 'helpers/identities';
 import { retrieveALL, retrieveCC } from 'store/editor-slice-utils';
 import { Attendee, MatchingReplyIdentity, SenderType } from 'types/calendar';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 /**
  * Analyze the message and return the identity that should be used as organizer.

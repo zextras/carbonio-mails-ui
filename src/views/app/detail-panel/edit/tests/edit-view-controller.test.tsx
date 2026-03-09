@@ -30,7 +30,7 @@ import { populateMessagesInEmailStore } from '__test__/generators/generateMessag
 import { EditViewActions } from 'constants/index';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
-import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
+import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
 

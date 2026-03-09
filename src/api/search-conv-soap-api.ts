@@ -8,7 +8,11 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import type { SearchConvRequest, SearchConvResponse, SearchConvParameters } from 'types/index.d';
+import {
+	SearchConvParameters,
+	SearchConvRequest,
+	SearchConvResponse
+} from 'types/soap/search-conv';
 
 export async function searchConvSoapApi({
 	conversationId,

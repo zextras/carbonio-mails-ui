@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { ActionFn } from 'types/index.d';
+import { ActionFn } from 'types/actions';
 
 /**
  * Hook to encapsulate the logic used across components to mark a message/conversation as read

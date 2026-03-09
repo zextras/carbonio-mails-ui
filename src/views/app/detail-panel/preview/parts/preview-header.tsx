@@ -18,7 +18,7 @@ import { useContainerWidth } from './utils';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { useGetTagsList } from 'ui-actions/tag-actions';
 import { ContactChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';

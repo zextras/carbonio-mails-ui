@@ -7,12 +7,6 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { generateCompleteMessageFromAPI } from '../../../../__test__/generators/api';
 import { generateNewEditor } from '../../../../__test__/generators/editors';
-import {
-	SavedAttachment,
-	SaveDraftRequest,
-	SaveDraftResponse,
-	UnsavedAttachment
-} from '../../../../types';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
 import { useEditorAttachments } from '../attachments';
@@ -22,6 +16,8 @@ import {
 	createSoapAPIInterceptorV2
 } from '@test-utils/network/msw/create-api-interceptor';
 import { getEditor } from 'store/editor/hooks/editors';
+import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
 
 const extractContentIdFromRequest = (request: SaveDraftRequest): string | undefined => {
 	// Magic, trust me

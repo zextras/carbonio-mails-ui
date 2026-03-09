@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft, isTrash } from 'helpers/folders';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 export const useMsgShowOriginalFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(

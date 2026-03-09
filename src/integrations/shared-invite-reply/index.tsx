@@ -22,7 +22,7 @@ import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import LabelRow from 'integrations/shared-invite-reply/parts/label-row';
 import ResponseActions from 'integrations/shared-invite-reply/parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 const InviteContainer = styled(Container)`
 	border: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};

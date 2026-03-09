@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Filter, FilterAction } from 'types/index.d';
+import { Filter, FilterAction } from 'types/filters';
 
 export type OnFilterActionChange = (filterActionValue: FilterAction) => void;
 

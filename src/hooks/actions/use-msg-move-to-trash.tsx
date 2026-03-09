@@ -17,7 +17,7 @@ import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import type { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
 
 const useRestoreMessage = (): ((

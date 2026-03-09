@@ -18,7 +18,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { CONVACTIONS } from 'commons/utilities';
-import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
 const conversationId = '-123';

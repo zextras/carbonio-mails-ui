@@ -19,7 +19,8 @@ import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
-import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 

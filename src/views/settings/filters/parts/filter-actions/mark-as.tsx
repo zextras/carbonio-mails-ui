@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
 
-import { MarkAsOption } from 'types/index.d';
+import { MarkAsOption } from 'types/filters';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 
 type MarkAsProps = {
