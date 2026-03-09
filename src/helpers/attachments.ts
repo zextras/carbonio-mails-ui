@@ -317,7 +317,7 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 	const attachmentsParts = getFlattenedAttachmentParts(message);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
-		isInline: isInlineDisposition(part.disposition),
+		isInline: isInlineDisposition(part.disposition) && !!part.ci,
 		contentId: (part.ci && removeAngleBrackets(part.ci)) ?? undefined,
 		filename: part.filename ?? '',
 		partName: part.name,

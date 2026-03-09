@@ -230,9 +230,6 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	return editor;
 };
 
-/**
- *
- */
 const generateReplyAndReplyAllMsgEditor = (
 	originalMessage: MailMessage,
 	action: EditViewActionsType
