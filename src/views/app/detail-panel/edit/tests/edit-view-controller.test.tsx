@@ -74,7 +74,6 @@ type TestCase = {
 	isTruncated: typeof ASSERTIONS.IS | typeof ASSERTIONS.IS_NOT;
 	editPref: 'html' | 'plain';
 	displayHTMLPref: 'TRUE' | 'FALSE';
-	expectedApiCall: 'none' | 'fullStore' | 'soap';
 };
 
 const APIDimensions = {
@@ -86,17 +85,18 @@ const APIDimensions = {
 	displayHTMLPref: displayPrefValues
 };
 
-const shouldCallApi = (tc: TestCase): boolean => {
-	const editAsHtml = tc.editPref === 'html';
-	const canUseStoreMessage =
-		(tc.msgIsHtml === ASSERTIONS.IS ? editAsHtml : !editAsHtml) &&
-		tc.isComplete === ASSERTIONS.IS &&
-		tc.isTruncated === ASSERTIONS.IS_NOT;
+const shouldCallApi = (testCase: TestCase): boolean => {
+	const editAsHtml = testCase.editPref === 'html';
 
-	return !canUseStoreMessage && actions.includes(tc.action);
+	const messageFormatMismatch = testCase.msgIsHtml === ASSERTIONS.IS ? !editAsHtml : editAsHtml;
+
+	const messageNotComplete =
+		testCase.isComplete !== ASSERTIONS.IS || testCase.isTruncated !== ASSERTIONS.IS_NOT;
+
+	return messageFormatMismatch || messageNotComplete;
 };
 
-const shouldNotCallApi = (tc: TestCase): boolean => !shouldCallApi(tc);
+const shouldNotCallApi = (testCase: TestCase): boolean => !shouldCallApi(testCase);
 
 const generateCases = (dimensions: typeof APIDimensions): TestCase[] =>
 	Object.entries(dimensions).reduce<TestCase[]>(
@@ -104,6 +104,7 @@ const generateCases = (dimensions: typeof APIDimensions): TestCase[] =>
 			acc.flatMap((prev) => values.map((value) => ({ ...prev, [key]: value }))),
 		[{} as TestCase]
 	);
+
 const allCases = generateCases(APIDimensions);
 const apiCases = allCases.filter(shouldCallApi);
 const noApiCases = allCases.filter(shouldNotCallApi);
