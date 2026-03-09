@@ -23,6 +23,7 @@ import { EditAttachmentsBlock } from './edit-attachments-block';
 import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
+import { useSmimeHandlers } from './edit-utils-hooks/use-smime-handlers';
 import {
 	isValidFileNode,
 	useUploadFromFiles,
@@ -43,19 +44,13 @@ import { DraftTrashedEvent } from '../../../../event-bus/events/draft-trashed';
 import { useEventSubscribe } from '../../../../event-bus/use-event-subscribe';
 import { isFulfilled } from '../../../../helpers/promises';
 import { useEditorIsDirty } from '../../../../store/editor/hooks/statuses';
-import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
 import { GapContainer, GapRow } from 'commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
 import { buildArrayFromFileList } from 'helpers/files';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
-import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from 'store/certificates/store';
+import { getIdentitiesDescriptors } from 'helpers/identities';
+import { useSmimeFeatureStore } from 'store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -63,16 +58,12 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	useEditorIsSmimeSign,
-	useEditorIdentityId,
-	useEditorIsSmimeEncrypt,
 	useEditorRecipients,
 	useEditorDid
 } from 'store/editor';
 import { EditorOperationAllowedStatus, EditViewClosingReasons } from 'types/editor';
-import { isValidEmail } from 'views/search/parts/utils';
-import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 import { SaveDraftResponse } from 'types/soap/save-draft';
+import { isValidEmail } from 'views/search/parts/utils';
 
 export type EditViewProp = {
 	editorId: string;
@@ -152,12 +143,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const isDirty = useEditorIsDirty(editorId);
-	const { identityId } = useEditorIdentityId(editorId);
-	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
-	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
-	const { isSmimeEncrypt, setIsSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
-	const getCertificate = useCertificatesStore((state) => state.getCertificate);
-	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 	const { did: draftId } = useEditorDid(editorId);
@@ -442,148 +427,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onSendError
 	]);
 
-	const handleCertificateResponse = useCallback(
-		(option: string, res: { data: Response } | { error: unknown }) => {
-			if ('data' in res) {
-				if (option === 'sign') {
-					setIsSmimeSign(true);
-				} else {
-					setIsSmimeEncrypt(true);
-				}
-			} else {
-				if (option === 'sign') {
-					setIsSmimeSign(false);
-				} else {
-					setIsSmimeEncrypt(false);
-				}
-				createSnackbar({
-					key: `info-on-certificate-missing`,
-					replace: true,
-					severity: 'error',
-					label: t(
-						'settings.uploadCertificate.uploadCertificateInSettings',
-						'Please upload your certificate from settings'
-					),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		},
-		[createSnackbar, setIsSmimeEncrypt, setIsSmimeSign]
-	);
-
-	const checkCertificateExist = useCallback(
-		(option: string, password?: string) => {
-			if (identityEmailAddress) {
-				checkPersonalCertificateExist(password ?? smimePassword, identityEmailAddress).then((res) =>
-					handleCertificateResponse(option, res)
-				);
-			}
-		},
-		[identityEmailAddress, smimePassword, handleCertificateResponse]
-	);
-
-	const checkEncryptionPassword = useCallback(
-		(option: string) => {
-			checkExistEncryptionPassword().then((res) => {
-				if ('data' in res) {
-					const id = Date.now().toString();
-					createModal(
-						{
-							id,
-							size: 'medium',
-							onClose: (): void => {
-								closeModal?.(id);
-							},
-							children: (
-								<Container crossAlignment="baseline">
-									<EnterPasswordModal
-										onConfirm={(password): void => {
-											checkCertificateExist(option, password);
-										}}
-										onClose={(): void => closeModal?.(id)}
-										hideReset
-									/>
-								</Container>
-							)
-						},
-						true
-					);
-				} else {
-					if (option === 'sign') {
-						setIsSmimeSign(false);
-					} else {
-						setIsSmimeEncrypt(false);
-					}
-					createSnackbar({
-						key: `info-on-password-missing`,
-						replace: true,
-						severity: 'error',
-						label: t(
-							'settings.uploadCertificate.createPasswordFromSettings',
-							'Please create your encryption password from settings'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			});
-		},
-		[
-			createModal,
-			checkCertificateExist,
-			closeModal,
-			createSnackbar,
-			setIsSmimeSign,
-			setIsSmimeEncrypt
-		]
-	);
-
-	useEffect(() => {
-		if (identityEmailAddress && (isSmimeSign || isSmimeEncrypt)) {
-			if (isSmimeSign) {
-				checkCertificateExist('sign');
-			} else {
-				checkCertificateExist('encrypt');
-			}
-		}
-	}, [
-		identityEmailAddress,
-		getCertificate,
-		setIsSmimeSign,
-		isSmimeSign,
-		isSmimeEncrypt,
-		checkEncryptionPassword,
-		checkCertificateExist
-	]);
-
-	const handleSmimeSelected = useCallback((): void => {
-		if (identityEmailAddress) {
-			if (smimePassword !== '') {
-				checkCertificateExist('sign');
-			} else {
-				checkEncryptionPassword('sign');
-			}
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
-
-	const handleSmimeDeselected = useCallback((): void => {
-		setIsSmimeSign(false);
-	}, [setIsSmimeSign]);
-
-	const handleEncryptSelected = useCallback((): void => {
-		if (identityEmailAddress) {
-			if (smimePassword !== '') {
-				checkCertificateExist('encrypt');
-			} else {
-				checkEncryptionPassword('encrypt');
-			}
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
-
-	const handleEncryptDeselected = useCallback((): void => {
-		setIsSmimeEncrypt(false);
-	}, [setIsSmimeEncrypt]);
+	const {
+		handleSmimeSelected,
+		handleSmimeDeselected,
+		handleEncryptSelected,
+		handleEncryptDeselected
+	} = useSmimeHandlers(editorId);
 
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
