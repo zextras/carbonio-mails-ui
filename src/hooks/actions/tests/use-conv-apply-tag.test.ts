@@ -9,13 +9,13 @@ import { find, forEach } from 'lodash';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateConversation } from '__test__/generators/generateConversation';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvApplyTagDescriptor,
 	useConvApplyTagSubDescriptors
 } from 'hooks/actions/use-conv-apply-tag';
-import { generateConversation } from '__test__/generators/generateConversation';
-import { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
 
 const tagA = { id: '1', name: 'a', label: 'a', color: 3 };
 const tagB = { id: '2', name: 'b', label: 'b', color: 3 };

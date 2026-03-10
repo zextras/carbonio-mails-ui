@@ -10,13 +10,13 @@ import { find, forEach } from 'lodash';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { tags as mockTags } from '@test-utils/tags/tags';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgApplyTagDescriptor,
 	useMsgApplyTagSubDescriptors
 } from 'hooks/actions/use-msg-apply-tag';
-import { generateMessage } from '__test__/generators/generateMessage';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();

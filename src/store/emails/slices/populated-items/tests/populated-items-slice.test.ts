@@ -1,28 +1,26 @@
-/* eslint-disable */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { populateFoldersStore } from '@test-utils/store/folders';
-import { tags as mockTags } from '@test-utils/tags/tags';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
-
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 import type { Mock } from 'vitest';
-import { CONVACTIONS } from 'commons/utilities';
-import { API_REQUEST_STATUS } from 'constants/index';
+
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
 import {
 	generateConversation,
 	populateConversationInEmailStore
 } from '__test__/generators/generateConversation';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
-import { ConvActionResponse, MailMessage } from 'types/index.d';
+import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	appendConversations,
 	getConversationMessages,
@@ -51,6 +49,8 @@ import {
 	useMessagesByIds,
 	useMessageStatus
 } from 'store/emails/store';
+import { MailMessage } from 'types/messages';
+import { ConvActionResponse } from 'types/soap/conv-action';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
@@ -81,6 +81,7 @@ describe('store-populated-items-slice', () => {
 			const updatedMessage = { ...initialMessage, isComplete: true, subject: undefined };
 			act(() => {
 				// passing undefined to subject to make sure it is not updated
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				updateMessages([updatedMessage]);
 			});
@@ -95,6 +96,7 @@ describe('store-populated-items-slice', () => {
 			const updatedMessage = { ...initialMessage, isComplete: false, subject: undefined };
 			act(() => {
 				// passing undefined to subject to make sure it is not updated
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				updateMessages([updatedMessage]);
 			});
@@ -181,6 +183,7 @@ describe('store-populated-items-slice', () => {
 				updateMessages(messages);
 			});
 
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			const { result: messageWithoutId } = renderHook(() => useMessageById(undefined));
 			const { result: message2 } = renderHook(() => useMessageById('2'));

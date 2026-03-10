@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type {
-	SearchBackupDeletedMessagesResponse,
-	SearchBackupDeletedMessagesAPIProps
-} from 'types/index.d';
+import {
+	SearchBackupDeletedMessagesAPIProps,
+	SearchBackupDeletedMessagesResponse
+} from 'types/api';
 
 export async function searchBackupDeletedMessagesApi({
 	startDate,

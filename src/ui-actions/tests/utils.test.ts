@@ -5,7 +5,7 @@
  */
 
 import { parseTextToHTMLDocument } from 'helpers/text';
-import { MessageAction } from 'types/index.d';
+import { MessageAction } from 'types/actions';
 import {
 	findMessageActionById,
 	generateSmartLinkHtml,

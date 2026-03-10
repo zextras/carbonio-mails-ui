@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { getFolderIdParts } from 'helpers/folders';
-import type { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 import { TooltipWrapper } from 'views/app/folder-panel/parts/tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`

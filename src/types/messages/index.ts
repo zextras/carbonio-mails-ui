@@ -5,10 +5,10 @@
  */
 
 import { SENSITIVITY_VALUES } from 'constants/index';
-import type { MailsEditorV2 } from 'types/editor/index.d';
+import type { MailsEditorV2 } from 'types/editor';
 import type { Participant } from 'types/participant';
 import type { PrefsType } from 'types/settings';
-import { SaveDraftResponse, MessageSignature } from 'types/soap/index.d';
+import { SaveDraftResponse, MessageSignature } from 'types/soap';
 
 export type MailAuthenticationHeader = { value: string; pass: boolean };
 
@@ -35,14 +35,14 @@ export type IncompleteMessage = MailHeaders & {
 	conversation: string;
 	read: boolean;
 	size: number;
-	hasAttachment: boolean;
-	flagged: boolean;
-	urgent: boolean;
-	isDeleted: boolean;
-	isSentByMe: boolean;
-	isForwarded: boolean;
-	isInvite: boolean;
-	isDraft: boolean;
+	hasAttachment?: boolean;
+	flagged?: boolean;
+	urgent?: boolean;
+	isDeleted?: boolean;
+	isSentByMe?: boolean;
+	isForwarded?: boolean;
+	isInvite?: boolean;
+	isDraft?: boolean;
 	isScheduled: boolean;
 	autoSendTime?: number;
 	originalId?: string;
@@ -58,7 +58,8 @@ export type IncompleteMessage = MailHeaders & {
 	invite?: any;
 	shr?: any;
 	isComplete: boolean;
-	isReplied: boolean;
+	html: boolean;
+	isReplied?: boolean;
 	isReadReceiptRequested?: boolean;
 	isEncrypted?: boolean;
 };

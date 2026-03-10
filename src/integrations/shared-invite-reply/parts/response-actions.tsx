@@ -12,7 +12,7 @@ import { TFunction } from 'i18next';
 
 import ColorSelect from 'integrations/shared-invite-reply/parts/color-select';
 import { useAccept, useDecline } from 'integrations/shared-invite-reply/parts/share-folder-actions';
-import { ResponseActionsProps } from 'types/index.d';
+import { ResponseActionsProps } from 'types/share';
 
 function getProposedFolderName(sharedFolderName: string, ownerName: string, t: TFunction): string {
 	const of = t('label.of', 'of');

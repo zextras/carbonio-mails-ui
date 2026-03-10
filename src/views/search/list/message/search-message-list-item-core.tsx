@@ -21,11 +21,12 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
+import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
-import { MailMessage, TextReadValuesType } from 'types/index.d';
+import { TextReadValuesType } from 'types/folder';
+import { MailMessage } from 'types/messages';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type SearchMessageListItemCoreProps = {

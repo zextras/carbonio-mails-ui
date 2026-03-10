@@ -8,7 +8,10 @@ import React, { FC } from 'react';
 import { Text, Tooltip } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import type { Crumb } from 'types/index.d';
+type Crumb = {
+	label: string;
+	tooltip: string;
+};
 
 type BreadcrumbsProps = Array<Crumb>;
 

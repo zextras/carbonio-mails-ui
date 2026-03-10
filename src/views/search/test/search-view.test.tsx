@@ -22,22 +22,15 @@ import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { generateSoapConversationMessage } from '__test__/generators/api';
 import * as searchSoapApi from 'api/search-soap-api';
-import {
-	ConvActionRequest,
-	ConvActionResponse,
-	GetMsgRequest,
-	GetMsgResponse,
-	MsgActionRequest,
-	MsgActionResponse,
-	SearchConvRequest,
-	SearchConvResponse,
-	SearchRequest,
-	SearchResponse,
-	SoapConversation,
-	SoapIncompleteMessage,
-	SoapMailMessage
-} from 'types/index.d';
+
 import SearchView from 'views/search/search-view';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
+import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
+import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
+import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 
 vi.mock('react-router-dom', async () => ({
 	...(await vi.importActual('react-router-dom')),

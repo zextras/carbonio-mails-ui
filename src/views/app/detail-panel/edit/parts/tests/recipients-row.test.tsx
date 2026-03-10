@@ -21,7 +21,7 @@ import {
 	generateMockedContactInput,
 	mockContactInput
 } from '@test-utils/integrations/mock-contact-input';
-import { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row';
 
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {

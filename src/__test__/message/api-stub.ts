@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SearchRequest, SearchResponse, SoapIncompleteMessage } from '../../types';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
+import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 
 export const stubSearchMessages = ({
 	messages

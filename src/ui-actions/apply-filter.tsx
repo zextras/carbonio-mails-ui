@@ -9,8 +9,9 @@ import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-des
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { FilterActionsDescriptors } from 'constants/index';
-import { UIAction } from 'types/index.d';
 import { ApplyFilterModal } from 'ui-actions/modals/apply-filter-modal';
+import { UIAction } from 'types/actions';
+import { noop } from 'lodash';
 
 export type ApplyFilterUIActionExecutionParams = {
 	criteria: {
@@ -26,6 +27,9 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 	id: FilterActionsDescriptors.APPLY.id,
 	icon: 'QuestionMarkOutline',
 	label: t('action.apply_filter_on_folder', 'Apply filter on folder'),
+	uiUtilities: {
+		createModal: noop
+	},
 	openModal: ({ criteria, uiUtilities }: ApplyFilterUIActionExecutionParams): void => {
 		const id = Date.now().toString();
 		uiUtilities.createModal(

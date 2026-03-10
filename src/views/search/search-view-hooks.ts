@@ -25,12 +25,9 @@ import {
 	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from 'store/emails/store';
-import {
-	IncompleteMessage,
-	MailMessage,
-	SearchIndexSliceState,
-	SearchResponse
-} from 'types/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { SearchIndexSliceState } from 'types/search';
+import { SearchResponse } from 'types/soap/search';
 import { generateQueryString, updateQueryChips } from 'views/search/utils';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
@@ -42,11 +39,9 @@ type UseRunSearchProps = {
 };
 
 function handleFulFilledConversationResults({
-	searchResponse,
-	tags
+	searchResponse
 }: {
 	searchResponse: SearchResponse;
-	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) =>
 		mapToNormalizedConversation({ conversation: conv })
@@ -61,7 +56,7 @@ function handleFulFilledMessagesResults({
 	searchResponse: SearchResponse;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
-		normalizeMailMessageFromSoap(msg, false)
+		normalizeMailMessageFromSoap({ m: msg, isComplete: false })
 	);
 
 	setSearchResultsByMessage(normalizedMessages, searchResponse.more);
@@ -82,7 +77,7 @@ function handleLoadMoreResults({
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.c?.forEach((soapConversation) =>
 			soapConversation.m.forEach((soapMessage) =>
-				messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+				messages.push(normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false }))
 			)
 		);
 		appendConversations(conversations, offset, searchResponse.more);
@@ -91,7 +86,7 @@ function handleLoadMoreResults({
 	if (searchResponse.m) {
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.m?.forEach((soapMessage) =>
-			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+			messages.push(normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false }))
 		);
 		appendMessagesToSearch(messages, offset);
 	}
@@ -105,9 +100,8 @@ export function handleSearchResults({
 	if ('Fault' in searchResponse) {
 		return;
 	}
-	const tags = getTags();
 	if (searchResponse.c) {
-		handleFulFilledConversationResults({ searchResponse, tags });
+		handleFulFilledConversationResults({ searchResponse });
 		const messages = extractConvMessage(searchResponse.c);
 		setMessagesInEmailStore(messages);
 	}

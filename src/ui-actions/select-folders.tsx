@@ -9,24 +9,15 @@ import React from 'react';
 import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Folder } from '@zextras/carbonio-ui-commons';
+import { noop } from 'lodash';
 
 import { GenericActionDescriptors } from 'constants/index';
-import { UIAction, UIActionExecutionParams } from 'types/index.d';
+import {
+	SelectFoldersUIActionExecutionConfig,
+	UIAction,
+	UIActionExecutionParams
+} from 'types/actions';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
-
-export type SelectFoldersUIActionExecutionConfig = {
-	showSharedAccounts: boolean;
-	showThrashFolder: boolean;
-	showSpamFolder: boolean;
-	allowRootSelection: boolean;
-	allowFolderCreation: boolean;
-	title: string;
-	hintText: string;
-	confirmActionLabel: string;
-	confirmActionTooltip: string;
-	disabledConfirmActionTooltip: string;
-	selectedFolder?: Folder;
-};
 
 export interface SelectFoldersUIActionExecutionParams extends UIActionExecutionParams<Folder> {
 	config: Partial<SelectFoldersUIActionExecutionConfig>;
@@ -66,6 +57,9 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 		id: descriptor.id,
 		icon: 'FolderOutline',
 		label: t('action.select_folders', 'Select folders'),
+		uiUtilities: {
+			createModal: noop
+		},
 		openModal: (params): void => {
 			const { uiUtilities, callbacks } = params;
 			const id = Date.now().toString();
@@ -84,7 +78,7 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 								folder={config.selectedFolder}
 								onClose={(): void => {
 									uiUtilities.closeModal(id);
-									callbacks.onCancel && callbacks.onCancel();
+									callbacks.onCancel?.();
 								}}
 								headerTitle={config.title}
 								inputLabel={config.hintText}
@@ -94,7 +88,7 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 										return;
 									}
 									uiUtilities.closeModal(id);
-									callbacks.onComplete && callbacks.onComplete(folder);
+									callbacks.onComplete(folder);
 								}}
 								actionTooltip={config.confirmActionTooltip}
 								disabledActionTooltip={config.disabledConfirmActionTooltip}

@@ -23,7 +23,8 @@ import {
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
 } from 'store/emails/store';
-import { SearchResponse, SearchSoapApiParams } from 'types/index.d';
+import { SearchSoapApiParams } from 'types/conversations';
+import { SearchResponse } from 'types/soap/search';
 import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 const handleSearchSoapApiResults = ({
@@ -46,7 +47,7 @@ const handleSearchSoapApiResults = ({
 	// Handle messages
 	if (Array.isArray(searchResponse.m) && searchResponse.m.length > 0) {
 		const normalizedMessages = map(searchResponse.m, (msg) =>
-			normalizeMailMessageFromSoap(msg, false)
+			normalizeMailMessageFromSoap({ m: msg, isComplete: false })
 		);
 		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
 		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);

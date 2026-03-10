@@ -8,13 +8,14 @@ import { act, renderHook } from '@testing-library/react';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import * as searchSoapApi from 'api/search-soap-api';
-import { API_REQUEST_STATUS } from 'constants/index';
-import * as storeHooks from 'store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConversationFromAPI
 } from '__test__/generators/api';
+import * as searchSoapApi from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import * as storeHooks from 'store/emails/store';
+import { SORT_BY } from 'types/sorting';
 import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
 
 describe('ConversationListHooks', () => {
@@ -35,7 +36,7 @@ describe('ConversationListHooks', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -57,7 +58,7 @@ describe('ConversationListHooks', () => {
 			offset: 0,
 			query: `inId:"${folder.id}"`,
 			recip: '2',
-			sortBy: 'date',
+			sortBy: SORT_BY.dateDesc,
 			types: 'conversation',
 			wantContent: 'full'
 		});
@@ -78,7 +79,7 @@ describe('ConversationListHooks', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -109,7 +110,7 @@ describe('ConversationListHooks', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,
@@ -136,7 +137,7 @@ describe('ConversationListHooks', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: false,
 				loadingMore,
@@ -160,7 +161,7 @@ describe('ConversationListHooks', () => {
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
 				offset: 0,
-				sortBy: 'date',
+				sortBy: SORT_BY.dateDesc,
 				limit: 20,
 				hasMore: true,
 				loadingMore,

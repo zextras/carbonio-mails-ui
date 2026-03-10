@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Grant } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
+import { Grant } from '@zextras/carbonio-ui-soap-lib';
 import { TFunction } from 'i18next';
 
 import type { Participant } from 'types/participant';

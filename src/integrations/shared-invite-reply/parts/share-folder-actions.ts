@@ -14,7 +14,8 @@ import { acceptSharedFolderReply } from 'api/accept-shared-folder-reply';
 import { mountSharedFolderSoapApi } from 'api/mount-shared-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import type { Participant, SaveDraftResponse } from 'types/index.d';
+import { Participant } from 'types/participant';
+import { SaveDraftResponse } from 'types/soap/save-draft';
 
 type Accept = {
 	zid: string;
@@ -76,6 +77,9 @@ const sharedFolderReplyFunc = ({
 }: AcceptSharedCalendarType): Promise<SaveDraftResponse> => {
 	const displayMessage = customMessage?.length > 0 ? customMessage : '';
 	return acceptSharedFolderReply({
+		// TODO FIX ATTACH TYPE ERROR
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		attach: [{ mp: [] }],
 		subject: isAccepted
 			? `Share Accepted: ${sharedFolderName} shared by ${owner}`

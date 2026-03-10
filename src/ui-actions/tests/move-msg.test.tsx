@@ -16,7 +16,8 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { MailMessage, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 import { MoveMessage } from 'ui-actions/move-msg';
 
 describe('MoveMsg', () => {

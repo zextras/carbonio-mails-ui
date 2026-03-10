@@ -1,17 +1,15 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-// noinspection HtmlRequiredLangAttribute
-
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { generateMessageFromAPI } from '../../__test__/generators/api';
-import { MailMessagePart, SoapMailMessagePart } from '../../types';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
+import { MailMessagePart } from 'types/messages';
+import { SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 describe('normalize-message.ts', () => {
 	describe('Normalize message', () => {
@@ -27,7 +25,7 @@ describe('normalize-message.ts', () => {
 					mp: [defaultBodyPart]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapIncompleteMessage });
 
 				expect(normalizedMessage.body.truncated).toBeFalsy();
 			});
@@ -37,7 +35,7 @@ describe('normalize-message.ts', () => {
 					mp: [{ ...defaultBodyPart, truncated: true }]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapIncompleteMessage });
 
 				expect(normalizedMessage.body.truncated).toBeTruthy();
 			});
@@ -47,7 +45,7 @@ describe('normalize-message.ts', () => {
 					mp: [{ ...defaultBodyPart, truncated: false }]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapIncompleteMessage });
 
 				expect(normalizedMessage.body.truncated).toBeFalsy();
 			});
@@ -58,7 +56,7 @@ describe('normalize-message.ts', () => {
 					origid: '123'
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapIncompleteMessage });
 
 				expect(normalizedMessage.originalId).toBe('123');
 				expect(normalizedMessage.replyType).toBe('r');
@@ -75,7 +73,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapIncompleteMessage });
 				const expectedResult = [
 					expect.objectContaining({ address: 'a', type: 'b' }),
 					expect.objectContaining({ address: 'a', type: 'c' }),
@@ -112,7 +110,9 @@ describe('normalize-message.ts', () => {
 						ci: 'cid:123'
 						// body: not specified
 					});
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expectNormalizedPart(msg.parts[0], {
 						contentType: 'text/plain',
 						size: 123,
@@ -127,7 +127,9 @@ describe('normalize-message.ts', () => {
 
 				it('should set body to true if explicitly set', () => {
 					const part = createSoapPart({ body: true, s: 50, cd: 'inline' });
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expectNormalizedPart(msg.parts[0], {
 						contentType: 'text/plain',
 						size: 50,
@@ -139,13 +141,17 @@ describe('normalize-message.ts', () => {
 
 				it('should default size to 0 if missing', () => {
 					const part = createSoapPart({ cd: 'attachment' });
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expect(msg.parts[0].size).toBe(0);
 				});
 
 				it('should handle body: false explicitly', () => {
 					const part = createSoapPart({});
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expect(msg.parts[0].body).toBe(false);
 				});
 			});
@@ -161,7 +167,9 @@ describe('normalize-message.ts', () => {
 							createSoapPart({ ct: 'text/plain', part: '1.2', s: 5, cd: 'attachment' })
 						]
 					};
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 
 					expectNormalizedPart(msg.parts[0], {
 						contentType: 'multipart/mixed',
@@ -201,7 +209,9 @@ describe('normalize-message.ts', () => {
 						]
 					};
 
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 
 					const alt = msg.parts[0].parts?.[0];
 					expect(alt?.contentType).toBe('multipart/alternative');
@@ -214,7 +224,9 @@ describe('normalize-message.ts', () => {
 			describe('edge cases and combinations', () => {
 				it('should handle missing optional fields', () => {
 					const part = createSoapPart({});
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expect(msg.parts[0].filename).toBeUndefined();
 					expect(msg.parts[0].content).toBeUndefined();
 					expect(msg.parts[0].ci).toBeUndefined();
@@ -222,7 +234,9 @@ describe('normalize-message.ts', () => {
 
 				it('should preserve filename and content fields', () => {
 					const part = createSoapPart({ filename: 'doc.pdf', content: 'base64string' });
-					const msg = normalizeMailMessageFromSoap({ ...generateMessageFromAPI(), mp: [part] });
+					const msg = normalizeMailMessageFromSoap({
+						m: { ...generateMessageFromAPI(), mp: [part] }
+					});
 					expect(msg.parts[0].filename).toBe('doc.pdf');
 					expect(msg.parts[0].content).toBe('base64string');
 				});
@@ -311,7 +325,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -352,7 +366,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -392,7 +406,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -426,7 +440,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -469,7 +483,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(2);
@@ -517,7 +531,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(2);
@@ -560,7 +574,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -603,7 +617,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -640,7 +654,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -674,7 +688,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
 			});
@@ -716,7 +730,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(2);
 				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
@@ -752,7 +766,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -787,7 +801,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toBeDefined();
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -834,7 +848,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].cd).toBe('inline');
@@ -865,7 +879,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment');
@@ -897,7 +911,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment');
@@ -955,7 +969,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(2);
 				const signatureImage = normalizedMessage.attachments?.find(
@@ -1003,7 +1017,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
@@ -1041,7 +1055,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('photo.jpg');
@@ -1071,7 +1085,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				// Should have no attachments since both are body parts
 				expect(normalizedMessage.attachments).toHaveLength(0);
@@ -1089,7 +1103,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(0);
 			});
@@ -1113,7 +1127,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('archive.zip');
@@ -1138,7 +1152,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
@@ -1168,7 +1182,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				// Should ignore the calendar part without filename
 				expect(normalizedMessage.attachments).toHaveLength(0);
@@ -1199,7 +1213,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				// Should include calendar file when it has a filename
 				expect(normalizedMessage.attachments).toHaveLength(1);
@@ -1231,7 +1245,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				// Should filter out the PKCS7 signature
 				expect(normalizedMessage.attachments).toHaveLength(0);
@@ -1264,7 +1278,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Unknown <message/rfc822>');
@@ -1296,7 +1310,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Original Email.eml');
@@ -1336,7 +1350,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalized = normalizeMailMessageFromSoap(soapMessage);
+				const normalized = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalized.attachments).toHaveLength(2);
 				expect(normalized.attachments?.[0].filename).toBe('daticert.xml');
@@ -1379,7 +1393,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalized = normalizeMailMessageFromSoap(soapMessage);
+				const normalized = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalized.attachments).toHaveLength(2);
 				expect(normalized.attachments?.[0].filename).toBe('daticert.xml');
@@ -1414,7 +1428,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('Unknown <text/html>');
@@ -1445,7 +1459,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('webpage.html');
@@ -1504,7 +1518,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(2);
 				const imageAttachment = normalizedMessage.attachments?.find(
@@ -1523,7 +1537,7 @@ describe('normalize-message.ts', () => {
 					mp: []
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(0);
 			});
@@ -1553,7 +1567,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				const attachment = normalizedMessage.attachments?.[0];
@@ -1582,7 +1596,7 @@ describe('normalize-message.ts', () => {
 					} as never // Force single object instead of array
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].filename).toBe('document.pdf');
@@ -1613,7 +1627,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				expect(normalizedMessage.attachments?.[0].cd).toBe('attachment'); // Defaulted
@@ -1666,7 +1680,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(4);
 				const filenames = normalizedMessage.attachments?.map((a) => a.filename);
@@ -1702,7 +1716,7 @@ describe('normalize-message.ts', () => {
 					]
 				});
 
-				const normalizedMessage = normalizeMailMessageFromSoap(soapMessage);
+				const normalizedMessage = normalizeMailMessageFromSoap({ m: soapMessage });
 
 				expect(normalizedMessage.attachments).toHaveLength(1);
 				// Should preserve inline since there's no HTML to contradict it

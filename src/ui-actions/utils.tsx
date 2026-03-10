@@ -8,7 +8,8 @@ import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
 import { SEARCH_ROUTE } from '../constants';
-import type { MailsEditorV2, MessageAction } from 'types/index.d';
+import { MessageAction } from 'types/actions';
+import { MailsEditorV2 } from 'types/editor';
 
 /**
  *

@@ -15,7 +15,8 @@ import {
 	appendMessagesToMessagesSlice,
 	updateMessagesResultsLoadingStatus
 } from 'store/emails/store';
-import { SearchResponse } from 'types/index.d';
+import { SearchResponse } from 'types/soap/search';
+import { SortBy } from 'types/sorting';
 
 function handleLoadMoreResults({
 	searchResponse,
@@ -26,7 +27,7 @@ function handleLoadMoreResults({
 }): void {
 	if (searchResponse.m) {
 		const messages = searchResponse.m?.map((soapMessage) =>
-			normalizeMailMessageFromSoap(soapMessage, false)
+			normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false })
 		);
 		appendMessagesToMessagesSlice(messages, offset, searchResponse.more);
 	}
@@ -41,7 +42,7 @@ export function useLoadMoreForMessageList({
 	filterType
 }: {
 	limit: number;
-	sortBy: string;
+	sortBy: SortBy;
 	folderId: string;
 	offset: number;
 	hasMore?: boolean;

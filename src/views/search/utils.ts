@@ -8,12 +8,14 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 import {
 	CONTACT_TYPES,
 	ContactInputItem,
-	convertSearchChipToString
+	convertSearchChipToString,
+	Folder,
+	Folders
 } from '@zextras/carbonio-ui-commons';
 import { concat, filter, map, reduce } from 'lodash';
 import moment from 'moment';
 
-import { ChipType, Folder, Folders } from 'types/index.d';
+import { ChipType } from 'types/search';
 import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-query';
 import { findIconFromChip } from 'views/search/parts/use-find-icon';
 import {

@@ -12,7 +12,7 @@ import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons'
 
 import { useMsgMoveToTrashFn } from 'hooks/actions/use-msg-move-to-trash';
 import { deleteEditor } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 import { useGlobalModal } from 'views/global-modal-manager';
 
 type DeleteDraftModalProps = {

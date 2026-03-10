@@ -5,7 +5,7 @@
  */
 import { DropdownItem } from '@zextras/carbonio-design-system';
 
-import { UIActionDescriptor } from 'types/index.d';
+import { UIActionDescriptor } from 'types/actions';
 
 export const normalizeDropdownActionItem = (item: UIActionDescriptor): DropdownItem => ({
 	id: item.id,

@@ -12,7 +12,7 @@ import { BannerViewExternalImages } from './banner-view-external-images';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
 import { ShowQuotedTextButton } from './show-quoted-text-button';
 import { useHtmlMessageRenderer } from './use-html-message-renderer';
-import { MailMessage } from '../../../types';
+import { MailMessage } from 'types/messages';
 
 type HtmlMessageRendererProps = {
 	message: MailMessage;

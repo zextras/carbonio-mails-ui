@@ -12,7 +12,7 @@ import {
 	getMessageDecryptEmailStoreAction
 } from 'store/emails/actions/get-message';
 import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
-import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
+import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 
 const stubGetMsgApi = (response: any): Promise<GetMsgRequest> =>
 	createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
@@ -54,10 +54,6 @@ describe('get-message', () => {
 				})
 			]
 		};
-
-		// beforeEach(() => {
-		// 	vi.clearAllMocks();
-		// });
 
 		it('handles successful message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi(getMsgResponse);

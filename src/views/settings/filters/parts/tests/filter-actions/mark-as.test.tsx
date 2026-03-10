@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
-import { MarkAsOption } from 'types/index.d';
+import { MarkAsOption } from 'types/filters';
 import { MarkAs } from 'views/settings/filters/parts/filter-actions/mark-as';
 
 describe('Mark As', () => {

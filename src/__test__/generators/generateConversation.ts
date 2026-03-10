@@ -10,7 +10,9 @@ import { times } from 'lodash';
 
 import { generateMessage, MessageGenerationParams } from '__test__/generators/generateMessage';
 import { updateConversations, updateMessages } from 'store/emails/store';
-import type { MailMessage, NormalizedConversation, Participant } from 'types';
+import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 
 /**
  *

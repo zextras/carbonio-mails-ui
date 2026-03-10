@@ -51,7 +51,8 @@ import {
 	useMessageById
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
-import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';

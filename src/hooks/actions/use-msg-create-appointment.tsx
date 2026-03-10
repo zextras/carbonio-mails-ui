@@ -16,8 +16,9 @@ import { isDraft, isSpam } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { extractBody } from 'store/editor-slice-utils';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { CalendarType, SenderType } from 'types/calendar';
-import type { ActionFn, MailMessage, UIActionDescriptor } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): ActionFn => {
 	const { createSnackbar } = useUiUtilities();

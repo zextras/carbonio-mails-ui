@@ -6,8 +6,9 @@
 import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { Grant } from '@zextras/carbonio-ui-soap-lib';
 
-import type { ModalProps } from 'types/index.d';
+import { ModalProps } from 'types/utils';
 import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
 import { Context } from 'views/sidebar/parts/edit/edit-context';
 import MainEditModal from 'views/sidebar/parts/edit/edit-default-modal';
@@ -15,10 +16,12 @@ import ShareRevokeModal from 'views/sidebar/parts/edit/share-revoke-modal';
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [activeModal, setActiveModal] = useState('default');
-	const [activeGrant, setActiveGrant] = useState({});
+	const [activeGrant, setActiveGrant] = useState<Grant | undefined>(undefined);
 	const goBack = useCallback(() => {
 		setActiveModal('default');
 	}, [setActiveModal]);
+
+	const grant = activeGrant ?? folder.acl?.grant[0];
 
 	return (
 		<Context.Provider value={{ activeModal, setActiveModal, activeGrant, setActiveGrant, onClose }}>
@@ -32,25 +35,23 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<MainEditModal folder={folder} onClose={onClose} setActiveModal={setActiveModal} />
 				)}
 
-				{activeModal === 'edit' && (
+				{activeModal === 'edit' && grant && (
 					<EditPermissionsModal
 						folder={folder}
 						onClose={onClose}
 						goBack={goBack}
 						editMode
-						grant={Object.keys(activeGrant).length > 0 ? activeGrant : folder?.acl?.grant[0]}
+						grant={grant}
 					/>
 				)}
 
 				{activeModal === 'revoke' && (
-					<ShareRevokeModal
-						folder={folder}
-						goBack={goBack}
-						grant={Object.keys(activeGrant).length > 0 ? activeGrant : folder?.acl?.grant[0]}
-					/>
+					<ShareRevokeModal folder={folder} goBack={goBack} grant={grant} />
 				)}
 
-				{activeModal === 'share' && <EditPermissionsModal folder={folder} onClose={onClose} />}
+				{activeModal === 'share' && (
+					<EditPermissionsModal folder={folder} onClose={onClose} grant={grant} />
+				)}
 			</Container>
 		</Context.Provider>
 	);

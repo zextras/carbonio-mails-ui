@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 /**
  * TODO for future refactors
@@ -61,7 +61,9 @@ export const useEditorTextProvider = (
 
 	const setTextProvider = useCallback(
 		(val: MailsEditorV2['textProvider']): void => {
-			setter(id, val);
+			if (val !== undefined) {
+				setter(id, val);
+			}
 		},
 		[id, setter]
 	);

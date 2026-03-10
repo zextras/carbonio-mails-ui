@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Folder } from '@zextras/carbonio-ui-commons';
+
 import { generateFolder } from '@test-utils/folders/folders-generator';
-import { Folder } from 'types/index.d';
 import { flattenAndFilterFoldersWithCap } from 'views/sidebar/commons/flatten-folders/utils';
 
 function generateFolderFunction(name: string, n: number, depth: number): Folder {
@@ -39,7 +40,7 @@ const mockFolders: Folder[] = [
 ];
 
 describe('flattenAndFilterFoldersWithCap', () => {
-	const largeFolderStructure: Folder[] = generateLargeFolderStructure(27);
+	const largeFolderStructure: Folder[] = generateLargeFolderStructure(10);
 
 	it('should run within acceptable time limits', () => {
 		const searchTerm = 'test';

@@ -9,7 +9,8 @@ import { Container } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { IncompleteMessage, MessageSignature } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
+import { MessageSignature } from 'types/soap/soap-mail-message';
 import { MailGeneralInfoSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/mail-general-info-subsection';
 import { SmimeSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/smime-subsection';
 

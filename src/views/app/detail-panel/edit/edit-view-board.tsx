@@ -6,7 +6,7 @@
 import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carbonio-shell-ui';
 
 import { MAILS_BOARD_VIEW_ID, EditViewActions } from 'constants/index';
-import { EditorPrefillData, EditViewActionsType } from 'types/index.d';
+import { EditorPrefillData, EditViewActionsType } from 'types/editor';
 
 export type EditViewBoardContext = {
 	originAction: EditViewActionsType;

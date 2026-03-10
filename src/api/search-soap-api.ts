@@ -7,7 +7,8 @@
 
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import type { SearchSoapApiParams, SearchRequest, SearchResponse } from 'types/index.d';
+import { SearchSoapApiParams } from 'types/conversations';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
 
 export async function searchSoapApi({
 	folderId,
@@ -24,6 +25,7 @@ export async function searchSoapApi({
 	const queryPart = [`inId:"${folderId}"`];
 	let finalsortBy = sortBy;
 	if (before) queryPart.push(`before:${before.getTime()}`);
+	// TODO WHY DO WE USE A QUERYPART AND CHANGE THE SORT ORDER THIS ONE?
 	switch (sortBy) {
 		case 'readAsc':
 			queryPart.push('is:unread');

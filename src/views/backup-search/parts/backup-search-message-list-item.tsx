@@ -12,7 +12,7 @@ import { find } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { BACKUP_SEARCH_ROUTE } from 'constants/index';
-import { BackupSearchMessage } from 'types/index.d';
+import { BackupSearchMessage } from 'types/backup-search';
 import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 
 type BackupSearchMessageListmessageProps = {

@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SortBy } from '@zextras/carbonio-ui-commons';
-
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import { ZimbraRequest } from 'types/soap/zimbra-request';
+import { SortBy } from 'types/sorting';
 
 export type SearchRequest = ZimbraRequest & {
 	sortBy: SortBy;

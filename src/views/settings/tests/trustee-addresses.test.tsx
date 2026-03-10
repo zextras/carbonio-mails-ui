@@ -13,7 +13,7 @@ import { times } from 'lodash';
 
 import { setupTest, within, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import type { InputProps } from 'types/index.d';
+import { InputProps } from 'types/settings';
 import TrusteeAddresses from 'views/settings/trustee-addresses';
 
 const FIND_TIMEOUT = 2000;

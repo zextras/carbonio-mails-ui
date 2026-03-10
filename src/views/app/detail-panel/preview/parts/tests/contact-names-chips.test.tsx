@@ -11,7 +11,7 @@ import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 
 import { screen, setupTest } from '@test-setup';
-import { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 import { copyEmailToClipboard, sendMsg } from 'ui-actions/participant-displayer-actions';
 import {
 	ContactNameChip,
