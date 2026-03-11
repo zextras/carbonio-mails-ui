@@ -99,7 +99,7 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 
 		it('should open password modal when smimePassword is empty on sign selection', async () => {
 			(checkExistEncryptionPassword as Mock).mockResolvedValue({ data: new Response() });
-			useSmimePasswordStore.getState().smimePassword = '';
+			useSmimePasswordStore.getState().updateSmimePassword('');
 
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
@@ -112,7 +112,7 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 
 		it('should show error snackbar when no encryption password exists on sign selection', async () => {
 			(checkExistEncryptionPassword as Mock).mockResolvedValue({ error: 'not found' });
-			useSmimePasswordStore.getState().smimePassword = '';
+			useSmimePasswordStore.getState().updateSmimePassword('');
 
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
@@ -190,7 +190,7 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 
 		it('should open password modal when smimePassword is empty on encrypt selection', async () => {
 			(checkExistEncryptionPassword as Mock).mockResolvedValue({ data: new Response() });
-			useSmimePasswordStore.getState().smimePassword = '';
+			useSmimePasswordStore.getState().updateSmimePassword('');
 
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
@@ -203,7 +203,7 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 
 		it('should show error snackbar when no encryption password exists on encrypt selection', async () => {
 			(checkExistEncryptionPassword as Mock).mockResolvedValue({ error: 'not found' });
-			useSmimePasswordStore.getState().smimePassword = '';
+			useSmimePasswordStore.getState().updateSmimePassword('');
 
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
