@@ -18,7 +18,7 @@ import { EnterPasswordModal } from 'views/settings/certificates/enter-password-m
 type UseSmimeHandlersReturn = {
 	isSmimeSign: boolean | undefined;
 	isSmimeEncrypt: boolean | undefined;
-	checkCertificateExist: (option: string, password?: string) => void;
+	checkCertificateExist: (option: 'sign' | 'encrypt', password?: string) => void;
 	handleSmimeSelected: () => void;
 	handleSmimeDeselected: () => void;
 	handleEncryptSelected: () => void;
@@ -33,9 +33,6 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 	const { smimePassword } = useSmimePasswordStore();
 	const createSnackbar = useSnackbar();
 	const { createModal, closeModal } = useModal();
-	const { getCertificate } = useCertificatesStore((state) => ({
-		getCertificate: state.getCertificate
-	}));
 
 	const handleCertificateResponse = useCallback(
 		(option: string, res: { data: Response } | { error: unknown }) => {
@@ -78,7 +75,7 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 				checkCertificateExist('encrypt');
 			}
 		}
-	}, [identityEmailAddress, getCertificate, isSmimeSign, isSmimeEncrypt, checkCertificateExist]);
+	}, [identityEmailAddress, isSmimeSign, isSmimeEncrypt, checkCertificateExist]);
 
 	const checkEncryptionPassword = useCallback(
 		(option: string) => {
