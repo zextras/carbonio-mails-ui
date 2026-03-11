@@ -27,8 +27,6 @@ import { useSmimePasswordStore } from 'store/certificates/store';
 vi.mock('api/check-personal-certificate-exist-api');
 vi.mock('api/check-exist-password-api');
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
 const createSmimeEnabledInterceptor = (): void => {
 	createAPIInterceptor(
 		'get',
