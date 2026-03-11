@@ -25,8 +25,8 @@ import {
 import { filter, find, forEach, reduce, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import type { ItemType, UIActionDescriptor } from 'types/index.d';
-import { ArgumentType, TagActionsReturnType } from 'types/tags';
+import { UIActionDescriptor } from 'types/actions';
+import { ArgumentType, ItemType, TagActionsReturnType } from 'types/tags';
 import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({

@@ -15,7 +15,7 @@ import { filter, find, reject, reverse, sortBy } from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
 
 import { MAILS_ROUTE } from 'constants/index';
-import { IncompleteMessage, MailMessage } from 'types/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 
 export const triggerNotification = (
 	messages: Array<IncompleteMessage | MailMessage>,

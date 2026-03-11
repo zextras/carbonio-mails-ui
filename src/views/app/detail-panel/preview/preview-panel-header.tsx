@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { MAILS_ROUTE } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { useViewLayout } from 'hooks/use-view-layout';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { ConversationPreviewHeaderNavigation } from 'views/app/detail-panel/preview/conversation-preview-header-navigation';
 import { MessagePreviewHeaderNavigation } from 'views/app/detail-panel/preview/message-preview-header-navigation';
 import { LayoutComponent } from 'views/app/folder-panel/parts/layout-component';

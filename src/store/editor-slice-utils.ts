@@ -15,14 +15,9 @@ import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identitie
 import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
 import { InlineAttachments, MailsEditor } from 'types/editor';
-import type {
-	MailAttachmentParts,
-	MailMessage,
-	MailMessagePart,
-	Participant,
-	SharedParticipant,
-	SoapDraftMessageObj
-} from 'types/index.d';
+import { MailMessage, MailMessagePart } from 'types/messages';
+import { Participant, SharedParticipant } from 'types/participant';
+import { MailAttachmentParts, SoapDraftMessageObj } from 'types/soap/save-draft';
 
 export const retrieveAttachmentsType = (
 	original: MailMessage,

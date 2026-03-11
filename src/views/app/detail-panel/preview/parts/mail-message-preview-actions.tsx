@@ -13,7 +13,7 @@ import { useShouldReplaceHistory } from '../../../../../hooks/use-should-replace
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;

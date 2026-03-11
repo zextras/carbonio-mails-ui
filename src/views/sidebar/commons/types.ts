@@ -5,15 +5,12 @@
  */
 
 import { SoapNotify } from '@zextras/carbonio-shell-ui';
-import { TagState } from '@zextras/carbonio-ui-commons';
+import { FolderState, TagState } from '@zextras/carbonio-ui-commons';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import {
-	FolderState,
-	IncompleteMessage,
-	SoapConversation,
-	SoapIncompleteMessage
-} from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 
 export type OptionalExcept<T, K extends keyof T> = {
 	[P in keyof T as P extends K ? P : never]: T[P];

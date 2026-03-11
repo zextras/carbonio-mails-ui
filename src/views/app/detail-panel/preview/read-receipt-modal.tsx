@@ -13,7 +13,7 @@ import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-
 import { updateMessages } from '../../../../store/emails/store';
 import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 type ReadReceiptModalProps = {
 	open: boolean;

@@ -5,7 +5,7 @@
  */
 import { map, omit } from 'lodash';
 
-import { AllFiltersTest, FilterRules } from 'types/index.d';
+import { AllFiltersTest, FilterRules } from 'types/filters';
 
 const normalizeFilterTests = (filterTests: AllFiltersTest): AllFiltersTest => {
 	const result: AllFiltersTest = { condition: filterTests.condition };

@@ -14,13 +14,13 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
+import { Tag } from '@zextras/carbonio-ui-soap-lib';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import { getCompactDateLabel, getTimeLabel } from 'commons/utils';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
-import { Tag } from 'types';
 import { MailMessage } from 'types/messages';
 
 type PreviewHeaderActions = {

@@ -21,7 +21,7 @@ import { populateConversationInEmailStore } from '__test__/generators/generateCo
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { setConversationsInEmailStore, updateConversationStatus } from 'store/emails/store';
-import type { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
 import {
 	ConversationListItem,
 	ConversationListItemProps

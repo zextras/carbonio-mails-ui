@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
 import { useMsgReplyFn } from 'hooks/actions/use-msg-reply';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 type ConvReplyFunctionsParameter = {
 	firstMessageId: string;

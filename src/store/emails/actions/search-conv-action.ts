@@ -15,7 +15,8 @@ import {
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
-import { NormalizedConversation, SearchConvResponse } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { SearchConvResponse } from 'types/soap/search-conv';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));

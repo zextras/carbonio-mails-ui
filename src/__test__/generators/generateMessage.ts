@@ -9,7 +9,8 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { updateMessages } from 'store/emails/store';
-import { MailMessage, MailMessagePart, Participant, Sensitivity } from 'types';
+import { MailMessage, MailMessagePart, Sensitivity } from 'types/messages';
+import { Participant } from 'types/participant';
 
 export type MessageGenerationParams = {
 	id?: string;
@@ -24,6 +25,7 @@ export type MessageGenerationParams = {
 	isRead?: boolean;
 	isFlagged?: boolean;
 	isComplete?: boolean;
+	html?: boolean;
 	isDeleted?: boolean;
 	isDraft?: boolean;
 	isForwarded?: boolean;
@@ -57,6 +59,7 @@ export const generateMessage = ({
 	isRead = false,
 	isFlagged = false,
 	isComplete = false,
+	html = true,
 	isDeleted = false,
 	isDraft = false,
 	isForwarded = false,
@@ -85,6 +88,7 @@ export const generateMessage = ({
 	id,
 	invite: undefined,
 	isComplete,
+	html,
 	isDeleted,
 	isDraft,
 	isForwarded,

@@ -13,7 +13,7 @@ import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvSetReadDescriptor, useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
-import { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
 
 describe('useConvSetRead', () => {
 	describe('Descriptor', () => {

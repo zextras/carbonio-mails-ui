@@ -9,13 +9,10 @@ import { map } from 'lodash';
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type {
-	GetConvParameters,
-	GetConvRequest,
-	GetConvResponse,
-	IncompleteMessage,
-	NormalizedConversation
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage } from 'types/messages';
+import { GetConvRequest, GetConvResponse } from 'types/soap/get-conv';
+import { GetConvParameters } from 'types/soap/soap';
 
 export const getConvSoapApi = async ({
 	conversationId,
@@ -52,7 +49,7 @@ export const getConvSoapApi = async ({
 
 	const conversation = normalizeConversations([result.c[0]]);
 	const messages = map(result.c[0].m, (item) =>
-		normalizeMailMessageFromSoap(item, false)
-	) as unknown as Array<IncompleteMessage>;
+		normalizeMailMessageFromSoap({ m: item, isComplete: false })
+	);
 	return { conversation, messages };
 };

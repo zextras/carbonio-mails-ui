@@ -5,7 +5,9 @@
  */
 import { ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 
-import type { MailMessage, NormalizedConversation, Participant } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 
 /**
  * Collect all the participants of the given type (or any type if the type params is not set)

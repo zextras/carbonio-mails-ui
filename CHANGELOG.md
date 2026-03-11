@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.3...v1.31.4) (2026-03-09)
+
+
+### Bug Fixes
+
+* excluding not referenced attachment from savedAttachments ([80a8844](https://github.com/zextras/carbonio-mails-ui/commit/80a8844d8f85933f4f250631bc7f58be6bd1d5b8))
+* removed unvalid test ([cf0f1c0](https://github.com/zextras/carbonio-mails-ui/commit/cf0f1c0515889bc68f581ca4392a0274caf782bd))
+
 ### [1.31.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.2...v1.31.3) (2026-03-06)
 
 

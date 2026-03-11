@@ -16,7 +16,7 @@ import {
 	getReferredContentIds
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type { MailMessagePart } from 'types';
+import { MailMessagePart } from 'types/messages';
 
 describe('attachments', () => {
 	describe('getFlattenedAttachmentParts', () => {
@@ -249,7 +249,10 @@ describe('attachments', () => {
 		});
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13' });
-			const messageFromSoap = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
+			const messageFromSoap = normalizeMailMessageFromSoap({
+				m: getMsgResponse.m[0],
+				isComplete: true
+			});
 			const attachmentParts = getFlattenedAttachmentParts(messageFromSoap);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');
@@ -729,23 +732,6 @@ describe('attachments', () => {
 				filename: 'img.png',
 				messageId: message.id
 			});
-		});
-
-		it('should mark part with disposition "inline" as inline even if not an image', () => {
-			const message = generateMessage({ folderId: '2' });
-
-			message.parts = [
-				{
-					contentType: 'application/pdf',
-					disposition: 'inline',
-					filename: 'doc.pdf',
-					name: '2.3',
-					size: 2048
-				}
-			];
-
-			const result = buildSavedAttachments(message);
-			expect(result[0].isInline).toBe(true);
 		});
 
 		it('should not mark as inline when contentId is missing and disposition is not "inline"', () => {

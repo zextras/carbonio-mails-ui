@@ -12,7 +12,7 @@ import type { EmlRouteParams } from '../../../types/routes';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const EmlPreviewPanelContainer = (): React.JSX.Element => {
@@ -28,7 +28,7 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 			if (!response || 'Fault' in response) {
 				return;
 			}
-			setMessage(normalizeMailMessageFromSoap(response.m[0], true) as MailMessage);
+			setMessage(normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true }));
 		});
 	}, [message, messageId, part]);
 

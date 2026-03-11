@@ -15,7 +15,7 @@ import {
 	MountSharedFolderParams,
 	mountSharedFolderSoapApi
 } from 'api/mount-shared-folder-soap-api';
-import { ISoapFolderObj } from 'types/index.d';
+import { ISoapFolderObj } from 'types/soap/soap';
 
 describe('mountShareCalendar', () => {
 	it('raise an error if the response is an error', async () => {

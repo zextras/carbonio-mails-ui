@@ -40,6 +40,5 @@ export type GetMsgForPrintParameter = {
 };
 
 export type GetMsgForPrintResponse = {
-	GetMsgResponse: Array<GetMsgResponse>;
-	_jsns: 'urn:zimbra';
+	getMsgResponse: Array<GetMsgResponse>;
 };

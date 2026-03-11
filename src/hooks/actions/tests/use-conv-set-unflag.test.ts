@@ -11,7 +11,7 @@ import { times } from 'lodash';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
-import { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
 
 describe('useConvSetUnflag', () => {
 	describe('Descriptor', () => {

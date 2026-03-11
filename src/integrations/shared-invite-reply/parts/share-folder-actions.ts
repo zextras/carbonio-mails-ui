@@ -14,7 +14,8 @@ import { acceptSharedFolderReply } from 'api/accept-shared-folder-reply';
 import { mountSharedFolderSoapApi } from 'api/mount-shared-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import type { Participant, SaveDraftResponse } from 'types/index.d';
+import { Participant } from 'types/participant';
+import { SaveDraftResponse } from 'types/soap/save-draft';
 
 type Accept = {
 	zid: string;

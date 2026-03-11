@@ -11,7 +11,7 @@ import { http, HttpResponse } from 'msw';
 import { getSetupServer } from '../../__test__/vitest-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { ShareFolderDataType, shareFolderSoapApi } from 'api/share-folder-soap-api';
-import { FolderActionGrant } from 'types/index.d';
+import { FolderActionGrant } from 'types/soap/soap';
 
 const setupInterceptor = (): Promise<Array<{ action: FolderActionGrant }>> =>
 	new Promise<Array<{ action: FolderActionGrant }>>((resolve, reject) => {

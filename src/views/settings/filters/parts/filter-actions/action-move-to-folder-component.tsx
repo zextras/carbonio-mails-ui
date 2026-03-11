@@ -6,12 +6,12 @@
 
 import React, { useCallback } from 'react';
 
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 
+import { FilterFileInto } from 'types/filters';
 import { MovetoFolder } from 'views/settings/filters/parts/filter-actions/move-to-folder';
 import { ActionComponentProps } from 'views/settings/filters/types';
-import { FilterFileInto } from 'types/filters';
-import { Folder } from 'types';
 
 export const ActionMoveToFolderComponent = ({
 	value,
