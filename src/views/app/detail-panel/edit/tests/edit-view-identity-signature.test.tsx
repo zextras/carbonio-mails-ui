@@ -19,7 +19,7 @@ import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { getSignatureValue, replaceSignatureOnPlainTextBody } from 'helpers/signatures';
 import * as useQueryParam from 'hooks/use-query-param';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { EditView, EditViewProp } from 'views/app/detail-panel/edit/edit-view';
+import { EditView } from 'views/app/detail-panel/edit/edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity
@@ -44,7 +44,7 @@ describe('New and Replay email view', () => {
 				return undefined;
 			});
 
-			const props: EditViewProp = {
+			const props = {
 				editorId: '' // FIXME
 			};
 
