@@ -128,20 +128,26 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 		]
 	);
 
-	const handleSmimeSelected = useCallback(() => {
-		if (identityEmailAddress) {
-			smimePassword !== '' ? checkCertificateExist('sign') : checkEncryptionPassword('sign');
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
+	const handleSmimeAction = useCallback(
+		(type: string) => {
+			if (!identityEmailAddress) return;
 
+			if (smimePassword === '') {
+				checkEncryptionPassword(type);
+			} else {
+				checkCertificateExist(type);
+			}
+		},
+		[checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]
+	);
+
+	const handleSmimeSelected = useCallback(() => handleSmimeAction('sign'), [handleSmimeAction]);
 	const handleSmimeDeselected = useCallback(() => setIsSmimeSign(false), [setIsSmimeSign]);
 
-	const handleEncryptSelected = useCallback(() => {
-		if (identityEmailAddress) {
-			smimePassword !== '' ? checkCertificateExist('encrypt') : checkEncryptionPassword('encrypt');
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
-
+	const handleEncryptSelected = useCallback(
+		() => handleSmimeAction('encrypt'),
+		[handleSmimeAction]
+	);
 	const handleEncryptDeselected = useCallback(() => setIsSmimeEncrypt(false), [setIsSmimeEncrypt]);
 
 	return {
