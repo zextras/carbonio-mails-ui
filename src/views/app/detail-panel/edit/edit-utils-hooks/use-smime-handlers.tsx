@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
 import { getIdentityDescriptor } from 'helpers/identities';
-import { useSmimePasswordStore, useCertificatesStore } from 'store/certificates/store';
+import { useSmimePasswordStore } from 'store/certificates/store';
 import { useEditorIsSmimeSign, useEditorIsSmimeEncrypt, useEditorIdentityId } from 'store/editor';
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
