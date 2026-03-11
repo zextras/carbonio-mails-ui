@@ -77,7 +77,6 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
 			await user.click(getSmimeSignOption());
-
 			await waitFor(() => expect(checkPersonalCertificateExist).toHaveBeenCalled());
 
 			await openOptionsDropdown(user);
@@ -169,7 +168,6 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 			const { user } = renderEditView();
 			await openOptionsDropdown(user);
 			await user.click(getSmimeEncryptOption());
-
 			await waitFor(() => expect(checkPersonalCertificateExist).toHaveBeenCalled());
 
 			await openOptionsDropdown(user);
