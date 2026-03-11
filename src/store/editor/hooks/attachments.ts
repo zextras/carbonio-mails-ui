@@ -316,8 +316,8 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		});
 		computeAndUpdateEditorStatus(editorId);
-		setDirty();
-		debouncedSaveDraft();
+		// setDirty();
+		// debouncedSaveDraft();
 	};
 	return {
 		hasStandardAttachments: unsavedStandardAttachments.length + savedStandardAttachments.length > 0,

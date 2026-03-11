@@ -137,10 +137,10 @@ export const RichTextEditorContainer = ({
 				return;
 			}
 			saveEditor();
-			const alreadyFocused = composerRef.current.hasFocus();
-			alreadyFocused && composerRef.current?.dispatch('blur');
+			// const alreadyFocused = composerRef.current.hasFocus();
+			// alreadyFocused && composerRef.current?.dispatch('blur');
 			composerRef.current?.setDirty(false);
-			alreadyFocused && composerRef.current?.focus();
+			// alreadyFocused && composerRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
 	}, [saveEditor, setDirty]);
 
