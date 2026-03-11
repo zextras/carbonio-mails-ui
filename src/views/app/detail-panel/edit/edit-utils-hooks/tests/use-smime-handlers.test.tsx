@@ -59,7 +59,7 @@ describe('useSmimeHandlers (via EditView + OptionsDropdown)', () => {
 		vi.clearAllMocks();
 		createSmimeEnabledInterceptor();
 		createSoapAPIInterceptor('GetShareInfo', getEmptyMSWShareInfoResponse());
-		useSmimePasswordStore.getState().smimePassword = 'secret';
+		useSmimePasswordStore.getState().updateSmimePassword('secret');
 	});
 
 	describe('handleSmimeSelected', () => {

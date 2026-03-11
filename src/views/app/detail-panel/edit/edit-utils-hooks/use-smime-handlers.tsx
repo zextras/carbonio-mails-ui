@@ -15,10 +15,11 @@ import { useSmimePasswordStore } from 'store/certificates/store';
 import { useEditorIsSmimeSign, useEditorIsSmimeEncrypt, useEditorIdentityId } from 'store/editor';
 import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
+type SmimeOption = 'sign' | 'encrypt';
 type UseSmimeHandlersReturn = {
 	isSmimeSign: boolean | undefined;
 	isSmimeEncrypt: boolean | undefined;
-	checkCertificateExist: (option: 'sign' | 'encrypt', password?: string) => void;
+	checkCertificateExist: (option: SmimeOption, password?: string) => void;
 	handleSmimeSelected: () => void;
 	handleSmimeDeselected: () => void;
 	handleEncryptSelected: () => void;
@@ -35,7 +36,7 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 	const { createModal, closeModal } = useModal();
 
 	const handleCertificateResponse = useCallback(
-		(option: string, res: { data: Response } | { error: unknown }) => {
+		(option: SmimeOption, res: { data: Response } | { error: unknown }) => {
 			if ('data' in res) {
 				option === 'sign' ? setIsSmimeSign(true) : setIsSmimeEncrypt(true);
 			} else {
@@ -57,7 +58,7 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 	);
 
 	const checkCertificateExist = useCallback(
-		(option: string, password?: string) => {
+		(option: SmimeOption, password?: string) => {
 			if (identityEmailAddress) {
 				checkPersonalCertificateExist(password ?? smimePassword, identityEmailAddress).then((res) =>
 					handleCertificateResponse(option, res)
@@ -78,7 +79,7 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 	}, [identityEmailAddress, isSmimeSign, isSmimeEncrypt, checkCertificateExist]);
 
 	const checkEncryptionPassword = useCallback(
-		(option: string) => {
+		(option: SmimeOption) => {
 			checkExistEncryptionPassword().then((res) => {
 				if ('data' in res) {
 					const id = Date.now().toString();
@@ -126,7 +127,7 @@ export const useSmimeHandlers = (editorId: string): UseSmimeHandlersReturn => {
 	);
 
 	const handleSmimeAction = useCallback(
-		(type: string) => {
+		(type: SmimeOption) => {
 			if (!identityEmailAddress) return;
 
 			if (smimePassword === '') {
