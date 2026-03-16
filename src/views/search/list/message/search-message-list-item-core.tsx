@@ -116,7 +116,7 @@ export const SearchMessageListItemCore = ({
 	);
 
 	const badge = useMemo<'read' | 'unread'>(() => {
-		if (typeof completeMessage.read === 'undefined') return 'read';
+		if (completeMessage.read === undefined) return 'read';
 		return completeMessage.read ? 'read' : 'unread';
 	}, [completeMessage.read]);
 

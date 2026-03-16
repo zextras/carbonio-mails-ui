@@ -78,7 +78,7 @@ const MessageContactList: FC<{
 	);
 
 	const badge: 'read' | 'unread' = useMemo(() => {
-		if (typeof message.read === 'undefined') return 'read';
+		if (message.read === undefined) return 'read';
 		return message.read ? 'read' : 'unread';
 	}, [message.read]);
 

@@ -112,7 +112,7 @@ export const MessageListItemCore = ({
 	);
 
 	const badge = useMemo<'read' | 'unread'>(() => {
-		if (typeof message.read === 'undefined') return 'read';
+		if (message.read === undefined) return 'read';
 		return message.read ? 'read' : 'unread';
 	}, [message.read]);
 	const isTagInStore = useTagExist(tags);
