@@ -94,7 +94,7 @@ export const ConversationListItemCore = ({
 	);
 
 	const badge: 'read' | 'unread' = useMemo(() => {
-		if (typeof conversation.read === 'undefined') return 'read';
+		if (conversation.read === undefined) return 'read';
 		return conversation.read ? 'read' : 'unread';
 	}, [conversation.read]);
 
