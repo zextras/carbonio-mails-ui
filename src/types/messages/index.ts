@@ -6,7 +6,7 @@
 
 import { SENSITIVITY_VALUES } from 'constants/index';
 import type { Participant } from 'types/participant';
-import { MessageSignature } from 'types/soap';
+import type { MessageSignature } from 'types/soap';
 
 export type MailAuthenticationHeader = { value: string; pass: boolean };
 
