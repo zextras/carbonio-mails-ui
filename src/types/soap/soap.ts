@@ -6,15 +6,11 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { Folder } from '@zextras/carbonio-ui-commons';
 
-import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import { EmailAddresses } from 'types/soap/redirect-message-action';
-import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from 'types/soap/save-draft';
+import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
+import { MailAttachment, SoapDraftMessageObj } from 'types/soap/save-draft';
 
 export type MailVerificationHeader =
 	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];
-
-export type MailSensitivityHeader =
-	(typeof MAIL_SENSITIVITY_HEADER)[keyof typeof MAIL_SENSITIVITY_HEADER];
 
 export type IFolderView =
 	| 'search folder'
@@ -57,93 +53,6 @@ export type ISoapFolderObj = {
 	view: IFolderView;
 	cn: Array<mapContactIds>;
 	webOfflineSyncDays: number;
-};
-
-export type ISoapSyncFolderObj = {
-	folder: Array<ISoapSyncFolderObj>;
-	absFolderPath: string;
-	acl: unknown;
-	activesyncdisabled: boolean;
-	color: number;
-	deletable: boolean;
-	f: string;
-	i4ms: number;
-	i4next: number;
-	id: string;
-	l: string;
-	luuid: string;
-	md: number;
-	mdver: number;
-	meta: Array<unknown>;
-	ms: number;
-	n: number;
-	name: string;
-	retentionPolicy: Array<unknown>;
-	rev: number;
-	s: number;
-	u: number;
-	url: string;
-	uuid: string;
-	view: IFolderView;
-	webOfflineSyncDays: number;
-	rgb: string;
-	rid: string;
-	zid: string;
-	perm: string;
-	owner: string;
-};
-
-export type SoapContact = {
-	d: number;
-	fileAsStr: string;
-	id: string;
-	l: string;
-	rev: number;
-	_attrs: {
-		type?: string;
-		firstName?: string;
-		fullName?: string;
-		lastName?: string;
-		jobTitle?: string;
-		middleName?: string;
-		nickname?: string;
-		nameSuffix?: string;
-		namePrefix?: string;
-		mobilePhone?: string;
-		workPhone?: string;
-		otherPhone?: string;
-		department?: string;
-		email?: string;
-		notes?: string;
-		company?: string;
-		otherStreet?: string;
-		otherPostalCode?: string;
-		otherCity?: string;
-		otherState?: string;
-		otherCountry?: string;
-		image?: {
-			part: string;
-			ct: string;
-			s: number;
-			filename: string;
-		};
-	};
-};
-
-export type SyncResponseContactFolder = ISoapSyncFolderObj & {
-	cn: Array<{
-		ids: string; // Comma-separated values
-	}>;
-	folder: Array<SyncResponseContactFolder>;
-};
-
-export type SyncResponseContact = {
-	d: number;
-	id: string;
-	l: string;
-	md: number;
-	ms: number;
-	rev: number;
 };
 
 type FolderActionRename = {
@@ -235,16 +144,8 @@ export type ContactActionRequest = {
 	action: ContactActionMove | ContactActionDelete;
 };
 
-export type CreateContactResponse = {
-	cn: Array<SoapContact>;
-};
-
 export type BatchedRequest = {
 	_jsns: 'urn:zimbraMail';
-	requestId: string;
-};
-
-export type BatchedResponse = {
 	requestId: string;
 };
 
@@ -258,23 +159,6 @@ export type BatchRequest = {
 	ContactActionRequest?: Array<BatchedRequest & ContactActionRequest>;
 };
 
-export type BatchResponse = {
-	CreateFolderResponse?: Array<BatchedResponse & CreateFolderResponse>;
-	CreateContactResponse?: Array<BatchedResponse & CreateContactResponse>;
-	FolderActionResponse?: Array<BatchedResponse & FolderActionResponse>;
-};
-
-export type GetContactRequest = {
-	_jsns: 'urn:zimbraMail';
-	cn: Array<{
-		id: string;
-	}>;
-};
-
-export type GetContactsResponse = {
-	cn: Array<SoapContact>;
-};
-
 export type GetConvParameters = {
 	conversationId: string;
 	fetch?: string;
@@ -282,21 +166,8 @@ export type GetConvParameters = {
 	onConversationIdChange?: (newConversationId: string) => void;
 };
 
-export type RedirectActionParameters = {
-	id: string;
-	e: EmailAddresses[];
-};
-
-export type SaveDraftNewResult = {
-	resp: SaveDraftResponse;
-};
-
 export type SaveDraftParameters = {
 	soapDraftMessageObj: SoapDraftMessageObj;
 	signal?: AbortSignal;
 	attach?: MailAttachment;
-};
-
-export type SaveDraftResult = {
-	resp: SaveDraftResponse;
 };

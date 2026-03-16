@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
-
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from 'constants/index';
 import {
 	AttachmentUploadProcessStatus,
@@ -29,14 +27,6 @@ export type EditorAttachmentFiles = {
 	uploadProgress: number;
 	fileSize: number;
 	uploadProcessStatus?: AttachmentUploadProcessStatus;
-};
-
-/**
- * @deprecated
- */
-export type InlineAttachment = {
-	ci: string;
-	attach: { aid: string };
 };
 
 /**
@@ -195,24 +185,5 @@ export type MailsEditorV2 = {
 	textProvider?: EditorTextProvider;
 };
 
-export type IdentityType = {
-	value: string;
-	label: string;
-	address: string;
-	fullname: string;
-	fullName?: string;
-	type: string;
-	identityName: string;
-	displayName?: string;
-	zimbraPrefDefaultSignatureId?: string;
-	zimbraPrefForwardReplySignatureId?: string;
-};
-
 export type EditViewClosingReasons =
 	(typeof EDIT_VIEW_CLOSING_REASONS)[keyof typeof EDIT_VIEW_CLOSING_REASONS];
-
-export type SaveDraftNewParameters = {
-	data: MailsEditorV2;
-	prefs?: Partial<AccountSettingsPrefs>;
-	signal?: AbortSignal;
-};

@@ -6,7 +6,7 @@
 
 import { IncompleteMessage } from 'types/messages';
 import { Participant } from 'types/participant';
-import { ConvActionOperation, SoapIncompleteMessage } from 'types/soap';
+import { ConvActionOperation } from 'types/soap';
 import { SortBy } from 'types/sorting';
 
 export type ConvMessage = {
@@ -59,9 +59,4 @@ export type FetchConversationsReturn = {
 	offset?: number;
 	types: string;
 	Detail: { Error: { Code: string; Message: string } };
-};
-
-export type DeleteAttachmentsReturn = {
-	attachments: string[];
-	res: SoapIncompleteMessage;
 };

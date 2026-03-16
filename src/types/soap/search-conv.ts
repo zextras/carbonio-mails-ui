@@ -5,7 +5,6 @@
  */
 
 import { MailVerificationHeader } from './soap';
-import type { MailMessage } from 'types/messages';
 import { SoapMailMessage } from 'types/soap/soap-mail-message';
 import { ZimbraRequest } from 'types/soap/zimbra-request';
 
@@ -38,11 +37,4 @@ export type SearchConvParameters = {
 	folderId?: string;
 	fetch: string;
 	shouldMarkAsRead?: boolean;
-};
-
-export type SearchConvReturn = {
-	hasMore: boolean;
-	offset: string;
-	messages: Array<MailMessage>;
-	orderBy: string;
 };

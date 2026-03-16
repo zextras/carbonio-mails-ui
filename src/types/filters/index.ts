@@ -59,10 +59,6 @@ export type MailFilterTag = {
 	color?: number;
 };
 
-export type SearchEmailValue = {
-	email: string;
-};
-
 export type MarkAsOption = {
 	label: string;
 	value: { actionFlag: [{ flagName: string }] };
@@ -129,12 +125,5 @@ export type FilterAction =
 	| FilterFileInto
 	| FilterDiscard
 	| FilterStop;
-
-export type FilterActionsProps = {
-	isIncoming: boolean;
-	tempActions: Array<FilterAction>;
-	setTempActions: (tempActions: Array<FilterAction>) => void;
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
-};
 
 export type FilterActions = Array<FilterAction>;
