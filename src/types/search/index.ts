@@ -11,7 +11,7 @@ import API_REQUEST_STATUS from 'constants';
 
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
-import { Query } from 'views/search/types/types';
+import type { Query } from 'views/search/types/types';
 
 type ApiRequestStatusKey = keyof typeof API_REQUEST_STATUS;
 export type SearchRequestStatus = (typeof API_REQUEST_STATUS)[ApiRequestStatusKey] | null;
