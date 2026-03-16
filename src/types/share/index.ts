@@ -10,16 +10,6 @@ import { TFunction } from 'i18next';
 
 import type { Participant } from 'types/participant';
 
-export type ShareCalendarModalProps = {
-	openModal: () => void;
-	setModal: (a: any) => void;
-	t: TFunction;
-	toggleSnackbar: () => void;
-	folder: string;
-	folders: any;
-	allCalendars: any;
-};
-
 export type ResponseActionsProps = {
 	t: TFunction;
 	zid: string;
@@ -32,10 +22,6 @@ export type ResponseActionsProps = {
 	role: string;
 	allowedActions: string;
 	participants: Participant[];
-};
-
-export type ReplyShareParameters = {
-	data: any;
 };
 
 export type GranteeInfoProps = {

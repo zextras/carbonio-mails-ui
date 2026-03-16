@@ -22,13 +22,6 @@ export type MessageListItemProps = {
 	index: number;
 	onSelect: (index: number, id: string, event: React.MouseEvent) => void;
 };
-
-export type TextReadValuesType = {
-	color: 'text' | 'primary';
-	weight: 'medium' | 'light' | 'regular' | 'bold';
-	badge: 'read' | 'unread';
-};
-
 export type MsgListDraggableItemType = {
 	item: Partial<MailMessage> & Pick<MailMessage, 'id'>;
 	folderId: string;
@@ -36,14 +29,6 @@ export type MsgListDraggableItemType = {
 	isMessageView: boolean;
 	dragCheck: (e: React.DragEvent, id: string) => void;
 	selectedIds: Array<string>;
-};
-
-export type ItemAvatarType = {
-	item: any;
-	selected: boolean;
-	selecting: boolean;
-	toggle: (arg: string) => void;
-	folderId: string;
 };
 
 export type CustomListItem = Partial<MailMessage> & { id: string; isSearchModule?: boolean };

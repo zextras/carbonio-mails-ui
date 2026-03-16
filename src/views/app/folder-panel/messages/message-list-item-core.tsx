@@ -24,7 +24,6 @@ import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { MessageSubjectRow } from '../parts/message-subject-row';
 import { ParticipantsString } from '../parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
-import { TextReadValuesType } from 'types/folder';
 import { IncompleteMessage } from 'types/messages';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
@@ -112,12 +111,9 @@ export const MessageListItemCore = ({
 		[message.tags, tagsFromStore]
 	);
 
-	const textReadValues = useMemo<TextReadValuesType>(() => {
-		if (typeof message.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return message.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
+	const badge = useMemo<'read' | 'unread'>(() => {
+		if (typeof message.read === 'undefined') return 'read';
+		return message.read ? 'read' : 'unread';
 	}, [message.read]);
 	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
@@ -236,8 +232,8 @@ export const MessageListItemCore = ({
 										folderId: firstChildFolderId,
 										folderName: messageFolder?.name ?? ''
 									})}
-									backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
-									color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
+									backgroundColor={badge === 'unread' ? 'primary' : 'gray2'}
+									color={badge === 'unread' ? 'gray6' : 'gray0'}
 								/>
 							</Padding>
 						)}

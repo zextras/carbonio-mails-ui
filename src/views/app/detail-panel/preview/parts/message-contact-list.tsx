@@ -31,7 +31,6 @@ import { filter, find } from 'lodash';
 
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
 import { MailMessage } from 'types/messages';
-import { TextReadValuesProps } from 'types/utils';
 import ContactNames from 'views/app/detail-panel/preview/parts/contact-names';
 import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
@@ -78,12 +77,9 @@ const MessageContactList: FC<{
 		[message.participants]
 	);
 
-	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof message.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read', size: 'small' };
-		return message.read
-			? { color: 'text', weight: 'regular', badge: 'read', size: 'small' }
-			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
+	const badge: 'read' | 'unread' = useMemo(() => {
+		if (typeof message.read === 'undefined') return 'read';
+		return message.read ? 'read' : 'unread';
 	}, [message.read]);
 
 	const messageFolder = useMemo(
@@ -225,8 +221,8 @@ const MessageContactList: FC<{
 								folderId,
 								folderName: messageFolder.name
 							})}
-							backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
-							color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
+							backgroundColor={badge === 'unread' ? 'primary' : 'gray2'}
+							color={badge === 'unread' ? 'gray6' : 'gray0'}
 						/>
 					</Padding>
 				)}

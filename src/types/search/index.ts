@@ -11,7 +11,7 @@ import API_REQUEST_STATUS from 'constants';
 
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
-import { AdvancedFilterModalFormValues, Query } from 'views/search/types/types';
+import { Query } from 'views/search/types/types';
 
 type ApiRequestStatusKey = keyof typeof API_REQUEST_STATUS;
 export type SearchRequestStatus = (typeof API_REQUEST_STATUS)[ApiRequestStatusKey] | null;
@@ -41,12 +41,6 @@ export type AdvancedFilterButtonProps = {
 	isSharedFolderIncluded: boolean;
 	onSearchConfirm: (options: { query: Query; includeSharedFolders: boolean }) => void;
 	invalidQueryTooltip?: string;
-};
-
-export type AttachTypeEmailStatusRowPropType = {
-	query: Query;
-	attachmentTypeInputName: string;
-	emailStatusInputName: string;
 };
 
 export type ChipOnAddItem = {
@@ -112,53 +106,6 @@ export type ChipOnAdd = ChipItem & {
 	isQueryFilter: boolean;
 	value: string;
 	avatarIcon: string;
-};
-
-export type SendReceivedDateRowPropType = {
-	query: Query;
-	sentBeforeInputName: string;
-	sentAfterInputName: string;
-	sentOnInputName: string;
-};
-export type SizeLargerSizeSmallerRowProps = {
-	query: Query;
-	sizeSmallerInputName: string;
-	sizeLargerInputName: string;
-};
-export type SubjectKeywordRowProps = {
-	query: Query;
-	keywordsInputName: keyof AdvancedFilterModalFormValues;
-	subjectInputName: string;
-};
-
-export type TagFolderRowProps = {
-	query: Query;
-	folderInputName: string;
-	tagInputName: string;
-};
-
-export type ToggleFilters = Array<{
-	id: string;
-	avatarIcon?: string;
-	label: string;
-	value?: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarBackground?: ChipProps['background'];
-}>;
-export type ToggleFiltersProps = {
-	query: Query;
-	isSharedFolderIncludedToggleName: string;
-	hasAttachmentToggleName: string;
-	isFlaggedToggleName: string;
-	isUnreadToggleName: string;
-};
-
-export type UseDisabledPropType = {
-	queryToBe: Array<QueryChip>;
-	query: Array<QueryChip>;
-	isSharedFolderIncluded: boolean;
-	isSharedFolderIncludedTobe: boolean;
 };
 
 export type ChipType = {
