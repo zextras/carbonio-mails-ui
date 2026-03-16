@@ -5,10 +5,8 @@
  */
 
 import { SENSITIVITY_VALUES } from 'constants/index';
-import type { MailsEditorV2 } from 'types/editor';
 import type { Participant } from 'types/participant';
-import type { PrefsType } from 'types/settings';
-import { SaveDraftResponse, MessageSignature } from 'types/soap';
+import { MessageSignature } from 'types/soap';
 
 export type MailAuthenticationHeader = { value: string; pass: boolean };
 
@@ -106,22 +104,5 @@ export type MailMessage = IncompleteMessage & {
 };
 
 export type BodyPart = { contentType: string; content: string; truncated: boolean };
-/**
- * Parameters' type for the SendMsgRequest API command
- */
-export type SendMsgParameters = {
-	editor: MailsEditorV2;
-	msg?: MailMessage;
-	message?: MailMessage;
-	prefs?: PrefsType;
-};
-
-export type SendMsgResult = {
-	response:
-		| SaveDraftResponse
-		| (SaveDraftResponse['Fault'] & {
-				error: true;
-		  });
-};
 
 export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];

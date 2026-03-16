@@ -4,26 +4,32 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export type SoapEmailParticipantRole = 'f' | 't' | 'c' | 'b' | 'r' | 's' | 'n' | 'rf';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+
+export type ParticipantAddress = string;
+export type ParticipantDisplayName = string;
+export type ParticipantName = string;
+export type ParticipantIsGroup = boolean;
+export type ParticipantExpandGroupAllowed = boolean;
 
 export type SoapMailParticipant = {
 	/**
 	 * The email address of the participant.
 	 * This is a required field.
 	 */
-	a: string;
+	a: ParticipantAddress;
 
 	/**
 	 * The display name of the participant.
 	 * This is an optional field. If not provided, the email client may display only the email address.
 	 */
-	d?: string;
+	d?: ParticipantDisplayName;
 
 	/**
 	 * The personal name of the participant.
 	 * This is a required field.
 	 */
-	p: string;
+	p: ParticipantName;
 
 	/**
 	 * The role of the participant in the email.
@@ -37,13 +43,13 @@ export type SoapMailParticipant = {
 	 * - (n)otification: Read receipt notification.
 	 * - (rf) resent-from: Resent from address.
 	 */
-	t: SoapEmailParticipantRole;
+	t: ParticipantRoleType;
 
 	/**
 	 * Indicates whether the participant is a group (e.g., a mailing list).
 	 * This is an optional field.
 	 */
-	isGroup?: boolean;
+	isGroup?: ParticipantIsGroup;
 
 	/**
 	 * Flags whether the authenticated user can expand group members.
@@ -51,5 +57,5 @@ export type SoapMailParticipant = {
 	 * - 0 (false): The authenticated user does not have permission to expand group members.
 	 * Note: This field is present only when {isGroup} is set to `true`.
 	 */
-	exp?: boolean;
+	exp?: ParticipantExpandGroupAllowed;
 };

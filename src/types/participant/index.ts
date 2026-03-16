@@ -4,17 +4,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+import type { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
+
+import {
+	type ParticipantAddress,
+	type ParticipantDisplayName,
+	type ParticipantExpandGroupAllowed,
+	type ParticipantIsGroup,
+	type ParticipantName
+} from '../soap';
 
 export type Participant = {
 	type: ParticipantRoleType;
-	address: string;
-	name?: string;
-	fullName?: string;
-	email?: string;
+	address: ParticipantAddress;
+	name?: ParticipantDisplayName | ParticipantAddress;
+	fullName?: ParticipantName;
+	email?: ParticipantAddress;
 	error?: boolean;
-	exp?: boolean;
-	isGroup?: boolean;
+	exp?: ParticipantExpandGroupAllowed;
+	isGroup?: ParticipantIsGroup;
 };
 
 export type SharedParticipant = {
