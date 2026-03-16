@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ComponentType, SyntheticEvent } from 'react';
+import type { ComponentType, SyntheticEvent } from 'react';
 
 import { AccordionItemType, CloseModalFn, CreateModalFn } from '@zextras/carbonio-design-system';
 
@@ -12,7 +12,7 @@ export type TagActionsReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	onClick?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	onClick?: (arg: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;
@@ -43,7 +43,7 @@ export type ReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	click?: (arg: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;
