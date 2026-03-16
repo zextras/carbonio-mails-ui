@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 
 import type { Folder } from '@zextras/carbonio-ui-commons';
 
