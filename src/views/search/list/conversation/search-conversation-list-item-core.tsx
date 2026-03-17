@@ -5,20 +5,13 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import {
-	Badge,
-	Button,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
+import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { NormalizedConversation } from 'types/conversations';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
@@ -137,11 +130,9 @@ export const SearchConversationListItemCore = ({
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
-								<Badge
-									data-testid={`conversation-messages-count-${conversationId}`}
+								<ItemBadge
+									itemReadValue={conversation.read}
 									value={badgeTotalConversationMessages()}
-									backgroundColor={badge === 'read' ? 'gray2' : 'primary'}
-									color={badge === 'read' ? 'gray0' : 'gray6'}
 								/>
 							</Padding>
 						</Row>

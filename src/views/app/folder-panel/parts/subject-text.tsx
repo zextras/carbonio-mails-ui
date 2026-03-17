@@ -19,7 +19,7 @@ export const SubjectText = ({
 	const subjectText = useListItemTextSubject(subject);
 
 	const weight = useMemo<'bold' | 'regular'>(() => {
-		if (typeof read === 'undefined') return 'regular';
+		if (read === undefined) return 'regular';
 		return read ? 'regular' : 'bold';
 	}, [read]);
 	return (
