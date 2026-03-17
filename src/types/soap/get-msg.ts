@@ -31,7 +31,7 @@ export type GetMsgParameters = {
 	smimePassword?: string;
 	part?: string;
 	shouldMarkAsRead?: boolean;
-	html: boolean;
+	html?: boolean;
 };
 
 export type GetMsgForPrintParameter = {

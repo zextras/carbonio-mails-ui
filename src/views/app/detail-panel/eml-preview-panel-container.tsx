@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import type { EmlRouteParams } from '../../../types/routes';
@@ -24,11 +25,13 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 		if (message) {
 			return;
 		}
-		getMsgSoapApi({ msgId: messageId, part }).then((response) => {
+		const prefs = getUserSettings()?.prefs;
+		const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+		getMsgSoapApi({ msgId: messageId, part, html }).then((response) => {
 			if (!response || 'Fault' in response) {
 				return;
 			}
-			setMessage(normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true }));
+			setMessage(normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html }));
 		});
 	}, [message, messageId, part]);
 
