@@ -72,7 +72,7 @@ describe('conversation-list-item component', () => {
 				setConversationsInEmailStore([conversation], false);
 
 				setupTest(<ConversationListItem {...props} />);
-				const badge = await screen.findByTestId(`conversation-messages-count-${conversation.id}`);
+				const badge = await screen.findByTestId('FolderBadge');
 				await act(async () => {
 					expect(badge).toBeVisible();
 				});
