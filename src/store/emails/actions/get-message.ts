@@ -89,7 +89,7 @@ export function getMessageDecryptEmailStoreAction(
 ): Promise<MailMessage | undefined> {
 	return handleDecryptRetrieveMessage(
 		messageId,
-		(id) => getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, html: true }),
+		(id) => getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, html }),
 		html
 	);
 }

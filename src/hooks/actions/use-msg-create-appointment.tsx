@@ -52,11 +52,13 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 					.then((message) => {
 						if (!message) return;
 						const mailHtmlBody = extractBody(message).richText;
+						const mailPlainBody = extractBody(message).plainText;
 						isAvailable &&
 							openAppointmentComposer({
 								title: message.subject,
-								isRichText: true,
-								richText: mailHtmlBody,
+								isRichText: html,
+								richText: html ? mailHtmlBody : undefined,
+								plainText: html ? undefined : mailPlainBody,
 								...(!isNull(calendar) ? { calendar } : {}),
 								...(!isNull(sender) ? { sender } : {}),
 								attendees,

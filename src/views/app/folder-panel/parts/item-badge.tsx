@@ -9,10 +9,12 @@ import { Badge } from '@zextras/carbonio-design-system';
 
 export const ItemBadge = ({
 	itemReadValue,
-	value
+	value,
+	dataTestId = 'FolderBadge'
 }: {
 	itemReadValue: boolean | undefined;
 	value: string | number;
+	dataTestId?: string;
 }): React.JSX.Element => {
 	const badgeReadValue = useMemo<'read' | 'unread'>(() => {
 		if (itemReadValue === undefined) return 'read';
@@ -20,7 +22,7 @@ export const ItemBadge = ({
 	}, [itemReadValue]);
 	return (
 		<Badge
-			data-testid="FolderBadge"
+			data-testid={dataTestId}
 			value={value}
 			backgroundColor={badgeReadValue === 'unread' ? 'primary' : 'gray2'}
 			color={badgeReadValue === 'unread' ? 'gray6' : 'gray0'}
