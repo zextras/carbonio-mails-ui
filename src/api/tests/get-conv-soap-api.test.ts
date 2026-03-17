@@ -27,7 +27,7 @@ describe('getConvSoapApi', () => {
 			_jsns: 'urn:zimbraMail',
 			c: {
 				id: '123',
-				html: 1,
+				html: true,
 				needExp: 1,
 				header: expect.any(Array),
 				fetch: 'all'

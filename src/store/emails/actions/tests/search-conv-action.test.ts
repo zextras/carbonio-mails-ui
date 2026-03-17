@@ -49,7 +49,8 @@ describe('searchConvEmailStoreAction', () => {
 		);
 		expect(searchConvSoapApi).toHaveBeenCalledWith({
 			conversationId: mockConversationId,
-			fetch: 'all'
+			fetch: 'all',
+			html: true
 		});
 		expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
 		expect(updateConversations).toHaveBeenCalledWith(expect.any(Array));
