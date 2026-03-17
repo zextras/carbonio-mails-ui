@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
-import { TextReadValuesType } from 'types/folder';
 import { MailMessage } from 'types/messages';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
@@ -116,13 +115,11 @@ export const SearchMessageListItemCore = ({
 		[completeMessage.tags, tagsFromStore]
 	);
 
-	const textReadValues = useMemo<TextReadValuesType>(() => {
-		if (typeof completeMessage.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return completeMessage.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
+	const badge = useMemo<'read' | 'unread'>(() => {
+		if (completeMessage.read === undefined) return 'read';
+		return completeMessage.read ? 'read' : 'unread';
 	}, [completeMessage.read]);
+
 	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
 		() =>
@@ -243,8 +240,8 @@ export const SearchMessageListItemCore = ({
 									folderId,
 									folderName: messageFolder?.name ?? ''
 								})}
-								backgroundColor={textReadValues.badge === 'read' ? 'gray2' : 'primary'}
-								color={textReadValues.badge === 'read' ? 'gray0' : 'gray6'}
+								backgroundColor={badge === 'read' ? 'gray2' : 'primary'}
+								color={badge === 'read' ? 'gray0' : 'gray6'}
 							/>
 						</Padding>
 					</Row>

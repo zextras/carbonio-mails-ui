@@ -4,13 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { SyntheticEvent } from 'react';
-
 import { CloseModalFn, CreateModalFn, Theme } from '@zextras/carbonio-design-system';
 import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
-import { ItemType } from '@zextras/carbonio-ui-commons';
-
-import type { TagActionItemType } from 'types/tags';
 
 export type SelectFoldersUIActionExecutionConfig = {
 	showSharedAccounts: boolean;
@@ -69,25 +64,6 @@ export type UIAction<ExecutionParams> = UIActionExecutionParams<ExecutionParams>
 	label: string;
 	openModal?: (params: ExecutionParams) => void;
 };
-
-export type MessageActionReturnType = UIAction<never> & {
-	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void | Promise<void>;
-	items?: ItemType[];
-	customComponent?: React.ReactElement;
-};
-
-export type ConvActionReturnType = UIAction<never> & {
-	disabled?: boolean;
-	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
-	customComponent?: React.JSX.Element;
-	items?: ItemType[];
-};
-
-export type ActionReturnType =
-	| false
-	| MessageActionReturnType
-	| ConvActionReturnType
-	| TagActionItemType;
 
 export type GetAttachmentsDownloadLinkProps = {
 	messageId: string;

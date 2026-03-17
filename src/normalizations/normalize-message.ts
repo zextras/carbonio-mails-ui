@@ -4,13 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {
-	getFolder,
-	getIdentitiesDescriptors,
-	ParticipantRole,
-	ParticipantRoleType,
-	useFolderStore
-} from '@zextras/carbonio-ui-commons';
+import { getFolder, getIdentitiesDescriptors, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { find, forEach, isArray, isNil, map, orderBy, reduce } from 'lodash';
 
 import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
@@ -36,7 +30,7 @@ import {
 	SoapMailMessage,
 	SoapMailMessagePart
 } from 'types/soap/soap-mail-message';
-import { SoapEmailParticipantRole, SoapMailParticipant } from 'types/soap/soap-mail-participant';
+import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage
@@ -308,31 +302,8 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
 	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
-const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
-	switch (t) {
-		case 'f':
-			return ParticipantRole.FROM;
-		case 't':
-			return ParticipantRole.TO;
-		case 'c':
-			return ParticipantRole.CARBON_COPY;
-		case 'b':
-			return ParticipantRole.BLIND_CARBON_COPY;
-		case 'r':
-			return ParticipantRole.REPLY_TO;
-		case 's':
-			return ParticipantRole.SENDER;
-		case 'n':
-			return ParticipantRole.READ_RECEIPT_NOTIFICATION;
-		case 'rf':
-			return ParticipantRole.RESENT_FROM;
-		default:
-			throw new Error(`Participant type not handled: '${t}'`);
-	}
-};
-
 export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
-	type: participantTypeFromSoap(e.t),
+	type: e.t,
 	address: e.a,
 	name: e.d || e.a,
 	fullName: e.p,

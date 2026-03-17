@@ -10,7 +10,6 @@ import type {
 	UnsavedAttachment
 } from 'types/attachments';
 import { EditorTextProvider, type MailsEditorV2 } from 'types/editor';
-import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 
 export type EditorsStateTypeV2 = {
 	editors: MailsEditorMapV2;
@@ -86,7 +85,3 @@ export type EditorsStateTypeV2 = {
 };
 
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
-
-export type Payload = {
-	payload: { m: Array<SoapIncompleteMessage>; t?: any };
-};

@@ -8,11 +8,6 @@ import { NameSpace } from '@zextras/carbonio-ui-soap-lib';
 
 import { EditorAttachmentFiles } from 'types/editor';
 
-export type MailEditHeaderType = {
-	folderId: string | number;
-	header: string | undefined;
-};
-
 export type IconColors = Array<{
 	color: string;
 	extension: string;
