@@ -65,12 +65,17 @@ async function handleDecryptRetrieveMessage(
 	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 
-export function getMessageEmailStoreAction(
-	messageId: string,
-	shouldMarkAsRead?: boolean
-): Promise<MailMessage | undefined> {
+export function getMessageEmailStoreAction({
+	messageId,
+	shouldMarkAsRead,
+	html
+}: {
+	messageId: string;
+	shouldMarkAsRead?: boolean;
+	html: boolean;
+}): Promise<MailMessage | undefined> {
 	return handleRetrieveMessage(messageId, (id) =>
-		getMsgSoapApi({ msgId: id, max: 250_000, shouldMarkAsRead })
+		getMsgSoapApi({ msgId: id, max: 250_000, shouldMarkAsRead, html })
 	);
 }
 

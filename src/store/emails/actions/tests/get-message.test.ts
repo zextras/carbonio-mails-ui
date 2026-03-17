@@ -57,7 +57,7 @@ describe('get-message', () => {
 
 		it('handles successful message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi(getMsgResponse);
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			const request = await getMsgApi;
 			expect(request.m.id).toBe(messageId);
@@ -69,7 +69,7 @@ describe('get-message', () => {
 
 		it('handles error during message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi({ Fault: {} });
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 			await getMsgApi;
 
 			expect(result).toBeUndefined();
@@ -79,7 +79,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			expect(result).toBeUndefined();
 		});
@@ -88,7 +88,7 @@ describe('get-message', () => {
 			// FIXME: code does not handle empty message
 			stubGetMsgApi({});
 
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			expect(result).toBeUndefined();
 		});

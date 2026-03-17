@@ -48,7 +48,7 @@ export async function sendMsgFromEditor({
 		identity?.ownerAccount ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction(response.m[0].id);
+		getMessageEmailStoreAction({ messageId: response.m[0].id, html: editor.isRichText });
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid });
