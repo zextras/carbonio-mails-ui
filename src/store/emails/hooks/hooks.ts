@@ -55,7 +55,9 @@ export function useCompleteConversationOrFetch({
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
+						const prefs = getUserSettings()?.prefs;
+						const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+						searchConvEmailStoreAction({ conversationId, folderId, shouldMarkAsRead, html });
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,

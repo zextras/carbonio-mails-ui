@@ -96,7 +96,7 @@ describe('get-message', () => {
 		it('handles successful decrypt message retrieval', async () => {
 			const msgApi = stubGetMsgApi(getMsgResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			const request = await msgApi;
 			expect(request.encryptionPassword).toEqual('smimePassword');
@@ -113,7 +113,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			expect(result).toBeUndefined();
 		});
@@ -123,14 +123,14 @@ describe('get-message', () => {
 			const emptyResponse = { m: [] };
 			stubGetMsgApi(emptyResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			expect(result).toBeUndefined();
 		});
 
 		it('handles enable to decrypt message response', async () => {
 			const getMsgApi = stubGetMsgApi(mockResponseEncryptMessage);
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			const request = await getMsgApi;
 			expect(request.m.max).toBe(250_000);

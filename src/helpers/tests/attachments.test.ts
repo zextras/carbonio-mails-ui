@@ -251,7 +251,8 @@ describe('attachments', () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13', html: true });
 			const messageFromSoap = normalizeMailMessageFromSoap({
 				m: getMsgResponse.m[0],
-				isComplete: true
+				isComplete: true,
+				html: true
 			});
 			const attachmentParts = getFlattenedAttachmentParts(messageFromSoap);
 			expect(attachmentParts).toHaveLength(1);

@@ -51,7 +51,7 @@ export async function sendMsgFromEditor({
 		getMessageEmailStoreAction({ messageId: response.m[0].id, html: editor.isRichText });
 	}
 	if (response?.m?.[0]?.cid) {
-		getConvEmailStoreAction({ id: response.m[0].cid });
+		getConvEmailStoreAction({ id: response.m[0].cid, html: editor.isRichText });
 	}
 	return response;
 }

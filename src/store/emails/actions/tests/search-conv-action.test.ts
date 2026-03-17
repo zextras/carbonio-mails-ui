@@ -41,7 +41,7 @@ describe('searchConvEmailStoreAction', () => {
 			messages: []
 		});
 
-		await searchConvEmailStoreAction(mockConversationId);
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
 
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,
@@ -62,7 +62,7 @@ describe('searchConvEmailStoreAction', () => {
 	it('handles error during conversation search', async () => {
 		(searchConvSoapApi as Mock).mockRejectedValueOnce(new Error('Error'));
 
-		await searchConvEmailStoreAction(mockConversationId);
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
 
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,
@@ -78,7 +78,7 @@ describe('searchConvEmailStoreAction', () => {
 		const faultResponse = { Fault: {} };
 		(searchConvSoapApi as Mock).mockResolvedValueOnce(faultResponse);
 
-		await searchConvEmailStoreAction(mockConversationId);
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
 
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,
@@ -98,7 +98,7 @@ describe('searchConvEmailStoreAction', () => {
 			messages: []
 		});
 
-		await searchConvEmailStoreAction(mockConversationId);
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
 
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,

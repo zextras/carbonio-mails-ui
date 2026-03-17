@@ -33,6 +33,6 @@ export const getMsgsForPrintSoapApi = async ({
 	});
 	return map(getMsgResponse, (re) => {
 		const msg = re.m[0];
-		return normalizeMailMessageFromSoap({ m: msg, isComplete: true });
+		return normalizeMailMessageFromSoap({ m: msg, isComplete: true, html: true });
 	});
 };

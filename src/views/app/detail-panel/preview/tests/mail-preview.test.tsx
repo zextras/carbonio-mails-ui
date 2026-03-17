@@ -24,7 +24,11 @@ describe('Mail preview', () => {
 
 	it('msg 10 - 3 inline images', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '10', html: true });
-		const message = normalizeMailMessageFromSoap({ m: getMsgResponse?.m[0], isComplete: true });
+		const message = normalizeMailMessageFromSoap({
+			m: getMsgResponse?.m[0],
+			isComplete: true,
+			html: true
+		});
 
 		const props: MailPreviewProps = {
 			message,
@@ -47,7 +51,11 @@ describe('Mail preview', () => {
 
 	it('msg 11 - table with a link', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '11', html: true });
-		const message = normalizeMailMessageFromSoap({ m: getMsgResponse?.m[0], isComplete: true });
+		const message = normalizeMailMessageFromSoap({
+			m: getMsgResponse?.m[0],
+			isComplete: true,
+			html: true
+		});
 
 		const props: MailPreviewProps = {
 			message,
@@ -65,7 +73,11 @@ describe('Mail preview', () => {
 
 	it('msg 12 - table with width greater than the previewer width', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '12', html: true });
-		const message = normalizeMailMessageFromSoap({ m: getMsgResponse?.m[0], isComplete: true });
+		const message = normalizeMailMessageFromSoap({
+			m: getMsgResponse?.m[0],
+			isComplete: true,
+			html: true
+		});
 
 		const props: MailPreviewProps = {
 			message,

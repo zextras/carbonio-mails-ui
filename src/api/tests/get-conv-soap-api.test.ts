@@ -18,7 +18,8 @@ describe('getConvSoapApi', () => {
 		};
 		const interceptor = createSoapAPIInterceptor('GetConv', response);
 		getConvSoapApi({
-			conversationId: '123'
+			conversationId: '123',
+			html: true
 		});
 		const request = await interceptor;
 
@@ -42,7 +43,8 @@ describe('getConvSoapApi', () => {
 		};
 		createSoapAPIInterceptor('GetConv', response);
 		const result = await getConvSoapApi({
-			conversationId: '123'
+			conversationId: '123',
+			html: true
 		});
 		await waitFor(async () => {
 			expect(result).toEqual({
@@ -61,7 +63,8 @@ describe('getConvSoapApi', () => {
 		createSoapAPIInterceptor('GetConv', response);
 		await getConvSoapApi({
 			conversationId: '-123',
-			onConversationIdChange: mockOnConversationIdChange
+			onConversationIdChange: mockOnConversationIdChange,
+			html: true
 		});
 		await waitFor(async () => {
 			expect(mockOnConversationIdChange).toHaveBeenCalledWith('123');
@@ -77,7 +80,8 @@ describe('getConvSoapApi', () => {
 		createSoapAPIInterceptor('GetConv', response);
 		await getConvSoapApi({
 			conversationId: '123',
-			onConversationIdChange: mockOnConversationIdChange
+			onConversationIdChange: mockOnConversationIdChange,
+			html: true
 		});
 		await waitFor(async () => {
 			expect(mockOnConversationIdChange).not.toHaveBeenCalledWith('123');
