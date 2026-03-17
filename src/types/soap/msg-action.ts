@@ -44,8 +44,3 @@ export type MsgActionParameters = {
 	flag?: string;
 	folderId?: string;
 };
-
-export type MsgActionResult = {
-	ids: string[];
-	operation: MsgActionOperation;
-};
