@@ -15,7 +15,7 @@ export async function getMsgSoapApi({
 	max,
 	part,
 	shouldMarkAsRead,
-	html = true
+	html
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	const message: GetMsgRequest['m'] = {
 		html,
