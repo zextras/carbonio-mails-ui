@@ -153,7 +153,7 @@ describe('get-message', () => {
 		it('handles successful full message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi(getMsgResponse);
 
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 			const request = await getMsgApi;
 			expect(request.m).toEqual(expect.objectContaining({ id: messageId }));
 			expect(result).toEqual(
@@ -163,7 +163,7 @@ describe('get-message', () => {
 
 		it('handles error during full message retrieval', async () => {
 			stubGetMsgApi({ Fault: {} });
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});
@@ -172,7 +172,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});
@@ -181,7 +181,7 @@ describe('get-message', () => {
 			// FIXME: code was mocked and test does not pass with real code
 			const emptyResponse = { m: [] };
 			stubGetMsgApi(emptyResponse);
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});

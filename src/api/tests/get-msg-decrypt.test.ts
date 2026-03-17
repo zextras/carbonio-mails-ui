@@ -11,13 +11,13 @@ import { GetMsgRequest } from 'types/soap/get-msg';
 describe('GetMsg', () => {
 	it('should send max parameter if present', async () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
-		getMsgDecryptSoapApi({ msgId: '1', max: 10, smimePassword: 'smimePassword' });
+		getMsgDecryptSoapApi({ msgId: '1', max: 10, smimePassword: 'smimePassword', html: true });
 		const request = await interceptor;
 		expect(request.m.max).toBe(10);
 	});
 	it('should not send max parameter if not present', async () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
-		getMsgDecryptSoapApi({ msgId: '1' });
+		getMsgDecryptSoapApi({ msgId: '1', html: true });
 		const request = await interceptor;
 		expect(request.m.max).not.toBeDefined();
 	});

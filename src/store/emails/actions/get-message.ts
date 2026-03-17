@@ -79,13 +79,13 @@ export function getMessageDecryptEmailStoreAction(
 	smimePassword: string
 ): Promise<MailMessage | undefined> {
 	return handleDecryptRetrieveMessage(messageId, (id) =>
-		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword })
+		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, html: true })
 	);
 }
 
 export function getFullMessageEmailStoreAction(
 	messageId: string,
-	html?: boolean
+	html: boolean
 ): Promise<MailMessage | undefined> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }), html);
 }
