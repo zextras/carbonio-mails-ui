@@ -26,7 +26,12 @@ async function handleRetrieveMessage(
 	apiCall: (id: string) => Promise<GetMsgResponse>,
 	html?: boolean
 ): Promise<MailMessage | undefined> {
-	const response = await apiCall(messageId);
+	let response: GetMsgResponse | undefined;
+	try {
+		response = await apiCall(messageId);
+	} catch {
+		return undefined;
+	}
 	if (!response || 'Fault' in response) {
 		return undefined;
 	}
@@ -38,7 +43,12 @@ async function handleDecryptRetrieveMessage(
 	messageId: string,
 	apiCall: (id: string) => Promise<GetMsgResponse>
 ): Promise<MailMessage | undefined> {
-	const response = await apiCall(messageId);
+	let response: GetMsgResponse | undefined;
+	try {
+		response = await apiCall(messageId);
+	} catch {
+		return undefined;
+	}
 	if (!response || 'Fault' in response) {
 		return undefined;
 	}
