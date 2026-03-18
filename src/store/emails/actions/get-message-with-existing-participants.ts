@@ -20,7 +20,12 @@ async function handleRetrieveMessageWithParticipants(
 	apiCall: (id: string) => Promise<GetMsgResponse>,
 	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
-	const response = await apiCall(messageId);
+	let response: GetMsgResponse | undefined;
+	try {
+		response = await apiCall(messageId);
+	} catch {
+		return undefined;
+	}
 	if (!response || 'Fault' in response) {
 		return undefined;
 	}
