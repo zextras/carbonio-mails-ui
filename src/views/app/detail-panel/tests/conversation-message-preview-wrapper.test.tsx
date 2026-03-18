@@ -6,12 +6,15 @@
 import React from 'react';
 
 import { act } from '@testing-library/react';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { NavigateFunction } from 'react-router-dom';
 
 import { populateMessagesInEmailStore } from '../../../../__test__/generators/generateMessage';
-import { updateMessageStatus } from '../../../../store/emails/store';
+import { GetMsgRequest } from '../../../../types/soap';
 import { ConversationMessagePreviewWrapper } from '../conversation-message-preview-wrapper';
 import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const mockNavigateSpy = vi.fn();
 
@@ -23,8 +26,12 @@ vi.mock('react-router-dom', async () => ({
 describe('conversation-message-preview-wrapper', () => {
 	test('when messageStatus has an error it will redirect', async () => {
 		const messages = await act(() => populateMessagesInEmailStore());
-		await act(() => updateMessageStatus(messages[0].id, 'error'));
+		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody();
 
+		const interceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
+			'GetMsg',
+			response
+		);
 		setupTest(
 			<ConversationMessagePreviewWrapper
 				convMessageId={messages[0].id}
@@ -36,7 +43,9 @@ describe('conversation-message-preview-wrapper', () => {
 				path: '/folder/:folderId/conversation/:conversationId'
 			}
 		);
-
+		await act(async () => {
+			await interceptor;
+		});
 		expect(mockNavigateSpy).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
 	});
 });

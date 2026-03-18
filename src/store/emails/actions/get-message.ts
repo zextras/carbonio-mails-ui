@@ -8,12 +8,11 @@ import { map } from 'lodash';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { getMsgDecryptSoapApi } from 'api/get-msg-soap-api-decrypt';
-import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
-import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { updateMessages } from 'store/emails/store';
 import { MailMessage } from 'types/messages';
 import { GetMsgResponse } from 'types/soap/get-msg';
 
@@ -27,16 +26,11 @@ async function handleRetrieveMessage(
 	apiCall: (id: string) => Promise<GetMsgResponse>,
 	html?: boolean
 ): Promise<MailMessage | undefined> {
-	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await apiCall(messageId).catch(() => {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-	});
+	const response = await apiCall(messageId);
 	if (!response || 'Fault' in response) {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
 	handleGetMsgResponse(response, html);
-	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
 	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html });
 }
 
@@ -44,12 +38,8 @@ async function handleDecryptRetrieveMessage(
 	messageId: string,
 	apiCall: (id: string) => Promise<GetMsgResponse>
 ): Promise<MailMessage | undefined> {
-	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await apiCall(messageId).catch(() => {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-	});
+	const response = await apiCall(messageId);
 	if (!response || 'Fault' in response) {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
 	const isNotDecrypted =
@@ -57,11 +47,9 @@ async function handleDecryptRetrieveMessage(
 		false;
 
 	if (isNotDecrypted) {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
 	handleGetMsgResponse(response);
-	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
 	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 

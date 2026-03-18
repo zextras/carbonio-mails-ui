@@ -8,13 +8,16 @@ import React from 'react';
 
 import { act, waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { NavigateFunction, useParams } from 'react-router-dom';
 import type { Mock } from 'vitest';
 
+import { GetMsgRequest } from '../../../../../types/soap';
 import { setupTest, screen, within } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
-import { API_REQUEST_STATUS } from 'constants/index';
-import { setSearchResultsByMessage, updateMessageStatus } from 'store/emails/store';
+import { setSearchResultsByMessage } from 'store/emails/store';
 import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
 const mockNavigateSpy = vi.fn();
@@ -40,10 +43,6 @@ describe('Message Panel', () => {
 			false
 		);
 
-		await waitFor(() => {
-			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
-		});
-
 		setupTest(<SearchMessagePanel messageId="1" />);
 
 		expect(await screen.findByTestId('MessagePanel-1')).toBeVisible();
@@ -52,13 +51,19 @@ describe('Message Panel', () => {
 	});
 	it('should redirect when messageStatus is error', async () => {
 		const messages = await act(() => populateMessagesInEmailStore());
-		await act(() => updateMessageStatus(messages[0].id, 'error'));
+		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody();
 
+		const interceptor = createSoapAPIInterceptor<GetMsgRequest, ErrorSoapBodyResponse>(
+			'GetMsg',
+			response
+		);
 		setupTest(<SearchMessagePanel messageId={messages[0].id} />, {
 			initialEntries: [`/message/${messages[0].id}`],
 			path: '/message/:messageId'
 		});
-
+		await act(async () => {
+			await interceptor;
+		});
 		expect(mockNavigateSpy).toHaveBeenCalledWith('/search', { replace: true });
 	});
 
@@ -78,10 +83,6 @@ describe('Message Panel', () => {
 			],
 			false
 		);
-
-		await waitFor(() => {
-			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
-		});
 
 		const { user } = setupTest(<SearchMessagePanel messageId="1" />);
 

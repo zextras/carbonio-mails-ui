@@ -5,10 +5,9 @@
  */
 
 import { saveDraftSoapApi } from 'api/save-draft-soap-api';
-import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { createSoapDraftRequestFromEditor } from 'store/editor/editor-transformations';
-import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { updateMessages } from 'store/emails/store';
 import { MailsEditorV2 } from 'types/editor';
 import { MailAttachment } from 'types/soap/save-draft';
 
@@ -30,7 +29,6 @@ export async function saveDraftEmailStoreAction({
 				m: message
 			});
 			updateMessages([normalizedMessage]);
-			updateMessageStatus(normalizedMessage.id, API_REQUEST_STATUS.fulfilled);
 		});
 	return result;
 }

@@ -6,12 +6,11 @@
 import { map } from 'lodash';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
-import { API_REQUEST_STATUS } from 'constants/index';
 import {
 	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
-import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { updateMessages } from 'store/emails/store';
 import { MailMessage } from 'types/messages';
 import { Participant } from 'types/participant';
 import { GetMsgResponse } from 'types/soap/get-msg';
@@ -21,12 +20,8 @@ async function handleRetrieveMessageWithParticipants(
 	apiCall: (id: string) => Promise<GetMsgResponse>,
 	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
-	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await apiCall(messageId).catch(() => {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-	});
+	const response = await apiCall(messageId);
 	if (!response || 'Fault' in response) {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
 	const messages = map(response?.m ?? [], (msg) => ({
@@ -34,7 +29,6 @@ async function handleRetrieveMessageWithParticipants(
 		participants
 	}));
 	updateMessages(messages);
-	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
 	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true });
 }
 

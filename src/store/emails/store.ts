@@ -401,24 +401,6 @@ export function updateConversationStatus(
 	});
 }
 
-/**
- * Updates the status of a specific message in the `populatedItemsSlice` of the emails store.
- * This function modifies the store state to set the provided status for the given message ID.
- */
-export function updateMessageStatus(messageId: string, status: SearchRequestStatus): void {
-	addTask(async () => {
-		populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
-	});
-}
-
-/**
- * Retrieves the status of a specific message from the `populatedItemsSlice`.
- * This function accesses the `populatedItemsSlice` to get the status of the given message ID.
- */
-export function useMessageStatus(id: string): SearchRequestStatus {
-	return useEmailsStore((state) => state.populatedItemsSlice.messagesStatus?.[id]);
-}
-
 // ###########################################
 // #### messageIndexSlice related functions
 // ###########################################

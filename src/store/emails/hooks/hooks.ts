@@ -4,19 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
-import {
-	useConversationById,
-	useConversationStatus,
-	useMessageById,
-	useMessageStatus
-} from 'store/emails/store';
+import { useConversationById, useConversationStatus, useMessageById } from 'store/emails/store';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { SearchRequestStatus } from 'types/search';
@@ -94,17 +89,28 @@ export function useCompleteMessageOrFetch({
 	shouldMarkAsRead = false
 }: UseCompleteMessageOrFetchParams): MessageWithStatus {
 	const message = useMessageById(messageId);
-	const messageStatus = useMessageStatus(messageId);
+	const [messageStatus, setMessageStatus] = useState<SearchRequestStatus>(null);
 
 	const requestDebouncedMessage = useMemo(
 		() =>
 			debounce(
 				() => {
-					if (
-						messageStatus !== API_REQUEST_STATUS.pending &&
-						(!message?.isComplete || messageStatus === undefined)
-					) {
-						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
+					if (message?.isComplete) {
+						setMessageStatus(API_REQUEST_STATUS.fulfilled);
+					}
+					if (!message?.isComplete && messageStatus !== API_REQUEST_STATUS.pending) {
+						setMessageStatus(API_REQUEST_STATUS.pending);
+						getMessageEmailStoreAction(messageId, shouldMarkAsRead)
+							.then((response) => {
+								if (!response) {
+									setMessageStatus(API_REQUEST_STATUS.error);
+								} else {
+									setMessageStatus(API_REQUEST_STATUS.fulfilled);
+								}
+							})
+							.catch(() => {
+								setMessageStatus(API_REQUEST_STATUS.error);
+							});
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,

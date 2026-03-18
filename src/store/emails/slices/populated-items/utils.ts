@@ -13,7 +13,6 @@ import { StoreApi, UseBoundStore } from 'zustand';
 
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { CONVACTIONS } from 'commons/utilities';
-import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { ConvActionParameters, NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
@@ -105,11 +104,6 @@ function updateMessages(
 				} else {
 					populatedItemsSlice.messages[message.id] = merge(existingMessage, message); // Merge
 				}
-
-				// Update the status if the message is complete
-				if (populatedItemsSlice.messages[message.id].isComplete) {
-					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
-				}
 			});
 		})
 	);
@@ -123,18 +117,6 @@ function updateConversationStatus(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversationsStatus[conversationId] = status;
-		})
-	);
-}
-
-function updateMessageStatus(
-	messageId: string,
-	status: SearchRequestStatus,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			populatedItemsSlice.messagesStatus[messageId] = status;
 		})
 	);
 }
@@ -322,7 +304,6 @@ function optimisticallyHandleConvActions({
 export const populatedItemsSliceUtils = {
 	optimisticallyHandleMessageActions,
 	updateConversations,
-	updateMessageStatus,
 	updateConversationStatus,
 	updateMessages,
 	useConversationMessages,

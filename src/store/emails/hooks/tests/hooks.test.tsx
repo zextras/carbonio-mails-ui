@@ -16,7 +16,7 @@ import {
 	generateConvMessageFromAPI
 } from '__test__/generators/api';
 import { generateConversation } from '__test__/generators/generateConversation';
-import { generateMessage } from '__test__/generators/generateMessage';
+import { generateMessage, populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import * as getMsg from 'api/get-msg-soap-api';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import {
@@ -30,11 +30,8 @@ import { SEARCH_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/search/sea
 import {
 	setMessagesInEmailStore,
 	setSearchResultsByConversation,
-	setSearchResultsByMessage,
 	updateConversationStatus,
-	updateMessageStatus,
-	useConversationStatus,
-	useMessageStatus
+	useConversationStatus
 } from 'store/emails/store';
 import { ConvMessage, NormalizedConversation } from 'types/conversations';
 import { MailMessage } from 'types/messages';
@@ -44,7 +41,7 @@ import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
 
 function awaitDebounce(): void {
 	act(() => {
-		vi.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+		vi.runAllTimers();
 	});
 }
 
@@ -172,9 +169,6 @@ describe('Searches store hooks', () => {
 				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
 			});
 
-			await act(async () => {
-				updateMessageStatus(message.id, API_REQUEST_STATUS.fulfilled);
-			});
 			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
@@ -185,19 +179,13 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should fetch if the messageStatus is undefined', async () => {
-			const message = generateMessage({ id: '1' });
-			await act(async () => {
-				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
-			});
+			const messages = await act(() => populateMessagesInEmailStore());
 
-			await act(async () => {
-				updateMessageStatus(message.id, undefined as never);
-			});
 			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 
 			// eslint-disable-next-line testing-library/no-unnecessary-act
 			await act(async () => {
-				renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
+				renderHook(() => useCompleteMessageOrFetch({ messageId: messages[0].id }));
 			});
 
 			awaitDebounce();
@@ -210,7 +198,6 @@ describe('Searches store hooks', () => {
 		it('should fetch if the message is incomplete and status is error', async () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
-			updateMessageStatus('1', API_REQUEST_STATUS.error);
 			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
 
@@ -218,22 +205,6 @@ describe('Searches store hooks', () => {
 
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalled();
-			});
-		});
-
-		it('should not fetch if the message status is pending', async () => {
-			const message = generateMessage({ id: '1' });
-			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
-			await act(async () => {
-				updateMessageStatus('1', API_REQUEST_STATUS.pending);
-			});
-			const { result } = renderHook(() => useMessageStatus('1'));
-			expect(result.current).toBe(API_REQUEST_STATUS.pending);
-			const getMsgSpy = vi.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch({ messageId: '1' }));
-
-			await act(async () => {
-				expect(getMsgSpy).not.toHaveBeenCalled();
 			});
 		});
 
@@ -260,30 +231,6 @@ describe('Searches store hooks', () => {
 				expect(getMsgSpy).toHaveBeenCalledTimes(2);
 			});
 		});
-
-		it('should update status if initial status is undefined', async () => {
-			const message = generateMessage({
-				id: '1',
-				subject: 'Test Message'
-			});
-			setSearchResultsByMessage([message], false);
-			await act(async () => {
-				updateMessageStatus(message.id, undefined as never);
-			});
-
-			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: message.id })]
-			};
-
-			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
-
-			const { result } = renderHook(() => useMessageStatus(message.id));
-			renderHook(() => useCompleteMessageOrFetch({ messageId: message.id }));
-
-			await waitFor(() => {
-				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
-			});
-		});
 	});
 
 	function arrayToRecord<T extends { id: string }>(items: Array<T> | undefined): Record<string, T> {
@@ -308,7 +255,6 @@ describe('Searches store hooks', () => {
 			populatedItemsSlice: {
 				conversations: arrayToRecord(conversations),
 				messages: arrayToRecord(messages),
-				messagesStatus: {},
 				conversationsStatus: {}
 			}
 		};

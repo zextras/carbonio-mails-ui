@@ -159,7 +159,6 @@ export type ConversationIndexSliceState = {
 export type PopulatedItemsSliceState = {
 	populatedItemsSlice: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
-		messagesStatus: Record<string, SearchRequestStatus>;
 		conversations: Record<string, NormalizedConversation>;
 		conversationsStatus: Record<string, SearchRequestStatus>;
 	};

@@ -38,7 +38,6 @@ import {
 	updateConversations,
 	updateConversationStatus,
 	updateMessages,
-	updateMessageStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationMessages,
@@ -46,8 +45,7 @@ import {
 	useConversationStatus,
 	useMessageById,
 	useMessagesByFolder,
-	useMessagesByIds,
-	useMessageStatus
+	useMessagesByIds
 } from 'store/emails/store';
 import { MailMessage } from 'types/messages';
 import { ConvActionResponse } from 'types/soap/conv-action';
@@ -190,32 +188,6 @@ describe('store-populated-items-slice', () => {
 
 			expect(messageWithoutId.current).toBeUndefined();
 			expect(message2.current?.id).toBe('2');
-		});
-
-		it('updates message status to fulfilled if complete', () => {
-			const messages = [generateMessage({ id: '1', isComplete: true })];
-			act(() => {
-				updateMessages(messages);
-			});
-
-			const { result: message1 } = renderHook(() => useMessageById('1'));
-			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
-
-			expect(message1.current?.id).toBe('1');
-			expect(message1Status.current).toBe(API_REQUEST_STATUS.fulfilled);
-		});
-
-		it('does not update message status if not complete', () => {
-			const messages = [generateMessage({ id: '1', isComplete: false })];
-			act(() => {
-				updateMessages(messages);
-			});
-
-			const { result: message1 } = renderHook(() => useMessageById('1'));
-			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
-
-			expect(message1.current?.id).toBe('1');
-			expect(message1Status.current).toBeUndefined();
 		});
 	});
 
@@ -529,16 +501,6 @@ describe('store-populated-items-slice', () => {
 			expect(renderHook(() => useConversationById('1')).result.current).toBeDefined();
 			expect(renderHook(() => useConversationById('2')).result.current).toBeDefined();
 			expect(renderHook(() => useConversationById('3')).result.current).toBeDefined();
-		});
-	});
-
-	describe('updateMessageStatus', () => {
-		it('should set message status if value present', async () => {
-			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
-
-			const { result } = renderHook(() => useMessageStatus('1'));
-
-			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 	});
 
