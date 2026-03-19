@@ -62,7 +62,7 @@
 		"@vitejs/plugin-react": "^5.1.2",
 		"@vitest/browser": "^4.0.14",
 		"@vitest/browser-playwright": "^4.0.14",
-		"@vitest/browser-preview": "4.0.14",
+		"@vitest/browser-preview": "4.1.0",
 		"@vitest/coverage-v8": "^4.0.14",
 		"@vitest/ui": "^4.0.14",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
@@ -82,7 +82,7 @@
 		"ts-node": "^10.9.1",
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.14",
+		"vitest": "^4.1.0",
 		"vitest-browser-react": "^2.0.2",
 		"vitest-mock-commonjs": "^1.0.2"
 	},
