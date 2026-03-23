@@ -16,7 +16,7 @@ import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { SearchListProps } from 'types/search';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
-import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
+import { MultipleSelectionActions } from 'views/app/folder-panel/parts/multiple-selection-actions';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';
 import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
@@ -163,10 +163,7 @@ export const SearchConversationList = ({
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
 					>
-						<ConversationsMultipleSelectionActions
-							selectedConversationsIds={selectedIds}
-							folderId={''}
-						/>
+						<MultipleSelectionActions type="conversation" ids={selectedIds} folderId={''} />
 					</SearchListHeader>
 					<Divider color="gray2" />
 				</>

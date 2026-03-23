@@ -9,8 +9,8 @@ import styled from '@emotion/styled';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 
+import { MultipleSelectionActions } from '../parts/multiple-selection-actions';
 import { DragItems } from 'views/app/folder-panel/messages/message-list-drag-component';
-import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
@@ -113,10 +113,11 @@ export const MessageListComponent = memo(function MessageListComponent({
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
 				>
-					<MessagesMultipleSelectionActions
+					<MultipleSelectionActions
+						type="message"
 						ids={selectedIds}
 						folderId={folderId}
-						onMessagesMoved={onMessagesMoved}
+						onItemsMoved={onMessagesMoved}
 					/>
 				</MultipleSelectionActionsPanel>
 			) : (
