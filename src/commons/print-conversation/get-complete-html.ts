@@ -5,6 +5,7 @@
  */
 
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+import { escape } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 
@@ -101,7 +102,7 @@ export function getCompleteHTML({ content }: { content: string }): string {
 						<b>Carbonio</b>
 					</td>
 					<td nowrap width="1%">
-						<b>${accountName}</b>
+						<b>${escape(accountName)}</b>
 					</td>
 				</tr>
 			</table>
