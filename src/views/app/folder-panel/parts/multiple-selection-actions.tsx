@@ -79,7 +79,7 @@ export const MultipleSelectionActions = ({
 	const selectedItems: Array<SelectableItem> =
 		type === 'message'
 			? filter(messages, (item): item is MailMessage => ids.includes(item.id))
-			: (conversations as Array<NormalizedConversation>);
+			: conversations;
 
 	const tags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
 	const atLeastOneIsUnread = some(selectedItems, (item) => !item.read);
