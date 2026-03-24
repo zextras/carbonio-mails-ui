@@ -151,5 +151,14 @@ describe('XSS prevention in print-conversation utilities', () => {
 			expect(() => getCompleteHTML({ content: '' })).not.toThrow();
 			expect(typeof getCompleteHTML({ content: '' })).toBe('string');
 		});
+
+		it('includes a Content-Security-Policy meta tag as defense-in-depth', () => {
+			const result = getCompleteHTML({ content: '' });
+			expect(result).toContain('http-equiv="Content-Security-Policy"');
+			expect(result).toContain("default-src 'none'");
+			expect(result).toContain("img-src 'self' data: cid:");
+			expect(result).toContain("base-uri 'none'");
+			expect(result).toContain("form-action 'none'");
+		});
 	});
 });
