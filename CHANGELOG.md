@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.4...v1.31.5) (2026-03-24)
+
+
+### Bug Fixes
+
+* add Content-Security-Policy meta tag to enhance security in getCompleteHTML function ([84452a5](https://github.com/zextras/carbonio-mails-ui/commit/84452a5f74470e68ad7f7b3c36988438829e7924))
+* prevent stored XSS vulnerabilities in print email feature by escaping user input ([25d872c](https://github.com/zextras/carbonio-mails-ui/commit/25d872c1465802747cfd6832903d1aa3d40c5420))
+* prevent stored XSS vulnerabilities in print email feature by escaping user input ([14374d1](https://github.com/zextras/carbonio-mails-ui/commit/14374d1a6155e19ccb61a2da440abe8c777216d6))
+* remove redundant copyright comment in print email test file ([5b35da9](https://github.com/zextras/carbonio-mails-ui/commit/5b35da912568950cc99046bceeb2552046895bab))
+
 ### [1.31.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.3...v1.31.4) (2026-03-09)
 
 

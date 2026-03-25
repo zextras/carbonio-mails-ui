@@ -5,6 +5,7 @@
  */
 
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+import { escape } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 
@@ -13,6 +14,7 @@ export function getCompleteHTML({ content }: { content: string }): string {
 	return `	<html>
 		<head>
 			<title>Carbonio</title>
+			<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: cid:; base-uri 'none'; form-action 'none';">
                 <style>
                     body {
                         max-width: 100% !important;
@@ -101,13 +103,13 @@ export function getCompleteHTML({ content }: { content: string }): string {
 						<b>Carbonio</b>
 					</td>
 					<td nowrap width="1%">
-						<b>${accountName}</b>
+						<b>${escape(accountName)}</b>
 					</td>
 				</tr>
 			</table>
 			<hr />${content}
 			<div className="footer">${window.location.hostname} </div>
-			<script type="text/javascript">setTimeout('window.print()', 3000);</script>
+			<script type="text/javascript">setTimeout(function() { window.print(); }, 3000);</script>
 		</body>
 	</html>`;
 }
