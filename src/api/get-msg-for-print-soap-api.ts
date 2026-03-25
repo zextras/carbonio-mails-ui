@@ -15,7 +15,7 @@ export const getMsgsForPrintSoapApi = async ({
 	ids,
 	part
 }: GetMsgForPrintParameter): Promise<Array<MailMessage>> => {
-	const { getMsgResponse } = await legacySoapFetch<unknown, GetMsgForPrintResponse>('Batch', {
+	const { GetMsgResponse } = await legacySoapFetch<unknown, GetMsgForPrintResponse>('Batch', {
 		GetMsgRequest: map(ids, (id) => ({
 			m: omitBy(
 				{
@@ -31,7 +31,7 @@ export const getMsgsForPrintSoapApi = async ({
 		})),
 		_jsns: 'urn:zimbra'
 	});
-	return map(getMsgResponse, (re) => {
+	return map(GetMsgResponse, (re) => {
 		const msg = re.m[0];
 		return normalizeMailMessageFromSoap({ m: msg, isComplete: true });
 	});
