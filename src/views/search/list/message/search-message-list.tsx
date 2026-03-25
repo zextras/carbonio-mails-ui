@@ -128,7 +128,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 				>
-					<MultipleSelectionActions type="message" ids={selectedIds} folderId={''} />{' '}
+					<MultipleSelectionActions type="message" ids={selectedIds} folderId={''} />
 				</SearchListHeader>
 			)}
 
