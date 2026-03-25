@@ -25,7 +25,8 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
+import { AttachmentUploadProcessStatus, UnsavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 
 const useNotifyUploadError = (): ((file: File) => void) => {
 	const { createSnackbar } = useUiUtilities();
@@ -315,8 +316,6 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		});
 		computeAndUpdateEditorStatus(editorId);
-		setDirty();
-		debouncedSaveDraft();
 	};
 	return {
 		hasStandardAttachments: unsavedStandardAttachments.length + savedStandardAttachments.length > 0,

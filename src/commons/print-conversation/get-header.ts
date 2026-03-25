@@ -8,10 +8,11 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import moment from 'moment';
 
+import { getUserLocale } from '../utils';
 import { getAttachments } from 'commons/print-conversation/get-attachments';
 import { getParticipantHeader } from 'commons/print-conversation/get-participant-header';
 import { getSubject } from 'commons/print-conversation/get-subject';
-import { type MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 export function getHeader(msg: MailMessage, content: string): string {
 	const { participants, subject } = msg;
@@ -20,7 +21,7 @@ export function getHeader(msg: MailMessage, content: string): string {
 	const cc = filter(participants, { type: 'c' });
 	const bcc = filter(participants, { type: 'b' });
 	const replyTo = filter(participants, { type: 'r' });
-	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
+	const msgTime = moment(msg.date).locale(getUserLocale()).format('llll');
 	const hasAttachments = msg.attachments && msg.attachments?.length > 0;
 
 	return `

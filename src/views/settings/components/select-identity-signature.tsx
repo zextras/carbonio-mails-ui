@@ -12,7 +12,7 @@ import { find } from 'lodash';
 
 import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
-import type { AccountIdentity, IdentityProps, SignItemType } from 'types/index.d';
+import { AccountIdentity, IdentityProps, SignItemType } from 'types/settings';
 
 type SelectIdentitySignProps = {
 	acc: AccountIdentity;

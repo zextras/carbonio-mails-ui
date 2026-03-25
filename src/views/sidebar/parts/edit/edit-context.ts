@@ -5,10 +5,12 @@
  */
 import { createContext } from 'react';
 
+import { Grant } from '@zextras/carbonio-ui-soap-lib';
+
 export const Context = createContext<{
 	setActiveGrant?: (arg: any) => void;
 	activeModal?: string;
 	setActiveModal?: (arg: string) => void;
-	activeGrant?: any;
+	activeGrant?: Grant;
 	onClose?: () => void;
 }>({});

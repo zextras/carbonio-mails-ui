@@ -7,9 +7,9 @@
 import { waitFor } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { getConvSoapApi } from 'api/get-conv-soap-api';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
-import { GetConvResponse } from 'types/index.d';
+import { getConvSoapApi } from 'api/get-conv-soap-api';
+import { GetConvResponse } from 'types/soap/get-conv';
 
 describe('getConvSoapApi', () => {
 	it('should fetch with the correct parameters', async () => {

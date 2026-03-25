@@ -13,7 +13,6 @@ import { filter, forEach, isArray, some } from 'lodash';
 import { getFlattenedAttachmentParts } from '../../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../../helpers/identities';
 import { getFullMessageEmailStoreAction } from '../../../store/emails/actions/get-message';
-import { BodyPart, MailMessage, MailMessagePartWithDisposition } from '../../../types';
 import {
 	getOriginalHtmlContent,
 	getQuotedTextFromOriginalContent
@@ -24,6 +23,7 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from '../../utils';
+import { BodyPart, MailMessage, MailMessagePartWithDisposition } from 'types/messages';
 
 export type ExternalImageState = {
 	showExternalImages: boolean;

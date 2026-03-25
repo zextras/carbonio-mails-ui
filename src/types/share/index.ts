@@ -4,21 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Grant } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
+import { Grant } from '@zextras/carbonio-ui-soap-lib';
 import { TFunction } from 'i18next';
 
 import type { Participant } from 'types/participant';
-
-export type ShareCalendarModalProps = {
-	openModal: () => void;
-	setModal: (a: any) => void;
-	t: TFunction;
-	toggleSnackbar: () => void;
-	folder: string;
-	folders: any;
-	allCalendars: any;
-};
 
 export type ResponseActionsProps = {
 	t: TFunction;
@@ -32,10 +22,6 @@ export type ResponseActionsProps = {
 	role: string;
 	allowedActions: string;
 	participants: Participant[];
-};
-
-export type ReplyShareParameters = {
-	data: any;
 };
 
 export type GranteeInfoProps = {

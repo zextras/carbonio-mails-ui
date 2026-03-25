@@ -12,7 +12,7 @@ import { useConversationDetailPanelControls } from '../../views/app/detail-panel
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isSpam } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 type ConvSetNotSpamFunctionsParameter = {
 	ids: Array<string>;

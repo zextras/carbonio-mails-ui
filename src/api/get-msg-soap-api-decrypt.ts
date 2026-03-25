@@ -7,7 +7,7 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/index.d';
+import { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 
 export async function getMsgDecryptSoapApi({
 	msgId,

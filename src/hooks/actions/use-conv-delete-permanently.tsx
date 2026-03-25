@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isSpam, isTrash } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
 type ConvDeletePermanentlyFunctionsParameter = {

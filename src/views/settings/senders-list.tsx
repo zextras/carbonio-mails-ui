@@ -20,7 +20,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import type { InputProps } from 'types/index.d';
+import { InputProps } from 'types/settings';
 import { isValidEmail } from 'views/search/parts/utils';
 import { SendersListItem } from 'views/settings/components/senders-list-item';
 import { allowedSendersSubSection, blockedSendersSubSection } from 'views/settings/subsections';
@@ -65,8 +65,9 @@ export const SendersList = ({
 	const [address, setAddress] = useState<string>('');
 	const [sendersList, setSendersList] = useState<string[]>(
 		listType === 'Allowed'
-			? getList(settingsObj?.amavisWhitelistSender)
-			: getList(settingsObj?.amavisBlacklistSender)
+			? // TODO: update types in soap lib to avoid this type assertion
+				getList(settingsObj?.amavisWhitelistSender as string[] | undefined)
+			: getList(settingsObj?.amavisBlacklistSender as string[] | undefined)
 	);
 	const sectionTitle = useMemo(
 		() => (listType === 'Allowed' ? allowedSendersSubSection() : blockedSendersSubSection()),
@@ -92,7 +93,11 @@ export const SendersList = ({
 			? settingsObj?.zimbraMailWhitelistMaxNumEntries
 			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100;
 
-	const isInsertEnabled = useMemo(() => itemsCount < maxItems, [itemsCount, maxItems]);
+	// TODO: update types in soap lib to avoid type assertion
+	const isInsertEnabled = useMemo(
+		() => itemsCount < (typeof maxItems === 'number' ? maxItems : 100),
+		[itemsCount, maxItems]
+	);
 
 	const isInputValid = useMemo(() => isValidEmail(address) || address === '', [address]);
 	const isAddEnabled = useMemo(

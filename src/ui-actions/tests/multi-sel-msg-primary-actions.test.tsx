@@ -13,7 +13,7 @@ import { setupTest } from '@test-setup';
 import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '__test__/constants';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from 'constants/index';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 
@@ -290,17 +290,3 @@ test.todo(
 test.todo(
 	'secondary actions don’t contain the mark as unread action if the selection involve a trashed, junk or draft message'
 );
-// test.todo('secondary actions contain the flag action');
-// test.todo(
-// 	'secondary actions don’t contain the move action if the selection involve a trashed or draft message'
-// );
-// test.todo('secondary actions contain the tag submenu');
-// test.todo(
-// 	'secondary actions don’t contain the mark as spam action if the selection involve a trashed, junk or draft message'
-// );
-// test.todo(
-// 	'secondary actions contain the restore action if the selection involve trashed messages only'
-// );
-// test.todo(
-// 	'secondary actions contain the delete permanently action if the selection involve trashed messages only'
-// );

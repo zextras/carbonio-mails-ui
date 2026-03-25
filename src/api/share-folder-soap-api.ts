@@ -8,7 +8,7 @@ import { Folder } from '@zextras/carbonio-ui-commons';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { trim } from 'lodash';
 
-import { FolderActionGrant, FolderActionRequest } from 'types/index.d';
+import { FolderActionGrant, FolderActionRequest } from 'types/soap/soap';
 
 export type ShareFolderDataType = {
 	sendNotification?: boolean;

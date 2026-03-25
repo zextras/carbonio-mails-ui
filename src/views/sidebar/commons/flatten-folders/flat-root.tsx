@@ -20,9 +20,8 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { Folder } from 'types/index.d';
 import { FlatFolder, type FlaFolderProps } from 'views/sidebar/commons/flatten-folders/flat-folder';
 
 type FlatRootProps = FlaFolderProps & {

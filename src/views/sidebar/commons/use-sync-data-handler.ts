@@ -35,7 +35,9 @@ import {
 	updateMessages
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
-import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import {
 	HandleFoldersNotifyProps,
 	HandleTagsNotifyProps,
@@ -47,7 +49,7 @@ export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
 ): Array<IncompleteMessage> {
 	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
-		normalizeMailMessageFromSoap(message)
+		normalizeMailMessageFromSoap({ m: message })
 	);
 }
 
@@ -96,13 +98,13 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 		);
 		handleNotifyConversationsCreated(conversationsWithMessageIds);
 		const normalizedMessages = allReceivedMessages.map((message) =>
-			normalizeMailMessageFromSoap(message)
+			normalizeMailMessageFromSoap({ m: message })
 		);
 		updateMessages(normalizedMessages);
 	}
 
 	if (newMessages) {
-		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap(message));
+		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap({ m: message }));
 		handleNotifyMessagesCreated(messages);
 		triggerNotification(messages, navigate);
 	}

@@ -3,12 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type { Folder } from '@zextras/carbonio-ui-commons';
 
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from 'constants/index';
-import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import {
+	AttachmentUploadProcessStatus,
+	SavedAttachment,
+	UnsavedAttachment
+} from 'types/attachments';
 import type { MailMessage } from 'types/messages';
 import type { Participant } from 'types/participant';
+import { MailAttachment } from 'types/soap';
 
 /**
  * @deprecated
@@ -28,20 +32,10 @@ export type EditorAttachmentFiles = {
 /**
  * @deprecated
  */
-export type InlineAttachment = {
+export type InlineAttachments = Array<{
 	ci: string;
 	attach: { aid: string };
-};
-
-/**
- * @deprecated
- */
-export type InlineAttachments =
-	| Array<{
-			ci: string;
-			attach: { aid: string };
-	  }>
-	| Array[];
+}>;
 
 /**
  * @deprecated
@@ -57,7 +51,7 @@ export type MailsEditor = {
 	text: [string, string];
 	subject: string;
 	original?: MailMessage;
-	attach: mailAttachment;
+	attach: MailAttachment;
 	to: Array<Participant>;
 	bcc: Array<Participant>;
 	cc: Array<Participant>;
@@ -126,7 +120,7 @@ export type EditorPrefillData = {
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
 
-type EditorTextProvider = {
+export type EditorTextProvider = {
 	getCurrentText: () => MailsEditorV2['text'] | null;
 	setCurrentText: (text: MailsEditorV2['text']) => void;
 };
@@ -179,7 +173,7 @@ export type MailsEditorV2 = {
 	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// status of the message send
 	sendProcessStatus?: SendProcessStatus;
-	// Id of the current selectesignature
+	// Id of the current selected signature
 	signatureId?: string;
 	// the size of the draft
 	size: number;
@@ -191,45 +185,5 @@ export type MailsEditorV2 = {
 	textProvider?: EditorTextProvider;
 };
 
-type IdentityType = {
-	value: string;
-	label: string;
-	address: string;
-	fullname: string;
-	fullName?: string;
-	type: string;
-	identityName: string;
-	displayName?: string;
-	zimbraPrefDefaultSignatureId?: string;
-	zimbraPrefForwardReplySignatureId?: string;
-};
-
-type UseGetIdentitiesReturnType = {
-	from: Partial<IdentityType> | undefined;
-	activeFrom: IdentityType | undefined;
-	identitiesList: Array<IdentityType>;
-	hasIdentity: boolean | undefined;
-};
-
-type FindDefaultIdentityType = {
-	list: Array<IdentityType>;
-	allAccounts: Record<string, Folder>;
-	folderId: string;
-	currentMessage?: MailMessage;
-	originalMessage?: MailMessage;
-	account: Account;
-	settings: AccountSettings;
-};
-
-type ThrottledSaveToDraftType = (data: Partial<MailsEditorV2>) => void;
-
-type EditViewContextType =
-	| {
-			throttledSaveToDraft: ThrottledSaveToDraftType;
-			editor: MailsEditor;
-			setSendLater: (arg: boolean) => void;
-	  }
-	| Record<string, never>;
-
-type EditViewClosingReasons =
+export type EditViewClosingReasons =
 	(typeof EDIT_VIEW_CLOSING_REASONS)[keyof typeof EDIT_VIEW_CLOSING_REASONS];

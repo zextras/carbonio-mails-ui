@@ -3,16 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	GetConvRequest,
-	GetConvResponse,
-	SearchConvRequest,
-	SearchConvResponse,
-	SearchRequest,
-	SearchResponse,
-	SoapConversation
-} from '../../types';
+
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { GetConvRequest, GetConvResponse } from 'types/soap/get-conv';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
+import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
+import { SoapConversation } from 'types/soap/soap-conversation';
 
 export const stubSearchConversations = ({
 	conversations

@@ -11,7 +11,8 @@ import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
 import { MIMETYPE_EML } from 'helpers/attachments';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { isDraft, isSpam } from 'helpers/folders';
-import { ActionFn, UIActionDescriptor, UnsavedAttachment } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
+import { UnsavedAttachment } from 'types/attachments';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgForwardAsAttachmentFn = (

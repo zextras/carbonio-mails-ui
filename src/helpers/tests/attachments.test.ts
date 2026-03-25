@@ -16,7 +16,7 @@ import {
 	getReferredContentIds
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type { MailMessagePart } from 'types';
+import { MailMessagePart } from 'types/messages';
 
 describe('attachments', () => {
 	describe('getFlattenedAttachmentParts', () => {
@@ -249,7 +249,10 @@ describe('attachments', () => {
 		});
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13' });
-			const messageFromSoap = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
+			const messageFromSoap = normalizeMailMessageFromSoap({
+				m: getMsgResponse.m[0],
+				isComplete: true
+			});
 			const attachmentParts = getFlattenedAttachmentParts(messageFromSoap);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');

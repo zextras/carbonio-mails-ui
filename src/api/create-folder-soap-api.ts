@@ -6,7 +6,7 @@
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import { type CreateFolderResponse } from 'types/index.d';
+import { CreateFolderResponse } from 'types/soap/soap';
 
 export function createFolderSoapApi({
 	parentFolderId,

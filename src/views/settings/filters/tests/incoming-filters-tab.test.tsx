@@ -7,13 +7,13 @@
 import React from 'react';
 
 import { act, screen, waitFor, within } from '@testing-library/react';
-import { useRootsArray } from '@zextras/carbonio-ui-commons';
+import { Folder, useRootsArray } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { Filter, type Folder } from 'types/index.d';
+import { Filter } from 'types/filters';
 import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 

@@ -15,7 +15,9 @@ import { generateMailRequest } from 'store/editor-slice-utils';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
-import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
+import { MailMessage } from 'types/messages';
+import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
 
 export const sendMsg = async ({
 	msg

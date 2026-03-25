@@ -14,7 +14,8 @@ import { composeCidUrlFromContentId } from 'store/editor/editor-transformations'
 import { getSavedInlineAttachmentByContentId } from 'store/editor/editor-utils';
 import { getEditor, useEditorsStore } from 'store/editor/index';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
-import { MailsEditorV2, UnsavedAttachment } from 'types/index.d';
+import { UnsavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 
 type UploadImageResult = {
 	downloadServiceUrl: string;
@@ -59,7 +60,10 @@ async function uploadImage(file: File, editorId: string): Promise<UploadImageRes
 	}
 
 	// Process the response
-	const mailMessage = normalizeMailMessageFromSoap(saveDraftResponse.m[0], true);
+	const mailMessage = normalizeMailMessageFromSoap({
+		m: saveDraftResponse.m[0],
+		isComplete: true
+	});
 
 	// add attachments to editor
 	const editorsStore = useEditorsStore.getState();

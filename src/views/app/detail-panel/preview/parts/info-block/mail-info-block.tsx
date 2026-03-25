@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/store';
 import { getMessageDecryptEmailStoreAction } from 'store/emails/actions/get-message';
-import { IncompleteMessage } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
 import { DistributionListIcon } from 'views/app/detail-panel/preview/parts/info-block/distribution-list-icon';
 import { ExternalDomainIcon } from 'views/app/detail-panel/preview/parts/info-block/external-domain-icon';
 import { MailSensitivityIcon } from 'views/app/detail-panel/preview/parts/info-block/mail-sensitivity-icon';

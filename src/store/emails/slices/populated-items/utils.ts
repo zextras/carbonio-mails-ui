@@ -15,16 +15,11 @@ import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import {
-	ConvActionParameters,
-	EmailsStoreState,
-	IncompleteMessage,
-	MailMessage,
-	MsgActionParameters,
-	NormalizedConversation,
-	SearchRequestStatus,
-	type ConvActionResponse
-} from 'types/index.d';
+import { ConvActionParameters, NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { EmailsStoreState, SearchRequestStatus } from 'types/search';
+import { ConvActionResponse } from 'types/soap/conv-action';
+import { MsgActionParameters } from 'types/soap/msg-action';
 
 function useConversationMessages(
 	conversationId: string,
@@ -243,7 +238,10 @@ function handleDeleteAttachments(
 			messageIds.forEach((id) => {
 				const message = populatedItemsSlice.messages[id];
 				if (message) {
-					const normalizeMsg = normalizeMailMessageFromSoap(response.m[0], true);
+					const normalizeMsg = normalizeMailMessageFromSoap({
+						m: response.m[0],
+						isComplete: true
+					});
 					populatedItemsSlice.messages[id] = {
 						...message,
 						parts: normalizeMsg.parts

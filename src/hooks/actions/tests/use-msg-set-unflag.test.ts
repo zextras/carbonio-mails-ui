@@ -11,7 +11,7 @@ import { times } from 'lodash';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from 'hooks/actions/use-msg-set-unflag';
-import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useMsgSetUnflag', () => {
 	describe('Descriptor', () => {

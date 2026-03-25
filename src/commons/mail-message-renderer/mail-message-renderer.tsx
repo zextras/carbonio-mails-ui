@@ -8,7 +8,7 @@ import React, { memo } from 'react';
 import { HtmlMessageRenderer } from './html-message-renderer/html-message-renderer';
 import { TextMessageRenderer } from './text-message-renderer/text-message-renderer';
 import { EmptyBody, EncryptedMsg } from 'commons/mail-message-renderer/empty-body';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 type MailMessageRendererProps = {
 	message: MailMessage;

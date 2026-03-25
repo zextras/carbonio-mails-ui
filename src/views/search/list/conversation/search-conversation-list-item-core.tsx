@@ -19,9 +19,9 @@ import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
-import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
-import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
+import { NormalizedConversation } from 'types/conversations';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type SearchConversationListItemCoreProps = {
@@ -93,20 +93,17 @@ export const SearchConversationListItemCore = ({
 		[conversation]
 	);
 
-	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof conversation.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return conversation.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
+	const badge: 'read' | 'unread' = useMemo(() => {
+		if (conversation.read === undefined) return 'read';
+		return conversation.read ? 'read' : 'unread';
 	}, [conversation.read]);
 
 	const renderBadge = useMemo(() => {
 		if (conversation.messagesInConversation === 1 || conversation?.messageIds?.length === 1) {
-			return textReadValues.badge === 'unread';
+			return badge === 'unread';
 		}
 		return conversation.messagesInConversation > 0 || conversation?.messageIds?.length > 0;
-	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
+	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
 	const avatarFolderId = conversation.messageIds.length === 1 ? parent : '';
 
@@ -143,8 +140,8 @@ export const SearchConversationListItemCore = ({
 								<Badge
 									data-testid={`conversation-messages-count-${conversationId}`}
 									value={badgeTotalConversationMessages()}
-									backgroundColor={textReadValues.badge === 'read' ? 'gray2' : 'primary'}
-									color={textReadValues.badge === 'read' ? 'gray0' : 'gray6'}
+									backgroundColor={badge === 'read' ? 'gray2' : 'primary'}
+									color={badge === 'read' ? 'gray0' : 'gray6'}
 								/>
 							</Padding>
 						</Row>

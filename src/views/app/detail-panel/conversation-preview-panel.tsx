@@ -10,7 +10,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { Spinner } from 'assets/spinner';
-import { NormalizedConversation } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
 import { ConversationMessagePreviewWrapper } from 'views/app/detail-panel/conversation-message-preview-wrapper';
 
 export const ConversationPreviewPanel = ({

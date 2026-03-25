@@ -9,7 +9,7 @@ import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design
 import { find, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction

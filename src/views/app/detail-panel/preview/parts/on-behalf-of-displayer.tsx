@@ -8,9 +8,10 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { getColor, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { capitalize } from 'lodash';
-
-import type { Participant, MailMessage } from 'types/index.d';
 import { useTranslation } from 'react-i18next';
+
+import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 
 const StyledText = styled.span<{ $isRead?: string | boolean; $color?: string }>`
 	padding: 0 0.125rem;

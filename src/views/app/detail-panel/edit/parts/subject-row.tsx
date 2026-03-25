@@ -15,7 +15,7 @@ import {
 	useEditorRequestReadReceipt,
 	useEditorSubject
 } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 export type SubjectRowProps = {
 	editorId: MailsEditorV2['id'];
