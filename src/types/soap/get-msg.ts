@@ -40,5 +40,5 @@ export type GetMsgForPrintParameter = {
 };
 
 export type GetMsgForPrintResponse = {
-	getMsgResponse: Array<GetMsgResponse>;
+	GetMsgResponse: Array<GetMsgResponse>;
 };
