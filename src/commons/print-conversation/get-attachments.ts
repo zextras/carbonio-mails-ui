@@ -5,7 +5,7 @@
  */
 
 import { t } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { escape, map } from 'lodash';
 
 import { MailMessage } from 'types/messages';
 
@@ -62,7 +62,7 @@ export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
             font-size: 0.75rem;
             display: flex;
             ">
-            ${item.filename}
+            ${escape(item.filename)}
          </p>
       </div>
    </td>
