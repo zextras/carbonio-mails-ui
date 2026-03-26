@@ -16,7 +16,6 @@ import React, {
 } from 'react';
 
 import {
-	Badge,
 	Button,
 	Container,
 	Icon,
@@ -30,6 +29,7 @@ import { useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { filter, find } from 'lodash';
 
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
+import { ItemBadge } from '../../../folder-panel/parts/item-badge';
 import { MailMessage } from 'types/messages';
 import ContactNames from 'views/app/detail-panel/preview/parts/contact-names';
 import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
@@ -76,11 +76,6 @@ const MessageContactList: FC<{
 		() => filter(message.participants, ['type', 'b']),
 		[message.participants]
 	);
-
-	const badge: 'read' | 'unread' = useMemo(() => {
-		if (message.read === undefined) return 'read';
-		return message.read ? 'read' : 'unread';
-	}, [message.read]);
 
 	const messageFolder = useMemo(
 		() => find(folders, (folder) => folder.id === message.parent),
@@ -215,14 +210,12 @@ const MessageContactList: FC<{
 				{message.urgent && <Icon data-testid="UrgentIcon" color="error" icon="ArrowUpward" />}
 				{showBadge && messageFolder?.name && (
 					<Padding left="small">
-						<Badge
-							data-testid="FolderBadge"
+						<ItemBadge
+							itemReadValue={message.read}
 							value={getFolderTranslatedName({
 								folderId,
 								folderName: messageFolder.name
 							})}
-							backgroundColor={badge === 'unread' ? 'primary' : 'gray2'}
-							color={badge === 'unread' ? 'gray6' : 'gray0'}
 						/>
 					</Padding>
 				)}

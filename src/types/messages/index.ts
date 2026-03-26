@@ -56,7 +56,7 @@ export type IncompleteMessage = MailHeaders & {
 	invite?: any;
 	shr?: any;
 	isComplete: boolean;
-	html: boolean;
+	html?: boolean;
 	isReplied?: boolean;
 	isReadReceiptRequested?: boolean;
 	isEncrypted?: boolean;

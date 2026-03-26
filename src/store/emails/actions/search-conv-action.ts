@@ -18,8 +18,12 @@ import {
 import { NormalizedConversation } from 'types/conversations';
 import { SearchConvResponse } from 'types/soap/search-conv';
 
-function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
+function handleSearchConvResponse(
+	conversationId: string,
+	response: SearchConvResponse,
+	html: boolean
+): void {
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, html));
 	updateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
 	const conversation = getConversationById(conversationId);
@@ -31,17 +35,24 @@ function handleSearchConvResponse(conversationId: string, response: SearchConvRe
 	updateConversations([updatedConversation]);
 }
 
-export async function searchConvEmailStoreAction(
-	conversationId: string,
-	folderId?: string,
-	shouldMarkAsRead?: boolean
-): Promise<void> {
+export async function searchConvEmailStoreAction({
+	conversationId,
+	folderId,
+	shouldMarkAsRead,
+	html
+}: {
+	conversationId: string;
+	folderId?: string;
+	shouldMarkAsRead?: boolean;
+	html: boolean;
+}): Promise<void> {
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
 	const response = await searchConvSoapApi({
 		conversationId,
 		fetch: 'all',
 		folderId,
-		shouldMarkAsRead
+		shouldMarkAsRead,
+		html
 	}).catch(() => {
 		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 	});
@@ -49,6 +60,6 @@ export async function searchConvEmailStoreAction(
 		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 		return;
 	}
-	handleSearchConvResponse(conversationId, response);
+	handleSearchConvResponse(conversationId, response, html);
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 }

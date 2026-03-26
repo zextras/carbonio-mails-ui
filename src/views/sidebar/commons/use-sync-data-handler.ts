@@ -49,7 +49,7 @@ export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
 ): Array<IncompleteMessage> {
 	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
-		normalizeMailMessageFromSoap({ m: message })
+		normalizeMailMessageFromSoap({ m: message, html: true })
 	);
 }
 
@@ -98,13 +98,15 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 		);
 		handleNotifyConversationsCreated(conversationsWithMessageIds);
 		const normalizedMessages = allReceivedMessages.map((message) =>
-			normalizeMailMessageFromSoap({ m: message })
+			normalizeMailMessageFromSoap({ m: message, html: true })
 		);
 		updateMessages(normalizedMessages);
 	}
 
 	if (newMessages) {
-		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap({ m: message }));
+		const messages = map(newMessages, (message) =>
+			normalizeMailMessageFromSoap({ m: message, html: true })
+		);
 		handleNotifyMessagesCreated(messages);
 		triggerNotification(messages, navigate);
 	}

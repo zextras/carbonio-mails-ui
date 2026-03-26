@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +51,9 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 	useEffect(() => {
 		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
-			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
+			const prefs = getUserSettings()?.prefs;
+			const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+			getConvEmailStoreAction({ id: conversationId, onConversationIdChange, html });
 		}
 	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
 

@@ -11,12 +11,18 @@ import { updateConversations, updateMessages } from 'store/emails/store';
 //  I suggest to make a hook which loads and returns data instead, avoid functions that do not return anything if possible
 export async function getConvEmailStoreAction({
 	id,
-	onConversationIdChange
+	onConversationIdChange,
+	html
 }: {
 	id: string;
 	onConversationIdChange?: (id: string) => void;
+	html: boolean;
 }): Promise<void> {
-	const getConvResponse = await getConvSoapApi({ conversationId: id, onConversationIdChange });
+	const getConvResponse = await getConvSoapApi({
+		conversationId: id,
+		onConversationIdChange,
+		html
+	});
 	updateMessages(getConvResponse.messages);
 	updateConversations(getConvResponse.conversation);
 }
