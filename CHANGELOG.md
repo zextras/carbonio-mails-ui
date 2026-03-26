@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.5...v1.31.6) (2026-03-26)
+
+
+### Bug Fixes
+
+* mail composer convert url in hyperlinks ([ff5d53d](https://github.com/zextras/carbonio-mails-ui/commit/ff5d53d2ec7146988f1b1a415e92cff84e2b8f5d))
+* mail composer convert url in hyperlinks ([f6329ed](https://github.com/zextras/carbonio-mails-ui/commit/f6329edc09f63fc9d603d4ee06200a283fcab11d))
+
 ### [1.31.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.4...v1.31.5) (2026-03-24)
 
 
