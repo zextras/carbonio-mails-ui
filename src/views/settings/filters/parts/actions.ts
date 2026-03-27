@@ -10,7 +10,7 @@ import { concat, filter, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 
 export type ListType = {
 	isSelecting: boolean;

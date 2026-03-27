@@ -9,7 +9,7 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 
 import { makeListItemsVisible, setupTest } from '@test-setup';
-import { Filter } from 'types/index.d';
+import { Filter } from 'types/filters';
 import { ListType } from 'views/settings/filters/parts/actions';
 import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 

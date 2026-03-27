@@ -5,7 +5,7 @@
  */
 import { escape, map } from 'lodash';
 
-import type { Participant } from 'types/index.d';
+import { Participant } from 'types/participant';
 
 export const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(

@@ -20,7 +20,7 @@ import { FOLDERS, isTrash, ModalFooter } from '@zextras/carbonio-ui-commons';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { getFolderIdParts } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { ModalProps } from 'types/index.d';
+import { ModalProps } from 'types/utils';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {

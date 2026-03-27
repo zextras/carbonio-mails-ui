@@ -16,7 +16,8 @@ import {
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from 'store/emails/store';
-import { ConversationIndexSliceState } from 'types/index.d';
+import { ConversationIndexSliceState } from 'types/search';
+import { SortBy } from 'types/sorting';
 
 /**
  * Manages the state and logic for retrieving and maintaining a list of conversation indices
@@ -38,7 +39,7 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 		() => parseMessageSortingOptions(folderId, prefSortOrder),
 		[folderId, prefSortOrder]
 	);
-	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
+	const sortBy = useMemo<SortBy>(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchConversations = useCallback(
 		async (signal: AbortSignal | undefined) => {

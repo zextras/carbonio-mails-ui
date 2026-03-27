@@ -9,7 +9,7 @@ import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
-import type { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 
 /*
  * Describe the folder id syntax

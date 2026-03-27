@@ -11,12 +11,9 @@ import { StoreApi, UseBoundStore } from 'zustand';
 
 import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
-import {
-	EmailsStoreState,
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { EmailsStoreState } from 'types/search';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
 function deleteConversationsInSearch(

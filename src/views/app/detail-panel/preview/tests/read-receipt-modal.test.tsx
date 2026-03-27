@@ -14,7 +14,7 @@ import { ReadReceiptModal } from '../read-receipt-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateMessage } from '__test__/generators/generateMessage';
-import type { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 const baseMessageWithReadReadReceiptRequested = generateMessage({
 	id: '12345',

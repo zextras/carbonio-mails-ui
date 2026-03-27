@@ -11,7 +11,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { PlainTextEditorContainer } from './plain-text-editor-container';
 import { RichTextEditorContainer } from './rich-text-editor-container';
 import { useEditorIsRichText } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];

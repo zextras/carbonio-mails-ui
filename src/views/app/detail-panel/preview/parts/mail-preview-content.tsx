@@ -13,7 +13,7 @@ import { MailMessageRenderer } from 'commons/mail-message-renderer/mail-message-
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import SharedInviteReply from 'integrations/shared-invite-reply/index';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import type { IncompleteMessage, MailMessage } from 'types/index.d';
+import { MailMessage, IncompleteMessage } from 'types/messages';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
 import { ReadReceiptModal } from 'views/app/detail-panel/preview/read-receipt-modal';
 

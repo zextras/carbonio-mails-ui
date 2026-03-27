@@ -32,7 +32,8 @@ import { useMsgSetSpamDescriptor } from 'hooks/actions/use-msg-set-spam';
 import { useMsgSetUnflagDescriptor } from 'hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from 'hooks/actions/use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from 'hooks/actions/use-msg-show-original';
-import { MailMessage, UIActionAggregator, UIActionDescriptor } from 'types/index.d';
+import { UIActionAggregator, UIActionDescriptor } from 'types/actions';
+import { MailMessage } from 'types/messages';
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
@@ -99,8 +100,8 @@ export const useMsgActions = ({
 		folderId,
 		isMessageRead: message.read
 	});
-	const flagDescriptor = useMsgSetFlagDescriptor([message.id], message.flagged);
-	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], message.flagged);
+	const flagDescriptor = useMsgSetFlagDescriptor([message.id], !!message.flagged);
+	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], !!message.flagged);
 	const markAsSpamDescriptor = useMsgSetSpamDescriptor({
 		ids: [message.id],
 		shouldReplaceHistory,

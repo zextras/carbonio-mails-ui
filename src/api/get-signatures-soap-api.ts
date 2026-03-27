@@ -7,7 +7,7 @@ import { JSNS } from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map, escape } from 'lodash';
 
-import { Signature } from 'types/index.d';
+import { Signature } from 'types/settings';
 
 export type GetSignaturesRequest = {
 	_jsns: typeof JSNS.account;

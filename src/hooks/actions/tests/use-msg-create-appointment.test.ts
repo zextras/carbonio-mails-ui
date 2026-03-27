@@ -17,7 +17,7 @@ import {
 	useMsgCreateAppointmentDescriptor,
 	useMsgCreateAppointmentFn
 } from 'hooks/actions/use-msg-create-appointment';
-import { GetMsgRequest } from 'types/index.d';
+import { GetMsgRequest } from 'types/soap/get-msg';
 
 describe('useMsgCreateAppointment', () => {
 	describe('Descriptor', () => {

@@ -19,7 +19,7 @@ import {
 } from '@test-utils/network/msw/create-api-interceptor';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
-import { Signature } from 'types/index.d';
+import { Signature } from 'types/settings';
 import { EditView } from 'views/app/detail-panel/edit/edit-view';
 
 describe('Change signature while composing mail', () => {

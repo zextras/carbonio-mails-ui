@@ -6,13 +6,13 @@
 import React, { useCallback } from 'react';
 
 import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/store';
 import { getMessageDecryptEmailStoreAction } from 'store/emails/actions/get-message';
-import { IncompleteMessage } from 'types/index.d';
+import { IncompleteMessage } from 'types/messages';
 import { DistributionListIcon } from 'views/app/detail-panel/preview/parts/info-block/distribution-list-icon';
 import { ExternalDomainIcon } from 'views/app/detail-panel/preview/parts/info-block/external-domain-icon';
 import { MailSensitivityIcon } from 'views/app/detail-panel/preview/parts/info-block/mail-sensitivity-icon';
@@ -82,7 +82,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 
 	const decryptMsgAction = useCallback(
 		(msgId: string, password: string) => {
-			getMessageDecryptEmailStoreAction(msgId, password).then((response) => {
+			const prefs = getUserSettings()?.prefs;
+			const displayAsHtml = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+			getMessageDecryptEmailStoreAction(msgId, password, displayAsHtml).then((response) => {
 				if (!response) {
 					createSnackbar({
 						key: `unable-to-decrypt`,

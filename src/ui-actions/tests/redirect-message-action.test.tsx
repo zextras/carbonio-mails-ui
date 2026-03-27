@@ -15,7 +15,7 @@ import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateMessage } from '__test__/generators/generateMessage';
-import { RedirectMessageActionRequest } from 'types/index.d';
+import { RedirectMessageActionRequest } from 'types/soap/redirect-message-action';
 import RedirectMessageAction from 'ui-actions/redirect-message-action';
 
 describe('RedirectMessageAction', () => {

@@ -6,6 +6,7 @@
 
 import { useEffect, useMemo } from 'react';
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
@@ -17,12 +18,9 @@ import {
 	useMessageById,
 	useMessageStatus
 } from 'store/emails/store';
-import {
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation,
-	SearchRequestStatus
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { SearchRequestStatus } from 'types/search';
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;
@@ -57,7 +55,9 @@ export function useCompleteConversationOrFetch({
 			debounce(
 				() => {
 					if (conversation && !conversationStatus) {
-						searchConvEmailStoreAction(conversationId, folderId, shouldMarkAsRead);
+						const prefs = getUserSettings()?.prefs;
+						const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+						searchConvEmailStoreAction({ conversationId, folderId, shouldMarkAsRead, html });
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
@@ -107,7 +107,9 @@ export function useCompleteMessageOrFetch({
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						getMessageEmailStoreAction(messageId, shouldMarkAsRead);
+						const prefs = getUserSettings()?.prefs;
+						const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+						getMessageEmailStoreAction({ messageId, html, shouldMarkAsRead });
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,

@@ -9,7 +9,7 @@ import styled from '@emotion/styled';
 import { Button, Container, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import type { AdvancedFilterButtonProps } from 'types/index.d';
+import { AdvancedFilterButtonProps } from 'types/search';
 import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
 
 const BorderContainer = styled(Container)`
@@ -20,8 +20,7 @@ const BorderContainer = styled(Container)`
 export const AdvancedFilterButton = ({
 	query,
 	onSearchConfirm,
-	isSharedFolderIncluded,
-	invalidQueryTooltip
+	isSharedFolderIncluded
 }: AdvancedFilterButtonProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();

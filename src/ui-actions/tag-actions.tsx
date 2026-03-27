@@ -23,11 +23,11 @@ import {
 	DeleteTagModal
 } from '@zextras/carbonio-ui-commons';
 import { filter, find, forEach, reduce, some } from 'lodash';
-
-import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
-import { ArgumentType } from 'types/tags';
-import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 import { useTranslation } from 'react-i18next';
+
+import { UIActionDescriptor } from 'types/actions';
+import { ArgumentType, ItemType, TagActionsReturnType } from 'types/tags';
+import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,

@@ -19,7 +19,7 @@ import { includes, isEmpty } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import { ModalProps } from 'types/index.d';
+import { ModalProps } from 'types/utils';
 import { RetentionPolicyState } from 'views/sidebar/commons/types';
 import { FolderDetails } from 'views/sidebar/parts/edit/folder-details';
 import NameInputRow from 'views/sidebar/parts/edit/name-input';

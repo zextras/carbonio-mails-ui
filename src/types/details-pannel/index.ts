@@ -4,20 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { NameSpace } from '@zextras/carbonio-shell-ui';
+import { NameSpace } from '@zextras/carbonio-ui-soap-lib';
 
-import { MailMessage } from 'types/messages';
-
-type OpenEmlPreviewType = (
-	parentMessageId: string,
-	attachmentName: string,
-	emlMessage: MailMessage
-) => void;
-
-export type MailEditHeaderType = {
-	folderId: string | number;
-	header: string | undefined;
-};
+import { EditorAttachmentFiles } from 'types/editor';
 
 export type IconColors = Array<{
 	color: string;
@@ -34,13 +23,6 @@ export type AttachmentType = {
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
-};
-
-export type PreviewPanelActionsType = {
-	item: Conversation;
-	folderId: string;
-	isMessageView: boolean;
-	conversation: Conversation;
 };
 
 export type CopyToFileRequest = {

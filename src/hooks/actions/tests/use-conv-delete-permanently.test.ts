@@ -20,7 +20,7 @@ import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
 } from 'hooks/actions/use-conv-delete-permanently';
-import { ConvActionRequest } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
 
 describe('useConvDeletePermanently', () => {
 	describe('Descriptor', () => {

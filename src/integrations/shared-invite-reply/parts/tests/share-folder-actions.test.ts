@@ -13,7 +13,7 @@ import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
 import { CreateMountpointResponse } from 'api/mount-shared-folder-soap-api';
 import { useAccept } from 'integrations/shared-invite-reply/parts/share-folder-actions';
-import { ISoapFolderObj } from 'types/index.d';
+import { ISoapFolderObj } from 'types/soap/soap';
 
 describe('share folder actions', () => {
 	it('should mount shared folder on accept', async () => {

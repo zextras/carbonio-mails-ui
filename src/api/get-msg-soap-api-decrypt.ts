@@ -7,17 +7,18 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
-import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/index.d';
+import { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 
 export async function getMsgDecryptSoapApi({
 	msgId,
 	max,
-	smimePassword
+	smimePassword,
+	html
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
 		m: {
-			html: 1,
+			html,
 			id: msgId,
 			needExp: 1,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),

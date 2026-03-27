@@ -6,7 +6,7 @@
 
 import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import type { FilterRules } from 'types/index.d';
+import { FilterRules } from 'types/filters';
 
 type GetFilterRulesResponse = {
 	filterRules: FilterRules;

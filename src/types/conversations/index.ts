@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { IncompleteMessage } from 'types/messages';
 import { Participant } from 'types/participant';
-import { ConvActionOperation } from 'types/soap/index.d';
+import { ConvActionOperation } from 'types/soap';
+import { SortBy } from 'types/sorting';
 
 export type ConvMessage = {
 	id: string;
@@ -41,9 +43,9 @@ export type SearchSoapApiParams = {
 	limit: number;
 	before?: Date | null;
 	types?: string;
-	sortBy?: SortBy;
+	sortBy: SortBy;
 	query?: string;
-	offset?: undefined | number;
+	offset?: number;
 	recip?: '0' | '1' | '2';
 	wantContent?: 'full' | 'original' | 'both';
 	locale?: string;
@@ -51,15 +53,10 @@ export type SearchSoapApiParams = {
 };
 
 export type FetchConversationsReturn = {
-	conversations?: Record<string, Conversation>;
+	conversations?: Record<string, NormalizedConversation>;
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
 	offset?: number;
 	types: string;
 	Detail: { Error: { Code: string; Message: string } };
-};
-
-export type DeleteAttachmentsReturn = {
-	attachments: string[];
-	res: SoapIncompleteMessage;
 };

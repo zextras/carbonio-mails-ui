@@ -11,7 +11,7 @@ import { t as mockT } from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '@test-setup';
 import { PRIMARY_IDENTITY_NAME } from 'helpers/identities';
-import { SignItemType } from 'types/index.d';
+import { SignItemType } from 'types/settings';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
 
 describe('SelectIdentitySignature', () => {

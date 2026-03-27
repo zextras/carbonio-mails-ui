@@ -9,18 +9,16 @@ import { map } from 'lodash';
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import type {
-	GetConvParameters,
-	GetConvRequest,
-	GetConvResponse,
-	IncompleteMessage,
-	NormalizedConversation
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage } from 'types/messages';
+import { GetConvRequest, GetConvResponse } from 'types/soap/get-conv';
+import { GetConvParameters } from 'types/soap/soap';
 
 export const getConvSoapApi = async ({
 	conversationId,
 	fetch = 'all',
-	onConversationIdChange
+	onConversationIdChange,
+	html
 }: GetConvParameters): Promise<{
 	conversation: Array<NormalizedConversation>;
 	messages: Array<IncompleteMessage>;
@@ -29,7 +27,7 @@ export const getConvSoapApi = async ({
 		_jsns: 'urn:zimbraMail',
 		c: {
 			id: conversationId,
-			html: 1,
+			html,
 			needExp: 1,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 			fetch
@@ -52,7 +50,7 @@ export const getConvSoapApi = async ({
 
 	const conversation = normalizeConversations([result.c[0]]);
 	const messages = map(result.c[0].m, (item) =>
-		normalizeMailMessageFromSoap(item, false)
-	) as unknown as Array<IncompleteMessage>;
+		normalizeMailMessageFromSoap({ m: item, isComplete: false, html })
+	);
 	return { conversation, messages };
 };

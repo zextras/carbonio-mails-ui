@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import type { SearchListPanelRouteParams } from '../../../../types/routes';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
-import type { SearchListProps } from 'types/index.d';
+import { SearchListProps } from 'types/search';
 import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';

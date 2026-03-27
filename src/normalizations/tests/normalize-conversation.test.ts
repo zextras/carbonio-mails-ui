@@ -6,16 +6,17 @@
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import {
-	mapToNormalizedConversation,
-	normalizeConversations,
-	normalizePartialConversations
-} from 'normalizations/normalize-conversation';
-import {
 	generateCompleteMessageFromAPI,
 	generateConversationFromAPI,
 	generateSoapConversationMessage
 } from '__test__/generators/api';
-import { Participant, SoapConversation } from 'types/index.d';
+import {
+	mapToNormalizedConversation,
+	normalizeConversations,
+	normalizePartialConversations
+} from 'normalizations/normalize-conversation';
+import { Participant } from 'types/participant';
+import { SoapConversation } from 'types/soap/soap-conversation';
 
 describe('Normalize conversation', () => {
 	it('returns normalized conversation with all fields', () => {

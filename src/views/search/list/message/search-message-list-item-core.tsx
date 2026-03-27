@@ -5,27 +5,20 @@
  */
 import React, { useMemo } from 'react';
 
-import {
-	Badge,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Text,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
 import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
+import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
-import { MailMessage, TextReadValuesType } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
-import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type SearchMessageListItemCoreProps = {
@@ -115,13 +108,6 @@ export const SearchMessageListItemCore = ({
 		[completeMessage.tags, tagsFromStore]
 	);
 
-	const textReadValues = useMemo<TextReadValuesType>(() => {
-		if (typeof completeMessage.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return completeMessage.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [completeMessage.read]);
 	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
 		() =>
@@ -236,14 +222,12 @@ export const SearchMessageListItemCore = ({
 							</Tooltip>
 						)}
 						<Padding left="small">
-							<Badge
-								data-testid="FolderBadge"
+							<ItemBadge
 								value={getFolderTranslatedName({
 									folderId,
 									folderName: messageFolder?.name ?? ''
 								})}
-								backgroundColor={textReadValues.badge === 'read' ? 'gray2' : 'primary'}
-								color={textReadValues.badge === 'read' ? 'gray0' : 'gray6'}
+								itemReadValue={completeMessage.read}
 							/>
 						</Padding>
 					</Row>

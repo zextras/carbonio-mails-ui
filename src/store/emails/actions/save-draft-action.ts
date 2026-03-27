@@ -9,7 +9,8 @@ import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { createSoapDraftRequestFromEditor } from 'store/editor/editor-transformations';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
-import { MailAttachment, MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
+import { MailAttachment } from 'types/soap/save-draft';
 
 type SaveDraftEmailStoreAction = {
 	editor: MailsEditorV2;
@@ -25,7 +26,10 @@ export async function saveDraftEmailStoreAction({
 	const result = await saveDraftSoapApi({ soapDraftMessageObj, signal });
 	if (result.m)
 		result.m.forEach((message) => {
-			const normalizedMessage = normalizeMailMessageFromSoap(message);
+			const normalizedMessage = normalizeMailMessageFromSoap({
+				m: message,
+				html: editor.isRichText
+			});
 			updateMessages([normalizedMessage]);
 			updateMessageStatus(normalizedMessage.id, API_REQUEST_STATUS.fulfilled);
 		});

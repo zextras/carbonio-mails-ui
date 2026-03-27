@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useShouldReplaceHistory } from '../../../../../hooks/use-should-replace-history';
 import { useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { PreviewHeader } from 'views/app/detail-panel/preview/parts/preview-header';
 
 type MailPreviewBlockType = {

@@ -17,7 +17,8 @@ import {
 	useMessageIndexSlice,
 	useMessagesIdsByFolder
 } from 'store/emails/store';
-import { MessageIndexSliceState } from 'types/index.d';
+import { MessageIndexSliceState } from 'types/search';
+import { SortBy } from 'types/sorting';
 
 export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceState => {
 	const { prefs } = useUserSettings();
@@ -35,7 +36,7 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 		() => parseMessageSortingOptions(folderId, prefSortOrder),
 		[folderId, prefSortOrder]
 	);
-	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
+	const sortBy = useMemo<SortBy>(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchMessages = useCallback(
 		async (signal: AbortSignal | undefined) => {

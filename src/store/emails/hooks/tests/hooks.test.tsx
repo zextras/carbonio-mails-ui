@@ -36,16 +36,11 @@ import {
 	useConversationStatus,
 	useMessageStatus
 } from 'store/emails/store';
-import {
-	ConvMessage,
-	EmailsStoreState,
-	GetMsgRequest,
-	GetMsgResponse,
-	MailMessage,
-	NormalizedConversation,
-	SearchConvRequest,
-	SearchConvResponse
-} from 'types/index.d';
+import { ConvMessage, NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
+import { EmailsStoreState } from 'types/search';
+import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
+import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
 
 function awaitDebounce(): void {
 	act(() => {

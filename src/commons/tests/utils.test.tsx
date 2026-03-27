@@ -16,7 +16,7 @@ import {
 	participantToString,
 	updateImageSrc
 } from 'commons/utils';
-import { MailMessagePart } from 'types/index.d';
+import { MailMessagePart } from 'types/messages';
 
 describe('getTimeLabel', () => {
 	describe('the date is formatted using local', () => {

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
 import { isFocusModeMailView, openMessageStandalonePreview } from 'helpers/external-tabs';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,

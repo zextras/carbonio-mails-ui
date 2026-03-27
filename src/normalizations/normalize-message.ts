@@ -4,14 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {
-	getFolder,
-	getIdentitiesDescriptors,
-	ParticipantRole,
-	ParticipantRoleType,
-	useFolderStore
-} from '@zextras/carbonio-ui-commons';
-import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
+import { getFolder, getIdentitiesDescriptors, useFolderStore } from '@zextras/carbonio-ui-commons';
+import { find, forEach, isArray, isNil, map, orderBy, reduce } from 'lodash';
 
 import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
 import {
@@ -28,14 +22,15 @@ import {
 	IncompleteMessage,
 	MailHeaders,
 	MailMessage,
-	MailMessagePart,
-	Participant,
-	SoapEmailParticipantRole,
+	MailMessagePart
+} from 'types/messages';
+import { Participant } from 'types/participant';
+import {
 	SoapIncompleteMessage,
 	SoapMailMessage,
-	SoapMailMessagePart,
-	SoapMailParticipant
-} from 'types/index.d';
+	SoapMailMessagePart
+} from 'types/soap/soap-mail-message';
+import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage
@@ -43,15 +38,15 @@ import {
 
 type Flags = {
 	read: boolean;
-	hasAttachment?: boolean;
-	flagged?: boolean;
-	urgent?: boolean;
-	isDeleted?: boolean;
-	isDraft?: boolean;
-	isForwarded?: boolean;
-	isSentByMe?: boolean;
-	isInvite?: boolean;
-	isReplied?: boolean;
+	hasAttachment: boolean;
+	flagged: boolean;
+	urgent: boolean;
+	isDeleted: boolean;
+	isDraft: boolean;
+	isForwarded: boolean;
+	isSentByMe: boolean;
+	isInvite: boolean;
+	isReplied: boolean;
 };
 
 /**
@@ -307,31 +302,8 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
 	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
-const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
-	switch (t) {
-		case 'f':
-			return ParticipantRole.FROM;
-		case 't':
-			return ParticipantRole.TO;
-		case 'c':
-			return ParticipantRole.CARBON_COPY;
-		case 'b':
-			return ParticipantRole.BLIND_CARBON_COPY;
-		case 'r':
-			return ParticipantRole.REPLY_TO;
-		case 's':
-			return ParticipantRole.SENDER;
-		case 'n':
-			return ParticipantRole.READ_RECEIPT_NOTIFICATION;
-		case 'rf':
-			return ParticipantRole.RESENT_FROM;
-		default:
-			throw new Error(`Participant type not handled: '${t}'`);
-	}
-};
-
 export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
-	type: participantTypeFromSoap(e.t),
+	type: e.t,
 	address: e.a,
 	name: e.d || e.a,
 	fullName: e.p,
@@ -385,13 +357,11 @@ const parseFlagsString = (flags: string): Flags => ({
 });
 
 /**
- * Extracts and maps flags from a partial  SOAP message from Notify to a Flags object, returning an empty object if no flags are present.
+ * Extracts and maps flags from a partial SOAP message from Notify to a Flags object, returning undefined if no flags are present.
  * */
-const getNotifyFlags = (
-	m: SoapPartialIncompleteMessage | undefined
-): Flags | NonNullable<unknown> => {
+const getNotifyFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | undefined => {
 	if (isNil(m?.f)) {
-		return {};
+		return undefined;
 	}
 	return parseFlagsString(m.f);
 };
@@ -399,8 +369,8 @@ const getNotifyFlags = (
 /**
  * Extracts and maps flags from a SOAP message to a Flags object. If flags is undefined or empty, it returns a default object with read set to true.
  * */
-const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
-	const defaultFlag = { read: true };
+const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | { read: true } => {
+	const defaultFlag = { read: true } as const;
 
 	if (isNil(m?.f) || m.f === '') {
 		return defaultFlag;
@@ -415,7 +385,25 @@ const getFlags = (m: SoapPartialIncompleteMessage | undefined): Flags => {
  */
 const createBaseNormalizedMessage = (
 	m: SoapPartialIncompleteMessage
-): Partial<IncompleteMessage> => ({
+): {
+	conversation: IncompleteMessage['conversation'] | undefined;
+	date: IncompleteMessage['date'] | undefined;
+	size: IncompleteMessage['size'] | undefined;
+	parent: IncompleteMessage['parent'] | undefined;
+	replyType: IncompleteMessage['replyType'];
+	originalId: IncompleteMessage['originalId'];
+	fragment: IncompleteMessage['fragment'];
+	subject: IncompleteMessage['subject'] | undefined;
+	participants: IncompleteMessage['participants'];
+	tags: IncompleteMessage['tags'] | undefined;
+	parts: IncompleteMessage['parts'] | undefined;
+	attachments: IncompleteMessage['attachments'];
+	invite: IncompleteMessage['invite'];
+	shr: IncompleteMessage['shr'];
+	body: IncompleteMessage['body'] | undefined;
+	autoSendTime: IncompleteMessage['autoSendTime'];
+	isEncrypted: IncompleteMessage['isEncrypted'];
+} => ({
 	conversation: m.cid,
 	date: m.d,
 	size: m.s,
@@ -437,10 +425,32 @@ const createBaseNormalizedMessage = (
 	isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined
 });
 
-export const normalizeMailMessageFromSoap = (
-	m: SoapIncompleteMessage,
-	isComplete?: boolean
-): IncompleteMessage => {
+type RemoveNil<T> = {
+	[K in keyof T as T[K] extends null | undefined ? never : K]: Exclude<T[K], null | undefined>;
+};
+
+const removeNil = <T extends object>(obj: T): RemoveNil<T> => {
+	const result: Partial<Record<keyof T, unknown>> = {};
+
+	(Object.keys(obj) as Array<keyof T>).forEach((key) => {
+		const value = obj[key];
+		if (value != null) {
+			result[key] = value;
+		}
+	});
+
+	return result as unknown as RemoveNil<T>;
+};
+
+export const normalizeMailMessageFromSoap = ({
+	m,
+	html,
+	isComplete
+}: {
+	m: SoapIncompleteMessage;
+	html: boolean;
+	isComplete?: boolean;
+}): IncompleteMessage => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
 	)[0];
@@ -454,25 +464,24 @@ export const normalizeMailMessageFromSoap = (
 		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
 		messageIsFromDistributionList: getMessageIsFromDistributionListFromAPI(m._attrs)
 	};
-	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
-	return <IncompleteMessage>omitBy(
-		{
-			...createBaseNormalizedMessage(m),
-			id: m.id,
-			isComplete,
-			isScheduled: !!m.autoSendTime,
-			...getFlags(m),
-			isReadReceiptRequested: m.e
-				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
-				: undefined,
-			...normalizedMailHeaders
-		},
-		isNil
-	);
+	return removeNil({
+		...createBaseNormalizedMessage(m),
+		id: m.id,
+		isComplete,
+		html,
+		isScheduled: !!m.autoSendTime,
+		...getFlags(m),
+		isReadReceiptRequested: m.e
+			? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+			: undefined,
+		...normalizedMailHeaders
+	});
 };
 
-export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
-	normalizeMailMessageFromSoap(m, true);
+export const normalizeCompleteMailMessageFromSoap = (
+	m: SoapMailMessage,
+	html: boolean
+): MailMessage => normalizeMailMessageFromSoap({ m, isComplete: true, html });
 
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
@@ -497,17 +506,12 @@ const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 export const normalizePartialIncompleteMessageFromSoapNotify = (
 	m: SoapPartialIncompleteMessage
 ): PartialIncompleteMessage => {
-	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
-	const partialMessageData = <IncompleteMessage>omitBy(
-		{
-			...createBaseNormalizedMessage(m),
-			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
-			// TODO: this function is accepting undefined values and assuming defaults
-			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
-			...normalizeMailHeaders(m)
-		},
-		isNil
-	);
+	const partialMessageData = removeNil({
+		...createBaseNormalizedMessage(m),
+		isScheduled: m.autoSendTime ? !!m.autoSendTime : undefined,
+		isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
+		...normalizeMailHeaders(m)
+	});
 	const flags = getNotifyFlags(m);
 	return { ...partialMessageData, ...flags, id: m.id };
 };

@@ -12,13 +12,8 @@ import { StoreApi, UseBoundStore } from 'zustand';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
-import {
-	EmailsStoreState,
-	IncompleteMessage,
-	MailMessage,
-	MessageIndexSliceState,
-	SearchRequestStatus
-} from 'types/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
+import { EmailsStoreState, MessageIndexSliceState, SearchRequestStatus } from 'types/search';
 
 function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,

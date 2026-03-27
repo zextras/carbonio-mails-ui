@@ -9,7 +9,7 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Route, Routes, useParams } from 'react-router-dom';
 
-import { SearchPanelProps } from 'types/index.d';
+import { SearchPanelProps } from 'types/search';
 import { SearchConversationPanel } from 'views/search/panel/conversation/search-conversation-panel';
 import { SearchMessagePanel } from 'views/search/panel/message/search-message-panel';
 
