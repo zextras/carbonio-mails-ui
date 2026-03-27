@@ -5,21 +5,14 @@
  */
 import React, { useMemo } from 'react';
 
-import {
-	Badge,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Text,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
 import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
@@ -114,11 +107,6 @@ export const SearchMessageListItemCore = ({
 			),
 		[completeMessage.tags, tagsFromStore]
 	);
-
-	const badge = useMemo<'read' | 'unread'>(() => {
-		if (completeMessage.read === undefined) return 'read';
-		return completeMessage.read ? 'read' : 'unread';
-	}, [completeMessage.read]);
 
 	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
@@ -234,14 +222,12 @@ export const SearchMessageListItemCore = ({
 							</Tooltip>
 						)}
 						<Padding left="small">
-							<Badge
-								data-testid="FolderBadge"
+							<ItemBadge
 								value={getFolderTranslatedName({
 									folderId,
 									folderName: messageFolder?.name ?? ''
 								})}
-								backgroundColor={badge === 'read' ? 'gray2' : 'primary'}
-								color={badge === 'read' ? 'gray0' : 'gray6'}
+								itemReadValue={completeMessage.read}
 							/>
 						</Padding>
 					</Row>

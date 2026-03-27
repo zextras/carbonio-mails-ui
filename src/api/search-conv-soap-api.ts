@@ -18,7 +18,8 @@ export async function searchConvSoapApi({
 	conversationId,
 	fetch = 'all',
 	folderId,
-	shouldMarkAsRead
+	shouldMarkAsRead,
+	html
 }: SearchConvParameters): Promise<SearchConvResponse> {
 	const userSettings: AccountSettings = getUserSettings();
 	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as 'dateDesc' | 'dateAsc';
@@ -33,7 +34,7 @@ export async function searchConvSoapApi({
 		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 		needExp: 1,
 		limit: 250,
-		html: 1
+		html
 	};
 	if (folderId) {
 		request.query = `inId: "${folderId}"`;

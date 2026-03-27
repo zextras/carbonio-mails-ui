@@ -444,11 +444,11 @@ const removeNil = <T extends object>(obj: T): RemoveNil<T> => {
 
 export const normalizeMailMessageFromSoap = ({
 	m,
-	html = true,
+	html,
 	isComplete
 }: {
 	m: SoapIncompleteMessage;
-	html?: boolean;
+	html: boolean;
 	isComplete?: boolean;
 }): IncompleteMessage => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
@@ -480,7 +480,7 @@ export const normalizeMailMessageFromSoap = ({
 
 export const normalizeCompleteMailMessageFromSoap = (
 	m: SoapMailMessage,
-	html?: boolean
+	html: boolean
 ): MailMessage => normalizeMailMessageFromSoap({ m, isComplete: true, html });
 
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {

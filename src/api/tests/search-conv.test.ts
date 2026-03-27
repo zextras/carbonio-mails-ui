@@ -14,7 +14,7 @@ describe('searchConvSoapApi', () => {
 	test('the max property is set to 250_000', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
 
-		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all' });
+		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all', html: true });
 
 		const req = await interceptor;
 		expect(req.max).toBe(250000);
@@ -27,7 +27,8 @@ describe('searchConvSoapApi', () => {
 			conversationId: '1',
 			folderId: FOLDERS.INBOX,
 			fetch: 'all',
-			shouldMarkAsRead: true
+			shouldMarkAsRead: true,
+			html: true
 		});
 
 		const req = await interceptor;
@@ -41,7 +42,8 @@ describe('searchConvSoapApi', () => {
 			conversationId: '1',
 			folderId: FOLDERS.INBOX,
 			fetch: 'all',
-			shouldMarkAsRead: false
+			shouldMarkAsRead: false,
+			html: true
 		});
 
 		const req = await interceptor;
@@ -51,7 +53,7 @@ describe('searchConvSoapApi', () => {
 	test('should NOT include read parameter when read is not provided', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
 
-		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all' });
+		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all', html: true });
 
 		const req = await interceptor;
 		expect(req.read).toBeUndefined();
