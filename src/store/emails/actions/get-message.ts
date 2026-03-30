@@ -14,16 +14,18 @@ import {
 	normalizeMailMessageFromSoap
 } from 'normalizations/normalize-message';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
-import { GetMsgResponse, MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { GetMsgResponse } from 'types/soap/get-msg';
 
-function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
+function handleGetMsgResponse(response: GetMsgResponse, html: boolean): void {
+	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, html));
 	updateMessages(messages);
 }
 
 async function handleRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	html: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -33,14 +35,15 @@ async function handleRetrieveMessage(
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
-	handleGetMsgResponse(response);
+	handleGetMsgResponse(response, html);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html });
 }
 
 async function handleDecryptRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	html: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -58,32 +61,42 @@ async function handleDecryptRetrieveMessage(
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
-	handleGetMsgResponse(response);
+	handleGetMsgResponse(response, html);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+	return normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html });
 }
 
-export function getMessageEmailStoreAction(
-	messageId: string,
-	shouldMarkAsRead?: boolean
-): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) =>
-		getMsgSoapApi({ msgId: id, max: 250_000, shouldMarkAsRead })
+export function getMessageEmailStoreAction({
+	messageId,
+	shouldMarkAsRead,
+	html
+}: {
+	messageId: string;
+	shouldMarkAsRead?: boolean;
+	html: boolean;
+}): Promise<MailMessage | undefined> {
+	return handleRetrieveMessage(
+		messageId,
+		(id) => getMsgSoapApi({ msgId: id, max: 250_000, shouldMarkAsRead, html }),
+		html
 	);
 }
 
 export function getMessageDecryptEmailStoreAction(
 	messageId: string,
-	smimePassword: string
+	smimePassword: string,
+	html: boolean
 ): Promise<MailMessage | undefined> {
-	return handleDecryptRetrieveMessage(messageId, (id) =>
-		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword })
+	return handleDecryptRetrieveMessage(
+		messageId,
+		(id) => getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, html }),
+		html
 	);
 }
 
 export function getFullMessageEmailStoreAction(
 	messageId: string,
-	html?: boolean
+	html: boolean
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }));
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, html }), html);
 }

@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
 import { ConversationActionsDescriptors } from 'constants/index';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
-import type { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
 
 type ConvRestoreFunctionsParameter = {

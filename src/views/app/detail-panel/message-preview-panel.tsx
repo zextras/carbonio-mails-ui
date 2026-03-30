@@ -9,7 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { Spinner } from 'assets/spinner';
-import { IncompleteMessage, MailMessage } from 'types/index.d';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 import MailPreview from 'views/app/detail-panel/preview/mail-preview';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 

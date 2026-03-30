@@ -6,13 +6,14 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import type { EmlRouteParams } from '../../../types/routes';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { MessagePreviewPanel } from 'views/app/detail-panel/message-preview-panel';
 
 export const EmlPreviewPanelContainer = (): React.JSX.Element => {
@@ -24,11 +25,13 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 		if (message) {
 			return;
 		}
-		getMsgSoapApi({ msgId: messageId, part }).then((response) => {
+		const prefs = getUserSettings()?.prefs;
+		const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+		getMsgSoapApi({ msgId: messageId, part, html }).then((response) => {
 			if (!response || 'Fault' in response) {
 				return;
 			}
-			setMessage(normalizeMailMessageFromSoap(response.m[0], true) as MailMessage);
+			setMessage(normalizeMailMessageFromSoap({ m: response.m[0], isComplete: true, html }));
 		});
 	}, [message, messageId, part]);
 

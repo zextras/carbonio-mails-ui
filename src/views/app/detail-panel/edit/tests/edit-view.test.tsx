@@ -22,7 +22,7 @@ import type { Mock } from 'vitest';
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../__test__/constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { EditView, EditViewProp } from '../edit-view';
+import { EditView } from '../edit-view';
 import { setupTest, screen, within } from '@test-setup';
 import {
 	useBoard as mockedUseBoard,
@@ -48,16 +48,15 @@ import {
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
 } from 'store/editor/editor-generators';
-import type {
-	MailsEditorV2,
+import { MailsEditorV2 } from 'types/editor';
+import {
 	SaveDraftRequest,
 	SaveDraftResponse,
 	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from 'types';
+	SoapEmailMessagePartObj
+} from 'types/soap/save-draft';
 import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { SoapMailMessage, SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -321,7 +320,7 @@ describe('Edit view', () => {
 			const subject = faker.lorem.sentence(1);
 			const body = faker.lorem.sentence(10);
 
-			const props: EditViewProp = {
+			const props = {
 				editorId: editor.id,
 				closeController: noop
 			};
@@ -418,7 +417,7 @@ describe('Edit view', () => {
 			const mocksContext = getMocksContext();
 			const loggedInuserAccountId = mocksContext.identities.primary.identity.id;
 
-			const props: EditViewProp = {
+			const props = {
 				editorId: editor.id,
 				closeController: noop
 			};
@@ -470,7 +469,7 @@ describe('Edit view', () => {
 			const editor = generateReplyMsgEditor(originalMessage);
 			addEditor({ id: editor.id, editor });
 
-			const props: EditViewProp = {
+			const props = {
 				editorId: editor.id,
 				closeController: noop
 			};

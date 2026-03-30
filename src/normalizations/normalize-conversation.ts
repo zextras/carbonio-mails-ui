@@ -7,11 +7,9 @@ import { filter, isNil, map, omitBy } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from 'normalizations/normalize-message';
 import { getTagIds } from 'normalizations/utils';
-import type {
-	NormalizedConversation,
-	SoapConversation,
-	SoapIncompleteMessage
-} from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import { OptionalExcept, SoapPartialConversation } from 'views/sidebar/commons/types';
 
 export type NormalizeConversationProps = {

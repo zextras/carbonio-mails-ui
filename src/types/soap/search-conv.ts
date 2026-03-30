@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { MailMessage } from 'types/messages';
-import { MailVerificationHeader } from 'types/soap/soap';
+import { MailVerificationHeader } from './soap';
 import { SoapMailMessage } from 'types/soap/soap-mail-message';
 import { ZimbraRequest } from 'types/soap/zimbra-request';
 
@@ -18,7 +17,7 @@ export type SearchConvRequest = ZimbraRequest & {
 	query?: string;
 	cid: string;
 	fetch: string;
-	html: 1 | 0;
+	html: boolean;
 	needExp: 1 | 0;
 	max?: number;
 	recip: '0' | '1' | '2' | 'false' | 'true';
@@ -38,11 +37,5 @@ export type SearchConvParameters = {
 	folderId?: string;
 	fetch: string;
 	shouldMarkAsRead?: boolean;
-};
-
-export type SearchConvReturn = {
-	hasMore: boolean;
-	offset: string;
-	messages: Array<MailMessage>;
-	orderBy: string;
+	html: boolean;
 };

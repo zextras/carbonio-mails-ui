@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from 'commons/utils';
 import { getEditor } from 'store/editor/index';
-import type { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 export const attachmentWords: Array<string> = [
 	t('messages.modal.send_anyway.attach', 'attach'),

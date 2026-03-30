@@ -7,7 +7,8 @@ import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isNil } from 'lodash';
 
 import { omitBy } from 'commons/utils';
-import type { ConvActionParameters, ConvActionRequest, ConvActionResponse } from 'types/index.d';
+import { ConvActionParameters } from 'types/conversations';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 
 export async function convActionSoapApi({
 	ids,

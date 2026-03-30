@@ -8,12 +8,8 @@ import { concat, filter, reduce, reject, some } from 'lodash';
 
 import { areContentIdsEqual } from '../../commons/content-id-utils';
 import { PROCESS_STATUS } from 'constants/index';
-import type {
-	EditorOperationAllowedStatus,
-	MailsEditorV2,
-	SavedAttachment,
-	UnsavedAttachment
-} from 'types/index.d';
+import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
 
 /**
  *

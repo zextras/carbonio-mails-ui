@@ -12,7 +12,7 @@ import { normalizeDropdownActionItem } from 'helpers/actions';
 import { isDraft } from 'helpers/folders';
 import { useMsgActions } from 'hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
-import { MailMessage } from 'types/index.d';
+import { MailMessage } from 'types/messages';
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 import { ListItemDropdownAction } from 'views/app/folder-panel/parts/list-item-dropdown-action';

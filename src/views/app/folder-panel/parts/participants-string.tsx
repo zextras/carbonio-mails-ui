@@ -17,7 +17,8 @@ import { getFolderOwnerAccountName, isDraft, isInbox, isSent } from '../../../..
 import { isConversation } from '../../../../helpers/messages';
 import { getConversationMessagesParents } from '../../../../store/emails/store';
 import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
-import { MailMessage, NormalizedConversation } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
 
 const getUserAddress = (
 	item: NormalizedConversation | MailMessage,

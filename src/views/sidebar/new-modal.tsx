@@ -13,7 +13,7 @@ import { find, includes, noop, toLower } from 'lodash';
 
 import { createFolderSoapApi } from 'api/create-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { ModalProps } from 'types/index.d';
+import { ModalProps } from 'types/utils';
 import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 import { useTranslatedSystemFolders } from 'views/sidebar/utils';
 

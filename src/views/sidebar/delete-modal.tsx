@@ -14,7 +14,7 @@ import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { FOLDER_ACTIONS } from 'commons/utilities';
 import { isSharedAccountFolder, isTrashed } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
-import type { ModalProps } from 'types/index.d';
+import { ModalProps } from 'types/utils';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

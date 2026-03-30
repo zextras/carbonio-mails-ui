@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { normalizeDropdownActionItem } from 'helpers/actions';
 import { useConvActions } from 'hooks/actions/use-conv-actions';
 import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
-import { NormalizedConversation } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
 import { HoverBarContainer } from 'views/app/folder-panel/parts/hover-bar-container';
 import { HoverContainer } from 'views/app/folder-panel/parts/hover-container';
 import { ListItemHoverActions } from 'views/app/folder-panel/parts/list-item-hover-actions';

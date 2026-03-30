@@ -12,10 +12,10 @@ import type { Folder } from '@zextras/carbonio-ui-commons';
 import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
 import { useFolders } from 'hooks/use-folders';
+import { themeMuiExtension } from 'theme/theme-mui';
 import { FlatFolders } from 'views/sidebar/commons/flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from 'views/sidebar/commons/folder-accordions-custom-component';
 import { FoldersAccordion } from 'views/sidebar/commons/folders-accordion';
-import { themeMuiExtension } from 'theme/theme-mui';
 
 export type FolderSelectorProps = {
 	inputLabel?: string;

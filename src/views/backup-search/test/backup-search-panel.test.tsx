@@ -14,7 +14,7 @@ import type { Mock } from 'vitest';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { useBackupSearchStore } from 'store/backup-search/store';
-import { DeletedMessageFromAPI } from 'types/index.d';
+import { DeletedMessageFromAPI } from 'types/api';
 import { BackupSearchPanel } from 'views/backup-search/parts/backup-search-panel';
 
 vi.mock('react-router-dom', async () => ({

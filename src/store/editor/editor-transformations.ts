@@ -24,17 +24,16 @@ import {
 	filterUnsavedStandardAttachment
 } from 'store/editor/editor-utils';
 import { getCompleteMessageId } from 'store/utils';
+import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
+import { Participant } from 'types/participant';
 import {
 	MailAttachment,
 	MailAttachmentParts,
-	MailsEditorV2,
 	MsgAttach,
-	Participant,
-	SavedAttachment,
 	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	UnsavedAttachment
-} from 'types/index.d';
+	SoapEmailMessagePartObj
+} from 'types/soap/save-draft';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
 	const contentIdInnerPart = removeAngleBrackets(contentId);

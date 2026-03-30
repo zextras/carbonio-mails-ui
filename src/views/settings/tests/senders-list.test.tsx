@@ -21,7 +21,7 @@ const FIND_TIMEOUT = 2000;
 const SENDERS_LIST_ITEM = 'senders-list-item';
 
 const buildProps = ({
-	settingsObj = { attrs: {}, prefs: {} },
+	settingsObj = {},
 	updateSettings = vi.fn(),
 	listType = 'Allowed'
 }: Partial<SendersListProps>): SendersListProps => ({

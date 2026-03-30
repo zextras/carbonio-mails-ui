@@ -4,16 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type API_REQUEST_STATUS } from 'constants/index';
-import type { SavedAttachment, UnsavedAttachment } from 'types/attachments';
-import type { Conversation } from 'types/conversations';
-import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from 'types/editor/index.d';
-import { type MailMessage } from 'types/messages';
-
-export type MailsStateType = {
-	conversations: ConversationsStateType;
-	messages: MsgStateType;
-};
+import type {
+	AttachmentUploadProcessStatus,
+	SavedAttachment,
+	UnsavedAttachment
+} from 'types/attachments';
+import { EditorTextProvider, type MailsEditorV2 } from 'types/editor';
 
 export type EditorsStateTypeV2 = {
 	editors: MailsEditorMapV2;
@@ -88,38 +84,4 @@ export type EditorsStateTypeV2 = {
 	getEditorsByDraftsId: (draftsId: Array<string>) => Array<MailsEditorV2 & { did: string }>;
 };
 
-export type MsgStateType = {
-	searchedInFolder: Record<string, SearchedFolderStateStatus>;
-	messages: MsgMap;
-	searchRequestStatus: SearchRequestStatus;
-};
-
-export type ErrorType = {
-	code: string;
-	description?: string;
-};
-
-export type ConversationsStateType = {
-	currentFolder: string;
-	searchedInFolder: Record<string, SearchedFolderStateStatus>;
-	conversations: Record<string, Conversation>;
-	expandedStatus: Record<string, SearchRequestStatus>;
-	searchRequestStatus: SearchRequestStatus;
-};
-
-export type MsgMapValue = Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>;
-
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
-
-export type MsgMap = Record<string, MsgMapValue>;
-
-type SearchedFolderStateStatusKey = keyof typeof SEARCHED_FOLDER_STATE_STATUS;
-export type SearchedFolderStateStatus =
-	(typeof SEARCHED_FOLDER_STATE_STATUS)[SearchedFolderStateStatusKey];
-
-type ApiRequestStatusKey = keyof typeof API_REQUEST_STATUS;
-export type SearchRequestStatus = (typeof API_REQUEST_STATUS)[ApiRequestStatusKey] | null;
-
-export type Payload = {
-	payload: { m: Array<SoapIncompleteMessage>; t?: any };
-};

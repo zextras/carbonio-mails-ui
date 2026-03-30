@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export type SoapEmailParticipantRole = 'f' | 't' | 'c' | 'b' | 'r' | 's' | 'n' | 'rf';
+import type { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 
 export type SoapMailParticipant = {
 	/**
@@ -37,7 +37,7 @@ export type SoapMailParticipant = {
 	 * - (n)otification: Read receipt notification.
 	 * - (rf) resent-from: Resent from address.
 	 */
-	t: SoapEmailParticipantRole;
+	t: ParticipantRoleType;
 
 	/**
 	 * Indicates whether the participant is a group (e.g., a mailing list).

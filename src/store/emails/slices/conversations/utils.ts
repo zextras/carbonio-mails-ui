@@ -13,7 +13,8 @@ import { StoreApi, UseBoundStore } from 'zustand';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
-import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from 'types/index.d';
+import { NormalizedConversation } from 'types/conversations';
+import { EmailsStoreState, SearchRequestStatus } from 'types/search';
 
 function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,

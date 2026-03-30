@@ -16,7 +16,7 @@ import {
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
 } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 
 export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];

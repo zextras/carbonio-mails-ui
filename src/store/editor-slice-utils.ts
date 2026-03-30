@@ -14,16 +14,10 @@ import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
-import type {
-	InlineAttachments,
-	MailAttachmentParts,
-	MailMessage,
-	MailMessagePart,
-	MailsEditor,
-	Participant,
-	SharedParticipant,
-	SoapDraftMessageObj
-} from 'types/index.d';
+import { InlineAttachments, MailsEditor } from 'types/editor';
+import { MailMessage, MailMessagePart } from 'types/messages';
+import { Participant, SharedParticipant } from 'types/participant';
+import { MailAttachmentParts, SoapDraftMessageObj } from 'types/soap/save-draft';
 
 export const retrieveAttachmentsType = (
 	original: MailMessage,
@@ -333,9 +327,13 @@ export const getHtmlWithPreAppliedStyled = (
 ): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
 
 export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
+	// TODO FIX MP TYPE ERROR
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
 	return `cid:${ci}`;
 };
+
 export const replaceLinkWithParts = (
 	content: string,
 	inline: InlineAttachments | undefined

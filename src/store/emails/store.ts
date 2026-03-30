@@ -7,6 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
@@ -20,18 +21,16 @@ import { createSearchIndexSlice } from 'store/emails/slices/search/search-slice'
 import { searchSliceUtils } from 'store/emails/slices/search/utils';
 import { syncDataHandlerUtils } from 'store/emails/sync-data-handler/utils';
 import { createTaskQueueManager } from 'store/emails/task-management/create-task-queue-manager';
+import { ConvActionParameters, NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 import {
-	IncompleteMessage,
-	MailMessage,
 	EmailsStoreState,
-	NormalizedConversation,
-	SearchRequestStatus,
-	SearchIndexSliceState,
 	PopulatedItemsSliceState,
-	ConvActionResponse,
-	MsgActionParameters,
-	ConvActionParameters
-} from 'types/index.d';
+	SearchIndexSliceState,
+	SearchRequestStatus
+} from 'types/search';
+import { ConvActionResponse } from 'types/soap/conv-action';
+import { MsgActionParameters } from 'types/soap/msg-action';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
 type TaskManagement = {
@@ -41,19 +40,24 @@ type TaskManagement = {
 	executeTasks: () => Promise<void>;
 };
 
-const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ...a) => ({
-	...createSearchIndexSlice(set, get, ...a),
-	...createMessageIndexSlice(set, get, ...a),
-	...createConversationIndexSlice(set, get, ...a),
-	...createPopulatedItemsSlice(set, get, ...a),
+const useEmailsStore = create<EmailsStoreState & TaskManagement>()(
+	devtools(
+		(set, get, ...a) => ({
+			...createSearchIndexSlice(set, get, ...a),
+			...createMessageIndexSlice(set, get, ...a),
+			...createConversationIndexSlice(set, get, ...a),
+			...createPopulatedItemsSlice(set, get, ...a),
 
-	/**
-	 * TaskQueueManager is a store extension that provides functionality
-	 * for managing and executing asynchronous tasks sequentially in a queue.
-	 * This implementation safeguards against race conditions.
-	 */
-	...createTaskQueueManager(set, get, ...a)
-}));
+			/**
+			 * TaskQueueManager is a store extension that provides functionality
+			 * for managing and executing asynchronous tasks sequentially in a queue.
+			 * This implementation safeguards against race conditions.
+			 */
+			...createTaskQueueManager(set, get, ...a)
+		}),
+		{ name: 'carbonio-mails-ui' }
+	)
+);
 
 const { addTask } = useEmailsStore.getState();
 

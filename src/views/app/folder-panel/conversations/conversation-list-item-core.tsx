@@ -5,23 +5,16 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import {
-	Badge,
-	Button,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
-import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
-import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ItemBadge } from '../parts/item-badge';
 import { ParticipantsString } from '../parts/participants-string';
+import { NormalizedConversation } from 'types/conversations';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type ConversationListItemCoreProps = {
@@ -93,19 +86,16 @@ export const ConversationListItemCore = ({
 		[conversation]
 	);
 
-	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof conversation.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return conversation.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
+	const badge: 'read' | 'unread' = useMemo(() => {
+		if (conversation.read === undefined) return 'read';
+		return conversation.read ? 'read' : 'unread';
 	}, [conversation.read]);
 
 	const renderBadge = useMemo(() => {
 		if (conversation.messagesInConversation === 1 || conversation?.messageIds?.length === 1)
-			return textReadValues.badge === 'unread';
+			return badge === 'unread';
 		return conversation.messagesInConversation > 0 || conversation?.messageIds?.length > 0;
-	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
+	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
@@ -142,12 +132,7 @@ export const ConversationListItemCore = ({
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
-								<Badge
-									data-testid={`conversation-messages-count-${conversation.id}`}
-									value={getmsgToDisplayCount()}
-									backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
-									color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
-								/>
+								<ItemBadge itemReadValue={conversation.read} value={getmsgToDisplayCount()} />
 							</Padding>
 						</Row>
 					)}

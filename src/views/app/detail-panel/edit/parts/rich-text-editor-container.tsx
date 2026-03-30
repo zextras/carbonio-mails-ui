@@ -26,7 +26,7 @@ import {
 	useEditorText,
 	useEditorTextProvider
 } from 'store/editor';
-import { MailsEditorV2 } from 'types/index.d';
+import { MailsEditorV2 } from 'types/editor';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';

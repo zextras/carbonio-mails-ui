@@ -12,7 +12,7 @@ export type GetConvRequest = ZimbraRequest & {
 	c: {
 		id: string;
 		fetch?: string;
-		html?: 0 | 1;
+		html?: boolean;
 		max?: number;
 		needExp: 0 | 1;
 		header: Array<{ n: MailVerificationHeader }>;

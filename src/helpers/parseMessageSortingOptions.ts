@@ -5,7 +5,7 @@
  */
 import { isTrash } from '@zextras/carbonio-ui-commons';
 
-import type { FolderSortOrder, SortDirection } from '../types';
+import { FolderSortOrder, SortDirection, SortOptions } from 'types/sorting';
 
 const fallbackSortOrder: FolderSortOrder = {
 	sortType: 'date',
@@ -19,14 +19,22 @@ const trashFolderSortOrder: FolderSortOrder = {
 export function findFolderEntry(
 	prefSortOrder: string,
 	folderId: string
-): { currentFolder: string | undefined; parameters: string[] | undefined } {
+): {
+	currentFolder: string | undefined;
+	parameters: [SortOptions, SortDirection, string?] | undefined;
+} {
 	if (!folderId || !prefSortOrder) return { currentFolder: undefined, parameters: undefined };
 
 	const folders = prefSortOrder.split(',');
 	const currentFolder = folders.find((folder) => folder.startsWith(`${folderId}:`));
 	if (!currentFolder) return { currentFolder: undefined, parameters: undefined };
 
-	const parameters = currentFolder.replace(',BDLV', '').replace(`${folderId}:`, '').split('-');
+	// TODO REMOVE THE CAST AND IMPLEMENT THE CORRECT TYPE FOR THE FOLDER
+	const parameters = currentFolder.replace(',BDLV', '').replace(`${folderId}:`, '').split('-') as [
+		SortOptions,
+		SortDirection,
+		string?
+	];
 
 	return { currentFolder, parameters };
 }
@@ -54,13 +62,13 @@ export function parseMessageSortingOptions(
 	if (parameters?.length === 2) {
 		return {
 			sortType: parameters[0],
-			sortDirection: parameters[1] as SortDirection
+			sortDirection: parameters[1]
 		};
 	}
 	if (parameters?.length === 3) {
 		return {
 			sortType: parameters[0],
-			sortDirection: parameters[1] as SortDirection,
+			sortDirection: parameters[1],
 			filterType: parameters[2]
 		};
 	}

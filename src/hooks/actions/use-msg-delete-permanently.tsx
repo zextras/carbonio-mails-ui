@@ -13,7 +13,7 @@ import { isFocusModeMailView } from 'helpers/external-tabs';
 import { isSpam, isTrash } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
-import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
 type MsgDeletePermanentlyFunctionsParameter = {

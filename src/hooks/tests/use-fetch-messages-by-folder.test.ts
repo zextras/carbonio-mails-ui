@@ -20,7 +20,7 @@ import {
 	resetMessagesAndPopulatedItems,
 	updateMessagesResultsLoadingStatus
 } from 'store/emails/store';
-import { SearchRequest, SearchResponse } from 'types/index.d';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
 
 const folder = generateFolder({ id: '2' });
 vi.mock('../../store/emails/store', async () => ({

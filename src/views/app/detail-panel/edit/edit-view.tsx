@@ -11,24 +11,22 @@ import {
 	Container,
 	Tooltip,
 	ButtonProps,
-	useSnackbar,
-	useModal
+	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { ErrorSoapBodyResponse, t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, partition, some } from 'lodash';
 
-import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
-import { getErrorSnackbarProps } from './edit-utils-hooks/use-error-handler';
 import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
+import { useSendHandlers } from './edit-utils-hooks/use-send-handlers';
+import { useSmimeHandlers } from './edit-utils-hooks/use-smime-handlers';
 import {
 	isValidFileNode,
 	useUploadFromFiles,
 	UseUploadFromFilesResult
 } from './edit-utils-hooks/use-upload-from-files';
-import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { EditViewFooter } from './parts/edit-view-footer';
@@ -43,37 +41,26 @@ import { DraftTrashedEvent } from '../../../../event-bus/events/draft-trashed';
 import { useEventSubscribe } from '../../../../event-bus/use-event-subscribe';
 import { isFulfilled } from '../../../../helpers/promises';
 import { useEditorIsDirty } from '../../../../store/editor/hooks/statuses';
-import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
 import { GapContainer, GapRow } from 'commons/gap-container';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { EDIT_VIEW_CLOSING_REASONS } from 'constants/index';
 import { buildArrayFromFileList } from 'helpers/files';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
+import { getIdentitiesDescriptors } from 'helpers/identities';
+import { useSmimeFeatureStore } from 'store/certificates/store';
 import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from 'store/certificates/store';
-import {
-	useEditorAutoSendTime,
 	useEditorDraftSave,
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	useEditorIsSmimeSign,
-	useEditorIdentityId,
-	useEditorIsSmimeEncrypt,
 	useEditorRecipients,
 	useEditorDid
 } from 'store/editor';
-import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
+import { EditorOperationAllowedStatus, EditViewClosingReasons } from 'types/editor';
 import { isValidEmail } from 'views/search/parts/utils';
-import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
-export type EditViewProp = {
+type EditViewProp = {
 	editorId: string;
 	closeController?: () => void;
 };
@@ -147,20 +134,19 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	{ editorId, closeController },
 	ref
 ) {
-	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
-
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const isDirty = useEditorIsDirty(editorId);
-	const { identityId } = useEditorIdentityId(editorId);
-	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
-	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
-	const { isSmimeEncrypt, setIsSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
-	const getCertificate = useCertificatesStore((state) => state.getCertificate);
-	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 	const { did: draftId } = useEditorDid(editorId);
 	const subscribeBusEvent = useEventSubscribe();
+	const { onSendClick, onSendLaterClick } = useSendHandlers(editorId, closeController);
+	const {
+		handleSmimeSelected,
+		handleSmimeDeselected,
+		handleEncryptSelected,
+		handleEncryptDeselected
+	} = useSmimeHandlers(editorId);
 
 	const {
 		recipients: { to, cc, bcc }
@@ -170,7 +156,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[bcc, cc, to]
 	);
 
-	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
+	const { status: sendAllowedStatus } = useEditorSend(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
@@ -237,68 +223,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[close, editorId, isDirty, saveDraft]
 	);
 
-	const onSendCountdownTick = useCallback(
-		(countdown: number, cancel: () => void): void => {
-			createSnackbar({
-				key: 'send',
-				replace: true,
-				severity: 'info',
-				label: t('messages.snackbar.sending_mail_in_count', {
-					count: countdown,
-					defaultValue_one: 'Sending your message in {{count}} second',
-					defaultValue_other: 'Sending your message in {{count}} seconds'
-				}),
-				disableAutoHide: true,
-				hideButton: !cancel,
-				actionLabel: t('label.undo', 'Undo'),
-				onActionClick: () => {
-					cancel();
-					createEditBoard({
-						action: EditViewActions.RESUME,
-						actionTargetId: editorId
-					});
-				}
-			});
-		},
-		[createSnackbar, editorId]
-	);
-
-	const onSendError = useCallback(
-		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
-			const { message, timeout } = getErrorSnackbarProps(error);
-			createSnackbar({
-				key: `mail-${editorId}`,
-				replace: true,
-				severity: 'error',
-				label: message,
-				autoHideTimeout: timeout,
-				hideButton: true
-			});
-			createEditBoard({
-				action: EditViewActions.RESUME,
-				actionTargetId: editorId
-			});
-		},
-		[createSnackbar, editorId]
-	);
-
-	const onSendComplete = useCallback((): void => {
-		createSnackbar({
-			key: `mail-${editorId}`,
-			replace: true,
-			severity: 'success',
-			label: t('messages.snackbar.mail_sent', 'Message sent'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
-		});
-		deleteEditor({ id: editorId });
-	}, [createSnackbar, editorId]);
-
-	const { createModal, closeModal } = useModal();
-
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const { addUploadedAttachment, savedStandardAttachments } = useEditorAttachments(editorId);
+	const { addUploadedAttachment } = useEditorAttachments(editorId);
 
 	const onUploadFromFilesComplete = useCallback(
 		(filesNodes: UseUploadFromFilesResult) => {
@@ -411,197 +338,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		setDropZoneEnabled(false);
 	}, []);
 
-	const flexStart = 'flex-start';
-
-	const onSendClick = useCallback((): void => {
-		const onConfirmCallback = async (): Promise<void> => {
-			sendMessage({
-				onCountdownTick: onSendCountdownTick,
-				onComplete: onSendComplete,
-				onError: onSendError
-			});
-			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
-		};
-		checkSubjectAndAttachment({
-			editorId,
-			hasAttachments: savedStandardAttachments.length > 0,
-			onConfirmCallback,
-			createModal,
-			closeModal
-		});
-	}, [
-		editorId,
-		savedStandardAttachments,
-		close,
-		createModal,
-		closeModal,
-		sendMessage,
-		onSendCountdownTick,
-		onSendComplete,
-		onSendError
-	]);
-
-	const handleCertificateResponse = useCallback(
-		(option: string, res: { data: Response } | { error: unknown }) => {
-			if ('data' in res) {
-				if (option === 'sign') {
-					setIsSmimeSign(true);
-				} else {
-					setIsSmimeEncrypt(true);
-				}
-			} else {
-				if (option === 'sign') {
-					setIsSmimeSign(false);
-				} else {
-					setIsSmimeEncrypt(false);
-				}
-				createSnackbar({
-					key: `info-on-certificate-missing`,
-					replace: true,
-					severity: 'error',
-					label: t(
-						'settings.uploadCertificate.uploadCertificateInSettings',
-						'Please upload your certificate from settings'
-					),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		},
-		[createSnackbar, setIsSmimeEncrypt, setIsSmimeSign]
-	);
-
-	const checkCertificateExist = useCallback(
-		(option: string, password?: string) => {
-			if (identityEmailAddress) {
-				checkPersonalCertificateExist(password ?? smimePassword, identityEmailAddress).then((res) =>
-					handleCertificateResponse(option, res)
-				);
-			}
-		},
-		[identityEmailAddress, smimePassword, handleCertificateResponse]
-	);
-
-	const checkEncryptionPassword = useCallback(
-		(option: string) => {
-			checkExistEncryptionPassword().then((res) => {
-				if ('data' in res) {
-					const id = Date.now().toString();
-					createModal(
-						{
-							id,
-							size: 'medium',
-							onClose: (): void => {
-								closeModal?.(id);
-							},
-							children: (
-								<Container crossAlignment="baseline">
-									<EnterPasswordModal
-										onConfirm={(password): void => {
-											checkCertificateExist(option, password);
-										}}
-										onClose={(): void => closeModal?.(id)}
-										hideReset
-									/>
-								</Container>
-							)
-						},
-						true
-					);
-				} else {
-					if (option === 'sign') {
-						setIsSmimeSign(false);
-					} else {
-						setIsSmimeEncrypt(false);
-					}
-					createSnackbar({
-						key: `info-on-password-missing`,
-						replace: true,
-						severity: 'error',
-						label: t(
-							'settings.uploadCertificate.createPasswordFromSettings',
-							'Please create your encryption password from settings'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			});
-		},
-		[
-			createModal,
-			checkCertificateExist,
-			closeModal,
-			createSnackbar,
-			setIsSmimeSign,
-			setIsSmimeEncrypt
-		]
-	);
-
-	useEffect(() => {
-		if (identityEmailAddress && (isSmimeSign || isSmimeEncrypt)) {
-			if (isSmimeSign) {
-				checkCertificateExist('sign');
-			} else {
-				checkCertificateExist('encrypt');
-			}
-		}
-	}, [
-		identityEmailAddress,
-		getCertificate,
-		setIsSmimeSign,
-		isSmimeSign,
-		isSmimeEncrypt,
-		checkEncryptionPassword,
-		checkCertificateExist
-	]);
-
-	const handleSmimeSelected = useCallback((): void => {
-		if (identityEmailAddress) {
-			if (smimePassword !== '') {
-				checkCertificateExist('sign');
-			} else {
-				checkEncryptionPassword('sign');
-			}
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
-
-	const handleSmimeDeselected = useCallback((): void => {
-		setIsSmimeSign(false);
-	}, [setIsSmimeSign]);
-
-	const handleEncryptSelected = useCallback((): void => {
-		if (identityEmailAddress) {
-			if (smimePassword !== '') {
-				checkCertificateExist('encrypt');
-			} else {
-				checkEncryptionPassword('encrypt');
-			}
-		}
-	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
-
-	const handleEncryptDeselected = useCallback((): void => {
-		setIsSmimeEncrypt(false);
-	}, [setIsSmimeEncrypt]);
-
-	const onSendLaterClick = useCallback(
-		(scheduledTime: number): void => {
-			const onConfirmCallback = async (): Promise<void> => {
-				setAutoSendTime(scheduledTime);
-				saveDraft();
-				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
-			};
-			checkSubjectAndAttachment({
-				editorId,
-				onConfirmCallback,
-				createModal,
-				closeModal,
-				hasAttachments: savedStandardAttachments.length > 0
-			});
-		},
-		[editorId, createModal, closeModal, savedStandardAttachments, setAutoSendTime, saveDraft, close]
-	);
-
 	const onDraftDeleted = useCallback((): void => {
 		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
 	}, [close]);
@@ -614,12 +350,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 
 	return (
-		<Container flexGrow={1} height="100%" mainAlignment={flexStart} crossAlignment={flexStart}>
+		<Container flexGrow={1} height="100%" mainAlignment="flex-start" crossAlignment="flex-start">
 			<Container
 				data-testid={'edit-view-editor'}
-				mainAlignment={flexStart}
+				mainAlignment="flex-start"
 				flexGrow={1}
-				crossAlignment={flexStart}
+				crossAlignment="flex-start"
 				padding={{ horizontal: 'large', top: 'large', bottom: 'none' }}
 				background={'gray5'}
 				style={{ overflowY: 'scroll' }}
@@ -632,7 +368,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						onDragLeaveEvent={handleDragLeave}
 					/>
 				)}
-				<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
+				<GapContainer mainAlignment="flex-start" crossAlignment="flex-start" gap={'large'}>
 					{/* Header start */}
 
 					<GapRow
@@ -685,17 +421,17 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 					<SendToYourselfWarningBanner editorId={editorId} />
 					<GapContainer
-						mainAlignment={flexStart}
-						crossAlignment={flexStart}
+						mainAlignment="flex-start"
+						crossAlignment="flex-start"
 						background={'gray6'}
 						padding={{ all: 'small' }}
 						gap={'small'}
 						height={'fill'}
 					>
-						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+						<Container mainAlignment="flex-start" crossAlignment="flex-start" height={'fit'}>
 							<MemoizedRecipientsRows editorId={editorId} />
 						</Container>
-						<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
+						<Container mainAlignment="flex-start" crossAlignment="flex-start" height={'fit'}>
 							<MemoizedSubjectRow editorId={editorId} />
 						</Container>
 						<EditAttachmentsBlock editorId={editorId} />

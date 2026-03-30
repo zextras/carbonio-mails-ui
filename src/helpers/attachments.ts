@@ -15,14 +15,9 @@ import {
 	removeAngleBrackets
 } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
-import {
-	AbstractAttachment,
-	MailMessage,
-	MailMessagePart,
-	MailMessagePartWithDisposition,
-	SavedAttachment,
-	UnsavedAttachment
-} from 'types/index.d';
+import { AbstractAttachment, SavedAttachment, UnsavedAttachment } from 'types/attachments';
+import { EditorAttachmentFiles } from 'types/editor';
+import { MailMessage, MailMessagePart, MailMessagePartWithDisposition } from 'types/messages';
 
 /**
  * Content disposition types for email attachments
@@ -301,7 +296,10 @@ export const getSizeDescription = (size: number): string => {
 	return value;
 };
 
-export const useAttachmentIconColor = (attachment: UnsavedAttachment | SavedAttachment): string => {
+export const useAttachmentIconColor = (
+	// TODO: This should be refactored to accept a common attachment type instead of three different types, but that requires refactoring all the places where this hook is used, so leaving it for now
+	attachment: UnsavedAttachment | SavedAttachment | EditorAttachmentFiles
+): string => {
 	const theme = useTheme();
 	return useMemo<string>(
 		(): string => calcColor(attachment.contentType ?? '', theme),

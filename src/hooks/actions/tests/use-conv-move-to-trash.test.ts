@@ -19,7 +19,8 @@ import {
 	useConvMoveToTrashDescriptor,
 	useConvMoveToTrashFn
 } from 'hooks/actions/use-conv-move-to-trash';
-import { ConvActionRequest, MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { ConvActionRequest } from 'types/soap/conv-action';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });
