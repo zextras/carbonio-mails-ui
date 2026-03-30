@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.6...v1.31.7) (2026-03-30)
+
+
+### Bug Fixes
+
+* code cleanup ([a2f6e8f](https://github.com/zextras/carbonio-mails-ui/commit/a2f6e8f7b7ad44defd2233a37ed2a4ed36b5307e))
+* removed uneecessary debouncedsavedraft, momentary remove of focus patch ([edba9e7](https://github.com/zextras/carbonio-mails-ui/commit/edba9e7ec3b5008bf3f19d51da2ce936ff3dc466))
+* removed unnecessary debouncedsavedraft, momentary remove of focus patch ([030333f](https://github.com/zextras/carbonio-mails-ui/commit/030333fe6f10366e125447c1f582154586433cc8))
+
 ### [1.31.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.31.5...v1.31.6) (2026-03-26)
 
 
