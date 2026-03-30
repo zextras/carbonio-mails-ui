@@ -85,7 +85,7 @@
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.1.0",
-		"vitest-browser-react": "^2.0.2",
+		"vitest-browser-react": "^2.1.0",
 		"vitest-mock-commonjs": "^1.0.2"
 	},
 	"dependencies": {
