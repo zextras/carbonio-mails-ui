@@ -57,7 +57,7 @@ describe('get-message', () => {
 
 		it('handles successful message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi(getMsgResponse);
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			const request = await getMsgApi;
 			expect(request.m.id).toBe(messageId);
@@ -69,7 +69,7 @@ describe('get-message', () => {
 
 		it('handles error during message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi({ Fault: {} });
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 			await getMsgApi;
 
 			expect(result).toBeUndefined();
@@ -79,7 +79,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			expect(result).toBeUndefined();
 		});
@@ -88,7 +88,7 @@ describe('get-message', () => {
 			// FIXME: code does not handle empty message
 			stubGetMsgApi({});
 
-			const result = await getMessageEmailStoreAction(messageId);
+			const result = await getMessageEmailStoreAction({ messageId, html: true });
 
 			expect(result).toBeUndefined();
 		});
@@ -96,7 +96,7 @@ describe('get-message', () => {
 		it('handles successful decrypt message retrieval', async () => {
 			const msgApi = stubGetMsgApi(getMsgResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			const request = await msgApi;
 			expect(request.encryptionPassword).toEqual('smimePassword');
@@ -113,7 +113,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			expect(result).toBeUndefined();
 		});
@@ -123,14 +123,14 @@ describe('get-message', () => {
 			const emptyResponse = { m: [] };
 			stubGetMsgApi(emptyResponse);
 
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			expect(result).toBeUndefined();
 		});
 
 		it('handles enable to decrypt message response', async () => {
 			const getMsgApi = stubGetMsgApi(mockResponseEncryptMessage);
-			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword');
+			const result = await getMessageDecryptEmailStoreAction(messageId, 'smimePassword', true);
 
 			const request = await getMsgApi;
 			expect(request.m.max).toBe(250_000);
@@ -153,7 +153,7 @@ describe('get-message', () => {
 		it('handles successful full message retrieval', async () => {
 			const getMsgApi = stubGetMsgApi(getMsgResponse);
 
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 			const request = await getMsgApi;
 			expect(request.m).toEqual(expect.objectContaining({ id: messageId }));
 			expect(result).toEqual(
@@ -163,7 +163,7 @@ describe('get-message', () => {
 
 		it('handles error during full message retrieval', async () => {
 			stubGetMsgApi({ Fault: {} });
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});
@@ -172,7 +172,7 @@ describe('get-message', () => {
 			const faultResponse = { Fault: {} };
 			stubGetMsgApi(faultResponse);
 
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});
@@ -181,7 +181,7 @@ describe('get-message', () => {
 			// FIXME: code was mocked and test does not pass with real code
 			const emptyResponse = { m: [] };
 			stubGetMsgApi(emptyResponse);
-			const result = await getFullMessageEmailStoreAction(messageId);
+			const result = await getFullMessageEmailStoreAction(messageId, true);
 
 			expect(result).toBeUndefined();
 		});

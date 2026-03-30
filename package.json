@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.31.5",
+	"version": "1.31.6",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -68,7 +68,7 @@
 		"@vitest/ui": "^4.0.14",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
 		"@zextras/carbonio-ui-configs": "2.1.0",
-		"@zextras/carbonio-ui-sdk": "2.2.1",
+		"@zextras/carbonio-ui-sdk": "2.2.1-devel.11",
 		"babel-plugin-transform-import-meta": "^2.3.3",
 		"eslint-import-resolver-typescript": "^3.10.1",
 		"eslint-plugin-notice": "^0.9.10",

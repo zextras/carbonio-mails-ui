@@ -12,7 +12,7 @@ export type GetMsgRequest = ZimbraRequest & {
 	m: {
 		id: string;
 		part?: string;
-		html: boolean | 0 | 1;
+		html: boolean;
 		needExp: 0 | 1;
 		max?: number;
 		header: Array<{ n: MailVerificationHeader }>;
@@ -31,7 +31,7 @@ export type GetMsgParameters = {
 	smimePassword?: string;
 	part?: string;
 	shouldMarkAsRead?: boolean;
-	html?: boolean;
+	html: boolean;
 };
 
 export type GetMsgForPrintParameter = {

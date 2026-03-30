@@ -14,7 +14,7 @@ import { StoreApi, UseBoundStore } from 'zustand';
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
 import { ConvActionParameters, NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { EmailsStoreState, SearchRequestStatus } from 'types/search';
@@ -238,10 +238,10 @@ function handleDeleteAttachments(
 			messageIds.forEach((id) => {
 				const message = populatedItemsSlice.messages[id];
 				if (message) {
-					const normalizeMsg = normalizeMailMessageFromSoap({
-						m: response.m[0],
-						isComplete: true
-					});
+					const normalizeMsg = normalizeCompleteMailMessageFromSoap(
+						response.m[0],
+						message.html ?? true
+					);
 					populatedItemsSlice.messages[id] = {
 						...message,
 						parts: normalizeMsg.parts

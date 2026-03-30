@@ -163,6 +163,7 @@ export type GetConvParameters = {
 	conversationId: string;
 	fetch?: string;
 	folderId?: string;
+	html: boolean;
 	onConversationIdChange?: (newConversationId: string) => void;
 };
 

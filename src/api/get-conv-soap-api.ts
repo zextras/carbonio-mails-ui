@@ -17,7 +17,8 @@ import { GetConvParameters } from 'types/soap/soap';
 export const getConvSoapApi = async ({
 	conversationId,
 	fetch = 'all',
-	onConversationIdChange
+	onConversationIdChange,
+	html
 }: GetConvParameters): Promise<{
 	conversation: Array<NormalizedConversation>;
 	messages: Array<IncompleteMessage>;
@@ -26,7 +27,7 @@ export const getConvSoapApi = async ({
 		_jsns: 'urn:zimbraMail',
 		c: {
 			id: conversationId,
-			html: 1,
+			html,
 			needExp: 1,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 			fetch
@@ -49,7 +50,7 @@ export const getConvSoapApi = async ({
 
 	const conversation = normalizeConversations([result.c[0]]);
 	const messages = map(result.c[0].m, (item) =>
-		normalizeMailMessageFromSoap({ m: item, isComplete: false })
+		normalizeMailMessageFromSoap({ m: item, isComplete: false, html })
 	);
 	return { conversation, messages };
 };

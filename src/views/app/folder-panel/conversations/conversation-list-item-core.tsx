@@ -5,20 +5,13 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import {
-	Badge,
-	Button,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
+import { ItemBadge } from '../parts/item-badge';
 import { ParticipantsString } from '../parts/participants-string';
 import { NormalizedConversation } from 'types/conversations';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
@@ -139,12 +132,7 @@ export const ConversationListItemCore = ({
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
-								<Badge
-									data-testid={`conversation-messages-count-${conversation.id}`}
-									value={getmsgToDisplayCount()}
-									backgroundColor={badge === 'unread' ? 'primary' : 'gray2'}
-									color={badge === 'unread' ? 'gray6' : 'gray0'}
-								/>
+								<ItemBadge itemReadValue={conversation.read} value={getmsgToDisplayCount()} />
 							</Padding>
 						</Row>
 					)}

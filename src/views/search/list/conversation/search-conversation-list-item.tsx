@@ -8,6 +8,7 @@ import React, { FC, useCallback } from 'react';
 
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -107,7 +108,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 
 	const fetchConversationIfNeeded = useCallback(() => {
 		if (shouldFetchConversation()) {
-			searchConvEmailStoreAction(conversationId);
+			const prefs = getUserSettings()?.prefs;
+			const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+			searchConvEmailStoreAction({ conversationId, html });
 		}
 	}, [shouldFetchConversation, conversationId]);
 

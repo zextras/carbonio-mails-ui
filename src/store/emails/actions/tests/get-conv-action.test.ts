@@ -24,7 +24,8 @@ describe('getConvEmailStoreAction', () => {
 		const interceptor = createSoapAPIInterceptor('GetConv', response);
 
 		await getConvEmailStoreAction({
-			id: '123'
+			id: '123',
+			html: true
 		});
 
 		const request = await interceptor;

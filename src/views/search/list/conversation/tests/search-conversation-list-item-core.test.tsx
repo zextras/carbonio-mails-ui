@@ -55,7 +55,7 @@ describe('SearchConversationListItemCore', () => {
 		);
 
 		expect(await screen.findByText('Test Subject')).toBeInTheDocument();
-		expect(await screen.findByTestId('conversation-messages-count-123')).toHaveTextContent('3');
+		expect(await screen.findByTestId('FolderBadge')).toHaveTextContent('3');
 	});
 
 	it('displays unread status correctly', async () => {

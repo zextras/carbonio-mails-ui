@@ -12,12 +12,13 @@ import { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/soap/get-
 export async function getMsgDecryptSoapApi({
 	msgId,
 	max,
-	smimePassword
+	smimePassword,
+	html
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
 		m: {
-			html: 1,
+			html,
 			id: msgId,
 			needExp: 1,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),

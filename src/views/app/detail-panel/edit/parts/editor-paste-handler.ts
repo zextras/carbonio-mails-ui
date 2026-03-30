@@ -62,7 +62,8 @@ async function uploadImage(file: File, editorId: string): Promise<UploadImageRes
 	// Process the response
 	const mailMessage = normalizeMailMessageFromSoap({
 		m: saveDraftResponse.m[0],
-		isComplete: true
+		isComplete: true,
+		html: editor.isRichText
 	});
 
 	// add attachments to editor

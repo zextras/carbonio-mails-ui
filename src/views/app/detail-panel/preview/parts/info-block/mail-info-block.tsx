@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 
 import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
@@ -82,7 +82,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 
 	const decryptMsgAction = useCallback(
 		(msgId: string, password: string) => {
-			getMessageDecryptEmailStoreAction(msgId, password).then((response) => {
+			const prefs = getUserSettings()?.prefs;
+			const displayAsHtml = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+			getMessageDecryptEmailStoreAction(msgId, password, displayAsHtml).then((response) => {
 				if (!response) {
 					createSnackbar({
 						key: `unable-to-decrypt`,

@@ -47,7 +47,7 @@ const handleSearchSoapApiResults = ({
 	// Handle messages
 	if (Array.isArray(searchResponse.m) && searchResponse.m.length > 0) {
 		const normalizedMessages = map(searchResponse.m, (msg) =>
-			normalizeMailMessageFromSoap({ m: msg, isComplete: false })
+			normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true })
 		);
 		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
 		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);

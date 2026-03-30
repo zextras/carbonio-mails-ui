@@ -103,7 +103,11 @@ export const useSaveDraftFromEditor = (
 						return;
 					}
 
-					const mailMessage = normalizeMailMessageFromSoap({ m: res.m[0], isComplete: true });
+					const mailMessage = normalizeMailMessageFromSoap({
+						m: res.m[0],
+						isComplete: true,
+						html: editor.isRichText
+					});
 					useEditorsStore.getState().setDid(editorId, mailMessage.id);
 					useEditorsStore.getState().setSize(editorId, mailMessage.size);
 					useEditorsStore.getState().removeUnsavedAttachments(editorId);

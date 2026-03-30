@@ -281,6 +281,7 @@ export const RichTextEditorContainer = ({
 				'advlist', // Enhances list functionality
 				'lists', // List support (bullist/numlist)
 				'link', // Link insertion
+				'autolink', // convert text link into clickable link
 				'image', // Image handling
 				'table', // Table support
 				'code', // Code view
