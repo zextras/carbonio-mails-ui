@@ -76,7 +76,7 @@
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"eslint-stats": "^1.0.1",
 		"jsdom": "20.0.3",
-		"msw": "^2.2.3",
+		"msw": "^2.12.14",
 		"npm": "^10.5.0",
 		"playwright": "^1.57.0",
 		"react-redux": "^8.0.5",
