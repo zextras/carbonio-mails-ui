@@ -11,7 +11,8 @@ import { getBodyWrapper } from 'commons/print-conversation/get-body-wrapper';
 import { getCompleteHTML } from 'commons/print-conversation/get-complete-html';
 import { getParticipantHeader } from 'commons/print-conversation/get-participant-header';
 import { getSubject } from 'commons/print-conversation/get-subject';
-import type { MailMessage, Participant } from 'types/index.d';
+import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 
 const HTML_TAG_PAYLOADS = [
 	'<script>alert("xss")</script>',
