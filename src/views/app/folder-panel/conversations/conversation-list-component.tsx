@@ -11,9 +11,9 @@ import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-syst
 import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 
+import { MultipleSelectionActions } from '../parts/multiple-selection-actions';
 import { getConversationById } from 'store/emails/store';
 import { ConversationListItemComponent } from 'views/app/folder-panel/conversations/conversation-list-item-component';
-import { ConversationsMultipleSelectionActions } from 'views/app/folder-panel/conversations/conversations-multiple-selection-actions';
 import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 import { getFolderPath } from 'views/app/folder-panel/parts/utils/utils';
@@ -158,10 +158,11 @@ export const ConversationListComponent = memo(function ConversationListComponent
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
 				>
-					<ConversationsMultipleSelectionActions
-						selectedConversationsIds={selectedIds}
+					<MultipleSelectionActions
+						type="conversation"
+						ids={selectedIds}
 						folderId={folderId}
-						onConversationsMoved={onConversationsMoved}
+						onItemsMoved={onConversationsMoved}
 					/>
 				</MultipleSelectionActionsPanel>
 			) : (

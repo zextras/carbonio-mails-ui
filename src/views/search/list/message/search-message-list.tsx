@@ -15,7 +15,7 @@ import { useParams } from 'react-router-dom';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { SearchListProps } from 'types/search';
 import { MessageShortcutsRegister } from 'views/app/folder-panel/messages/message-shortcuts-register';
-import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
+import { MultipleSelectionActions } from 'views/app/folder-panel/parts/multiple-selection-actions';
 import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
 import { SearchListHeader } from 'views/search/list/parts/search-list-header';
 import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
@@ -128,7 +128,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 				>
-					<MessagesMultipleSelectionActions ids={selectedIds} folderId={''} />
+					<MultipleSelectionActions type="message" ids={selectedIds} folderId={''} />
 				</SearchListHeader>
 			)}
 
