@@ -83,7 +83,6 @@
 		"sonarqube-scanner": "^4.3.5",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.7.2",
-		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.1.0",
 		"vitest-browser-react": "^2.1.0",
 		"vitest-mock-commonjs": "^1.0.2"
