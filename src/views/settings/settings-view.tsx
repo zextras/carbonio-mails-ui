@@ -10,7 +10,6 @@ import {
 	AccountSettings,
 	IdentityAttrs,
 	SettingsHeader,
-	SettingsHeaderProps,
 	updateAccount,
 	useUserAccount,
 	useUserSettings
@@ -141,14 +140,12 @@ const SettingsView = (): React.JSX.Element => {
 
 	const updateIdentities = useCallback(
 		(e: {
-			id?: string | undefined;
-			target?:
-				| {
-						name: string;
-						value: string;
-				  }
-				| undefined;
-			_attrs?: IdentityAttrs | undefined;
+			id?: string;
+			target?: {
+				name: string;
+				value: string;
+			};
+			_attrs?: IdentityAttrs;
 		}) => {
 			const data = map(updatedIdentities, (item) => {
 				if (item.id === e.id) {
@@ -257,7 +254,7 @@ const SettingsView = (): React.JSX.Element => {
 			});
 	}, [onSignaturesLoaded]);
 
-	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
+	const saveChanges = useCallback(() => {
 		if (!isEqual(signatures, originalSignatures)) {
 			const validationResult = validateSignatures(signatures);
 			if (validationResult.length) {

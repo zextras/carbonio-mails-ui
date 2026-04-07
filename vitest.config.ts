@@ -6,7 +6,6 @@
 
 import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults, defineConfig } from 'vitest/config';
 
 const junitReporter: ['junit', { outputFile: string; console: boolean }] = [
@@ -19,14 +18,16 @@ process.env.LC_ALL = 'en_US.UTF-8';
 process.env.TZ = 'Europe/Berlin';
 
 export default defineConfig({
+	resolve: {
+		tsconfigPaths: true
+	},
 	plugins: [
 		react({
 			jsxImportSource: '@emotion/react',
 			babel: {
 				plugins: ['@emotion/babel-plugin']
 			}
-		}),
-		tsconfigPaths()
+		})
 	],
 	publicDir: './',
 	server: {
@@ -52,14 +53,16 @@ export default defineConfig({
 		},
 		projects: [
 			{
+				resolve: {
+					tsconfigPaths: true
+				},
 				plugins: [
 					react({
 						jsxImportSource: '@emotion/react',
 						babel: {
 							plugins: ['@emotion/babel-plugin']
 						}
-					}),
-					tsconfigPaths()
+					})
 				],
 				test: {
 					name: 'unit',
@@ -97,14 +100,16 @@ export default defineConfig({
 				}
 			},
 			{
+				resolve: {
+					tsconfigPaths: true
+				},
 				plugins: [
 					react({
 						jsxImportSource: '@emotion/react',
 						babel: {
 							plugins: ['@emotion/babel-plugin']
 						}
-					}),
-					tsconfigPaths()
+					})
 				],
 				test: {
 					name: 'browser',
