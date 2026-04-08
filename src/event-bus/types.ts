@@ -1,4 +1,5 @@
 import { DraftTrashedEvent } from './events/draft-trashed';
+import { QuotaChangedEvent } from './events/quota-changed';
 
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -11,6 +12,7 @@ export type DraftTrashedEventPayload = {
 
 export interface EventsBusEventsMap {
 	[DraftTrashedEvent.EventName]: DraftTrashedEvent;
+	[QuotaChangedEvent.EventName]: QuotaChangedEvent;
 }
 
 export type EventsBusEventsName = keyof EventsBusEventsMap;
