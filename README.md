@@ -32,12 +32,6 @@ nvm use
 npm install
 ```
 
-- install carbonio-commons-ui submodule
-
-```
-git submodule update --recursive --init
-```
-
 <h4>Watch Mode</h4>
 
 ```
