@@ -6,6 +6,7 @@
 
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
+import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { getIdentityDescriptor } from 'helpers/identities';
 import { getCertificatesPassword } from 'store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from 'store/editor/editor-transformations';
@@ -53,5 +54,6 @@ export async function sendMsgFromEditor({
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid, html: editor.isRichText });
 	}
+	publishQuotaChangedEvent(editor.size);
 	return response;
 }
