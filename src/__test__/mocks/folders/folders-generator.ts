@@ -5,7 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { uuidv4 } from '@posthog/core/vendor/uuidv7';
+import { v4 as uuidv4 } from 'uuid';
 import {
 	Folder,
 	FOLDERS,

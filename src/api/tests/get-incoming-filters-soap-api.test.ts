@@ -39,11 +39,7 @@ describe('getIncomingFiltersSoapApi', () => {
 	});
 
 	it('should throw a warning if the api responds with 500', async () => {
-		createAPIInterceptor(
-			'post',
-			'/service/soap/GetFilterRulesRequest',
-			HttpResponse.json({}, { type: 'error', status: 500, statusText: 'Failed' })
-		);
+		createAPIInterceptor('post', '/service/soap/GetFilterRulesRequest', HttpResponse.error());
 
 		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
 			'warning error';
