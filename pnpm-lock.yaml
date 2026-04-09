@@ -36,8 +36,8 @@ importers:
         specifier: 14.0.1
         version: 14.0.1(679cd17781f2d77d398ddb60614eae0a)
       '@zextras/carbonio-ui-commons':
-        specifier: 2.2.0
-        version: 2.2.0(ee0b8ac4ffd357e75c4855ff01298139)
+        specifier: 2.1.0-devel.4
+        version: 2.1.0-devel.4(ee0b8ac4ffd357e75c4855ff01298139)
       '@zextras/carbonio-ui-preview':
         specifier: 5.0.0
         version: 5.0.0(@types/react@18.3.28)(@zextras/carbonio-design-system@12.0.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.17.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -123,9 +123,6 @@ importers:
       '@babel/core':
         specifier: 7.29.0
         version: 7.29.0
-      '@babel/plugin-proposal-class-properties':
-        specifier: 7.18.6
-        version: 7.18.6(@babel/core@7.29.0)
       '@babel/plugin-transform-runtime':
         specifier: 7.29.0
         version: 7.29.0(@babel/core@7.29.0)
@@ -411,13 +408,6 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
-
-  '@babel/plugin-proposal-class-properties@7.18.6':
-    resolution: {integrity: sha512-cumfXOF0+nzZrrN8Rf0t7M+tF6sZc7vhQwYQck9q1/5w2OExlD+b4v4RpMJFaV1Z7WcDRgO6FqvxqxGlwo+RHQ==}
-    engines: {node: '>=6.9.0'}
-    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
 
   '@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2':
     resolution: {integrity: sha512-SOSkfJDddaM7mak6cPEpswyTRnuRltl429hMraQEglW+OkovnCzsiszTmsrlY//qLFjCpQDFRvjdm2wA5pPm9w==}
@@ -2517,22 +2507,22 @@ packages:
       react-router-dom:
         optional: true
 
-  '@zextras/carbonio-ui-commons@2.2.0':
-    resolution: {integrity: sha512-bvL8LI/GEvisxhtDd8deUfNGS0zs8QoX73xwBg2VPw01MUmDJXji4+CanZpVVbK9TTUUUOJiu5jG/rKwZLvvHg==}
-    engines: {node: v22, npm: v10}
+  '@zextras/carbonio-ui-commons@2.1.0-devel.4':
+    resolution: {integrity: sha512-mQWwNR66AwthF2Atg1fHlYS3XdDEAVbDlF88Zlhu7tB45Rqp6KyxaBzVYALxch9ansBIyd+3kUrdRnVRPJlKpQ==}
+    engines: {node: v22, pnpm: '>=10'}
     peerDependencies:
-      '@emotion/react': ^11.14.0
-      '@emotion/styled': ^11.14.0
-      '@mui/icons-material': ^5.15.12
-      '@mui/material': ^5.15.12
+      '@emotion/react': 11.14.0
+      '@emotion/styled': 11.14.1
+      '@mui/icons-material': 5.18.0
+      '@mui/material': 5.18.0
       '@zextras/carbonio-design-system': '>=12.0.0'
       '@zextras/carbonio-shell-ui': '>=12.0.0'
       '@zextras/carbonio-ui-soap-lib': '>=1.0.4'
-      lodash: ^4.17.21
-      react: ^18.3.1
-      react-dom: ^18.3.1
-      react-i18next: ^12.2.0
-      react-router-dom: ^6.30.0
+      lodash: 4.17.21
+      react: 18.3.1
+      react-dom: 18.3.1
+      react-i18next: 12.3.1
+      react-router-dom: 6.30.1
 
   '@zextras/carbonio-ui-configs@2.1.0':
     resolution: {integrity: sha512-eBHiSyLyGpWUJIfGHVBRVV0cY98oaQCNrTcjA4Jjh711t+LxdQd4sNYSwnsGBKAeVo21SNKH54jHj3SQSFBvPQ==}
@@ -3151,6 +3141,9 @@ packages:
 
   core-js@3.36.0:
     resolution: {integrity: sha512-mt7+TUBbTFg5+GngsAxeKBTl5/VS0guFeJacYge9OmHb+m058UwwIm41SE9T4Den7ClatV57B6TYTuJ0CX1MAw==}
+
+  core-js@3.47.0:
+    resolution: {integrity: sha512-c3Q2VVkGAUyupsjRnaNX6u8Dq2vAdzm9iuPj5FW0fRxzlxgq9Q39MDq10IvmQSpLgHQNyQzQmOo6bgGHmH3NNg==}
 
   core-js@3.49.0:
     resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
@@ -4204,9 +4197,6 @@ packages:
   i18next-http-backend@2.7.3:
     resolution: {integrity: sha512-FgZxrXdRA5u44xfYsJlEBL4/KH3f2IluBpgV/7riW0YW2VEyM8FzVt2XHAOi6id0Ppj7vZvCZVpp5LrGXnc8Ig==}
 
-  i18next@22.4.13:
-    resolution: {integrity: sha512-GX7flMHRRqQA0I1yGLmaZ4Hwt1JfLqagk8QPDPZsqekbKtXsuIngSVWM/s3SLgNkrEXjA+0sMGNuOEkkmyqmWg==}
-
   i18next@22.5.1:
     resolution: {integrity: sha512-8TGPgM3pAD+VRsMtUMNknRz3kzqwp/gPALrWMsDnmC1mKqJwpWyooQRLMcbTwq8z8YwSmuj+ZYvc+xCuEpkssA==}
 
@@ -4238,6 +4228,9 @@ packages:
 
   immer@9.0.19:
     resolution: {integrity: sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==}
+
+  immer@9.0.21:
+    resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -6220,6 +6213,10 @@ packages:
     resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
     hasBin: true
 
+  uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -6579,6 +6576,21 @@ packages:
       react:
         optional: true
 
+  zustand@4.5.7:
+    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+
   zustand@5.0.12:
     resolution: {integrity: sha512-i77ae3aZq4dhMlRhJVCYgMLKuSiZAaUPAct2AksxQ+gOtimhGMdXljRT21P5BNpeT4kXlLIckvkPM029OljD7g==}
     engines: {node: '>=12.20.0'}
@@ -6821,14 +6833,6 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/traverse': 7.29.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@babel/plugin-proposal-class-properties@7.18.6(@babel/core@7.29.0)':
-    dependencies:
-      '@babel/core': 7.29.0
-      '@babel/helper-create-class-features-plugin': 7.28.6(@babel/core@7.29.0)
-      '@babel/helper-plugin-utils': 7.28.6
     transitivePeerDependencies:
       - supports-color
 
@@ -9333,7 +9337,7 @@ snapshots:
       - encoding
       - use-sync-external-store
 
-  '@zextras/carbonio-ui-commons@2.2.0(ee0b8ac4ffd357e75c4855ff01298139)':
+  '@zextras/carbonio-ui-commons@2.1.0-devel.4(ee0b8ac4ffd357e75c4855ff01298139)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.3.28)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
@@ -9342,16 +9346,17 @@ snapshots:
       '@zextras/carbonio-design-system': 12.0.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.17.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-shell-ui': 14.0.1(679cd17781f2d77d398ddb60614eae0a)
       '@zextras/carbonio-ui-soap-lib': 1.0.4
-      core-js: 3.36.0
-      i18next: 22.4.13
-      immer: 9.0.19
+      core-js: 3.47.0
+      i18next: 22.5.1
+      immer: 9.0.21
       lodash: 4.17.21
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-i18next: 12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom: 6.30.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      uuid: 9.0.0
-      zustand: 4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1)
+      redux: 4.2.1
+      uuid: 9.0.1
+      zustand: 4.5.7(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -10082,6 +10087,8 @@ snapshots:
       browserslist: 4.28.2
 
   core-js@3.36.0: {}
+
+  core-js@3.47.0: {}
 
   core-js@3.49.0: {}
 
@@ -11349,10 +11356,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  i18next@22.4.13:
-    dependencies:
-      '@babel/runtime': 7.29.2
-
   i18next@22.5.1:
     dependencies:
       '@babel/runtime': 7.29.2
@@ -11377,6 +11380,8 @@ snapshots:
   immer@10.2.0: {}
 
   immer@9.0.19: {}
+
+  immer@9.0.21: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -13451,6 +13456,8 @@ snapshots:
 
   uuid@9.0.0: {}
 
+  uuid@9.0.1: {}
+
   v8-compile-cache-lib@3.0.1: {}
 
   valid-data-url@3.0.1: {}
@@ -13826,6 +13833,14 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.28
       immer: 9.0.19
+      react: 18.3.1
+
+  zustand@4.5.7(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1):
+    dependencies:
+      use-sync-external-store: 1.6.0(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.28
+      immer: 9.0.21
       react: 18.3.1
 
   zustand@5.0.12(@types/react@18.3.28)(immer@10.2.0)(react@18.3.1)(use-sync-external-store@1.6.0(react@18.3.1)):
