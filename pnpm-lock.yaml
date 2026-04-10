@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@zextras/carbonio-ui-soap-lib': 1.1.0
+
 importers:
 
   .:
@@ -2495,7 +2498,7 @@ packages:
       '@mui/material': 5.18.0
       '@zextras/carbonio-design-system': '>=12.0.0'
       '@zextras/carbonio-shell-ui': '>=12.0.0'
-      '@zextras/carbonio-ui-soap-lib': '>=1.0.4'
+      '@zextras/carbonio-ui-soap-lib': 1.1.0
       lodash: 4.17.21
       react: 18.3.1
       react-dom: 18.3.1
@@ -2518,9 +2521,6 @@ packages:
     resolution: {integrity: sha512-2uEzr7ono4oPfWFUpft2Ie5dPK/JICzxkA3PVuxlJ34G7FNufxB1VFfIa+oq9ksh0SiUKUkdtXtohNYWQzf4vg==}
     engines: {node: v22, pnpm: '>=9'}
     hasBin: true
-
-  '@zextras/carbonio-ui-soap-lib@1.0.4':
-    resolution: {integrity: sha512-vRaizwsMPC4fODiBXiNwVnKH9b9IlKWNhAu3uYzb+BvB+HMTzxb6OGLtgLqgW+PVvBb56x+ITIbdONBsVV69OQ==}
 
   '@zextras/carbonio-ui-soap-lib@1.1.0':
     resolution: {integrity: sha512-i11CNTX6dQSjmWo7B/oDihvUdiNuB793rNZU37AxfbW3BkeutWA4FVXuGKHVxge1QEvrRtYOwGs8HKvrhQyAsw==}
@@ -9217,7 +9217,7 @@ snapshots:
   '@zextras/carbonio-shell-ui@14.0.1(3674298b739c9c81b902b55fcbe35b9b)':
     dependencies:
       '@fontsource/roboto': 5.2.10
-      '@zextras/carbonio-ui-soap-lib': 1.0.4
+      '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.49.0
       darkreader: 4.9.79
       date-fns: 4.1.0
@@ -9245,7 +9245,7 @@ snapshots:
   '@zextras/carbonio-shell-ui@14.0.1(679cd17781f2d77d398ddb60614eae0a)':
     dependencies:
       '@fontsource/roboto': 5.2.10
-      '@zextras/carbonio-ui-soap-lib': 1.0.4
+      '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.36.0
       darkreader: 4.9.79
       date-fns: 4.1.0
@@ -9369,11 +9369,6 @@ snapshots:
       - uglify-js
       - utf-8-validate
       - webpack-cli
-
-  '@zextras/carbonio-ui-soap-lib@1.0.4':
-    dependencies:
-      '@types/ua-parser-js': 0.7.39
-      ua-parser-js: 1.0.41
 
   '@zextras/carbonio-ui-soap-lib@1.1.0':
     dependencies:
