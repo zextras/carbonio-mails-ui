@@ -9,7 +9,7 @@ SPDX-FileCopyrightText = "2023 Zextras <https://www.zextras.com>"
 SPDX-License-Identifier = "AGPL-3.0-only"
 
 [[annotations]]
-path = ["THIRDPARTIES", ".nvmrc", ".npmrc", ".husky/**", ".github/**", "CHANGELOG.md", "REUSE.toml", "Dockerfile"]
+path = ["THIRDPARTIES", ".nvmrc", ".npmrc", ".husky/**", ".github/**", "CHANGELOG.md", "REUSE.toml", "Dockerfile", "pnpm-lock.yaml"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2023 Zextras <https://www.zextras.com>"
 SPDX-License-Identifier = "CC0-1.0"

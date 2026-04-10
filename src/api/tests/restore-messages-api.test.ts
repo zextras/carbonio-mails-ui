@@ -25,11 +25,7 @@ describe('restoreMessagesAPI', () => {
 
 	describe('when backend fails', () => {
 		beforeAll(() => {
-			createAPIInterceptor(
-				'post',
-				'/zx/backup/v1/restoreMessages',
-				HttpResponse.json(null, { status: 500, statusText: 'Internal Server Error', type: 'error' })
-			);
+			createAPIInterceptor('post', '/zx/backup/v1/restoreMessages', HttpResponse.error());
 		});
 
 		it('should reply with a status that is not accepted', async () => {

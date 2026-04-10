@@ -7,7 +7,7 @@
 import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
-import { uuidv4 } from '@posthog/core/vendor/uuidv7';
+import { v4 as uuidv4 } from 'uuid';
 import { screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
