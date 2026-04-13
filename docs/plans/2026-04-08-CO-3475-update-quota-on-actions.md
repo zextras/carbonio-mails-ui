@@ -18,6 +18,7 @@ Move and trash actions do NOT impact quota since they only move messages between
 Use the existing event-bus pattern to dispatch a custom event after quota-impacting actions, with a centralized listener that calls the `storages-refresh-quota` integrated function.
 
 This approach was chosen because:
+
 - It follows the existing event-bus architecture (`DraftTrashedEvent` pattern)
 - It keeps a clean module boundary by delegating actual quota refresh to the storages module
 - It's centralized and extensible — new actions only need to dispatch the event
@@ -88,10 +89,13 @@ This approach was chosen because:
 ## Alternatives Considered
 
 ### Direct SOAP call (NoOp) after actions
+
 After each action, call `legacySoapFetch('NoOp')` to trigger a quota refresh via the SOAP response header. Rejected because it adds unnecessary network calls from mails-ui and couples the module to the SOAP quota extraction mechanism.
 
 ### Direct `dispatchUserQuotaChangeEvent` from soap-lib
+
 Call `dispatchUserQuotaChangeEvent(quota)` from `@zextras/carbonio-ui-soap-lib` directly after actions. Rejected because it requires knowing the actual quota number, which would need a separate SOAP call to obtain.
 
 ### Direct function call in actions (no event bus)
+
 Call a `refreshQuota()` utility directly in each action. Rejected because it tightly couples each action to the refresh mechanism and is harder to maintain when adding new actions.
