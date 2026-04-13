@@ -42,7 +42,7 @@ describe('getOutgoingFiltersSoapApi', () => {
 		createAPIInterceptor(
 			'post',
 			'/service/soap/GetOutgoingFilterRulesRequest',
-			HttpResponse.json({}, { type: 'error', status: 500, statusText: 'Failed' })
+			HttpResponse.error()
 		);
 
 		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {

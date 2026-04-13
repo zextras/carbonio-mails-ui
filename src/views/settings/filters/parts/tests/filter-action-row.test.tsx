@@ -270,9 +270,8 @@ describe('FilterActionsRows', () => {
 			);
 			await user.click(screen.getByText('Keep in Inbox'));
 
-			expect(
-				within(screen.getByTestId('dropdown-popper-list')).queryByText(REDIRECT_TO_ADDRESS)
-			).not.toBeInTheDocument();
+			const dropdownList = screen.getByTestId('dropdown-popper-list');
+			expect(within(dropdownList).queryByText(REDIRECT_TO_ADDRESS)).not.toBeInTheDocument();
 		});
 	});
 	describe('Tag With', () => {
