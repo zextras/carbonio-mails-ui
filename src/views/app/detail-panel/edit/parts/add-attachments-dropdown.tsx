@@ -11,15 +11,19 @@ import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { compact, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
+import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import { buildArrayFromFileList } from 'helpers/files';
 import { useRegisterFilesComposerIntegrations } from 'integrations/carbonio-files-ui-composer-integration';
 import { useComposerIntegrationStore } from 'store/composer-integrations/store';
-import { useEditorsStore } from 'store/editor';
-import { useEditorAttachments, useEditorText } from 'store/editor/index';
+import { useEditorsStore, useEditorAttachments, useEditorText } from 'store/editor';
 import { MailsEditorV2 } from 'types/editor';
-import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
-import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+
+const escapeHtml = (str: string): string =>
+	str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const isSafeUrl = (url: string): boolean => /^https?:\/\//i.test(url);
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -51,8 +55,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	// their own integrations via getIntegratedFunction('register-composer-integration').
 	useRegisterFilesComposerIntegrations();
 
-	const integrations = useComposerIntegrationStore(
-		(state) => Array.from(state.integrations.values())
+	const integrations = useComposerIntegrationStore((state) =>
+		Array.from(state.integrations.values())
 	);
 
 	const addFilesFromLocal = useCallback(
@@ -89,15 +93,17 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 									size: att.size
 								}),
 							onLinksInserted: (links) => {
+								const safeLinks = links.filter((l) => isSafeUrl(l.url));
 								const current = getText();
 								setText({
-									plainText: links.map((l) => l.url).join('\n') + '\n' + current.plainText,
+									plainText: `${safeLinks.map((l) => l.url).join('\n')}\n${current.plainText}`,
 									richText:
-										links
-											.map(
-												(l) =>
-													`<p><a href="${l.url}">${l.label ?? l.url}</a></p>`
-											)
+										safeLinks
+											.map((l) => {
+												const href = escapeHtml(l.url);
+												const text = escapeHtml(l.label ?? l.url);
+												return `<p><a href="${href}">${text}</a></p>`;
+											})
 											.join('') + current.richText
 								});
 							},
@@ -106,15 +112,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						})
 				})
 			),
-		[
-			addUploadedAttachment,
-			editor?.size,
-			editorId,
-			getText,
-			integrations,
-			maxAllowedSize,
-			setText
-		]
+		[addUploadedAttachment, editor?.size, editorId, getText, integrations, maxAllowedSize, setText]
 	);
 
 	const actionsItems = useMemo<Array<DropdownItem>>(() => {

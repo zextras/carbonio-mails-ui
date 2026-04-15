@@ -12,8 +12,6 @@ type ComposerIntegrationStoreState = {
 	integrations: Map<string, ComposerIntegrationConfig>;
 	register: (config: ComposerIntegrationConfig) => void;
 	unregister: (id: string) => void;
-	/** Clears all registrations. Intended for use in tests only. */
-	reset: () => void;
 };
 
 /**
@@ -30,17 +28,21 @@ type ComposerIntegrationStoreState = {
 export const useComposerIntegrationStore = create<ComposerIntegrationStoreState>()((set) => ({
 	integrations: new Map(),
 
-	register: (config) =>
+	register: (config): void => {
 		set((state) => ({
 			integrations: new Map(state.integrations).set(config.id, config)
-		})),
+		}));
+	},
 
-	unregister: (id) =>
+	unregister: (id): void => {
 		set((state) => {
 			const next = new Map(state.integrations);
 			next.delete(id);
 			return { integrations: next };
-		}),
-
-	reset: () => set({ integrations: new Map() })
+		});
+	}
 }));
+
+/** Clears all registrations. Intended for use in tests only. */
+export const resetComposerIntegrationStore = (): void =>
+	useComposerIntegrationStore.setState({ integrations: new Map() });
