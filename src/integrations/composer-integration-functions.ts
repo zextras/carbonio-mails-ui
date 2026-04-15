@@ -22,7 +22,14 @@ import type { ComposerIntegrationConfig } from 'types/integrations/composer-inte
  * useComposerIntegrationStore.getState().unregister(id) to remove it.
  */
 export const registerComposerIntegration = (config: ComposerIntegrationConfig): void => {
-	if (!config.id || !config.label || typeof config.onClick !== 'function') {
+	if (
+		!config.id ||
+		typeof config.id !== 'string' ||
+		!config.label ||
+		typeof config.label !== 'string' ||
+		typeof config.icon !== 'string' ||
+		typeof config.onClick !== 'function'
+	) {
 		console.warn('[carbonio-mails-ui] registerComposerIntegration: invalid config', config);
 		return;
 	}
