@@ -6,10 +6,21 @@
 
 import { registerFunctions } from '@zextras/carbonio-shell-ui';
 
+import { registerComposerIntegration } from 'integrations/composer-integration-functions';
 import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from 'integrations/shared-functions';
+
+/*
+ * Expose 'register-composer-integration' at module-load time — before any React
+ * rendering — so that external modules can safely call it during their own
+ * bootstrap sequence regardless of mount order.
+ */
+registerFunctions({
+	id: 'register-composer-integration',
+	fn: registerComposerIntegration
+});
 
 export const registerShellIntegrations = (): void => {
 	registerFunctions(
@@ -22,4 +33,5 @@ export const registerShellIntegrations = (): void => {
 			fn: openPrefilledComposerSharedFunction
 		}
 	);
+
 };

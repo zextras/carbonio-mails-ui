@@ -7,25 +7,18 @@ import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
 import styled from '@emotion/styled';
 import { Dropdown, Row, Tooltip, DropdownItem, Button } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
-import { compact, map, noop } from 'lodash';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { compact, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
-import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
-import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import { buildArrayFromFileList } from 'helpers/files';
-import { isFulfilled } from 'helpers/promises';
+import { useRegisterFilesComposerIntegrations } from 'integrations/carbonio-files-ui-composer-integration';
+import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useEditorsStore } from 'store/editor';
 import { useEditorAttachments, useEditorText } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
-import {
-	useGetPublicUrl,
-	UseGetPublicUrlRespType
-} from 'views/app/detail-panel/edit/edit-utils-hooks/use-get-public-url';
-import {
-	useUploadFromFiles,
-	UseUploadFromFilesResult
-} from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
+import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 const SelectorContainer = styled(Row)`
@@ -50,77 +43,24 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { originalMessageHasAttachments, addOriginalAttachmentsToEditor } =
 		useEditorOriginalAttachments({ editorId });
 
+	const editor = useEditorsStore((state) => state.editors[editorId]);
+	const maxMessageSizeStr = useUserSettings().attrs?.zimbraMtaMaxMessageSize as string | undefined;
+	const maxAllowedSize = parseInt(maxMessageSizeStr ?? '0', 10);
+
+	// Register the built-in Files integrations. Other external modules register
+	// their own integrations via getIntegratedFunction('register-composer-integration').
+	useRegisterFilesComposerIntegrations();
+
+	const integrations = useComposerIntegrationStore(
+		(state) => Array.from(state.integrations.values())
+	);
+
 	const addFilesFromLocal = useCallback(
 		async (fileList: FileList) => {
 			const files = buildArrayFromFileList(fileList);
 			addLocalFiles(files);
 		},
 		[addLocalFiles]
-	);
-
-	const onUploadFromFilesComplete = useCallback(
-		(filesNodes: UseUploadFromFilesResult) => {
-			filesNodes.forEach((filesNode) => {
-				isFulfilled(filesNode) &&
-					addUploadedAttachment({
-						attachmentId: filesNode.value.attachmentId,
-						fileName: filesNode.value.fileName,
-						contentType: filesNode.value.contentType,
-						size: filesNode.value.size
-					});
-			});
-		},
-		[addUploadedAttachment]
-	);
-
-	const addPublicLinkFromFiles = useCallback(
-		(filesResponse: UseGetPublicUrlRespType[]) => {
-			const textWithLink = {
-				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
-					.join('\n')
-					.concat(getText().plainText),
-				richText: ` ${map(
-					filesResponse,
-					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
-				).join('')}`.concat(getText().richText)
-			};
-			setText(textWithLink);
-		},
-		[setText, getText]
-	);
-
-	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
-	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
-		onComplete: onUploadFromFilesComplete
-	});
-
-	const { addFilesFromFiles } = useFilesAttachmentOrSmartlink({
-		editorId,
-		onUploadFiles: uploadFromFiles
-	});
-
-	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
-
-	const uploadFromFilesSelectionConfig = useMemo(
-		() => ({
-			title: t('label.choose_file', 'Choose file'),
-			confirmAction: addFilesFromFiles,
-			confirmLabel: t('label.select', 'Select'),
-			allowFiles: true,
-			allowFolders: false
-		}),
-		[addFilesFromFiles]
-	);
-
-	const getPublicLinkSelectionConfig = useMemo(
-		() => ({
-			title: t('label.choose_file', 'Choose file'),
-			confirmAction: getLink,
-			confirmLabel: t('label.share_public_link', 'Share Public Link'),
-			allowFiles: true,
-			allowFolders: false
-		}),
-		[getLink]
 	);
 
 	const onLocalFileClick = useCallback(() => {
@@ -130,6 +70,53 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		}
 	}, []);
 
+	const integrationItems = useMemo<DropdownItem[]>(
+		() =>
+			integrations.map(
+				(config): DropdownItem => ({
+					id: config.id,
+					icon: config.icon,
+					label: config.label,
+					onClick: (): void =>
+						config.onClick({
+							editorId,
+							getText,
+							onAttachmentAdded: (att) =>
+								addUploadedAttachment({
+									attachmentId: att.attachmentId,
+									fileName: att.name,
+									contentType: att.contentType,
+									size: att.size
+								}),
+							onLinksInserted: (links) => {
+								const current = getText();
+								setText({
+									plainText: links.map((l) => l.url).join('\n') + '\n' + current.plainText,
+									richText:
+										links
+											.map(
+												(l) =>
+													`<p><a href="${l.url}">${l.label ?? l.url}</a></p>`
+											)
+											.join('') + current.richText
+								});
+							},
+							currentEditorSize: editor?.size ?? 0,
+							maxAllowedSize
+						})
+				})
+			),
+		[
+			addUploadedAttachment,
+			editor?.size,
+			editorId,
+			getText,
+			integrations,
+			maxAllowedSize,
+			setText
+		]
+	);
+
 	const actionsItems = useMemo<Array<DropdownItem>>(() => {
 		const localFileAction: DropdownItem = {
 			id: 'localAttachment',
@@ -137,30 +124,6 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			label: t('composer.attachment.local', 'Add from local'),
 			onClick: onLocalFileClick
 		};
-
-		const filesNodeAction: DropdownItem | undefined =
-			isSelectNodesAvailable && isUploadFromFiles
-				? {
-						id: 'driveItem',
-						label: t('composer.attachment.files', 'Add from Files'),
-						icon: 'DriveOutline',
-						onClick: (): void => {
-							selectNodes(uploadFromFilesSelectionConfig);
-						}
-					}
-				: undefined;
-
-		const filesLinkAction: DropdownItem | undefined =
-			isSelectNodesAvailable && isGetLinkAvailable
-				? {
-						id: 'fileUrl',
-						label: t('composer.attachment.url', 'Add public link from Files'),
-						icon: 'Link2',
-						onClick: (): void => {
-							selectNodes(getPublicLinkSelectionConfig);
-						}
-					}
-				: undefined;
 
 		const originalAttachmentsAction: DropdownItem | undefined = originalMessageHasAttachments
 			? {
@@ -171,17 +134,12 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				}
 			: undefined;
 
-		return compact([localFileAction, filesNodeAction, filesLinkAction, originalAttachmentsAction]);
+		return compact([localFileAction, ...integrationItems, originalAttachmentsAction]);
 	}, [
 		onLocalFileClick,
 		originalMessageHasAttachments,
 		addOriginalAttachmentsToEditor,
-		isUploadFromFiles,
-		uploadFromFilesSelectionConfig,
-		isSelectNodesAvailable,
-		isGetLinkAvailable,
-		selectNodes,
-		getPublicLinkSelectionConfig
+		integrationItems
 	]);
 
 	return (
