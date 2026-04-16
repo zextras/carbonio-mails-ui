@@ -13,11 +13,13 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
+import { uploadAttachmentsApi } from 'api/upload-attachments-api';
 import { buildArrayFromFileList } from 'helpers/files';
 import { useRegisterFilesComposerIntegrations } from 'integrations/carbonio-files-ui-composer-integration';
 import { useComposerIntegrationStore } from 'store/composer-integrations/store';
 import { useEditorsStore, useEditorAttachments, useEditorText } from 'store/editor';
 import { MailsEditorV2 } from 'types/editor';
+import { UploadedAttachment } from 'types/integrations/composer-integration';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 const escapeHtml = (str: string): string =>
@@ -105,6 +107,25 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 												return `<p><a href="${href}">${text}</a></p>`;
 											})
 											.join('') + current.richText
+								});
+							},
+							uploadFiles: (files: File[]): Promise<UploadedAttachment[]> => {
+								if (files.length === 0) {
+									return Promise.resolve([]);
+								}
+								return new Promise((resolve) => {
+									const succeeded: UploadedAttachment[] = [];
+									uploadAttachmentsApi(files, {
+										onUploadComplete: (file, _uploadId, attachmentId) => {
+											succeeded.push({
+												attachmentId,
+												name: file.name,
+												contentType: file.type || 'application/octet-stream',
+												size: file.size
+											});
+										},
+										onUploadsEnd: () => resolve(succeeded)
+									});
 								});
 							},
 							currentEditorSize: editor?.size ?? 0,

@@ -39,7 +39,7 @@ React render phase
   AddAttachmentsDropdown
     ├─ useRegisterFilesComposerIntegrations()   (built-in Files items)
     ├─ useComposerIntegrationStore(...)          (all registered items)
-    └─ renders dropdown items dynamically
+    └─ renders dropdown items dynamically, injecting ComposerIntegrationContext at click time
 ```
 
 ---
@@ -99,6 +99,7 @@ type ComposerIntegrationConfig = {
 #### `ComposerIntegrationContext`
 
 Passed by the composer to the integration's `onClick` handler at click time.
+All interactions with the composer go through this object.
 
 ```ts
 type ComposerIntegrationContext = {
@@ -121,10 +122,22 @@ type ComposerIntegrationContext = {
    */
   onLinksInserted: (links: Array<{ url: string; label?: string }>) => void;
 
+  /**
+   * Upload one or more browser File objects to the mail server attachment service.
+   * Returns a promise that always resolves with the successfully uploaded files as
+   * UploadedAttachment records, ready to pass to onAttachmentAdded.
+   * Files that fail to upload are omitted; compare result.length against input.length
+   * to detect partial failures.
+   *
+   * Use this when your integration delivers browser File objects (e.g. from a native
+   * file picker or a third-party storage module) rather than server-side references.
+   */
+  uploadFiles: (files: File[]) => Promise<UploadedAttachment[]>;
+
   /** Current total email size in bytes (body + existing attachments). */
   currentEditorSize: number;
 
-  /** Maximum allowed email size in bytes (zimbraMtaMaxMessageSize). */
+  /** Maximum allowed email size in bytes (mtaMaxMessageSize setting). */
   maxAllowedSize: number;
 };
 ```
@@ -188,47 +201,64 @@ Reads from `useComposerIntegrationStore` and maps each registered config to a `D
 injecting the `ComposerIntegrationContext` at click time. The local-file item and
 original-attachments item remain hardcoded as they are internal to the composer.
 
+The `uploadFiles` implementation is provided here: it wraps the internal upload API and resolves
+once all uploads have settled, returning only the succeeded results.
+
 ---
 
 ## How to write an integration (external module)
 
-### Simple case — upload and attach
+### Attaching browser File objects (e.g. from a third-party storage picker)
+
+The most common pattern for modules that deliver browser `File` objects: use `ctx.uploadFiles()`
+to hand them to the mail server and receive back ready-to-use `UploadedAttachment` records.
 
 ```ts
-// In your module's register-shell-integrations.ts (or equivalent bootstrap file)
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { useSnackbar } from '@zextras/carbonio-design-system';
+import { useEffect } from 'react';
 
-export const registerMailsIntegrations = (): void => {
-  const [registerIntegration, isAvailable] =
-    getIntegratedFunction('register-composer-integration');
+const MY_PICKER_INTEGRATION = 'my-module.integrations.select-files';
 
-  if (!isAvailable) return;
+export const useRegisterMyModuleComposerIntegration = (): void => {
+  const createSnackbar = useSnackbar();
+  const [openPicker, isPickerAvailable] = useIntegratedFunction(MY_PICKER_INTEGRATION);
 
-  registerIntegration({
-    id: 'my-module:attach',
-    label: t('composer.attachment.mymodule', 'Add from MyModule'),
-    icon: 'CloudOutline',
-    onClick: async (ctx) => {
-      // 1. Open your file picker (your own UI, not the composer's)
-      const file = await openMyPicker();
-      if (!file) return;
+  useEffect(() => {
+    if (!isPickerAvailable) return;
 
-      // 2. Upload the file to the mail server
-      const { attachmentId } = await uploadToMailServer(file);
+    const [registerIntegration, isAvailable] =
+      getIntegratedFunction('register-composer-integration');
+    if (!isAvailable) return;
 
-      // 3. Tell the composer to attach it
-      ctx.onAttachmentAdded({
-        attachmentId,
-        name: file.name,
-        contentType: file.type,
-        size: file.size
-      });
-    }
-  });
+    registerIntegration({
+      id: 'my-module:attach',
+      label: t('composer.attachment.mymodule', 'Add from MyModule'),
+      icon: 'CloudDownloadOutline',
+      onClick: (ctx) => {
+        openPicker(async (files: File[]) => {
+          const uploaded = await ctx.uploadFiles(files);
+
+          uploaded.forEach(att => ctx.onAttachmentAdded(att));
+
+          const failed = files.length - uploaded.length;
+          createSnackbar({
+            key: 'my-module-attachment',
+            severity: failed === 0 ? 'info' : 'warning',
+            label: failed === 0
+              ? t('message.snackbar.all_att_added', 'Attachments added successfully')
+              : t('message.snackbar.some_att_add_fails', 'Some attachments could not be added'),
+            autoHideTimeout: 4000,
+            hideButton: true
+          });
+        });
+      }
+    });
+  }, [createSnackbar, isPickerAvailable, openPicker]);
 };
 ```
 
-### Insert a public link instead
+### Insert a public link instead of attaching
 
 ```ts
 registerIntegration({
@@ -240,13 +270,12 @@ registerIntegration({
     if (!file) return;
 
     const url = await createPublicLink(file.id);
-
     ctx.onLinksInserted([{ url, label: file.name }]);
   }
 });
 ```
 
-### Size-aware attachment with fallback
+### Size-aware attachment with smartlink fallback
 
 ```ts
 registerIntegration({
@@ -254,20 +283,36 @@ registerIntegration({
   label: t('composer.attachment.mymodule_smart', 'Attach or link from MyModule'),
   icon: 'CloudOutline',
   onClick: async (ctx) => {
-    const file = await openMyPicker();
-    if (!file) return;
+    const files = await openMyPicker();
+    if (!files.length) return;
 
-    if (ctx.currentEditorSize + file.size < ctx.maxAllowedSize) {
-      // Attach directly
-      const { attachmentId } = await uploadToMailServer(file);
-      ctx.onAttachmentAdded({ attachmentId, name: file.name, contentType: file.type, size: file.size });
+    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
+
+    if (ctx.currentEditorSize + totalSize < ctx.maxAllowedSize) {
+      // Files fit — upload and attach directly
+      const uploaded = await ctx.uploadFiles(files);
+      uploaded.forEach(att => ctx.onAttachmentAdded(att));
     } else {
-      // Fall back to a public link
-      const url = await createPublicLink(file.id);
-      ctx.onLinksInserted([{ url, label: file.name }]);
+      // Files too large — fall back to public links
+      const links = await Promise.all(files.map(f => createPublicLink(f.id)));
+      ctx.onLinksInserted(links.map((url, i) => ({ url, label: files[i].name })));
     }
   }
 });
+```
+
+### Modules with server-side files (e.g. carbonio-files-ui)
+
+If your module already has files on a server and can obtain a server-side attachment reference
+directly (without going through the browser), skip `uploadFiles` and call `onAttachmentAdded`
+directly with the reference:
+
+```ts
+onClick: async (ctx) => {
+  const [uploadTo] = getIntegratedFunction('upload-to-target-and-get-target-id');
+  const { attachmentId } = await uploadTo({ nodeId, targetModule: 'MAILS' });
+  ctx.onAttachmentAdded({ attachmentId, name, contentType, size });
+}
 ```
 
 ### Multiple registrations from one module
@@ -337,9 +382,23 @@ afterEach(() => {
 
 it('renders the registered integration item', () => {
   render(<AddAttachmentsDropdown editorId="editor-1" />);
-  // open the dropdown
   userEvent.click(screen.getByRole('button', { name: /add attachments/i }));
   expect(screen.getByText('Add from Test')).toBeInTheDocument();
+});
+
+it('provides uploadFiles in the context', async () => {
+  const onClick = vi.fn();
+  useComposerIntegrationStore.getState().register({
+    id: 'test:upload',
+    label: 'Upload Test',
+    icon: 'CloudOutline',
+    onClick
+  });
+  render(<AddAttachmentsDropdown editorId="editor-1" />);
+  userEvent.click(screen.getByRole('button', { name: /add attachments/i }));
+  userEvent.click(screen.getByText('Upload Test'));
+  const ctx = onClick.mock.calls[0][0];
+  expect(typeof ctx.uploadFiles).toBe('function');
 });
 ```
 
@@ -349,9 +408,9 @@ it('renders the registered integration item', () => {
 
 | File | Purpose |
 |------|---------|
-| `src/types/integrations/composer-integration.ts` | Public type definitions |
+| `src/types/integrations/composer-integration.ts` | Public type definitions (`ComposerIntegrationConfig`, `ComposerIntegrationContext`, `UploadedAttachment`) |
 | `src/store/composer-integrations/store.ts` | Zustand registry store |
 | `src/integrations/composer-integration-functions.ts` | Registration function (exposed via shell) |
-| `src/integrations/carbonio-files-ui-composer-integration.tsx` | Built-in Files integration (React hook) |
+| `src/integrations/carbonio-files-ui-composer-integration.tsx` | Built-in Files integration (React hook, reference implementation) |
 | `src/app-utils/register-shell-integrations.ts` | Exposes `register-composer-integration` at startup |
-| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Data-driven dropdown rendering |
+| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Data-driven dropdown; provides `ComposerIntegrationContext` including `uploadFiles` |

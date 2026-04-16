@@ -39,6 +39,28 @@ export type ComposerIntegrationContext = {
 	 */
 	onLinksInserted: (links: Array<{ url: string; label?: string }>) => void;
 
+	/**
+	 * Upload one or more browser File objects to the mail server attachment service.
+	 * Returns a promise that always resolves with the successfully uploaded files
+	 * as UploadedAttachment records, ready to pass to onAttachmentAdded.
+	 * Files that fail to upload are omitted from the result; compare result.length
+	 * against the input length to detect partial failures.
+	 *
+	 * Use this when your integration delivers browser File objects (e.g. from a
+	 * native file picker or a third-party storage module) rather than server-side
+	 * attachment references.
+	 *
+	 * @example
+	 * ```ts
+	 * onClick: async (ctx) => {
+	 *   const files = await openMyPicker();
+	 *   const uploaded = await ctx.uploadFiles(files);
+	 *   uploaded.forEach(att => ctx.onAttachmentAdded(att));
+	 * }
+	 * ```
+	 */
+	uploadFiles: (files: File[]) => Promise<UploadedAttachment[]>;
+
 	/** Current total size of the email in bytes (body + existing attachments). */
 	currentEditorSize: number;
 
