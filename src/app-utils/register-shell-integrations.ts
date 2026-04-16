@@ -6,6 +6,7 @@
 
 import { registerFunctions } from '@zextras/carbonio-shell-ui';
 
+import { registerAttachmentSaveAction } from 'integrations/attachment-save-action-functions';
 import { registerComposerIntegration } from 'integrations/composer-integration-functions';
 import {
 	openComposerSharedFunction,
@@ -13,13 +14,18 @@ import {
 } from 'integrations/shared-functions';
 
 /*
- * Expose 'register-composer-integration' at module-load time — before any React
- * rendering — so that external modules can safely call it during their own
+ * Expose integration registration functions at module-load time — before any React
+ * rendering — so that external modules can safely call them during their own
  * bootstrap sequence regardless of mount order.
  */
 registerFunctions({
 	id: 'register-composer-integration',
 	fn: registerComposerIntegration
+});
+
+registerFunctions({
+	id: 'register-attachment-save-action',
+	fn: registerAttachmentSaveAction
 });
 
 export const registerShellIntegrations = (): void => {
