@@ -7,10 +7,12 @@ import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState
 
 import styled from '@emotion/styled';
 import {
+	Button,
 	Container,
+	Dropdown,
+	DropdownItem,
 	getColor,
 	Icon,
-	Button,
 	Link,
 	Padding,
 	Row,
@@ -19,7 +21,6 @@ import {
 	useTheme
 } from '@zextras/carbonio-design-system';
 import {
-	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	useAppContext,
 	useIntegratedFunction
@@ -35,24 +36,28 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { downloadAttachmentAsFile } from 'api/download-attachment-api';
 import { AppContext } from 'app-utils/app-context-initializer';
 import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { useRegisterFilesAttachmentSaveIntegration } from 'integrations/carbonio-files-ui-attachment-save-integration';
+import { useAttachmentSaveActionStore } from 'store/attachment-save-actions/store';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
+import { AttachmentType, CopyToFileResponse } from 'types/details-pannel';
+import { AttachmentSaveActionContext } from 'types/integrations/attachment-save-action';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
 	SelectNodesFunctionArgs
 } from 'types/integrations/carbonio-files-ui';
+import { AttachmentPart, MailMessage } from 'types/messages';
 import DeleteAttachmentModal from 'views/app/detail-panel/preview/delete-attachment-modal';
 import {
 	humanFileSize,
 	isDocument,
 	previewType
 } from 'views/app/detail-panel/preview/file-preview';
-import { AttachmentType, CopyToFileRequest, CopyToFileResponse } from 'types/details-pannel';
-import { AttachmentPart, MailMessage } from 'types/messages';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -125,7 +130,7 @@ const Attachment = ({
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getAttachmentExtension(att.contentType, att.filename).value;
-	const { createSnackbar, createModal, closeModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -181,82 +186,27 @@ const Attachment = ({
 		);
 	}, [closeModal, createModal, onDeleteAttachment, onDownloadAndDelete]);
 
-	const confirmAction = useCallback(
-		(nodes: { id: string }[]) => {
-			legacySoapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>(
-				'CopyToFiles',
-				{
-					_jsns: 'urn:zimbraMail',
-					mid: messageId,
-					part: att.name,
-					destinationFolderId: nodes[0].id
-				}
-			)
-				.then((res) => {
-					if (!('Fault' in res)) {
-						createSnackbar({
-							key: `mail-moved-root`,
-							replace: true,
-							severity: 'info',
-							hideButton: true,
-							label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
-							autoHideTimeout: 3000
-						});
-					} else {
-						createSnackbar({
-							key: `mail-moved-root`,
-							replace: true,
-							severity: 'warning',
-							hideButton: true,
-							label: t(
-								'message.snackbar.att_err',
-								'There seems to be a problem when saving, please try again'
-							),
-							autoHideTimeout: 3000
-						});
-					}
-				})
-				.catch(() => {
-					createSnackbar({
-						key: `calendar-moved-root`,
-						replace: true,
-						severity: 'warning',
-						hideButton: true,
-						label: t(
-							'message.snackbar.att_err',
-							'There seems to be a problem when saving, please try again'
-						),
-						autoHideTimeout: 3000
-					});
-				});
-		},
-		[att.name, createSnackbar, messageId, t]
-	);
 	const onCreateContact = useCallback(() => {
 		createContact({ messageId, part });
 	}, [createContact, messageId, part]);
-	const isAValidDestination = useCallback(
-		(node: { permissions?: { can_write_file?: boolean } }) => node?.permissions?.can_write_file,
-		[]
+
+	const saveActions = useAttachmentSaveActionStore((state) =>
+		Array.from(state.integrations.values())
 	);
 
-	const actionTarget = useMemo(
-		() => ({
-			title: t('label.select_folder', 'Select folder'),
-			confirmAction,
-			confirmLabel: t('label.save', 'Save'),
-			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
-			allowFiles: false,
-			allowFolders: true,
-			canCreateFolder: true,
-			isValidSelection: isAValidDestination,
-			maxSelection: 1,
-			canSelectOpenedFolder: true
+	const makeSaveContext = useCallback(
+		(): AttachmentSaveActionContext => ({
+			messageId,
+			partName: att.name,
+			filename: filename ?? '',
+			contentType: att.contentType,
+			size,
+			downloadUrl: downloadlink,
+			getFile: (): Promise<File> =>
+				downloadAttachmentAsFile(downloadlink, filename ?? '', att.contentType)
 		}),
-		[confirmAction, isAValidDestination, t]
+		[att.contentType, att.name, downloadlink, filename, messageId, size]
 	);
-
-	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
 		openEmlStandalonePreview({ messageId, part });
@@ -400,21 +350,38 @@ const Attachment = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && (
-						<Tooltip
-							key={`${messageId}-DriveOutline`}
-							label={t('label.save_to_files', 'Save to Files')}
+					{saveActions.length === 1 && (
+						<Tooltip key={`${messageId}-save-action`} label={saveActions[0].label}>
+							<Button
+								type={'ghost'}
+								color={'gray0'}
+								size="medium"
+								icon={saveActions[0].icon}
+								onClick={(): void => {
+									saveActions[0].onClick(makeSaveContext());
+								}}
+							/>
+						</Tooltip>
+					)}
+					{saveActions.length > 1 && (
+						<Dropdown
+							items={saveActions.map(
+								(action): DropdownItem => ({
+									id: action.id,
+									label: action.label,
+									icon: action.icon,
+									onClick: (): void => action.onClick(makeSaveContext())
+								})
+							)}
 						>
 							<Button
 								type={'ghost'}
 								color={'gray0'}
 								size="medium"
-								icon="DriveOutline"
-								onClick={(): void => {
-									uploadIntegration && uploadIntegration(actionTarget);
-								}}
+								icon="SaveOutline"
+								onClick={(): void => undefined}
 							/>
-						</Tooltip>
+						</Dropdown>
 					)}
 
 					<Padding right="small">
@@ -499,6 +466,10 @@ const AttachmentsBlock = ({
 }: AttachmentsBlockProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
+
+	// Register the built-in "Save to Files" action. External modules register their
+	// own save actions via getIntegratedFunction('register-attachment-save-action').
+	useRegisterFilesAttachmentSaveIntegration();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(messageAttachments, { cd: 'attachment' }),
