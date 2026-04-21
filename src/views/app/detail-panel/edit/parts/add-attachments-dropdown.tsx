@@ -15,11 +15,11 @@ import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-ori
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
 import { uploadAttachmentsApi } from 'api/upload-attachments-api';
 import { buildArrayFromFileList } from 'helpers/files';
-import { useRegisterFilesComposerIntegrations } from 'integrations/carbonio-files-ui-composer-integration';
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useRegisterFilesAttachmentAddIntegrations } from 'integrations/carbonio-files-ui-attachment-add-integration';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
 import { useEditorsStore, useEditorAttachments, useEditorText } from 'store/editor';
 import { MailsEditorV2 } from 'types/editor';
-import { UploadedAttachment } from 'types/integrations/composer-integration';
+import { UploadedAttachment } from 'types/integrations/attachment-add-action';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 const escapeHtml = (str: string): string =>
@@ -54,10 +54,10 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const maxAllowedSize = parseInt(maxMessageSizeStr ?? '0', 10);
 
 	// Register the built-in Files integrations. Other external modules register
-	// their own integrations via getIntegratedFunction('register-composer-integration').
-	useRegisterFilesComposerIntegrations();
+	// their own integrations via getIntegratedFunction('register-attachment-add-action').
+	useRegisterFilesAttachmentAddIntegrations();
 
-	const integrations = useComposerIntegrationStore((state) =>
+	const integrations = useAttachmentAddActionStore((state) =>
 		Array.from(state.integrations.values())
 	);
 

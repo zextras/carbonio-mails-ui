@@ -13,23 +13,23 @@ composer's **"Add Attachments"** dropdown.
 ```
 Bootstrap phase (before React mounts)
   carbonio-mails-ui:
-    registerFunctions({ id: 'register-composer-integration', fn: registerComposerIntegration })
+    registerFunctions({ id: 'register-attachment-add-action', fn: registerAttachmentAddAction })
   ↓
 External module bootstrap (carbonio-files-ui, carbonio-nextcloud, …):
-    getIntegratedFunction('register-composer-integration')
-    → registerComposerIntegration({ id, label, icon, onClick })
-         → writes to Zustand store (useComposerIntegrationStore)
+    getIntegratedFunction('register-attachment-add-action')
+    → registerAttachmentAddAction({ id, label, icon, onClick })
+         → writes to Zustand store (useAttachmentAddActionStore)
 
 React render phase:
   AddAttachmentsDropdown
-    ├─ useRegisterFilesComposerIntegrations()   (built-in Files items)
-    ├─ useComposerIntegrationStore(...)          (all registered items)
-    └─ renders dropdown items dynamically, injecting ComposerIntegrationContext at click time
+    ├─ useRegisterFilesAttachmentAddIntegrations()   (built-in Files items)
+    ├─ useAttachmentAddActionStore(...)               (all registered items)
+    └─ renders dropdown items dynamically, injecting AttachmentAddActionContext at click time
 ```
 
 ---
 
-## Shell function: `register-composer-integration`
+## Shell function: `register-attachment-add-action`
 
 Exposed at module-load time in `src/app-utils/register-shell-integrations.ts`.
 
@@ -37,7 +37,7 @@ Exposed at module-load time in `src/app-utils/register-shell-integrations.ts`.
 import { getIntegratedFunction } from '@zextras/carbonio-shell-ui';
 
 const [registerIntegration, isAvailable] =
-  getIntegratedFunction('register-composer-integration');
+  getIntegratedFunction('register-attachment-add-action');
 if (isAvailable) {
   registerIntegration({ id, label, icon, onClick });
 }
@@ -47,14 +47,14 @@ if (isAvailable) {
 
 ## Types
 
-Defined in `src/types/integrations/composer-integration.ts`.
+Defined in `src/types/integrations/attachment-add-action.ts`.
 
-### `ComposerIntegrationConfig`
+### `AttachmentAddActionConfig`
 
 The object passed to the registration function.
 
 ```ts
-type ComposerIntegrationConfig = {
+type AttachmentAddActionConfig = {
   /**
    * Unique identifier. Convention: '<module-name>:<action>'
    * e.g. 'carbonio-nextcloud:attach'.
@@ -69,16 +69,16 @@ type ComposerIntegrationConfig = {
   icon: string;
 
   /** Called when the user clicks this dropdown item. */
-  onClick: (context: ComposerIntegrationContext) => void;
+  onClick: (context: AttachmentAddActionContext) => void;
 };
 ```
 
-### `ComposerIntegrationContext`
+### `AttachmentAddActionContext`
 
 Passed by the composer to the integration's `onClick` at click time.
 
 ```ts
-type ComposerIntegrationContext = {
+type AttachmentAddActionContext = {
   /** The id of the active editor instance. */
   editorId: string;
 
@@ -128,26 +128,26 @@ type UploadedAttachment = {
 
 ## Internal components
 
-### Store — `src/store/composer-integrations/store.ts`
+### Store — `src/store/attachment-add-actions/store.ts`
 
-`Map<string, ComposerIntegrationConfig>` — preserves insertion order, O(1) lookup by id.
+`Map<string, AttachmentAddActionConfig>` — preserves insertion order, O(1) lookup by id.
 
-### Registration function — `src/integrations/composer-integration-functions.ts`
+### Registration function — `src/integrations/attachment-add-action-functions.ts`
 
 Validates the config (required string fields, function onClick) and delegates to the store.
-This is the function exposed as `register-composer-integration` via the shell.
+This is the function exposed as `register-attachment-add-action` via the shell.
 
-### Built-in Files hook — `src/integrations/carbonio-files-ui-composer-integration.tsx`
+### Built-in Files hook — `src/integrations/carbonio-files-ui-attachment-add-integration.tsx`
 
-`useRegisterFilesComposerIntegrations()` — called from `AddAttachmentsDropdown`. Registers
+`useRegisterFilesAttachmentAddIntegrations()` — called from `AddAttachmentsDropdown`. Registers
 two built-in entries (`carbonio-files-ui:attach`, `carbonio-files-ui:link`) using React hooks
 for modal and snackbar feedback. This is the reference implementation for integrations that
 need React context.
 
 ### Dropdown — `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx`
 
-Reads from `useComposerIntegrationStore`, maps each config to a `DropdownItem`, and injects
-`ComposerIntegrationContext` (including `uploadFiles`) at click time.
+Reads from `useAttachmentAddActionStore`, maps each config to a `DropdownItem`, and injects
+`AttachmentAddActionContext` (including `uploadFiles`) at click time.
 
 ---
 
@@ -218,9 +218,9 @@ onClick: async (ctx) => {
 
 | File | Purpose |
 |------|---------|
-| `src/types/integrations/composer-integration.ts` | Public types (`ComposerIntegrationConfig`, `ComposerIntegrationContext`, `UploadedAttachment`) |
-| `src/store/composer-integrations/store.ts` | Zustand registry |
-| `src/integrations/composer-integration-functions.ts` | Registration function (shell-exposed) |
-| `src/integrations/carbonio-files-ui-composer-integration.tsx` | Built-in Files integration (reference implementation) |
-| `src/app-utils/register-shell-integrations.ts` | Exposes `register-composer-integration` at startup |
-| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Renders the dropdown; provides `ComposerIntegrationContext` |
+| `src/types/integrations/attachment-add-action.ts` | Public types (`AttachmentAddActionConfig`, `AttachmentAddActionContext`, `UploadedAttachment`) |
+| `src/store/attachment-add-actions/store.ts` | Zustand registry |
+| `src/integrations/attachment-add-action-functions.ts` | Registration function (shell-exposed) |
+| `src/integrations/carbonio-files-ui-attachment-add-integration.tsx` | Built-in Files integration (reference implementation) |
+| `src/app-utils/register-shell-integrations.ts` | Exposes `register-attachment-add-action` at startup |
+| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Renders the dropdown; provides `AttachmentAddActionContext` |

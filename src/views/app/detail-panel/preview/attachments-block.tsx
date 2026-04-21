@@ -350,40 +350,6 @@ const Attachment = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{saveActions.length === 1 && (
-						<Tooltip key={`${messageId}-save-action`} label={saveActions[0].label}>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								size="medium"
-								icon={saveActions[0].icon}
-								onClick={(): void => {
-									saveActions[0].onClick(makeSaveContext());
-								}}
-							/>
-						</Tooltip>
-					)}
-					{saveActions.length > 1 && (
-						<Dropdown
-							items={saveActions.map(
-								(action): DropdownItem => ({
-									id: action.id,
-									label: action.label,
-									icon: action.icon,
-									onClick: (): void => action.onClick(makeSaveContext())
-								})
-							)}
-						>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								size="medium"
-								icon="SaveOutline"
-								onClick={(): void => undefined}
-							/>
-						</Dropdown>
-					)}
-
 					<Padding right="small">
 						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<Button
@@ -427,6 +393,27 @@ const Attachment = ({
 								/>
 							</Tooltip>
 						</Padding>
+					)}
+					{saveActions.length > 0 && (
+						<Dropdown
+							disablePortal
+							items={saveActions.map(
+								(action): DropdownItem => ({
+									id: action.id,
+									label: action.label,
+									icon: action.icon,
+									onClick: (): void => action.onClick(makeSaveContext())
+								})
+							)}
+						>
+							<Button
+								type={'ghost'}
+								color={'gray0'}
+								size="medium"
+								icon="MoreVertical"
+								onClick={(): void => undefined}
+							/>
+						</Dropdown>
 					)}
 				</AttachmentHoverBarContainer>
 			</Row>

@@ -6,8 +6,8 @@
 
 import { registerFunctions } from '@zextras/carbonio-shell-ui';
 
+import { registerAttachmentAddAction } from 'integrations/attachment-add-action-functions';
 import { registerAttachmentSaveAction } from 'integrations/attachment-save-action-functions';
-import { registerComposerIntegration } from 'integrations/composer-integration-functions';
 import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
@@ -19,8 +19,8 @@ import {
  * bootstrap sequence regardless of mount order.
  */
 registerFunctions({
-	id: 'register-composer-integration',
-	fn: registerComposerIntegration
+	id: 'register-attachment-add-action',
+	fn: registerAttachmentAddAction
 });
 
 registerFunctions({

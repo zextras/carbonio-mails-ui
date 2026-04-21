@@ -10,11 +10,11 @@
  *
  * This hook only consumes the public Carbonio Shell integration bus:
  *
- *   getIntegratedFunction('register-composer-integration')
+ *   getIntegratedFunction('register-attachment-add-action')
  *     → exposed by carbonio-mails-ui to let any module add an entry
  *       to the composer "Add Attachments" dropdown.
  *
- *   ComposerIntegrationContext.uploadFiles(files)
+ *   AttachmentAddActionContext.uploadFiles(files)
  *     → provided by the composer at click time; uploads browser File
  *       objects to the mail server and returns UploadedAttachment records.
  *
@@ -33,7 +33,7 @@ import { getIntegratedFunction, t, useIntegratedFunction } from '@zextras/carbon
 /** Integration key that carbonio-nextcloud-ui registers for its file picker. */
 const SELECT_FILES_INTEGRATION = 'fr.zextras.nextcloud-carbonio-ui.integrations.select-files';
 
-type ComposerIntegrationContext = {
+type AttachmentAddActionContext = {
 	onAttachmentAdded: (att: {
 		attachmentId: string;
 		name: string;
@@ -67,19 +67,19 @@ export const useRegisterNextcloudIntegrations = (): void => {
 		// Retrieve the registration function exposed by carbonio-mails-ui.
 		// It is registered at module-load time, so it is always available by
 		// the time any React component mounts.
-		const [registerComposerIntegration, isRegisterAvailable] = getIntegratedFunction(
-			'register-composer-integration'
+		const [registerAttachmentAddAction, isRegisterAvailable] = getIntegratedFunction(
+			'register-attachment-add-action'
 		);
 
 		if (!isRegisterAvailable) {
 			return undefined;
 		}
 
-		(registerComposerIntegration as (config: unknown) => void)({
+		(registerAttachmentAddAction as (config: unknown) => void)({
 			id: 'nextcloud:attach',
 			label: t('composer.attachment.nextcloud', 'Add from Nextcloud'),
 			icon: 'CloudDownloadOutline',
-			onClick: (ctx: ComposerIntegrationContext) => {
+			onClick: (ctx: AttachmentAddActionContext) => {
 				selectFiles(async (files: File[]) => {
 					// ctx.uploadFiles handles uploading browser File objects to the
 					// mail server and returns the successfully uploaded attachments.
