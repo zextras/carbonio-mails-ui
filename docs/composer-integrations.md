@@ -28,25 +28,25 @@ exposes a registration function, and any module can call it at startup to plug i
 
 ```
 Bootstrap phase (before React mounts)
-  carbonio-mails-ui calls registerFunctions({ id: 'register-composer-integration', fn })
+  carbonio-mails-ui calls registerFunctions({ id: 'register-attachment-add-action', fn })
   ↓
 External module bootstrap (carbonio-files-ui, carbonio-nextcloud, …)
-  getIntegratedFunction('register-composer-integration')
-  → registerComposerIntegration({ id, label, icon, onClick })
-       → writes to Zustand store (useComposerIntegrationStore)
+  getIntegratedFunction('register-attachment-add-action')
+  → registerAttachmentAddAction({ id, label, icon, onClick })
+       → writes to Zustand store (useAttachmentAddActionStore)
 
 React render phase
   AddAttachmentsDropdown
-    ├─ useRegisterFilesComposerIntegrations()   (built-in Files items)
-    ├─ useComposerIntegrationStore(...)          (all registered items)
-    └─ renders dropdown items dynamically, injecting ComposerIntegrationContext at click time
+    ├─ useRegisterFilesAttachmentAddIntegrations()   (built-in Files items)
+    ├─ useAttachmentAddActionStore(...)          (all registered items)
+    └─ renders dropdown items dynamically, injecting AttachmentAddActionContext at click time
 ```
 
 ---
 
 ## Public API
 
-### Shell function: `register-composer-integration`
+### Shell function: `register-attachment-add-action`
 
 Exposed at module-load time in `src/app-utils/register-shell-integrations.ts`. External modules
 retrieve it via the carbonio-shell-ui function registry:
@@ -54,7 +54,7 @@ retrieve it via the carbonio-shell-ui function registry:
 ```ts
 import { getIntegratedFunction } from '@zextras/carbonio-shell-ui';
 
-const [registerIntegration, isAvailable] = getIntegratedFunction('register-composer-integration');
+const [registerIntegration, isAvailable] = getIntegratedFunction('register-attachment-add-action');
 if (isAvailable) {
   registerIntegration({ id, label, icon, onClick });
 }
@@ -64,14 +64,14 @@ if (isAvailable) {
 
 ### Types
 
-Defined in `src/types/integrations/composer-integration.ts`.
+Defined in `src/types/integrations/attachment-add-action.ts`.
 
-#### `ComposerIntegrationConfig`
+#### `AttachmentAddActionConfig`
 
 The object passed to the registration function.
 
 ```ts
-type ComposerIntegrationConfig = {
+type AttachmentAddActionConfig = {
   /**
    * Unique identifier. Convention: '<module-name>:<action>'
    * e.g. 'carbonio-nextcloud:attach'.
@@ -90,19 +90,19 @@ type ComposerIntegrationConfig = {
 
   /**
    * Called when the user clicks this dropdown item.
-   * Use the provided ComposerIntegrationContext to communicate results back to the composer.
+   * Use the provided AttachmentAddActionContext to communicate results back to the composer.
    */
-  onClick: (context: ComposerIntegrationContext) => void;
+  onClick: (context: AttachmentAddActionContext) => void;
 };
 ```
 
-#### `ComposerIntegrationContext`
+#### `AttachmentAddActionContext`
 
 Passed by the composer to the integration's `onClick` handler at click time.
 All interactions with the composer go through this object.
 
 ```ts
-type ComposerIntegrationContext = {
+type AttachmentAddActionContext = {
   /** The id of the active editor instance. */
   editorId: string;
 
@@ -157,37 +157,37 @@ type UploadedAttachment = {
 
 ## Internal components
 
-### Zustand store — `src/store/composer-integrations/store.ts`
+### Zustand store — `src/store/attachment-add-actions/store.ts`
 
-Holds the registry of all registered integrations. Uses `Map<string, ComposerIntegrationConfig>`
+Holds the registry of all registered integrations. Uses `Map<string, AttachmentAddActionConfig>`
 to preserve insertion order and allow O(1) lookup by id.
 
 ```ts
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
 
-// Register imperatively (outside React, e.g. from registerComposerIntegration)
-useComposerIntegrationStore.getState().register(config);
+// Register imperatively (outside React, e.g. from registerAttachmentAddAction)
+useAttachmentAddActionStore.getState().register(config);
 
 // Unregister
-useComposerIntegrationStore.getState().unregister(id);
+useAttachmentAddActionStore.getState().unregister(id);
 
 // Subscribe in a React component
-const integrations = useComposerIntegrationStore(
+const integrations = useAttachmentAddActionStore(
   (state) => Array.from(state.integrations.values())
 );
 
 // Reset all entries (tests only)
-useComposerIntegrationStore.getState().reset();
+useAttachmentAddActionStore.getState().reset();
 ```
 
-### Registration function — `src/integrations/composer-integration-functions.ts`
+### Registration function — `src/integrations/attachment-add-action-functions.ts`
 
 Validates the config and delegates to the store. This is the function exposed as
-`register-composer-integration` via the shell.
+`register-attachment-add-action` via the shell.
 
-### Built-in Files hook — `src/integrations/carbonio-files-ui-composer-integration.tsx`
+### Built-in Files hook — `src/integrations/carbonio-files-ui-attachment-add-integration.tsx`
 
-A React hook (`useRegisterFilesComposerIntegrations`) called from `AddAttachmentsDropdown`. It
+A React hook (`useRegisterFilesAttachmentAddIntegrations`) called from `AddAttachmentsDropdown`. It
 registers the built-in carbonio-files-ui integration items using React hooks (`useModal`,
 `useIntegratedFunction`, `useSnackbar`) and cleans them up on unmount.
 
@@ -197,8 +197,8 @@ in their `onClick` without needing a hook.
 
 ### Dropdown — `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx`
 
-Reads from `useComposerIntegrationStore` and maps each registered config to a `DropdownItem`,
-injecting the `ComposerIntegrationContext` at click time. The local-file item and
+Reads from `useAttachmentAddActionStore` and maps each registered config to a `DropdownItem`,
+injecting the `AttachmentAddActionContext` at click time. The local-file item and
 original-attachments item remain hardcoded as they are internal to the composer.
 
 The `uploadFiles` implementation is provided here: it wraps the internal upload API and resolves
@@ -220,7 +220,7 @@ import { useEffect } from 'react';
 
 const MY_PICKER_INTEGRATION = 'my-module.integrations.select-files';
 
-export const useRegisterMyModuleComposerIntegration = (): void => {
+export const useRegisterMyModuleAttachmentAddIntegration = (): void => {
   const createSnackbar = useSnackbar();
   const [openPicker, isPickerAvailable] = useIntegratedFunction(MY_PICKER_INTEGRATION);
 
@@ -228,7 +228,7 @@ export const useRegisterMyModuleComposerIntegration = (): void => {
     if (!isPickerAvailable) return;
 
     const [registerIntegration, isAvailable] =
-      getIntegratedFunction('register-composer-integration');
+      getIntegratedFunction('register-attachment-add-action');
     if (!isAvailable) return;
 
     registerIntegration({
@@ -331,31 +331,31 @@ registerIntegration({ id: 'my-module:link',   label: '...', icon: '...', onClick
 ### Store unit tests
 
 ```ts
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
 
-beforeEach(() => useComposerIntegrationStore.getState().reset());
+beforeEach(() => useAttachmentAddActionStore.getState().reset());
 
 it('registers an integration', () => {
-  useComposerIntegrationStore.getState().register({
+  useAttachmentAddActionStore.getState().register({
     id: 'test:item', label: 'Test', icon: 'StarOutline', onClick: vi.fn()
   });
-  expect(useComposerIntegrationStore.getState().integrations.size).toBe(1);
+  expect(useAttachmentAddActionStore.getState().integrations.size).toBe(1);
 });
 
 it('overwrites duplicate ids', () => {
   const first = vi.fn();
   const second = vi.fn();
-  useComposerIntegrationStore.getState().register({ id: 'x', label: '', icon: '', onClick: first });
-  useComposerIntegrationStore.getState().register({ id: 'x', label: '', icon: '', onClick: second });
-  expect(useComposerIntegrationStore.getState().integrations.get('x')?.onClick).toBe(second);
+  useAttachmentAddActionStore.getState().register({ id: 'x', label: '', icon: '', onClick: first });
+  useAttachmentAddActionStore.getState().register({ id: 'x', label: '', icon: '', onClick: second });
+  expect(useAttachmentAddActionStore.getState().integrations.get('x')?.onClick).toBe(second);
 });
 
 it('preserves insertion order', () => {
   ['a', 'b', 'c'].forEach((id) =>
-    useComposerIntegrationStore.getState().register({ id, label: id, icon: '', onClick: vi.fn() })
+    useAttachmentAddActionStore.getState().register({ id, label: id, icon: '', onClick: vi.fn() })
   );
   expect(
-    Array.from(useComposerIntegrationStore.getState().integrations.keys())
+    Array.from(useAttachmentAddActionStore.getState().integrations.keys())
   ).toEqual(['a', 'b', 'c']);
 });
 ```
@@ -365,10 +365,10 @@ it('preserves insertion order', () => {
 Replace shell function mocks with direct store population:
 
 ```ts
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
 
 beforeEach(() => {
-  useComposerIntegrationStore.getState().register({
+  useAttachmentAddActionStore.getState().register({
     id: 'test:attach',
     label: 'Add from Test',
     icon: 'DriveOutline',
@@ -377,7 +377,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  useComposerIntegrationStore.getState().reset();
+  useAttachmentAddActionStore.getState().reset();
 });
 
 it('renders the registered integration item', () => {
@@ -388,7 +388,7 @@ it('renders the registered integration item', () => {
 
 it('provides uploadFiles in the context', async () => {
   const onClick = vi.fn();
-  useComposerIntegrationStore.getState().register({
+  useAttachmentAddActionStore.getState().register({
     id: 'test:upload',
     label: 'Upload Test',
     icon: 'CloudOutline',
@@ -408,9 +408,9 @@ it('provides uploadFiles in the context', async () => {
 
 | File | Purpose |
 |------|---------|
-| `src/types/integrations/composer-integration.ts` | Public type definitions (`ComposerIntegrationConfig`, `ComposerIntegrationContext`, `UploadedAttachment`) |
-| `src/store/composer-integrations/store.ts` | Zustand registry store |
-| `src/integrations/composer-integration-functions.ts` | Registration function (exposed via shell) |
-| `src/integrations/carbonio-files-ui-composer-integration.tsx` | Built-in Files integration (React hook, reference implementation) |
-| `src/app-utils/register-shell-integrations.ts` | Exposes `register-composer-integration` at startup |
-| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Data-driven dropdown; provides `ComposerIntegrationContext` including `uploadFiles` |
+| `src/types/integrations/attachment-add-action.ts` | Public type definitions (`AttachmentAddActionConfig`, `AttachmentAddActionContext`, `UploadedAttachment`) |
+| `src/store/attachment-add-actions/store.ts` | Zustand registry store |
+| `src/integrations/attachment-add-action-functions.ts` | Registration function (exposed via shell) |
+| `src/integrations/carbonio-files-ui-attachment-add-integration.tsx` | Built-in Files integration (React hook, reference implementation) |
+| `src/app-utils/register-shell-integrations.ts` | Exposes `register-attachment-add-action` at startup |
+| `src/views/app/detail-panel/edit/parts/add-attachments-dropdown.tsx` | Data-driven dropdown; provides `AttachmentAddActionContext` including `uploadFiles` |

@@ -20,7 +20,7 @@ export type UploadedAttachment = {
  * Context provided by the composer to an integration's onClick handler.
  * Use this to add attachments or insert links into the current editor.
  */
-export type ComposerIntegrationContext = {
+export type AttachmentAddActionContext = {
 	/** The id of the editor instance the user is composing in. */
 	editorId: string;
 
@@ -72,11 +72,11 @@ export type ComposerIntegrationContext = {
  * Configuration for a single entry in the composer's "Add Attachments" dropdown.
  *
  * Register an instance of this type by calling the shell-exposed function
- * 'register-composer-integration' from your module's bootstrap code.
+ * 'register-attachment-add-action' from your module's bootstrap code.
  *
  * @example
  * ```ts
- * const [registerIntegration, isAvailable] = getIntegratedFunction('register-composer-integration');
+ * const [registerIntegration, isAvailable] = getIntegratedFunction('register-attachment-add-action');
  * if (isAvailable) {
  *   registerIntegration({
  *     id: 'my-module:attach',
@@ -90,7 +90,7 @@ export type ComposerIntegrationContext = {
  * }
  * ```
  */
-export type ComposerIntegrationConfig = {
+export type AttachmentAddActionConfig = {
 	/**
 	 * Unique identifier for this integration entry.
 	 * Convention: '<module-name>:<action>', e.g. 'carbonio-files-ui:attach'.
@@ -111,5 +111,5 @@ export type ComposerIntegrationConfig = {
 	 * Called when the user clicks this item in the dropdown.
 	 * Use the provided context to add attachments or links to the composer.
 	 */
-	onClick: (context: ComposerIntegrationContext) => void;
+	onClick: (context: AttachmentAddActionContext) => void;
 };
