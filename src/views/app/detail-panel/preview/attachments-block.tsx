@@ -395,27 +395,25 @@ const Attachment = ({
 						</Padding>
 					)}
 					{saveActions.length > 0 && (
-						<Padding right="small">
-							<Dropdown
-								disablePortal
-								items={saveActions.map(
-									(action): DropdownItem => ({
-										id: action.id,
-										label: action.label,
-										icon: action.icon,
-										onClick: (): void => action.onClick(makeSaveContext())
-									})
-								)}
-							>
-								<Button
-									type={'ghost'}
-									color={'gray0'}
-									size="medium"
-									icon="MoreVertical"
-									onClick={(): void => undefined}
-								/>
-							</Dropdown>
-						</Padding>
+						<Dropdown
+							disablePortal
+							items={saveActions.map(
+								(action): DropdownItem => ({
+									id: action.id,
+									label: action.label,
+									icon: action.icon,
+									onClick: (): void => action.onClick(makeSaveContext())
+								})
+							)}
+						>
+							<Button
+								type={'ghost'}
+								color={'gray0'}
+								size="medium"
+								icon="MoreVertical"
+								onClick={(): void => undefined}
+							/>
+						</Dropdown>
 					)}
 				</AttachmentHoverBarContainer>
 			</Row>
