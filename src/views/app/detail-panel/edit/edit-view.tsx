@@ -189,7 +189,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	// Subscribe to draft deletion events to close the edit view when the draft is deleted elsewhere
 	useEffect(() => {
 		subscribeBusEvent(DraftTrashedEvent.EventName, (details) => {
-			if (details.draftId === draftId) {
+			if (details && 'draftId' in details && details.draftId === draftId) {
 				close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
 			}
 		});
