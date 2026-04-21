@@ -9,7 +9,7 @@ external Carbonio modules extend the mail UI without forking or directly importi
 
 | Integration point | Shell function ID | Document |
 |-------------------|-------------------|----------|
-| Composer "Add Attachments" dropdown | `register-composer-integration` | [composer-add-attachments.md](./composer-add-attachments.md) |
+| Composer "Add Attachments" dropdown | `register-attachment-add-action` | [attachment-add-actions.md](./attachment-add-actions.md) |
 | Attachment hover bar "Save to …" actions | `register-attachment-save-action` | *(coming soon)* |
 
 ---
