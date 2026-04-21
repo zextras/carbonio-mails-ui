@@ -9,10 +9,12 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from 'constants/index';
+import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { isSpam, isTrash } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { getMessageById } from 'store/emails/store';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
@@ -33,11 +35,13 @@ export const useMsgDeletePermanentlyFn = ({
 
 	const deleteMessage = useCallback(
 		async (onClose: () => void) => {
+			const totalSize = ids.reduce((sum, id) => sum + (getMessageById(id)?.size ?? 0), 0);
 			const response = await msgActionEmailStoreAction({
 				operation: 'delete',
 				ids
 			});
 			if (!('Fault' in response)) {
+				publishQuotaChangedEvent(totalSize);
 				onActionComplete && onActionComplete(ids);
 				createSnackbar({
 					key: `trash-${ids}`,

@@ -18,6 +18,7 @@ import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
+import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
@@ -109,6 +110,8 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 		);
 		handleNotifyMessagesCreated(messages);
 		triggerNotification(messages, navigate);
+		const totalSize = newMessages.reduce((sum, message) => sum + (message.s ?? 0), 0);
+		publishQuotaChangedEvent(totalSize);
 	}
 }
 

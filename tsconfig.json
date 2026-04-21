@@ -11,9 +11,6 @@
 			"@test-setup": ["__test__/test-setup.tsx"]
 		}
 	},
-	"include": [
-		"**/*",
-		".eslintrc.js"
-	],
+	"include": ["**/*", ".eslintrc.js"],
 	"exclude": ["./node_modules/*", "./dist/*"]
 }
