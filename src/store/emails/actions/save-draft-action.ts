@@ -6,6 +6,7 @@
 
 import { saveDraftSoapApi } from 'api/save-draft-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { createSoapDraftRequestFromEditor } from 'store/editor/editor-transformations';
 import { updateMessages, updateMessageStatus } from 'store/emails/store';
@@ -33,5 +34,6 @@ export async function saveDraftEmailStoreAction({
 			updateMessages([normalizedMessage]);
 			updateMessageStatus(normalizedMessage.id, API_REQUEST_STATUS.fulfilled);
 		});
+	publishQuotaChangedEvent(editor.size);
 	return result;
 }

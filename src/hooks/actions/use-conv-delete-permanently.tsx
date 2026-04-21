@@ -9,8 +9,10 @@ import { useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
+import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { isSpam, isTrash } from 'helpers/folders';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { getConversationMessages } from 'store/emails/store';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { PermanentlyDeleteModal } from 'ui-actions/permanently-delete-modal';
 
@@ -34,11 +36,19 @@ export const useConvDeletePermanentlyFn = ({
 
 	const deleteConversation = useCallback(
 		async (onClose: () => void) => {
+			const totalSize = ids.reduce((sum, id) => {
+				const convMsgSize = getConversationMessages(id).reduce(
+					(msgSum, msg) => msgSum + (msg.size ?? 0),
+					0
+				);
+				return sum + convMsgSize;
+			}, 0);
 			const response = await convActionEmailStoreAction({
 				operation: 'delete',
 				ids
 			});
 			if (!('Fault' in response)) {
+				publishQuotaChangedEvent(totalSize);
 				onActionComplete && onActionComplete(ids);
 				createSnackbar({
 					key: `trash-${ids}`,

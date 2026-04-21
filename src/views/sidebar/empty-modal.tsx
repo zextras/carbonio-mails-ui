@@ -18,6 +18,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, isTrash, ModalFooter } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { QuotaChangedEvent } from 'event-bus/events/quota-changed';
+import { publishEvent } from 'event-bus/publish-event';
 import { getFolderIdParts } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ModalProps } from 'types/utils';
@@ -29,6 +31,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const onConfirm = useCallback(() => {
 		folderActionSoapApi({ folder, recursive: true, op: 'empty', type: 'emails' }).then((res) => {
 			if (!('Fault' in res)) {
+				publishEvent(new QuotaChangedEvent());
 				createSnackbar({
 					key: `trash`,
 					replace: true,
