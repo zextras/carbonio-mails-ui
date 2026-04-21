@@ -4,24 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
-import type { ComposerIntegrationConfig } from 'types/integrations/composer-integration';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
+import type { AttachmentAddActionConfig } from 'types/integrations/attachment-add-action';
 
 /**
  * Registers a new entry in the composer's "Add Attachments" dropdown.
  *
  * This function is exposed to external Carbonio modules via the shell function registry
- * under the id 'register-composer-integration'. External modules should retrieve it with:
+ * under the id 'register-attachment-add-action'. External modules should retrieve it with:
  *
  * ```ts
- * const [registerIntegration, isAvailable] = getIntegratedFunction('register-composer-integration');
+ * const [registerIntegration, isAvailable] = getIntegratedFunction('register-attachment-add-action');
  * ```
  *
  * Registering the same `id` twice overwrites the previous entry (last-write-wins).
  * The registration is permanent for the lifetime of the session; call
- * useComposerIntegrationStore.getState().unregister(id) to remove it.
+ * useAttachmentAddActionStore.getState().unregister(id) to remove it.
  */
-export const registerComposerIntegration = (config: ComposerIntegrationConfig): void => {
+export const registerAttachmentAddAction = (config: AttachmentAddActionConfig): void => {
 	if (
 		!config.id ||
 		typeof config.id !== 'string' ||
@@ -30,8 +30,8 @@ export const registerComposerIntegration = (config: ComposerIntegrationConfig): 
 		typeof config.icon !== 'string' ||
 		typeof config.onClick !== 'function'
 	) {
-		console.warn('[carbonio-mails-ui] registerComposerIntegration: invalid config', config);
+		console.warn('[carbonio-mails-ui] registerAttachmentAddAction: invalid config', config);
 		return;
 	}
-	useComposerIntegrationStore.getState().register(config);
+	useAttachmentAddActionStore.getState().register(config);
 };

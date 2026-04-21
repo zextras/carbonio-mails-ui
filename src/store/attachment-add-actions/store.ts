@@ -6,26 +6,26 @@
 
 import { create } from 'zustand';
 
-import type { ComposerIntegrationConfig } from 'types/integrations/composer-integration';
+import type { AttachmentAddActionConfig } from 'types/integrations/attachment-add-action';
 
-type ComposerIntegrationStoreState = {
-	integrations: Map<string, ComposerIntegrationConfig>;
-	register: (config: ComposerIntegrationConfig) => void;
+type AttachmentAddActionStoreState = {
+	integrations: Map<string, AttachmentAddActionConfig>;
+	register: (config: AttachmentAddActionConfig) => void;
 	unregister: (id: string) => void;
 };
 
 /**
- * Zustand store that holds all registered composer integrations.
+ * Zustand store that holds all registered attachment-add-action integrations.
  *
  * Do not use this store directly to register integrations — call
- * registerComposerIntegration() instead, or use the shell-exposed function
- * 'register-composer-integration' from external modules.
+ * registerAttachmentAddAction() instead, or use the shell-exposed function
+ * 'register-attachment-add-action' from external modules.
  *
  * The store is initialized at module-import time, before any React rendering,
  * so external modules can safely call the registration function at any point
  * during their bootstrap sequence.
  */
-export const useComposerIntegrationStore = create<ComposerIntegrationStoreState>()((set) => ({
+export const useAttachmentAddActionStore = create<AttachmentAddActionStoreState>()((set) => ({
 	integrations: new Map(),
 
 	register: (config): void => {
@@ -44,5 +44,5 @@ export const useComposerIntegrationStore = create<ComposerIntegrationStoreState>
 }));
 
 /** Clears all registrations. Intended for use in tests only. */
-export const resetComposerIntegrationStore = (): void =>
-	useComposerIntegrationStore.setState({ integrations: new Map() });
+export const resetAttachmentAddActionStore = (): void =>
+	useAttachmentAddActionStore.setState({ integrations: new Map() });

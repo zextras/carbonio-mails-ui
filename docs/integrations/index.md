@@ -9,7 +9,7 @@ external Carbonio modules extend the mail UI without forking or directly importi
 
 | Integration point | Shell function ID | Document |
 |-------------------|-------------------|----------|
-| Composer "Add Attachments" dropdown | `register-composer-integration` | [composer-add-attachments.md](./composer-add-attachments.md) |
+| Composer "Add Attachments" dropdown | `register-attachment-add-action` | [attachment-add-actions.md](./attachment-add-actions.md) |
 | Attachment hover bar "Save to …" actions | `register-attachment-save-action` | *(coming soon)* |
 
 ---
@@ -136,31 +136,31 @@ Key rules:
 Each integration point exports a `resetXxxStore()` helper for tests.
 
 ```ts
-import { useComposerIntegrationStore, resetComposerIntegrationStore }
-  from 'store/composer-integrations/store';
+import { useAttachmentAddActionStore, resetAttachmentAddActionStore }
+  from 'store/attachment-add-actions/store';
 
-beforeEach(() => resetComposerIntegrationStore());
+beforeEach(() => resetAttachmentAddActionStore());
 
 it('registers an entry', () => {
-  useComposerIntegrationStore.getState().register({
+  useAttachmentAddActionStore.getState().register({
     id: 'test:item', label: 'Test', icon: 'StarOutline', onClick: vi.fn()
   });
-  expect(useComposerIntegrationStore.getState().integrations.size).toBe(1);
+  expect(useAttachmentAddActionStore.getState().integrations.size).toBe(1);
 });
 
 it('overwrites duplicate ids', () => {
   const first = vi.fn();
   const second = vi.fn();
-  useComposerIntegrationStore.getState().register({ id: 'x', label: '', icon: '', onClick: first });
-  useComposerIntegrationStore.getState().register({ id: 'x', label: '', icon: '', onClick: second });
-  expect(useComposerIntegrationStore.getState().integrations.get('x')?.onClick).toBe(second);
+  useAttachmentAddActionStore.getState().register({ id: 'x', label: '', icon: '', onClick: first });
+  useAttachmentAddActionStore.getState().register({ id: 'x', label: '', icon: '', onClick: second });
+  expect(useAttachmentAddActionStore.getState().integrations.get('x')?.onClick).toBe(second);
 });
 
 it('preserves insertion order', () => {
   ['a', 'b', 'c'].forEach((id) =>
-    useComposerIntegrationStore.getState().register({ id, label: id, icon: '', onClick: vi.fn() })
+    useAttachmentAddActionStore.getState().register({ id, label: id, icon: '', onClick: vi.fn() })
   );
-  expect(Array.from(useComposerIntegrationStore.getState().integrations.keys()))
+  expect(Array.from(useAttachmentAddActionStore.getState().integrations.keys()))
     .toEqual(['a', 'b', 'c']);
 });
 ```
@@ -171,7 +171,7 @@ Populate the store directly rather than mocking shell functions:
 
 ```ts
 beforeEach(() => {
-  useComposerIntegrationStore.getState().register({
+  useAttachmentAddActionStore.getState().register({
     id: 'test:attach',
     label: 'Add from Test',
     icon: 'DriveOutline',
@@ -179,5 +179,5 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => resetComposerIntegrationStore());
+afterEach(() => resetAttachmentAddActionStore());
 ```

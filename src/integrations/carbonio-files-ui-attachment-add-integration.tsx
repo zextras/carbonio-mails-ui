@@ -10,7 +10,7 @@ import { useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import { t, useIntegratedFunction, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
-import { useComposerIntegrationStore } from 'store/composer-integrations/store';
+import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
 import { ArrayOneOrMore, NodeWithMetadata } from 'types/integrations/carbonio-files-ui';
 import { BASE_64_CONVERSION_RATE } from 'views/app/detail-panel/edit/edit-utils-hooks/constants';
 import {
@@ -33,7 +33,7 @@ import { SmartlinkFromFilesModal } from 'views/app/detail-panel/edit/parts/smart
  *
  * Each entry is unregistered when the component unmounts.
  */
-export const useRegisterFilesComposerIntegrations = (): void => {
+export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const maxMessageSizeStr = useUserSettings().attrs?.zimbraMtaMaxMessageSize as string | undefined;
@@ -51,7 +51,7 @@ export const useRegisterFilesComposerIntegrations = (): void => {
 			return undefined;
 		}
 
-		useComposerIntegrationStore.getState().register({
+		useAttachmentAddActionStore.getState().register({
 			id: 'carbonio-files-ui:attach',
 			label: t('composer.attachment.files', 'Add from Files'),
 			icon: 'DriveOutline',
@@ -137,7 +137,7 @@ export const useRegisterFilesComposerIntegrations = (): void => {
 		});
 
 		return (): void => {
-			useComposerIntegrationStore.getState().unregister('carbonio-files-ui:attach');
+			useAttachmentAddActionStore.getState().unregister('carbonio-files-ui:attach');
 		};
 	}, [
 		closeModal,
@@ -156,7 +156,7 @@ export const useRegisterFilesComposerIntegrations = (): void => {
 			return undefined;
 		}
 
-		useComposerIntegrationStore.getState().register({
+		useAttachmentAddActionStore.getState().register({
 			id: 'carbonio-files-ui:link',
 			label: t('composer.attachment.url', 'Add public link from Files'),
 			icon: 'Link2',
@@ -214,7 +214,7 @@ export const useRegisterFilesComposerIntegrations = (): void => {
 		});
 
 		return (): void => {
-			useComposerIntegrationStore.getState().unregister('carbonio-files-ui:link');
+			useAttachmentAddActionStore.getState().unregister('carbonio-files-ui:link');
 		};
 	}, [
 		createSnackbar,
