@@ -28,7 +28,7 @@
 import { useEffect } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 
 /** Integration key that carbonio-nextcloud-ui registers for its file picker. */
 const SELECT_FILES_INTEGRATION = 'fr.zextras.nextcloud-carbonio-ui.integrations.select-files';
@@ -40,9 +40,9 @@ type AttachmentAddActionContext = {
 		contentType: string;
 		size: number;
 	}) => void;
-	uploadFiles: (files: File[]) => Promise<
-		Array<{ attachmentId: string; name: string; contentType: string; size: number }>
-	>;
+	uploadFiles: (
+		files: File[]
+	) => Promise<Array<{ attachmentId: string; name: string; contentType: string; size: number }>>;
 };
 
 /**
@@ -57,30 +57,28 @@ export const useRegisterNextcloudIntegrations = (): void => {
 
 	// Reactive: re-registers whenever the Nextcloud file picker becomes
 	// available or unavailable (i.e. when the Nextcloud module mounts/unmounts).
-	const [selectFiles, isSelectFilesAvailable] = useIntegratedFunction(SELECT_FILES_INTEGRATION);
+	// const [selectFiles, isSelectFilesAvailable] = useIntegratedFunction(SELECT_FILES_INTEGRATION);
 
 	useEffect(() => {
-		if (!isSelectFilesAvailable) {
+		/* if (!isSelectFilesAvailable) {
 			return undefined;
-		}
+		} */
 
 		// Retrieve the registration function exposed by carbonio-mails-ui.
 		// It is registered at module-load time, so it is always available by
 		// the time any React component mounts.
-		const [registerAttachmentAddAction, isRegisterAvailable] = getIntegratedFunction(
-			'register-attachment-add-action'
-		);
+		const [registerAttachmentAddAction] = getIntegratedFunction('register-attachment-add-action');
 
-		if (!isRegisterAvailable) {
+		/* if (!isRegisterAvailable) {
 			return undefined;
-		}
+		} */
 
 		(registerAttachmentAddAction as (config: unknown) => void)({
 			id: 'nextcloud:attach',
 			label: t('composer.attachment.nextcloud', 'Add from Nextcloud'),
 			icon: 'CloudDownloadOutline',
 			onClick: (ctx: AttachmentAddActionContext) => {
-				selectFiles(async (files: File[]) => {
+				/* selectFiles(async (files: File[]) => {
 					// ctx.uploadFiles handles uploading browser File objects to the
 					// mail server and returns the successfully uploaded attachments.
 					const uploaded = await ctx.uploadFiles(files);
@@ -107,8 +105,8 @@ export const useRegisterNextcloudIntegrations = (): void => {
 										),
 						autoHideTimeout: 4000
 					});
-				});
+				}); */
 			}
 		});
-	}, [createSnackbar, isSelectFilesAvailable, selectFiles]);
+	}, [createSnackbar]);
 };

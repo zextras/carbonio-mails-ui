@@ -7,12 +7,16 @@ import React, { FC, PropsWithChildren, useEffect } from 'react';
 
 import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 
+import { useRegisterNextcloudAttachmentSaveAction } from '../mocks/carbonio-nextcloud-ui/use-register-nextcloud-attachment-save-action';
+import { useRegisterNextcloudIntegrations } from '../mocks/carbonio-nextcloud-ui/use-register-nextcloud-integrations';
 import { addComponentsToShell } from 'app-utils/add-shell-components';
 import { registerShellActions } from 'app-utils/register-shell-actions';
 import { registerShellIntegrations } from 'app-utils/register-shell-integrations';
 
 export const ShellRegistrations: FC<PropsWithChildren> = ({ children }) => {
 	const isCarbonioCE = useIsCarbonioCE();
+	useRegisterNextcloudIntegrations();
+	useRegisterNextcloudAttachmentSaveAction();
 	useEffect(() => {
 		addComponentsToShell(isCarbonioCE);
 		registerShellIntegrations();

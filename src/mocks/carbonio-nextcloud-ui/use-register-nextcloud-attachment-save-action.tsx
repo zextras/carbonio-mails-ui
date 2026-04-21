@@ -27,21 +27,7 @@
 
 import { useEffect } from 'react';
 
-import { useSnackbar } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
-
-/** Integration key that carbonio-nextcloud-ui registers for its file save function. */
-const SAVE_FILE_INTEGRATION = 'fr.zextras.nextcloud-carbonio-ui.integrations.save-file';
-
-type AttachmentSaveActionContext = {
-	messageId: string;
-	partName: string;
-	filename: string;
-	contentType: string;
-	size: number;
-	downloadUrl: string;
-	getFile(): Promise<File>;
-};
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 
 /**
  * Registers the "Save to Nextcloud" entry into the attachment hover bar
@@ -52,20 +38,7 @@ type AttachmentSaveActionContext = {
  * hooks, or components directly.
  */
 export const useRegisterNextcloudAttachmentSaveAction = (): void => {
-	const createSnackbar = useSnackbar();
-
-	// Reactive: re-registers whenever the Nextcloud save function becomes
-	// available or unavailable (i.e. when the Nextcloud module mounts/unmounts).
-	const [saveFile, isSaveFileAvailable] = useIntegratedFunction(SAVE_FILE_INTEGRATION);
-
 	useEffect(() => {
-		if (!isSaveFileAvailable) {
-			return undefined;
-		}
-
-		// Retrieve the registration function exposed by carbonio-mails-ui.
-		// It is registered at module-load time, so it is always available by
-		// the time any React component mounts.
 		const [registerAttachmentSaveAction, isRegisterAvailable] = getIntegratedFunction(
 			'register-attachment-save-action'
 		);
@@ -78,30 +51,9 @@ export const useRegisterNextcloudAttachmentSaveAction = (): void => {
 			id: 'nextcloud:save',
 			label: t('label.save_to_nextcloud', 'Save to Nextcloud'),
 			icon: 'CloudUploadOutline',
-			onClick: async (ctx: AttachmentSaveActionContext) => {
-				// ctx.getFile() downloads the attachment from the mail server and
-				// returns it as a browser File object for uploading to Nextcloud.
-				const file = await ctx.getFile();
-
-				saveFile(file, (success: boolean) => {
-					createSnackbar({
-						key: 'nextcloud-save',
-						replace: true,
-						severity: success ? 'info' : 'warning',
-						hideButton: true,
-						label: success
-							? t(
-									'message.snackbar.att_saved_nextcloud',
-									'Attachment saved to Nextcloud'
-								)
-							: t(
-									'message.snackbar.att_err',
-									'There seems to be a problem when saving, please try again'
-								),
-						autoHideTimeout: 3000
-					});
-				});
+			onClick: (): void => {
+				/* saveFile(file, ...) */
 			}
 		});
-	}, [createSnackbar, isSaveFileAvailable, saveFile]);
+	}, []);
 };
