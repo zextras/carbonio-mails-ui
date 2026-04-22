@@ -10,7 +10,6 @@ import {
 	Button,
 	Container,
 	Dropdown,
-	DropdownItem,
 	getColor,
 	Icon,
 	Link,
@@ -76,11 +75,10 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)`
+const AttachmentContainer = styled(Row)`
 	border-radius: 0.125rem;
-	width: calc(50% - 0.25rem);
-	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
+	transition: background-color 0.2s ease-out;
+	cursor: pointer;
 	&:hover {
 		background-color: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
@@ -88,11 +86,6 @@ const AttachmentContainer = styled(Container)`
 			display: flex;
 		}
 	}
-	&:focus {
-		background-color: ${({ theme, background = 'currentColor' }): string =>
-			getColor(`${background}.focus`, theme)};
-	}
-	cursor: pointer;
 `;
 
 const AttachmentLink = styled.a`
@@ -117,6 +110,26 @@ const AttachmentExtension = styled(Text)<{
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
+const DropdownStretchWrapper = styled.div`
+	align-self: stretch;
+	display: flex;
+`;
+
+const FullHeightButtonWrapper = styled.div`
+	height: 100%;
+	transition: background-color 0.2s ease-out;
+	&:hover {
+		background-color: ${({ theme }): string => getColor('gray3.hover', theme)};
+	}
+	& > * {
+		height: 100%;
+		grid-template-rows: 100%;
+	}
+	& * {
+		background-color: transparent !important;
+	}
+`;
+
 const Attachment = ({
 	filename,
 	size,
@@ -133,6 +146,7 @@ const Attachment = ({
 	const { createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
 
+	const [openDropdown, setOpenDropdown] = useState(false);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 
@@ -314,117 +328,179 @@ const Attachment = ({
 	const attachItemColor = useAttachmentIconColor(att);
 	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
+	const dropdownItems = useMemo(
+		() => [
+			{
+				id: 'download',
+				label: t('label.download', 'Download'),
+				icon: 'DownloadOutline',
+				onClick: downloadAttachment
+			},
+			...saveActions.map((action) => ({
+				id: action.id,
+				label: action.label,
+				icon: action.icon,
+				onClick: (): void => action.onClick(makeSaveContext())
+			})),
+			...(isAvailable && pType === 'vcard'
+				? [
+						{
+							id: 'import-contacts',
+							label: t('label.import_to_contacts', 'Import to Contacts'),
+							icon: 'UploadOutline',
+							onClick: onCreateContact
+						}
+					]
+				: []),
+			{
+				id: 'delete',
+				label: t('label.delete', 'Delete'),
+				icon: 'DeletePermanentlyOutline',
+				onClick: removeAttachment
+			}
+		],
+		[
+			downloadAttachment,
+			isAvailable,
+			makeSaveContext,
+			onCreateContact,
+			pType,
+			removeAttachment,
+			saveActions,
+			t
+		]
+	);
+
 	return (
-		<AttachmentContainer
+		<Row
+			width={'calc(50% - 0.25rem)'}
 			orientation="horizontal"
 			mainAlignment="flex-start"
-			height="fit"
-			background={'gray3'}
-			data-testid={`attachment-container-${filename}`}
+			background={'transparent'}
+			padding={{ bottom: 'small' }}
 		>
-			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
-				<Row
-					padding={{ all: 'small' }}
+			<Container
+				width={'100%'}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+				height="100%"
+				background={'gray3'}
+				data-testid={`attachment-container-${filename}`}
+			>
+				<AttachmentContainer
+					orientation="horizontal"
 					mainAlignment="flex-start"
-					onClick={preview}
+					height="fit-content"
 					takeAvailableSpace
+					background={'gray3'}
 				>
-					<AttachmentExtension $background={attachmentExtensionColor}>
-						{attachmentExtensionContent}
-					</AttachmentExtension>
-					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>
-								{filename ||
-									t('label.attachement_unknown', {
-										mimeType: att?.contentType,
-										defaultValue: 'Unknown <{{mimeType}}>'
-									})}
-							</Text>
-						</Padding>
-						<Text color="gray1" size="small">
-							{sizeLabel}
-						</Text>
-					</Row>
-				</Row>
-			</Tooltip>
-			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer orientation="horizontal">
-					<Padding right="small">
-						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								data-testid={`download-attachment-${filename}`}
-								size="medium"
-								icon="DownloadOutline"
-								onClick={downloadAttachment}
-							/>
-						</Tooltip>
-					</Padding>
-					{!isEml && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-DeletePermanentlyOutline`}
-								label={t('label.delete', 'Delete')}
-							>
-								<Button
-									type={'ghost'}
-									color={'gray0'}
-									data-testid={`remove-attachments-${filename}`}
-									size="medium"
-									icon="DeletePermanentlyOutline"
-									onClick={removeAttachment}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
-					{isAvailable && pType === 'vcard' && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-UploadOutline`}
-								label={t('label.import_to_contacts', 'Import to Contacts')}
-							>
-								<Button
-									data-testid={`import-contacts-${filename}`}
-									size="small"
-									icon="UploadOutline"
-									onClick={onCreateContact}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
-					{saveActions.length > 0 && (
-						<Dropdown
-							disablePortal
-							items={saveActions.map(
-								(action): DropdownItem => ({
-									id: action.id,
-									label: action.label,
-									icon: action.icon,
-									onClick: (): void => action.onClick(makeSaveContext())
-								})
-							)}
+					<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
+						<Row
+							height={'fill'}
+							padding={{ all: 'small' }}
+							mainAlignment="flex-start"
+							onClick={preview}
+							takeAvailableSpace
 						>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								size="medium"
-								icon="MoreVertical"
-								onClick={(): void => undefined}
-							/>
+							<AttachmentExtension $background={attachmentExtensionColor}>
+								{attachmentExtensionContent}
+							</AttachmentExtension>
+							<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+								<Padding style={{ width: '100%' }} bottom="extrasmall">
+									<Text>
+										{filename ||
+											t('label.attachement_unknown', {
+												mimeType: att?.contentType,
+												defaultValue: 'Unknown <{{mimeType}}>'
+											})}
+									</Text>
+								</Padding>
+								<Text color="gray1" size="small">
+									{sizeLabel}
+								</Text>
+							</Row>
+						</Row>
+					</Tooltip>
+					<Row orientation="horizontal" crossAlignment="center">
+						<AttachmentHoverBarContainer orientation="horizontal">
+							<Padding right="small">
+								<Tooltip
+									key={`${messageId}-DownloadOutline`}
+									label={t('label.download', 'Download')}
+								>
+									<Button
+										type={'ghost'}
+										color={'gray0'}
+										data-testid={`download-attachment-${filename}`}
+										size="medium"
+										icon="DownloadOutline"
+										onClick={downloadAttachment}
+									/>
+								</Tooltip>
+							</Padding>
+							{!isEml && (
+								<Padding right="small">
+									<Tooltip
+										key={`${messageId}-DeletePermanentlyOutline`}
+										label={t('label.delete', 'Delete')}
+									>
+										<Button
+											type={'ghost'}
+											color={'gray0'}
+											data-testid={`remove-attachments-${filename}`}
+											size="medium"
+											icon="DeletePermanentlyOutline"
+											onClick={removeAttachment}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+							{isAvailable && pType === 'vcard' && (
+								<Padding right="small">
+									<Tooltip
+										key={`${messageId}-UploadOutline`}
+										label={t('label.import_to_contacts', 'Import to Contacts')}
+									>
+										<Button
+											data-testid={`import-contacts-${filename}`}
+											size="small"
+											icon="UploadOutline"
+											onClick={onCreateContact}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+						</AttachmentHoverBarContainer>
+					</Row>
+				</AttachmentContainer>
+				{!isEml && (
+					<DropdownStretchWrapper>
+						<Dropdown items={dropdownItems} style={{ height: '100%' }} forceOpen={openDropdown}>
+							<Row width={'fit'} height={'100%'}>
+								<FullHeightButtonWrapper>
+									<Button
+										style={{ alignSelf: 'stretch' }}
+										type={'ghost'}
+										color={'gray0'}
+										size="medium"
+										data-testid={`attachment-actions-${filename}`}
+										icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+										onClick={(): void => setOpenDropdown((prev) => !prev)}
+									/>
+								</FullHeightButtonWrapper>
+							</Row>
 						</Dropdown>
-					)}
-				</AttachmentHoverBarContainer>
-			</Row>
-			<AttachmentLink
-				rel="noopener"
-				ref={inputRef2}
-				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
-			/>
-			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
-		</AttachmentContainer>
+					</DropdownStretchWrapper>
+				)}
+				<AttachmentLink
+					rel="noopener"
+					ref={inputRef2}
+					target="_blank"
+					href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
+				/>
+				<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
+			</Container>
+		</Row>
 	);
 };
 
