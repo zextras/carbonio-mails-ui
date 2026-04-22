@@ -475,21 +475,28 @@ const Attachment = ({
 				</AttachmentContainer>
 				{!isEml && (
 					<DropdownStretchWrapper>
-						<Dropdown items={dropdownItems} style={{ height: '100%' }} forceOpen={openDropdown}>
-							<Row width={'fit'} height={'100%'}>
-								<FullHeightButtonWrapper>
-									<Button
-										style={{ alignSelf: 'stretch' }}
-										type={'ghost'}
-										color={'gray0'}
-										size="medium"
-										data-testid={`attachment-actions-${filename}`}
-										icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-										onClick={(): void => setOpenDropdown((prev) => !prev)}
-									/>
-								</FullHeightButtonWrapper>
-							</Row>
-						</Dropdown>
+						<Tooltip label={'label'}>
+							<Dropdown
+								items={dropdownItems}
+								style={{ height: '100%' }}
+								onOpen={(): void => setOpenDropdown(true)}
+								onClose={(): void => setOpenDropdown(false)}
+							>
+								<Row width={'fit'} height={'100%'}>
+									<FullHeightButtonWrapper>
+										<Button
+											style={{ alignSelf: 'stretch' }}
+											type={'ghost'}
+											color={'gray0'}
+											size="medium"
+											data-testid={`attachment-actions-${filename}`}
+											icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+											onClick={(): undefined => undefined}
+										/>
+									</FullHeightButtonWrapper>
+								</Row>
+							</Dropdown>
+						</Tooltip>
 					</DropdownStretchWrapper>
 				)}
 				<AttachmentLink
