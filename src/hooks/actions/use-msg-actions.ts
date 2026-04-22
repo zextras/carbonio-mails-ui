@@ -129,7 +129,7 @@ export const useMsgActions = ({
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);
 	const archiveDescriptor = useMsgArchiveDescriptor({
 		messagesIds: [message.id],
-		folderId
+		folderId: routeFolderId ?? folderId
 	});
 
 	const redirectDescriptor = useMsgRedirectDescriptor(message.id, folderId);
