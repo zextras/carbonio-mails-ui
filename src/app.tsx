@@ -15,6 +15,7 @@ import { GlobalModalManager } from 'views/global-modal-manager';
 import { InitializeFolders } from 'views/sidebar/initialize-folders';
 import { InitializeServicesCatalog } from 'views/sidebar/initialize-services-catalog';
 import { InitializeTags } from 'views/sidebar/initialize-tags';
+import { QuotaRefreshHandler } from 'views/sidebar/quota-refresh-handler';
 import { SyncDataHandler } from 'views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => (
@@ -28,6 +29,7 @@ const App = (): React.JSX.Element => (
 			<InitializeTags />
 			<SyncDataHandler />
 			<InitializeServicesCatalog />
+			<QuotaRefreshHandler />
 		</GlobalModalManager>
 	</AuthGuard>
 );
