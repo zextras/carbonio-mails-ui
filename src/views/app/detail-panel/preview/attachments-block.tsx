@@ -3,15 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	ReactElement,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import {
@@ -40,6 +32,7 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import {
+	PreviewSaveAttachmentItem,
 	PreviewSaveAttachmentProviderContext,
 	usePreviewSaveAttachmentProviders
 } from './preview-utils-hooks/use-preview-save-attachment-providers';
@@ -139,33 +132,6 @@ const AttachmentExtension = styled(Text)<{
 	text-transform: uppercase;
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
-
-/**
- * Renders nothing. Calls usePreviewSaveAttachmentProviders for a single attachment
- * and fires execute() once for the given provider. Used to implement "save all to
- * external provider" by rendering one executor per attachment.
- */
-const PerAttachmentProviderExecutor = ({
-	context,
-	providerId
-}: {
-	context: PreviewSaveAttachmentProviderContext;
-	providerId: string;
-}): null => {
-	const providers = usePreviewSaveAttachmentProviders(context);
-	const executedRef = useRef(false);
-
-	useEffect(() => {
-		if (executedRef.current || providers.length === 0) return;
-		const provider = providers.find((p) => p.id === providerId);
-		if (provider) {
-			executedRef.current = true;
-			provider.execute();
-		}
-	}, [providers, providerId]);
-
-	return null;
-};
 
 const Attachment = ({
 	filename,
@@ -315,12 +281,21 @@ const Attachment = ({
 
 	const [openDropdown, setOpenDropdown] = useState(false);
 
-	const saveProviders = usePreviewSaveAttachmentProviders({
-		filename: filename ?? '',
-		contentType: att.contentType,
-		size,
-		downloadUrl: downloadlink
-	});
+	const saveContext = useMemo<PreviewSaveAttachmentProviderContext>(
+		() => ({
+			attachments: [
+				{
+					filename: filename ?? '',
+					contentType: att.contentType,
+					size,
+					downloadUrl: downloadlink
+				}
+			]
+		}),
+		[filename, att.contentType, size, downloadlink]
+	);
+
+	const saveProviders = usePreviewSaveAttachmentProviders(saveContext);
 
 	const dropdownItems = useMemo<DropdownItem[]>(() => {
 		const items: DropdownItem[] = [];
@@ -655,10 +630,10 @@ const AttachmentsBlock = ({
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
 	const theme = useTheme();
 
-	// Contexts for all attachments — used both for the per-card hook and the "save all" links.
-	const allAttachmentContexts = useMemo<PreviewSaveAttachmentProviderContext[]>(
-		() =>
-			attachments.map((att) => ({
+	// Context with all attachments — passed to external providers for the "save all" links.
+	const saveAllContext = useMemo<PreviewSaveAttachmentProviderContext>(
+		() => ({
+			attachments: attachments.map((att) => ({
 				filename: att.filename ?? '',
 				contentType: att.contentType ?? '',
 				size: att.size ?? 0,
@@ -667,28 +642,11 @@ const AttachmentsBlock = ({
 					messageSubject,
 					attachments: [att.name]
 				})
-			})),
+			}))
+		}),
 		[attachments, messageId, messageSubject]
 	);
-
-	// Use the first attachment's context to discover registered providers (label/icon).
-	// All providers are registered globally so the list is the same regardless of context.
-	const firstAttachmentContext = useMemo<PreviewSaveAttachmentProviderContext>(
-		() => allAttachmentContexts[0] ?? { filename: '', contentType: '', size: 0, downloadUrl: '' },
-		[allAttachmentContexts]
-	);
-	const saveProvidersForLinks = usePreviewSaveAttachmentProviders(firstAttachmentContext);
-
-	// Tracks which provider the user wants to "save all" to. Each click increments batchKey
-	// so that executor components are remounted (and re-fire) on repeated clicks.
-	const [executionTrigger, setExecutionTrigger] = useState<{
-		batchKey: number;
-		providerId: string;
-	} | null>(null);
-
-	const handleSaveAllToProvider = useCallback((providerId: string): void => {
-		setExecutionTrigger((prev) => ({ batchKey: (prev?.batchKey ?? 0) + 1, providerId }));
-	}, []);
+	const saveProvidersForLinks = usePreviewSaveAttachmentProviders(saveAllContext);
 
 	const actionsDownloadLink = useMemo(
 		() =>
@@ -872,7 +830,7 @@ const AttachmentsBlock = ({
 						key={provider.id}
 						size="medium"
 						onClick={(): void => {
-							handleSaveAllToProvider(provider.id);
+							provider.execute();
 						}}
 						style={{ paddingLeft: '0.5rem' }}
 					>
@@ -880,14 +838,6 @@ const AttachmentsBlock = ({
 					</Link>
 				))}
 			</Row>
-			{executionTrigger !== null &&
-				allAttachmentContexts.map((ctx, i) => (
-					<PerAttachmentProviderExecutor
-						key={`${executionTrigger.batchKey}-${i}`}
-						context={ctx}
-						providerId={executionTrigger.providerId}
-					/>
-				))}
 		</Container>
 	) : (
 		<></>
