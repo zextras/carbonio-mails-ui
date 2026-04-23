@@ -80,7 +80,7 @@
 		"msw": "2.12.14",
 		"playwright": "1.57.0",
 		"react-redux": "8.0.5",
-		"sonarqube-scanner": "4.3.5",
+		"sonarqube-scanner": "4.3.6",
 		"ts-node": "10.9.1",
 		"typescript": "5.7.2",
 		"vitest": "4.1.0",
