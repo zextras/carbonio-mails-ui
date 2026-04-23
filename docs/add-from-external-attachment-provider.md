@@ -119,13 +119,13 @@ function openMyFilePicker(onFiles: (files: File[]) => void): void {
 
 ---
 
-## Full example — Nextcloud module
+## Full example — external storage module
 
 ```typescript
-// src/bootstrap.ts  (inside carbonio-nextcloud-ui)
+// src/bootstrap.ts  (inside carbonio-external-storage-ui)
 
 import { registerActions, t } from '@zextras/carbonio-shell-ui';
-import { openNextcloudPicker } from './nextcloud-picker';
+import { openExternalFilePicker } from './external-file-picker';
 
 type EditorAddAttachmentProviderContext = {
   onFilesSelected: (files: File[]) => void;
@@ -133,18 +133,18 @@ type EditorAddAttachmentProviderContext = {
 
 export function registerMailEditorIntegration(): void {
   registerActions<EditorAddAttachmentProviderContext>({
-    id: 'nextcloud-editor-add-attachment',
+    id: 'external-storage-editor-add-attachment',
     type: 'mails-editor-add-attachment-provider',
     action: (context: EditorAddAttachmentProviderContext) => ({
-      id: 'nextcloud-editor-add-attachment',
-      label: t('nextcloud.add_attachment', 'Add from Nextcloud'),
+      id: 'external-storage-editor-add-attachment',
+      label: t('external_storage.add_attachment', 'Add from External Storage'),
       icon: 'CloudUploadOutline',
       execute: () => {
-        openNextcloudPicker({
-          onConfirm: async (nodes: NextcloudNode[]) => {
+        openExternalFilePicker({
+          onConfirm: async (nodes: ExternalFileNode[]) => {
             const files = await Promise.all(
               nodes.map(async (node) => {
-                const blob = await downloadFromNextcloud(node.id);
+                const blob = await downloadExternalFile(node.id);
                 return new File([blob], node.name, { type: node.mimeType });
               })
             );
@@ -158,7 +158,7 @@ export function registerMailEditorIntegration(): void {
 ```
 
 ```typescript
-// src/app.tsx  (inside carbonio-nextcloud-ui)
+// src/app.tsx  (inside carbonio-external-storage-ui)
 
 import { registerMailEditorIntegration } from './bootstrap';
 
