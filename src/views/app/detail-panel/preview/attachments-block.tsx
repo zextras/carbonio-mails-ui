@@ -7,10 +7,12 @@ import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState
 
 import styled from '@emotion/styled';
 import {
+	Button,
 	Container,
+	Dropdown,
+	DropdownItem,
 	getColor,
 	Icon,
-	Button,
 	Link,
 	Padding,
 	Row,
@@ -35,6 +37,7 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { usePreviewSaveAttachmentProviders } from './preview-utils-hooks/use-preview-save-attachment-providers';
 import { AppContext } from 'app-utils/app-context-initializer';
 import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
@@ -258,6 +261,80 @@ const Attachment = ({
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
+	const [openDropdown, setOpenDropdown] = useState(false);
+
+	const saveProviders = usePreviewSaveAttachmentProviders({
+		filename: filename ?? '',
+		contentType: att.contentType,
+		size,
+		downloadUrl: downloadlink
+	});
+
+	const dropdownItems = useMemo<DropdownItem[]>(() => {
+		const items: DropdownItem[] = [];
+
+		if (isUploadIntegrationAvailable) {
+			items.push({
+				id: 'save-to-files',
+				label: t('label.save_to_files', 'Save to Files'),
+				icon: 'DriveOutline',
+				onClick: (): void => {
+					uploadIntegration && uploadIntegration(actionTarget);
+				}
+			});
+		}
+
+		saveProviders.forEach((provider) => {
+			items.push({
+				id: provider.id,
+				label: provider.label,
+				icon: provider.icon,
+				onClick: (): void => {
+					provider.execute();
+				}
+			});
+		});
+
+		items.push({
+			id: 'download',
+			label: t('label.download', 'Download'),
+			icon: 'DownloadOutline',
+			onClick: downloadAttachment
+		});
+
+		if (!isEml) {
+			items.push({
+				id: 'delete',
+				label: t('label.delete', 'Delete'),
+				icon: 'DeletePermanentlyOutline',
+				onClick: removeAttachment
+			});
+		}
+
+		if (isAvailable && pType === 'vcard') {
+			items.push({
+				id: 'import-contacts',
+				label: t('label.import_to_contacts', 'Import to Contacts'),
+				icon: 'UploadOutline',
+				onClick: onCreateContact
+			});
+		}
+
+		return items;
+	}, [
+		isUploadIntegrationAvailable,
+		uploadIntegration,
+		actionTarget,
+		saveProviders,
+		downloadAttachment,
+		isEml,
+		removeAttachment,
+		isAvailable,
+		pType,
+		onCreateContact,
+		t
+	]);
+
 	const showEMLPreview = useCallback(() => {
 		openEmlStandalonePreview({ messageId, part });
 	}, [messageId, part]);
@@ -400,67 +477,23 @@ const Attachment = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && (
-						<Tooltip
-							key={`${messageId}-DriveOutline`}
-							label={t('label.save_to_files', 'Save to Files')}
-						>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								size="medium"
-								icon="DriveOutline"
-								onClick={(): void => {
-									uploadIntegration && uploadIntegration(actionTarget);
-								}}
-							/>
-						</Tooltip>
-					)}
-
-					<Padding right="small">
-						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								data-testid={`download-attachment-${filename}`}
-								size="medium"
-								icon="DownloadOutline"
-								onClick={downloadAttachment}
-							/>
-						</Tooltip>
-					</Padding>
-					{!isEml && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-DeletePermanentlyOutline`}
-								label={t('label.delete', 'Delete')}
-							>
-								<Button
-									type={'ghost'}
-									color={'gray0'}
-									data-testid={`remove-attachments-${filename}`}
-									size="medium"
-									icon="DeletePermanentlyOutline"
-									onClick={removeAttachment}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
-					{isAvailable && pType === 'vcard' && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-UploadOutline`}
-								label={t('label.import_to_contacts', 'Import to Contacts')}
-							>
-								<Button
-									data-testid={`import-contacts-${filename}`}
-									size="small"
-									icon="UploadOutline"
-									onClick={onCreateContact}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
+					<Dropdown
+						items={dropdownItems}
+						onOpen={(): void => {
+							setOpenDropdown(true);
+						}}
+						onClose={(): void => {
+							setOpenDropdown(false);
+						}}
+					>
+						<Button
+							type="ghost"
+							color="gray0"
+							size="medium"
+							icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+							onClick={(): undefined => undefined}
+						/>
+					</Dropdown>
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
