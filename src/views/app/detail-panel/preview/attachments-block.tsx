@@ -74,11 +74,10 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)`
+const AttachmentContainer = styled(Row)`
 	border-radius: 0.125rem;
-	width: calc(50% - 0.25rem);
-	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
+	transition: background-color 0.2s ease-out;
+	cursor: pointer;
 	&:hover {
 		background-color: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
@@ -86,11 +85,26 @@ const AttachmentContainer = styled(Container)`
 			display: flex;
 		}
 	}
-	&:focus {
-		background-color: ${({ theme, background = 'currentColor' }): string =>
-			getColor(`${background}.focus`, theme)};
+`;
+
+const DropdownStretchWrapper = styled.div`
+	align-self: stretch;
+	display: flex;
+`;
+
+const FullHeightButtonWrapper = styled.div`
+	height: 100%;
+	transition: background-color 0.2s ease-out;
+	&:hover {
+		background-color: ${({ theme }): string => getColor('gray3.hover', theme)};
 	}
-	cursor: pointer;
+	& > * {
+		height: 100%;
+		grid-template-rows: 100%;
+	}
+	& * {
+		background-color: transparent !important;
+	}
 `;
 
 const AttachmentLink = styled.a`
@@ -442,68 +456,129 @@ const Attachment = ({
 	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
 	return (
-		<AttachmentContainer
+		<Row
+			width={'calc(50% - 0.25rem)'}
 			orientation="horizontal"
 			mainAlignment="flex-start"
-			height="fit"
-			background={'gray3'}
-			data-testid={`attachment-container-${filename}`}
+			background={'transparent'}
+			padding={{ bottom: 'small' }}
 		>
-			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
-				<Row
-					padding={{ all: 'small' }}
+			<Container
+				width={'100%'}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+				height="100%"
+				background={'gray3'}
+				data-testid={`attachment-container-${filename}`}
+			>
+				<AttachmentContainer
+					orientation="horizontal"
 					mainAlignment="flex-start"
-					onClick={preview}
+					height="fit-content"
 					takeAvailableSpace
+					background={'gray3'}
 				>
-					<AttachmentExtension $background={attachmentExtensionColor}>
-						{attachmentExtensionContent}
-					</AttachmentExtension>
-					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>
-								{filename ||
-									t('label.attachement_unknown', {
-										mimeType: att?.contentType,
-										defaultValue: 'Unknown <{{mimeType}}>'
-									})}
-							</Text>
-						</Padding>
-						<Text color="gray1" size="small">
-							{sizeLabel}
-						</Text>
+					<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
+						<Row
+							height={'fill'}
+							padding={{ all: 'small' }}
+							mainAlignment="flex-start"
+							onClick={preview}
+							takeAvailableSpace
+						>
+							<AttachmentExtension $background={attachmentExtensionColor}>
+								{attachmentExtensionContent}
+							</AttachmentExtension>
+							<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+								<Padding style={{ width: '100%' }} bottom="extrasmall">
+									<Text>
+										{filename ||
+											t('label.attachement_unknown', {
+												mimeType: att?.contentType,
+												defaultValue: 'Unknown <{{mimeType}}>'
+											})}
+									</Text>
+								</Padding>
+								<Text color="gray1" size="small">
+									{sizeLabel}
+								</Text>
+							</Row>
+						</Row>
+					</Tooltip>
+					<Row orientation="horizontal" crossAlignment="center">
+						<AttachmentHoverBarContainer orientation="horizontal">
+							<Padding right="small">
+								<Tooltip
+									key={`${messageId}-DownloadOutline`}
+									label={t('label.download', 'Download')}
+								>
+									<Button
+										type={'ghost'}
+										color={'gray0'}
+										data-testid={`download-attachment-${filename}`}
+										size="medium"
+										icon="DownloadOutline"
+										onClick={downloadAttachment}
+									/>
+								</Tooltip>
+							</Padding>
+							{!isEml && (
+								<Padding right="small">
+									<Tooltip
+										key={`${messageId}-DeletePermanentlyOutline`}
+										label={t('label.delete', 'Delete')}
+									>
+										<Button
+											type={'ghost'}
+											color={'gray0'}
+											data-testid={`remove-attachments-${filename}`}
+											size="medium"
+											icon="DeletePermanentlyOutline"
+											onClick={removeAttachment}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+						</AttachmentHoverBarContainer>
 					</Row>
-				</Row>
-			</Tooltip>
-			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer orientation="horizontal">
-					<Dropdown
-						items={dropdownItems}
-						onOpen={(): void => {
-							setOpenDropdown(true);
-						}}
-						onClose={(): void => {
-							setOpenDropdown(false);
-						}}
-					>
-						<Button
-							type="ghost"
-							color="gray0"
-							size="medium"
-							icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-							onClick={(): undefined => undefined}
-						/>
-					</Dropdown>
-				</AttachmentHoverBarContainer>
-			</Row>
-			<AttachmentLink
-				rel="noopener"
-				ref={inputRef2}
-				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
-			/>
-			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
-		</AttachmentContainer>
+				</AttachmentContainer>
+				{!isEml && (
+					<DropdownStretchWrapper>
+						<Dropdown
+							items={dropdownItems}
+							style={{ height: '100%' }}
+							onOpen={(): void => {
+								setOpenDropdown(true);
+							}}
+							onClose={(): void => {
+								setOpenDropdown(false);
+							}}
+						>
+							<Row width={'fit'} height={'100%'}>
+								<FullHeightButtonWrapper>
+									<Button
+										style={{ alignSelf: 'stretch' }}
+										type={'ghost'}
+										color={'gray0'}
+										size="medium"
+										data-testid={`attachment-actions-${filename}`}
+										icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+										onClick={(): undefined => undefined}
+									/>
+								</FullHeightButtonWrapper>
+							</Row>
+						</Dropdown>
+					</DropdownStretchWrapper>
+				)}
+				<AttachmentLink
+					rel="noopener"
+					ref={inputRef2}
+					target="_blank"
+					href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
+				/>
+				<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
+			</Container>
+		</Row>
 	);
 };
 
