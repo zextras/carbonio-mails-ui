@@ -32,7 +32,6 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import {
-	PreviewSaveAttachmentItem,
 	PreviewSaveAttachmentProviderContext,
 	usePreviewSaveAttachmentProviders
 } from './preview-utils-hooks/use-preview-save-attachment-providers';
@@ -313,7 +312,7 @@ const Attachment = ({
 				label: t('label.save_to_files', 'Save to Files'),
 				icon: 'DriveOutline',
 				onClick: (): void => {
-					uploadIntegration && uploadIntegration(actionTarget);
+					uploadIntegration?.(actionTarget);
 				}
 			});
 		}
@@ -736,7 +735,7 @@ const AttachmentsBlock = ({
 			<Link
 				size="medium"
 				onClick={(): void => {
-					uploadIntegration && uploadIntegration(actionTarget);
+					uploadIntegration?.(actionTarget);
 				}}
 				style={{ paddingLeft: '0.5rem' }}
 			>

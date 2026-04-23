@@ -7,9 +7,10 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { useActions, useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 import { getMessageById } from 'store/emails/store';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
@@ -336,5 +337,140 @@ describe('Attachment link validation', () => {
 		expect(createPreviewParam.src).toBe(
 			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
 		);
+	});
+});
+
+describe('External save attachment providers', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(useActions as Mock).mockReturnValue([]);
+	});
+
+	test('provider label appears as a link in the footer when registered', () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		expect(screen.getByText('Save to External')).toBeVisible();
+	});
+
+	test('clicking the provider footer link calls provider.execute()', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByText('Save to External'));
+		expect(mockExecute).toHaveBeenCalledTimes(1);
+	});
+
+	test('provider item appears in attachment dropdown when registered', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External Storage',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Before opening the dropdown only the footer link is present
+		expect(screen.getAllByText('Save to External Storage')).toHaveLength(1);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// After opening the dropdown both the footer link and the dropdown item are present
+		expect(await screen.findAllByText('Save to External Storage')).toHaveLength(2);
+	});
+
+	test('clicking provider dropdown item calls provider.execute()', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External Storage',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+		// The dropdown item is a <div> while the footer link is an <a>
+		const allItems = await screen.findAllByText('Save to External Storage');
+		const dropdownItem = allItems.find((el) => el.tagName === 'DIV');
+		if (!dropdownItem) throw new Error('Dropdown item not found');
+		await user.click(dropdownItem);
+		expect(mockExecute).toHaveBeenCalledTimes(1);
+	});
+
+	test('no provider items shown in footer when none registered', () => {
+		(useActions as Mock).mockReturnValue([]);
+
+		setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		expect(screen.queryByText('Save to External')).not.toBeInTheDocument();
 	});
 });
