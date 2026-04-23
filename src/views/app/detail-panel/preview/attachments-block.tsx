@@ -287,6 +287,13 @@ const Attachment = ({
 	const dropdownItems = useMemo<DropdownItem[]>(() => {
 		const items: DropdownItem[] = [];
 
+		items.push({
+			id: 'download',
+			label: t('label.download', 'Download'),
+			icon: 'DownloadOutline',
+			onClick: downloadAttachment
+		});
+
 		if (isUploadIntegrationAvailable) {
 			items.push({
 				id: 'save-to-files',
@@ -307,13 +314,6 @@ const Attachment = ({
 					provider.execute();
 				}
 			});
-		});
-
-		items.push({
-			id: 'download',
-			label: t('label.download', 'Download'),
-			icon: 'DownloadOutline',
-			onClick: downloadAttachment
 		});
 
 		if (!isEml) {
