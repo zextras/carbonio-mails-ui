@@ -37,7 +37,9 @@ export const registerMockPreviewSaveAttachmentProvider = (): void => {
 						anchor.href = att.downloadUrl;
 						anchor.download = att.filename;
 						anchor.rel = 'noopener';
+						document.body.appendChild(anchor);
 						anchor.click();
+						document.body.removeChild(anchor);
 					});
 				}
 			};
