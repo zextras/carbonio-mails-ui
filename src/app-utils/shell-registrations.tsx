@@ -10,6 +10,7 @@ import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { addComponentsToShell } from 'app-utils/add-shell-components';
 import { registerShellActions } from 'app-utils/register-shell-actions';
 import { registerShellIntegrations } from 'app-utils/register-shell-integrations';
+import { registerMockExternalAttachmentProvider } from 'dev-mocks/mock-external-attachment-provider';
 
 export const ShellRegistrations: FC<PropsWithChildren> = ({ children }) => {
 	const isCarbonioCE = useIsCarbonioCE();
@@ -17,6 +18,7 @@ export const ShellRegistrations: FC<PropsWithChildren> = ({ children }) => {
 		addComponentsToShell(isCarbonioCE);
 		registerShellIntegrations();
 		registerShellActions();
+		registerMockExternalAttachmentProvider();
 	}, [isCarbonioCE]);
 
 	return <>{children}</>;
