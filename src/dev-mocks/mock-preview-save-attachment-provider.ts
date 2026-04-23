@@ -26,17 +26,19 @@ export const registerMockPreviewSaveAttachmentProvider = (): void => {
 		id: 'mock-external-storage-preview-save-attachment',
 		type: 'mails-preview-save-attachment-provider',
 		action: (context): PreviewSaveAttachmentProvider => {
-			const { downloadUrl, filename } = context as PreviewSaveAttachmentProviderContext;
+			const { attachments } = context as PreviewSaveAttachmentProviderContext;
 			return {
 				id: 'mock-external-storage-preview-save-attachment',
 				label: t('mock.external_storage.save_attachment', '[MOCK] Save to External Storage'),
 				icon: 'CloudUploadOutline',
 				execute: (): void => {
-					const anchor = document.createElement('a');
-					anchor.href = downloadUrl;
-					anchor.download = filename;
-					anchor.rel = 'noopener';
-					anchor.click();
+					attachments.forEach((att) => {
+						const anchor = document.createElement('a');
+						anchor.href = att.downloadUrl;
+						anchor.download = att.filename;
+						anchor.rel = 'noopener';
+						anchor.click();
+					});
 				}
 			};
 		}
