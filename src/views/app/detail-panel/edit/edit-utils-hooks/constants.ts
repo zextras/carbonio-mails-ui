@@ -10,4 +10,4 @@
  */
 export const BASE_64_CONVERSION_RATE = 1.33;
 
-export const ADD_ATTACHMENT_PROVIDER_TYPE = 'mails-add-attachment-provider';
+export const EDITOR_ADD_ATTACHMENT_PROVIDER_TYPE = 'mails-editor-add-attachment-provider';

@@ -11,7 +11,7 @@ import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useAddFromExternal } from '../edit-utils-hooks/use-add-from-external';
+import { useEditorAddAttachmentProviders } from '../edit-utils-hooks/use-editor-add-attachment-providers';
 import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
@@ -100,7 +100,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		onUploadFiles: uploadFromFiles
 	});
 
-	const externalProviders = useAddFromExternal({ editorId });
+	const externalProviders = useEditorAddAttachmentProviders({ editorId });
 
 	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
 

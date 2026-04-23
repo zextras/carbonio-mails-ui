@@ -8,31 +8,31 @@ import { useMemo } from 'react';
 
 import { Action, useActions } from '@zextras/carbonio-shell-ui';
 
-import { ADD_ATTACHMENT_PROVIDER_TYPE } from './constants';
+import { EDITOR_ADD_ATTACHMENT_PROVIDER_TYPE } from './constants';
 import { useLocalAttachmentOrSmartlink } from './use-local-attachment-or-smartlink';
 
-export type AddAttachmentProviderContext = {
+export type EditorAddAttachmentProviderContext = {
 	onFilesSelected: (files: File[]) => void;
 };
 
-export type AddAttachmentProvider = Action & { id: string };
+export type EditorAddAttachmentProvider = Action & { id: string };
 
-export const useAddFromExternal = ({
+export const useEditorAddAttachmentProviders = ({
 	editorId
 }: {
 	editorId: string;
-}): Array<AddAttachmentProvider> => {
+}): Array<EditorAddAttachmentProvider> => {
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
-	const context = useMemo<AddAttachmentProviderContext>(
+	const context = useMemo<EditorAddAttachmentProviderContext>(
 		() => ({ onFilesSelected: addLocalFiles }),
 		[addLocalFiles]
 	);
 
 	return (
-		useActions<AddAttachmentProviderContext, AddAttachmentProvider>(
+		useActions<EditorAddAttachmentProviderContext, EditorAddAttachmentProvider>(
 			context,
-			ADD_ATTACHMENT_PROVIDER_TYPE
+			EDITOR_ADD_ATTACHMENT_PROVIDER_TYPE
 		) ?? []
 	);
 };
