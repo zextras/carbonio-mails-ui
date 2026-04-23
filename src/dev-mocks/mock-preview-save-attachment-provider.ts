@@ -33,13 +33,18 @@ export const registerMockPreviewSaveAttachmentProvider = (): void => {
 				icon: 'CloudUploadOutline',
 				execute: (): void => {
 					attachments.forEach((att) => {
-						const anchor = document.createElement('a');
-						anchor.href = att.downloadUrl;
-						anchor.download = att.filename;
-						anchor.rel = 'noopener';
-						document.body.appendChild(anchor);
-						anchor.click();
-						document.body.removeChild(anchor);
+						fetch(att.downloadUrl, { credentials: 'same-origin' })
+							.then((res) => res.blob())
+							.then((blob) => {
+								const blobUrl = URL.createObjectURL(blob);
+								const anchor = document.createElement('a');
+								anchor.href = blobUrl;
+								anchor.download = att.filename;
+								document.body.appendChild(anchor);
+								anchor.click();
+								document.body.removeChild(anchor);
+								URL.revokeObjectURL(blobUrl);
+							});
 					});
 				}
 			};
