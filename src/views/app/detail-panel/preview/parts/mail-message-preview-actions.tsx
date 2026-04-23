@@ -49,7 +49,8 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		redirectDescriptor,
 		editAsNewDescriptor,
 		showOriginalDescriptor,
-		downloadEmlDescriptor
+		downloadEmlDescriptor,
+		archiveDescriptor
 	} = useMsgActions({
 		message,
 		shouldReplaceHistory
@@ -59,6 +60,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 
 	const actions = useMemo(() => {
 		const moreDropdownItems = [
+			normalizeDropdownActionItem(archiveDescriptor),
 			normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
 			normalizeDropdownActionItem(flagDescriptor),
 			normalizeDropdownActionItem(unflagDescriptor),
@@ -122,6 +124,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
 		messageUnreadDescriptor,
+		archiveDescriptor,
 		forwardAsAttachmentDescriptor,
 		flagDescriptor,
 		unflagDescriptor,

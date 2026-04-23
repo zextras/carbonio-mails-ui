@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import { isTrash } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
+import { useParams } from 'react-router-dom';
 
 import { useConvArchiveDescriptor } from './use-conv-archive';
 import { getFolderIdParts, getParentFolderId, isDraft } from 'helpers/folders';
@@ -62,6 +63,7 @@ export const useConvActions = ({
 	conversation
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
+	const { folderId: routeFolderId } = useParams<{ folderId?: string }>();
 	const firstConversationMessage =
 		find(messages, (msg) => {
 			const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
@@ -147,7 +149,7 @@ export const useConvActions = ({
 
 	const archiveDescriptor = useConvArchiveDescriptor({
 		conversationIds: [conversation.id],
-		folderId
+		folderId: routeFolderId ?? folderId
 	});
 
 	return useMemo(
