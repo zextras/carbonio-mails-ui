@@ -4,7 +4,7 @@
 
 `carbonio-mails-ui` exposes a generic integration point that lets any Carbonio module register itself as a file source in the mail **editor**'s attachment dropdown.
 
-When a provider is registered it appears as an extra item in the **Add attachments** menu, next to the built-in "Add from local" and "Add from Files" options. If no provider is registered the menu is unchanged — the feature is completely invisible until something registers against it.
+When a provider is registered it appears as an extra item in the **Add attachments** menu alongside the other available options. If no provider is registered the menu is unchanged — the feature is completely invisible until something registers against it.
 
 > **Naming rationale:** The type string and all related identifiers are scoped to `editor` (the compose/edit panel) rather than just `mails`. This keeps the door open for future, distinct integration points in other surfaces — for example, a hypothetical "save attachment to external storage" in the **preview** panel would use a different type string and a different hook.
 
