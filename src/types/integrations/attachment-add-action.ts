@@ -28,12 +28,6 @@ export type AttachmentAddActionContext = {
 	getText: () => { plainText: string; richText: string };
 
 	/**
-	 * Call this for each pre-uploaded file to attach it to the email.
-	 * The attachmentId must be a valid server-side attachment reference.
-	 */
-	onAttachmentAdded: (attachment: UploadedAttachment) => void;
-
-	/**
 	 * Call this to prepend one or more hyperlinks into the email body.
 	 * Supply an optional label for the rich-text anchor text; falls back to the URL.
 	 */

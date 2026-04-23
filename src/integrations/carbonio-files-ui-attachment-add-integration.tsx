@@ -11,6 +11,7 @@ import { t, useIntegratedFunction, useUserSettings } from '@zextras/carbonio-she
 import { filter, map } from 'lodash';
 
 import { useAttachmentAddActionStore } from 'store/attachment-add-actions/store';
+import { useEditorsStore } from 'store/editor/store';
 import { ArrayOneOrMore, NodeWithMetadata } from 'types/integrations/carbonio-files-ui';
 import { BASE_64_CONVERSION_RATE } from 'views/app/detail-panel/edit/edit-utils-hooks/constants';
 import {
@@ -40,9 +41,7 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 	const maxAllowedMailSize = parseInt(maxMessageSizeStr ?? '0', 10);
 
 	const [selectNodes, isSelectNodesAvailable] = useIntegratedFunction('select-nodes');
-	const [uploadTo, isUploadAvailable] = useIntegratedFunction(
-		'upload-to-target-and-get-target-id'
-	);
+	const [uploadTo, isUploadAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
 	const [getLink, isGetLinkAvailable] = useIntegratedFunction('get-link');
 
 	// "Add from Files" integration
@@ -74,31 +73,31 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 								(uploadTo as UploadToTargetIntegratedFunction)({
 									nodeId: node.id,
 									targetModule: 'MAILS'
-								}).then(({ attachmentId }) =>
-									ctx.onAttachmentAdded({
-										attachmentId,
-										name: node.name,
-										contentType: node.mime_type,
-										size: node.size
-									})
-								)
+								}).then(({ attachmentId }) => {
+									useEditorsStore.getState().addUnsavedAttachments(ctx.editorId, [
+										{
+											filename: node.name,
+											contentType: node.mime_type,
+											size: node.size,
+											aid: attachmentId,
+											isInline: false,
+											uploadStatus: { status: 'completed', progress: 0 }
+										}
+									]);
+								})
 							);
 
 							Promise.allSettled(promises).then((res) => {
 								const success = filter(res, ['status', 'fulfilled']);
 								const allSuccess = res.length === success.length;
-								const allFails =
-									res.length === filter(res, ['status', 'rejected']).length;
+								const allFails = res.length === filter(res, ['status', 'rejected']).length;
 								createSnackbar({
 									key: 'files-attachment',
 									replace: false,
 									severity: allSuccess ? 'info' : 'warning',
 									hideButton: true,
 									label: allSuccess
-										? t(
-												'message.snackbar.all_att_added',
-												'Attachments added successfully'
-											)
+										? t('message.snackbar.all_att_added', 'Attachments added successfully')
 										: allFails
 											? t(
 													'message.snackbar.att_err_adding',
@@ -177,8 +176,7 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 								value: { url?: string | null };
 							}>;
 							const allSuccess = res.length === success.length;
-							const allFails =
-								res.length === filter(res, ['status', 'rejected']).length;
+							const allFails = res.length === filter(res, ['status', 'rejected']).length;
 
 							createSnackbar({
 								key: 'public-link',
@@ -186,10 +184,7 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 								severity: allSuccess ? 'info' : 'warning',
 								hideButton: true,
 								label: allSuccess
-									? t(
-											'message.snackbar.all_link_copied',
-											'Public link copied successfully'
-										)
+									? t('message.snackbar.all_link_copied', 'Public link copied successfully')
 									: allFails
 										? t(
 												'message.snackbar.link_copying_error',
@@ -203,9 +198,7 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 							});
 
 							ctx.onLinksInserted(
-								success
-									.map((r) => ({ url: r.value?.url ?? '' }))
-									.filter((l) => l.url)
+								success.map((r) => ({ url: r.value?.url ?? '' })).filter((l) => l.url)
 							);
 						});
 					}
@@ -216,11 +209,5 @@ export const useRegisterFilesAttachmentAddIntegrations = (): void => {
 		return (): void => {
 			useAttachmentAddActionStore.getState().unregister('carbonio-files-ui:link');
 		};
-	}, [
-		createSnackbar,
-		getLink,
-		isGetLinkAvailable,
-		isSelectNodesAvailable,
-		selectNodes
-	]);
+	}, [createSnackbar, getLink, isGetLinkAvailable, isSelectNodesAvailable, selectNodes]);
 };

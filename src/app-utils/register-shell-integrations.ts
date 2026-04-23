@@ -39,5 +39,4 @@ export const registerShellIntegrations = (): void => {
 			fn: openPrefilledComposerSharedFunction
 		}
 	);
-
 };

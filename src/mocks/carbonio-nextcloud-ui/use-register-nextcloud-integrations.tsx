@@ -83,8 +83,6 @@ export const useRegisterNextcloudIntegrations = (): void => {
 					// mail server and returns the successfully uploaded attachments.
 					const uploaded = await ctx.uploadFiles(files);
 
-					uploaded.forEach((att) => ctx.onAttachmentAdded(att));
-
 					const failed = files.length - uploaded.length;
 					createSnackbar({
 						key: 'nextcloud-attachment',

@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Dropdown, Row, Tooltip, DropdownItem, Button } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { compact, noop } from 'lodash';
+import { compact, forEach, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
@@ -87,13 +87,6 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						config.onClick({
 							editorId,
 							getText,
-							onAttachmentAdded: (att) =>
-								addUploadedAttachment({
-									attachmentId: att.attachmentId,
-									fileName: att.name,
-									contentType: att.contentType,
-									size: att.size
-								}),
 							onLinksInserted: (links) => {
 								const safeLinks = links.filter((l) => isSafeUrl(l.url));
 								const current = getText();
@@ -124,7 +117,17 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 												size: file.size
 											});
 										},
-										onUploadsEnd: () => resolve(succeeded)
+										onUploadsEnd: () => {
+											forEach(succeeded, (att) =>
+												addUploadedAttachment({
+													attachmentId: att.attachmentId,
+													fileName: att.name,
+													contentType: att.contentType,
+													size: att.size
+												})
+											);
+											return resolve(succeeded);
+										}
 									});
 								});
 							},
