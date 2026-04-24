@@ -10,7 +10,12 @@ import { screen } from '@testing-library/react';
 import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { useActions, useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	getIntegratedFunction,
+	useActions,
+	useAppContext,
+	useIntegratedFunction
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 import { getMessageById } from 'store/emails/store';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
@@ -526,5 +531,150 @@ describe('Attachment actions dropdown button', () => {
 			downloadInDropdown!.compareDocumentPosition(deleteInDropdown) &
 				Node.DOCUMENT_POSITION_FOLLOWING
 		).toBeTruthy();
+	});
+});
+
+describe('Save to Files in attachment dropdown', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(getIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+	});
+
+	test('Save to Files item appears in dropdown when select-nodes integration is available', async () => {
+		(getIntegratedFunction as Mock).mockReturnValue([vi.fn(), true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Before opening dropdown, "Save to Files" link is present once in the footer
+		expect(screen.getAllByText('Save to Files')).toHaveLength(1);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// After opening dropdown, "Save to Files" appears in both footer and dropdown
+		expect(await screen.findAllByText('Save to Files')).toHaveLength(2);
+	});
+
+	test('clicking Save to Files dropdown item calls uploadIntegration', async () => {
+		const mockSelectNodes = vi.fn();
+		(getIntegratedFunction as Mock).mockReturnValue([mockSelectNodes, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+		const allSaveItems = await screen.findAllByText('Save to Files');
+		const dropdownItem = allSaveItems.find((el) => el.tagName === 'DIV');
+		if (!dropdownItem) throw new Error('Save to Files dropdown item not found');
+		await user.click(dropdownItem);
+		expect(mockSelectNodes).toHaveBeenCalledTimes(1);
+	});
+
+	test('clicking Save to Files footer link calls uploadIntegration', async () => {
+		const mockSelectNodes = vi.fn();
+		(getIntegratedFunction as Mock).mockReturnValue([mockSelectNodes, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Only one "Save to Files" exists before the dropdown is opened (the footer link)
+		await user.click(screen.getByText('Save to Files'));
+		expect(mockSelectNodes).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('Import to Contacts in attachment dropdown', () => {
+	const vcardAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'contact.vcf',
+			size: 500,
+			contentType: 'text/vcard'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+	});
+
+	test('Import to Contacts item appears in dropdown for vcard when integration is available', async () => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		expect(await screen.findByText('Import to Contacts')).toBeVisible();
+	});
+
+	test('clicking Import to Contacts in dropdown calls the contact creation function', async () => {
+		const mockCreateContact = vi.fn();
+		(useIntegratedFunction as Mock).mockReturnValue([mockCreateContact, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		await user.click(await screen.findByText('Import to Contacts'));
+		expect(mockCreateContact).toHaveBeenCalledTimes(1);
+	});
+
+	test('Import to Contacts does not appear in dropdown when integration is not available', async () => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		await screen.findAllByText('Download');
+		expect(screen.queryByText('Import to Contacts')).not.toBeInTheDocument();
 	});
 });
