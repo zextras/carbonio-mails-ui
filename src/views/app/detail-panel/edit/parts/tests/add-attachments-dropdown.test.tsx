@@ -16,6 +16,7 @@ import type { Mock } from 'vitest';
 import { setupTest, screen } from '@test-setup';
 import {
 	getIntegratedFunction,
+	useActions,
 	useIntegratedFunction,
 	useUserSettings
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
@@ -615,6 +616,70 @@ describe('AddAttachmentsDropdown', () => {
 			expect(
 				screen.queryByText(TESTID_SELECTORS.composer.attachmentAddOriginal)
 			).not.toBeInTheDocument();
+		});
+	});
+
+	describe('External providers', () => {
+		it('should not display any external item when no providers are registered', async () => {
+			(useActions as Mock).mockReturnValue([]);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+
+			expect(screen.queryByText('Add from Nextcloud')).not.toBeInTheDocument();
+		});
+
+		it('should not display any external item when useActions returns undefined', async () => {
+			(useActions as Mock).mockReturnValue(undefined);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+
+			expect(screen.queryByText('Add from Nextcloud')).not.toBeInTheDocument();
+		});
+
+		it('should display an item for each registered external provider', async () => {
+			(useActions as Mock).mockReturnValue([
+				{
+					id: 'nextcloud',
+					label: 'Add from Nextcloud',
+					icon: 'CloudUploadOutline',
+					execute: vi.fn()
+				},
+				{ id: 'docs', label: 'Add from Docs', icon: 'FileTextOutline', execute: vi.fn() }
+			]);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+
+			expect(screen.getByText('Add from Nextcloud')).toBeVisible();
+			expect(screen.getByText('Add from Docs')).toBeVisible();
+		});
+
+		it('should call execute on the provider when the user clicks its item', async () => {
+			const mockExecute = vi.fn();
+			(useActions as Mock).mockReturnValue([
+				{
+					id: 'nextcloud',
+					label: 'Add from Nextcloud',
+					icon: 'CloudUploadOutline',
+					execute: mockExecute
+				}
+			]);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
+			const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
+			await user.click(dropdownIcon);
+			await user.click(screen.getByText('Add from Nextcloud'));
+
+			expect(mockExecute).toHaveBeenCalledTimes(1);
 		});
 	});
 });
