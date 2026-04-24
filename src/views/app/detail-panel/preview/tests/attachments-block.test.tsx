@@ -522,6 +522,7 @@ describe('Attachment actions dropdown button', () => {
 		expect(downloadInDropdown).toBeDefined();
 		// Delete should follow Download in document order (i.e. Delete is after Download)
 		expect(
+			// eslint-disable-next-line no-bitwise
 			downloadInDropdown!.compareDocumentPosition(deleteInDropdown) &
 				Node.DOCUMENT_POSITION_FOLLOWING
 		).toBeTruthy();
