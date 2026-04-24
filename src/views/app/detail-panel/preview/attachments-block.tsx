@@ -328,21 +328,21 @@ const Attachment = ({
 			});
 		});
 
-		if (!isEml) {
-			items.push({
-				id: 'delete',
-				label: t('label.delete', 'Delete'),
-				icon: 'DeletePermanentlyOutline',
-				onClick: removeAttachment
-			});
-		}
-
 		if (isAvailable && pType === 'vcard') {
 			items.push({
 				id: 'import-contacts',
 				label: t('label.import_to_contacts', 'Import to Contacts'),
 				icon: 'UploadOutline',
 				onClick: onCreateContact
+			});
+		}
+
+		if (!isEml) {
+			items.push({
+				id: 'delete',
+				label: t('label.delete', 'Delete'),
+				icon: 'DeletePermanentlyOutline',
+				onClick: removeAttachment
 			});
 		}
 
@@ -555,32 +555,34 @@ const Attachment = ({
 					</Row>
 				</AttachmentContainer>
 				{!isEml && (
-					<DropdownStretchWrapper>
-						<Dropdown
-							items={dropdownItems}
-							style={{ height: '100%' }}
-							onOpen={(): void => {
-								setOpenDropdown(true);
-							}}
-							onClose={(): void => {
-								setOpenDropdown(false);
-							}}
-						>
-							<Row width={'fit'} height={'100%'}>
-								<FullHeightButtonWrapper>
-									<Button
-										style={{ alignSelf: 'stretch' }}
-										type={'ghost'}
-										color={'gray0'}
-										size="medium"
-										data-testid={`attachment-actions-${filename}`}
-										icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-										onClick={(): undefined => undefined}
-									/>
-								</FullHeightButtonWrapper>
-							</Row>
-						</Dropdown>
-					</DropdownStretchWrapper>
+					<Tooltip label={t('label.view_all_actions', 'View all actions')}>
+						<DropdownStretchWrapper>
+							<Dropdown
+								items={dropdownItems}
+								style={{ height: '100%' }}
+								onOpen={(): void => {
+									setOpenDropdown(true);
+								}}
+								onClose={(): void => {
+									setOpenDropdown(false);
+								}}
+							>
+								<Row width={'fit'} height={'100%'}>
+									<FullHeightButtonWrapper>
+										<Button
+											style={{ alignSelf: 'stretch' }}
+											type={'ghost'}
+											color={'gray0'}
+											size="medium"
+											data-testid={`attachment-actions-${filename}`}
+											icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+											onClick={(): undefined => undefined}
+										/>
+									</FullHeightButtonWrapper>
+								</Row>
+							</Dropdown>
+						</DropdownStretchWrapper>
+					</Tooltip>
 				)}
 				<AttachmentLink
 					rel="noopener"

@@ -474,3 +474,56 @@ describe('External save attachment providers', () => {
 		expect(screen.queryByText('Save to External')).not.toBeInTheDocument();
 	});
 });
+
+describe('Attachment actions dropdown button', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	test('hovering the actions button shows "View all actions" tooltip', async () => {
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.hover(screen.getByTestId('attachment-actions-report.pdf'));
+		expect(await screen.findByText('View all actions')).toBeVisible();
+	});
+
+	test('delete item is the last entry in the dropdown', async () => {
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// Dropdown items are <div> elements; find Download and Delete in the dropdown
+		const downloadItems = await screen.findAllByText('Download');
+		const downloadInDropdown = downloadItems.find((el) => el.tagName !== 'A');
+		const deleteInDropdown = screen.getByText('Delete');
+
+		expect(downloadInDropdown).toBeDefined();
+		// Delete should follow Download in document order (i.e. Delete is after Download)
+		expect(
+			downloadInDropdown!.compareDocumentPosition(deleteInDropdown) &
+				Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
+	});
+});
