@@ -213,20 +213,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					<Radio width="100%" label={t('label.by_message', 'By Message')} value="message" />
 				</RadioGroup>
 			</FormSubSection>
-			<FormSubSection label={t('settings.label.default_mail_search', 'Default Mail Search')}>
-				<Input
-					label={t('settings.label.search_query', 'Default query')}
-					value={settingsObj.zimbraPrefMailInitialSearch}
-					onChange={(e: ChangeEvent<HTMLInputElement>): void =>
-						updateSettings({
-							target: {
-								name: 'zimbraPrefMailInitialSearch',
-								value: e.target.value
-							}
-						})
-					}
-				/>
-			</FormSubSection>
+
 			{/* Read after N seconds option managed as a read immediately */}
 			<FormSubSection label={t('settings.label.mark_reading_panel', 'Mark as read')}>
 				<RadioGroup
