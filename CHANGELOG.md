@@ -1,3 +1,8 @@
+## 1.33.0 (2026-04-27)
+
+* build(release): update jenkins-lib-ui to 1.0.12 (#1224) ([116ffc9](https://github.com/zextras/carbonio-mails-ui/commit/116ffc9)), closes [#1224](https://github.com/zextras/carbonio-mails-ui/issues/1224)
+* feat: add attachment to composer from generic external provider ([1ff79c6](https://github.com/zextras/carbonio-mails-ui/commit/1ff79c6))
+
 ## 1.32.0 (2026-04-24)
 
 * ci: update jenkins-lib-ui version and add semantic-release configuration (#1220) ([326cd71](https://github.com/zextras/carbonio-mails-ui/commit/326cd71)), closes [#1220](https://github.com/zextras/carbonio-mails-ui/issues/1220)
