@@ -9,3 +9,5 @@
  * 1 byte ≈ 1.33 base64 characters.
  */
 export const BASE_64_CONVERSION_RATE = 1.33;
+
+export const EDITOR_ADD_ATTACHMENT_PROVIDER_TYPE = 'mails-editor-add-attachment-provider';

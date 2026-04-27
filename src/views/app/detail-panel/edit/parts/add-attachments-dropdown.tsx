@@ -11,6 +11,7 @@ import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map, noop } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useEditorAddAttachmentProviders } from '../edit-utils-hooks/use-editor-add-attachment-providers';
 import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
@@ -99,6 +100,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		onUploadFiles: uploadFromFiles
 	});
 
+	const externalProviders = useEditorAddAttachmentProviders({ editorId });
+
 	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
 
 	const uploadFromFilesSelectionConfig = useMemo(
@@ -171,7 +174,22 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				}
 			: undefined;
 
-		return compact([localFileAction, filesNodeAction, filesLinkAction, originalAttachmentsAction]);
+		const externalActions: Array<DropdownItem> = externalProviders.map((provider) => ({
+			id: provider.id,
+			label: provider.label,
+			icon: provider.icon,
+			onClick: (): void => {
+				provider.execute();
+			}
+		}));
+
+		return compact([
+			localFileAction,
+			filesNodeAction,
+			filesLinkAction,
+			...externalActions,
+			originalAttachmentsAction
+		]);
 	}, [
 		onLocalFileClick,
 		originalMessageHasAttachments,
@@ -181,7 +199,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		isSelectNodesAvailable,
 		isGetLinkAvailable,
 		selectNodes,
-		getPublicLinkSelectionConfig
+		getPublicLinkSelectionConfig,
+		externalProviders
 	]);
 
 	return (
