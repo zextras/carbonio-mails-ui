@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useRef } from 'react';
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -32,6 +32,8 @@ export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	const { prefs } = useUserSettings();
 	const isMarkManually = prefs?.zimbraPrefMarkMsgRead === '-1';
 
+	const notifiedMessageIds = useRef<Set<string>>(new Set());
+
 	const onDoNotConfirm = useCallback(() => {
 		const flag = isMarkManually && !message?.read ? 'nu' : 'n';
 		msgActionEmailStoreAction({
@@ -45,6 +47,7 @@ export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	}, [isMarkManually, message, onClose]);
 
 	const onNotify = useCallback(() => {
+		console.log('Message details:', message);
 		sendDeliveryReportSoapApi(message.id).then(() => {
 			updateMessages([{ ...message, isReadReceiptRequested: false }]);
 			createSnackbar({
@@ -60,8 +63,15 @@ export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	}, [createSnackbar, message, onClose]);
 
 	useEffect(() => {
-		if (message?.isReadReceiptRequested && readReceiptSetting === 'always' && !message?.isSentByMe)
+		if (
+				message?.isReadReceiptRequested &&
+				readReceiptSetting === 'always' &&
+				!message?.isSentByMe &&
+				!notifiedMessageIds.current.has(message.id)
+		) {
+			notifiedMessageIds.current.add(message.id);
 			onNotify();
+		}
 	}, [message?.isReadReceiptRequested, onNotify, readReceiptSetting, message?.isSentByMe]);
 
 	return (
