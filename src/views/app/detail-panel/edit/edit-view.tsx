@@ -67,7 +67,8 @@ import {
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
 	useEditorRecipients,
-	useEditorDid
+	useEditorDid,
+	useEditorDraftSaveProcessStatus
 } from 'store/editor';
 import { EditorOperationAllowedStatus, EditViewClosingReasons, SaveDraftResponse } from 'types';
 import { isValidEmail } from 'views/search/parts/utils';
@@ -150,6 +151,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
+	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const isDirty = useEditorIsDirty(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
@@ -606,7 +608,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
 	}, [close]);
 
-	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
+	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent || draftSaveProcessStatus?.status !== 'completed';
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
