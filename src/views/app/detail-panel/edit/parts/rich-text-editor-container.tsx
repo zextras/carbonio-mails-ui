@@ -292,6 +292,9 @@ export const RichTextEditorContainer = ({
 				'visualblocks', // Show block boundaries
 				'emoticons' // Emoji support
 			],
+			table_resize_bars: true,
+			table_sizing_mode: 'relative',
+                        object_resizing: 'table,img',
 			toolbar: [
 				// Fonts
 				'fontfamily fontsize styles',
