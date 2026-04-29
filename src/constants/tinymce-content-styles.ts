@@ -37,8 +37,8 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	table {
 		border-collapse: collapse;
 		border-spacing: 0;
-		width: 100%;
-		max-width: 100%;
+		/*width: 100%;
+		max-width: 100%;*/
 		background-color: transparent;
 	}
 	table td,
