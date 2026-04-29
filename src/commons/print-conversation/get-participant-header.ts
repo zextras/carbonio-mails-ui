@@ -10,7 +10,7 @@ import type { Participant } from 'types/index.d';
 export const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(
 		participants,
-		(f) => `${escape(f.fullName || f.name || f.address)} <${escape(f.address)}> `
+		(f) => `${escape(f.fullName || f.name || f.address)} ${escape("<"+ f.address + ">" || "<>")} `
 	).join(', ');
 
 	if (participants.length === 0) return '';
