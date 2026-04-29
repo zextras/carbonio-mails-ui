@@ -47,7 +47,6 @@ export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	}, [isMarkManually, message, onClose]);
 
 	const onNotify = useCallback(() => {
-		console.log('Message details:', message);
 		sendDeliveryReportSoapApi(message.id).then(() => {
 			updateMessages([{ ...message, isReadReceiptRequested: false }]);
 			createSnackbar({
