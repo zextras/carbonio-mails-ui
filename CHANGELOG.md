@@ -1,3 +1,7 @@
+## 1.34.0 (2026-05-04)
+
+* feat: add external save attachment provider integration ([c02ba21](https://github.com/zextras/carbonio-mails-ui/commit/c02ba21))
+
 ## <small>1.33.1 (2026-04-27)</small>
 
 * Merge branch 'devel' into co-3494-default-mail-search ([c71faf7](https://github.com/zextras/carbonio-mails-ui/commit/c71faf7))
