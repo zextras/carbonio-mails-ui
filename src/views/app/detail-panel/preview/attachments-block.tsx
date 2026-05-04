@@ -7,10 +7,12 @@ import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState
 
 import styled from '@emotion/styled';
 import {
+	Button,
 	Container,
+	Dropdown,
+	DropdownItem,
 	getColor,
 	Icon,
-	Button,
 	Link,
 	Padding,
 	Row,
@@ -30,6 +32,10 @@ import { filter, includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import {
+	PreviewSaveAttachmentProviderContext,
+	usePreviewSaveAttachmentProviders
+} from './preview-utils-hooks/use-preview-save-attachment-providers';
+import {
 	getAttachmentIconColors,
 	getAttachmentsDownloadLink,
 	getAttachmentsLink,
@@ -40,19 +46,19 @@ import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachme
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
+import { AttachmentType, CopyToFileRequest, CopyToFileResponse } from 'types/details-pannel';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
 	SelectNodesFunctionArgs
 } from 'types/integrations/carbonio-files-ui';
+import { AttachmentPart, MailMessage } from 'types/messages';
 import DeleteAttachmentModal from 'views/app/detail-panel/preview/delete-attachment-modal';
 import {
 	humanFileSize,
 	isDocument,
 	previewType
 } from 'views/app/detail-panel/preview/file-preview';
-import { AttachmentType, CopyToFileRequest, CopyToFileResponse } from 'types/details-pannel';
-import { AttachmentPart, MailMessage } from 'types/messages';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -71,11 +77,10 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)`
+const AttachmentContainer = styled(Row)`
 	border-radius: 0.125rem;
-	width: calc(50% - 0.25rem);
-	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
+	transition: background-color 0.2s ease-out;
+	cursor: pointer;
 	&:hover {
 		background-color: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
@@ -83,11 +88,26 @@ const AttachmentContainer = styled(Container)`
 			display: flex;
 		}
 	}
-	&:focus {
-		background-color: ${({ theme, background = 'currentColor' }): string =>
-			getColor(`${background}.focus`, theme)};
+`;
+
+const DropdownStretchWrapper = styled.div`
+	align-self: stretch;
+	display: flex;
+`;
+
+const FullHeightButtonWrapper = styled.div`
+	height: 100%;
+	transition: background-color 0.2s ease-out;
+	&:hover {
+		background-color: ${({ theme }): string => getColor('gray3.hover', theme)};
 	}
-	cursor: pointer;
+	& > * {
+		height: 100%;
+		grid-template-rows: 100%;
+	}
+	& * {
+		background-color: transparent !important;
+	}
 `;
 
 const AttachmentLink = styled.a`
@@ -258,6 +278,89 @@ const Attachment = ({
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
+	const [openDropdown, setOpenDropdown] = useState(false);
+
+	const saveContext = useMemo<PreviewSaveAttachmentProviderContext>(
+		() => ({
+			attachments: [
+				{
+					filename: filename ?? '',
+					contentType: att.contentType,
+					size,
+					downloadUrl: downloadlink
+				}
+			]
+		}),
+		[filename, att.contentType, size, downloadlink]
+	);
+
+	const saveProviders = usePreviewSaveAttachmentProviders(saveContext);
+
+	const dropdownItems = useMemo<DropdownItem[]>(() => {
+		const items: DropdownItem[] = [];
+
+		items.push({
+			id: 'download',
+			label: t('label.download', 'Download'),
+			icon: 'DownloadOutline',
+			onClick: downloadAttachment
+		});
+
+		if (isUploadIntegrationAvailable) {
+			items.push({
+				id: 'save-to-files',
+				label: t('label.save_to_files', 'Save to Files'),
+				icon: 'DriveOutline',
+				onClick: (): void => {
+					uploadIntegration?.(actionTarget);
+				}
+			});
+		}
+
+		saveProviders.forEach((provider) => {
+			items.push({
+				id: provider.id,
+				label: provider.label,
+				icon: provider.icon,
+				onClick: (): void => {
+					provider.execute();
+				}
+			});
+		});
+
+		if (isAvailable && pType === 'vcard') {
+			items.push({
+				id: 'import-contacts',
+				label: t('label.import_to_contacts', 'Import to Contacts'),
+				icon: 'UploadOutline',
+				onClick: onCreateContact
+			});
+		}
+
+		if (!isEml) {
+			items.push({
+				id: 'delete',
+				label: t('label.delete', 'Delete'),
+				icon: 'DeletePermanentlyOutline',
+				onClick: removeAttachment
+			});
+		}
+
+		return items;
+	}, [
+		isUploadIntegrationAvailable,
+		uploadIntegration,
+		actionTarget,
+		saveProviders,
+		downloadAttachment,
+		isEml,
+		removeAttachment,
+		isAvailable,
+		pType,
+		onCreateContact,
+		t
+	]);
+
 	const showEMLPreview = useCallback(() => {
 		openEmlStandalonePreview({ messageId, part });
 	}, [messageId, part]);
@@ -365,112 +468,131 @@ const Attachment = ({
 	const attachmentExtensionColor = useMemo(() => attachItemColor, [attachItemColor]);
 
 	return (
-		<AttachmentContainer
+		<Row
+			width={'calc(50% - 0.25rem)'}
 			orientation="horizontal"
 			mainAlignment="flex-start"
-			height="fit"
-			background={'gray3'}
-			data-testid={`attachment-container-${filename}`}
+			background={'transparent'}
+			padding={{ bottom: 'small' }}
 		>
-			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
-				<Row
-					padding={{ all: 'small' }}
+			<Container
+				width={'100%'}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+				height="100%"
+				background={'gray3'}
+				data-testid={`attachment-container-${filename}`}
+			>
+				<AttachmentContainer
+					orientation="horizontal"
 					mainAlignment="flex-start"
-					onClick={preview}
+					height="fit-content"
 					takeAvailableSpace
+					background={'gray3'}
 				>
-					<AttachmentExtension $background={attachmentExtensionColor}>
-						{attachmentExtensionContent}
-					</AttachmentExtension>
-					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>
-								{filename ||
-									t('label.attachement_unknown', {
-										mimeType: att?.contentType,
-										defaultValue: 'Unknown <{{mimeType}}>'
-									})}
-							</Text>
-						</Padding>
-						<Text color="gray1" size="small">
-							{sizeLabel}
-						</Text>
-					</Row>
-				</Row>
-			</Tooltip>
-			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && (
-						<Tooltip
-							key={`${messageId}-DriveOutline`}
-							label={t('label.save_to_files', 'Save to Files')}
+					<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
+						<Row
+							height={'fill'}
+							padding={{ all: 'small' }}
+							mainAlignment="flex-start"
+							onClick={preview}
+							takeAvailableSpace
 						>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								size="medium"
-								icon="DriveOutline"
-								onClick={(): void => {
-									uploadIntegration && uploadIntegration(actionTarget);
+							<AttachmentExtension $background={attachmentExtensionColor}>
+								{attachmentExtensionContent}
+							</AttachmentExtension>
+							<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+								<Padding style={{ width: '100%' }} bottom="extrasmall">
+									<Text>
+										{filename ||
+											t('label.attachement_unknown', {
+												mimeType: att?.contentType,
+												defaultValue: 'Unknown <{{mimeType}}>'
+											})}
+									</Text>
+								</Padding>
+								<Text color="gray1" size="small">
+									{sizeLabel}
+								</Text>
+							</Row>
+						</Row>
+					</Tooltip>
+					<Row orientation="horizontal" crossAlignment="center">
+						<AttachmentHoverBarContainer orientation="horizontal">
+							<Padding right="small">
+								<Tooltip
+									key={`${messageId}-DownloadOutline`}
+									label={t('label.download', 'Download')}
+								>
+									<Button
+										type={'ghost'}
+										color={'gray0'}
+										data-testid={`download-attachment-${filename}`}
+										size="medium"
+										icon="DownloadOutline"
+										onClick={downloadAttachment}
+									/>
+								</Tooltip>
+							</Padding>
+							{!isEml && (
+								<Padding right="small">
+									<Tooltip
+										key={`${messageId}-DeletePermanentlyOutline`}
+										label={t('label.delete', 'Delete')}
+									>
+										<Button
+											type={'ghost'}
+											color={'gray0'}
+											data-testid={`remove-attachments-${filename}`}
+											size="medium"
+											icon="DeletePermanentlyOutline"
+											onClick={removeAttachment}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+						</AttachmentHoverBarContainer>
+					</Row>
+				</AttachmentContainer>
+				{!isEml && (
+					<Tooltip label={t('label.view_all_actions', 'View all actions')}>
+						<DropdownStretchWrapper>
+							<Dropdown
+								items={dropdownItems}
+								style={{ height: '100%' }}
+								onOpen={(): void => {
+									setOpenDropdown(true);
 								}}
-							/>
-						</Tooltip>
-					)}
-
-					<Padding right="small">
-						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<Button
-								type={'ghost'}
-								color={'gray0'}
-								data-testid={`download-attachment-${filename}`}
-								size="medium"
-								icon="DownloadOutline"
-								onClick={downloadAttachment}
-							/>
-						</Tooltip>
-					</Padding>
-					{!isEml && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-DeletePermanentlyOutline`}
-								label={t('label.delete', 'Delete')}
+								onClose={(): void => {
+									setOpenDropdown(false);
+								}}
 							>
-								<Button
-									type={'ghost'}
-									color={'gray0'}
-									data-testid={`remove-attachments-${filename}`}
-									size="medium"
-									icon="DeletePermanentlyOutline"
-									onClick={removeAttachment}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
-					{isAvailable && pType === 'vcard' && (
-						<Padding right="small">
-							<Tooltip
-								key={`${messageId}-UploadOutline`}
-								label={t('label.import_to_contacts', 'Import to Contacts')}
-							>
-								<Button
-									data-testid={`import-contacts-${filename}`}
-									size="small"
-									icon="UploadOutline"
-									onClick={onCreateContact}
-								/>
-							</Tooltip>
-						</Padding>
-					)}
-				</AttachmentHoverBarContainer>
-			</Row>
-			<AttachmentLink
-				rel="noopener"
-				ref={inputRef2}
-				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
-			/>
-			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
-		</AttachmentContainer>
+								<Row width={'fit'} height={'100%'}>
+									<FullHeightButtonWrapper>
+										<Button
+											style={{ alignSelf: 'stretch' }}
+											type={'ghost'}
+											color={'gray0'}
+											size="medium"
+											data-testid={`attachment-actions-${filename}`}
+											icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+											onClick={(): undefined => undefined}
+										/>
+									</FullHeightButtonWrapper>
+								</Row>
+							</Dropdown>
+						</DropdownStretchWrapper>
+					</Tooltip>
+				)}
+				<AttachmentLink
+					rel="noopener"
+					ref={inputRef2}
+					target="_blank"
+					href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
+				/>
+				<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
+			</Container>
+		</Row>
 	);
 };
 
@@ -508,6 +630,25 @@ const AttachmentsBlock = ({
 	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
 	const theme = useTheme();
+
+	// Context with all attachments — passed to external providers for the "save all" links.
+	const saveAllContext = useMemo<PreviewSaveAttachmentProviderContext>(
+		() => ({
+			attachments: attachments.map((att) => ({
+				filename: att.filename ?? '',
+				contentType: att.contentType ?? '',
+				size: att.size ?? 0,
+				downloadUrl: getAttachmentsDownloadLink({
+					messageId,
+					messageSubject,
+					attachments: [att.name]
+				})
+			}))
+		}),
+		[attachments, messageId, messageSubject]
+	);
+	const saveProvidersForLinks = usePreviewSaveAttachmentProviders(saveAllContext);
+
 	const actionsDownloadLink = useMemo(
 		() =>
 			getAttachmentsDownloadLink({
@@ -596,7 +737,7 @@ const AttachmentsBlock = ({
 			<Link
 				size="medium"
 				onClick={(): void => {
-					uploadIntegration && uploadIntegration(actionTarget);
+					uploadIntegration?.(actionTarget);
 				}}
 				style={{ paddingLeft: '0.5rem' }}
 			>
@@ -685,6 +826,18 @@ const AttachmentsBlock = ({
 					})}
 				</Link>
 				{getSaveToFilesLink()}
+				{saveProvidersForLinks.map((provider) => (
+					<Link
+						key={provider.id}
+						size="medium"
+						onClick={(): void => {
+							provider.execute();
+						}}
+						style={{ paddingLeft: '0.5rem' }}
+					>
+						{provider.label}
+					</Link>
+				))}
 			</Row>
 		</Container>
 	) : (

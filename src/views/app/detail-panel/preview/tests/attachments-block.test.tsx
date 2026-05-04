@@ -7,9 +7,15 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
-import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	getIntegratedFunction,
+	useActions,
+	useAppContext,
+	useIntegratedFunction
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 import { getMessageById } from 'store/emails/store';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
@@ -336,5 +342,339 @@ describe('Attachment link validation', () => {
 		expect(createPreviewParam.src).toBe(
 			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
 		);
+	});
+});
+
+describe('External save attachment providers', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(useActions as Mock).mockReturnValue([]);
+	});
+
+	test('provider label appears as a link in the footer when registered', () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		expect(screen.getByText('Save to External')).toBeVisible();
+	});
+
+	test('clicking the provider footer link calls provider.execute()', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByText('Save to External'));
+		expect(mockExecute).toHaveBeenCalledTimes(1);
+	});
+
+	test('provider item appears in attachment dropdown when registered', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External Storage',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Before opening the dropdown only the footer link is present
+		expect(screen.getAllByText('Save to External Storage')).toHaveLength(1);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// After opening the dropdown both the footer link and the dropdown item are present
+		expect(await screen.findAllByText('Save to External Storage')).toHaveLength(2);
+	});
+
+	test('clicking provider dropdown item calls provider.execute()', async () => {
+		const mockExecute = vi.fn();
+		(useActions as Mock).mockReturnValue([
+			{
+				id: 'save-to-external',
+				label: 'Save to External Storage',
+				icon: 'CloudUploadOutline',
+				execute: mockExecute
+			}
+		]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+		// The dropdown item is a <div> while the footer link is an <a>
+		const allItems = await screen.findAllByText('Save to External Storage');
+		const dropdownItem = allItems.find((el) => el.tagName === 'DIV');
+		if (!dropdownItem) throw new Error('Dropdown item not found');
+		await user.click(dropdownItem);
+		expect(mockExecute).toHaveBeenCalledTimes(1);
+	});
+
+	test('no provider items shown in footer when none registered', () => {
+		(useActions as Mock).mockReturnValue([]);
+
+		setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		expect(screen.queryByText('Save to External')).not.toBeInTheDocument();
+	});
+});
+
+describe('Attachment actions dropdown button', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	test('hovering the actions button shows "View all actions" tooltip', async () => {
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.hover(screen.getByTestId('attachment-actions-report.pdf'));
+		expect(await screen.findByText('View all actions')).toBeVisible();
+	});
+
+	test('delete item is the last entry in the dropdown', async () => {
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// Dropdown items are <div> elements; find Download and Delete in the dropdown
+		const downloadItems = await screen.findAllByText('Download');
+		const downloadInDropdown = downloadItems.find((el) => el.tagName !== 'A');
+		const deleteInDropdown = screen.getByText('Delete');
+
+		expect(downloadInDropdown).toBeDefined();
+		// Delete should follow Download in document order (i.e. Delete is after Download)
+		expect(
+			// eslint-disable-next-line no-bitwise
+			downloadInDropdown!.compareDocumentPosition(deleteInDropdown) &
+				Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
+	});
+});
+
+describe('Save to Files in attachment dropdown', () => {
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'report.pdf',
+			size: 5000,
+			contentType: 'application/pdf'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(getIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+	});
+
+	test('Save to Files item appears in dropdown when select-nodes integration is available', async () => {
+		(getIntegratedFunction as Mock).mockReturnValue([vi.fn(), true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Before opening dropdown, "Save to Files" link is present once in the footer
+		expect(screen.getAllByText('Save to Files')).toHaveLength(1);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+
+		// After opening dropdown, "Save to Files" appears in both footer and dropdown
+		expect(await screen.findAllByText('Save to Files')).toHaveLength(2);
+	});
+
+	test('clicking Save to Files dropdown item calls uploadIntegration', async () => {
+		const mockSelectNodes = vi.fn();
+		(getIntegratedFunction as Mock).mockReturnValue([mockSelectNodes, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-report.pdf'));
+		const allSaveItems = await screen.findAllByText('Save to Files');
+		const dropdownItem = allSaveItems.find((el) => el.tagName === 'DIV');
+		if (!dropdownItem) throw new Error('Save to Files dropdown item not found');
+		await user.click(dropdownItem);
+		expect(mockSelectNodes).toHaveBeenCalledTimes(1);
+	});
+
+	test('clicking Save to Files footer link calls uploadIntegration', async () => {
+		const mockSelectNodes = vi.fn();
+		(getIntegratedFunction as Mock).mockReturnValue([mockSelectNodes, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>
+		);
+
+		// Only one "Save to Files" exists before the dropdown is opened (the footer link)
+		await user.click(screen.getByText('Save to Files'));
+		expect(mockSelectNodes).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('Import to Contacts in attachment dropdown', () => {
+	const vcardAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'contact.vcf',
+			size: 500,
+			contentType: 'text/vcard'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+	});
+
+	test('Import to Contacts item appears in dropdown for vcard when integration is available', async () => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		expect(await screen.findByText('Import to Contacts')).toBeVisible();
+	});
+
+	test('clicking Import to Contacts in dropdown calls the contact creation function', async () => {
+		const mockCreateContact = vi.fn();
+		(useIntegratedFunction as Mock).mockReturnValue([mockCreateContact, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		await user.click(await screen.findByText('Import to Contacts'));
+		expect(mockCreateContact).toHaveBeenCalledTimes(1);
+	});
+
+	test('Import to Contacts does not appear in dropdown when integration is not available', async () => {
+		(useIntegratedFunction as Mock).mockReturnValue([vi.fn(), false]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={vcardAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
+		await screen.findAllByText('Download');
+		expect(screen.queryByText('Import to Contacts')).not.toBeInTheDocument();
 	});
 });
