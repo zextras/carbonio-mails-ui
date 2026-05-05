@@ -34,13 +34,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	h6 { font-size: 12px; }
 	
 	/* Tables */
-	table {
-		border-collapse: collapse;
-		border-spacing: 0;
-		/*width: 100%;
-		max-width: 100%;*/
-		background-color: transparent;
-	}
 	table td,
 	table th {
 		padding: 8px;
