@@ -293,8 +293,7 @@ export const RichTextEditorContainer = ({
 				'emoticons' // Emoji support
 			],
 			table_resize_bars: true,
-			table_sizing_mode: 'relative',
-                        object_resizing: 'table,img',
+			object_resizing: 'table,img',
 			toolbar: [
 				// Fonts
 				'fontfamily fontsize styles',
