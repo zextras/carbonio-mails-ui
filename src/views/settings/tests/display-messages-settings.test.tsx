@@ -157,27 +157,7 @@ describe('Displaying messages settings', () => {
 			target: { name: 'zimbraPrefGroupMailBy', value: 'message' }
 		});
 	});
-	it('should update default mail search query on input change', async () => {
-		const updateSettings = vi.fn();
 
-		const { user } = setupTest(
-			<DisplayMessagesSettings
-				settingsObj={settingsObj as Record<string, string>}
-				updateSettings={updateSettings}
-				updateProps={vi.fn()}
-				updatedProps={{}}
-			/>
-		);
-		const input = screen.getByRole('textbox', {
-			name: 'settings.label.search_query'
-		});
-
-		await user.type(input, '1');
-
-		expect(updateSettings).toHaveBeenCalledWith({
-			target: { name: 'zimbraPrefMailInitialSearch', value: '1' }
-		});
-	});
 	it('should update mark as read preference when a new radio button is selected', async () => {
 		const updateSettings = vi.fn();
 

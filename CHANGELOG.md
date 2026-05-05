@@ -1,3 +1,19 @@
+## 1.34.0 (2026-05-04)
+
+* feat: add external save attachment provider integration ([c02ba21](https://github.com/zextras/carbonio-mails-ui/commit/c02ba21))
+
+## <small>1.33.1 (2026-04-27)</small>
+
+* Merge branch 'devel' into co-3494-default-mail-search ([c71faf7](https://github.com/zextras/carbonio-mails-ui/commit/c71faf7))
+* Merge pull request #1214 from zextras/co-3494-default-mail-search ([1efb296](https://github.com/zextras/carbonio-mails-ui/commit/1efb296)), closes [#1214](https://github.com/zextras/carbonio-mails-ui/issues/1214)
+* fix: removed default mail setting search ([54a7dce](https://github.com/zextras/carbonio-mails-ui/commit/54a7dce))
+* fix: removed outdated test ([d294a48](https://github.com/zextras/carbonio-mails-ui/commit/d294a48))
+
+## 1.33.0 (2026-04-27)
+
+* build(release): update jenkins-lib-ui to 1.0.12 (#1224) ([116ffc9](https://github.com/zextras/carbonio-mails-ui/commit/116ffc9)), closes [#1224](https://github.com/zextras/carbonio-mails-ui/issues/1224)
+* feat: add attachment to composer from generic external provider ([1ff79c6](https://github.com/zextras/carbonio-mails-ui/commit/1ff79c6))
+
 ## 1.32.0 (2026-04-24)
 
 * ci: update jenkins-lib-ui version and add semantic-release configuration (#1220) ([326cd71](https://github.com/zextras/carbonio-mails-ui/commit/326cd71)), closes [#1220](https://github.com/zextras/carbonio-mails-ui/issues/1220)
