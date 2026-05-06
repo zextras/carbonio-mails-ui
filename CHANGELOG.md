@@ -1,3 +1,7 @@
+## <small>1.34.1 (2026-05-06)</small>
+
+* build(deps): update dependencies (#1227) ([3da848e](https://github.com/zextras/carbonio-mails-ui/commit/3da848e)), closes [#1227](https://github.com/zextras/carbonio-mails-ui/issues/1227)
+
 ## 1.34.0 (2026-05-04)
 
 * feat: add external save attachment provider integration ([c02ba21](https://github.com/zextras/carbonio-mails-ui/commit/c02ba21))
