@@ -14,7 +14,7 @@ export function getCompleteHTML({ content }: { content: string }): string {
 	return `	<html>
 		<head>
 			<title>Carbonio</title>
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: cid: https:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; img-src data: cid: https:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';">
                 <style>
                     body {
                         max-width: 100% !important;
