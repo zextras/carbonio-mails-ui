@@ -209,7 +209,8 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 			contentType: att.contentType,
 			isInline: att.isInline ?? false,
 			contentId: att.contentId,
-			uploadStatus: att.uploadStatus ?? (att.aid ? { status: 'completed' as const, progress: 0 } : undefined)
+			uploadStatus:
+				att.uploadStatus ?? (att.aid ? { status: 'completed' as const, progress: 0 } : undefined)
 		})) ?? [];
 
 	const editor: MailsEditorV2 = {
