@@ -9,12 +9,14 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 
 import { EditViewActions } from '../../../../../constants';
-import { generateEditor } from '../../../../../store/editor/editor-generators';
+import { generateEditor, generateNewMessageEditor } from '../../../../../store/editor/editor-generators';
 import { setupTest } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateEditorV2Case } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { addEditor } from 'store/editor/index';
+import { useEditorsStore } from 'store/editor/store';
+import { UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
 import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
 
@@ -85,6 +87,59 @@ describe('Attachments visualization', () => {
 		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
 		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
 	});
+	describe('Upload status indicator', () => {
+		const baseAttachment: UnsavedAttachment = {
+			filename: 'file.pdf',
+			contentType: 'application/pdf',
+			size: 1000,
+			isInline: false,
+			aid: 'test-aid-123'
+		};
+
+		it('should not show the upload status indicator when uploadStatus is undefined', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+			useEditorsStore.getState().addUnsavedAttachment(editor.id, { ...baseAttachment });
+
+			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
+			expect(screen.queryByTestId('attachmentuploadstatus-container')).not.toBeInTheDocument();
+		});
+
+		it('should show the upload status indicator when uploadStatus is running', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+			useEditorsStore.getState().addUnsavedAttachment(editor.id, {
+				...baseAttachment,
+				uploadStatus: { status: 'running', progress: 50 }
+			});
+
+			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
+			expect(screen.getByTestId('attachmentuploadstatus-container')).toBeInTheDocument();
+		});
+
+		it('should show the upload status indicator (without spinner) when uploadStatus is completed', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+			useEditorsStore.getState().addUnsavedAttachment(editor.id, {
+				...baseAttachment,
+				uploadStatus: { status: 'completed', progress: 100 }
+			});
+
+			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
+
+			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
+			expect(screen.getByTestId('attachmentuploadstatus-container')).toBeInTheDocument();
+			expect(screen.queryByRole('button')).not.toBeInTheDocument();
+		});
+	});
+
 	it('should NOT display inline attachments with Content-ID', async () => {
 		setupEditorStore({ editors: [] });
 		const message = generateMessage({

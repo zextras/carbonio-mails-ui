@@ -202,10 +202,14 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const unsavedAttachments: Array<UnsavedAttachment> =
 		compositionData?.attachments?.map((att) => ({
 			aid: att.aid,
+			mid: att.mid,
+			uploadId: att.uploadId,
 			filename: att.filename,
 			size: att.size,
 			contentType: att.contentType,
-			isInline: att.isInline ?? false
+			isInline: att.isInline ?? false,
+			contentId: att.contentId,
+			uploadStatus: att.uploadStatus ?? (att.aid ? { status: 'completed' as const, progress: 0 } : undefined)
 		})) ?? [];
 
 	const editor: MailsEditorV2 = {
