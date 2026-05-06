@@ -9,7 +9,10 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 
 import { EditViewActions } from '../../../../../constants';
-import { generateEditor, generateNewMessageEditor } from '../../../../../store/editor/editor-generators';
+import {
+	generateEditor,
+	generateNewMessageEditor
+} from '../../../../../store/editor/editor-generators';
 import { setupTest } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateEditorV2Case } from '__test__/generators/editors';
@@ -88,6 +91,7 @@ describe('Attachments visualization', () => {
 		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
 	});
 	describe('Upload status indicator', () => {
+		const uploadStatusTestId = 'attachmentuploadstatus-container';
 		const baseAttachment: UnsavedAttachment = {
 			filename: 'file.pdf',
 			contentType: 'application/pdf',
@@ -105,7 +109,7 @@ describe('Attachments visualization', () => {
 			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
 
 			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
-			expect(screen.queryByTestId('attachmentuploadstatus-container')).not.toBeInTheDocument();
+			expect(screen.queryByTestId(uploadStatusTestId)).not.toBeInTheDocument();
 		});
 
 		it('should show the upload status indicator when uploadStatus is running', async () => {
@@ -120,7 +124,7 @@ describe('Attachments visualization', () => {
 			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
 
 			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
-			expect(screen.getByTestId('attachmentuploadstatus-container')).toBeInTheDocument();
+			expect(screen.getByTestId(uploadStatusTestId)).toBeInTheDocument();
 		});
 
 		it('should show the upload status indicator (without spinner) when uploadStatus is completed', async () => {
@@ -135,7 +139,7 @@ describe('Attachments visualization', () => {
 			setupTest(<EditAttachmentsBlock editorId={editor.id} />);
 
 			await screen.findByTestId(`attachment-container-${baseAttachment.filename}`);
-			expect(screen.getByTestId('attachmentuploadstatus-container')).toBeInTheDocument();
+			expect(screen.getByTestId(uploadStatusTestId)).toBeInTheDocument();
 			expect(screen.queryByRole('button')).not.toBeInTheDocument();
 		});
 	});
