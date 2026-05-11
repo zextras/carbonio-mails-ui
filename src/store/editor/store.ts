@@ -481,10 +481,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()(
 	)
 );
 
+const EDITORS_STORE_INITIAL_STATE = {
+	editors: {}
+} satisfies Pick<EditorsStateTypeV2, 'editors'>;
+
 /**
  * Resets the EditorsStore to its initial state.
  * This should be called on logout to prevent data leakage between sessions.
+ * Note: uses merge mode (replace=false) so store action functions are preserved.
  */
 export function resetEditorsStore(): void {
-	useEditorsStore.setState({ editors: {} }, false);
+	useEditorsStore.setState(EDITORS_STORE_INITIAL_STATE, false);
 }

@@ -682,6 +682,8 @@ export function handleNotifyMessagesCreated(
 /**
  * Resets the entire EmailsStore to its initial state.
  * This should be called on logout to prevent data leakage between sessions.
+ * Note: uses merge mode (replace=false) so store action functions (addTask,
+ * executeTasks) are preserved and the store remains fully operational.
  */
 export function resetEmailsStore(): void {
 	useEmailsStore.setState(EMAILS_STORE_INITIAL_STATE, false);
