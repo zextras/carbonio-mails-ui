@@ -52,6 +52,15 @@ type TaskManagement = {
 	executeTasks: () => Promise<void>;
 };
 
+const EMAILS_STORE_INITIAL_STATE = {
+	searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
+	messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
+	conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE,
+	populatedItemsSlice: POPULATED_ITEMS_SLICE_INITIAL_STATE,
+	queue: [] as Array<() => Promise<void>>,
+	isExecuting: false
+};
+
 const useEmailsStore = create<EmailsStoreState & TaskManagement>()(
 	devtools(
 		(set, get, ...a) => ({
@@ -675,17 +684,7 @@ export function handleNotifyMessagesCreated(
  * This should be called on logout to prevent data leakage between sessions.
  */
 export function resetEmailsStore(): void {
-	useEmailsStore.setState(
-		{
-			searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
-			messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
-			conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE,
-			populatedItemsSlice: POPULATED_ITEMS_SLICE_INITIAL_STATE,
-			queue: [],
-			isExecuting: false
-		},
-		false
-	);
+	useEmailsStore.setState(EMAILS_STORE_INITIAL_STATE, false);
 }
 
 /**

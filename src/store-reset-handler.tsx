@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useAuthenticated } from '@zextras/carbonio-shell-ui';
 
@@ -17,12 +17,14 @@ import { resetEmailsStore } from 'store/emails/store';
  */
 export const StoreResetHandler = (): null => {
 	const isAuthenticated = useAuthenticated();
+	const wasAuthenticated = useRef(false);
 
 	useEffect(() => {
-		if (!isAuthenticated) {
+		if (wasAuthenticated.current && !isAuthenticated) {
 			resetEmailsStore();
 			resetEditorsStore();
 		}
+		wasAuthenticated.current = isAuthenticated;
 	}, [isAuthenticated]);
 
 	return null;
