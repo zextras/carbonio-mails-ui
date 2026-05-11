@@ -11,13 +11,25 @@ import { devtools } from 'zustand/middleware';
 
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
-import { createConversationIndexSlice } from 'store/emails/slices/conversations/conversations-index-slice';
+import {
+	CONVERSATION_INDEX_SLICE_INITIAL_STATE,
+	createConversationIndexSlice
+} from 'store/emails/slices/conversations/conversations-index-slice';
 import { conversationIndexSliceUtils } from 'store/emails/slices/conversations/utils';
-import { createMessageIndexSlice } from 'store/emails/slices/messages/messages-slice';
+import {
+	MESSAGE_INDEX_SLICE_INITIAL_STATE,
+	createMessageIndexSlice
+} from 'store/emails/slices/messages/messages-slice';
 import { messageIndexSliceUtils } from 'store/emails/slices/messages/utils';
-import { createPopulatedItemsSlice } from 'store/emails/slices/populated-items/populated-items-slice';
+import {
+	POPULATED_ITEMS_SLICE_INITIAL_STATE,
+	createPopulatedItemsSlice
+} from 'store/emails/slices/populated-items/populated-items-slice';
 import { populatedItemsSliceUtils } from 'store/emails/slices/populated-items/utils';
-import { createSearchIndexSlice } from 'store/emails/slices/search/search-slice';
+import {
+	SEARCH_INDEX_SLICE_INITIAL_STATE,
+	createSearchIndexSlice
+} from 'store/emails/slices/search/search-slice';
 import { searchSliceUtils } from 'store/emails/slices/search/utils';
 import { syncDataHandlerUtils } from 'store/emails/sync-data-handler/utils';
 import { createTaskQueueManager } from 'store/emails/task-management/create-task-queue-manager';
@@ -656,6 +668,24 @@ export function handleNotifyMessagesCreated(
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyMessagesCreated(messages, useEmailsStore);
 	});
+}
+
+/**
+ * Resets the entire EmailsStore to its initial state.
+ * This should be called on logout to prevent data leakage between sessions.
+ */
+export function resetEmailsStore(): void {
+	useEmailsStore.setState(
+		{
+			searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
+			messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
+			conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE,
+			populatedItemsSlice: POPULATED_ITEMS_SLICE_INITIAL_STATE,
+			queue: [],
+			isExecuting: false
+		},
+		false
+	);
 }
 
 /**

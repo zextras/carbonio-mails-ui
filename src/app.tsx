@@ -11,6 +11,7 @@ import { BackupSearchComponentToggler } from 'app-utils/backup-search-component-
 import { SearchRegistration } from 'app-utils/search-registration';
 import { ShellRegistrations } from 'app-utils/shell-registrations';
 import { AuthGuard } from 'auth-guard';
+import { StoreResetHandler } from 'store-reset-handler';
 import { GlobalModalManager } from 'views/global-modal-manager';
 import { InitializeFolders } from 'views/sidebar/initialize-folders';
 import { InitializeServicesCatalog } from 'views/sidebar/initialize-services-catalog';
@@ -19,19 +20,22 @@ import { QuotaRefreshHandler } from 'views/sidebar/quota-refresh-handler';
 import { SyncDataHandler } from 'views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => (
-	<AuthGuard>
-		<AppContextInitializer />
-		<ShellRegistrations />
-		<BackupSearchComponentToggler />
-		<SearchRegistration />
-		<GlobalModalManager>
-			<InitializeFolders />
-			<InitializeTags />
-			<SyncDataHandler />
-			<InitializeServicesCatalog />
-			<QuotaRefreshHandler />
-		</GlobalModalManager>
-	</AuthGuard>
+	<>
+		<StoreResetHandler />
+		<AuthGuard>
+			<AppContextInitializer />
+			<ShellRegistrations />
+			<BackupSearchComponentToggler />
+			<SearchRegistration />
+			<GlobalModalManager>
+				<InitializeFolders />
+				<InitializeTags />
+				<SyncDataHandler />
+				<InitializeServicesCatalog />
+				<QuotaRefreshHandler />
+			</GlobalModalManager>
+		</AuthGuard>
+	</>
 );
 
 export default App;

@@ -480,3 +480,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()(
 		{ name: 'carbonio-mails-ui-EDITORS-SLICE' }
 	)
 );
+
+/**
+ * Resets the EditorsStore to its initial state.
+ * This should be called on logout to prevent data leakage between sessions.
+ */
+export function resetEditorsStore(): void {
+	useEditorsStore.setState({ editors: {} }, false);
+}
