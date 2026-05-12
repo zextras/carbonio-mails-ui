@@ -58,7 +58,7 @@ export const RichTextEditorContainer = ({
 	editorId,
 	onDragOver
 }: TextEditorContainerProps): JSX.Element => {
-	const { getText, setText } = useEditorText(editorId);
+	const { getText, setText, setTextNoDraft } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
 	const savedAttachments = useEditorsStore((state) => state.editors[editorId].savedAttachments);
@@ -120,6 +120,7 @@ export const RichTextEditorContainer = ({
 			return;
 		}
 
+		const sendProcessStatus = useEditorsStore.getState().editors[editorId]?.sendProcessStatus?.status;
 		const plainText = composerRef.current.getContent({ format: 'text' });
 		let richText = composerRef.current.getContent({ format: 'html' });
 
@@ -128,8 +129,12 @@ export const RichTextEditorContainer = ({
 		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
 		cleanupUnusedAttachments(richText);
-		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [prefs, cleanupUnusedAttachments, setText]);
+		if (sendProcessStatus === 'running') {
+			setTextNoDraft({ plainText, richText }, { syncTextProvider: false });
+		} else {
+			setText({ plainText, richText }, { syncTextProvider: false });
+		}
+	}, [prefs, cleanupUnusedAttachments, setText, setTextNoDraft, editorId]);
 
 	const onTextChange = useCallback(() => {
 		setDirty();
