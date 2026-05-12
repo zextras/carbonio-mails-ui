@@ -88,6 +88,7 @@ export const useEditorText = (
 ): {
 	getText: () => MailsEditorV2['text'];
 	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
+	setTextNoDraft: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
 	const { immediateSaveDraft } = useSaveDraftFromEditor(id);
 	const setter = useEditorsStore.getState().setText;
@@ -115,12 +116,27 @@ export const useEditorText = (
 		[id, immediateSaveDraft, setter, textProvider, setDirty]
 	);
 
+	const setTextNoDraft = useCallback(
+		(
+			val: MailsEditorV2['text'],
+			options: EditorSetTextOptions = { syncTextProvider: true }
+		): void => {
+			if (textProvider && options.syncTextProvider) {
+				textProvider.setCurrentText(val);
+			}
+			setter(id, val);
+			setDirty();
+		},
+		[id, setter, textProvider, setDirty]
+	);
+
 	return useMemo(
 		() => ({
 			getText,
-			setText
+			setText,
+			setTextNoDraft
 		}),
-		[getText, setText]
+		[getText, setText, setTextNoDraft]
 	);
 };
 
