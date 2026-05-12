@@ -31,6 +31,7 @@ import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
 import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
+import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 
 type FileSelectProps = {
 	editor: TinyMCE;
@@ -60,8 +61,9 @@ export const RichTextEditorContainer = ({
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
+	const savedAttachments = useEditorsStore((state) => state.editors[editorId].savedAttachments);
 	const composerRef = useRef<Editor>();
-	const initialValue = useRef(text);
+	const initialValue = useRef(replaceCidUrlWithServiceUrl(text, savedAttachments));
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
@@ -86,9 +88,11 @@ export const RichTextEditorContainer = ({
 				return;
 			}
 			setDirty();
-			composerRef.current.setContent(value.richText);
+			const savedAttachments = useEditorsStore.getState().editors[editorId].savedAttachments;
+			const richTextWithServiceUrls = replaceCidUrlWithServiceUrl(value.richText, savedAttachments);
+			composerRef.current.setContent(richTextWithServiceUrls);
 		},
-		[setDirty]
+		[setDirty, editorId]
 	);
 
 	const onComposerInit = useCallback(
