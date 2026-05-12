@@ -5,7 +5,7 @@
  */
 
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { getParticipantsFromMessage } from 'helpers/messages';
@@ -15,7 +15,10 @@ import { generateMailRequest } from 'store/editor-slice-utils';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
-import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from 'types/index.d';
+import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse, SendMsgResult } from 'types/index.d';
+import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
+import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { SoapSendMsgRequest } from '../types/soap/send-msg';
 
 export const sendMsg = async ({
 	msg
@@ -47,14 +50,33 @@ export async function sendMsgFromEditor({
 	editor
 }: {
 	editor: MailsEditorV2;
-}): Promise<SaveDraftResponse | ErrorSoapBodyResponse> {
+}): Promise<SoapSendMsgResponse| ErrorSoapBodyResponse> {
+
 	const msg = createSoapSendMsgRequestFromEditor(editor);
-
 	const identity = getIdentityDescriptor(editor.identityId);
+	const errRes = {} as ErrorSoapBodyResponse;
 
-	const response = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
-		'SendMsg',
-		{
+	if (editor?.identityId) {
+
+		await saveDraftEmailStoreAction({ editor }).then(() => {
+			console.log('Draft saved successfully, proceeding to send');
+		}).catch((err) => {
+			errRes.Fault = {
+				Code: {
+					Value: 'Client'
+				},
+				Reason: {
+					Text: 'Unexpected error occurred while saving the draft before sending the message'
+				},
+				Detail: { Error: {
+					Code: 'SendingDisabled',
+					Trace: ''
+				} }
+			};
+			return errRes;
+		});
+
+		const prepareMsgBody = {
 			_jsns: 'urn:zimbraMail',
 			m: msg,
 			...(editor.isSmimeSign || editor.isSmimeEncrypt
@@ -73,14 +95,41 @@ export async function sendMsgFromEditor({
 						encrypt: true
 					}
 				: {})
+		};
+
+		const response = await soapFetchV2<SoapSendMsgRequest,SoapSendMsgResponse>(
+			'SendMsg',
+			prepareMsgBody,
+			identity?.ownerAccount ?? undefined
+		);
+
+		if (response && 'SendMsgResponse' in response.Body) {
+			const sendMsgResponse = response.Body?.SendMsgResponse as SoapSendMsgResponse;
+			if (sendMsgResponse?.m?.[0]?.id) {
+				getMessageEmailStoreAction(sendMsgResponse.m[0].id);
+			}
+			return sendMsgResponse;
+		}
+
+		if (response && 'Fault' in response.Body) {
+			const errorDescription = response.Body as ErrorSoapBodyResponse;
+			return errorDescription;
+		}
+
+	}
+
+	errRes.Fault = {
+		Code: {
+			Value: 'Client'
 		},
-		identity?.ownerAccount ?? undefined
-	);
-	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction(response.m[0].id);
-	}
-	if (response?.m?.[0]?.cid) {
-		getConvEmailStoreAction({ id: response.m[0].cid });
-	}
-	return response;
+		Reason: {
+			Text: 'Unexpected error occurred while sending the message'
+		},
+		Detail: { Error: {
+			Code: 'SendingBlocked',
+			Trace: ''
+		} }
+	};
+
+	return errRes;
 }

@@ -39,11 +39,38 @@ const sendFromEditor = (
 ): SendMessageResult => {
 	const editorExist = getEditor({ id: editorId });
 	if (!editorExist) {
-		console.warn('Cannot find the editor', editorId);
+		// editor doesn't exist — report error and allow recovery
+		useEditorsStore.getState().setSendProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: 'Editor not found'
+		});
+		computeAndUpdateEditorStatus(editorId);
+		options?.onError &&
+			options.onError({
+				Fault: {
+					Reason: {
+						Text: 'Editor not found'
+					}
+				}
+			} as SaveDraftResponse);
 		return {};
 	}
 
 	if (!editorExist.sendAllowedStatus?.allowed) {
+		// sending is not allowed — report error and allow recovery
+		useEditorsStore.getState().setSendProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: 'Sending not allowed in the current editor state'
+		});
+		computeAndUpdateEditorStatus(editorId);
+		options?.onError &&
+			options.onError({
+				Fault: {
+					Reason: {
+						Text: 'Sending not allowed in the current editor state'
+					}
+				}
+			} as SaveDraftResponse);
 		return {};
 	}
 
@@ -84,33 +111,49 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(() => {
 			const editor = getEditor({ id: editorId });
-			editor?.identityId &&
+			if (editor?.identityId) {
 				sendMsgFromEditor({ editor })
 					.then((res) => {
-						if ('Fault' in res) {
-							const errorDescription: string = res.Fault.Reason.Text;
+						if (res && 'm' in res) {
+							useEditorsStore.getState().setSendProcessStatus(editorId, {
+								status: 'completed'
+							});
+							computeAndUpdateEditorStatus(editorId);
+							options?.onComplete && options.onComplete();
+						} else {
+							const errorDescription: string = res.Fault?.Reason?.Text ?? 'Unknown error';
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
 								status: 'aborted',
 								abortReason: errorDescription
 							});
 							computeAndUpdateEditorStatus(editorId);
 							options?.onError && options.onError(res);
-						} else {
-							useEditorsStore.getState().setSendProcessStatus(editorId, {
-								status: 'completed'
-							});
-							computeAndUpdateEditorStatus(editorId);
-							options?.onComplete && options.onComplete();
 						}
 					})
 					.catch((err) => {
 						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'aborted',
-							abortReason: err
+							abortReason: err?.Fault?.Reason?.Text ?? 'Unknown error'
 						});
 						computeAndUpdateEditorStatus(editorId);
 						options?.onError && options.onError(err);
 					});
+			} else {
+				// Missing identity — report error and allow recovery
+				useEditorsStore.getState().setSendProcessStatus(editorId, {
+					status: 'aborted',
+					abortReason: 'Identity not found'
+				});
+				computeAndUpdateEditorStatus(editorId);
+				options?.onError &&
+					options.onError({
+						Fault: {
+							Reason: {
+								Text: 'Identity not found'
+							}
+						}
+					} as SaveDraftResponse);
+			}
 		})
 		.catch((err) => {
 			useEditorsStore.getState().setSendProcessStatus(editorId, {
