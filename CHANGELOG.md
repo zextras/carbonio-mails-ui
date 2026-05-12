@@ -1,3 +1,9 @@
+## <small>1.34.2 (2026-05-12)</small>
+
+* Merge pull request #1231 from zextras/IN-1095-jfrog-cost-optimization-usage-analysis-and-mitigation- ([2480fca](https://github.com/zextras/carbonio-mails-ui/commit/2480fca)), closes [#1231](https://github.com/zextras/carbonio-mails-ui/issues/1231)
+* build(release): update jenkins-lib-ui to 1.0.13 ([5bc3789](https://github.com/zextras/carbonio-mails-ui/commit/5bc3789))
+* chore(deps): update semantic-release monorepo (#1221) ([b60a463](https://github.com/zextras/carbonio-mails-ui/commit/b60a463)), closes [#1221](https://github.com/zextras/carbonio-mails-ui/issues/1221)
+
 ## <small>1.34.1 (2026-05-06)</small>
 
 * build(deps): update dependencies (#1227) ([3da848e](https://github.com/zextras/carbonio-mails-ui/commit/3da848e)), closes [#1227](https://github.com/zextras/carbonio-mails-ui/issues/1227)
