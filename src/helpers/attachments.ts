@@ -235,15 +235,20 @@ function flattenAndAddDisposition(
 				if (part.disposition === undefined) {
 					incoming.push({
 						...part,
-						disposition: isReferredByCid ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
+						disposition: isReferredByCid &&
+										part.contentType.startsWith('image/') ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
 					});
-				} else if (isReferredByCid) {
+				} else if (isReferredByCid && part.contentType.startsWith('image/')) {
 					incoming.push({
 						...part,
 						disposition: DISPOSITION_INLINE
 					});
 				} else {
-					incoming.push({ ...part, disposition: part.disposition });
+					incoming.push({
+						...part,
+						disposition: part.contentType.startsWith('image/') &&
+										part.disposition === DISPOSITION_INLINE ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
+					});
 				}
 			}
 
