@@ -58,24 +58,6 @@ export async function sendMsgFromEditor({
 
 	if (editor?.identityId) {
 
-		await saveDraftEmailStoreAction({ editor }).then(() => {
-			console.log('Draft saved successfully, proceeding to send');
-		}).catch((err) => {
-			errRes.Fault = {
-				Code: {
-					Value: 'Client'
-				},
-				Reason: {
-					Text: 'Unexpected error occurred while saving the draft before sending the message'
-				},
-				Detail: { Error: {
-					Code: 'SendingDisabled',
-					Trace: ''
-				} }
-			};
-			return errRes;
-		});
-
 		const prepareMsgBody = {
 			_jsns: 'urn:zimbraMail',
 			m: msg,
