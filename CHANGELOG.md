@@ -1,3 +1,8 @@
+## <small>1.34.4 (2026-05-14)</small>
+
+* fix(ci): migrate Jenkinsfile to jenkins-lib-common ([1ad2863](https://github.com/zextras/carbonio-mails-ui/commit/1ad2863))
+* chore: add .worktrees to .gitignore ([a124ce0](https://github.com/zextras/carbonio-mails-ui/commit/a124ce0))
+
 ## <small>1.34.3 (2026-05-12)</small>
 
 * fix: input select file name display issue fixed (#1230) ([dde1ff9](https://github.com/zextras/carbonio-mails-ui/commit/dde1ff9)), closes [#1230](https://github.com/zextras/carbonio-mails-ui/issues/1230)
