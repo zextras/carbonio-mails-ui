@@ -3,56 +3,94 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { Grant } from '@zextras/carbonio-ui-soap-lib';
+import type { Grant } from '@zextras/carbonio-ui-commons';
+import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
 import { ModalProps } from 'types/utils';
-import EditPermissionsModal from 'views/sidebar/edit-permissions-modal';
-import { Context } from 'views/sidebar/parts/edit/edit-context';
-import MainEditModal from 'views/sidebar/parts/edit/edit-default-modal';
-import ShareRevokeModal from 'views/sidebar/parts/edit/share-revoke-modal';
+import { AddShareModal } from 'views/sidebar/add-share-modal';
+import { EditShareModal } from 'views/sidebar/edit-share-modal';
+import { MainEditModal } from 'views/sidebar/parts/edit/edit-default-modal';
+import { ShareRevokeModal } from 'views/sidebar/parts/edit/share-revoke-modal';
+
+type ModalView =
+	| { kind: 'default' }
+	| { kind: 'add-share' }
+	| { kind: 'edit-share'; grant: Grant }
+	| { kind: 'revoke-share'; grant: Grant };
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const [activeModal, setActiveModal] = useState('default');
-	const [activeGrant, setActiveGrant] = useState<Grant | undefined>(undefined);
-	const goBack = useCallback(() => {
-		setActiveModal('default');
-	}, [setActiveModal]);
+	const [view, setView] = useState<ModalView>({ kind: 'default' });
+	const [grants, setGrants] = useState<Grant[]>(folder.acl?.grant ?? []);
 
-	const grant = activeGrant ?? folder?.acl?.grant?.[0];
+	const refreshGrants = useCallback(() => {
+		legacySoapFetch('GetFolder', {
+			_jsns: 'urn:zimbraMail',
+			folder: { l: folder.id }
+		}).then((res: any): void => {
+			if (res?.folder?.[0]?.acl?.grant) {
+				setGrants(res.folder[0].acl.grant);
+			}
+		});
+	}, [folder.id]);
+
+	useEffect(() => {
+		refreshGrants();
+	}, [refreshGrants]);
+
+	const goBack = useCallback(() => setView({ kind: 'default' }), []);
+	const onAddShare = useCallback(() => setView({ kind: 'add-share' }), []);
+	const onEditGrant = useCallback((grant: Grant) => setView({ kind: 'edit-share', grant }), []);
+	const onRevokeGrant = useCallback((grant: Grant) => setView({ kind: 'revoke-share', grant }), []);
 
 	return (
-		<Context.Provider value={{ activeModal, setActiveModal, activeGrant, setActiveGrant, onClose }}>
-			<Container
-				padding={{ all: 'medium' }}
-				mainAlignment="center"
-				crossAlignment="flex-start"
-				height="fit"
-			>
-				{activeModal === 'default' && (
-					<MainEditModal folder={folder} onClose={onClose} setActiveModal={setActiveModal} />
-				)}
+		<Container
+			padding={{ all: 'medium' }}
+			mainAlignment="center"
+			crossAlignment="flex-start"
+			height="fit"
+		>
+			{view.kind === 'default' && (
+				<MainEditModal
+					folder={folder}
+					onClose={onClose}
+					grants={grants}
+					onAddShare={onAddShare}
+					onEditGrant={onEditGrant}
+					onRevokeGrant={onRevokeGrant}
+				/>
+			)}
 
-				{activeModal === 'edit' && grant && (
-					<EditPermissionsModal
-						folder={folder}
-						onClose={onClose}
-						goBack={goBack}
-						editMode
-						grant={grant}
-					/>
-				)}
+			{view.kind === 'add-share' && (
+				<AddShareModal
+					folder={folder}
+					onClose={onClose}
+					goBack={goBack}
+					onSuccess={refreshGrants}
+				/>
+			)}
 
-				{activeModal === 'revoke' && grant && (
-					<ShareRevokeModal folder={folder} goBack={goBack} grant={grant} />
-				)}
+			{view.kind === 'edit-share' && (
+				<EditShareModal
+					folder={folder}
+					onClose={onClose}
+					grant={view.grant}
+					goBack={goBack}
+					onSuccess={refreshGrants}
+				/>
+			)}
 
-				{activeModal === 'share' && grant && (
-					<EditPermissionsModal folder={folder} onClose={onClose} grant={grant} />
-				)}
-			</Container>
-		</Context.Provider>
+			{view.kind === 'revoke-share' && (
+				<ShareRevokeModal
+					folder={folder}
+					onClose={onClose}
+					grant={view.grant}
+					goBack={goBack}
+					onSuccess={refreshGrants}
+				/>
+			)}
+		</Container>
 	);
 };

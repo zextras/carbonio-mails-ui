@@ -7,7 +7,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import type { ShareRevokeModalType } from '@zextras/carbonio-ui-commons';
+import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
@@ -16,7 +16,21 @@ import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
 
-const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
+type ShareRevokeModalProps = {
+	folder: Folder;
+	onClose?: () => void;
+	grant: Grant;
+	goBack: () => void;
+	onSuccess?: () => void;
+};
+
+export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
+	folder,
+	onClose,
+	grant,
+	goBack,
+	onSuccess
+}) => {
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
 
@@ -24,53 +38,40 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 
 	const { createSnackbar } = useUiUtilities();
 
-	const onConfirm = useCallback(() => {
+	const onConfirm = useCallback(async () => {
 		if (sendNotification) {
-			sendShareNotificationSoapApi({
+			await sendShareNotificationSoapApi({
 				standardMessage,
-				contacts: [{ email: grant?.d }],
+				contacts: [{ email: grant.d ?? '' }],
 				folder,
 				accounts
-			}).then(() => {
-				folderActionSoapApi({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
-					if (!('Fault' in res)) {
-						createSnackbar({
-							key: `remove-share-${folder.id}`,
-							replace: true,
-							severity: 'info',
-							label: t('snackbar.share_revoke', 'Share access revoked'),
-							autoHideTimeout: 2000,
-							hideButton: true
-						});
-					}
-					goBack();
-				});
-			});
-		} else {
-			folderActionSoapApi({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
-				if (!('Fault' in res)) {
-					createSnackbar({
-						key: `remove-share-${folder.id}`,
-						replace: true,
-						severity: 'info',
-						label: t('snackbar.share_revoke', 'Share access revoked'),
-						autoHideTimeout: 2000,
-						hideButton: true
-					});
-				}
-				goBack();
 			});
 		}
+		const res = await folderActionSoapApi({ folder, zid: grant.zid ?? '', op: '!grant' });
+		if (!('Fault' in res)) {
+			createSnackbar({
+				key: `remove-share-${folder.id}`,
+				replace: true,
+				severity: 'info',
+				label: t('snackbar.share_revoke', 'Share access revoked'),
+				autoHideTimeout: 2000,
+				hideButton: true
+			});
+			onSuccess?.();
+		}
+		goBack();
 	}, [
 		sendNotification,
 		standardMessage,
-		grant?.d,
+		grant.d,
 		grant.zid,
 		folder,
 		accounts,
 		goBack,
-		createSnackbar
+		createSnackbar,
+		onSuccess
 	]);
+
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
 		[grant.perm]
@@ -86,6 +87,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 			'Revoke access without sending a notification'
 		);
 	}, [sendNotification, standardMessage]);
+
 	return (
 		<Container
 			padding={{ all: 'small' }}
@@ -161,4 +163,3 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 		</Container>
 	);
 };
-export default ShareRevokeModal;

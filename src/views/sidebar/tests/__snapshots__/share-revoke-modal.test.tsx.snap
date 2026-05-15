@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ShareRevokeModal > styling > confirm button has error (destructive) styling 1`] = `"css-14xs02u-StyledButton-pseudoClasses-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-pseudoClasses-pseudoClasses-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-pseudoClasses-pseudoClasses-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-buildPseudoRule-pseudoClasses-StyledButton e3vfq553"`;

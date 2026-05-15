@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -27,100 +27,79 @@ import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-a
 import { shareFolderSoapApi } from 'api/share-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
-import { EditPermissionsModalProps } from 'types/sidebar';
-import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
+import { ModalProps } from 'types/utils';
 
-// TODO refactor IRIS-4324
-const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
-	onClose,
-	folder,
-	editMode = false,
-	grant,
-	goBack
-}) => {
+type AddShareModalProps = ModalProps & {
+	goBack: () => void;
+	onSuccess?: () => void;
+};
+
+export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack, onSuccess }) => {
 	const ContactInput = useContactInput();
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
-	const [shareWithUserRole, setshareWithUserRole] = useState<string>(editMode ? grant.perm : 'r');
+	const [shareWithUserRole, setShareWithUserRole] = useState<string>('r');
 
 	const { createSnackbar } = useUiUtilities();
-
 	const accounts = useUserAccounts();
 
-	const title = useMemo(
-		() =>
-			editMode
-				? `${t('label.edit_access', 'Edit access')} `
-				: `${t('label.share', 'Share')} ${folder.name}`,
-		[editMode, folder.name]
-	);
+	const title = useMemo(() => `${t('label.share', 'Share')} ${folder.name}`, [folder.name]);
 
-	const onShareRoleChange = useCallback((shareRole: any) => {
-		setshareWithUserRole(shareRole);
+	const onShareRoleChange = useCallback((shareRole: string | null) => {
+		if (shareRole !== null) setShareWithUserRole(shareRole);
 	}, []);
 
 	const onConfirm = useCallback(async (): Promise<void> => {
 		const shareFolderResponse = await shareFolderSoapApi({
 			sendNotification,
 			standardMessage,
-			contacts: editMode
-				? [{ email: grant.d || grant.zid }]
-				: contacts.map((contact) => ({ email: contact.value.email })),
+			contacts: contacts.map((contact) => ({ email: contact.value.email })),
 			shareWithUserRole,
 			folder,
 			accounts
 		});
-		if (!('Fault' in shareFolderResponse)) {
+		if ('Fault' in shareFolderResponse) {
 			createSnackbar({
 				key: `share-${folder.id}`,
 				replace: true,
 				hideButton: true,
-				severity: 'info',
-				label: editMode
-					? t('snackbar.share_updated', '"Access rights updated"')
-					: t('snackbar.folder_shared', 'Folder shared'),
+				severity: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
 				autoHideTimeout: 3000
 			});
-			const sendNotificaitonResponse = await sendShareNotificationSoapApi?.({
+			return;
+		}
+		createSnackbar({
+			key: `share-${folder.id}`,
+			replace: true,
+			hideButton: true,
+			severity: 'info',
+			label: t('snackbar.folder_shared', 'Folder shared'),
+			autoHideTimeout: 3000
+		});
+		if (sendNotification) {
+			await sendShareNotificationSoapApi({
 				standardMessage,
-				contacts: editMode
-					? [{ email: grant.d || grant.zid }]
-					: contacts.map((contact) => ({ email: contact.value.email })),
-
+				contacts: contacts.map((contact) => ({ email: contact.value.email })),
 				folder,
 				accounts
 			});
-			if (!sendNotificaitonResponse) {
-				createSnackbar({
-					key: `share-${folder.id}`,
-					replace: true,
-					severity: 'error',
-					hideButton: true,
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
-			}
 		}
+		onSuccess?.();
 		onClose();
 	}, [
 		sendNotification,
 		standardMessage,
-		editMode,
-		grant,
 		contacts,
 		shareWithUserRole,
 		folder,
 		accounts,
 		onClose,
-		createSnackbar
+		createSnackbar,
+		onSuccess
 	]);
-
-	const disableEdit = useMemo(
-		() => grant?.perm === shareWithUserRole,
-		[grant?.perm, shareWithUserRole]
-	);
 
 	return (
 		<>
@@ -132,26 +111,16 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			>
 				<ModalHeader title={title} onClose={onClose} />
 				<Padding top="small" />
-				{editMode ? (
-					<Container
-						orientation="horizontal"
-						mainAlignment="flex-end"
-						padding={{ bottom: 'large', top: 'large' }}
-					>
-						<GranteeInfo grant={grant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
-					</Container>
-				) : (
-					<Container height="fit" padding={{ vertical: 'small' }}>
-						<ContactInput
-							background="gray4"
-							placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-							onChange={(contactChips: ContactInputItem[]): void => {
-								setContacts(contactChips);
-							}}
-							defaultValue={contacts}
-						/>
-					</Container>
-				)}
+				<Container height="fit" padding={{ vertical: 'small' }}>
+					<ContactInput
+						background="gray4"
+						placeholder={t('share.recipients_address', "Recipients' e-mail addresses")}
+						onChange={(contactChips: ContactInputItem[]): void => {
+							setContacts(contactChips);
+						}}
+						defaultValue={contacts}
+					/>
+				</Container>
 
 				<Container height="fit">
 					<Select
@@ -162,8 +131,8 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 						onChange={onShareRoleChange}
 						defaultSelection={
 							{
-								value: editMode ? grant?.perm : 'r',
-								label: findLabel(shareCalendarRoleOptions, editMode ? grant?.perm : 'r')
+								value: 'r',
+								label: findLabel(shareCalendarRoleOptions, 'r')
 							} as SelectItem
 						}
 					/>
@@ -216,16 +185,12 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				</Container>
 			</Container>
 			<ModalFooter
-				label={
-					editMode ? t('action.edit_share', 'Edit Share') : t('action.share_folder', 'Share folder')
-				}
+				label={t('action.share_folder', 'Share folder')}
 				onConfirm={onConfirm}
-				disabled={editMode ? disableEdit : contacts.length < 1}
+				disabled={contacts.length < 1}
 				secondaryAction={goBack}
 				secondaryLabel={t('label.go_back', 'Go Back')}
 			/>
 		</>
 	);
 };
-
-export default EditPermissionsModal;

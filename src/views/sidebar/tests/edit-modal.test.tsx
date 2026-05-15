@@ -16,6 +16,7 @@ import {
 	SoapFolderAction,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-ui-commons';
+import type { Grant } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
 import { getSetupServer } from '../../../__test__/vitest-setup';
@@ -373,6 +374,12 @@ describe('edit-modal', () => {
 	});
 
 	describe('Shared folder', () => {
+		it('should render without crashing when acl is defined but grant is an empty array', () => {
+			const folder = generateFolder({ acl: { grant: [] } });
+			setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+			expect(screen.getByRole('button', { name: /label\.edit/i })).toBeEnabled();
+		});
+
 		it('should display "Sharing of this folder" panel acl is present', async () => {
 			const acl = {
 				grant: [
@@ -419,10 +426,9 @@ describe('edit-modal', () => {
 			await user.clear(folderInputElement);
 			expect(folderInputElement).toHaveValue('');
 
-			const editButton = screen.getByRole('button', {
-				name: /label\.edit/i
-			});
-			expect(editButton).toBeDisabled();
+			// ModalFooter submit button is always last among buttons named label.edit
+			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
+			expect(editButtons[editButtons.length - 1]).toBeDisabled();
 		});
 
 		it('should enable the edit submit button when folder name input is not empty', async () => {
@@ -434,10 +440,9 @@ describe('edit-modal', () => {
 			const folderInputElement = within(newFolder).getByRole('textbox');
 			expect(folderInputElement).toHaveValue('Test');
 
-			const editButton = screen.getByRole('button', {
-				name: /label\.edit/i
-			});
-			expect(editButton).toBeEnabled();
+			// ModalFooter submit button is always last among buttons named label.edit
+			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
+			expect(editButtons[editButtons.length - 1]).toBeEnabled();
 		});
 
 		it('should display the "Cannot use a system folder name" error when folder name input is equal to a system folder', async () => {
@@ -471,10 +476,9 @@ describe('edit-modal', () => {
 				await screen.findByText('Special characters not allowed. Max lenght is 128 characters.')
 			).toBeVisible();
 
-			const editButton = screen.getByRole('button', {
-				name: /label\.edit/i
-			});
-			expect(editButton).toBeDisabled();
+			// ModalFooter submit button is always last among buttons named label.edit
+			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
+			expect(editButtons[editButtons.length - 1]).toBeDisabled();
 		});
 
 		it('should disable the submit button and show error message when system folder name is used', async () => {
@@ -491,10 +495,88 @@ describe('edit-modal', () => {
 			await user.type(folderInputElement, 'Inbox');
 			expect(await screen.findByText('You cannot rename a folder as a system one')).toBeVisible();
 
-			const editButton = screen.getByRole('button', {
-				name: /label\.edit/i
-			});
-			expect(editButton).toBeDisabled();
+			// ModalFooter submit button is always last among buttons named label.edit
+			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
+			expect(editButtons[editButtons.length - 1]).toBeDisabled();
+		});
+	});
+
+	describe('navigation between views', () => {
+		const testGrant: Grant = {
+			zid: 'test-zid',
+			d: 'test@example.com',
+			perm: 'r',
+			gt: 'usr'
+		};
+
+		const setupWithGrant = async (): Promise<{
+			user: ReturnType<typeof setupTest>['user'];
+			folder: Folder;
+		}> => {
+			const acl = { grant: [testGrant] };
+			createSoapAPIInterceptor('GetFolder', { folder: [{ acl }] });
+			const folder = { ...generateFolder(), acl };
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+			// label.revoke is unique to the ShareFolderProperties actions — waiting for it confirms
+			// the SOAP response has arrived and the grant row is rendered
+			await screen.findByRole('button', { name: /label\.revoke/i });
+			return { user, folder };
+		};
+
+		// Both the Actions "Edit share" button and the ModalFooter "Edit folder" button share
+		// the label "label.edit". The Actions button appears first in DOM order (above ModalFooter).
+		const clickGrantEditButton = async (
+			user: ReturnType<typeof setupTest>['user']
+		): Promise<void> => {
+			const [actionsEditBtn] = screen.getAllByRole('button', { name: /label\.edit/i });
+			await user.click(actionsEditBtn);
+		};
+
+		it('clicking "Add Share" shows the recipients contact input', async () => {
+			const folder = aFolderWithoutSharePermission();
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+			await user.click(screen.getByRole('button', { name: /folder\.modal\.edit\.add_share/i }));
+			expect(
+				screen.getByRole('textbox', { name: /share\.recipients_address/i })
+			).toBeInTheDocument();
+		});
+
+		it('clicking "Edit" on a grant shows the EditPermissionsModal in edit mode', async () => {
+			const { user } = await setupWithGrant();
+			await clickGrantEditButton(user);
+			expect(screen.getByRole('button', { name: /action\.edit_share/i })).toBeInTheDocument();
+		});
+
+		it('edit mode shows the correct grantee pre-populated', async () => {
+			const { user } = await setupWithGrant();
+			await clickGrantEditButton(user);
+			expect(screen.getByText(/test@example\.com/i)).toBeInTheDocument();
+		});
+
+		it('clicking "Revoke" on a grant shows the ShareRevokeModal', async () => {
+			const { user } = await setupWithGrant();
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(screen.getByText(/label\.revoke_share/i)).toBeInTheDocument();
+		});
+
+		it('"Go Back" from edit mode returns to the default view', async () => {
+			const { user } = await setupWithGrant();
+			await clickGrantEditButton(user);
+			expect(screen.getByRole('button', { name: /action\.edit_share/i })).toBeInTheDocument();
+			await user.click(screen.getByRole('button', { name: /label\.go_back/i }));
+			expect(
+				screen.getByRole('button', { name: /folder\.modal\.edit\.add_share/i })
+			).toBeInTheDocument();
+		});
+
+		it('"Go Back" from revoke mode returns to the default view', async () => {
+			const { user } = await setupWithGrant();
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(screen.getByText(/label\.revoke_share/i)).toBeInTheDocument();
+			await user.click(screen.getByRole('button', { name: /label\.go_back/i }));
+			expect(
+				screen.getByRole('button', { name: /folder\.modal\.edit\.add_share/i })
+			).toBeInTheDocument();
 		});
 	});
 
