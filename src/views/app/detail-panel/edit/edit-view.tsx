@@ -592,8 +592,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
+				// Create a snackbar that inform the user that message
 				setAutoSendTime(scheduledTime);
-				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
 			};
 			checkSubjectAndAttachment({
