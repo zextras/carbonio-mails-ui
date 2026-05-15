@@ -164,6 +164,16 @@ describe('ShareFolderProperties', () => {
 			await user.click(screen.getByRole('button', { name: /label\.resend/i }));
 			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
 		});
+
+		it('Resend button does not show a snackbar when the API response contains a Fault', async () => {
+			const sendMock = vi
+				.spyOn(sendShareModule, 'sendShareNotificationSoapApi')
+				.mockResolvedValue([{ Fault: {} }] as never);
+			const { user } = setupWithGrant();
+			await user.click(screen.getByRole('button', { name: /label\.resend/i }));
+			await vi.waitFor(() => expect(sendMock).toHaveBeenCalled());
+			expect(screen.queryByTestId('snackbar')).not.toBeInTheDocument();
+		});
 	});
 
 	it('each grantee row uses its own grant perm to determine the role label', () => {

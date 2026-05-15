@@ -112,6 +112,29 @@ describe('AddShareModal', () => {
 	});
 
 	describe('API called with correct parameters', () => {
+		it('calls shareFolderSoapApi with all entered recipients when multiple addresses are added', async () => {
+			const { user, folder } = defaultSetup();
+			const email1 = faker.internet.email();
+			const email2 = faker.internet.email();
+			const chipInput = screen.getByRole('textbox', { name: /share\.recipients_address/i });
+
+			await user.type(chipInput, email1);
+			await user.tab();
+			await user.type(chipInput, email2);
+			await user.tab();
+
+			const shareFolderMock = vi.spyOn(shareFolderModule, 'shareFolderSoapApi');
+			await user.click(screen.getByRole('button', { name: /action\.share_folder/i }));
+
+			expect(shareFolderMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					contacts: expect.arrayContaining([{ email: email1 }, { email: email2 }]),
+					folder
+				})
+			);
+			expect(shareFolderMock.mock.calls[0][0].contacts).toHaveLength(2);
+		});
+
 		it('calls shareFolderSoapApi with viewer role', async () => {
 			const { user, folder } = defaultSetup();
 			const viewer = faker.internet.email();

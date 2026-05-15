@@ -17,6 +17,7 @@ import {
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-ui-commons';
 import type { Grant } from '@zextras/carbonio-ui-commons';
+import * as soapLib from '@zextras/carbonio-ui-soap-lib';
 import { http } from 'msw';
 
 import { getSetupServer } from '../../../__test__/vitest-setup';
@@ -378,6 +379,47 @@ describe('edit-modal', () => {
 			const folder = generateFolder({ acl: { grant: [] } });
 			setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
 			expect(screen.getByRole('button', { name: /label\.edit/i })).toBeEnabled();
+		});
+
+		describe('when folder.acl is undefined', () => {
+			const refreshGrant: Grant = {
+				zid: 'refresh-zid',
+				gt: 'usr',
+				perm: 'r',
+				d: 'refresh@example.com'
+			};
+
+			it('fetches grants from the API and displays them', async () => {
+				createSoapAPIInterceptor('GetFolder', {
+					folder: [{ acl: { grant: [refreshGrant] } }]
+				});
+				const folder = aFolderWithoutSharePermission();
+				setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+				await screen.findByText(
+					/refresh@example\.com - share\.options\.share_calendar_role\.viewer/i
+				);
+			});
+
+			it('does not crash when the API call rejects', async () => {
+				const soapSpy = vi
+					.spyOn(soapLib, 'soapFetchV2')
+					.mockRejectedValue(new Error('network error'));
+				const folder = aFolderWithoutSharePermission();
+				setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+				await vi.waitFor(() => expect(soapSpy).toHaveBeenCalled());
+				expect(screen.queryByText(/share\.options\.share_calendar_role/i)).not.toBeInTheDocument();
+				expect(screen.getByRole('button', { name: /label\.edit/i })).toBeEnabled();
+			});
+
+			it('does not display grants when the API response contains a Fault', async () => {
+				const soapSpy = vi.spyOn(soapLib, 'soapFetchV2').mockResolvedValue({
+					Body: { Fault: { Reason: { Text: 'Permission denied' } } }
+				} as never);
+				const folder = aFolderWithoutSharePermission();
+				setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+				await vi.waitFor(() => expect(soapSpy).toHaveBeenCalled());
+				expect(screen.queryByText(/share\.options\.share_calendar_role/i)).not.toBeInTheDocument();
+			});
 		});
 
 		it('should display "Sharing of this folder" panel acl is present', async () => {
