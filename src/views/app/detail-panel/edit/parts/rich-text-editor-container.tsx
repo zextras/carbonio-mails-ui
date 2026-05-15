@@ -64,6 +64,7 @@ export const RichTextEditorContainer = ({
 	const savedAttachments = useEditorsStore((state) => state.editors[editorId].savedAttachments);
 	const composerRef = useRef<Editor>();
 	const initialValue = useRef(replaceCidUrlWithServiceUrl(text, savedAttachments));
+	const fixedInitialValue = useRef(replaceCidUrlWithServiceUrl(text, savedAttachments));
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
@@ -126,17 +127,38 @@ export const RichTextEditorContainer = ({
 
 		const style = getUserPreferenceStyle(prefs);
 
-		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
+		const richTextUserPref = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
 
-		cleanupUnusedAttachments(richText);
+		cleanupUnusedAttachments(richTextUserPref);
 		if (sendProcessStatus === 'running') {
-			setTextNoDraft({ plainText, richText }, { syncTextProvider: false });
+			setTextNoDraft({ plainText, richText: richTextUserPref }, { syncTextProvider: false });
 		} else {
-			setText({ plainText, richText }, { syncTextProvider: false });
+			setText({ plainText, richText: richTextUserPref }, { syncTextProvider: false });
 		}
+		
+		// Update the initial value to avoid multiple consecutive saves when the user is not changing the content after the first save
+		fixedInitialValue.current = richText;
+
+
 	}, [prefs, cleanupUnusedAttachments, setText, setTextNoDraft, editorId]);
 
 	const onTextChange = useCallback(() => {
+
+		//verify if current text is different from the initial text, if not do not set dirty and do not trigger save
+		if (!composerRef.current) {
+			return;
+		}
+
+		// verify if the content has actually changed since the last save to avoid unnecessary saves when the user is not changing the content but triggers the onTextChange callback (ex: by changing the font size, which triggers onTextChange but does not change the actual text content)
+		const currentRichText = composerRef.current.getContent({ format: 'html' });
+
+		const initialRichText = fixedInitialValue.current;
+
+		if (currentRichText === initialRichText) {
+			composerRef.current?.setDirty(false);
+			return;
+		}
+
 		setDirty();
 		if (timeoutId.current) {
 			clearTimeout(timeoutId.current);
@@ -145,6 +167,28 @@ export const RichTextEditorContainer = ({
 			if (!composerRef.current) {
 				return;
 			}
+
+			saveEditor();
+			composerRef.current?.setDirty(false);
+		}, SAVE_EDITOR_DELAY);
+	}, [saveEditor, setDirty]);
+
+	const onTextInput = useCallback(() => {
+
+		//verify if current text is different from the initial text, if not do not set dirty and do not trigger save
+		if (!composerRef.current) {
+			return;
+		}
+
+		setDirty();
+		if (timeoutId.current) {
+			clearTimeout(timeoutId.current);
+		}
+		timeoutId.current = setTimeout(() => {
+			if (!composerRef.current) {
+				return;
+			}
+
 			saveEditor();
 			composerRef.current?.setDirty(false);
 		}, SAVE_EDITOR_DELAY);
@@ -329,7 +373,7 @@ export const RichTextEditorContainer = ({
 
 				const handlePaste = createPasteHandler(editor, editorId);
 				editor.on('paste', handlePaste);
-				editor.on('input', onTextChange);
+				editor.on('input', onTextInput);
 				editor.on('change', onTextChange);
 				editor.on('remove', onComposerClose);
 
