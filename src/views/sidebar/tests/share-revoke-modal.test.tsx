@@ -178,5 +178,4 @@ describe('ShareRevokeModal', () => {
 			expect(onSuccess).not.toHaveBeenCalled();
 		});
 	});
-
 });

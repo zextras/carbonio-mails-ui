@@ -184,5 +184,4 @@ describe('ShareFolderProperties', () => {
 			expect(chip).toHaveClass(defaultClass, { exact: true });
 		});
 	});
-
 });

@@ -47,7 +47,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 	const { createSnackbar } = useUiUtilities();
 	const accounts = useUserAccounts();
 
-	const title = useMemo(() => `${t('label.edit_access', 'Edit access')} `, []);
+	const title = useMemo(() => t('label.edit_access', 'Edit access'), []);
 
 	const onShareRoleChange = useCallback((shareRole: string | null) => {
 		if (shareRole !== null) setShareWithUserRole(shareRole);
@@ -78,7 +78,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 			replace: true,
 			hideButton: true,
 			severity: 'info',
-			label: t('snackbar.share_updated', '"Access rights updated"'),
+			label: t('snackbar.share_updated', 'Access rights updated'),
 			autoHideTimeout: 3000
 		});
 		if (sendNotification) {
@@ -182,7 +182,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 						<Text overflow="break-word" size="small" color="gray1">
 							{t(
 								'share.share_note',
-								'The standard message displays your name, the name of the shared item, pemissions granted to the recipients, and sign in information, if necessary.'
+								'The standard message displays your name, the name of the shared item, permissions granted to the recipients, and sign in information, if necessary.'
 							)}
 						</Text>
 					</Row>

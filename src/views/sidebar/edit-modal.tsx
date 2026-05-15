@@ -30,9 +30,7 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 			_jsns: 'urn:zimbraMail',
 			folder: { l: folder.id }
 		}).then((res: any): void => {
-			if (res?.folder?.[0]?.acl?.grant) {
-				setGrants(res.folder[0].acl.grant);
-			}
+			setGrants(res?.folder?.[0]?.acl?.grant ?? []);
 		});
 	}, [folder.id]);
 

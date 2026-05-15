@@ -39,15 +39,37 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 	const { createSnackbar } = useUiUtilities();
 
 	const onConfirm = useCallback(async () => {
-		if (sendNotification) {
-			await sendShareNotificationSoapApi({
-				standardMessage,
-				contacts: [{ email: grant.d ?? '' }],
-				folder,
-				accounts
+		if (!grant.zid) {
+			createSnackbar({
+				key: `remove-share-${folder.id}`,
+				replace: true,
+				severity: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000,
+				hideButton: true
 			});
+			return;
 		}
-		const res = await folderActionSoapApi({ folder, zid: grant.zid ?? '', op: '!grant' });
+		if (sendNotification) {
+			try {
+				await sendShareNotificationSoapApi({
+					standardMessage,
+					contacts: [{ email: grant.d ?? '' }],
+					folder,
+					accounts
+				});
+			} catch {
+				createSnackbar({
+					key: `notify-${folder.id}`,
+					replace: true,
+					severity: 'warning',
+					label: t('label.notification_failed', 'Failed to send notification'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		}
+		const res = await folderActionSoapApi({ folder, zid: grant.zid, op: '!grant' });
 		if (!('Fault' in res)) {
 			createSnackbar({
 				key: `remove-share-${folder.id}`,
