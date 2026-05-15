@@ -57,7 +57,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 		const shareFolderResponse = await shareFolderSoapApi({
 			sendNotification,
 			standardMessage,
-			contacts: [{ email: grant.d || grant.zid || '' }],
+			contacts: [{ email: grant.d ?? '' }],
 			shareWithUserRole,
 			folder,
 			accounts
@@ -85,7 +85,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 			try {
 				await sendShareNotificationSoapApi({
 					standardMessage,
-					contacts: [{ email: grant.d || grant.zid || '' }],
+					contacts: [{ email: grant.d ?? '' }],
 					folder,
 					accounts
 				});
@@ -161,7 +161,6 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 				>
 					<Checkbox
 						value={sendNotification}
-						defaultChecked={sendNotification}
 						onClick={(): void => setSendNotification(!sendNotification)}
 						label={t('share.send_notification', 'Send a notification about this share')}
 					/>

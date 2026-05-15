@@ -29,13 +29,13 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 		soapFetchV2<
 			{ _jsns: string; folder: { l: string } },
 			{ GetFolderResponse: { folder?: Array<{ acl?: { grant?: Grant[] } }> } }
-		>('GetFolder', { _jsns: 'urn:zimbraMail', folder: { l: folder.id } }).then((res): void => {
-			if (!('Fault' in res.Body)) {
-				setGrants(res.Body.GetFolderResponse?.folder?.[0]?.acl?.grant ?? []);
-			} else {
-				setGrants([]);
-			}
-		});
+		>('GetFolder', { _jsns: 'urn:zimbraMail', folder: { l: folder.id } })
+			.then((res): void => {
+				if (res?.Body && !('Fault' in res.Body)) {
+					setGrants(res.Body.GetFolderResponse?.folder?.[0]?.acl?.grant ?? []);
+				}
+			})
+			.catch(() => undefined);
 	}, [folder.id]);
 
 	useEffect(() => {

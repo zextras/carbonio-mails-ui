@@ -541,7 +541,7 @@ describe('edit-modal', () => {
 			).toBeInTheDocument();
 		});
 
-		it('clicking "Edit" on a grant shows the EditPermissionsModal in edit mode', async () => {
+		it('clicking "Edit" on a grant shows the EditShareModal pre-populated with the grant role', async () => {
 			const { user } = await setupWithGrant();
 			await clickGrantEditButton(user);
 			expect(screen.getByRole('button', { name: /action\.edit_share/i })).toBeInTheDocument();

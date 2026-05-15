@@ -165,10 +165,10 @@ describe('ShareRevokeModal', () => {
 			expect(goBack).toHaveBeenCalled();
 		});
 
-		it('does not show a success snackbar', async () => {
+		it('shows an error snackbar', async () => {
 			const { user } = defaultSetup();
 			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
-			expect(screen.queryByTestId('snackbar')).not.toBeInTheDocument();
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
 		});
 
 		it('does not call onSuccess', async () => {

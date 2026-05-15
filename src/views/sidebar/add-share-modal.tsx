@@ -157,7 +157,6 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 				>
 					<Checkbox
 						value={sendNotification}
-						defaultChecked={sendNotification}
 						onClick={(): void => setSendNotification(!sendNotification)}
 						label={t('share.send_notification', 'Send a notification about this share')}
 					/>

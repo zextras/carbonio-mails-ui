@@ -80,6 +80,15 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 				hideButton: true
 			});
 			onSuccess?.();
+		} else {
+			createSnackbar({
+				key: `remove-share-${folder.id}`,
+				replace: true,
+				severity: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
 		}
 		goBack();
 	}, [
@@ -132,7 +141,6 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 			<Checkbox
 				iconSize="medium"
 				value={sendNotification}
-				defaultChecked={sendNotification}
 				onClick={(): void => setSendNotification(!sendNotification)}
 				label={t('label.send_notification', 'Send a notification message to')}
 			/>
