@@ -52,7 +52,7 @@ export const ShareNotificationFields: FC<ShareNotificationFieldsProps> = ({
 		>
 			<Row padding={{ right: 'small' }}>
 				<Text weight="bold" size="small" color="gray0">
-					Note:
+					{t('label.note', 'Note:')}
 				</Text>
 			</Row>
 			<Row padding={{ bottom: 'small' }}>

@@ -53,6 +53,7 @@ export const useShareFolderConfirm = ({
 					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
+				goBack();
 				return;
 			}
 			createSnackbar({

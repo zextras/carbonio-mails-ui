@@ -76,9 +76,7 @@ const Actions = ({
 					!Array.isArray(res) ||
 					res.some(
 						(item) =>
-							typeof item === 'object' &&
-							item !== null &&
-							('error' in item || 'Fault' in item)
+							typeof item === 'object' && item !== null && ('error' in item || 'Fault' in item)
 					);
 
 				if (!hasFailures) {

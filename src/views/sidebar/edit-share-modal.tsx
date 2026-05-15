@@ -43,7 +43,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 	const confirm = useShareFolderConfirm({
 		folder,
 		shareWithUserRole,
-		sendNotification,
+		sendNotification: sendNotification && !!grant.d,
 		standardMessage,
 		successLabel: t('snackbar.share_updated', 'Access rights updated'),
 		goBack,

@@ -532,26 +532,12 @@ describe('edit-modal', () => {
 		};
 
 		// Both the Actions "Edit share" button and the ModalFooter "Edit folder" button share
-		// the label "label.edit". Scope the lookup to the rendered grant actions area so the
-		// test does not depend on global DOM order.
+		// Both the grant Actions "Edit share" button and the ModalFooter "Edit folder" button share
+		// the label "label.edit". The Actions button appears first in DOM order (above ModalFooter).
 		const clickGrantEditButton = async (
 			user: ReturnType<typeof setupTest>['user']
 		): Promise<void> => {
-			const revokeButton = screen.getByRole('button', { name: /label\.revoke/i });
-			let actionsContainer: HTMLElement | null = revokeButton.parentElement;
-
-			while (
-				actionsContainer &&
-				within(actionsContainer).queryByRole('button', { name: /label\.edit/i }) === null
-			) {
-				actionsContainer = actionsContainer.parentElement;
-			}
-
-			if (!actionsContainer) {
-				throw new Error('Unable to find the grant actions container containing the Edit button');
-			}
-
-			const actionsEditBtn = within(actionsContainer).getByRole('button', { name: /label\.edit/i });
+			const [actionsEditBtn] = screen.getAllByRole('button', { name: /label\.edit/i });
 			await user.click(actionsEditBtn);
 		};
 
