@@ -21,7 +21,7 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 		setActiveModal('default');
 	}, [setActiveModal]);
 
-	const grant = activeGrant ?? folder.acl?.grant[0];
+	const grant = activeGrant ?? folder?.acl?.grant?.[0];
 
 	return (
 		<Context.Provider value={{ activeModal, setActiveModal, activeGrant, setActiveGrant, onClose }}>
@@ -45,11 +45,11 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 					/>
 				)}
 
-				{activeModal === 'revoke' && (
+				{activeModal === 'revoke' && grant && (
 					<ShareRevokeModal folder={folder} goBack={goBack} grant={grant} />
 				)}
 
-				{activeModal === 'share' && (
+				{activeModal === 'share' && grant && (
 					<EditPermissionsModal folder={folder} onClose={onClose} grant={grant} />
 				)}
 			</Container>
