@@ -442,9 +442,11 @@ describe('edit-modal', () => {
 			const folderInputElement = within(newFolder).getByRole('textbox');
 			expect(folderInputElement).toHaveValue('Test');
 
-			// ModalFooter submit button is always last among buttons named label.edit
-			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
-			expect(editButtons[editButtons.length - 1]).toBeEnabled();
+			expect(
+				within(screen.getByTestId('edit-folder-footer')).getByRole('button', {
+					name: /label\.edit/i
+				})
+			).toBeEnabled();
 		});
 
 		it('should display the "Cannot use a system folder name" error when folder name input is equal to a system folder', async () => {
