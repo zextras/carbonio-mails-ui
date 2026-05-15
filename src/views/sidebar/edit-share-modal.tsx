@@ -6,13 +6,11 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, Padding, Select, SelectItem } from '@zextras/carbonio-design-system';
-import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import type { Grant } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
-import { shareFolderSoapApi } from 'api/share-folder-soap-api';
-import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { useShareFolderConfirm } from 'hooks/use-share-folder-confirm';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
 import { ModalProps } from 'types/utils';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
@@ -36,76 +34,23 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 	const [standardMessage, setStandardMessage] = useState('');
 	const [shareWithUserRole, setShareWithUserRole] = useState<string>(grant.perm);
 
-	const { createSnackbar } = useUiUtilities();
-	const accounts = useUserAccounts();
-
 	const title = useMemo(() => t('label.edit_access', 'Edit access'), []);
 
 	const onShareRoleChange = useCallback((shareRole: string | null) => {
 		if (shareRole !== null) setShareWithUserRole(shareRole);
 	}, []);
 
-	const onConfirm = useCallback(async (): Promise<void> => {
-		const shareFolderResponse = await shareFolderSoapApi({
-			sendNotification,
-			standardMessage,
-			contacts: [{ email: grant.d ?? '' }],
-			shareWithUserRole,
-			folder,
-			accounts
-		});
-		if ('Fault' in shareFolderResponse) {
-			createSnackbar({
-				key: `share-${folder.id}`,
-				replace: true,
-				hideButton: true,
-				severity: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000
-			});
-			return;
-		}
-		createSnackbar({
-			key: `share-${folder.id}`,
-			replace: true,
-			hideButton: true,
-			severity: 'info',
-			label: t('snackbar.share_updated', 'Access rights updated'),
-			autoHideTimeout: 3000
-		});
-		if (sendNotification) {
-			try {
-				await sendShareNotificationSoapApi({
-					standardMessage,
-					contacts: [{ email: grant.d ?? '' }],
-					folder,
-					accounts
-				});
-			} catch (e) {
-				console.error('Failed to send share notification', e);
-				createSnackbar({
-					key: `notify-${folder.id}`,
-					replace: true,
-					severity: 'warning',
-					label: t('label.notification_failed', 'Failed to send notification'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		}
-		onSuccess?.();
-		goBack();
-	}, [
+	const confirm = useShareFolderConfirm({
+		folder,
+		shareWithUserRole,
 		sendNotification,
 		standardMessage,
-		grant,
-		shareWithUserRole,
-		folder,
-		accounts,
+		successLabel: t('snackbar.share_updated', 'Access rights updated'),
 		goBack,
-		createSnackbar,
 		onSuccess
-	]);
+	});
+
+	const onConfirm = useCallback(() => confirm([{ email: grant.d ?? '' }]), [confirm, grant.d]);
 
 	const disableEdit = useMemo(
 		() => grant.perm === shareWithUserRole,
