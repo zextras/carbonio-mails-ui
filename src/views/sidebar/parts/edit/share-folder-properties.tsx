@@ -72,7 +72,16 @@ const Actions = ({
 				folder,
 				accounts
 			}).then((res) => {
-				if (!('Fault' in (res as Record<string, unknown>))) {
+				const hasFailures =
+					!Array.isArray(res) ||
+					res.some(
+						(item) =>
+							typeof item === 'object' &&
+							item !== null &&
+							('error' in item || 'Fault' in item)
+					);
+
+				if (!hasFailures) {
 					createSnackbar({
 						key: `resend-${folder.id}`,
 						replace: true,
