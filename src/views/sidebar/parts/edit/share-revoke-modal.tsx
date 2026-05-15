@@ -58,7 +58,7 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 					folder,
 					accounts
 				});
-			} catch {
+			} catch (_e) {
 				createSnackbar({
 					key: `notify-${folder.id}`,
 					replace: true,
@@ -167,7 +167,7 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 					<Text overflow="break-word" size="small" color="gray1">
 						{t(
 							'share.share_note',
-							'The standard message displays your name, the name of the shared item, pemissions granted to the recipients, and sign in information, if necessary.'
+							'The standard message displays your name, the name of the shared item, permissions granted to the recipients, and sign in information, if necessary.'
 						)}
 					</Text>
 				</Row>

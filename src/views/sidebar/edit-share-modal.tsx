@@ -82,12 +82,23 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 			autoHideTimeout: 3000
 		});
 		if (sendNotification) {
-			await sendShareNotificationSoapApi({
-				standardMessage,
-				contacts: [{ email: grant.d || grant.zid || '' }],
-				folder,
-				accounts
-			});
+			try {
+				await sendShareNotificationSoapApi({
+					standardMessage,
+					contacts: [{ email: grant.d || grant.zid || '' }],
+					folder,
+					accounts
+				});
+			} catch (_e) {
+				createSnackbar({
+					key: `notify-${folder.id}`,
+					replace: true,
+					severity: 'warning',
+					label: t('label.notification_failed', 'Failed to send notification'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
 		}
 		onSuccess?.();
 		onClose();
@@ -164,7 +175,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 							setStandardMessage(ev.target.value);
 						}}
 						disabled={!sendNotification}
-						backgroundColor="gray5"
+						background="gray5"
 					/>
 				</Container>
 				<Container

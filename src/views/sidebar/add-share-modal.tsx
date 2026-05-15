@@ -80,12 +80,23 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 			autoHideTimeout: 3000
 		});
 		if (sendNotification) {
-			await sendShareNotificationSoapApi({
-				standardMessage,
-				contacts: contacts.map((contact) => ({ email: contact.value.email })),
-				folder,
-				accounts
-			});
+			try {
+				await sendShareNotificationSoapApi({
+					standardMessage,
+					contacts: contacts.map((contact) => ({ email: contact.value.email })),
+					folder,
+					accounts
+				});
+			} catch (_e) {
+				createSnackbar({
+					key: `notify-${folder.id}`,
+					replace: true,
+					severity: 'warning',
+					label: t('label.notification_failed', 'Failed to send notification'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
 		}
 		onSuccess?.();
 		onClose();
@@ -160,7 +171,7 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 							setStandardMessage(ev.target.value);
 						}}
 						disabled={!sendNotification}
-						backgroundColor="gray5"
+						background="gray5"
 					/>
 				</Container>
 				<Container

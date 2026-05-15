@@ -72,7 +72,7 @@ const Actions = ({
 				folder,
 				accounts
 			}).then((res) => {
-				if (!('error' in (res as any))) {
+				if (!('Fault' in (res as Record<string, unknown>))) {
 					createSnackbar({
 						key: `resend-${folder.id}`,
 						replace: true,
@@ -128,14 +128,12 @@ const Actions = ({
 	);
 };
 
-const Grantee: FC<GranteeProps> = ({
-	grant,
-	folder,
-	onEdit,
-	onRevoke,
-	shareCalendarRoleOptions
-}) => {
+const Grantee: FC<GranteeProps> = ({ grant, folder, onEdit, onRevoke }) => {
 	const [hovered, setHovered] = useState(false);
+	const shareCalendarRoleOptions = useMemo(
+		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
+		[grant.perm]
+	);
 	const onMouseEnter = useCallback(() => {
 		setHovered(true);
 	}, []);
@@ -166,30 +164,16 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	grants,
 	onEdit,
 	onRevoke
-}) => {
-	const shareCalendarRoleOptions = useMemo(
-		() => ShareCalendarRoleOptions(t, grants[0]?.perm?.includes('p')),
-		[grants]
-	);
-
-	return (
-		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
-			<Padding vertical="small" />
-			<Text weight="bold">{t('label.shares_folder_edit', 'Sharing of this folder')}</Text>
-			<Padding vertical="small" />
-			{map(grants, (item) => (
-				<Grantee
-					key={item?.zid}
-					grant={item}
-					folder={folder}
-					onEdit={onEdit}
-					onRevoke={onRevoke}
-					shareCalendarRoleOptions={shareCalendarRoleOptions}
-				/>
-			))}
-			<Padding top="medium" />
-			<Divider />
-			<Padding bottom="medium" />
-		</Container>
-	);
-};
+}) => (
+	<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+		<Padding vertical="small" />
+		<Text weight="bold">{t('label.shares_folder_edit', 'Sharing of this folder')}</Text>
+		<Padding vertical="small" />
+		{map(grants, (item) => (
+			<Grantee key={item?.zid} grant={item} folder={folder} onEdit={onEdit} onRevoke={onRevoke} />
+		))}
+		<Padding top="medium" />
+		<Divider />
+		<Padding bottom="medium" />
+	</Container>
+);

@@ -7,7 +7,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import type { Grant } from '@zextras/carbonio-ui-commons';
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 import { ModalProps } from 'types/utils';
 import { AddShareModal } from 'views/sidebar/add-share-modal';
@@ -26,11 +26,15 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [grants, setGrants] = useState<Grant[]>(folder.acl?.grant ?? []);
 
 	const refreshGrants = useCallback(() => {
-		legacySoapFetch('GetFolder', {
-			_jsns: 'urn:zimbraMail',
-			folder: { l: folder.id }
-		}).then((res: any): void => {
-			setGrants(res?.folder?.[0]?.acl?.grant ?? []);
+		soapFetchV2<
+			{ _jsns: string; folder: { l: string } },
+			{ GetFolderResponse: { folder?: Array<{ acl?: { grant?: Grant[] } }> } }
+		>('GetFolder', { _jsns: 'urn:zimbraMail', folder: { l: folder.id } }).then((res): void => {
+			if (!('Fault' in res.Body)) {
+				setGrants(res.Body.GetFolderResponse?.folder?.[0]?.acl?.grant ?? []);
+			} else {
+				setGrants([]);
+			}
 		});
 	}, [folder.id]);
 

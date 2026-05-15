@@ -34,7 +34,6 @@ export type GranteeProps = {
 	folder: Folder;
 	onEdit: (grant: Grant) => void;
 	onRevoke: (grant: Grant) => void;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
 };
 
 export type ShareFolderPropertiesProps = {
