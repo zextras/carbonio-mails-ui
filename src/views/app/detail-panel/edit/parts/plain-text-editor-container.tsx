@@ -11,7 +11,7 @@ import { debounce } from 'lodash';
 
 import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
 import { plainTextToHTML } from 'commons/utils';
-import { useEditorText, useEditorTextProvider } from 'store/editor/index';
+import { useEditorsStore, useEditorText, useEditorTextProvider } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
@@ -22,7 +22,7 @@ export const PlainTextEditorContainer = ({
 }: {
 	editorId: MailsEditorV2['id'];
 }): JSX.Element => {
-	const { getText, setText } = useEditorText(editorId);
+	const { getText, setText, setTextNoDraft } = useEditorText(editorId);
 	const { prefs } = useUserSettings();
 	const { setTextProvider } = useEditorTextProvider(editorId);
 	const { setDirty } = useEditorSetDirty(editorId);
@@ -56,12 +56,20 @@ export const PlainTextEditorContainer = ({
 	const debounceSetText = useMemo(
 		() =>
 			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
-				setText(
-					{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
-					{ syncTextProvider: false }
-				);
+				const sendProcessStatus = useEditorsStore.getState().editors[editorId]?.sendProcessStatus?.status;
+				if (sendProcessStatus === 'running') {
+					setTextNoDraft(
+						{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
+						{ syncTextProvider: false }
+					);
+				} else {
+					setText(
+						{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
+						{ syncTextProvider: false }
+					);
+				}
 			}, SAVE_EDITOR_DELAY),
-		[setText]
+		[setText, setTextNoDraft]
 	);
 
 	const onTextChange = useCallback(
@@ -86,17 +94,28 @@ export const PlainTextEditorContainer = ({
 		const initialValue = initialValueRef?.current;
 		return (): void => {
 			if (textArea && initialValue && textArea.value !== initialValue) {
-				setText(
-					{
-						plainText: textArea.value,
-						richText: plainTextToHTML(textArea.value)
-					},
-					{ syncTextProvider: false }
-				);
+				const sendProcessStatus = useEditorsStore.getState().editors[editorId]?.sendProcessStatus?.status;
+				if (sendProcessStatus === 'running') {
+					setTextNoDraft(
+						{
+							plainText: textArea.value,
+							richText: plainTextToHTML(textArea.value)
+						},
+						{ syncTextProvider: false }
+					);
+				} else {
+					setText(
+						{
+							plainText: textArea.value,
+							richText: plainTextToHTML(textArea.value)
+						},
+						{ syncTextProvider: false }
+					);
+				}
 			}
 			setTextProvider(undefined);
 		};
-	}, [setText, setTextProvider, textProviderValue]);
+	}, [setText, setTextNoDraft, setTextProvider, textProviderValue]);
 
 	return (
 		<Container data-testid={'PlainTextEditorContainer'} background={'gray6'} height="100%">
