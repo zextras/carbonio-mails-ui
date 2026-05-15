@@ -111,6 +111,25 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(() => {
 			const editor = getEditor({ id: editorId });
+
+			if (editor?.isDirty) {
+				// Unsaved changes — report error and allow recovery
+				useEditorsStore.getState().setSendProcessStatus(editorId, {
+					status: 'aborted',
+					abortReason: 'Editor has unsaved changes'
+				});
+				computeAndUpdateEditorStatus(editorId);
+				options?.onError &&
+					options.onError({
+						Fault: {
+							Reason: {
+								Text: 'Editor has unsaved changes'
+							}
+						}
+					} as SaveDraftResponse);
+				return;
+			}
+
 			if (editor?.identityId) {
 				sendMsgFromEditor({ editor })
 					.then((res) => {
