@@ -3,18 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import {
-	Checkbox,
-	Container,
-	Input,
-	Padding,
-	Row,
-	Select,
-	SelectItem,
-	Text
-} from '@zextras/carbonio-design-system';
+import { Container, Padding, Select, SelectItem } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { Grant } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
@@ -25,6 +16,7 @@ import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
 import { ModalProps } from 'types/utils';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
+import { ShareNotificationFields } from 'views/sidebar/share-notification-fields';
 
 type EditShareModalProps = ModalProps & {
 	grant: Grant;
@@ -89,7 +81,8 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 					folder,
 					accounts
 				});
-			} catch (_e) {
+			} catch (e) {
+				console.error('Failed to send share notification', e);
 				createSnackbar({
 					key: `notify-${folder.id}`,
 					replace: true,
@@ -152,51 +145,12 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 						}
 					/>
 				</Container>
-				<Container
-					height="fit"
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					padding={{ vertical: 'medium' }}
-					data-testid={'sendNotificationCheckboxContainer'}
-				>
-					<Checkbox
-						value={sendNotification}
-						onClick={(): void => setSendNotification(!sendNotification)}
-						label={t('share.send_notification', 'Send a notification about this share')}
-					/>
-				</Container>
-
-				<Container height="fit">
-					<Input
-						label={t('share.standard_message', 'Add a note to the standard message')}
-						value={standardMessage}
-						onChange={(ev: ChangeEvent<HTMLInputElement>): void => {
-							setStandardMessage(ev.target.value);
-						}}
-						disabled={!sendNotification}
-						background="gray5"
-					/>
-				</Container>
-				<Container
-					orientation="horizontal"
-					crossAlignment="baseline"
-					mainAlignment="baseline"
-					padding={{ all: 'small' }}
-				>
-					<Row padding={{ right: 'small' }}>
-						<Text weight="bold" size="small" color="gray0">
-							Note:
-						</Text>
-					</Row>
-					<Row padding={{ bottom: 'small' }}>
-						<Text overflow="break-word" size="small" color="gray1">
-							{t(
-								'share.share_note',
-								'The standard message displays your name, the name of the shared item, permissions granted to the recipients, and sign in information, if necessary.'
-							)}
-						</Text>
-					</Row>
-				</Container>
+				<ShareNotificationFields
+					sendNotification={sendNotification}
+					standardMessage={standardMessage}
+					onToggleNotification={(): void => setSendNotification(!sendNotification)}
+					onMessageChange={setStandardMessage}
+				/>
 			</Container>
 			<ModalFooter
 				label={t('action.edit_share', 'Edit Share')}

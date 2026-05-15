@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
@@ -15,6 +15,7 @@ import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-a
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
+import { ShareNotificationFields } from 'views/sidebar/share-notification-fields';
 
 type ShareRevokeModalProps = {
 	folder: Folder;
@@ -58,7 +59,8 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 					folder,
 					accounts
 				});
-			} catch (_e) {
+			} catch (e) {
+				console.error('Failed to send share notification', e);
 				createSnackbar({
 					key: `notify-${folder.id}`,
 					replace: true,
@@ -138,48 +140,12 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 					shareCalendarRoleOptions={shareCalendarRoleOptions}
 				/>
 			</Container>
-			<Checkbox
-				iconSize="medium"
-				value={sendNotification}
-				onClick={(): void => setSendNotification(!sendNotification)}
-				label={t('label.send_notification', 'Send a notification message to')}
+			<ShareNotificationFields
+				sendNotification={sendNotification}
+				standardMessage={standardMessage}
+				onToggleNotification={(): void => setSendNotification(!sendNotification)}
+				onMessageChange={setStandardMessage}
 			/>
-			<Container
-				mainAlignment="center"
-				crossAlignment="flex-start"
-				height="fit"
-				padding={{ bottom: 'large', top: 'large' }}
-			>
-				<Input
-					label={t('share.standard_message', 'Add a note to the standard message')}
-					value={standardMessage}
-					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
-						setStandardMessage(ev.target.value);
-					}}
-					disabled={!sendNotification}
-					backgroundColor="gray5"
-				/>
-			</Container>
-			<Container
-				orientation="horizontal"
-				crossAlignment="baseline"
-				mainAlignment="baseline"
-				padding={{ all: 'small' }}
-			>
-				<Row padding={{ right: 'small' }}>
-					<Text weight="bold" size="small" color="gray0">
-						Note:
-					</Text>
-				</Row>
-				<Row padding={{ bottom: 'small' }}>
-					<Text overflow="break-word" size="small" color="gray1">
-						{t(
-							'share.share_note',
-							'The standard message displays your name, the name of the shared item, permissions granted to the recipients, and sign in information, if necessary.'
-						)}
-					</Text>
-				</Row>
-			</Container>
 			<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 				<ModalFooter
 					background="error"
