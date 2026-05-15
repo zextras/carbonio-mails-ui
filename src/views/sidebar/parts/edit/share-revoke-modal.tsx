@@ -49,6 +49,7 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
+			goBack();
 			return;
 		}
 		if (sendNotification) {

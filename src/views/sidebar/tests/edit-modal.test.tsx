@@ -426,9 +426,11 @@ describe('edit-modal', () => {
 			await user.clear(folderInputElement);
 			expect(folderInputElement).toHaveValue('');
 
-			// ModalFooter submit button is always last among buttons named label.edit
-			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
-			expect(editButtons[editButtons.length - 1]).toBeDisabled();
+			expect(
+				within(screen.getByTestId('edit-folder-footer')).getByRole('button', {
+					name: /label\.edit/i
+				})
+			).toBeDisabled();
 		});
 
 		it('should enable the edit submit button when folder name input is not empty', async () => {
@@ -476,9 +478,11 @@ describe('edit-modal', () => {
 				await screen.findByText('Special characters not allowed. Max lenght is 128 characters.')
 			).toBeVisible();
 
-			// ModalFooter submit button is always last among buttons named label.edit
-			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
-			expect(editButtons[editButtons.length - 1]).toBeDisabled();
+			expect(
+				within(screen.getByTestId('edit-folder-footer')).getByRole('button', {
+					name: /label\.edit/i
+				})
+			).toBeDisabled();
 		});
 
 		it('should disable the submit button and show error message when system folder name is used', async () => {
@@ -495,9 +499,11 @@ describe('edit-modal', () => {
 			await user.type(folderInputElement, 'Inbox');
 			expect(await screen.findByText('You cannot rename a folder as a system one')).toBeVisible();
 
-			// ModalFooter submit button is always last among buttons named label.edit
-			const editButtons = screen.getAllByRole('button', { name: /label\.edit/i });
-			expect(editButtons[editButtons.length - 1]).toBeDisabled();
+			expect(
+				within(screen.getByTestId('edit-folder-footer')).getByRole('button', {
+					name: /label\.edit/i
+				})
+			).toBeDisabled();
 		});
 	});
 

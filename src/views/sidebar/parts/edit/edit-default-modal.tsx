@@ -254,21 +254,23 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 				/>
 			</Container>
 
-			<ModalFooter
-				onConfirm={onConfirm}
-				label={t('label.edit', 'Edit')}
-				secondaryAction={onAddShare}
-				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
-				disabled={disableSubmit}
-				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
-				secondaryBtnType="outlined"
-				secondaryColor="primary"
-				tooltip={
-					disableSubmit
-						? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
-						: ''
-				}
-			/>
+			<Container data-testid="edit-folder-footer" height="fit">
+				<ModalFooter
+					onConfirm={onConfirm}
+					label={t('label.edit', 'Edit')}
+					secondaryAction={onAddShare}
+					secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
+					disabled={disableSubmit}
+					secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
+					secondaryBtnType="outlined"
+					secondaryColor="primary"
+					tooltip={
+						disableSubmit
+							? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
+							: ''
+					}
+				/>
+			</Container>
 		</>
 	);
 };

@@ -36,22 +36,24 @@ describe('EditShareModal', () => {
 		folder: ReturnType<typeof getFolder>;
 		grant: Grant;
 		onClose: ReturnType<typeof vi.fn>;
+		goBack: ReturnType<typeof vi.fn>;
 		onSuccess: ReturnType<typeof vi.fn>;
 	} => {
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.INBOX);
 		const onClose = vi.fn();
+		const goBack = vi.fn();
 		const onSuccess = vi.fn();
 		const { user } = setupTest(
 			<EditShareModal
 				folder={folder!}
 				onClose={onClose}
-				goBack={vi.fn()}
+				goBack={goBack}
 				grant={grant}
 				onSuccess={onSuccess}
 			/>
 		);
-		return { user, folder, grant, onClose, onSuccess };
+		return { user, folder, grant, onClose, goBack, onSuccess };
 	};
 
 	const changeRoleAndSubmit = async (user: ReturnType<typeof setupTest>['user']): Promise<void> => {
@@ -121,10 +123,10 @@ describe('EditShareModal', () => {
 			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
 		});
 
-		it('calls onClose', async () => {
-			const { user, onClose } = editModeSetup();
+		it('calls goBack', async () => {
+			const { user, goBack } = editModeSetup();
 			await changeRoleAndSubmit(user);
-			expect(onClose).toHaveBeenCalled();
+			expect(goBack).toHaveBeenCalled();
 		});
 
 		it('calls onSuccess', async () => {

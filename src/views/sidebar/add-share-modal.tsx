@@ -92,7 +92,7 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 			}
 		}
 		onSuccess?.();
-		onClose();
+		goBack();
 	}, [
 		sendNotification,
 		standardMessage,
@@ -100,7 +100,7 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose,
+		goBack,
 		createSnackbar,
 		onSuccess
 	]);

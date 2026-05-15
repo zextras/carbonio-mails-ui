@@ -7,6 +7,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { t } from '@zextras/carbonio-shell-ui';
 import type { Grant } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -18,10 +19,7 @@ import {
 	ShareFolderProperties
 } from 'views/sidebar/parts/edit/share-folder-properties';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const shareCalendarRoleOptions = ShareCalendarRoleOptions(
-	((_key: string, fallback: string) => fallback) as any
-);
+const shareCalendarRoleOptions = ShareCalendarRoleOptions(t);
 
 const baseGrant: Grant = {
 	perm: 'r',

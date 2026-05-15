@@ -94,7 +94,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 			}
 		}
 		onSuccess?.();
-		onClose();
+		goBack();
 	}, [
 		sendNotification,
 		standardMessage,
@@ -102,7 +102,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose,
+		goBack,
 		createSnackbar,
 		onSuccess
 	]);
