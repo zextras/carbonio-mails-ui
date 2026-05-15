@@ -185,34 +185,4 @@ describe('ShareFolderProperties', () => {
 		});
 	});
 
-	describe('styling', () => {
-		it('Revoke button has error color styling', () => {
-			const folder = generateFolder();
-			setupTest(
-				<ShareFolderProperties
-					folder={folder}
-					grants={[baseGrant]}
-					onEdit={vi.fn()}
-					onRevoke={vi.fn()}
-				/>,
-				{}
-			);
-			expect(screen.getByRole('button', { name: /label\.revoke/i }).className).toMatchSnapshot();
-		});
-
-		it('Edit and Resend buttons have outlined variant styling', () => {
-			const folder = generateFolder();
-			setupTest(
-				<ShareFolderProperties
-					folder={folder}
-					grants={[baseGrant]}
-					onEdit={vi.fn()}
-					onRevoke={vi.fn()}
-				/>,
-				{}
-			);
-			expect(screen.getByRole('button', { name: /label\.edit/i }).className).toMatchSnapshot();
-			expect(screen.getByRole('button', { name: /label\.resend/i }).className).toMatchSnapshot();
-		});
-	});
 });

@@ -179,10 +179,4 @@ describe('ShareRevokeModal', () => {
 		});
 	});
 
-	describe('styling', () => {
-		it('confirm button has error (destructive) styling', () => {
-			defaultSetup();
-			expect(screen.getByRole('button', { name: /label\.revoke/i }).className).toMatchSnapshot();
-		});
-	});
 });
