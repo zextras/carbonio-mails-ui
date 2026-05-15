@@ -39,8 +39,15 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	}, [folder.id]);
 
 	useEffect(() => {
-		refreshGrants();
-	}, [refreshGrants]);
+		const initialGrants = folder.acl?.grant;
+
+		if (initialGrants === undefined) {
+			refreshGrants();
+			return;
+		}
+
+		setGrants(initialGrants);
+	}, [folder.acl?.grant, refreshGrants]);
 
 	const goBack = useCallback(() => setView({ kind: 'default' }), []);
 	const onAddShare = useCallback(() => setView({ kind: 'add-share' }), []);
