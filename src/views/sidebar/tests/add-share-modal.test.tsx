@@ -231,6 +231,12 @@ describe('AddShareModal', () => {
 			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
 		});
 
+		it('calls goBack so the user is not stuck on the modal', async () => {
+			const { user, goBack } = defaultSetup();
+			await typeRecipientAndSubmit(user);
+			expect(goBack).toHaveBeenCalled();
+		});
+
 		it('does not call onClose', async () => {
 			const { user, onClose } = defaultSetup();
 			await typeRecipientAndSubmit(user);
@@ -248,6 +254,32 @@ describe('AddShareModal', () => {
 			const sendNotificationMock = vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi');
 			await typeRecipientAndSubmit(user);
 			expect(sendNotificationMock).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when notification sending fails', () => {
+		beforeEach(() => {
+			vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi').mockRejectedValue(
+				new Error('network error')
+			);
+		});
+
+		it('shows a warning snackbar', async () => {
+			const { user } = defaultSetup();
+			await typeRecipientAndSubmit(user);
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+
+		it('still calls goBack after the notification failure', async () => {
+			const { user, goBack } = defaultSetup();
+			await typeRecipientAndSubmit(user);
+			expect(goBack).toHaveBeenCalled();
+		});
+
+		it('still calls onSuccess after the notification failure', async () => {
+			const { user, onSuccess } = defaultSetup();
+			await typeRecipientAndSubmit(user);
+			expect(onSuccess).toHaveBeenCalled();
 		});
 	});
 });

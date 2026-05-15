@@ -156,6 +156,15 @@ describe('EditShareModal', () => {
 			await changeRoleAndSubmit(user);
 			expect(sendNotificationMock).not.toHaveBeenCalled();
 		});
+
+		it('does not call sendShareNotificationSoapApi when grant.d is absent even if notification is checked', async () => {
+			const grantWithoutEmail: Grant = { zid: 'grantee-id', gt: 'usr', perm: 'r' };
+			const { user } = editModeSetup(grantWithoutEmail);
+			const sendNotificationMock = vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi');
+			// notification checkbox is checked by default; but grant.d is absent so it must be skipped
+			await changeRoleAndSubmit(user);
+			expect(sendNotificationMock).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('on API failure', () => {
@@ -169,6 +178,12 @@ describe('EditShareModal', () => {
 			const { user } = editModeSetup();
 			await changeRoleAndSubmit(user);
 			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+
+		it('calls goBack so the user is not stuck on the modal', async () => {
+			const { user, goBack } = editModeSetup();
+			await changeRoleAndSubmit(user);
+			expect(goBack).toHaveBeenCalled();
 		});
 
 		it('does not call onClose', async () => {
@@ -188,6 +203,32 @@ describe('EditShareModal', () => {
 			const sendNotificationMock = vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi');
 			await changeRoleAndSubmit(user);
 			expect(sendNotificationMock).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when notification sending fails', () => {
+		beforeEach(() => {
+			vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi').mockRejectedValue(
+				new Error('network error')
+			);
+		});
+
+		it('shows a warning snackbar', async () => {
+			const { user } = editModeSetup();
+			await changeRoleAndSubmit(user);
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+
+		it('still calls goBack after the notification failure', async () => {
+			const { user, goBack } = editModeSetup();
+			await changeRoleAndSubmit(user);
+			expect(goBack).toHaveBeenCalled();
+		});
+
+		it('still calls onSuccess after the notification failure', async () => {
+			const { user, onSuccess } = editModeSetup();
+			await changeRoleAndSubmit(user);
+			expect(onSuccess).toHaveBeenCalled();
 		});
 	});
 });

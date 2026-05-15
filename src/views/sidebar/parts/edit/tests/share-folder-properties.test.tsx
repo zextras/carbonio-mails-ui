@@ -157,6 +157,39 @@ describe('ShareFolderProperties', () => {
 			await user.click(screen.getByRole('button', { name: /label\.resend/i }));
 			expect(sendNotificationMock).not.toHaveBeenCalled();
 		});
+
+		it('Resend button shows a success snackbar when notification is sent successfully', async () => {
+			vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi').mockResolvedValue([]);
+			const { user } = setupWithGrant();
+			await user.click(screen.getByRole('button', { name: /label\.resend/i }));
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+	});
+
+	it('each grantee row uses its own grant perm to determine the role label', () => {
+		const folder = generateFolder();
+		const viewerGrant: Grant = { perm: 'r', gt: 'usr', zid: 'viewer-zid', d: 'viewer@example.com' };
+		const adminGrant: Grant = {
+			perm: 'rwidxa',
+			gt: 'usr',
+			zid: 'admin-zid',
+			d: 'admin@example.com'
+		};
+		setupTest(
+			<ShareFolderProperties
+				folder={folder}
+				grants={[viewerGrant, adminGrant]}
+				onEdit={vi.fn()}
+				onRevoke={vi.fn()}
+			/>,
+			{}
+		);
+		expect(
+			screen.getByText(/viewer@example\.com - share\.options\.share_calendar_role\.viewer/i)
+		).toBeInTheDocument();
+		expect(
+			screen.getByText(/admin@example\.com - share\.options\.share_calendar_role\.admin/i)
+		).toBeInTheDocument();
 	});
 
 	describe('hover behavior', () => {

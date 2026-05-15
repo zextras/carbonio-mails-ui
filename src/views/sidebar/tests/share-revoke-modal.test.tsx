@@ -23,7 +23,8 @@ const baseGrant: Grant = {
 };
 
 const defaultSetup = (
-	onSuccess?: () => void
+	onSuccess?: () => void,
+	grant: Grant = baseGrant
 ): {
 	user: ReturnType<typeof setupTest>['user'];
 	goBack: ReturnType<typeof vi.fn>;
@@ -31,7 +32,7 @@ const defaultSetup = (
 	const folder = generateFolder();
 	const goBack = vi.fn();
 	const { user } = setupTest(
-		<ShareRevokeModal folder={folder} grant={baseGrant} goBack={goBack} onSuccess={onSuccess} />,
+		<ShareRevokeModal folder={folder} grant={grant} goBack={goBack} onSuccess={onSuccess} />,
 		{}
 	);
 	return { user, goBack };
@@ -176,6 +177,52 @@ describe('ShareRevokeModal', () => {
 			const { user } = defaultSetup(onSuccess);
 			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
 			expect(onSuccess).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when grant.zid is missing', () => {
+		const grantWithoutZid: Grant = { gt: 'usr', perm: 'r', d: 'grantee@example.com' };
+
+		beforeEach(() => {
+			vi.spyOn(folderActionModule, 'folderActionSoapApi').mockResolvedValue({} as never);
+		});
+
+		it('calls goBack immediately without calling folderActionSoapApi', async () => {
+			const { user, goBack } = defaultSetup(undefined, grantWithoutZid);
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(goBack).toHaveBeenCalled();
+			expect(folderActionModule.folderActionSoapApi).not.toHaveBeenCalled();
+		});
+
+		it('shows an error snackbar', async () => {
+			const { user } = defaultSetup(undefined, grantWithoutZid);
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+	});
+
+	describe('when notification sending fails during revoke', () => {
+		beforeEach(() => {
+			vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi').mockRejectedValue(
+				new Error('network error')
+			);
+			vi.spyOn(folderActionModule, 'folderActionSoapApi').mockResolvedValue({} as never);
+		});
+
+		it('shows a warning snackbar and still proceeds with the revoke', async () => {
+			const { user, goBack } = defaultSetup();
+			await user.click(screen.getByTestId('icon: Square'));
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+			expect(goBack).toHaveBeenCalled();
+		});
+
+		it('still calls folderActionSoapApi after the notification failure', async () => {
+			const { user } = defaultSetup();
+			const folderActionMock = vi.spyOn(folderActionModule, 'folderActionSoapApi');
+			await user.click(screen.getByTestId('icon: Square'));
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			expect(folderActionMock).toHaveBeenCalled();
 		});
 	});
 });
