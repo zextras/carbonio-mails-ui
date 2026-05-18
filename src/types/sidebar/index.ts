@@ -8,8 +8,6 @@ import type { SyntheticEvent } from 'react';
 
 import type { Folder } from '@zextras/carbonio-ui-commons';
 
-import { ModalProps } from 'types/utils';
-
 export type Contact = {
 	middleName: string;
 	firstName: string;
@@ -19,12 +17,6 @@ export type Contact = {
 
 export type SidebarComponentProps = {
 	accordions: Array<Folder>;
-};
-
-export type EditPermissionsModalProps = ModalProps & {
-	editMode?: boolean;
-	goBack?: () => void;
-	grant: any; // TODO FIX Grant type
 };
 
 export type FolderActionsProps = {

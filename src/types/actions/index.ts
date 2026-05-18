@@ -42,7 +42,8 @@ export type UIActionAggregator = ActionDescriptor & {
 export type ActionProps = {
 	folder: Folder;
 	grant: Grant;
-	setActiveModal: (arg: string) => void;
+	onEdit: (grant: Grant) => void;
+	onRevoke: (grant: Grant) => void;
 	onMouseLeave: () => void;
 	onMouseEnter: () => void;
 };

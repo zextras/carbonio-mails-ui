@@ -9,7 +9,7 @@ import React from 'react';
 import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest, screen } from '@test-setup';
-import NameInputRow from 'views/sidebar/parts/edit/name-input';
+import { NameInputRow } from 'views/sidebar/parts/edit/name-input';
 
 describe('NameInputRow', () => {
 	const inputValue = 'Test Folder';

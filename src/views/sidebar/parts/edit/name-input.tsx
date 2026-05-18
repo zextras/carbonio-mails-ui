@@ -19,7 +19,7 @@ type NameInputRowProps = {
 	folderColor: number;
 	setFolderColor: (value: number) => void;
 };
-const NameInputRow: FC<NameInputRowProps> = ({
+export const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
 	inpDisable,
 	showWarning,
@@ -60,5 +60,3 @@ const NameInputRow: FC<NameInputRowProps> = ({
 		</Container>
 	);
 };
-
-export default NameInputRow;

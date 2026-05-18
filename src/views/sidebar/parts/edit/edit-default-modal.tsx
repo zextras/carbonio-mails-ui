@@ -15,6 +15,7 @@ import {
 	ModalFooter,
 	ModalHeader
 } from '@zextras/carbonio-ui-commons';
+import type { Grant } from '@zextras/carbonio-ui-commons';
 import { includes, isEmpty } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
@@ -22,7 +23,7 @@ import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ModalProps } from 'types/utils';
 import { RetentionPolicyState } from 'views/sidebar/commons/types';
 import { FolderDetails } from 'views/sidebar/parts/edit/folder-details';
-import NameInputRow from 'views/sidebar/parts/edit/name-input';
+import { NameInputRow } from 'views/sidebar/parts/edit/name-input';
 import { RetentionPolicies } from 'views/sidebar/parts/edit/retention-policies';
 import { ShareFolderProperties } from 'views/sidebar/parts/edit/share-folder-properties';
 import { getFolderTranslatedName, useTranslatedSystemFolders } from 'views/sidebar/utils';
@@ -34,10 +35,20 @@ const MONTHS_LABEL = 'label.months';
 const YEARS_LABEL = 'label.years';
 
 type MainEditModalProps = ModalProps & {
-	setActiveModal: (modal: string) => void;
+	grants: Grant[];
+	onAddShare: () => void;
+	onEditGrant: (grant: Grant) => void;
+	onRevokeGrant: (grant: Grant) => void;
 };
 
-const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal }) => {
+export const MainEditModal: FC<MainEditModalProps> = ({
+	folder,
+	onClose,
+	grants,
+	onAddShare,
+	onEditGrant,
+	onRevokeGrant
+}) => {
 	const [folderNameInputValue, setFolderNameInputValue] = useState(folder.name);
 	const [folderColor, setFolderColor] = useState<number>(folder.color ?? 0);
 	const [retentionState, setRetentionState] = useState<RetentionPolicyState>({
@@ -209,8 +220,6 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		onClose();
 	}, [retentionState, folderNameInputValue, folder, folderColor, onClose, createSnackbar]);
 
-	const openShareModal = useCallback((): void => setActiveModal('share'), [setActiveModal]);
-
 	return (
 		<>
 			<ModalHeader
@@ -231,8 +240,13 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'small' }}>
 				<FolderDetails folder={folder} />
-				{!isEmpty(folder?.acl) && (
-					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
+				{grants.length > 0 && (
+					<ShareFolderProperties
+						folder={folder}
+						grants={grants}
+						onEdit={onEditGrant}
+						onRevoke={onRevokeGrant}
+					/>
 				)}
 				<RetentionPolicies
 					retentionState={retentionState}
@@ -240,23 +254,23 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				/>
 			</Container>
 
-			<ModalFooter
-				onConfirm={onConfirm}
-				label={t('label.edit', 'Edit')}
-				secondaryAction={openShareModal}
-				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
-				disabled={disableSubmit}
-				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
-				secondaryBtnType="outlined"
-				secondaryColor="primary"
-				tooltip={
-					disableSubmit
-						? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
-						: ''
-				}
-			/>
+			<Container data-testid="edit-folder-footer" height="fit">
+				<ModalFooter
+					onConfirm={onConfirm}
+					label={t('label.edit', 'Edit')}
+					secondaryAction={onAddShare}
+					secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
+					disabled={disableSubmit}
+					secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
+					secondaryBtnType="outlined"
+					secondaryColor="primary"
+					tooltip={
+						disableSubmit
+							? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
+							: ''
+					}
+				/>
+			</Container>
 		</>
 	);
 };
-
-export default MainEditModal;
