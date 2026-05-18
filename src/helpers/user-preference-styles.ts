@@ -60,7 +60,8 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		'pre',
 		'mark',
 		'blockquote',
-		'caption'
+		'caption',
+		'table'
 	];
 	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
 
