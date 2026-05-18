@@ -1,3 +1,7 @@
+## <small>1.34.5 (2026-05-18)</small>
+
+* refactor: edit calendar modal ([fa04c34](https://github.com/zextras/carbonio-mails-ui/commit/fa04c34))
+
 ## <small>1.34.4 (2026-05-14)</small>
 
 * fix(ci): migrate Jenkinsfile to jenkins-lib-common ([1ad2863](https://github.com/zextras/carbonio-mails-ui/commit/1ad2863))
