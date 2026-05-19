@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -106,6 +106,11 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [createSnackbar, folderDestination?.id, inputValue, onClose, DEFAULT_FOLDER_NAME]);
 
+	const folderNameRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		folderNameRef.current?.focus();
+	}, []);
+
 	return folder ? (
 		<Container
 			padding={{ all: 'large' }}
@@ -135,6 +140,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					defaultValue={inputValue}
 					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 					data-testid={'new-folder-name'}
+					inputRef={folderNameRef}
 				/>
 				{showWarning && (
 					<Padding all="small">

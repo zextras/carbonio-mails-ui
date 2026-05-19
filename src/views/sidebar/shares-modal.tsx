@@ -87,10 +87,6 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
 	const [t] = useTranslation();
-	const filterUsersRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		filterUsersRef.current?.focus();
-	}, []);
 
 	const onConfirm = useCallback(() => {
 		createMountpointSoapApi(links);
@@ -148,6 +144,11 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 		[filteredFolders]
 	);
 
+	const filterUsersRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		filterUsersRef.current?.focus();
+	}, []);
+
 	return (
 		<>
 			<ModalHeader title={t('label.find_mail_shares', 'Find shared folders')} onClose={onClose} />
@@ -156,13 +157,13 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 			</Row>
 			<Row padding={{ top: 'small', bottom: 'large' }} width="fill">
 				<Input
-					label={t('label.filter_user', 'Filter users')}
+					label={`${t('label.filter_user', 'Filter users')}*`}
 					backgroundColor="gray5"
 					CustomIcon={({ hasFocus }: { hasFocus: boolean }): ReactElement => (
 						<Icon icon="FunnelOutline" size="large" color={hasFocus ? 'primary' : 'text'} />
 					)}
 					onChange={filterResults}
-					ref={filterUsersRef}
+					inputRef={filterUsersRef}
 				/>
 			</Row>
 			<ContainerEl orientation="vertical" mainAlignment="flex-start" maxHeight="40vh">
