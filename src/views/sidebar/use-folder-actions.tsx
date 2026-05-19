@@ -66,6 +66,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							onClose: (): void => {
 								closeModal(modalId);
 							},
+							focusModalContent: false,
 							children: <NewModal folder={folder} onClose={(): void => closeModal(modalId)} />
 						},
 						true
@@ -248,6 +249,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							onClose: (): void => {
 								closeModal(modalId);
 							},
+							focusModalContent: false,
 							children: <EditModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true

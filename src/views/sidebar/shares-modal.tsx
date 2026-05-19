@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	Accordion,
@@ -144,6 +144,11 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 		[filteredFolders]
 	);
 
+	const filterUsersRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		filterUsersRef.current?.focus();
+	}, []);
+
 	return (
 		<>
 			<ModalHeader title={t('label.find_mail_shares', 'Find shared folders')} onClose={onClose} />
@@ -158,6 +163,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 						<Icon icon="FunnelOutline" size="large" color={hasFocus ? 'primary' : 'text'} />
 					)}
 					onChange={filterResults}
+					inputRef={filterUsersRef}
 				/>
 			</Row>
 			<ContainerEl orientation="vertical" mainAlignment="flex-start" maxHeight="40vh">

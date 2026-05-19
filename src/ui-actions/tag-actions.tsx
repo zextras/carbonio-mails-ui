@@ -44,6 +44,7 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownIt
 				onClose: (): void => {
 					closeModal?.(id);
 				},
+				focusModalContent: false,
 				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} />
 			},
 			true
@@ -66,6 +67,7 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): Dropdow
 				onClose: (): void => {
 					closeModal?.(id);
 				},
+				focusModalContent: false,
 				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} tag={tag} editMode />
 			},
 			true

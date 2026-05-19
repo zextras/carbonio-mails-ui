@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container, Padding, Select, SelectItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -53,6 +53,11 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 		[confirm, contacts]
 	);
 
+	const recipientsEmailsRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		recipientsEmailsRef.current?.focus();
+	}, []);
+
 	return (
 		<>
 			<Container
@@ -66,11 +71,12 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 				<Container height="fit" padding={{ vertical: 'small' }}>
 					<ContactInput
 						background="gray4"
-						placeholder={t('share.recipients_address', "Recipients' e-mail addresses")}
+						placeholder={`${t('share.recipients_address', 'Recipients’ e-mail addresses')}*`}
 						onChange={(contactChips: ContactInputItem[]): void => {
 							setContacts(contactChips);
 						}}
 						defaultValue={contacts}
+						inputRef={recipientsEmailsRef}
 					/>
 				</Container>
 				<Container height="fit">
