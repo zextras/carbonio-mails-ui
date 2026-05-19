@@ -70,7 +70,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		}
 		setHasError(value);
 		setDisabled(value);
-	}, [folderDestination, inputValue, showWarning]);
+	}, [folderDestination, inputValue, showWarning, DEFAULT_FOLDER_NAME]);
 
 	const onConfirm = useCallback(() => {
 		createFolderSoapApi({
@@ -104,7 +104,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		setFolderDestination(undefined);
 		setHasError(false);
 		onClose();
-	}, [createSnackbar, folderDestination?.id, inputValue, onClose]);
+	}, [createSnackbar, folderDestination?.id, inputValue, onClose, DEFAULT_FOLDER_NAME]);
 
 	return folder ? (
 		<Container
