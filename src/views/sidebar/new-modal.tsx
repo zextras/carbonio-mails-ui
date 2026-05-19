@@ -136,7 +136,6 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					defaultValue={inputValue}
 					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 					data-testid={'new-folder-name'}
-					autoFocus
 				/>
 				{showWarning && (
 					<Padding all="small">
