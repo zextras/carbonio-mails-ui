@@ -157,7 +157,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 			</Row>
 			<Row padding={{ top: 'small', bottom: 'large' }} width="fill">
 				<Input
-					label={`${t('label.filter_user', 'Filter users')}*`}
+					label={t('label.filter_user', 'Filter users')}
 					backgroundColor="gray5"
 					CustomIcon={({ hasFocus }: { hasFocus: boolean }): ReactElement => (
 						<Icon icon="FunnelOutline" size="large" color={hasFocus ? 'primary' : 'text'} />
