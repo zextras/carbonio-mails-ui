@@ -1,3 +1,14 @@
+## <small>1.34.6 (2026-05-19)</small>
+
+* Merge pull request #1236 from zextras/co-3427-required-fields ([d884e6f](https://github.com/zextras/carbonio-mails-ui/commit/d884e6f)), closes [#1236](https://github.com/zextras/carbonio-mails-ui/issues/1236)
+* fix: improved autofocus ([55a6916](https://github.com/zextras/carbonio-mails-ui/commit/55a6916))
+* fix: improved autofocus ([55b7c65](https://github.com/zextras/carbonio-mails-ui/commit/55b7c65))
+* fix: required fields ([83d3c19](https://github.com/zextras/carbonio-mails-ui/commit/83d3c19))
+* fix: required fields ([c403883](https://github.com/zextras/carbonio-mails-ui/commit/c403883))
+* fix: required fields ([cd94beb](https://github.com/zextras/carbonio-mails-ui/commit/cd94beb))
+* fix: required fields ([9fcc417](https://github.com/zextras/carbonio-mails-ui/commit/9fcc417))
+* fix: required fields ([30218e0](https://github.com/zextras/carbonio-mails-ui/commit/30218e0))
+
 ## <small>1.34.5 (2026-05-18)</small>
 
 * refactor: edit calendar modal ([fa04c34](https://github.com/zextras/carbonio-mails-ui/commit/fa04c34))
