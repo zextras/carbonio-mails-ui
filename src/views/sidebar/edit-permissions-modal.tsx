@@ -144,7 +144,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					<Container height="fit" padding={{ vertical: 'small' }}>
 						<ContactInput
 							background="gray4"
-							placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
+							placeholder={`${t('share.recipients_address', 'Recipients’ e-mail addresses')}*`}
 							onChange={(contactChips: ContactInputItem[]): void => {
 								setContacts(contactChips);
 							}}

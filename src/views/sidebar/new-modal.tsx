@@ -23,7 +23,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState<string>(
-		t('folder_panel.modal.new.input.name', 'Enter Folder Name')
+		`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`
 	);
 	const [errorMsg, setErrorMsg] = useState<string>(
 		t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
@@ -67,7 +67,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
-			setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+			setLabel(`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`);
 		}
 		setHasError(value);
 		setDisabled(value);
@@ -101,7 +101,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			})
 			.catch(() => noop);
 		setInputValue('');
-		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+		setLabel(`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`);
 		setFolderDestination(undefined);
 		setHasError(false);
 		onClose();
@@ -136,6 +136,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					defaultValue={inputValue}
 					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 					data-testid={'new-folder-name'}
+					autoFocus
 				/>
 				{showWarning && (
 					<Padding all="small">
