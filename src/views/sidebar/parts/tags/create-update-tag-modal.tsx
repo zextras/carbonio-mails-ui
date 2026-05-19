@@ -35,7 +35,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				: t('label.create_tag', 'Create a new Tag'),
 		[editMode, tag?.name]
 	);
-	const label = useMemo(() => t('label.tag_name', 'Tag name'), []);
+	const label = useMemo(() => `${t('label.tag_name', 'Tag name')}*`, []);
 	const handleColorChange = useCallback((c: string | null) => setColor(c), []);
 	const handleNameChange = useCallback(
 		(ev: React.ChangeEvent<HTMLInputElement>) => setName(ev.target.value),

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	Accordion,
@@ -87,6 +87,10 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
 	const [t] = useTranslation();
+	const filterUsersRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		filterUsersRef.current?.focus();
+	}, []);
 
 	const onConfirm = useCallback(() => {
 		createMountpointSoapApi(links);
@@ -158,6 +162,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 						<Icon icon="FunnelOutline" size="large" color={hasFocus ? 'primary' : 'text'} />
 					)}
 					onChange={filterResults}
+					ref={filterUsersRef}
 				/>
 			</Row>
 			<ContainerEl orientation="vertical" mainAlignment="flex-start" maxHeight="40vh">
