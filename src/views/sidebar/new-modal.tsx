@@ -18,13 +18,12 @@ import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 import { useTranslatedSystemFolders } from 'views/sidebar/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
+	const DEFAULT_FOLDER_NAME = `${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`;
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState<string>(
-		`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`
-	);
+	const [label, setLabel] = useState<string>(DEFAULT_FOLDER_NAME);
 	const [errorMsg, setErrorMsg] = useState<string>(
 		t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 	);
@@ -67,7 +66,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
-			setLabel(`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`);
+			setLabel(DEFAULT_FOLDER_NAME);
 		}
 		setHasError(value);
 		setDisabled(value);
@@ -101,7 +100,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			})
 			.catch(() => noop);
 		setInputValue('');
-		setLabel(`${t('folder_panel.modal.new.input.name', 'Enter Folder Name')}*`);
+		setLabel(DEFAULT_FOLDER_NAME);
 		setFolderDestination(undefined);
 		setHasError(false);
 		onClose();
