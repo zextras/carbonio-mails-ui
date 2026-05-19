@@ -66,7 +66,7 @@ export const AddShareModal: FC<AddShareModalProps> = ({ onClose, folder, goBack,
 				<Container height="fit" padding={{ vertical: 'small' }}>
 					<ContactInput
 						background="gray4"
-						placeholder={t('share.recipients_address', "Recipients' e-mail addresses")}
+						placeholder={`${t('share.recipients_address', 'Recipients’ e-mail addresses')}*`}
 						onChange={(contactChips: ContactInputItem[]): void => {
 							setContacts(contactChips);
 						}}
