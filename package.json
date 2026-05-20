@@ -111,7 +111,7 @@
 		"@zextras/carbonio-ui-text-composer": "1.1.1",
 		"asn1js": "3.0.7",
 		"autolinker": "4.1.5",
-		"axios": "1.12.0",
+		"axios": "1.15.2",
 		"core-js": "3.36.0",
 		"darkreader": "4.9.79",
 		"date-fns": "4.1.0",
