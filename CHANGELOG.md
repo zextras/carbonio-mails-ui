@@ -1,3 +1,21 @@
+## <small>1.34.7 (2026-05-20)</small>
+
+* Merge branch 'devel' into renovate/npm-axios-vulnerability ([968d973](https://github.com/zextras/carbonio-mails-ui/commit/968d973))
+* Merge branch 'devel' into renovate/npm-axios-vulnerability ([acd1959](https://github.com/zextras/carbonio-mails-ui/commit/acd1959))
+* Merge branch 'devel' into renovate/npm-darkreader-vulnerability ([73aaf33](https://github.com/zextras/carbonio-mails-ui/commit/73aaf33))
+* Merge branch 'devel' into renovate/testing-library ([c3c82bf](https://github.com/zextras/carbonio-mails-ui/commit/c3c82bf))
+* Merge branch 'devel' into renovate/zextras-jenkins-lib-common-2.x ([16761f9](https://github.com/zextras/carbonio-mails-ui/commit/16761f9))
+* Merge pull request #1202 from zextras/renovate/npm-darkreader-vulnerability ([f66d762](https://github.com/zextras/carbonio-mails-ui/commit/f66d762)), closes [#1202](https://github.com/zextras/carbonio-mails-ui/issues/1202)
+* Merge pull request #1203 from zextras/renovate/npm-axios-vulnerability ([4fecd6a](https://github.com/zextras/carbonio-mails-ui/commit/4fecd6a)), closes [#1203](https://github.com/zextras/carbonio-mails-ui/issues/1203)
+* Merge pull request #1222 from zextras/renovate/testing-library ([16c85c7](https://github.com/zextras/carbonio-mails-ui/commit/16c85c7)), closes [#1222](https://github.com/zextras/carbonio-mails-ui/issues/1222)
+* Merge pull request #1225 from zextras/renovate/zextras-carbonio-search-ui-0.x ([8ec2ec1](https://github.com/zextras/carbonio-mails-ui/commit/8ec2ec1)), closes [#1225](https://github.com/zextras/carbonio-mails-ui/issues/1225)
+* Merge pull request #1234 from zextras/renovate/zextras-jenkins-lib-common-2.x ([d0afb4e](https://github.com/zextras/carbonio-mails-ui/commit/d0afb4e)), closes [#1234](https://github.com/zextras/carbonio-mails-ui/issues/1234)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.0.11 ([898e79e](https://github.com/zextras/carbonio-mails-ui/commit/898e79e))
+* chore(deps): update dependency zextras/jenkins-lib-common to v2.7.0 ([69c903a](https://github.com/zextras/carbonio-mails-ui/commit/69c903a))
+* chore(deps): update testing library ([ccb2970](https://github.com/zextras/carbonio-mails-ui/commit/ccb2970))
+* fix(deps): update dependency axios to v1.15.2 [security] ([57e03f0](https://github.com/zextras/carbonio-mails-ui/commit/57e03f0))
+* fix(deps): update dependency darkreader to v4.9.117 [security] ([8595041](https://github.com/zextras/carbonio-mails-ui/commit/8595041))
+
 ## <small>1.34.6 (2026-05-19)</small>
 
 * Merge pull request #1236 from zextras/co-3427-required-fields ([d884e6f](https://github.com/zextras/carbonio-mails-ui/commit/d884e6f)), closes [#1236](https://github.com/zextras/carbonio-mails-ui/issues/1236)
