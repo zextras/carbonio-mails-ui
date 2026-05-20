@@ -74,7 +74,7 @@
 		"@vitest/browser-preview": "4.1.0",
 		"@vitest/coverage-v8": "4.1.0",
 		"@vitest/ui": "4.1.0",
-		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#v0.0.7",
+		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#v0.0.11",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "1.8.0-beta.2",
 		"babel-plugin-transform-import-meta": "2.3.3",
