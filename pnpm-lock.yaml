@@ -63,8 +63,8 @@ importers:
         specifier: 3.36.0
         version: 3.36.0
       darkreader:
-        specifier: 4.9.79
-        version: 4.9.79
+        specifier: 4.9.117
+        version: 4.9.117
       date-fns:
         specifier: 4.1.0
         version: 4.1.0
@@ -3561,9 +3561,6 @@ packages:
 
   darkreader@4.9.120:
     resolution: {integrity: sha512-BYjP9rsFzwtO2KDXfzqGZHBfo9LAp7azyRR4UIj0/n8uls0C0J08Rhh5g05BZU/CARvDmMf+LQXM9PoPxO1M4A==}
-
-  darkreader@4.9.79:
-    resolution: {integrity: sha512-FZ/8qP2WuZ3eJTFhaTIoQhTW/OdwBZLbh6Rsl0BjSXXLvl2VNEqQ5C/uBFtcJPtnYMH1xgbQAjzzz68s/FS8Ng==}
 
   data-urls@3.0.2:
     resolution: {integrity: sha512-Jy/tj3ldjZJo63sVAvg6LHt2mHvl4V6AgRAmNDtLdm7faqtsx+aJG42rsyCo9JCoRVKwPFzKlIPx3DIibwSIaQ==}
@@ -10332,7 +10329,7 @@ snapshots:
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
       '@floating-ui/dom': 1.7.6
       core-js: 3.49.0
-      darkreader: 4.9.120
+      darkreader: 4.9.117
       date-fns: 4.1.0
       lodash: 4.17.21
       polished: 4.3.1
@@ -10383,7 +10380,7 @@ snapshots:
       '@fontsource/roboto': 5.2.10
       '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.49.0
-      darkreader: 4.9.79
+      darkreader: 4.9.117
       date-fns: 4.1.0
       i18next: 22.5.1
       i18next-chained-backend: 4.6.3
@@ -11404,8 +11401,6 @@ snapshots:
     optionalDependencies:
       '@rollup/rollup-linux-x64-gnu': 4.56.0
       '@rollup/rollup-win32-x64-msvc': 4.56.0
-
-  darkreader@4.9.79: {}
 
   data-urls@3.0.2:
     dependencies:
