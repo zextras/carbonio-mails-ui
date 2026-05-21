@@ -50,6 +50,12 @@ const sendFromEditor = (
 				Fault: {
 					Reason: {
 						Text: 'Editor not found'
+					},
+					Detail: {
+						Error: {
+							Code: 'EditorNotFound',
+							Trace: ''
+						}
 					}
 				}
 			} as SaveDraftResponse);
@@ -68,6 +74,12 @@ const sendFromEditor = (
 				Fault: {
 					Reason: {
 						Text: 'Sending not allowed in the current editor state'
+					},
+					Detail: {
+						Error: {
+							Code: 'SendingNotAllowed',
+							Trace: ''
+						}
 					}
 				}
 			} as SaveDraftResponse);
@@ -124,6 +136,12 @@ const sendFromEditor = (
 						Fault: {
 							Reason: {
 								Text: 'Editor has unsaved changes'
+							},
+							Detail: {
+								Error: {
+									Code: 'EditorHasUnsavedChanges',
+									Trace: ''
+								}
 							}
 						}
 					} as SaveDraftResponse);
@@ -169,6 +187,12 @@ const sendFromEditor = (
 						Fault: {
 							Reason: {
 								Text: 'Identity not found'
+							},
+							Detail: {
+								Error: {
+									Code: 'IdentityNotFound',
+									Trace: ''
+								}
 							}
 						}
 					} as SaveDraftResponse);
