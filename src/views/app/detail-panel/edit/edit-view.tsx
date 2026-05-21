@@ -86,11 +86,14 @@ export type EditViewHandle = {
 // TODO: sendAllowedStatus is completely flawed and full of logical errors
 function evaluateSendDisabledReason(
 	invalidRecipientsPresent: boolean,
-	sendAllowedStatus: EditorOperationAllowedStatus | undefined
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined,
+	firstDraftSaveProcessCompleted?: string
 ): string | undefined {
 	let sendDisabledReason;
 	if (invalidRecipientsPresent) {
 		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
+	} else if (firstDraftSaveProcessCompleted !== 'completed') {
+		sendDisabledReason = t('editView.footer.draftSaving', 'Saving draft in progress...');
 	} else {
 		sendDisabledReason = sendAllowedStatus?.reason;
 	}
@@ -593,6 +596,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				setAutoSendTime(scheduledTime);
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
 			};
+			saveDraft();
 			checkSubjectAndAttachment({
 				editorId,
 				onConfirmCallback,
@@ -612,7 +616,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
-		sendAllowedStatus
+		sendAllowedStatus,
+		draftSaveProcessStatus?.status
 	);
 
 	return (
