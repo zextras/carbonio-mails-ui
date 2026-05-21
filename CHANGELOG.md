@@ -1,3 +1,22 @@
+## <small>1.34.8 (2026-05-21)</small>
+
+* Merge branch 'devel' into renovate/babel ([d57eb57](https://github.com/zextras/carbonio-mails-ui/commit/d57eb57))
+* Merge branch 'devel' into renovate/babel ([5089d08](https://github.com/zextras/carbonio-mails-ui/commit/5089d08))
+* Merge branch 'devel' into renovate/babel ([df8c1dd](https://github.com/zextras/carbonio-mails-ui/commit/df8c1dd))
+* Merge branch 'devel' into renovate/npm-lodash-vulnerability ([6d3e286](https://github.com/zextras/carbonio-mails-ui/commit/6d3e286))
+* Merge branch 'devel' into renovate/npm-lodash-vulnerability ([7ef4db8](https://github.com/zextras/carbonio-mails-ui/commit/7ef4db8))
+* Merge branch 'devel' into renovate/redux ([91b3491](https://github.com/zextras/carbonio-mails-ui/commit/91b3491))
+* Merge branch 'devel' into renovate/redux ([ac31c6d](https://github.com/zextras/carbonio-mails-ui/commit/ac31c6d))
+* Merge branch 'devel' into renovate/redux ([309920a](https://github.com/zextras/carbonio-mails-ui/commit/309920a))
+* Merge branch 'devel' into renovate/redux ([73514ae](https://github.com/zextras/carbonio-mails-ui/commit/73514ae))
+* Merge pull request #1198 from zextras/renovate/npm-lodash-vulnerability ([b7f31ae](https://github.com/zextras/carbonio-mails-ui/commit/b7f31ae)), closes [#1198](https://github.com/zextras/carbonio-mails-ui/issues/1198)
+* Merge pull request #1212 from zextras/renovate/redux ([5e5a7db](https://github.com/zextras/carbonio-mails-ui/commit/5e5a7db)), closes [#1212](https://github.com/zextras/carbonio-mails-ui/issues/1212)
+* Merge pull request #1229 from zextras/renovate/babel ([6f720c8](https://github.com/zextras/carbonio-mails-ui/commit/6f720c8)), closes [#1229](https://github.com/zextras/carbonio-mails-ui/issues/1229)
+* fix: regenerated pnpm-lock ([3e5f93d](https://github.com/zextras/carbonio-mails-ui/commit/3e5f93d))
+* fix(deps): update dependency lodash to v4.18.1 [security] ([68a42be](https://github.com/zextras/carbonio-mails-ui/commit/68a42be))
+* chore(deps): update dependency @babel/preset-env to v7.29.5 ([04af311](https://github.com/zextras/carbonio-mails-ui/commit/04af311))
+* chore(deps): update redux ([4b8c9ee](https://github.com/zextras/carbonio-mails-ui/commit/4b8c9ee))
+
 ## <small>1.34.7 (2026-05-20)</small>
 
 * Merge branch 'devel' into renovate/npm-axios-vulnerability ([968d973](https://github.com/zextras/carbonio-mails-ui/commit/968d973))
