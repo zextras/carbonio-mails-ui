@@ -114,8 +114,8 @@ importers:
         specifier: 5.0.1
         version: 5.0.1
       tinymce:
-        specifier: 6.8.4
-        version: 6.8.4
+        specifier: 7.0.0
+        version: 7.0.0
       uuid:
         specifier: 9.0.0
         version: 9.0.0
@@ -6812,6 +6812,9 @@ packages:
   tinymce@6.8.4:
     resolution: {integrity: sha512-okoJyxuPv1gzASxQDNgQbnUXOdAIyoOSXcXcZZu7tiW0PSKEdf3SdASxPBupRj+64/E3elHwVRnzSdo82Emqbg==}
 
+  tinymce@7.0.0:
+    resolution: {integrity: sha512-ggXLfTRrUALAcjeJSRrZcJDOl6MgC2tPXe/zNOEkQXvTDgcKqFypPRoPpfpK5wejexjyaI/7dwETOntJ5MPBFg==}
+
   tinyrainbow@3.1.0:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
@@ -10313,9 +10316,9 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.3.28)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
-      '@floating-ui/dom': 1.7.6
-      core-js: 3.49.0
-      darkreader: 4.9.117
+      '@floating-ui/dom': 1.6.12
+      core-js: 3.39.0
+      darkreader: 4.9.105
       date-fns: 4.1.0
       lodash: 4.17.21
       polished: 4.3.1
@@ -14915,6 +14918,8 @@ snapshots:
       picomatch: 4.0.4
 
   tinymce@6.8.4: {}
+
+  tinymce@7.0.0: {}
 
   tinyrainbow@3.1.0: {}
 
