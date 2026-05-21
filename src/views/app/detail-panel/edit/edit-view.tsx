@@ -86,14 +86,11 @@ export type EditViewHandle = {
 // TODO: sendAllowedStatus is completely flawed and full of logical errors
 function evaluateSendDisabledReason(
 	invalidRecipientsPresent: boolean,
-	sendAllowedStatus: EditorOperationAllowedStatus | undefined,
-	editorIsDirty: boolean
+	sendAllowedStatus: EditorOperationAllowedStatus | undefined
 ): string | undefined {
 	let sendDisabledReason;
 	if (invalidRecipientsPresent) {
 		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
-	} else if (editorIsDirty) {
-		sendDisabledReason = t('editView.footer.draftSaving', 'Saving draft in progress...');
 	} else {
 		sendDisabledReason = sendAllowedStatus?.reason;
 	}
@@ -611,15 +608,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
 	}, [close]);
 
-	// verify if editor is dirty
-	const editorIsDirty = useEditorIsDirty(editorId);
-
-	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent || draftSaveProcessStatus?.status !== 'completed' || editorIsDirty ;
+	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent || draftSaveProcessStatus?.status !== 'completed';
 
 	const sendDisabledReason = evaluateSendDisabledReason(
 		invalidRecipientsPresent,
-		sendAllowedStatus,
-		editorIsDirty
+		sendAllowedStatus
 	);
 
 	return (
