@@ -15,6 +15,7 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';
 import { isFocusModeMailView } from 'helpers/external-tabs';
+import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -157,6 +158,10 @@ const sendFromEditor = (
 							});
 							computeAndUpdateEditorStatus(editorId);
 							options?.onComplete && options.onComplete();
+							if (res.m?.[0]?.id) {
+								// Refreshing the message in the store to update its status to "sent"
+								getMessageEmailStoreAction(res.m[0].id);
+							}
 						} else {
 							const errorDescription: string = res.Fault?.Reason?.Text ?? 'Unknown error';
 							useEditorsStore.getState().setSendProcessStatus(editorId, {

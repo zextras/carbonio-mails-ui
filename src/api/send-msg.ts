@@ -87,9 +87,6 @@ export async function sendMsgFromEditor({
 
 		if (response && 'SendMsgResponse' in response.Body) {
 			const sendMsgResponse = response.Body?.SendMsgResponse as SoapSendMsgResponse;
-			if (sendMsgResponse?.m?.[0]?.id) {
-				getMessageEmailStoreAction(sendMsgResponse.m[0].id);
-			}
 			return sendMsgResponse;
 		}
 
