@@ -29,12 +29,15 @@ function isErrorAboutEditorNotFound(error: SaveDraftResponse | ErrorSoapBodyResp
 	return error?.Fault?.Detail?.Error?.Code === 'EditorNotFound';
 }
 
+function isErrorAboutMessageTooLarge(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
+	return error?.Fault?.Detail?.Error?.Code === 'mail.MESSAGE_TOO_BIG';
+}
 
 export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyResponse): {
 	message: string;
 	timeout: number;
 } {
-	let timeout = TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT;
+	let timeout = 10000;
 	let message = t('label.error_try_again', 'Something went wrong, please try again');
 
 	if (isErrorAboutInvalidRecipient(error)) {
@@ -44,19 +47,16 @@ export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyRe
 			defaultValue: `The recipient address "${invalidAddress}" does not exist or is invalid`,
 			invalidAddress
 		});
-		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	} else if (isErrorAboutUnsavedChanges(error)) {
 		message = t('error.unsaved_changes', 'Please save your changes before sending the email');
-		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	} else if (isErrorAboutIdentityNotFound(error)) {
 		message = t('error.identity_not_found', 'The selected identity was not found. Please check your account settings.');
-		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	} else if (isErrorAboutSendingNotAllowed(error)) {
 		message = t('error.sending_not_allowed', 'Sending emails is not allowed for your account. Please contact support for assistance.');
-		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
 	} else if (isErrorAboutEditorNotFound(error)) {
 		message = t('error.editor_not_found', 'The email editor was not found. Please try reopening the email and sending again.');
-		timeout = TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT;
+	} else if (isErrorAboutMessageTooLarge(error)) {
+		message = t('editor.warning.mail_size_exceeds_limit', 'The message size exceeds the limit. Please convert some attachments to smart links');
 	}
 
 	return { message, timeout };
