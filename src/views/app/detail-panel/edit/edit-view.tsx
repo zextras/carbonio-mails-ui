@@ -277,7 +277,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				severity: 'error',
 				label: message,
 				autoHideTimeout: timeout,
-				hideButton: true
+				hideButton: false
 			});
 			createEditBoard({
 				action: EditViewActions.RESUME,
@@ -293,10 +293,21 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			replace: true,
 			severity: 'success',
 			label: t('messages.snackbar.mail_sent', 'Message sent'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
+			autoHideTimeout: 5000,
+			hideButton: false
 		});
 		deleteEditor({ id: editorId });
+	}, [createSnackbar, editorId]);
+
+	const onSendProcess = useCallback((): void => {
+		createSnackbar({
+			key: `mail-${editorId}`,
+			replace: true,
+			severity: 'info',
+			label: 'Attendere prego, invio del messaggio in corso...',
+			disableAutoHide: true,
+			hideButton: true
+		});
 	}, [createSnackbar, editorId]);
 
 	const { createModal, closeModal } = useModal();
@@ -423,7 +434,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
-				onError: onSendError
+				onError: onSendError,
+				onSendProcess: onSendProcess
 			});
 			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 		};
@@ -443,7 +455,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		sendMessage,
 		onSendCountdownTick,
 		onSendComplete,
-		onSendError
+		onSendError,
+		onSendProcess
 	]);
 
 	const handleCertificateResponse = useCallback(

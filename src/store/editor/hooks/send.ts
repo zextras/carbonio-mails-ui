@@ -24,6 +24,7 @@ export type SendMessageOptions = {
 	onComplete?: () => void;
 	onError?: (error: SaveDraftResponse | ErrorSoapBodyResponse) => void;
 	onCancel?: () => void;
+	onSendProcess?: () => void;
 };
 
 export type SendMessageResult = {
@@ -132,6 +133,7 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(() => {
 			const editor = getEditor({ id: editorId });
+			options?.onSendProcess && options.onSendProcess();
 			if (editor?.identityId) {
 				sendMsgFromEditor({ editor })
 					.then((res) => {
