@@ -16,6 +16,7 @@ import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
+import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -111,6 +112,13 @@ const sendFromEditor = (
 	let delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
 	if ( isFocusModeMailView() ) {
 		delay = '0';
+	}
+
+	if (delay !== '0') {
+		// save draft
+		if (editorExist.draftSaveProcessStatus?.status !== 'running') {
+			saveDraftEmailStoreAction({ editor: editorExist });
+		}
 	}
 
 	window.addEventListener('beforeunload', onBeforeUnload);
