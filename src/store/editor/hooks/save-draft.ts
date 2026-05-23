@@ -71,6 +71,15 @@ export const useSaveDraftFromEditor = (
 				return;
 			}
 
+			if (editor.draftSaveProcessStatus?.status === 'running' || editor.sendProcessStatus?.status === 'running') {
+				useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
+					status: 'aborted',
+					abortReason: 'Another process is running'
+				});
+				computeAndUpdateEditorStatus(editorId);
+				return;
+			}
+
 			const handleError = (err: string): void => {
 				useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 					status: 'aborted',
