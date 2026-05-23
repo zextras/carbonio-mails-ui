@@ -6,7 +6,6 @@
 
 import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
 
-import { TIMEOUTS } from 'constants/index';
 import { SaveDraftResponse } from 'types';
 
 function isErrorAboutInvalidRecipient(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
@@ -30,7 +29,8 @@ function isErrorAboutEditorNotFound(error: SaveDraftResponse | ErrorSoapBodyResp
 }
 
 function isErrorAboutMessageTooLarge(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
-	return error?.Fault?.Detail?.Error?.Code === 'mail.MESSAGE_TOO_BIG';
+	return error?.Fault?.Detail?.Error?.Code === 'mail.MESSAGE_TOO_BIG' ||
+			error?.Fault?.Detail?.Error?.Code === 'mail.UPLOAD_TOO_LARGE';
 }
 
 export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyResponse): {
