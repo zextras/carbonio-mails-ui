@@ -10,13 +10,15 @@ import { find } from 'lodash';
 
 import { sendMsgFromEditor } from 'api/send-msg';
 import { createCancelableTimer } from 'helpers/timers';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
+import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2, SaveDraftResponse } from 'types/index.d';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { buildSavedAttachments } from 'helpers/attachments';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -115,13 +117,6 @@ const sendFromEditor = (
 		delay = '0';
 	}
 
-	if (delay !== '0') {
-		// save draft
-		if (editorExist.draftSaveProcessStatus?.status !== 'running') {
-			saveDraftEmailStoreAction({ editor: editorExist });
-		}
-	}
-
 	window.addEventListener('beforeunload', onBeforeUnload);
 
 	const cancelableTimer = createCancelableTimer({
@@ -131,9 +126,28 @@ const sendFromEditor = (
 	});
 
 	cancelableTimer.promise
-		.then(() => {
-			const editor = getEditor({ id: editorId });
+		.then(async() => {
 			options?.onSendProcess && options.onSendProcess();
+			if (!editorExist.draftSaveProcessStatus?.lastSaveTimestamp) {
+				await saveDraftEmailStoreAction({ editor: editorExist })
+					.then((res) => {
+						if (res.m?.[0]?.id) {
+							const mailMessage = normalizeMailMessageFromSoap(res.m[0], true);
+							useEditorsStore.getState().setDid(editorExist.id, mailMessage.id);
+							useEditorsStore.getState().setSize(editorExist.id, mailMessage.size);
+							useEditorsStore.getState().removeUnsavedAttachments(editorExist.id);
+							const savedAttachments = buildSavedAttachments(mailMessage);
+
+							useEditorsStore.getState().setSavedAttachments(editorExist.id, savedAttachments);
+							useEditorsStore.getState().setDraftSaveProcessStatus(editorExist.id, {
+								status: 'completed',
+								lastSaveTimestamp: new Date()
+							});
+							computeAndUpdateEditorStatus(editorExist.id);
+						}
+					})
+			}
+			const editor = getEditor({ id: editorId });
 			if (editor?.identityId) {
 				sendMsgFromEditor({ editor })
 					.then((res) => {
