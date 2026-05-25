@@ -1,3 +1,8 @@
+## <small>1.34.9 (2026-05-25)</small>
+
+* Merge pull request #1237 from zextras/renovate/npm-uuid-vulnerability ([7a0412b](https://github.com/zextras/carbonio-mails-ui/commit/7a0412b)), closes [#1237](https://github.com/zextras/carbonio-mails-ui/issues/1237)
+* fix(deps): update dependency uuid to v11 [security] ([f1a2f04](https://github.com/zextras/carbonio-mails-ui/commit/f1a2f04))
+
 ## <small>1.34.8 (2026-05-21)</small>
 
 * Merge branch 'devel' into renovate/babel ([d57eb57](https://github.com/zextras/carbonio-mails-ui/commit/d57eb57))
