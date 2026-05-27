@@ -48,8 +48,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       '@zextras/carbonio-ui-text-composer':
-        specifier: 1.1.1
-        version: 1.1.1(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-i18next@12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        specifier: 1.2.0
+        version: 1.2.0(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-i18next@12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       asn1js:
         specifier: 3.0.7
         version: 3.0.7
@@ -2752,8 +2752,8 @@ packages:
   '@zextras/carbonio-ui-soap-lib@1.1.0':
     resolution: {integrity: sha512-i11CNTX6dQSjmWo7B/oDihvUdiNuB793rNZU37AxfbW3BkeutWA4FVXuGKHVxge1QEvrRtYOwGs8HKvrhQyAsw==}
 
-  '@zextras/carbonio-ui-text-composer@1.1.1':
-    resolution: {integrity: sha512-ouroQb5c6iQqUusfBnGzrlhtgfeXWRYHAqNpBbgBj7wXGQPqqdhuSSFe64W4nI98ZTKepHj+r3XcfQ9+TvXw7w==}
+  '@zextras/carbonio-ui-text-composer@1.2.0':
+    resolution: {integrity: sha512-ZjfhUTJ79dlLAmqpBdq9mL3RL86FK5b7acbFlprQGj5tQn2NNLLnt2V6WWiaBFuSyzzibDdvLpPLvuzUVDy/yg==}
     engines: {node: v22, pnpm: '>=10'}
     peerDependencies:
       '@zextras/carbonio-design-system': ^12.0.1
@@ -10525,7 +10525,7 @@ snapshots:
       '@types/ua-parser-js': 0.7.39
       ua-parser-js: 1.0.41
 
-  '@zextras/carbonio-ui-text-composer@1.1.1(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-i18next@12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
+  '@zextras/carbonio-ui-text-composer@1.2.0(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-i18next@12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tinymce/tinymce-react': 4.3.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-design-system': 12.0.4(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
