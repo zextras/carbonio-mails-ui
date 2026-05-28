@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Folder } from '@zextras/carbonio-ui-commons';
-import { Grant } from '@zextras/carbonio-ui-soap-lib';
+import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 
 import type { Participant } from 'types/participant';
@@ -33,15 +32,15 @@ export type GranteeInfoProps = {
 export type GranteeProps = {
 	grant: Grant;
 	folder: Folder;
-	onMouseLeave?: () => void;
-	onMouseEnter?: () => void;
-	setActiveModal: (modal: string) => void;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
+	onEdit: (grant: Grant) => void;
+	onRevoke: (grant: Grant) => void;
 };
 
 export type ShareFolderPropertiesProps = {
 	folder: Folder;
-	setActiveModal: (modal: string) => void;
+	grants: Grant[];
+	onEdit: (grant: Grant) => void;
+	onRevoke: (grant: Grant) => void;
 };
 
 export type ShareCalendarRoleOptions = {

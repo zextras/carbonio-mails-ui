@@ -35,6 +35,7 @@ export const ButtonFindShares = (): React.JSX.Element => {
 							onClose: (): void => {
 								closeModal(id);
 							},
+							focusModalContent: false,
 							children: <SharesModal folders={resFolders} onClose={(): void => closeModal(id)} />
 						},
 						true

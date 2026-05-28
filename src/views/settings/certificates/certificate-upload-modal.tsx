@@ -101,7 +101,7 @@ export const CertificateUploadModal = ({
 								'settings.uploadCertificate.smimeCertificate',
 								'S/MIME Certificate (i.e. certificate.p12)'
 							)}
-							defaultValue={selectedFile ? selectedFile.name : ''}
+							value={selectedFile ? selectedFile.name : ''}
 							data-testid="certificate-file-name"
 							style={{ pointerEvents: 'none' }}
 						/>

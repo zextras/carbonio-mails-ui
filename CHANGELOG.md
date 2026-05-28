@@ -1,3 +1,79 @@
+## <small>1.34.10 (2026-05-27)</small>
+
+* fix: update the text composer to use latest languages configuration ([6e3ad71](https://github.com/zextras/carbonio-mails-ui/commit/6e3ad71))
+
+## <small>1.34.9 (2026-05-25)</small>
+
+* Merge pull request #1237 from zextras/renovate/npm-uuid-vulnerability ([7a0412b](https://github.com/zextras/carbonio-mails-ui/commit/7a0412b)), closes [#1237](https://github.com/zextras/carbonio-mails-ui/issues/1237)
+* fix(deps): update dependency uuid to v11 [security] ([f1a2f04](https://github.com/zextras/carbonio-mails-ui/commit/f1a2f04))
+
+## <small>1.34.8 (2026-05-21)</small>
+
+* Merge branch 'devel' into renovate/babel ([d57eb57](https://github.com/zextras/carbonio-mails-ui/commit/d57eb57))
+* Merge branch 'devel' into renovate/babel ([5089d08](https://github.com/zextras/carbonio-mails-ui/commit/5089d08))
+* Merge branch 'devel' into renovate/babel ([df8c1dd](https://github.com/zextras/carbonio-mails-ui/commit/df8c1dd))
+* Merge branch 'devel' into renovate/npm-lodash-vulnerability ([6d3e286](https://github.com/zextras/carbonio-mails-ui/commit/6d3e286))
+* Merge branch 'devel' into renovate/npm-lodash-vulnerability ([7ef4db8](https://github.com/zextras/carbonio-mails-ui/commit/7ef4db8))
+* Merge branch 'devel' into renovate/redux ([91b3491](https://github.com/zextras/carbonio-mails-ui/commit/91b3491))
+* Merge branch 'devel' into renovate/redux ([ac31c6d](https://github.com/zextras/carbonio-mails-ui/commit/ac31c6d))
+* Merge branch 'devel' into renovate/redux ([309920a](https://github.com/zextras/carbonio-mails-ui/commit/309920a))
+* Merge branch 'devel' into renovate/redux ([73514ae](https://github.com/zextras/carbonio-mails-ui/commit/73514ae))
+* Merge pull request #1198 from zextras/renovate/npm-lodash-vulnerability ([b7f31ae](https://github.com/zextras/carbonio-mails-ui/commit/b7f31ae)), closes [#1198](https://github.com/zextras/carbonio-mails-ui/issues/1198)
+* Merge pull request #1212 from zextras/renovate/redux ([5e5a7db](https://github.com/zextras/carbonio-mails-ui/commit/5e5a7db)), closes [#1212](https://github.com/zextras/carbonio-mails-ui/issues/1212)
+* Merge pull request #1229 from zextras/renovate/babel ([6f720c8](https://github.com/zextras/carbonio-mails-ui/commit/6f720c8)), closes [#1229](https://github.com/zextras/carbonio-mails-ui/issues/1229)
+* fix: regenerated pnpm-lock ([3e5f93d](https://github.com/zextras/carbonio-mails-ui/commit/3e5f93d))
+* fix(deps): update dependency lodash to v4.18.1 [security] ([68a42be](https://github.com/zextras/carbonio-mails-ui/commit/68a42be))
+* chore(deps): update dependency @babel/preset-env to v7.29.5 ([04af311](https://github.com/zextras/carbonio-mails-ui/commit/04af311))
+* chore(deps): update redux ([4b8c9ee](https://github.com/zextras/carbonio-mails-ui/commit/4b8c9ee))
+
+## <small>1.34.7 (2026-05-20)</small>
+
+* Merge branch 'devel' into renovate/npm-axios-vulnerability ([968d973](https://github.com/zextras/carbonio-mails-ui/commit/968d973))
+* Merge branch 'devel' into renovate/npm-axios-vulnerability ([acd1959](https://github.com/zextras/carbonio-mails-ui/commit/acd1959))
+* Merge branch 'devel' into renovate/npm-darkreader-vulnerability ([73aaf33](https://github.com/zextras/carbonio-mails-ui/commit/73aaf33))
+* Merge branch 'devel' into renovate/testing-library ([c3c82bf](https://github.com/zextras/carbonio-mails-ui/commit/c3c82bf))
+* Merge branch 'devel' into renovate/zextras-jenkins-lib-common-2.x ([16761f9](https://github.com/zextras/carbonio-mails-ui/commit/16761f9))
+* Merge pull request #1202 from zextras/renovate/npm-darkreader-vulnerability ([f66d762](https://github.com/zextras/carbonio-mails-ui/commit/f66d762)), closes [#1202](https://github.com/zextras/carbonio-mails-ui/issues/1202)
+* Merge pull request #1203 from zextras/renovate/npm-axios-vulnerability ([4fecd6a](https://github.com/zextras/carbonio-mails-ui/commit/4fecd6a)), closes [#1203](https://github.com/zextras/carbonio-mails-ui/issues/1203)
+* Merge pull request #1222 from zextras/renovate/testing-library ([16c85c7](https://github.com/zextras/carbonio-mails-ui/commit/16c85c7)), closes [#1222](https://github.com/zextras/carbonio-mails-ui/issues/1222)
+* Merge pull request #1225 from zextras/renovate/zextras-carbonio-search-ui-0.x ([8ec2ec1](https://github.com/zextras/carbonio-mails-ui/commit/8ec2ec1)), closes [#1225](https://github.com/zextras/carbonio-mails-ui/issues/1225)
+* Merge pull request #1234 from zextras/renovate/zextras-jenkins-lib-common-2.x ([d0afb4e](https://github.com/zextras/carbonio-mails-ui/commit/d0afb4e)), closes [#1234](https://github.com/zextras/carbonio-mails-ui/issues/1234)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.0.11 ([898e79e](https://github.com/zextras/carbonio-mails-ui/commit/898e79e))
+* chore(deps): update dependency zextras/jenkins-lib-common to v2.7.0 ([69c903a](https://github.com/zextras/carbonio-mails-ui/commit/69c903a))
+* chore(deps): update testing library ([ccb2970](https://github.com/zextras/carbonio-mails-ui/commit/ccb2970))
+* fix(deps): update dependency axios to v1.15.2 [security] ([57e03f0](https://github.com/zextras/carbonio-mails-ui/commit/57e03f0))
+* fix(deps): update dependency darkreader to v4.9.117 [security] ([8595041](https://github.com/zextras/carbonio-mails-ui/commit/8595041))
+
+## <small>1.34.6 (2026-05-19)</small>
+
+* Merge pull request #1236 from zextras/co-3427-required-fields ([d884e6f](https://github.com/zextras/carbonio-mails-ui/commit/d884e6f)), closes [#1236](https://github.com/zextras/carbonio-mails-ui/issues/1236)
+* fix: improved autofocus ([55a6916](https://github.com/zextras/carbonio-mails-ui/commit/55a6916))
+* fix: improved autofocus ([55b7c65](https://github.com/zextras/carbonio-mails-ui/commit/55b7c65))
+* fix: required fields ([83d3c19](https://github.com/zextras/carbonio-mails-ui/commit/83d3c19))
+* fix: required fields ([c403883](https://github.com/zextras/carbonio-mails-ui/commit/c403883))
+* fix: required fields ([cd94beb](https://github.com/zextras/carbonio-mails-ui/commit/cd94beb))
+* fix: required fields ([9fcc417](https://github.com/zextras/carbonio-mails-ui/commit/9fcc417))
+* fix: required fields ([30218e0](https://github.com/zextras/carbonio-mails-ui/commit/30218e0))
+
+## <small>1.34.5 (2026-05-18)</small>
+
+* refactor: edit calendar modal ([fa04c34](https://github.com/zextras/carbonio-mails-ui/commit/fa04c34))
+
+## <small>1.34.4 (2026-05-14)</small>
+
+* fix(ci): migrate Jenkinsfile to jenkins-lib-common ([1ad2863](https://github.com/zextras/carbonio-mails-ui/commit/1ad2863))
+* chore: add .worktrees to .gitignore ([a124ce0](https://github.com/zextras/carbonio-mails-ui/commit/a124ce0))
+
+## <small>1.34.3 (2026-05-12)</small>
+
+* fix: input select file name display issue fixed (#1230) ([dde1ff9](https://github.com/zextras/carbonio-mails-ui/commit/dde1ff9)), closes [#1230](https://github.com/zextras/carbonio-mails-ui/issues/1230)
+
+## <small>1.34.2 (2026-05-12)</small>
+
+* Merge pull request #1231 from zextras/IN-1095-jfrog-cost-optimization-usage-analysis-and-mitigation- ([2480fca](https://github.com/zextras/carbonio-mails-ui/commit/2480fca)), closes [#1231](https://github.com/zextras/carbonio-mails-ui/issues/1231)
+* build(release): update jenkins-lib-ui to 1.0.13 ([5bc3789](https://github.com/zextras/carbonio-mails-ui/commit/5bc3789))
+* chore(deps): update semantic-release monorepo (#1221) ([b60a463](https://github.com/zextras/carbonio-mails-ui/commit/b60a463)), closes [#1221](https://github.com/zextras/carbonio-mails-ui/issues/1221)
+
 ## <small>1.34.1 (2026-05-06)</small>
 
 * build(deps): update dependencies (#1227) ([3da848e](https://github.com/zextras/carbonio-mails-ui/commit/3da848e)), closes [#1227](https://github.com/zextras/carbonio-mails-ui/issues/1227)

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -35,7 +35,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				: t('label.create_tag', 'Create a new Tag'),
 		[editMode, tag?.name]
 	);
-	const label = useMemo(() => t('label.tag_name', 'Tag name'), []);
+	const label = useMemo(() => `${t('label.tag_name', 'Tag name')}*`, []);
 	const handleColorChange = useCallback((c: string | null) => setColor(c), []);
 	const handleNameChange = useCallback(
 		(ev: React.ChangeEvent<HTMLInputElement>) => setName(ev.target.value),
@@ -102,6 +102,11 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 			});
 	}, [color, createSnackbar, name, onClose, tag?.id]);
 
+	const tagNameRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		tagNameRef.current?.focus();
+	}, []);
+
 	return (
 		<>
 			<ModalHeader onClose={onClose} title={title} />
@@ -112,6 +117,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				backgroundColor="gray5"
 				textColor={showWarning ? 'error' : 'text'}
 				hasError={showWarning}
+				inputRef={tagNameRef}
 			/>
 
 			{showWarning && (

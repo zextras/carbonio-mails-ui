@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 import {
@@ -16,7 +16,6 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { Grant, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
@@ -24,7 +23,6 @@ import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { findLabel, ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import { ActionProps } from 'types/actions';
 import { GranteeInfoProps, GranteeProps, ShareFolderPropertiesProps } from 'types/share';
-import { Context } from 'views/sidebar/parts/edit/edit-context';
 
 const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
 	background-color: ${({ theme, $hovered }): string =>
@@ -39,7 +37,7 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 
 	const label = useMemo(() => {
 		const composeLabel = (name: string): string => `${name} - ${role}`;
-		return grant.d ? composeLabel(grant.d) : composeLabel(grant.zid);
+		return composeLabel(grant.d ?? grant.zid ?? '');
 	}, [grant, role]);
 
 	return (
@@ -54,20 +52,19 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 const Actions = ({
 	folder,
 	grant,
-	setActiveModal,
+	onEdit,
+	onRevoke,
 	onMouseLeave,
 	onMouseEnter
 }: ActionProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
-	const { setActiveGrant } = useContext(Context);
-	const onRevoke = useCallback(() => {
-		if (setActiveGrant) setActiveGrant(grant);
-		setActiveModal('revoke');
-	}, [setActiveModal, setActiveGrant, grant]);
-
 	const { createSnackbar } = useUiUtilities();
 
-	const onResend = useCallback(() => {
+	const handleRevoke = useCallback(() => {
+		onRevoke(grant);
+	}, [onRevoke, grant]);
+
+	const handleResend = useCallback(() => {
 		if (grant.d) {
 			sendShareNotificationSoapApi({
 				standardMessage: '',
@@ -75,7 +72,14 @@ const Actions = ({
 				folder,
 				accounts
 			}).then((res) => {
-				if (!('error' in (res as any))) {
+				const hasFailures =
+					!Array.isArray(res) ||
+					res.some(
+						(item) =>
+							typeof item === 'object' && item !== null && ('error' in item || 'Fault' in item)
+					);
+
+				if (!hasFailures) {
 					createSnackbar({
 						key: `resend-${folder.id}`,
 						replace: true,
@@ -88,10 +92,10 @@ const Actions = ({
 			});
 		}
 	}, [accounts, createSnackbar, folder, grant.d]);
-	const onEdit = useCallback(() => {
-		if (setActiveGrant) setActiveGrant(grant);
-		setActiveModal('edit');
-	}, [setActiveModal, setActiveGrant, grant]);
+
+	const handleEdit = useCallback(() => {
+		onEdit(grant);
+	}, [onEdit, grant]);
 
 	return (
 		<Container
@@ -102,7 +106,7 @@ const Actions = ({
 			maxWidth="fit"
 		>
 			<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
-				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
+				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={handleEdit} size="small" />
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
 			<Tooltip label={t('tooltip.revoke', 'Revoke access')} placement="top">
@@ -110,7 +114,7 @@ const Actions = ({
 					type="outlined"
 					label={t('label.revoke', 'Revoke')}
 					color="error"
-					onClick={onRevoke}
+					onClick={handleRevoke}
 					size="small"
 				/>
 			</Tooltip>
@@ -123,15 +127,20 @@ const Actions = ({
 				<Button
 					type="outlined"
 					label={t('label.resend', 'Resend')}
-					onClick={onResend}
+					onClick={handleResend}
 					size="small"
 				/>
 			</Tooltip>
 		</Container>
 	);
 };
-const Grantee: FC<GranteeProps> = ({ grant, folder, setActiveModal, shareCalendarRoleOptions }) => {
+
+const Grantee: FC<GranteeProps> = ({ grant, folder, onEdit, onRevoke }) => {
 	const [hovered, setHovered] = useState(false);
+	const shareCalendarRoleOptions = useMemo(
+		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
+		[grant.perm]
+	);
 	const onMouseEnter = useCallback(() => {
 		setHovered(true);
 	}, []);
@@ -150,7 +159,8 @@ const Grantee: FC<GranteeProps> = ({ grant, folder, setActiveModal, shareCalenda
 				onMouseLeave={onMouseLeave}
 				onMouseEnter={onMouseEnter}
 				grant={grant}
-				setActiveModal={setActiveModal}
+				onEdit={onEdit}
+				onRevoke={onRevoke}
 			/>
 		</Container>
 	);
@@ -158,42 +168,19 @@ const Grantee: FC<GranteeProps> = ({ grant, folder, setActiveModal, shareCalenda
 
 export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	folder,
-	setActiveModal
-}) => {
-	const [grant, setGrant] = useState<Array<Grant> | undefined>();
-
-	useEffect(() => {
-		legacySoapFetch('GetFolder', {
-			_jsns: 'urn:zimbraMail',
-			folder: { l: folder.id }
-		}).then((res: any): void => {
-			if (res?.folder) {
-				setGrant(res.folder[0].acl.grant);
-			}
-		});
-	}, [folder.id]);
-
-	const shareCalendarRoleOptions = useMemo(
-		() => ShareCalendarRoleOptions(t, grant?.[0]?.perm?.includes('p')),
-		[grant]
-	);
-	return (
-		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
-			<Padding vertical="small" />
-			<Text weight="bold">{t('label.shares_folder_edit', 'Sharing of this folder')}</Text>
-			<Padding vertical="small" />
-			{map(grant, (item) => (
-				<Grantee
-					key={item?.zid}
-					grant={item}
-					folder={folder}
-					setActiveModal={setActiveModal}
-					shareCalendarRoleOptions={shareCalendarRoleOptions}
-				/>
-			))}
-			<Padding top="medium" />
-			<Divider />
-			<Padding bottom="medium" />
-		</Container>
-	);
-};
+	grants,
+	onEdit,
+	onRevoke
+}) => (
+	<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+		<Padding vertical="small" />
+		<Text weight="bold">{t('label.shares_folder_edit', 'Sharing of this folder')}</Text>
+		<Padding vertical="small" />
+		{map(grants, (item) => (
+			<Grantee key={item?.zid} grant={item} folder={folder} onEdit={onEdit} onRevoke={onRevoke} />
+		))}
+		<Padding top="medium" />
+		<Divider />
+		<Padding bottom="medium" />
+	</Container>
+);

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, useEffect, useRef } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { isValidFolderName } from '@zextras/carbonio-ui-commons';
@@ -19,7 +19,7 @@ type NameInputRowProps = {
 	folderColor: number;
 	setFolderColor: (value: number) => void;
 };
-const NameInputRow: FC<NameInputRowProps> = ({
+export const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
 	inpDisable,
 	showWarning,
@@ -28,15 +28,21 @@ const NameInputRow: FC<NameInputRowProps> = ({
 	setFolderColor
 }) => {
 	const [t] = useTranslation();
+
+	const folderNameRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		folderNameRef.current?.focus();
+	}, []);
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start">
 			<Input
-				label={t('label.folder_name', 'Folder name')}
+				label={`${t('label.folder_name', 'Folder name')}*`}
 				onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 				disabled={inpDisable}
 				value={inputValue}
 				hasError={showWarning && !inpDisable}
 				data-testid="folder-name"
+				inputRef={folderNameRef}
 			/>
 			{showWarning && !inpDisable && (
 				<Padding all="small">
@@ -60,5 +66,3 @@ const NameInputRow: FC<NameInputRowProps> = ({
 		</Container>
 	);
 };
-
-export default NameInputRow;
