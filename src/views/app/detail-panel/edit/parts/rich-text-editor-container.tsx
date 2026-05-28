@@ -26,6 +26,7 @@ import {
 	useEditorText,
 	useEditorTextProvider
 } from 'store/editor';
+import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 import { MailsEditorV2 } from 'types/editor';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
@@ -61,7 +62,14 @@ export const RichTextEditorContainer = ({
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
 	const composerRef = useRef<Editor>();
-	const initialValue = useRef(text);
+
+	const initialValue = useRef(
+		replaceCidUrlWithServiceUrl(
+			text,
+			useEditorsStore.getState().editors[editorId]?.savedAttachments ?? []
+		)
+	);
+
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
@@ -86,9 +94,11 @@ export const RichTextEditorContainer = ({
 				return;
 			}
 			setDirty();
-			composerRef.current.setContent(value.richText);
+			const savedAttachments = useEditorsStore.getState().editors[editorId]?.savedAttachments ?? [];
+			const richText = replaceCidUrlWithServiceUrl(value.richText, savedAttachments);
+			composerRef.current.setContent(richText);
 		},
-		[setDirty]
+		[setDirty, editorId]
 	);
 
 	const onComposerInit = useCallback(
