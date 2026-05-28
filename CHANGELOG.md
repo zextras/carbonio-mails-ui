@@ -1,3 +1,9 @@
+## <small>1.34.11 (2026-05-28)</small>
+
+* fix: show real upload status for attachments instead of always 'running' ([fea8301](https://github.com/zextras/carbonio-mails-ui/commit/fea8301))
+* chore(deps): lock file maintenance ([5a197c2](https://github.com/zextras/carbonio-mails-ui/commit/5a197c2))
+* chore(deps): update dependency zextras/jenkins-lib-common to v2.8.6 ([6555865](https://github.com/zextras/carbonio-mails-ui/commit/6555865))
+
 ## <small>1.34.10 (2026-05-27)</small>
 
 * fix: update the text composer to use latest languages configuration ([6e3ad71](https://github.com/zextras/carbonio-mails-ui/commit/6e3ad71))
