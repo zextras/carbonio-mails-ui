@@ -62,7 +62,14 @@ export const RichTextEditorContainer = ({
 	const text = useMemo(() => getText().richText, [getText]);
 	const { setDirty } = useEditorSetDirty(editorId);
 	const composerRef = useRef<Editor>();
-	const initialValue = useRef(text);
+
+	const initialValue = useRef(
+		replaceCidUrlWithServiceUrl(
+			text,
+			useEditorsStore.getState().editors[editorId]?.savedAttachments ?? []
+		)
+	);
+
 	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const { setTextProvider } = useEditorTextProvider(editorId);

@@ -18,15 +18,18 @@ import { SavedAttachment } from 'types/attachments';
 import { EditorTextProvider } from 'types/editor';
 
 /*
- * Spy functions used to intercept TinyMCE Editor method calls. They are defined
- * via vi.hoisted so they are available inside the vi.mock factory (which is
- * hoisted at the top of the module by Vitest).
+ * Spy functions used to intercept TinyMCE Editor method calls and the
+ * initialValue prop received by the Composer. They are defined via vi.hoisted
+ * so they are available inside the vi.mock factory (which is hoisted at the
+ * top of the module by Vitest).
  */
 const mockSetContent = vi.hoisted(() => vi.fn());
 const mockGetContent = vi.hoisted(() => vi.fn(() => '<p></p>'));
 const mockEditorOn = vi.hoisted(() => vi.fn());
 const mockEditorDispatch = vi.hoisted(() => vi.fn());
 const mockEditorSetDirty = vi.hoisted(() => vi.fn());
+/** Captures the initialValue prop that was passed to Composer on each mount. */
+const capturedInitialValues = vi.hoisted(() => [] as string[]);
 
 /**
  * Build a minimal TinyMCE Editor stub whose setContent / getContent are
@@ -55,12 +58,18 @@ vi.mock('@zextras/carbonio-ui-text-composer', async () => {
 	const { useEffect } = await import('react');
 	return {
 		Composer: ({
+			initialValue: composerInitialValue,
 			customInitOptions
 		}: {
+			initialValue?: string;
 			customInitOptions?: {
 				init_instance_callback?: (editor: unknown) => unknown;
 			};
 		}): React.JSX.Element => {
+			// Capture the initialValue passed by RichTextEditorContainer so tests
+			// can assert it was pre-processed (CID URLs replaced with service URLs).
+			capturedInitialValues.push(composerInitialValue ?? '');
+
 			// Store reference to options so the effect closure captures the
 			// version from the first render (stable after mount).
 			const optionsRef = { current: customInitOptions };
@@ -103,8 +112,10 @@ const waitForTextProvider = (editorId: string): Promise<EditorTextProvider> =>
 // Test setup
 // ---------------------------------------------------------------------------
 
-describe('RichTextEditorContainer', () => {
+describe('RichTextEditorContainer - inline image display', () => {
 	beforeEach(() => {
+		// Reset the captured initialValues before each test
+		capturedInitialValues.length = 0;
 		// Provide the minimum user settings used by RichTextEditorContainer
 		useUserSettings.mockReturnValue({
 			prefs: {
@@ -310,6 +321,102 @@ describe('RichTextEditorContainer', () => {
 			// The text content must be preserved
 			const calledWithHtml: string = mockSetContent.mock.lastCall?.[0] ?? '';
 			expect(calledWithHtml).toContain('Hello World');
+		});
+	});
+
+	// -------------------------------------------------------------------------
+	// Inline images on composer mount (send error / undo-send re-opens board)
+	// -------------------------------------------------------------------------
+
+	describe('when the composer mounts with stored draft content containing CID URLs', () => {
+		it('should replace CID URL src with the service URL in the initialValue passed to Composer', () => {
+			createSoapAPIInterceptor('SaveDraft');
+
+			const savedAttachment = createInlineSavedAttachment();
+			const editor = generateNewMessageEditor();
+			// Simulate what the store looks like after a previous TinyMCE session: the
+			// saved richText has src="cid:..." because getContent() serialises via
+			// data-mce-src.
+			const richTextWithCid =
+				'<p>Body</p>' +
+				'<img src="cid:abc123@carbonio" data-pnsrc="cid:abc123@carbonio" alt="img" />';
+			setupEditorStore({
+				editors: [
+					{
+						...editor,
+						isRichText: true,
+						savedAttachments: [savedAttachment],
+						text: { plainText: 'Body', richText: richTextWithCid }
+					}
+				]
+			});
+
+			setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+
+			// The Composer should have been called with a pre-processed initialValue
+			// where the CID URL was replaced with the download service URL.
+			expect(capturedInitialValues.length).toBeGreaterThanOrEqual(1);
+			// All renders should receive the same pre-processed initialValue.
+			const passedInitialValue = capturedInitialValues[0];
+
+			// DOMParser#innerHTML encodes '&' as '&amp;' in attribute values
+			expect(passedInitialValue).toContain('/service/home/~/?auth=co&amp;id=100&amp;part=2');
+
+			// Verify the img src is not a CID URL any more
+			/* eslint-disable testing-library/no-node-access */
+			const parsedImages = new DOMParser()
+				.parseFromString(passedInitialValue, 'text/html')
+				.querySelectorAll('img');
+			/* eslint-enable testing-library/no-node-access */
+			parsedImages.forEach((img) => {
+				expect(img.getAttribute('src')).not.toMatch(/^cid:/);
+			});
+		});
+
+		it('should preserve data-mce-src with the CID URL in the initialValue', () => {
+			createSoapAPIInterceptor('SaveDraft');
+
+			const savedAttachment = createInlineSavedAttachment();
+			const editor = generateNewMessageEditor();
+			const richTextWithCid =
+				'<img src="cid:abc123@carbonio" data-pnsrc="cid:abc123@carbonio" alt="img" />';
+			setupEditorStore({
+				editors: [
+					{
+						...editor,
+						isRichText: true,
+						savedAttachments: [savedAttachment],
+						text: { plainText: '', richText: richTextWithCid }
+					}
+				]
+			});
+
+			setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+
+			const passedInitialValue = capturedInitialValues[0] ?? '';
+			// data-mce-src must still carry the CID so TinyMCE serialises correctly
+			expect(passedInitialValue).toContain('data-mce-src="cid:abc123@carbonio"');
+		});
+
+		it('should leave the initialValue unchanged when there are no inline images', () => {
+			createSoapAPIInterceptor('SaveDraft');
+
+			const editor = generateNewMessageEditor();
+			const plainHtml = '<p>Hello World</p>';
+			setupEditorStore({
+				editors: [
+					{
+						...editor,
+						isRichText: true,
+						savedAttachments: [],
+						text: { plainText: 'Hello World', richText: plainHtml }
+					}
+				]
+			});
+
+			setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+
+			expect(capturedInitialValues[0]).toContain('Hello World');
 		});
 	});
 });
