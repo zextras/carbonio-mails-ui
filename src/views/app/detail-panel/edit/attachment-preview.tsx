@@ -207,10 +207,10 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 						</Row>
 					</Row>
 				</Tooltip>
-				{!isSavedAttachment(attachment) && (
+				{isUnsavedAttachment(attachment) && attachment.uploadStatus && (
 					<AttachmentUploadStatus
 						data-testid={'attachmentuploadstatus-container'}
-						uploadStatus={{ status: 'running' }}
+						uploadStatus={attachment.uploadStatus}
 						cancelUpload={cancelUpload}
 					/>
 				)}
