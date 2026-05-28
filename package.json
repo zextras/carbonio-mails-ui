@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.34.9",
+	"version": "1.34.10",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"packageManager": "pnpm@10.32.1",
@@ -108,7 +108,7 @@
 		"@zextras/carbonio-ui-commons": "2.2.0",
 		"@zextras/carbonio-ui-preview": "5.0.1",
 		"@zextras/carbonio-ui-soap-lib": "1.2.0",
-		"@zextras/carbonio-ui-text-composer": "1.1.1",
+		"@zextras/carbonio-ui-text-composer": "1.2.0",
 		"asn1js": "3.0.7",
 		"autolinker": "4.1.5",
 		"axios": "1.15.2",
