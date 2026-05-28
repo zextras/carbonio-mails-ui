@@ -110,7 +110,7 @@ const apiCases = allCases.filter(shouldCallApi);
 const noApiCases = allCases.filter(shouldNotCallApi);
 
 describe('EditViewController', () => {
-	beforeAll(() => {
+	beforeEach(() => {
 		createSoapAPIInterceptor('SaveDraft');
 		createSoapAPIInterceptor('GetShareInfo');
 		createAPIInterceptor(
