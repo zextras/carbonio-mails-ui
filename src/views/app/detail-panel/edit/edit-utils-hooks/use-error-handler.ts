@@ -33,6 +33,10 @@ function isErrorAboutMessageTooLarge(error: SaveDraftResponse | ErrorSoapBodyRes
 			error?.Fault?.Detail?.Error?.Code === 'mail.UPLOAD_TOO_LARGE';
 }
 
+function isErrorAboutAccountQuotaExceeded(error: SaveDraftResponse | ErrorSoapBodyResponse): boolean {
+	return error?.Fault?.Detail?.Error?.Code === 'mail.QUOTA_EXCEEDED';
+}
+
 export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyResponse): {
 	message: string;
 	timeout: number;
@@ -57,6 +61,8 @@ export function getErrorSnackbarProps(error: SaveDraftResponse | ErrorSoapBodyRe
 		message = t('error.editor_not_found', 'The email editor was not found. Please try reopening the email and sending again.');
 	} else if (isErrorAboutMessageTooLarge(error)) {
 		message = t('editor.warning.mail_size_exceeds_limit', 'The message size exceeds the limit. Please convert some attachments to smart links');
+	} else if (isErrorAboutAccountQuotaExceeded(error)) {
+		message = t('error.account_quota_exceeded', 'Your account quota has been exceeded. Please free up some space or contact support.');
 	}
 
 	return { message, timeout };
