@@ -182,7 +182,7 @@ const makeSomeChangeToTriggerSaveDraft = async (user: UserEvent): Promise<void> 
 };
 
 describe('Edit view', () => {
-	beforeAll(() => {
+	beforeEach(() => {
 		createCheckSmimeEnabledAPIInterceptor();
 		createSoapAPIInterceptor('GetShareInfo', getEmptyMSWShareInfoResponse());
 	});
@@ -197,7 +197,7 @@ describe('Edit view', () => {
 	});
 
 	describe('Send button is disabled', () => {
-		beforeAll(() => {
+		beforeEach(() => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
