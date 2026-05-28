@@ -1,3 +1,7 @@
+## <small>1.34.10 (2026-05-27)</small>
+
+* fix: update the text composer to use latest languages configuration ([6e3ad71](https://github.com/zextras/carbonio-mails-ui/commit/6e3ad71))
+
 ## <small>1.34.9 (2026-05-25)</small>
 
 * Merge pull request #1237 from zextras/renovate/npm-uuid-vulnerability ([7a0412b](https://github.com/zextras/carbonio-mails-ui/commit/7a0412b)), closes [#1237](https://github.com/zextras/carbonio-mails-ui/issues/1237)
