@@ -210,7 +210,14 @@ export const extractBody = (msg: MailMessage): ExtractedBody => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr?.[0]?.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
-	const textAsHtml = text?.replaceAll('\n', '<br/>');
+
+	let textAsHtml = '';
+
+	if (text) {
+		// encode text to HTML
+		textAsHtml = htmlEncode(text).replaceAll('\n', '<br/>');
+	}
+
 	let html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
 	// Inline CSS styles from <head> <style> tags to preserve formatting
