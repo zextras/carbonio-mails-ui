@@ -95,27 +95,35 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 	isUploading = true;
 	editor.setProgressState(true);
 
-	const file = uploadQueue.shift();
-	if (file) {
-		const uploadImageResult = await uploadImage(file, editorId).finally(() => {
-			editor.setProgressState(false);
-		});
-		if (!uploadImageResult?.cidUrl) {
-			throw new Error('No CID URL found in upload response');
+	try {
+		const file = uploadQueue.shift();
+		if (file) {
+			const uploadImageResult = await uploadImage(file, editorId).finally(() => {
+				editor.setProgressState(false);
+			});
+			if (!uploadImageResult?.cidUrl) {
+				throw new Error('No CID URL found in upload response');
+			}
+			// get the updated image in order to avoid TinyMCE caching issues
+			const blob = await fetch(uploadImageResult.downloadServiceUrl).then((r) => r.blob());
+			const objectUrl = URL.createObjectURL(blob);
+			// data-pnsrc is a non-TinyMCE attribute preserved in getContent() output and used by
+			// retrieveCIdsFromContent and replaceServiceUrlWithCidUrl to locate the CID reference.
+			// data-mce-src is TinyMCE's internal attribute that causes getContent() to restore src
+			// to the CID URL. Both are required for correct inline-attachment tracking.
+			editor.insertContent(
+				`<img alt="${uploadImageResult.fileName}" src="${objectUrl}" data-pnsrc="${uploadImageResult.cidUrl}" data-mce-src="${uploadImageResult.cidUrl}"/>`
+			);
 		}
-		// get the updated image in ordeer to avoid TinyMCE caching issues
-		const blob = await fetch(uploadImageResult.downloadServiceUrl).then((r) => r.blob());
-		const objectUrl = URL.createObjectURL(blob);
-		editor.insertContent(
-			`<img alt="${uploadImageResult.fileName}" src="${objectUrl}" data-mce-src="${uploadImageResult.cidUrl}"/>`
-		);
-	}
-
-	isUploading = false;
-	if (uploadQueue.length > 0) {
-		await processNextUpload(editor, editorId);
-	} else {
-		editor.setProgressState(false);
+	} catch (error) {
+		console.error('Error uploading pasted image:', error);
+	} finally {
+		isUploading = false;
+		if (uploadQueue.length > 0) {
+			await processNextUpload(editor, editorId);
+		} else {
+			editor.setProgressState(false);
+		}
 	}
 };
 

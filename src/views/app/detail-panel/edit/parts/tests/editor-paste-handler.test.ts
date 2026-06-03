@@ -248,11 +248,11 @@ describe('handleEditorPaste', () => {
 			const objectUrl = URL.createObjectURL(blob);
 
 			editor.insertContent(
-				`<img alt="${uploadResult.fileName}" src="${objectUrl}" data-mce-src="${uploadResult.cidUrl}"/>`
+				`<img alt="${uploadResult.fileName}" src="${objectUrl}" data-pnsrc="${uploadResult.cidUrl}" data-mce-src="${uploadResult.cidUrl}"/>`
 			);
 
 			expect(editor.insertContent).toHaveBeenCalledWith(
-				`<img alt="${mockFile.name}" src="${fakeObjectUrl}" data-mce-src="cid:${mockContentId}"/>`
+				`<img alt="${mockFile.name}" src="${fakeObjectUrl}" data-pnsrc="cid:${mockContentId}" data-mce-src="cid:${mockContentId}"/>`
 			);
 			expect(fetch).toHaveBeenCalledWith(uploadResult.downloadServiceUrl);
 			expect(URL.createObjectURL).toHaveBeenCalledWith(fakeBlob);
