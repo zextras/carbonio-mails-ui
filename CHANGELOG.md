@@ -1,3 +1,7 @@
+## <small>1.34.13 (2026-06-03)</small>
+
+* fix: update Content Security Policy to allow external images in print conversation(#1242) ([49afce5](https://github.com/zextras/carbonio-mails-ui/commit/49afce5)), closes [#1242](https://github.com/zextras/carbonio-mails-ui/issues/1242)
+
 ## <small>1.34.12 (2026-06-02)</small>
 
 * build: migrate to buildah (FQDN images + jenkins-lib-common@2.10.0) (#1247) ([ea47a2c](https://github.com/zextras/carbonio-mails-ui/commit/ea47a2c)), closes [#1247](https://github.com/zextras/carbonio-mails-ui/issues/1247)
