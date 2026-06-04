@@ -1,3 +1,11 @@
+## <small>1.34.16 (2026-06-04)</small>
+
+* Merge branch 'devel' into co-3778-advanced-filter-modal-tests ([4b8a593](https://github.com/zextras/carbonio-mails-ui/commit/4b8a593))
+* Merge branch 'devel' into co-3778-advanced-filter-modal-tests ([4d7fac7](https://github.com/zextras/carbonio-mails-ui/commit/4d7fac7))
+* Merge pull request #1245 from zextras/co-3778-advanced-filter-modal-tests ([9cd36a1](https://github.com/zextras/carbonio-mails-ui/commit/9cd36a1)), closes [#1245](https://github.com/zextras/carbonio-mails-ui/issues/1245)
+* fix(CO-3793): preserve author-defined styles in elements (#1252) ([074e8bd](https://github.com/zextras/carbonio-mails-ui/commit/074e8bd)), closes [#1252](https://github.com/zextras/carbonio-mails-ui/issues/1252)
+* refactor: unified advanced filter modals tests ([3b2ee71](https://github.com/zextras/carbonio-mails-ui/commit/3b2ee71))
+
 ## <small>1.34.15 (2026-06-04)</small>
 
 * fix(CO-3796): prevent duplication of missing tags in tag list (#1248) ([b828430](https://github.com/zextras/carbonio-mails-ui/commit/b828430)), closes [#1248](https://github.com/zextras/carbonio-mails-ui/issues/1248)
