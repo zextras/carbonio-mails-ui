@@ -6,6 +6,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { TINYMCE_BASE_CONTENT_STYLES } from '../../constants/tinymce-content-styles';
 import {
 	applyUserPreferenceStyles,
 	generateUserPreferenceStyles,
@@ -23,7 +24,11 @@ describe('user-preference-styles', () => {
 
 			const result = generateUserPreferenceStyles(style);
 
-			expect(result).toBe('p { margin: 0; }');
+			// a default font-family is always applied as a fallback
+			expect(result).toContain('p { margin: 0; }');
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
+			expect(result).not.toContain('color:');
+			expect(result).not.toContain('font-size:');
 		});
 
 		it('should generate CSS with color preference only', () => {
@@ -37,7 +42,8 @@ describe('user-preference-styles', () => {
 
 			expect(result).toContain('color: #ff0000;');
 			expect(result).not.toContain('font-size:');
-			expect(result).not.toContain('font-family:');
+			// no font preference -> the default font-family fallback is applied
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
 		});
 
 		it('should generate CSS with font-size preference only', () => {
@@ -51,7 +57,8 @@ describe('user-preference-styles', () => {
 
 			expect(result).toContain('font-size: 14pt;');
 			expect(result).not.toContain('color:');
-			expect(result).not.toContain('font-family:');
+			// no font preference -> the default font-family fallback is applied
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
 		});
 
 		it('should generate CSS with font-family preference only', () => {
@@ -121,6 +128,19 @@ describe('user-preference-styles', () => {
 			const result = generateUserPreferenceStyles(style);
 
 			expect(result).toContain(':not(a[href])');
+		});
+
+		it('should exclude author color-bearing elements from selector', () => {
+			const style: UserPreferenceStyle = {
+				font: 'Arial',
+				fontSize: '12pt',
+				color: '#000000'
+			};
+
+			const result = generateUserPreferenceStyles(style);
+
+			expect(result).toContain(':not(font)');
+			expect(result).toContain(':not([color])');
 		});
 
 		it('should exclude special formatting elements from selector', () => {
@@ -405,6 +425,208 @@ describe('user-preference-styles', () => {
 			expect(result).toContain('Regular span');
 			expect(result).toContain('Code span');
 			expect(result).toContain('Quote');
+		});
+	});
+
+	// CO-3793: base styles are defaults and must never override what the author
+	// specified via inline style or a presentational attribute.
+	describe('table style preservation (CO-3793)', () => {
+		const style: UserPreferenceStyle = {
+			font: 'Arial, sans-serif',
+			fontSize: '14pt',
+			color: '#ff0000'
+		};
+
+		it('should not override table styling specified via presentational attributes', () => {
+			const content = `<table style="text-align: left; font-size: 8pt;" border="0" cellspacing="0" cellpadding="0">
+					<tbody>
+						<tr>
+							<td style="font-size: 10pt;">Logo</td>
+							<td>Paola Sora</td>
+						</tr>
+					</tbody>
+				</table>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// cellpadding="0" is respected -> our 8px cell padding default is not applied
+			expect(result).not.toContain('padding: 8px');
+			// cellspacing="0" is respected -> border-collapse is not forced
+			expect(result).not.toContain('border-collapse');
+			// border="0" is respected -> cells keep no border
+			expect(result).toContain('border: none');
+			// the authored attributes survive untouched
+			expect(result).toMatch(/border="0"\s+cellspacing="0"\s+cellpadding="0"/);
+			// the authored inline styles survive untouched
+			expect(result).toContain('text-align: left');
+			expect(result).toContain('font-size: 8pt');
+		});
+
+		it('should not force a width on a table that did not specify one', () => {
+			const content = `<table style="text-align: left;" border="0" cellpadding="0"><tbody><tr><td>cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).not.toMatch(/width:\s*100%/);
+			expect(result).not.toMatch(/<table[^>]*width="100%"/);
+		});
+
+		it('should still apply default cell padding to a composer table with no overrides', () => {
+			// A composer-created table (no attributes) keeps the defaults.
+			const content = `<table><tbody><tr><td>cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('padding: 8px');
+		});
+
+		it('should keep an author-specified cell padding instead of our default', () => {
+			const content = `<table cellpadding="4"><tbody><tr><td>cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('cellpadding="4"');
+			expect(result).not.toContain('padding: 8px');
+		});
+
+		it('should not override an image border specified via the border attribute', () => {
+			const content = `<p>Logo</p><img src="logo.png" border="2" alt="Logo">`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('border="2"');
+			expect(result).not.toContain('border: 0');
+		});
+
+		it('should still apply the default image border when none is specified', () => {
+			const content = `<p>Logo</p><img src="logo.png" alt="Logo">`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('border: 0');
+		});
+
+		it('should not override hr thickness specified via the size attribute', () => {
+			const content = `<hr size="5">`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('size="5"');
+			expect(result).not.toContain('height: 0');
+		});
+
+		it('should not recolor text the author colored via a legacy <font> attribute', () => {
+			const content = `<p>Body</p><font color="green" size="5">Author colored</font>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('color="green"');
+			expect(result).toContain('size="5"');
+			// the user's preference colour/size must not be inlined onto the <font>
+			expect(result).not.toMatch(/<font[^>]*style="[^"]*color: #ff0000/);
+			expect(result).not.toMatch(/<font[^>]*style="[^"]*font-size: 14pt/);
+		});
+
+		it('should still apply user preferences to ordinary body content', () => {
+			const content = `<p>Body</p>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<p style="[^"]*color: #ff0000/);
+		});
+
+		it('should not change size or font when the author colors part of a heading', () => {
+			// TinyMCE wraps the coloured selection in a <span> inside the heading;
+			// only the author's colour should change - size/font are inherited.
+			const content = `<h1>Title <span style="color: blue;">colored</span></h1>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<h1 style="[^"]*font-size: 24px/);
+			expect(result).not.toMatch(/<span[^>]*font-size: 14pt/);
+			expect(result).not.toMatch(/<span[^>]*font-family/);
+			expect(result).toContain('color: blue');
+		});
+
+		it('should not force the preference size onto sub/sup', () => {
+			const content = `<p>x<sub>2</sub></p>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// sub keeps its relative 75% size rather than the absolute preference size
+			expect(result).toMatch(/<sub[^>]*font-size: 75%/);
+			expect(result).not.toMatch(/<sub[^>]*font-size: 14pt/);
+		});
+
+		it('should not override the monospace font of code content', () => {
+			const content = `<pre><code>fn <span>x</span></code></pre>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// the span inside code must not be re-fonted to the preference family
+			expect(result).not.toMatch(/<span[^>]*font-family: Arial/);
+		});
+
+		it('should still apply the preference to nested ordinary content via inheritance', () => {
+			const content = `<div><p>nested</p></div>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// the top-level div carries the preference; the nested <p> inherits it
+			expect(result).toMatch(/<div style="[^"]*color: #ff0000[^"]*font-size: 14pt/);
+		});
+
+		it('should apply a default font-family when neither preference nor author provides one', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<p>Body</p>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<p style="[^"]*font-family: arial, helvetica, sans-serif/);
+		});
+
+		it('should set the font-family on table cells (clients that do not inherit it)', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<table><tbody><tr><td>cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<td[^>]*font-family: arial, helvetica, sans-serif/);
+		});
+
+		it('should not apply the fallback font to a cell the author already styled', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<table><tbody><tr><td style="font-family: Georgia;">cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('font-family: Georgia');
+			expect(result).not.toMatch(/<td[^>]*arial, helvetica, sans-serif/);
+		});
+
+		it('should not apply the fallback font to signature table cells', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<div class="signature-div"><table><tbody><tr><td>sig</td></tr></tbody></table></div>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).not.toContain('arial, helvetica, sans-serif');
 		});
 	});
 

@@ -13,11 +13,22 @@ export type UserPreferenceStyle = {
 };
 
 /**
+ * Default font-family used as a fallback when neither the user preference nor
+ * the author specified a font, so content renders in a consistent font instead
+ * of the client default.
+ */
+export const DEFAULT_FONT_FAMILY = 'arial, helvetica, sans-serif';
+
+/**
  * Generates CSS styles that apply user preferences to email content while excluding signature elements
  * and special formatting elements.
  *
- * The selectors target only non-signature, non-special-element content to prevent styles from
- * cascading into elements that should maintain their original styling.
+ * The preference is applied to top-level body elements only and inherited by their
+ * descendants, so nested content that should keep its own value (headings, sub/sup,
+ * code blocks) is not overridden.
+ *
+ * A font-family is always emitted - the preference, or {@link DEFAULT_FONT_FAMILY}
+ * as a fallback when the author didn't provide one.
  *
  * Note: Elements with explicit inline styles (e.g., style="color: red") will have those styles
  * inlined with higher specificity after CSS processing, so they will take precedence over
@@ -27,16 +38,12 @@ export type UserPreferenceStyle = {
  * @returns CSS string with user preference styles
  */
 export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string => {
-	const styles: string[] = [];
+	// A font-family is always applied: the user's preference, or a default
+	// fallback when the author didn't provide one. This keeps content in a
+	// consistent font instead of the client default.
+	const fontFamily = style?.font || DEFAULT_FONT_FAMILY;
 
-	// Only apply styles if at least one preference is defined
-	const hasStyles = style?.color || style?.fontSize || style?.font;
-
-	if (!hasStyles) {
-		return 'p { margin: 0; }';
-	}
-
-	// Build CSS that applies user preferences to all elements except signature, headings, links, and special elements
+	// Build CSS that applies user preferences to top-level body elements except signature, headings, links, and special elements
 	// Excluded elements maintain their original/intended styling:
 	// - .signature-div: signature content and children
 	// - h1-h6: heading hierarchy
@@ -46,6 +53,8 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 	// - mark: highlighted text with specific styling
 	// - blockquote: quoted content with distinct styling
 	// - caption: table captions with bold/larger text
+	// - font, [color]: author color/size set via legacy <font> or a color
+	//   attribute must win over the compose preference (CO-3793)
 	const excludedSelectors = [
 		'.signature-div',
 		'h1',
@@ -60,26 +69,34 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		'pre',
 		'mark',
 		'blockquote',
-		'caption'
+		'caption',
+		'font',
+		'[color]'
 	];
 	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
 
-	let userPrefRules = `body > *${notSelectors},\n\t\tbody > *:not(.signature-div) *${notSelectors} {\n`;
-
+	// Apply the preference only to top-level body elements and let it inherit.
+	// Painting it on every descendant would override nested content that should
+	// keep its own value - text inside a heading, sub/sup, or a code block - and
+	// shrink/recolour/re-font it (CO-3793). Inheritance covers nested content;
+	// the author's inline styles still win.
+	const declarations: string[] = [];
 	if (style?.color) {
-		userPrefRules += `\t\t\tcolor: ${style.color};\n`;
+		declarations.push(`color: ${style.color};`);
 	}
 	if (style?.fontSize) {
-		userPrefRules += `\t\t\tfont-size: ${style.fontSize};\n`;
+		declarations.push(`font-size: ${style.fontSize};`);
 	}
-	if (style?.font) {
-		userPrefRules += `\t\t\tfont-family: ${style.font};\n`;
-	}
+	declarations.push(`font-family: ${fontFamily};`);
 
-	userPrefRules += '\t\t}';
-
-	styles.push('p { margin: 0; }');
-	styles.push(userPrefRules);
+	const styles = [
+		'p { margin: 0; }',
+		`body > *${notSelectors} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`,
+		// Some clients (e.g. Outlook) do not inherit font-family into table cells,
+		// so set the fallback explicitly. Scoped away from signatures and skipped
+		// when the author already styled the cell's font.
+		`body > *:not(.signature-div) td:not([style*="font"]),\n\t\tbody > *:not(.signature-div) th:not([style*="font"]) {\n\t\t\tfont-family: ${fontFamily};\n\t\t}`
+	];
 
 	return styles.join('\n\t\t');
 };

@@ -33,28 +33,34 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	h5 { font-size: 14px; }
 	h6 { font-size: 12px; }
 	
-	/* Tables */
-	table {
+	/*
+	 * Tables - defaults only. Each rule is guarded so it applies only when the
+	 * author hasn't already set that property via an inline style or the matching
+	 * presentational attribute. No width is forced (CO-3793).
+	 */
+	table:not([cellspacing]):not([style*="border-spacing"]) {
 		border-collapse: collapse;
 		border-spacing: 0;
-		width: 100%;
-		max-width: 100%;
-		background-color: transparent;
 	}
-	table td,
-	table th {
+	table:not([cellpadding]) td:not([style*="padding"]),
+	table:not([cellpadding]) th:not([style*="padding"]) {
 		padding: 8px;
+	}
+	table td:not([valign]):not([style*="vertical-align"]),
+	table th:not([valign]):not([style*="vertical-align"]) {
 		vertical-align: top;
 	}
 	table td:not([style*="border"]),
 	table th:not([style*="border"]) {
 		border: 1px solid #cccccc;
 	}
-	table th {
+	table th:not([style*="font-weight"]) {
 		font-weight: bold;
+	}
+	table th:not([align]):not([style*="text-align"]) {
 		text-align: left;
 	}
-	table th:not([style*="background"]) {
+	table th:not([bgcolor]):not([style*="background"]) {
 		background-color: #f5f5f5;
 	}
 	table[border="1"] td:not([style*="border"]),
@@ -65,10 +71,12 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	table[border="0"] th {
 		border: none;
 	}
-	
+
 	/* Table captions */
-	caption {
+	caption:not([style*="padding"]) {
 		padding: 8px;
+	}
+	caption {
 		caption-side: top;
 		margin-bottom: 8px;
 	}
@@ -100,20 +108,26 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		color: #1e5092;
 	}
 	
-	/* Images */
-	img {
+	/* Images - "border: 0" must not override an author border attribute/style */
+	img:not([border]):not([style*="border"]) {
 		border: 0;
+	}
+	img {
 		outline: none;
 		text-decoration: none;
 		display: block;
 	}
-	
-	/* Horizontal rules */
-	hr {
+
+	/* Horizontal rules - respect author thickness via size/noshade attributes */
+	hr:not([size]):not([noshade]):not([style*="border"]) {
 		border: 0;
 		border-top: 1px solid #cccccc;
-		margin: 16px 0;
+	}
+	hr:not([size]):not([style*="height"]) {
 		height: 0;
+	}
+	hr {
+		margin: 16px 0;
 	}
 	
 	/* Code blocks */
