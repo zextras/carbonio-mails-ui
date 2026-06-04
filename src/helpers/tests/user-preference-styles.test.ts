@@ -24,7 +24,11 @@ describe('user-preference-styles', () => {
 
 			const result = generateUserPreferenceStyles(style);
 
-			expect(result).toBe('p { margin: 0; }');
+			// a default font-family is always applied as a fallback
+			expect(result).toContain('p { margin: 0; }');
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
+			expect(result).not.toContain('color:');
+			expect(result).not.toContain('font-size:');
 		});
 
 		it('should generate CSS with color preference only', () => {
@@ -38,7 +42,8 @@ describe('user-preference-styles', () => {
 
 			expect(result).toContain('color: #ff0000;');
 			expect(result).not.toContain('font-size:');
-			expect(result).not.toContain('font-family:');
+			// no font preference -> the default font-family fallback is applied
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
 		});
 
 		it('should generate CSS with font-size preference only', () => {
@@ -52,7 +57,8 @@ describe('user-preference-styles', () => {
 
 			expect(result).toContain('font-size: 14pt;');
 			expect(result).not.toContain('color:');
-			expect(result).not.toContain('font-family:');
+			// no font preference -> the default font-family fallback is applied
+			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
 		});
 
 		it('should generate CSS with font-family preference only', () => {
@@ -568,6 +574,59 @@ describe('user-preference-styles', () => {
 
 			// the top-level div carries the preference; the nested <p> inherits it
 			expect(result).toMatch(/<div style="[^"]*color: #ff0000[^"]*font-size: 14pt/);
+		});
+
+		it('should apply a default font-family when neither preference nor author provides one', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<p>Body</p>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<p style="[^"]*font-family: arial, helvetica, sans-serif/);
+		});
+
+		it('should set the font-family on table cells (clients that do not inherit it)', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<table><tbody><tr><td>cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<td[^>]*font-family: arial, helvetica, sans-serif/);
+		});
+
+		it('should not apply the fallback font to a cell the author already styled', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<table><tbody><tr><td style="font-family: Georgia;">cell</td></tr></tbody></table>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toContain('font-family: Georgia');
+			expect(result).not.toMatch(/<td[^>]*arial, helvetica, sans-serif/);
+		});
+
+		it('should not apply the fallback font to signature table cells', () => {
+			const noFont: UserPreferenceStyle = {
+				font: undefined,
+				fontSize: undefined,
+				color: undefined
+			};
+			const content = `<div class="signature-div"><table><tbody><tr><td>sig</td></tr></tbody></table></div>`;
+
+			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).not.toContain('arial, helvetica, sans-serif');
 		});
 	});
 

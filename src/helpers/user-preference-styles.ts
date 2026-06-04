@@ -13,12 +13,22 @@ export type UserPreferenceStyle = {
 };
 
 /**
+ * Default font-family used as a fallback when neither the user preference nor
+ * the author specified a font, so content renders in a consistent font instead
+ * of the client default.
+ */
+export const DEFAULT_FONT_FAMILY = 'arial, helvetica, sans-serif';
+
+/**
  * Generates CSS styles that apply user preferences to email content while excluding signature elements
  * and special formatting elements.
  *
  * The preference is applied to top-level body elements only and inherited by their
  * descendants, so nested content that should keep its own value (headings, sub/sup,
  * code blocks) is not overridden.
+ *
+ * A font-family is always emitted - the preference, or {@link DEFAULT_FONT_FAMILY}
+ * as a fallback when the author didn't provide one.
  *
  * Note: Elements with explicit inline styles (e.g., style="color: red") will have those styles
  * inlined with higher specificity after CSS processing, so they will take precedence over
@@ -28,14 +38,10 @@ export type UserPreferenceStyle = {
  * @returns CSS string with user preference styles
  */
 export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string => {
-	const styles: string[] = [];
-
-	// Only apply styles if at least one preference is defined
-	const hasStyles = style?.color || style?.fontSize || style?.font;
-
-	if (!hasStyles) {
-		return 'p { margin: 0; }';
-	}
+	// A font-family is always applied: the user's preference, or a default
+	// fallback when the author didn't provide one. This keeps content in a
+	// consistent font instead of the client default.
+	const fontFamily = style?.font || DEFAULT_FONT_FAMILY;
 
 	// Build CSS that applies user preferences to top-level body elements except signature, headings, links, and special elements
 	// Excluded elements maintain their original/intended styling:
@@ -81,12 +87,16 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 	if (style?.fontSize) {
 		declarations.push(`font-size: ${style.fontSize};`);
 	}
-	if (style?.font) {
-		declarations.push(`font-family: ${style.font};`);
-	}
+	declarations.push(`font-family: ${fontFamily};`);
 
-	styles.push('p { margin: 0; }');
-	styles.push(`body > *${notSelectors} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`);
+	const styles = [
+		'p { margin: 0; }',
+		`body > *${notSelectors} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`,
+		// Some clients (e.g. Outlook) do not inherit font-family into table cells,
+		// so set the fallback explicitly. Scoped away from signatures and skipped
+		// when the author already styled the cell's font.
+		`body > *:not(.signature-div) td:not([style*="font"]),\n\t\tbody > *:not(.signature-div) th:not([style*="font"]) {\n\t\t\tfont-family: ${fontFamily};\n\t\t}`
+	];
 
 	return styles.join('\n\t\t');
 };
