@@ -525,6 +525,301 @@ describe('attachments', () => {
 				expect(result.some((p) => p.name === 'body2')).toBe(false);
 			});
 		});
+		describe('flattenAndAddDisposition edge cases', () => {
+			it('should return an empty array when the message has no parts', () => {
+				const message = generateMessage({ parts: [] });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should flatten and preserve order across three nesting levels', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: '1',
+						contentType: 'multipart/mixed',
+						size: 1000,
+						parts: [
+							{
+								name: '1.1',
+								contentType: 'multipart/related',
+								size: 600,
+								parts: [
+									{
+										name: '1.1.1',
+										contentType: 'multipart/alternative',
+										size: 200,
+										parts: [
+											{
+												name: '1.1.1.1',
+												contentType: 'text/plain',
+												size: 100,
+												content: 'plain body'
+											},
+											{
+												name: '1.1.1.2',
+												contentType: 'text/html',
+												size: 100,
+												content: '<p>html body</p>'
+											}
+										]
+									},
+									{
+										name: '1.1.2',
+										disposition: 'attachment',
+										contentType: 'image/png',
+										filename: 'inner.png',
+										size: 200
+									}
+								]
+							},
+							{
+								name: '1.2',
+								disposition: 'attachment',
+								contentType: 'application/pdf',
+								filename: 'doc.pdf',
+								size: 300
+							}
+						]
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result.map((p) => p.name)).toEqual(['1.1.2', '1.2']);
+				expect(result.every((p) => p.disposition === 'attachment')).toBe(true);
+			});
+
+			it('should mark a cid-referenced part as inline when the ci is wrapped in angle brackets', () => {
+				const ci = '<image001@carbonio>';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<img src="cid:image001@carbonio" />`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						filename: 'logo.png',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+				expect(result[0].ci).toBe(ci);
+			});
+
+			it('should mark a cid-referenced part as inline when the body html uses an HTML-entity encoded cid', () => {
+				const ci = 'abc@carbonio';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<img src="cid:abc&#64;carbonio" />`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						contentType: 'image/png',
+						filename: 'logo.png',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+
+			it('should fall back to attachment disposition when a cid-referenced inline part is not an image', () => {
+				const ci = 'styles@carbonio';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<link href="cid:${ci}" />`,
+						size: 200
+					},
+					{
+						ci,
+						name: '2',
+						disposition: 'inline',
+						contentType: 'text/css',
+						filename: 'style.css',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
+			});
+
+			it('should not include a leaf part with no disposition, no name and a non-text content type', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						// name intentionally omitted
+						contentType: 'application/octet-stream',
+						size: 100
+					} as MailMessagePart
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should keep an inline image with a filename even when no cid reference exists', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: '<p>no cid refs here</p>',
+						size: 200
+					},
+					{
+						name: '2',
+						disposition: 'inline',
+						contentType: 'image/jpeg',
+						filename: 'orphan.jpg',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+				expect(result[0].filename).toBe('orphan.jpg');
+			});
+
+			it('should resolve cid references collected from multiple html body parts', () => {
+				const ciA = 'aaa@carbonio';
+				const ciB = 'bbb@carbonio';
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body-1',
+						contentType: 'text/html',
+						content: `<img src="cid:${ciA}" />`,
+						size: 200
+					},
+					{
+						name: 'body-2',
+						contentType: 'text/html',
+						content: `<img src="cid:${ciB}" />`,
+						size: 200
+					},
+					{
+						ci: ciA,
+						name: 'att-a',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						filename: 'a.png',
+						size: 200
+					},
+					{
+						ci: ciB,
+						name: 'att-b',
+						disposition: 'attachment',
+						contentType: 'image/png',
+						filename: 'b.png',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(2);
+				expect(result.every((p) => p.disposition === 'inline')).toBe(true);
+				expect(result.map((p) => p.name).sort()).toEqual(['att-a', 'att-b']);
+			});
+
+			it('should not recurse into the children of an EML part identified by contentType', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'wrapper',
+						contentType: 'multipart/mixed',
+						size: 800,
+						parts: [
+							{
+								name: 'eml',
+								contentType: 'message/rfc822',
+								disposition: 'attachment',
+								filename: 'forwarded.eml',
+								size: 400,
+								parts: [
+									{
+										name: 'eml-inner',
+										disposition: 'attachment',
+										contentType: 'image/png',
+										filename: 'hidden.png',
+										size: 100
+									}
+								]
+							},
+							{
+								name: 'sibling',
+								disposition: 'attachment',
+								contentType: 'application/pdf',
+								filename: 'visible.pdf',
+								size: 200
+							}
+						]
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result.map((p) => p.name)).toEqual(['eml', 'sibling']);
+				expect(result.some((p) => p.name === 'eml-inner')).toBe(false);
+			});
+
+			it('should not recurse into the children of an EML part identified by .eml filename', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'eml',
+						contentType: 'application/octet-stream',
+						disposition: 'attachment',
+						filename: 'forwarded.eml',
+						size: 400,
+						parts: [
+							{
+								name: 'eml-inner',
+								disposition: 'attachment',
+								contentType: 'image/png',
+								filename: 'hidden.png',
+								size: 100
+							}
+						]
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].name).toBe('eml');
+			});
+		});
 		describe('EML part', () => {
 			it('should not return EML attachment if it has no disposition and contains parts', () => {
 				const parts: Array<MailMessagePart> = [
