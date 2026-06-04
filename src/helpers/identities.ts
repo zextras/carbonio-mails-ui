@@ -7,7 +7,7 @@ import { Account, getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import type { Folders } from '@zextras/carbonio-ui-commons';
 import { getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
-import { filter, findIndex, flatten, map, remove } from 'lodash';
+import { filter, findIndex, flatten, map, remove, toLower } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import {
@@ -372,7 +372,7 @@ const checkMatchingAddress = (
 	recipients.map((recipient) => ({
 		...recipient,
 		matchingAddress: availableAddresses.some(
-			(availableAddress) => availableAddress.address === recipient.recipientAddress
+			(availableAddress) => toLower(availableAddress.address) === toLower(recipient.recipientAddress)
 		)
 	}));
 
@@ -417,7 +417,7 @@ const computeIdentityWeight = (
 	recipients.forEach((recipient) => {
 		// Check if the recipient has a matching identity
 		const matchingIdentity = identities.find(
-			(identity) => identity.fromAddress === recipient.recipientAddress
+			(identity) => toLower(identity.fromAddress) === toLower(recipient.recipientAddress)
 		);
 
 		/*
