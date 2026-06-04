@@ -46,6 +46,8 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 	// - mark: highlighted text with specific styling
 	// - blockquote: quoted content with distinct styling
 	// - caption: table captions with bold/larger text
+	// - font, [color]: author color/size set via legacy <font> or a color
+	//   attribute must win over the compose preference (CO-3793)
 	const excludedSelectors = [
 		'.signature-div',
 		'h1',
@@ -60,7 +62,9 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		'pre',
 		'mark',
 		'blockquote',
-		'caption'
+		'caption',
+		'font',
+		'[color]'
 	];
 	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
 
