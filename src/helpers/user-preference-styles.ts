@@ -67,23 +67,33 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		'[color]'
 	];
 	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
+	const topLevelSelector = `body > *${notSelectors}`;
+	const descendantSelector = `body > *:not(.signature-div) *${notSelectors}`;
 
-	let userPrefRules = `body > *${notSelectors},\n\t\tbody > *:not(.signature-div) *${notSelectors} {\n`;
-
-	if (style?.color) {
-		userPrefRules += `\t\t\tcolor: ${style.color};\n`;
-	}
-	if (style?.fontSize) {
-		userPrefRules += `\t\t\tfont-size: ${style.fontSize};\n`;
-	}
-	if (style?.font) {
-		userPrefRules += `\t\t\tfont-family: ${style.font};\n`;
-	}
-
-	userPrefRules += '\t\t}';
+	const buildRule = (selector: string, includeFontSize: boolean): string => {
+		const declarations: string[] = [];
+		if (style?.color) {
+			declarations.push(`color: ${style.color};`);
+		}
+		// font-size is applied at the top level only. Inheriting it (instead of
+		// forcing it on every descendant) lets nested content keep its own size -
+		// e.g. text inside a heading, or sub/sup - rather than being shrunk to the
+		// preference size (CO-3793).
+		if (includeFontSize && style?.fontSize) {
+			declarations.push(`font-size: ${style.fontSize};`);
+		}
+		if (style?.font) {
+			declarations.push(`font-family: ${style.font};`);
+		}
+		return `${selector} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`;
+	};
 
 	styles.push('p { margin: 0; }');
-	styles.push(userPrefRules);
+	styles.push(buildRule(topLevelSelector, true));
+	// Skip the descendant rule when font-size is the only preference (it would be empty)
+	if (style?.color || style?.font) {
+		styles.push(buildRule(descendantSelector, false));
+	}
 
 	return styles.join('\n\t\t');
 };

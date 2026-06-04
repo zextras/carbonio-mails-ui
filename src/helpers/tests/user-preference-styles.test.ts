@@ -528,6 +528,29 @@ describe('user-preference-styles', () => {
 
 			expect(result).toMatch(/<p style="[^"]*color: #ff0000/);
 		});
+
+		it('should not shrink a heading when the author colors part of it', () => {
+			// TinyMCE wraps the coloured selection in a <span> inside the heading.
+			const content = `<h1>Title <span style="color: blue;">colored</span></h1>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// the heading keeps its size and the span must NOT be forced to the
+			// preference font-size (it inherits the heading size instead)
+			expect(result).toMatch(/<h1 style="[^"]*font-size: 24px/);
+			expect(result).not.toMatch(/<span[^>]*font-size: 14pt/);
+			expect(result).toContain('color: blue');
+		});
+
+		it('should not force the preference size onto sub/sup', () => {
+			const content = `<p>x<sub>2</sub></p>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// sub keeps its relative 75% size rather than the absolute preference size
+			expect(result).toMatch(/<sub[^>]*font-size: 75%/);
+			expect(result).not.toMatch(/<sub[^>]*font-size: 14pt/);
+		});
 	});
 
 	describe('edge cases', () => {
