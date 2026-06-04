@@ -16,8 +16,9 @@ export type UserPreferenceStyle = {
  * Generates CSS styles that apply user preferences to email content while excluding signature elements
  * and special formatting elements.
  *
- * The selectors target only non-signature, non-special-element content to prevent styles from
- * cascading into elements that should maintain their original styling.
+ * The preference is applied to top-level body elements only and inherited by their
+ * descendants, so nested content that should keep its own value (headings, sub/sup,
+ * code blocks) is not overridden.
  *
  * Note: Elements with explicit inline styles (e.g., style="color: red") will have those styles
  * inlined with higher specificity after CSS processing, so they will take precedence over
@@ -36,7 +37,7 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		return 'p { margin: 0; }';
 	}
 
-	// Build CSS that applies user preferences to all elements except signature, headings, links, and special elements
+	// Build CSS that applies user preferences to top-level body elements except signature, headings, links, and special elements
 	// Excluded elements maintain their original/intended styling:
 	// - .signature-div: signature content and children
 	// - h1-h6: heading hierarchy
@@ -67,33 +68,25 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 		'[color]'
 	];
 	const notSelectors = excludedSelectors.map((sel) => `:not(${sel})`).join('');
-	const topLevelSelector = `body > *${notSelectors}`;
-	const descendantSelector = `body > *:not(.signature-div) *${notSelectors}`;
 
-	const buildRule = (selector: string, includeFontSize: boolean): string => {
-		const declarations: string[] = [];
-		if (style?.color) {
-			declarations.push(`color: ${style.color};`);
-		}
-		// font-size is applied at the top level only. Inheriting it (instead of
-		// forcing it on every descendant) lets nested content keep its own size -
-		// e.g. text inside a heading, or sub/sup - rather than being shrunk to the
-		// preference size (CO-3793).
-		if (includeFontSize && style?.fontSize) {
-			declarations.push(`font-size: ${style.fontSize};`);
-		}
-		if (style?.font) {
-			declarations.push(`font-family: ${style.font};`);
-		}
-		return `${selector} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`;
-	};
+	// Apply the preference only to top-level body elements and let it inherit.
+	// Painting it on every descendant would override nested content that should
+	// keep its own value - text inside a heading, sub/sup, or a code block - and
+	// shrink/recolour/re-font it (CO-3793). Inheritance covers nested content;
+	// the author's inline styles still win.
+	const declarations: string[] = [];
+	if (style?.color) {
+		declarations.push(`color: ${style.color};`);
+	}
+	if (style?.fontSize) {
+		declarations.push(`font-size: ${style.fontSize};`);
+	}
+	if (style?.font) {
+		declarations.push(`font-family: ${style.font};`);
+	}
 
 	styles.push('p { margin: 0; }');
-	styles.push(buildRule(topLevelSelector, true));
-	// Skip the descendant rule when font-size is the only preference (it would be empty)
-	if (style?.color || style?.font) {
-		styles.push(buildRule(descendantSelector, false));
-	}
+	styles.push(`body > *${notSelectors} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`);
 
 	return styles.join('\n\t\t');
 };

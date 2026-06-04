@@ -529,16 +529,16 @@ describe('user-preference-styles', () => {
 			expect(result).toMatch(/<p style="[^"]*color: #ff0000/);
 		});
 
-		it('should not shrink a heading when the author colors part of it', () => {
-			// TinyMCE wraps the coloured selection in a <span> inside the heading.
+		it('should not change size or font when the author colors part of a heading', () => {
+			// TinyMCE wraps the coloured selection in a <span> inside the heading;
+			// only the author's colour should change - size/font are inherited.
 			const content = `<h1>Title <span style="color: blue;">colored</span></h1>`;
 
 			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
 
-			// the heading keeps its size and the span must NOT be forced to the
-			// preference font-size (it inherits the heading size instead)
 			expect(result).toMatch(/<h1 style="[^"]*font-size: 24px/);
 			expect(result).not.toMatch(/<span[^>]*font-size: 14pt/);
+			expect(result).not.toMatch(/<span[^>]*font-family/);
 			expect(result).toContain('color: blue');
 		});
 
@@ -550,6 +550,24 @@ describe('user-preference-styles', () => {
 			// sub keeps its relative 75% size rather than the absolute preference size
 			expect(result).toMatch(/<sub[^>]*font-size: 75%/);
 			expect(result).not.toMatch(/<sub[^>]*font-size: 14pt/);
+		});
+
+		it('should not override the monospace font of code content', () => {
+			const content = `<pre><code>fn <span>x</span></code></pre>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// the span inside code must not be re-fonted to the preference family
+			expect(result).not.toMatch(/<span[^>]*font-family: Arial/);
+		});
+
+		it('should still apply the preference to nested ordinary content via inheritance', () => {
+			const content = `<div><p>nested</p></div>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			// the top-level div carries the preference; the nested <p> inherits it
+			expect(result).toMatch(/<div style="[^"]*color: #ff0000[^"]*font-size: 14pt/);
 		});
 	});
 
