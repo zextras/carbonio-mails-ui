@@ -156,8 +156,8 @@ describe('XSS prevention in print-conversation utilities', () => {
 		it('includes a Content-Security-Policy meta tag as defense-in-depth', () => {
 			const result = getCompleteHTML({ content: '' });
 			expect(result).toContain('http-equiv="Content-Security-Policy"');
-			expect(result).toContain("default-src 'none'");
-			expect(result).toContain("img-src 'self' data: cid:");
+			expect(result).toContain("default-src 'self'");
+			expect(result).toContain('img-src https: data: cid:');
 			expect(result).toContain("base-uri 'none'");
 			expect(result).toContain("form-action 'none'");
 		});

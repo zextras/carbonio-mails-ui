@@ -1,3 +1,15 @@
+## <small>1.34.15 (2026-06-04)</small>
+
+* fix(CO-3796): prevent duplication of missing tags in tag list (#1248) ([b828430](https://github.com/zextras/carbonio-mails-ui/commit/b828430)), closes [#1248](https://github.com/zextras/carbonio-mails-ui/issues/1248)
+
+## <small>1.34.14 (2026-06-04)</small>
+
+* fix: update participant header formatting and add tests for getParticipantHeader function (#1249) ([78117d6](https://github.com/zextras/carbonio-mails-ui/commit/78117d6)), closes [#1249](https://github.com/zextras/carbonio-mails-ui/issues/1249)
+
+## <small>1.34.13 (2026-06-03)</small>
+
+* fix: update Content Security Policy to allow external images in print conversation(#1242) ([49afce5](https://github.com/zextras/carbonio-mails-ui/commit/49afce5)), closes [#1242](https://github.com/zextras/carbonio-mails-ui/issues/1242)
+
 ## <small>1.34.12 (2026-06-02)</small>
 
 * build: migrate to buildah (FQDN images + jenkins-lib-common@2.10.0) (#1247) ([ea47a2c](https://github.com/zextras/carbonio-mails-ui/commit/ea47a2c)), closes [#1247](https://github.com/zextras/carbonio-mails-ui/issues/1247)

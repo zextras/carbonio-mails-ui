@@ -456,5 +456,23 @@ describe('Tag Actions', () => {
 			const nilTags = result.current.filter((t) => t.id.startsWith('nil:'));
 			expect(nilTags.length).toBeGreaterThanOrEqual(3);
 		});
+
+		it('should not duplicate a not-in-list tag for each tag in the store', () => {
+			const mockTags: Record<string, Tag> = {
+				'tag-1': { id: 'tag-1', name: 'Important', color: 1 },
+				'tag-2': { id: 'tag-2', name: 'Work', color: 2 },
+				'tag-3': { id: 'tag-3', name: 'Personal', color: 3 }
+			};
+
+			populateTagsStore(mockTags);
+			const msgTags = ['nil:missing-tag'];
+
+			const { result } = renderHook(() => useGetTagsList(msgTags), {
+				wrapper: ProvidersWrapper
+			});
+
+			const nilTags = result.current.filter((tag) => tag.id === 'nil:missing-tag');
+			expect(nilTags).toHaveLength(1);
+		});
 	});
 });
