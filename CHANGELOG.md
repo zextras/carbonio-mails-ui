@@ -1,3 +1,7 @@
+## <small>1.34.18 (2026-06-05)</small>
+
+* fix: html-encode plain text messages and escape special characters (#1254) ([5014b69](https://github.com/zextras/carbonio-mails-ui/commit/5014b69)), closes [#1254](https://github.com/zextras/carbonio-mails-ui/issues/1254)
+
 ## <small>1.34.17 (2026-06-05)</small>
 
 * fix: include no-image inline attachments when editing as new and forwarding  a message ([cfb43b2](https://github.com/zextras/carbonio-mails-ui/commit/cfb43b2))
