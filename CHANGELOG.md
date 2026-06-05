@@ -1,3 +1,7 @@
+## <small>1.34.17 (2026-06-05)</small>
+
+* fix: include no-image inline attachments when editing as new and forwarding  a message ([cfb43b2](https://github.com/zextras/carbonio-mails-ui/commit/cfb43b2))
+
 ## <small>1.34.16 (2026-06-04)</small>
 
 * Merge branch 'devel' into co-3778-advanced-filter-modal-tests ([4b8a593](https://github.com/zextras/carbonio-mails-ui/commit/4b8a593))
