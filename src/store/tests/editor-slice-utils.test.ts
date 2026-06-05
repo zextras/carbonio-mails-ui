@@ -572,6 +572,79 @@ describe('retrieveReplyTo', () => {
 				const html = extractedBody.richText;
 				expect(html).toEqual(plainText);
 			});
+
+			it('should html-encode angle-bracketed text in a plain text message', () => {
+				const plainText = 'Contact me at <email@example.com> today';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual('Contact me at &lt;email@example.com&gt; today');
+			});
+
+			it('should escape html tags in a plain text message so they are not interpreted as markup', () => {
+				const plainText = '<b>not bold</b>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual('&lt;b&gt;not bold&lt;/b&gt;');
+			});
+
+			it('should escape ampersands in a plain text message', () => {
+				const plainText = 'A & B';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual('A &amp; B');
+			});
+
+			it('should convert newlines to <br/> while escaping special chars in a plain text message', () => {
+				const plainText = 'first <one>\nsecond <two>';
+				const message: MailMessage = {
+					...mailMessage,
+					parts: [
+						{
+							contentType: 'text/plain',
+							size: 0,
+							content: plainText,
+							name: 'Plain body'
+						}
+					]
+				};
+				const extractedBody = extractBody(message);
+				const html = extractedBody.richText;
+				expect(html).toEqual('first &lt;one&gt;<br/>second &lt;two&gt;');
+			});
+
 			it('should replace dfsrc with src in html message', () => {
 				const htmlContent = '<div>dfsrc<p>Hello there </p></div>';
 				const message: MailMessage = {
