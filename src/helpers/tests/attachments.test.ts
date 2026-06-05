@@ -697,7 +697,7 @@ describe('attachments', () => {
 				expect(result).toEqual([]);
 			});
 
-			it('should downgrade an inline image without cid reference to attachment', () => {
+			it('should preserve inline disposition for an inline image even without cid reference', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						name: 'body',
@@ -718,8 +718,57 @@ describe('attachments', () => {
 				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
-				expect(result[0].disposition).toBe('attachment');
+				expect(result[0].disposition).toBe('inline');
 				expect(result[0].filename).toBe('orphan.jpg');
+			});
+
+			it('should keep an inline image inline while its cid reference is not yet present in the body', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: '<p>typing without the image embed yet</p>',
+						size: 100
+					},
+					{
+						name: '2',
+						ci: 'pending@composer',
+						disposition: 'inline',
+						contentType: 'image/png',
+						filename: 'fresh.png',
+						size: 5000
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('inline');
+			});
+
+			it('should still downgrade a non-image inline part without cid reference to attachment', () => {
+				const parts: Array<MailMessagePart> = [
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: '<p>no cid refs here</p>',
+						size: 200
+					},
+					{
+						name: '2',
+						disposition: 'inline',
+						contentType: 'text/css',
+						filename: 'style.css',
+						size: 200
+					}
+				];
+				const message = generateMessage({ parts });
+
+				const result = getFlattenedAttachmentParts(message);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].disposition).toBe('attachment');
 			});
 
 			it('should resolve cid references collected from multiple html body parts', () => {
