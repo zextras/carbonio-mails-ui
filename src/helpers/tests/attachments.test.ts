@@ -38,8 +38,20 @@ describe('attachments', () => {
 			size: 200
 		};
 		describe('should return part with disposition inline', () => {
-			test('if has disposition inline', () => {
-				const parts: Array<MailMessagePart> = [inlinePart];
+			test('if has disposition inline and is referenced by Text/Html part', () => {
+				const ci = '123:456';
+				const parts: Array<MailMessagePart> = [
+					{
+						...inlinePart,
+						ci
+					},
+					{
+						name: 'body',
+						contentType: 'text/html',
+						content: `<img src="cid:${ci}" />`,
+						size: 200
+					}
+				];
 				const message = generateMessage({ parts });
 
 				const result = getFlattenedAttachmentParts(message);
@@ -644,7 +656,7 @@ describe('attachments', () => {
 				expect(result[0].disposition).toBe('inline');
 			});
 
-			it('should fall back to attachment disposition when a cid-referenced inline part is not an image', () => {
+			it('should keep inline disposition for a cid-referenced inline part regardless of content type', () => {
 				const ci = 'styles@carbonio';
 				const parts: Array<MailMessagePart> = [
 					{
@@ -667,7 +679,7 @@ describe('attachments', () => {
 				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
-				expect(result[0].disposition).toBe('attachment');
+				expect(result[0].disposition).toBe('inline');
 			});
 
 			it('should not include a leaf part with no disposition, no name and a non-text content type', () => {
@@ -685,7 +697,7 @@ describe('attachments', () => {
 				expect(result).toEqual([]);
 			});
 
-			it('should keep an inline image with a filename even when no cid reference exists', () => {
+			it('should downgrade an inline image without cid reference to attachment', () => {
 				const parts: Array<MailMessagePart> = [
 					{
 						name: 'body',
@@ -706,7 +718,7 @@ describe('attachments', () => {
 				const result = getFlattenedAttachmentParts(message);
 
 				expect(result).toHaveLength(1);
-				expect(result[0].disposition).toBe('inline');
+				expect(result[0].disposition).toBe('attachment');
 				expect(result[0].filename).toBe('orphan.jpg');
 			});
 
