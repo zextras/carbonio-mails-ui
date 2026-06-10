@@ -114,8 +114,8 @@ importers:
         specifier: 5.0.1
         version: 5.0.1
       tinymce:
-        specifier: 6.8.4
-        version: 6.8.4
+        specifier: 7.0.0
+        version: 7.0.0
       uuid:
         specifier: 11.1.1
         version: 11.1.1
@@ -6867,6 +6867,9 @@ packages:
 
   tinymce@6.8.4:
     resolution: {integrity: sha512-okoJyxuPv1gzASxQDNgQbnUXOdAIyoOSXcXcZZu7tiW0PSKEdf3SdASxPBupRj+64/E3elHwVRnzSdo82Emqbg==}
+
+  tinymce@7.0.0:
+    resolution: {integrity: sha512-ggXLfTRrUALAcjeJSRrZcJDOl6MgC2tPXe/zNOEkQXvTDgcKqFypPRoPpfpK5wejexjyaI/7dwETOntJ5MPBFg==}
 
   tinyrainbow@3.1.0:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
@@ -15009,6 +15012,8 @@ snapshots:
       picomatch: 4.0.4
 
   tinymce@6.8.4: {}
+
+  tinymce@7.0.0: {}
 
   tinyrainbow@3.1.0: {}
 

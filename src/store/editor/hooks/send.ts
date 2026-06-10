@@ -42,6 +42,12 @@ const waitForDraftSaveComplete = (editorId: MailsEditorV2['id']): Promise<void> 
 				resolve();
 			}
 		});
+		const statusAfterSubscribe =
+			useEditorsStore.getState().editors[editorId]?.draftSaveProcessStatus?.status;
+		if (statusAfterSubscribe !== 'running') {
+			unsubscribe();
+			resolve();
+		}
 	});
 
 /**
@@ -96,6 +102,10 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(async () => {
 			await waitForDraftSaveComplete(editorId);
+			const sendStatus = useEditorsStore.getState().editors[editorId]?.sendProcessStatus?.status;
+			if (sendStatus !== 'running') {
+				return;
+			}
 			const editor = getEditor({ id: editorId });
 			editor?.identityId &&
 				sendMsgFromEditor({ editor })
