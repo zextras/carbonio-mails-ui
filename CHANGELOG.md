@@ -1,3 +1,12 @@
+## <small>1.34.19 (2026-06-11)</small>
+
+* Merge branch 'devel' into co-3795-send-email-fast-generate-draft ([691fff0](https://github.com/zextras/carbonio-mails-ui/commit/691fff0))
+* Merge pull request #1255 from zextras/co-3795-send-email-fast-generate-draft ([c93b8c5](https://github.com/zextras/carbonio-mails-ui/commit/c93b8c5)), closes [#1255](https://github.com/zextras/carbonio-mails-ui/issues/1255)
+* Update package.json ([7753f86](https://github.com/zextras/carbonio-mails-ui/commit/7753f86))
+* revert: restore package.json and pnpm-lock.yaml to devel state ([afee250](https://github.com/zextras/carbonio-mails-ui/commit/afee250))
+* fix: edge case ([648812b](https://github.com/zextras/carbonio-mails-ui/commit/648812b))
+* fix: send message waits the savedraft to complete ([20f6fdd](https://github.com/zextras/carbonio-mails-ui/commit/20f6fdd))
+
 ## <small>1.34.18 (2026-06-05)</small>
 
 * fix: html-encode plain text messages and escape special characters (#1254) ([5014b69](https://github.com/zextras/carbonio-mails-ui/commit/5014b69)), closes [#1254](https://github.com/zextras/carbonio-mails-ui/issues/1254)
