@@ -22,7 +22,7 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	DeleteTagModal
 } from '@zextras/carbonio-ui-commons';
-import { filter, find, forEach, reduce, some } from 'lodash';
+import { filter, find, map, reduce, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { UIActionDescriptor } from 'types/actions';
@@ -194,7 +194,7 @@ export const useGetTagsList = (msgTags?: string[]): Tag[] => {
 	const [t] = useTranslation();
 	const tagsFromStore = useTagsArrayFromStore();
 
-	return reduce(
+	const tagsInList = reduce(
 		tagsFromStore,
 		(acc: Tag[], tag) => {
 			if (msgTags?.includes(tag.id)) {
@@ -206,26 +206,26 @@ export const useGetTagsList = (msgTags?: string[]): Tag[] => {
 					color: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
 					label: tag.name
 				});
-			} else {
-				forEach(
-					filter(msgTags, (tagName) => tagName?.includes('nil:')),
-					(tagNotInList: string) => {
-						acc.push({
-							id: tagNotInList,
-							name: t('label.not_in_list', {
-								name: tagNotInList.split(':')[1],
-								defaultValue: '{{name}} - Not in your tag list'
-							}),
-							// TODO: align the use of the property with the type exposed by the shell
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							color: ZIMBRA_STANDARD_COLORS[0].hex
-						});
-					}
-				);
 			}
 			return acc;
 		},
 		[]
 	);
+
+	const tagsNotInList = map(
+		filter(msgTags, (tagName) => tagName?.includes('nil:')),
+		(tagNotInList: string): Tag => ({
+			id: tagNotInList,
+			name: t('label.not_in_list', {
+				name: tagNotInList.split(':')[1],
+				defaultValue: '{{name}} - Not in your tag list'
+			}),
+			// TODO: align the use of the property with the type exposed by the shell
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			color: ZIMBRA_STANDARD_COLORS[0].hex
+		})
+	);
+
+	return [...tagsInList, ...tagsNotInList];
 };

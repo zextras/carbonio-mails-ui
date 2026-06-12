@@ -20,7 +20,8 @@ export const UploadingRow = styled(Row)`
 export const AttachmentUploadStatus: FC<{
 	uploadStatus: AttachmentUploadProcessStatus;
 	cancelUpload: () => void;
-}> = ({ uploadStatus, cancelUpload }) => {
+	'data-testid'?: string;
+}> = ({ uploadStatus, cancelUpload, 'data-testid': dataTestId }) => {
 	const [showCompleted, setShowCompleted] = useState<boolean>(false);
 
 	/**
@@ -41,7 +42,11 @@ export const AttachmentUploadStatus: FC<{
 	}, [uploadStatus.status]);
 
 	return (
-		<UploadingRow padding={{ horizontal: 'small', vertical: 'small' }} crossAlignment={'center'}>
+		<UploadingRow
+			data-testid={dataTestId}
+			padding={{ horizontal: 'small', vertical: 'small' }}
+			crossAlignment={'center'}
+		>
 			{uploadStatus.status === 'running' && (
 				<>
 					<Padding right="extrasmall" />

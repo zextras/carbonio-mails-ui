@@ -1,3 +1,51 @@
+## <small>1.34.19 (2026-06-11)</small>
+
+* Merge branch 'devel' into co-3795-send-email-fast-generate-draft ([691fff0](https://github.com/zextras/carbonio-mails-ui/commit/691fff0))
+* Merge pull request #1255 from zextras/co-3795-send-email-fast-generate-draft ([c93b8c5](https://github.com/zextras/carbonio-mails-ui/commit/c93b8c5)), closes [#1255](https://github.com/zextras/carbonio-mails-ui/issues/1255)
+* Update package.json ([7753f86](https://github.com/zextras/carbonio-mails-ui/commit/7753f86))
+* revert: restore package.json and pnpm-lock.yaml to devel state ([afee250](https://github.com/zextras/carbonio-mails-ui/commit/afee250))
+* fix: edge case ([648812b](https://github.com/zextras/carbonio-mails-ui/commit/648812b))
+* fix: send message waits the savedraft to complete ([20f6fdd](https://github.com/zextras/carbonio-mails-ui/commit/20f6fdd))
+
+## <small>1.34.18 (2026-06-05)</small>
+
+* fix: html-encode plain text messages and escape special characters (#1254) ([5014b69](https://github.com/zextras/carbonio-mails-ui/commit/5014b69)), closes [#1254](https://github.com/zextras/carbonio-mails-ui/issues/1254)
+
+## <small>1.34.17 (2026-06-05)</small>
+
+* fix: include no-image inline attachments when editing as new and forwarding  a message ([cfb43b2](https://github.com/zextras/carbonio-mails-ui/commit/cfb43b2))
+
+## <small>1.34.16 (2026-06-04)</small>
+
+* Merge branch 'devel' into co-3778-advanced-filter-modal-tests ([4b8a593](https://github.com/zextras/carbonio-mails-ui/commit/4b8a593))
+* Merge branch 'devel' into co-3778-advanced-filter-modal-tests ([4d7fac7](https://github.com/zextras/carbonio-mails-ui/commit/4d7fac7))
+* Merge pull request #1245 from zextras/co-3778-advanced-filter-modal-tests ([9cd36a1](https://github.com/zextras/carbonio-mails-ui/commit/9cd36a1)), closes [#1245](https://github.com/zextras/carbonio-mails-ui/issues/1245)
+* fix(CO-3793): preserve author-defined styles in elements (#1252) ([074e8bd](https://github.com/zextras/carbonio-mails-ui/commit/074e8bd)), closes [#1252](https://github.com/zextras/carbonio-mails-ui/issues/1252)
+* refactor: unified advanced filter modals tests ([3b2ee71](https://github.com/zextras/carbonio-mails-ui/commit/3b2ee71))
+
+## <small>1.34.15 (2026-06-04)</small>
+
+* fix(CO-3796): prevent duplication of missing tags in tag list (#1248) ([b828430](https://github.com/zextras/carbonio-mails-ui/commit/b828430)), closes [#1248](https://github.com/zextras/carbonio-mails-ui/issues/1248)
+
+## <small>1.34.14 (2026-06-04)</small>
+
+* fix: update participant header formatting and add tests for getParticipantHeader function (#1249) ([78117d6](https://github.com/zextras/carbonio-mails-ui/commit/78117d6)), closes [#1249](https://github.com/zextras/carbonio-mails-ui/issues/1249)
+
+## <small>1.34.13 (2026-06-03)</small>
+
+* fix: update Content Security Policy to allow external images in print conversation(#1242) ([49afce5](https://github.com/zextras/carbonio-mails-ui/commit/49afce5)), closes [#1242](https://github.com/zextras/carbonio-mails-ui/issues/1242)
+
+## <small>1.34.12 (2026-06-02)</small>
+
+* build: migrate to buildah (FQDN images + jenkins-lib-common@2.10.0) (#1247) ([ea47a2c](https://github.com/zextras/carbonio-mails-ui/commit/ea47a2c)), closes [#1247](https://github.com/zextras/carbonio-mails-ui/issues/1247)
+* fix(CO-3783):  composer inline image is lost when user switches the identity  (#1241) ([b278008](https://github.com/zextras/carbonio-mails-ui/commit/b278008)), closes [#1241](https://github.com/zextras/carbonio-mails-ui/issues/1241)
+
+## <small>1.34.11 (2026-05-28)</small>
+
+* fix: show real upload status for attachments instead of always 'running' ([fea8301](https://github.com/zextras/carbonio-mails-ui/commit/fea8301))
+* chore(deps): lock file maintenance ([5a197c2](https://github.com/zextras/carbonio-mails-ui/commit/5a197c2))
+* chore(deps): update dependency zextras/jenkins-lib-common to v2.8.6 ([6555865](https://github.com/zextras/carbonio-mails-ui/commit/6555865))
+
 ## <small>1.34.10 (2026-05-27)</small>
 
 * fix: update the text composer to use latest languages configuration ([6e3ad71](https://github.com/zextras/carbonio-mails-ui/commit/6e3ad71))

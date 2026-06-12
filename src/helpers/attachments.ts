@@ -199,6 +199,24 @@ const isReferredCID = (cid: string, referredCIDs: Array<string>): boolean =>
  * Filters the message parts to collect body content and attachments and adds disposition.
  * Uses centralized disposition utilities for consistent behavior.
  *
+ * Disposition resolution rules:
+ *
+ * | producer disposition      | image?    | cid-referenced? | resolved disposition |
+ * | ------------------------- | --------- | --------------- | -------------------- |
+ * | undefined                 | any       | yes             | inline               |
+ * | undefined                 | any       | no              | attachment           |
+ * | 'inline' or 'attachment'  | any       | yes             | inline               |
+ * | 'inline'                  | image     | no              | inline (preserved)   |
+ * | 'inline'                  | non-image | no              | attachment           |
+ * | 'attachment'              | any       | no              | attachment           |
+ *
+ * The "image + inline + not yet cid-referenced" carve-out exists for the
+ * composer flow: an inline image dropped into an editor is added to the parts
+ * list before the corresponding `<img src="cid:…">` reference is written into
+ * the body html (the reference is inserted on draft save). Downgrading the
+ * image to a regular attachment at that point would strip the inline marker
+ * while the user is still editing.
+ *
  * @param parts - Message parts to process
  * @param referredCIDs - Content-IDs referenced in HTML content
  * @param filtered - Accumulated results array
@@ -226,19 +244,24 @@ function flattenAndAddDisposition(
 							part.name)));
 
 			if (partShouldBeIncluded && !part.body) {
-				// Determine disposition: inline if referenced, attachment otherwise
 				if (part.disposition === undefined) {
 					incoming.push({
 						...part,
 						disposition: isReferredByCid ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
 					});
-				} else if (isReferredByCid) {
+				} else if (
+					isReferredByCid ||
+					(isInlineDisposition(part.disposition) && part.contentType.startsWith('image/'))
+				) {
 					incoming.push({
 						...part,
 						disposition: DISPOSITION_INLINE
 					});
 				} else {
-					incoming.push({ ...part, disposition: part.disposition });
+					incoming.push({
+						...part,
+						disposition: DISPOSITION_ATTACHMENT
+					});
 				}
 			}
 

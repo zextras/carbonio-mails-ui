@@ -28,6 +28,28 @@ export type SendMessageResult = {
 	cancel?: () => void;
 };
 
+const waitForDraftSaveComplete = (editorId: MailsEditorV2['id']): Promise<void> =>
+	new Promise<void>((resolve) => {
+		const status = useEditorsStore.getState().editors[editorId]?.draftSaveProcessStatus?.status;
+		if (status !== 'running') {
+			resolve();
+			return;
+		}
+		const unsubscribe = useEditorsStore.subscribe((state) => {
+			const newStatus = state.editors[editorId]?.draftSaveProcessStatus?.status;
+			if (newStatus !== 'running') {
+				unsubscribe();
+				resolve();
+			}
+		});
+		const statusAfterSubscribe =
+			useEditorsStore.getState().editors[editorId]?.draftSaveProcessStatus?.status;
+		if (statusAfterSubscribe !== 'running') {
+			unsubscribe();
+			resolve();
+		}
+	});
+
 /**
  *
  * @param editorId
@@ -78,7 +100,12 @@ const sendFromEditor = (
 	});
 
 	cancelableTimer.promise
-		.then(() => {
+		.then(async () => {
+			await waitForDraftSaveComplete(editorId);
+			const sendStatus = useEditorsStore.getState().editors[editorId]?.sendProcessStatus?.status;
+			if (sendStatus !== 'running') {
+				return;
+			}
 			const editor = getEditor({ id: editorId });
 			editor?.identityId &&
 				sendMsgFromEditor({ editor })
