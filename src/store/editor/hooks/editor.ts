@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
@@ -50,79 +50,35 @@ export const useEditorSubject = (
 	);
 };
 
-export const useEditorTextProvider = (
-	id: MailsEditorV2['id']
-): {
-	textProvider: MailsEditorV2['textProvider'];
-	setTextProvider: (textProvider: MailsEditorV2['textProvider']) => void;
-} => {
-	const value = useEditorsStore((state) => state.editors[id].textProvider);
-	const setter = useEditorsStore.getState().setTextProvider;
-
-	const setTextProvider = useCallback(
-		(val: MailsEditorV2['textProvider']): void => {
-			if (val !== undefined) {
-				setter(id, val);
-			}
-		},
-		[id, setter]
-	);
-
-	return useMemo(
-		() => ({
-			textProvider: value,
-			setTextProvider
-		}),
-		[setTextProvider, value]
-	);
-};
-
-type EditorSetTextOptions = {
-	syncTextProvider?: boolean;
-};
-
 /**
- * Returns reactive references to the text values and to their setter
+ * Returns reactive references to the text value and to its setter.
+ *
+ * The editor store is the single source of truth (controlled-literal editor),
+ * so `text` is read reactively from the store and `setText` follows the same
+ * pattern as `setSubject` (setter + setDirty + debounced save).
  * @param id
  */
 export const useEditorText = (
 	id: MailsEditorV2['id']
 ): {
-	getText: () => MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
+	text: MailsEditorV2['text'];
+	setText: (text: MailsEditorV2['text']) => void;
 } => {
-	const { immediateSaveDraft } = useSaveDraftFromEditor(id);
+	const { debouncedSaveDraft } = useSaveDraftFromEditor(id);
+	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore.getState().setText;
-	const { textProvider } = useEditorTextProvider(id);
 	const { setDirty } = useEditorSetDirty(id);
-
-	const getText = useCallback(
-		(): MailsEditorV2['text'] =>
-			textProvider?.getCurrentText() ?? useEditorsStore.getState().editors[id].text,
-		[id, textProvider]
-	);
-
-	const setText = useCallback(
-		(
-			val: MailsEditorV2['text'],
-			options: EditorSetTextOptions = { syncTextProvider: true }
-		): void => {
-			if (textProvider && options.syncTextProvider) {
-				textProvider.setCurrentText(val);
-			}
-			setter(id, val);
-			setDirty();
-			immediateSaveDraft();
-		},
-		[id, immediateSaveDraft, setter, textProvider, setDirty]
-	);
 
 	return useMemo(
 		() => ({
-			getText,
-			setText
+			text: value,
+			setText: (val: MailsEditorV2['text']): void => {
+				setter(id, val);
+				setDirty();
+				debouncedSaveDraft();
+			}
 		}),
-		[getText, setText]
+		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
 };
 

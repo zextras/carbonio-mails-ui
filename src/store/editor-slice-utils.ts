@@ -10,7 +10,6 @@ import moment from 'moment';
 
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
-import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
@@ -18,6 +17,7 @@ import { InlineAttachments, MailsEditor } from 'types/editor';
 import { MailMessage, MailMessagePart } from 'types/messages';
 import { Participant, SharedParticipant } from 'types/participant';
 import { MailAttachmentParts, SoapDraftMessageObj } from 'types/soap/save-draft';
+import { MAIL_EDITOR_CONTENT_STYLES } from 'views/app/detail-panel/edit/parts/tiptap/tiptap-content-styles';
 
 export const retrieveAttachmentsType = (
 	original: MailMessage,
@@ -324,7 +324,7 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 export const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+): string => applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	// TODO FIX MP TYPE ERROR

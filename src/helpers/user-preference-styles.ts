@@ -107,7 +107,7 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
  *
  * @param content - The HTML content to wrap
  * @param style - User preference styles (font, fontSize, color)
- * @param baseContentStyles - Optional base CSS styles to include (e.g., TINYMCE_BASE_CONTENT_STYLES)
+ * @param baseContentStyles - Optional base CSS styles to include (e.g., MAIL_EDITOR_CONTENT_STYLES)
  * @returns HTML content with inlined styles
  */
 export const applyUserPreferenceStyles = (

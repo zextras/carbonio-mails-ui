@@ -18,7 +18,7 @@ import {
 	SavedAttachment,
 	UnsavedAttachment
 } from 'types/attachments';
-import { EditorTextProvider, MailsEditorV2 } from 'types/editor';
+import { MailsEditorV2 } from 'types/editor';
 import { EditorsStateTypeV2 } from 'types/state';
 
 export const useEditorsStore = create<EditorsStateTypeV2>()(
@@ -443,18 +443,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()(
 					'EDITOR/SET_IS_SMIME_ENCRYPT'
 				);
 			},
-			setTextProvider: (id: MailsEditorV2['id'], provider: EditorTextProvider): void => {
-				set(
-					produce((state: EditorsStateTypeV2) => {
-						if (state?.editors?.[id]) {
-							state.editors[id].textProvider = provider;
-						}
-					}),
-					false,
-					'EDITOR/SET_TEXT_PROVIDER'
-				);
-			},
-
 			// Iterate through editors to find one with matching draftId and return it. Return null if not found
 			getEditorByDraftId: (draftId: string): MailsEditorV2 | null => {
 				let foundEditor: MailsEditorV2 | null = null;

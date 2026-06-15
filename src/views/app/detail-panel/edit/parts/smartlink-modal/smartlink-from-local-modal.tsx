@@ -53,7 +53,7 @@ export const SmartlinkFromLocalModal = ({
 		});
 	}, [createSnackbar, t]);
 
-	const { getText, setText } = useEditorText(editorId);
+	const { text, setText } = useEditorText(editorId);
 
 	const onCloseCallback = useCallback(() => {
 		uploadController?.abort?.();
@@ -63,7 +63,6 @@ export const SmartlinkFromLocalModal = ({
 	const onConfirm = useCallback(async () => {
 		setAwaitingConfirmation(false);
 		try {
-			const text = getText();
 			const smartLinksArray = await Promise.all(
 				files.map(async (file) => {
 					const { upload, abortController } = uploadToFiles({
@@ -117,7 +116,7 @@ export const SmartlinkFromLocalModal = ({
 		files,
 		getLink,
 		getLinkAvailable,
-		getText,
+		text,
 		onClose,
 		setText,
 		uploadCancelledSnackbar

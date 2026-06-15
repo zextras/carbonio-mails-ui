@@ -164,8 +164,14 @@ describe('SmartlinkFromLocalModal', () => {
 			expect(uploadToFiles).toHaveBeenCalledTimes(1);
 			expect(getLinkSpy).toHaveBeenCalledTimes(1);
 
-			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
+			// `onConfirm` is async (it awaits upload + public link), so wait until
+			// the store text has been updated with the inserted smartlink.
+			await waitFor(() => {
+				const richText = useEditorsStore.getState()?.editors?.[editor.id]?.text.richText;
+				expect(richText).toContain('url1');
+			});
 
+			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 			const testDom = new DOMParser().parseFromString(newEditor.text.richText, 'text/html');
 
 			const smartlink = testDom.querySelector('a') as Element;
@@ -185,10 +191,6 @@ describe('SmartlinkFromLocalModal', () => {
 			if (anchorIndex !== -1 && signatureIndex !== -1) {
 				expect(anchorIndex).toBeLessThan(signatureIndex);
 			}
-			// intercepting the save draft snackbar to reach the lifecycle of the component
-			// not interested in the outcome of the save draft, an error is acceptable for our purpose
-			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
-			expect(errorSnackbar).toBeInTheDocument();
 		});
 		it('correctly adds multiple smartlink urls before the signature', async () => {
 			(uploadToFiles as Mock)
@@ -235,8 +237,12 @@ describe('SmartlinkFromLocalModal', () => {
 			expect(uploadToFiles).toHaveBeenCalledTimes(2);
 			expect(getLinkSpy).toHaveBeenCalledTimes(2);
 
-			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
+			await waitFor(() => {
+				const richText = useEditorsStore.getState()?.editors?.[editor.id]?.text.richText;
+				expect(richText).toContain('url2');
+			});
 
+			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
 			const testDom = new DOMParser().parseFromString(newEditor.text.richText, 'text/html');
 
 			const smartlinks = testDom.querySelectorAll('a');
@@ -263,10 +269,6 @@ describe('SmartlinkFromLocalModal', () => {
 
 			expect(anchorIndex1).toBeLessThan(anchorIndex2);
 			expect(anchorIndex2).toBeLessThan(signatureIndex);
-			// intercepting the save draft snackbar to reach the lifecycle of the component
-			// not interested in the outcome of the save draft, an error is acceptable for our purpose
-			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
-			expect(errorSnackbar).toBeInTheDocument();
 		});
 	});
 	describe('in plainText mode', () => {
@@ -315,16 +317,10 @@ describe('SmartlinkFromLocalModal', () => {
 			expect(uploadToFiles).toHaveBeenCalledTimes(2);
 			expect(getLinkSpy).toHaveBeenCalledTimes(2);
 
-			const newEditor = useEditorsStore.getState()?.editors?.[editor.id];
-
-			const newText = newEditor.text.plainText;
 			await waitFor(() => {
+				const newText = useEditorsStore.getState()?.editors?.[editor.id]?.text.plainText;
 				expect(newText).toBe(editor.text.plainText.concat('\nurl1\n').concat('url2'));
 			});
-			// intercepting the save draft snackbar to reach the lifecycle of the component
-			// not interested in the outcome of the save draft, an error is acceptable for our purpose
-			const errorSnackbar = await screen.findByText(/Something went wrong, please try again/);
-			expect(errorSnackbar).toBeInTheDocument();
 		});
 	});
 

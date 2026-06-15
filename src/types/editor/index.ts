@@ -120,11 +120,6 @@ export type EditorPrefillData = {
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
 
-export type EditorTextProvider = {
-	getCurrentText: () => MailsEditorV2['text'] | null;
-	setCurrentText: (text: MailsEditorV2['text']) => void;
-};
-
 export type AddEditorParams = {
 	id: MailsEditorV2['id'];
 	editor: MailsEditorV2;
@@ -181,8 +176,6 @@ export type MailsEditorV2 = {
 	isSmimeSign?: boolean;
 	// flag for the S/MIME Encrypt request
 	isSmimeEncrypt?: boolean;
-	// optional external text provider to get/set the editor text
-	textProvider?: EditorTextProvider;
 };
 
 export type EditViewClosingReasons =

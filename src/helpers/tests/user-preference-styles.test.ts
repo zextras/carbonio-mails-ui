@@ -6,7 +6,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TINYMCE_BASE_CONTENT_STYLES } from '../../constants/tinymce-content-styles';
+import { MAIL_EDITOR_CONTENT_STYLES } from '../../views/app/detail-panel/edit/parts/tiptap/tiptap-content-styles';
 import {
 	applyUserPreferenceStyles,
 	generateUserPreferenceStyles,
@@ -447,7 +447,7 @@ describe('user-preference-styles', () => {
 					</tbody>
 				</table>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			// cellpadding="0" is respected -> our 8px cell padding default is not applied
 			expect(result).not.toContain('padding: 8px');
@@ -465,7 +465,7 @@ describe('user-preference-styles', () => {
 		it('should not force a width on a table that did not specify one', () => {
 			const content = `<table style="text-align: left;" border="0" cellpadding="0"><tbody><tr><td>cell</td></tr></tbody></table>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).not.toMatch(/width:\s*100%/);
 			expect(result).not.toMatch(/<table[^>]*width="100%"/);
@@ -475,7 +475,7 @@ describe('user-preference-styles', () => {
 			// A composer-created table (no attributes) keeps the defaults.
 			const content = `<table><tbody><tr><td>cell</td></tr></tbody></table>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('padding: 8px');
 		});
@@ -483,7 +483,7 @@ describe('user-preference-styles', () => {
 		it('should keep an author-specified cell padding instead of our default', () => {
 			const content = `<table cellpadding="4"><tbody><tr><td>cell</td></tr></tbody></table>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('cellpadding="4"');
 			expect(result).not.toContain('padding: 8px');
@@ -492,7 +492,7 @@ describe('user-preference-styles', () => {
 		it('should not override an image border specified via the border attribute', () => {
 			const content = `<p>Logo</p><img src="logo.png" border="2" alt="Logo">`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('border="2"');
 			expect(result).not.toContain('border: 0');
@@ -501,7 +501,7 @@ describe('user-preference-styles', () => {
 		it('should still apply the default image border when none is specified', () => {
 			const content = `<p>Logo</p><img src="logo.png" alt="Logo">`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('border: 0');
 		});
@@ -509,7 +509,7 @@ describe('user-preference-styles', () => {
 		it('should not override hr thickness specified via the size attribute', () => {
 			const content = `<hr size="5">`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('size="5"');
 			expect(result).not.toContain('height: 0');
@@ -518,7 +518,7 @@ describe('user-preference-styles', () => {
 		it('should not recolor text the author colored via a legacy <font> attribute', () => {
 			const content = `<p>Body</p><font color="green" size="5">Author colored</font>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('color="green"');
 			expect(result).toContain('size="5"');
@@ -530,7 +530,7 @@ describe('user-preference-styles', () => {
 		it('should still apply user preferences to ordinary body content', () => {
 			const content = `<p>Body</p>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toMatch(/<p style="[^"]*color: #ff0000/);
 		});
@@ -540,7 +540,7 @@ describe('user-preference-styles', () => {
 			// only the author's colour should change - size/font are inherited.
 			const content = `<h1>Title <span style="color: blue;">colored</span></h1>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toMatch(/<h1 style="[^"]*font-size: 24px/);
 			expect(result).not.toMatch(/<span[^>]*font-size: 14pt/);
@@ -551,7 +551,7 @@ describe('user-preference-styles', () => {
 		it('should not force the preference size onto sub/sup', () => {
 			const content = `<p>x<sub>2</sub></p>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			// sub keeps its relative 75% size rather than the absolute preference size
 			expect(result).toMatch(/<sub[^>]*font-size: 75%/);
@@ -561,7 +561,7 @@ describe('user-preference-styles', () => {
 		it('should not override the monospace font of code content', () => {
 			const content = `<pre><code>fn <span>x</span></code></pre>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			// the span inside code must not be re-fonted to the preference family
 			expect(result).not.toMatch(/<span[^>]*font-family: Arial/);
@@ -570,7 +570,7 @@ describe('user-preference-styles', () => {
 		it('should still apply the preference to nested ordinary content via inheritance', () => {
 			const content = `<div><p>nested</p></div>`;
 
-			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 			// the top-level div carries the preference; the nested <p> inherits it
 			expect(result).toMatch(/<div style="[^"]*color: #ff0000[^"]*font-size: 14pt/);
@@ -584,7 +584,7 @@ describe('user-preference-styles', () => {
 			};
 			const content = `<p>Body</p>`;
 
-			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, noFont, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toMatch(/<p style="[^"]*font-family: arial, helvetica, sans-serif/);
 		});
@@ -597,7 +597,7 @@ describe('user-preference-styles', () => {
 			};
 			const content = `<table><tbody><tr><td>cell</td></tr></tbody></table>`;
 
-			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, noFont, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toMatch(/<td[^>]*font-family: arial, helvetica, sans-serif/);
 		});
@@ -610,7 +610,7 @@ describe('user-preference-styles', () => {
 			};
 			const content = `<table><tbody><tr><td style="font-family: Georgia;">cell</td></tr></tbody></table>`;
 
-			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, noFont, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).toContain('font-family: Georgia');
 			expect(result).not.toMatch(/<td[^>]*arial, helvetica, sans-serif/);
@@ -624,7 +624,7 @@ describe('user-preference-styles', () => {
 			};
 			const content = `<div class="signature-div"><table><tbody><tr><td>sig</td></tr></tbody></table></div>`;
 
-			const result = applyUserPreferenceStyles(content, noFont, TINYMCE_BASE_CONTENT_STYLES);
+			const result = applyUserPreferenceStyles(content, noFont, MAIL_EDITOR_CONTENT_STYLES);
 
 			expect(result).not.toContain('arial, helvetica, sans-serif');
 		});

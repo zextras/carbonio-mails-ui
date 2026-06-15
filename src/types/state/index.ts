@@ -9,7 +9,7 @@ import type {
 	SavedAttachment,
 	UnsavedAttachment
 } from 'types/attachments';
-import { EditorTextProvider, type MailsEditorV2 } from 'types/editor';
+import { type MailsEditorV2 } from 'types/editor';
 
 export type EditorsStateTypeV2 = {
 	editors: MailsEditorMapV2;
@@ -79,7 +79,6 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
 	) => void;
-	setTextProvider: (id: MailsEditorV2['id'], textProvider: EditorTextProvider) => void;
 	getEditorByDraftId: (draftId: string) => MailsEditorV2 | null;
 	getEditorsByDraftsId: (draftsId: Array<string>) => Array<MailsEditorV2 & { did: string }>;
 };

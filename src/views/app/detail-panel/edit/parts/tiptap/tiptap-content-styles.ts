@@ -1,14 +1,20 @@
 /*
- * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 /**
- * Base content styles for TinyMCE editor and email body formatting.
- * Optimized for email client compatibility (Gmail, Outlook, Apple Mail, etc.)
+ * Base content styles for the TipTap mail editor and for email body formatting.
+ * Optimized for email client compatibility (Gmail, Outlook, Apple Mail, etc.).
+ *
+ * These rules use bare element selectors so they can be:
+ *  - injected (auto-scoped by Emotion) into the editing surface for a faithful
+ *    WYSIWYG preview, and
+ *  - inlined into the outgoing HTML at save time (via `juice` in
+ *    {@link applyUserPreferenceStyles}).
  */
-export const TINYMCE_BASE_CONTENT_STYLES = `
+export const MAIL_EDITOR_CONTENT_STYLES = `
 	/* Paragraphs */
 	p {
 		margin: 0;
@@ -18,7 +24,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	p:last-child {
 		margin-bottom: 0;
 	}
-	
+
 	/* Headings */
 	h1, h2, h3, h4, h5, h6 {
 		margin-top: 0;
@@ -32,7 +38,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	h4 { font-size: 16px; }
 	h5 { font-size: 14px; }
 	h6 { font-size: 12px; }
-	
+
 	/*
 	 * Tables - defaults only. Each rule is guarded so it applies only when the
 	 * author hasn't already set that property via an inline style or the matching
@@ -85,7 +91,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		margin-bottom: 0;
 		margin-top: 8px;
 	}
-	
+
 	/* Lists */
 	ul, ol {
 		margin: 0 0 16px 0;
@@ -94,7 +100,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	li {
 		margin-bottom: 4px;
 	}
-	
+
 	/* Links */
 	a[href] {
 		color: #2b73d2;
@@ -107,7 +113,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	a[href]:visited {
 		color: #1e5092;
 	}
-	
+
 	/* Images - "border: 0" must not override an author border attribute/style */
 	img:not([border]):not([style*="border"]) {
 		border: 0;
@@ -129,7 +135,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	hr {
 		margin: 16px 0;
 	}
-	
+
 	/* Code blocks */
 	code {
 		background-color: #f5f5f5;
@@ -153,7 +159,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		padding: 0;
 		border: none;
 	}
-	
+
 	/* Blockquotes */
 	blockquote {
 		border-left: 3px solid #cccccc;
@@ -165,18 +171,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		border-right: 3px solid #cccccc;
 		padding: 8px 16px 8px 0;
 	}
-	.mce-content-body:not([dir=rtl]) blockquote {
-		border-left: 3px solid #cccccc;
-		margin: 16px 0;
-		padding: 8px 0 8px 16px;
-	}
-	.mce-content-body[dir=rtl] blockquote {
-		border-right: 3px solid #cccccc;
-		border-left: none;
-		margin: 16px 0;
-		padding: 8px 16px 8px 0;
-	}
-	
+
 	/* Text formatting */
 	strong, b {
 		font-weight: bold;
@@ -204,7 +199,7 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 		vertical-align: baseline;
 		top: -0.5em;
 	}
-	
+
 	/* Divs */
 	div {
 		margin: 0;

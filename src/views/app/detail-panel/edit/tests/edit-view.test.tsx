@@ -58,6 +58,17 @@ import {
 import { SoapSendMsgResponse } from 'types/soap/send-msg';
 import { SoapMailMessage, SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
+/*
+ * These tests exercise the EditView orchestration (recipients, subject, send /
+ * save-draft flows), not the rich editor internals. Stub the TipTap-based rich
+ * editor container so its ProseMirror editor view doesn't schedule timers that
+ * would leak across the fake-timer based tests in this file.
+ */
+// noinspection JSUnusedGlobalSymbols
+vi.mock('views/app/detail-panel/edit/parts/rich-text-editor-container', () => ({
+	RichTextEditorContainer: (): React.JSX.Element => <div data-testid="MailEditorWrapper" />
+}));
+
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
 const CT_MULTIPART_ALTERNATIVE = 'multipart/alternative';

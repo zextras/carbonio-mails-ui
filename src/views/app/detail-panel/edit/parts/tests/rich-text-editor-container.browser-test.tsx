@@ -32,7 +32,8 @@ describe('rich-text-editor-container', () => {
 
 		await renderInBrowser(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
-		const frame = page.frameLocator(page.getByTitle('Rich Text Area'));
-		await expect.element(frame.getByText('Hello, World!')).toBeVisible();
+		// TipTap renders an inline contenteditable (no iframe), so the body text
+		// is queryable directly on the page.
+		await expect.element(page.getByText('Hello, World!')).toBeVisible();
 	});
 });

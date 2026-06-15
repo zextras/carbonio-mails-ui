@@ -44,16 +44,6 @@ export const TextArea = styled.textarea`
 	}
 `;
 
-export const EditorWrapper = styled.div`
-	width: 100%;
-
-	.tox.tox-tinymce {
-		width: 100%;
-		height: 100%;
-		border: none;
-	}
-`;
-
 export const BannerContainer = styled(Container)<{
 	$bottomBorderColor: PaletteColor;
 }>`

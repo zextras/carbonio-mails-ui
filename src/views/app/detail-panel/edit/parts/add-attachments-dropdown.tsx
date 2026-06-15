@@ -45,7 +45,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { control } = useForm();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const { getText, setText } = useEditorText(editorId);
+	const { text, setText } = useEditorText(editorId);
 	const { addUploadedAttachment } = useEditorAttachments(editorId);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 	const { originalMessageHasAttachments, addOriginalAttachmentsToEditor } =
@@ -79,15 +79,15 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			const textWithLink = {
 				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
 					.join('\n')
-					.concat(getText().plainText),
+					.concat(text.plainText),
 				richText: ` ${map(
 					filesResponse,
 					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
-				).join('')}`.concat(getText().richText)
+				).join('')}`.concat(text.richText)
 			};
 			setText(textWithLink);
 		},
-		[setText, getText]
+		[setText, text]
 	);
 
 	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });

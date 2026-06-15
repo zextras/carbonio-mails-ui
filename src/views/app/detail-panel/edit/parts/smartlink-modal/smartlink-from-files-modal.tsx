@@ -40,12 +40,10 @@ export const SmartlinkFromFilesModal = ({
 		});
 	}, [createSnackbar, t]);
 
-	const { getText, setText } = useEditorText(editorId);
+	const { text, setText } = useEditorText(editorId);
 
 	const onConfirm = useCallback(async () => {
 		try {
-			const text = getText();
-
 			const smartLinksArray = await Promise.all(
 				fileNodes.map(async (fileNode) => {
 					const response =
@@ -85,7 +83,7 @@ export const SmartlinkFromFilesModal = ({
 			errorSnackbar();
 			onClose();
 		}
-	}, [errorSnackbar, fileNodes, getLink, getLinkAvailable, getText, onClose, setText]);
+	}, [errorSnackbar, fileNodes, getLink, getLinkAvailable, text, onClose, setText]);
 
 	return <SmartlinkAwaitingConfirmModal onClose={onClose} onConfirm={onConfirm} />;
 };

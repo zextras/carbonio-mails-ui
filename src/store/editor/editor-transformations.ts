@@ -8,7 +8,7 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
 import { areContentIdsEqual, removeAngleBrackets } from 'commons/content-id-utils';
-import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
+import { MAIL_EDITOR_CONTENT_STYLES } from 'views/app/detail-panel/edit/parts/tiptap/tiptap-content-styles';
 import {
 	composeAttachmentDownloadUrl,
 	getCidFromCidUrl,
@@ -152,14 +152,13 @@ export const replaceServiceUrlWithCidUrl = (content: string): string => {
 const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+): string => applyUserPreferenceStyles(content, style, MAIL_EDITOR_CONTENT_STYLES);
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
 
-	// The stored text could be out of sync with the current text of the composer.
-	// TODO: This logic should be encapsulated in the editor or the store
-	const text = editor.textProvider?.getCurrentText() ?? editor.text;
+	// The editor store is the single source of truth for the body text.
+	const { text } = editor;
 
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string,
