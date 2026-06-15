@@ -10,11 +10,10 @@ import { Editor } from '@tiptap/core';
 import { useEditorState } from '@tiptap/react';
 import {
 	Container,
-	Divider,
 	Dropdown,
 	DropdownItem,
+	Icon,
 	Input,
-	Padding,
 	Row,
 	Text,
 	Tooltip
@@ -22,20 +21,92 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { HexColorPicker } from 'react-colorful';
 
+import {
+	AlignGlyph,
+	BoldGlyph,
+	CharmapGlyph,
+	ClearFormatGlyph,
+	DirectionGlyph,
+	ForeColorGlyph,
+	IndentGlyph,
+	ItalicGlyph,
+	NumberedListGlyph,
+	StrikethroughGlyph,
+	UnderlineGlyph,
+	VisualBlocksGlyph
+} from './tiptap-toolbar-glyphs';
 import { TipTapAccountSettingsPrefs } from './tiptap-types';
 import useClickOutside from 'hooks/use-click-outside-picker';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
-/*
- * NOTE: the visible glyph of every toolbar control is a TEXT PLACEHOLDER
- * (see `ToolbarButton` / dropdown triggers). Proper icons will be chosen and
- * wired in later - replace the `placeholder` strings / `<Text>` labels below.
- */
-
 const DEFAULT_TEXT_COLOR = '#000000';
 const DEFAULT_HIGHLIGHT_COLOR = '#ffff00';
 
-const COMMON_EMOJIS = ['😀', '😁', '😂', '😉', '😍', '😎', '👍', '👏', '🙏', '🎉', '❤️', '🔥'];
+const SPECIAL_CHARS = [
+	'©',
+	'®',
+	'™',
+	'§',
+	'¶',
+	'†',
+	'‡',
+	'•',
+	'…',
+	'‰',
+	'€',
+	'£',
+	'¥',
+	'¢',
+	'°',
+	'±',
+	'×',
+	'÷',
+	'≤',
+	'≥',
+	'≠',
+	'≈',
+	'∞',
+	'µ',
+	'α',
+	'β',
+	'π',
+	'Ω',
+	'→',
+	'←',
+	'↑',
+	'↓',
+	'«',
+	'»',
+	'“',
+	'”',
+	'‘',
+	'’',
+	'—',
+	'–'
+];
+
+const BULLET_STYLES: Array<{ value: string; label: string }> = [
+	{ value: 'disc', label: 'Disc' },
+	{ value: 'circle', label: 'Circle' },
+	{ value: 'square', label: 'Square' }
+];
+const ORDERED_STYLES: Array<{ value: string; label: string }> = [
+	{ value: 'decimal', label: '1, 2, 3' },
+	{ value: 'lower-alpha', label: 'a, b, c' },
+	{ value: 'upper-alpha', label: 'A, B, C' },
+	{ value: 'lower-roman', label: 'i, ii, iii' },
+	{ value: 'upper-roman', label: 'I, II, III' }
+];
+
+const Bar = styled(Row)`
+	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray3.regular};
+`;
+
+const Group = styled(Row)`
+	&:not(:last-of-type) {
+		border-right: 0.0625rem solid ${({ theme }): string => theme.palette.gray3.regular};
+	}
+`;
 
 const StyledToolbarButton = styled.button<{ $active?: boolean }>`
 	display: inline-flex;
@@ -51,10 +122,14 @@ const StyledToolbarButton = styled.button<{ $active?: boolean }>`
 		$active ? theme.palette.highlight.regular : 'transparent'};
 	color: ${({ theme, disabled }): string =>
 		disabled ? theme.palette.gray3.regular : theme.palette.text.regular};
-	font-size: 0.75rem;
 	&:hover {
-		background-color: ${({ theme, disabled }): string =>
-			disabled ? 'transparent' : theme.palette.gray5.regular};
+		background-color: ${({ theme, disabled, $active }): string =>
+			// eslint-disable-next-line no-nested-ternary
+			disabled
+				? 'transparent'
+				: $active
+					? theme.palette.highlight.regular
+					: theme.palette.gray5.regular};
 	}
 `;
 
@@ -63,7 +138,8 @@ const Popover = styled(Container)`
 	top: calc(100% + 0.125rem);
 	left: 0;
 	z-index: 10;
-	width: 15rem;
+	width: fit-content;
+	min-width: 12.5rem;
 	padding: 0.5rem;
 	border-radius: 0.5rem;
 	box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.15);
@@ -74,21 +150,24 @@ const RelativeContainer = styled(Container)`
 	position: relative;
 `;
 
+const Chevron = (): React.JSX.Element => (
+	<Icon icon="ChevronDownOutline" size="small" style={{ marginLeft: '0.125rem' }} />
+);
+
 type ToolbarButtonProps = {
 	tooltip: string;
-	/** Text placeholder shown until a proper icon is wired in. */
-	placeholder: string;
 	active?: boolean;
 	disabled?: boolean;
 	onClick: () => void;
+	children: React.ReactNode;
 };
 
 const ToolbarButton = ({
 	tooltip,
-	placeholder,
 	active,
 	disabled,
-	onClick
+	onClick,
+	children
 }: ToolbarButtonProps): React.JSX.Element => (
 	<Tooltip label={tooltip}>
 		<StyledToolbarButton
@@ -99,31 +178,82 @@ const ToolbarButton = ({
 			onClick={onClick}
 			aria-label={tooltip}
 		>
-			{placeholder}
+			{children}
 		</StyledToolbarButton>
 	</Tooltip>
 );
 
-const ToolbarDivider = (): React.JSX.Element => (
-	<Padding horizontal="extrasmall">
-		<div style={{ width: '0.0625rem', height: '1.5rem', background: 'rgba(0,0,0,0.1)' }} />
-	</Padding>
+const IconLabel = ({ icon }: { icon: string }): React.JSX.Element => (
+	<Icon icon={icon} size="medium" />
+);
+
+type DropdownButtonProps = {
+	tooltip: string;
+	label: React.ReactNode;
+	items: Array<DropdownItem>;
+	disabled?: boolean;
+};
+
+const DropdownButton = ({
+	tooltip,
+	label,
+	items,
+	disabled
+}: DropdownButtonProps): React.JSX.Element => (
+	<Tooltip label={tooltip}>
+		<Dropdown items={items} disabled={disabled} disableAutoFocus>
+			<StyledToolbarButton type="button" disabled={disabled} aria-label={tooltip}>
+				{label}
+				<Chevron />
+			</StyledToolbarButton>
+		</Dropdown>
+	</Tooltip>
+);
+
+type SplitButtonProps = {
+	tooltip: string;
+	active?: boolean;
+	disabled?: boolean;
+	onPrimary: () => void;
+	menuItems: Array<DropdownItem>;
+	children: React.ReactNode;
+};
+
+/** Icon area performs the primary action; the chevron area opens a menu. */
+const SplitButton = ({
+	tooltip,
+	active,
+	disabled,
+	onPrimary,
+	menuItems,
+	children
+}: SplitButtonProps): React.JSX.Element => (
+	<Row>
+		<ToolbarButton tooltip={tooltip} active={active} disabled={disabled} onClick={onPrimary}>
+			{children}
+		</ToolbarButton>
+		<Dropdown items={menuItems} disabled={disabled} disableAutoFocus>
+			<StyledToolbarButton type="button" disabled={disabled} style={{ minWidth: '1rem' }}>
+				<Icon icon="ChevronDownOutline" size="small" />
+			</StyledToolbarButton>
+		</Dropdown>
+	</Row>
 );
 
 type ColorControlProps = {
 	tooltip: string;
-	placeholder: string;
 	disabled?: boolean;
 	color: string;
+	glyph: (color: string) => React.ReactNode;
 	onChange: (color: string) => void;
 	onClear: () => void;
 };
 
 const ColorControl = ({
 	tooltip,
-	placeholder,
 	disabled,
 	color,
+	glyph,
 	onChange,
 	onClear
 }: ColorControlProps): React.JSX.Element => {
@@ -134,90 +264,105 @@ const ColorControl = ({
 
 	return (
 		<RelativeContainer width="fit" height="fit" ref={ref}>
-			<ToolbarButton
-				tooltip={tooltip}
-				placeholder={placeholder}
-				disabled={disabled}
-				onClick={(): void => setOpen((s) => !s)}
-			/>
+			<Tooltip label={tooltip}>
+				<StyledToolbarButton
+					type="button"
+					disabled={disabled}
+					aria-label={tooltip}
+					onMouseDown={(e): void => e.preventDefault()}
+					onClick={(): void => setOpen((s) => !s)}
+				>
+					{glyph(color)}
+					<Chevron />
+				</StyledToolbarButton>
+			</Tooltip>
 			{open && (
-				<Popover height="fit" crossAlignment="flex-start">
+				<Popover height="fit" crossAlignment="flex-start" gap="0.5rem">
 					<HexColorPicker color={color} onChange={onChange} />
-					<Padding top="small">
-						<ToolbarButton
-							tooltip={t('label.remove', 'Remove')}
-							placeholder={t('label.remove', 'Remove')}
-							onClick={(): void => {
-								onClear();
-								close();
-							}}
-						/>
-					</Padding>
+					<ToolbarButton
+						tooltip={t('label.remove', 'Remove')}
+						onClick={(): void => {
+							onClear();
+							close();
+						}}
+					>
+						<Text size="small">{t('label.remove', 'Remove')}</Text>
+					</ToolbarButton>
 				</Popover>
 			)}
 		</RelativeContainer>
 	);
 };
 
-type LinkControlProps = {
+type PopoverInputControlProps = {
+	tooltip: string;
+	icon: string;
+	active?: boolean;
 	disabled?: boolean;
-	isActive: boolean;
-	currentHref: string;
-	onApply: (href: string) => void;
-	onRemove: () => void;
+	inputLabel: string;
+	initialValue?: string;
+	confirmLabel: string;
+	onConfirm: (value: string) => void;
+	onRemove?: () => void;
 };
 
-const LinkControl = ({
+const PopoverInputControl = ({
+	tooltip,
+	icon,
+	active,
 	disabled,
-	isActive,
-	currentHref,
-	onApply,
+	inputLabel,
+	initialValue = '',
+	confirmLabel,
+	onConfirm,
 	onRemove
-}: LinkControlProps): React.JSX.Element => {
+}: PopoverInputControlProps): React.JSX.Element => {
 	const [open, setOpen] = useState(false);
-	const [href, setHref] = useState('');
+	const [value, setValue] = useState('');
 	const ref = useRef<HTMLInputElement>(null);
 	const close = useCallback(() => setOpen(false), []);
 	useClickOutside(ref, close);
 
 	const toggle = useCallback(() => {
-		setHref(currentHref);
+		setValue(initialValue);
 		setOpen((s) => !s);
-	}, [currentHref]);
+	}, [initialValue]);
 
 	return (
 		<RelativeContainer width="fit" height="fit" ref={ref}>
-			<ToolbarButton
-				tooltip={t('label.link', 'Link')}
-				placeholder={t('label.link', 'Link')}
-				active={isActive}
-				disabled={disabled}
-				onClick={toggle}
-			/>
+			<ToolbarButton tooltip={tooltip} active={active} disabled={disabled} onClick={toggle}>
+				<IconLabel icon={icon} />
+			</ToolbarButton>
 			{open && (
 				<Popover height="fit" crossAlignment="flex-start" gap="0.5rem">
 					<Input
-						label={t('label.link_address', 'Link address')}
-						value={href}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setHref(e.target.value)}
+						label={inputLabel}
+						value={value}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setValue(e.target.value)}
 					/>
 					<Row mainAlignment="space-between" width="100%" padding={{ top: 'small' }}>
+						{onRemove && (
+							<ToolbarButton
+								tooltip={t('label.remove', 'Remove')}
+								onClick={(): void => {
+									onRemove();
+									close();
+								}}
+							>
+								<Text size="small">{t('label.remove', 'Remove')}</Text>
+							</ToolbarButton>
+						)}
 						<ToolbarButton
-							tooltip={t('label.remove', 'Remove')}
-							placeholder={t('label.remove', 'Remove')}
+							tooltip={confirmLabel}
 							onClick={(): void => {
-								onRemove();
+								if (value) {
+									onConfirm(value);
+								}
 								close();
 							}}
-						/>
-						<ToolbarButton
-							tooltip={t('label.apply', 'Apply')}
-							placeholder={t('label.apply', 'Apply')}
-							onClick={(): void => {
-								onApply(href);
-								close();
-							}}
-						/>
+						>
+							<Text size="small">{confirmLabel}</Text>
+						</ToolbarButton>
 					</Row>
 				</Popover>
 			)}
@@ -225,11 +370,66 @@ const LinkControl = ({
 	);
 };
 
+type CharmapControlProps = {
+	disabled?: boolean;
+	onInsert: (char: string) => void;
+};
+
+const CharGrid = styled.div`
+	display: grid;
+	grid-template-columns: repeat(8, 1.75rem);
+	gap: 0.125rem;
+`;
+
+const CharmapControl = ({ disabled, onInsert }: CharmapControlProps): React.JSX.Element => {
+	const [open, setOpen] = useState(false);
+	const ref = useRef<HTMLInputElement>(null);
+	const close = useCallback(() => setOpen(false), []);
+	useClickOutside(ref, close);
+
+	return (
+		<RelativeContainer width="fit" height="fit" ref={ref}>
+			<ToolbarButton
+				tooltip={t('label.special_characters', 'Special characters')}
+				disabled={disabled}
+				onClick={(): void => setOpen((s) => !s)}
+			>
+				<CharmapGlyph />
+			</ToolbarButton>
+			{open && (
+				<Popover height="fit" crossAlignment="flex-start">
+					<CharGrid>
+						{SPECIAL_CHARS.map((char) => (
+							<StyledToolbarButton
+								key={char}
+								type="button"
+								onMouseDown={(e): void => e.preventDefault()}
+								onClick={(): void => {
+									onInsert(char);
+									close();
+								}}
+							>
+								{char}
+							</StyledToolbarButton>
+						))}
+					</CharGrid>
+				</Popover>
+			)}
+		</RelativeContainer>
+	);
+};
+
+const EMOJIS = ['😀', '😁', '😂', '😉', '😍', '😎', '👍', '👏', '🙏', '🎉', '❤️', '🔥'];
+
 export type TipTapToolbarProps = {
 	editor: Editor | null;
 	disabled?: boolean;
 	accountSettingsPrefs: TipTapAccountSettingsPrefs;
 	onFileSelect: (files: Array<File>) => void;
+	sourceView: boolean;
+	onToggleSourceView: () => void;
+	visualBlocks: boolean;
+	onToggleVisualBlocks: () => void;
 };
 
 type ToolbarState = {
@@ -240,11 +440,12 @@ type ToolbarState = {
 	isBulletList: boolean;
 	isOrderedList: boolean;
 	isLink: boolean;
-	isAlignLeft: boolean;
-	isAlignCenter: boolean;
-	isAlignRight: boolean;
-	isAlignJustify: boolean;
+	align: string;
+	dir: string;
 	currentHref: string;
+	fontFamily: string;
+	fontSize: string;
+	blockLabel: string;
 };
 
 const EMPTY_STATE: ToolbarState = {
@@ -255,19 +456,82 @@ const EMPTY_STATE: ToolbarState = {
 	isBulletList: false,
 	isOrderedList: false,
 	isLink: false,
-	isAlignLeft: false,
-	isAlignCenter: false,
-	isAlignRight: false,
-	isAlignJustify: false,
-	currentHref: ''
+	align: 'left',
+	dir: 'ltr',
+	currentHref: '',
+	fontFamily: '',
+	fontSize: '',
+	blockLabel: ''
+};
+
+type BlockLabels = {
+	paragraph: string;
+	h1: string;
+	h2: string;
+	h3: string;
+	h4: string;
+	h5: string;
+	h6: string;
+	pre: string;
+	blockquote: string;
+};
+
+const getBlockLabel = (e: Editor, labels: BlockLabels): string => {
+	const headingLabels = [labels.h1, labels.h2, labels.h3, labels.h4, labels.h5, labels.h6];
+	for (let level = 1; level <= 6; level += 1) {
+		if (e.isActive('heading', { level })) {
+			return headingLabels[level - 1];
+		}
+	}
+	if (e.isActive('codeBlock')) {
+		return labels.pre;
+	}
+	if (e.isActive('blockquote')) {
+		return labels.blockquote;
+	}
+	return labels.paragraph;
+};
+
+const getAlign = (e: Editor): string => {
+	if (e.isActive({ textAlign: 'center' })) {
+		return 'center';
+	}
+	if (e.isActive({ textAlign: 'right' })) {
+		return 'right';
+	}
+	if (e.isActive({ textAlign: 'justify' })) {
+		return 'justify';
+	}
+	return 'left';
 };
 
 export const TipTapToolbar = ({
 	editor,
 	disabled = false,
-	onFileSelect
+	onFileSelect,
+	sourceView,
+	onToggleSourceView,
+	visualBlocks,
+	onToggleVisualBlocks
 }: TipTapToolbarProps): React.JSX.Element => {
 	const imageInputRef = useRef<HTMLInputElement>(null);
+
+	const blockStyleLabels = useMemo(
+		() => ({
+			paragraph: t('label.paragraph', 'Paragraph'),
+			h1: t('label.heading_1', 'Heading 1'),
+			h2: t('label.heading_2', 'Heading 2'),
+			h3: t('label.heading_3', 'Heading 3'),
+			h4: t('label.heading_4', 'Heading 4'),
+			h5: t('label.heading_5', 'Heading 5'),
+			h6: t('label.heading_6', 'Heading 6'),
+			pre: t('label.preformatted', 'Pre'),
+			blockquote: t('label.blockquote', 'Blockquote')
+		}),
+		[]
+	);
+
+	const fonts = useMemo(() => getFonts(), []);
 
 	const state =
 		useEditorState({
@@ -276,6 +540,7 @@ export const TipTapToolbar = ({
 				if (!e) {
 					return EMPTY_STATE;
 				}
+				const fontValue = e.getAttributes('textStyle').fontFamily ?? '';
 				return {
 					isBold: e.isActive('bold'),
 					isItalic: e.isActive('italic'),
@@ -284,11 +549,12 @@ export const TipTapToolbar = ({
 					isBulletList: e.isActive('bulletList'),
 					isOrderedList: e.isActive('orderedList'),
 					isLink: e.isActive('link'),
-					isAlignLeft: e.isActive({ textAlign: 'left' }),
-					isAlignCenter: e.isActive({ textAlign: 'center' }),
-					isAlignRight: e.isActive({ textAlign: 'right' }),
-					isAlignJustify: e.isActive({ textAlign: 'justify' }),
-					currentHref: e.getAttributes('link').href ?? ''
+					align: getAlign(e),
+					dir: e.isActive({ dir: 'rtl' }) ? 'rtl' : 'ltr',
+					currentHref: e.getAttributes('link').href ?? '',
+					fontFamily: fonts.find((f) => f.value === fontValue)?.label ?? '',
+					fontSize: e.getAttributes('textStyle').fontSize ?? '',
+					blockLabel: getBlockLabel(e, blockStyleLabels)
 				};
 			}
 		}) ?? EMPTY_STATE;
@@ -303,14 +569,16 @@ export const TipTapToolbar = ({
 		[editor]
 	);
 
+	const controlsDisabled = disabled || sourceView;
+
 	const fontFamilyItems = useMemo<Array<DropdownItem>>(
 		() =>
-			getFonts().map((font) => ({
+			fonts.map((font) => ({
 				id: font.value,
 				label: font.label,
-				onClick: (): void => run((chain) => chain.setFontFamily(font.value))
+				onClick: (): void => run((c) => c.setFontFamily(font.value))
 			})),
-		[run]
+		[fonts, run]
 	);
 
 	const fontSizeItems = useMemo<Array<DropdownItem>>(
@@ -318,7 +586,7 @@ export const TipTapToolbar = ({
 			getFontSizesOptions().map((size) => ({
 				id: size,
 				label: size,
-				onClick: (): void => run((chain) => chain.setFontSize(size))
+				onClick: (): void => run((c) => c.setFontSize(size))
 			})),
 		[run]
 	);
@@ -327,51 +595,51 @@ export const TipTapToolbar = ({
 		() => [
 			{
 				id: 'p',
-				label: t('label.paragraph', 'Paragraph'),
+				label: blockStyleLabels.paragraph,
 				onClick: (): void => run((c) => c.setParagraph())
 			},
 			{
 				id: 'h1',
-				label: t('label.heading_1', 'Heading 1'),
+				label: blockStyleLabels.h1,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 1 }))
 			},
 			{
 				id: 'h2',
-				label: t('label.heading_2', 'Heading 2'),
+				label: blockStyleLabels.h2,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 2 }))
 			},
 			{
 				id: 'h3',
-				label: t('label.heading_3', 'Heading 3'),
+				label: blockStyleLabels.h3,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 3 }))
 			},
 			{
 				id: 'h4',
-				label: t('label.heading_4', 'Heading 4'),
+				label: blockStyleLabels.h4,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 4 }))
 			},
 			{
 				id: 'h5',
-				label: t('label.heading_5', 'Heading 5'),
+				label: blockStyleLabels.h5,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 5 }))
 			},
 			{
 				id: 'h6',
-				label: t('label.heading_6', 'Heading 6'),
+				label: blockStyleLabels.h6,
 				onClick: (): void => run((c) => c.toggleHeading({ level: 6 }))
 			},
 			{
 				id: 'pre',
-				label: t('label.preformatted', 'Pre'),
+				label: blockStyleLabels.pre,
 				onClick: (): void => run((c) => c.toggleCodeBlock())
 			},
 			{
 				id: 'blockquote',
-				label: t('label.blockquote', 'Blockquote'),
+				label: blockStyleLabels.blockquote,
 				onClick: (): void => run((c) => c.toggleBlockquote())
 			}
 		],
-		[run]
+		[blockStyleLabels, run]
 	);
 
 	const tableItems = useMemo<Array<DropdownItem>>(
@@ -420,9 +688,41 @@ export const TipTapToolbar = ({
 		[run]
 	);
 
+	const bulletStyleItems = useMemo<Array<DropdownItem>>(
+		() =>
+			BULLET_STYLES.map((style) => ({
+				id: style.value,
+				label: style.label,
+				onClick: (): void => {
+					run((c) =>
+						(state.isBulletList ? c : c.toggleBulletList()).updateAttributes('bulletList', {
+							listStyleType: style.value
+						})
+					);
+				}
+			})),
+		[run, state.isBulletList]
+	);
+
+	const orderedStyleItems = useMemo<Array<DropdownItem>>(
+		() =>
+			ORDERED_STYLES.map((style) => ({
+				id: style.value,
+				label: style.label,
+				onClick: (): void => {
+					run((c) =>
+						(state.isOrderedList ? c : c.toggleOrderedList()).updateAttributes('orderedList', {
+							listStyleType: style.value
+						})
+					);
+				}
+			})),
+		[run, state.isOrderedList]
+	);
+
 	const emojiItems = useMemo<Array<DropdownItem>>(
 		() =>
-			COMMON_EMOJIS.map((emoji) => ({
+			EMOJIS.map((emoji) => ({
 				id: emoji,
 				label: emoji,
 				onClick: (): void => run((c) => c.insertContent(emoji))
@@ -441,163 +741,262 @@ export const TipTapToolbar = ({
 		[onFileSelect]
 	);
 
+	const pickImageFile = useCallback(() => imageInputRef.current?.click(), []);
+
 	return (
 		<Container width="100%" height="fit" crossAlignment="flex-start" background="gray6">
-			<Row
+			<Bar
 				width="100%"
 				mainAlignment="flex-start"
 				wrap="wrap"
 				padding={{ vertical: 'extrasmall', horizontal: 'small' }}
 			>
-				<Dropdown items={fontFamilyItems} disabled={disabled}>
-					<StyledToolbarButton type="button" disabled={disabled}>
-						<Text size="small">{t('label.font', 'Font')}</Text>
-					</StyledToolbarButton>
-				</Dropdown>
-				<Dropdown items={fontSizeItems} disabled={disabled}>
-					<StyledToolbarButton type="button" disabled={disabled}>
-						<Text size="small">{t('label.size', 'Size')}</Text>
-					</StyledToolbarButton>
-				</Dropdown>
-				<Dropdown items={styleItems} disabled={disabled}>
-					<StyledToolbarButton type="button" disabled={disabled}>
-						<Text size="small">{t('label.styles', 'Styles')}</Text>
-					</StyledToolbarButton>
-				</Dropdown>
+				{/* Font family / size / block style */}
+				<Group mainAlignment="flex-start" padding={{ right: 'extrasmall' }}>
+					<DropdownButton
+						tooltip={t('label.font', 'Font')}
+						label={<Text size="small">{state.fontFamily || t('label.font', 'Font')}</Text>}
+						items={fontFamilyItems}
+						disabled={controlsDisabled}
+					/>
+					<DropdownButton
+						tooltip={t('label.font_size', 'Font size')}
+						label={<Text size="small">{state.fontSize || t('label.size', 'Size')}</Text>}
+						items={fontSizeItems}
+						disabled={controlsDisabled}
+					/>
+					<DropdownButton
+						tooltip={t('label.styles', 'Styles')}
+						label={<Text size="small">{state.blockLabel || blockStyleLabels.paragraph}</Text>}
+						items={styleItems}
+						disabled={controlsDisabled}
+					/>
+				</Group>
 
-				<ToolbarDivider />
+				{/* Colors */}
+				<Group mainAlignment="flex-start" padding={{ horizontal: 'extrasmall' }}>
+					<ColorControl
+						tooltip={t('label.text_color', 'Text color')}
+						disabled={controlsDisabled}
+						color={DEFAULT_TEXT_COLOR}
+						glyph={(color): React.ReactNode => <ForeColorGlyph color={color} />}
+						onChange={(color): void => run((c) => c.setColor(color))}
+						onClear={(): void => run((c) => c.unsetColor())}
+					/>
+					<ColorControl
+						tooltip={t('label.highlight_color', 'Highlight color')}
+						disabled={controlsDisabled}
+						color={DEFAULT_HIGHLIGHT_COLOR}
+						glyph={(): React.ReactNode => <IconLabel icon="Brush" />}
+						onChange={(color): void => run((c) => c.toggleHighlight({ color }))}
+						onClear={(): void => run((c) => c.unsetHighlight())}
+					/>
+				</Group>
 
-				<ToolbarButton
-					tooltip={t('label.bold', 'Bold')}
-					placeholder="B"
-					active={state.isBold}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleBold())}
-				/>
-				<ToolbarButton
-					tooltip={t('label.italic', 'Italic')}
-					placeholder="I"
-					active={state.isItalic}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleItalic())}
-				/>
-				<ToolbarButton
-					tooltip={t('label.underline', 'Underline')}
-					placeholder="U"
-					active={state.isUnderline}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleUnderline())}
-				/>
-				<ToolbarButton
-					tooltip={t('label.strikethrough', 'Strikethrough')}
-					placeholder="S"
-					active={state.isStrike}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleStrike())}
-				/>
-				<ToolbarButton
-					tooltip={t('label.remove_format', 'Clear formatting')}
-					placeholder="Tx"
-					disabled={disabled}
-					onClick={(): void => run((c) => c.unsetAllMarks().clearNodes())}
-				/>
+				{/* Inline formatting */}
+				<Group mainAlignment="flex-start" padding={{ horizontal: 'extrasmall' }}>
+					<ToolbarButton
+						tooltip={t('label.bold', 'Bold')}
+						active={state.isBold}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.toggleBold())}
+					>
+						<BoldGlyph />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.italic', 'Italic')}
+						active={state.isItalic}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.toggleItalic())}
+					>
+						<ItalicGlyph />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.underline', 'Underline')}
+						active={state.isUnderline}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.toggleUnderline())}
+					>
+						<UnderlineGlyph />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.strikethrough', 'Strikethrough')}
+						active={state.isStrike}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.toggleStrike())}
+					>
+						<StrikethroughGlyph />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.remove_format', 'Clear formatting')}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.unsetAllMarks().clearNodes())}
+					>
+						<ClearFormatGlyph />
+					</ToolbarButton>
+				</Group>
 
-				<ToolbarDivider />
-
-				<ColorControl
-					tooltip={t('label.text_color', 'Text color')}
-					placeholder="A"
-					disabled={disabled}
-					color={DEFAULT_TEXT_COLOR}
-					onChange={(color): void => run((c) => c.setColor(color))}
-					onClear={(): void => run((c) => c.unsetColor())}
-				/>
-				<ColorControl
-					tooltip={t('label.highlight_color', 'Highlight color')}
-					placeholder="H"
-					disabled={disabled}
-					color={DEFAULT_HIGHLIGHT_COLOR}
-					onChange={(color): void => run((c) => c.toggleHighlight({ color }))}
-					onClear={(): void => run((c) => c.unsetHighlight())}
-				/>
-
-				<ToolbarDivider />
-
-				<ToolbarButton
-					tooltip={t('label.align_left', 'Align left')}
-					placeholder="L"
-					active={state.isAlignLeft}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.setTextAlign('left'))}
-				/>
-				<ToolbarButton
-					tooltip={t('label.align_center', 'Align center')}
-					placeholder="C"
-					active={state.isAlignCenter}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.setTextAlign('center'))}
-				/>
-				<ToolbarButton
-					tooltip={t('label.align_right', 'Align right')}
-					placeholder="R"
-					active={state.isAlignRight}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.setTextAlign('right'))}
-				/>
-				<ToolbarButton
-					tooltip={t('label.align_justify', 'Justify')}
-					placeholder="J"
-					active={state.isAlignJustify}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.setTextAlign('justify'))}
-				/>
-
-				<ToolbarDivider />
-
-				<ToolbarButton
-					tooltip={t('label.bullet_list', 'Bullet list')}
-					placeholder="UL"
-					active={state.isBulletList}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleBulletList())}
-				/>
-				<ToolbarButton
-					tooltip={t('label.ordered_list', 'Numbered list')}
-					placeholder="OL"
-					active={state.isOrderedList}
-					disabled={disabled}
-					onClick={(): void => run((c) => c.toggleOrderedList())}
-				/>
-
-				<ToolbarDivider />
-
-				<LinkControl
-					disabled={disabled}
-					isActive={state.isLink}
-					currentHref={state.currentHref}
-					onApply={(href): void => {
-						if (href) {
-							run((c) => c.extendMarkRange('link').setLink({ href }));
+				{/* Alignment / indentation / direction */}
+				<Group mainAlignment="flex-start" padding={{ horizontal: 'extrasmall' }}>
+					<ToolbarButton
+						tooltip={t('label.align_left', 'Align left')}
+						active={state.align === 'left'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextAlign('left'))}
+					>
+						<AlignGlyph variant="left" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.align_center', 'Align center')}
+						active={state.align === 'center'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextAlign('center'))}
+					>
+						<AlignGlyph variant="center" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.align_right', 'Align right')}
+						active={state.align === 'right'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextAlign('right'))}
+					>
+						<AlignGlyph variant="right" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.align_justify', 'Justify')}
+						active={state.align === 'justify'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextAlign('justify'))}
+					>
+						<AlignGlyph variant="justify" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.outdent', 'Decrease indent')}
+						disabled={controlsDisabled}
+						onClick={(): void =>
+							run((c) => (editor?.isActive('listItem') ? c.liftListItem('listItem') : c.outdent()))
 						}
-					}}
-					onRemove={(): void => run((c) => c.extendMarkRange('link').unsetLink())}
-				/>
-				<Dropdown items={tableItems} disabled={disabled}>
-					<StyledToolbarButton type="button" disabled={disabled}>
-						<Text size="small">{t('label.table', 'Table')}</Text>
-					</StyledToolbarButton>
-				</Dropdown>
-				<ToolbarButton
-					tooltip={t('label.insert_image', 'Insert image')}
-					placeholder="Img"
-					disabled={disabled}
-					onClick={(): void => imageInputRef.current?.click()}
-				/>
-				<Dropdown items={emojiItems} disabled={disabled}>
-					<StyledToolbarButton type="button" disabled={disabled}>
-						<Text size="small">{t('label.emoji', 'Emoji')}</Text>
-					</StyledToolbarButton>
-				</Dropdown>
+					>
+						<IndentGlyph direction="outdent" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.indent', 'Increase indent')}
+						disabled={controlsDisabled}
+						onClick={(): void =>
+							run((c) => (editor?.isActive('listItem') ? c.sinkListItem('listItem') : c.indent()))
+						}
+					>
+						<IndentGlyph direction="indent" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.ltr', 'Left to right')}
+						active={state.dir === 'ltr'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextDirection('ltr'))}
+					>
+						<DirectionGlyph dir="ltr" />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.rtl', 'Right to left')}
+						active={state.dir === 'rtl'}
+						disabled={controlsDisabled}
+						onClick={(): void => run((c) => c.setTextDirection('rtl'))}
+					>
+						<DirectionGlyph dir="rtl" />
+					</ToolbarButton>
+				</Group>
+
+				{/* Lists */}
+				<Group mainAlignment="flex-start" padding={{ horizontal: 'extrasmall' }}>
+					<SplitButton
+						tooltip={t('label.bullet_list', 'Bullet list')}
+						active={state.isBulletList}
+						disabled={controlsDisabled}
+						onPrimary={(): void => run((c) => c.toggleBulletList())}
+						menuItems={bulletStyleItems}
+					>
+						<IconLabel icon="List" />
+					</SplitButton>
+					<SplitButton
+						tooltip={t('label.ordered_list', 'Numbered list')}
+						active={state.isOrderedList}
+						disabled={controlsDisabled}
+						onPrimary={(): void => run((c) => c.toggleOrderedList())}
+						menuItems={orderedStyleItems}
+					>
+						<NumberedListGlyph />
+					</SplitButton>
+				</Group>
+
+				{/* Insert */}
+				<Group mainAlignment="flex-start" padding={{ horizontal: 'extrasmall' }}>
+					<PopoverInputControl
+						tooltip={t('label.link', 'Link')}
+						icon="Link2Outline"
+						active={state.isLink}
+						disabled={controlsDisabled}
+						inputLabel={t('label.link_address', 'Link address')}
+						initialValue={state.currentHref}
+						confirmLabel={t('label.apply', 'Apply')}
+						onConfirm={(href): void => run((c) => c.extendMarkRange('link').setLink({ href }))}
+						onRemove={(): void => run((c) => c.extendMarkRange('link').unsetLink())}
+					/>
+					<SplitButton
+						tooltip={t('label.table', 'Table')}
+						disabled={controlsDisabled}
+						onPrimary={(): void =>
+							run((c) => c.insertTable({ rows: 3, cols: 3, withHeaderRow: true }))
+						}
+						menuItems={tableItems}
+					>
+						<IconLabel icon="GridOutline" />
+					</SplitButton>
+					<ToolbarButton
+						tooltip={t('label.insert_image', 'Insert image')}
+						disabled={controlsDisabled}
+						onClick={pickImageFile}
+					>
+						<IconLabel icon="ImageOutline" />
+					</ToolbarButton>
+					<PopoverInputControl
+						tooltip={t('label.insert_image_from_url', 'Insert image from URL')}
+						icon="Image2"
+						disabled={controlsDisabled}
+						inputLabel={t('label.image_url', 'Image URL')}
+						confirmLabel={t('label.insert', 'Insert')}
+						onConfirm={(src): void => run((c) => c.setImage({ src }))}
+					/>
+					<CharmapControl
+						disabled={controlsDisabled}
+						onInsert={(char): void => run((c) => c.insertContent(char))}
+					/>
+					<DropdownButton
+						tooltip={t('label.emoticons', 'Emoji')}
+						label={<IconLabel icon="SmileOutline" />}
+						items={emojiItems}
+						disabled={controlsDisabled}
+					/>
+				</Group>
+
+				{/* View */}
+				<Group mainAlignment="flex-start" padding={{ left: 'extrasmall' }}>
+					<ToolbarButton
+						tooltip={t('label.visual_blocks', 'Show blocks')}
+						active={visualBlocks}
+						disabled={sourceView}
+						onClick={onToggleVisualBlocks}
+					>
+						<VisualBlocksGlyph />
+					</ToolbarButton>
+					<ToolbarButton
+						tooltip={t('label.source_code', 'Source code')}
+						active={sourceView}
+						disabled={disabled}
+						onClick={onToggleSourceView}
+					>
+						<IconLabel icon="CodeOutline" />
+					</ToolbarButton>
+				</Group>
 
 				<input
 					ref={imageInputRef}
@@ -608,8 +1007,7 @@ export const TipTapToolbar = ({
 					data-testid="tiptap-image-input"
 					onChange={onImageInputChange}
 				/>
-			</Row>
-			<Divider color="gray3" />
+			</Bar>
 		</Container>
 	);
 };

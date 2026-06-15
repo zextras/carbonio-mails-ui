@@ -3,7 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
+import React, {
+	ChangeEvent,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useState
+} from 'react';
 
 import styled from '@emotion/styled';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -20,6 +27,24 @@ export type {
 	TipTapEditorProps
 } from './tiptap-types';
 
+const VISUAL_BLOCK_SELECTORS = [
+	'p',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'div',
+	'blockquote',
+	'pre',
+	'ul',
+	'ol',
+	'table'
+]
+	.map((tag) => `.ProseMirror.show-visual-blocks ${tag}`)
+	.join(', ');
+
 const EditorContentWrapper = styled.div`
 	width: 100%;
 	flex: 1 1 auto;
@@ -31,7 +56,25 @@ const EditorContentWrapper = styled.div`
 		outline: none;
 	}
 
+	${VISUAL_BLOCK_SELECTORS} {
+		outline: 0.0625rem dashed ${({ theme }): string => theme.palette.gray3.regular};
+		outline-offset: 0.0625rem;
+	}
+
 	${MAIL_EDITOR_CONTENT_STYLES}
+`;
+
+const SourceTextArea = styled.textarea`
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 12.5rem;
+	flex: 1 1 auto;
+	border: none;
+	resize: vertical;
+	padding: 0.5rem 0.75rem;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 0.8125rem;
+	outline: none;
 `;
 
 const getImageFilesFromDataTransfer = (dataTransfer: DataTransfer | null): Array<File> => {
@@ -40,6 +83,9 @@ const getImageFilesFromDataTransfer = (dataTransfer: DataTransfer | null): Array
 	}
 	return Array.from(dataTransfer.files).filter((file) => file.type.startsWith('image/'));
 };
+
+const htmlToPlainText = (html: string): string =>
+	new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '';
 
 export const TipTapEditor = ({
 	value,
@@ -52,6 +98,8 @@ export const TipTapEditor = ({
 	editorRef
 }: TipTapEditorProps): React.JSX.Element => {
 	const extensions = useMemo(() => buildEditorExtensions(), []);
+	const [sourceView, setSourceView] = useState(false);
+	const [visualBlocks, setVisualBlocks] = useState(false);
 
 	const editorStyle = useMemo(() => {
 		const declarations: Array<string> = [];
@@ -116,24 +164,33 @@ export const TipTapEditor = ({
 		editor?.setEditable(!disabled);
 	}, [disabled, editor]);
 
+	// Toggle the visual-blocks outline class on the editing surface.
+	useEffect(() => {
+		editor?.view.dom.classList.toggle('show-visual-blocks', visualBlocks);
+	}, [editor, visualBlocks]);
+
 	// Controlled-literal sync with a diff-guard: only re-apply the incoming value
 	// when it differs from what the editor currently holds. Since `onChange`
 	// stores the HTML extracted from the editor, the next render's diff matches
 	// and no `setContent` runs - so the caret never jumps while typing.
 	useEffect(() => {
-		if (editor && value.richText !== editor.getHTML()) {
+		if (editor && !sourceView && value.richText !== editor.getHTML()) {
 			editor.commands.setContent(value.richText, { emitUpdate: false });
 		}
-	}, [editor, value.richText]);
+	}, [editor, sourceView, value.richText]);
 
-	const handleImageFiles = useCallback(
-		(files: Array<File>) => {
-			if (files.length > 0) {
-				onFileSelect(files);
-			}
+	const onSourceChange = useCallback(
+		(event: ChangeEvent<HTMLTextAreaElement>): void => {
+			onChange({
+				richText: event.target.value,
+				plainText: htmlToPlainText(event.target.value)
+			});
 		},
-		[onFileSelect]
+		[onChange]
 	);
+
+	const toggleSourceView = useCallback(() => setSourceView((s) => !s), []);
+	const toggleVisualBlocks = useCallback(() => setVisualBlocks((s) => !s), []);
 
 	return (
 		<Container
@@ -147,11 +204,24 @@ export const TipTapEditor = ({
 				editor={editor}
 				disabled={disabled}
 				accountSettingsPrefs={accountSettingsPrefs}
-				onFileSelect={handleImageFiles}
+				onFileSelect={onFileSelect}
+				sourceView={sourceView}
+				onToggleSourceView={toggleSourceView}
+				visualBlocks={visualBlocks}
+				onToggleVisualBlocks={toggleVisualBlocks}
 			/>
-			<EditorContentWrapper>
-				<EditorContent editor={editor} />
-			</EditorContentWrapper>
+			{sourceView ? (
+				<SourceTextArea
+					data-testid="tiptap-source-view"
+					value={value.richText}
+					disabled={disabled}
+					onChange={onSourceChange}
+				/>
+			) : (
+				<EditorContentWrapper>
+					<EditorContent editor={editor} />
+				</EditorContentWrapper>
+			)}
 		</Container>
 	);
 };

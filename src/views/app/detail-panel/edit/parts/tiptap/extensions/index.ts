@@ -14,8 +14,11 @@ import { Color, FontFamily, TextStyle } from '@tiptap/extension-text-style';
 import { StarterKit } from '@tiptap/starter-kit';
 
 import { FontSize } from './font-size';
+import { Indent } from './indent';
 import { InlineImage } from './inline-image';
+import { ListStyle } from './list-style';
 import { SignatureBlock } from './signature-block';
+import { TextDirection } from './text-direction';
 
 /**
  * Builds the ordered list of extensions used by the mail compose editor.
@@ -40,6 +43,9 @@ export const buildEditorExtensions = (): Array<AnyExtension> => [
 	FontSize,
 	Highlight.configure({ multicolor: true }),
 	TextAlign.configure({ types: ['heading', 'paragraph'] }),
+	Indent,
+	TextDirection,
+	ListStyle,
 	InlineImage.configure({ inline: true, allowBase64: true }),
 	Table.configure({ resizable: true }),
 	TableRow,
