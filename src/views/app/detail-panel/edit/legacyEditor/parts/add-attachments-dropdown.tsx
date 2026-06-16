@@ -22,12 +22,12 @@ import { MailsEditorV2 } from 'types/editor';
 import {
 	useGetPublicUrl,
 	UseGetPublicUrlRespType
-} from 'views/app/detail-panel/edit/edit-utils-hooks/use-get-public-url';
+} from 'views/app/detail-panel/edit/legacyEditor/edit-utils-hooks/use-get-public-url';
 import {
 	useUploadFromFiles,
 	UseUploadFromFilesResult
-} from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+} from 'views/app/detail-panel/edit/legacyEditor/edit-utils-hooks/use-upload-from-files';
+import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;

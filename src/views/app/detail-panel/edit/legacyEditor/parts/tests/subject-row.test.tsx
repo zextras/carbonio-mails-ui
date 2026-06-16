@@ -14,7 +14,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { addEditor } from 'store/editor/index';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '__test__/generators/editors';
-import { SubjectRow } from 'views/app/detail-panel/edit/parts/subject-row';
+import { SubjectRow } from 'views/app/detail-panel/edit/legacyEditor/parts/subject-row';
 
 beforeEach(() => {
 	createSoapAPIInterceptor('SaveDraft');

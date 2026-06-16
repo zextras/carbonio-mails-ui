@@ -25,9 +25,9 @@ import { TESTID_SELECTORS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor, generateReplyMsgEditor } from 'store/editor/editor-generators';
 import { getEditor } from 'store/editor/index';
-import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
-import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
-import { generateMessage } from '../../../../../../__test__/generators/generateMessage';
+import { FileNode } from 'views/app/detail-panel/edit/legacyEditor/edit-utils-hooks/use-upload-from-files';
+import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/legacyEditor/parts/add-attachments-dropdown';
+import { generateMessage } from '../../../../../../../__test__/generators/generateMessage';
 
 type FilesUploadResult = { attachmentId: string };
 

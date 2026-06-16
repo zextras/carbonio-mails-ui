@@ -18,7 +18,7 @@ import { populateMessagesInEmailStore } from '__test__/generators/generateMessag
 import { CONVACTIONS } from 'commons/utilities';
 import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
 import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
 vi.mock('helpers/external-tabs', () => ({
@@ -26,7 +26,7 @@ vi.mock('helpers/external-tabs', () => ({
 	isFocusModeMailView: vi.fn().mockReturnValue(false)
 }));
 
-vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
+vi.mock('views/app/detail-panel/edit/legacyEditor/edit-view-board', () => ({
 	createEditBoard: vi.fn()
 }));
 

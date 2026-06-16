@@ -8,10 +8,10 @@ import React from 'react';
 
 import { page } from '@vitest/browser/context';
 
-import { generateMessage } from '../../../../../../__test__/generators/generateMessage';
-import { useEditorsStore } from '../../../../../../store/editor';
-import { generateReplyMsgEditor } from '../../../../../../store/editor/editor-generators';
-import { FolderPanelRouteParams } from '../../../../../../types/routes';
+import { generateMessage } from '../../../../../../../__test__/generators/generateMessage';
+import { useEditorsStore } from '../../../../../../../store/editor';
+import { generateReplyMsgEditor } from '../../../../../../../store/editor/editor-generators';
+import { FolderPanelRouteParams } from '../../../../../../../types/routes';
 import { RichTextEditorContainer } from '../rich-text-editor-container';
 import { renderInBrowser } from '@browser-test-utils/setup-in-browser';
 

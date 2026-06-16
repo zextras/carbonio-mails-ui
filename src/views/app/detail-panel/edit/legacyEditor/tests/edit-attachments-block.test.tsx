@@ -8,11 +8,11 @@ import React from 'react';
 
 import { screen, within } from '@testing-library/react';
 
-import { EditViewActions } from '../../../../../constants';
+import { EditViewActions } from '../../../../../../constants';
 import {
 	generateEditor,
 	generateNewMessageEditor
-} from '../../../../../store/editor/editor-generators';
+} from '../../../../../../store/editor/editor-generators';
 import { setupTest } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateEditorV2Case } from '__test__/generators/editors';
@@ -21,7 +21,7 @@ import { addEditor } from 'store/editor/index';
 import { useEditorsStore } from 'store/editor/store';
 import { UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
-import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
+import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/legacyEditor/edit-attachments-block';
 
 describe('Attachments visualization', () => {
 	const setLargeFileUploadInfoBannerVisible = vi.fn();

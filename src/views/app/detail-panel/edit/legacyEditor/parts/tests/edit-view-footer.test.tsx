@@ -9,13 +9,13 @@ import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 import { Theme, useTheme } from '@zextras/carbonio-design-system';
 
-import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
-import { setupEditorStore } from '../../../../../../__test__/generators/editor-store';
-import { createSoapAPIInterceptor } from '../../../../../../__test__/mocks/network/msw/create-api-interceptor';
-import { setupTest, screen, setupHook } from '../../../../../../__test__/test-setup';
-import { FOLDER_ACTIONS } from '../../../../../../commons/utilities';
-import { PROCESS_STATUS } from '../../../../../../constants';
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
+import { TESTID_SELECTORS } from '../../../../../../../__test__/constants';
+import { setupEditorStore } from '../../../../../../../__test__/generators/editor-store';
+import { createSoapAPIInterceptor } from '../../../../../../../__test__/mocks/network/msw/create-api-interceptor';
+import { setupTest, screen, setupHook } from '../../../../../../../__test__/test-setup';
+import { FOLDER_ACTIONS } from '../../../../../../../commons/utilities';
+import { PROCESS_STATUS } from '../../../../../../../constants';
+import { generateNewMessageEditor } from '../../../../../../../store/editor/editor-generators';
 import { EditViewFooter } from '../edit-view-footer';
 import { MailsEditorV2 } from 'types/editor';
 

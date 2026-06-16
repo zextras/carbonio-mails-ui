@@ -20,11 +20,11 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { Divider } from '../../../../../components/divider';
-import { PROCESS_STATUS } from '../../../../../constants';
-import { useMsgMoveToTrashDescriptor } from '../../../../../hooks/actions/use-msg-move-to-trash';
-import { useEditorDid, useEditorDraftSaveProcessStatus } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types/editor';
+import { Divider } from '../../../../../../components/divider';
+import { PROCESS_STATUS } from '../../../../../../constants';
+import { useMsgMoveToTrashDescriptor } from '../../../../../../hooks/actions/use-msg-move-to-trash';
+import { useEditorDid, useEditorDraftSaveProcessStatus } from '../../../../../../store/editor';
+import { MailsEditorV2 } from '../../../../../../types/editor';
 
 const DIVIDER_COLOR: AnyColor = 'gray2';
 

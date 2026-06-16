@@ -6,7 +6,7 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { EditViewActions } from '../../../../../constants';
+import { EditViewActions } from '../../../../../../constants';
 import { createEditBoard } from '../edit-view-board';
 
 const mockAddBoard = addBoard as Mock<typeof addBoard>;

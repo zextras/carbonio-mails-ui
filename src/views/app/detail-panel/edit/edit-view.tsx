@@ -16,27 +16,27 @@ import {
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, partition, some } from 'lodash';
 
-import DropZoneAttachment from './dropzone-attachment';
-import { EditAttachmentsBlock } from './edit-attachments-block';
-import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
-import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
-import { useSendHandlers } from './edit-utils-hooks/use-send-handlers';
-import { useSmimeHandlers } from './edit-utils-hooks/use-smime-handlers';
+import { useFilesAttachmentOrSmartlink } from './legacyEditor/edit-utils-hooks/use-files-attachment-or-smartlink';
+import { useLocalAttachmentOrSmartlink } from './legacyEditor/edit-utils-hooks/use-local-attachment-or-smartlink';
+import { useSendHandlers } from './legacyEditor/edit-utils-hooks/use-send-handlers';
+import { useSmimeHandlers } from './legacyEditor/edit-utils-hooks/use-smime-handlers';
 import {
 	isValidFileNode,
 	useUploadFromFiles,
 	UseUploadFromFilesResult
-} from './edit-utils-hooks/use-upload-from-files';
-import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
-import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
-import { EditViewFooter } from './parts/edit-view-footer';
-import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
-import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import { OptionsDropdown } from './parts/options-dropdown';
-import { RecipientsRows } from './parts/recipients-rows';
-import { SubjectRow } from './parts/subject-row';
-import { TextEditorContainer } from './parts/text-editor-container';
-import { WarningBanner } from './parts/warning-banner';
+} from './legacyEditor/edit-utils-hooks/use-upload-from-files';
+import DropZoneAttachment from './legacyEditor/dropzone-attachment';
+import { EditAttachmentsBlock } from './legacyEditor/edit-attachments-block';
+import { AddAttachmentsDropdown } from './legacyEditor/parts/add-attachments-dropdown';
+import { ChangeSignaturesDropdown } from './legacyEditor/parts/change-signatures-dropdown';
+import { EditViewFooter } from './legacyEditor/parts/edit-view-footer';
+import { EditViewIdentitySelector } from './legacyEditor/parts/edit-view-identity-selector';
+import { EditViewSendButtons } from './legacyEditor/parts/edit-view-send-buttons';
+import { OptionsDropdown } from './legacyEditor/parts/options-dropdown';
+import { RecipientsRows } from './legacyEditor/parts/recipients-rows';
+import { SubjectRow } from './legacyEditor/parts/subject-row';
+import { TextEditorContainer } from './legacyEditor/parts/text-editor-container';
+import { WarningBanner } from './legacyEditor/parts/warning-banner';
 import { DraftTrashedEvent } from '../../../../event-bus/events/draft-trashed';
 import { useEventSubscribe } from '../../../../event-bus/use-event-subscribe';
 import { isFulfilled } from '../../../../helpers/promises';

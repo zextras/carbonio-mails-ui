@@ -16,6 +16,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
+import { EditViewBoardContext } from './legacyEditor/edit-view-board';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
@@ -26,7 +27,6 @@ import { addEditor, useEditorSubject } from 'store/editor/index';
 import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
 import { MailMessage } from 'types/messages';
 import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
-import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 
 const parseAndValidateParams = (
 	action?: string,

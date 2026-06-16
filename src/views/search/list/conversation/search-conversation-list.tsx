@@ -14,7 +14,7 @@ import { useParams } from 'react-router-dom';
 import type { SearchListPanelRouteParams } from '../../../../types/routes';
 import { useMultipleSelection } from 'hooks/use-multiple-selection';
 import { SearchListProps } from 'types/search';
-import { Divider } from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import { Divider } from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
 import { ConversationShortcutsRegister } from 'views/app/folder-panel/conversations/conversation-shortcuts-register';
 import { MultipleSelectionActions } from 'views/app/folder-panel/parts/multiple-selection-actions';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';

@@ -15,7 +15,7 @@ import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-actio
 import {
 	testingPurposeOnly,
 	handleEditorPaste
-} from 'views/app/detail-panel/edit/parts/editor-paste-handler';
+} from 'views/app/detail-panel/edit/legacyEditor/parts/editor-paste-handler';
 
 vi.mock('api/upload-file-api');
 vi.mock('store/emails/actions/save-draft-action');

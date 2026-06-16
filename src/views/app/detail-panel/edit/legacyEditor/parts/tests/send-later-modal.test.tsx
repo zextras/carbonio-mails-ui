@@ -10,7 +10,7 @@ import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import { setupTest } from '@test-setup';
-import { SendLaterModal } from 'views/app/detail-panel/edit/parts/send-later-modal';
+import { SendLaterModal } from 'views/app/detail-panel/edit/legacyEditor/parts/send-later-modal';
 
 describe('send-later-modal', () => {
 	it('all elements of the component are visible', async () => {

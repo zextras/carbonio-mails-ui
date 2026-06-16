@@ -14,7 +14,7 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import {
 	OptionsDropdown,
 	OptionsDropdownProps
-} from 'views/app/detail-panel/edit/parts/options-dropdown';
+} from 'views/app/detail-panel/edit/legacyEditor/parts/options-dropdown';
 
 const OPTION_DROPDOWN_ICON = 'options-dropdown-icon';
 const DROPDOWN_POPPER_LIST = 'dropdown-popper-list';

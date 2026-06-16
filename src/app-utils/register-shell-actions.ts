@@ -12,7 +12,7 @@ import { isArray, isString, some } from 'lodash';
 
 import { EditViewActions, MAIL_APP_ID } from 'constants/index';
 import { mailToSharedFunction } from 'integrations/shared-functions';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
 
 interface MailToActionType extends Action {
 	id: string;

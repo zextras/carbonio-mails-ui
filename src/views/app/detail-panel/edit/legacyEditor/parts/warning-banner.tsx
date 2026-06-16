@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Icon, IconProps, Padding, Text, Theme } from '@zextras/carbonio-design-system';
 
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
+import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
 
 type WarningBannerProps = {
 	text: string;

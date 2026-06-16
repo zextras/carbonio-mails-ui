@@ -12,7 +12,7 @@ import { noop } from 'lodash';
 import type { TinyMCE, Editor } from 'tinymce';
 
 import { editorUtils } from './editor-utils';
-import { useEditorSetDirty } from '../../../../../store/editor/hooks/statuses';
+import { useEditorSetDirty } from '../../../../../../store/editor/hooks/statuses';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { buildArrayFromFileList } from 'helpers/files';
 import {
@@ -28,9 +28,9 @@ import {
 } from 'store/editor';
 import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 import { MailsEditorV2 } from 'types/editor';
-import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
-import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
-import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
+import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
+import { handleEditorPaste } from 'views/app/detail-panel/edit/legacyEditor/parts/editor-paste-handler';
+import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/legacyEditor/parts/text-editor-container';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type FileSelectProps = {

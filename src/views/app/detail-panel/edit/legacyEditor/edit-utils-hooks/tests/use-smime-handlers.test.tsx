@@ -11,7 +11,7 @@ import { noop } from 'lodash';
 import { HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
 
-import { EditView } from '../../edit-view';
+import { EditView } from '../../../edit-view';
 import { setupTest } from '@test-setup';
 import {
 	createAPIInterceptor,

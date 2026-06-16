@@ -13,7 +13,7 @@ import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
-import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
 
 export const useMsgEditDraftFn = (
 	messageId: string,

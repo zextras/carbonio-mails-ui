@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { getAttachmentsLink } from '../preview/utils';
+import { getAttachmentsLink } from '../../preview/utils';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
@@ -34,7 +34,7 @@ import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/
 import StyledWrapper from 'styled-wrapper';
 import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
-import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/attachment-upload-status';
+import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/legacyEditor/attachment-upload-status';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
