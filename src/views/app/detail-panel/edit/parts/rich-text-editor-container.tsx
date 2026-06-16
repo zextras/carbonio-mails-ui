@@ -195,10 +195,7 @@ export const RichTextEditorContainer = ({
 	}, [saveEditor, setDirty]);
 
 	const onComposerClose = useCallback(() => {
-		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
-			saveEditor();
-		}
-
+		saveEditor();
 		composerRef.current = undefined;
 		setTextProvider(undefined);
 	}, [editorId, saveEditor, setTextProvider]);
