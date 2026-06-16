@@ -16,6 +16,7 @@ import {
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map, partition, some } from 'lodash';
 
+import { LexicalEditorContainer } from './editor/lexical-editor-container';
 import { useFilesAttachmentOrSmartlink } from './legacyEditor/edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './legacyEditor/edit-utils-hooks/use-local-attachment-or-smartlink';
 import { useSendHandlers } from './legacyEditor/edit-utils-hooks/use-send-handlers';
@@ -159,6 +160,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { status: sendAllowedStatus } = useEditorSend(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
+	// Local-only switch between the new Lexical editor (default) and the legacy TinyMCE editor
+	const [useLexicalEditor, setUseLexicalEditor] = useState<boolean>(true);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
 
 	// Check for SMiME enablement
@@ -396,6 +399,16 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 								}
 								isSmimeEnabled={isSmimeEnabled}
 							/>
+							<Button
+								data-testid="BtnToggleEditor"
+								type="outlined"
+								onClick={(): void => setUseLexicalEditor((prev) => !prev)}
+								label={
+									useLexicalEditor
+										? t('label.use_tinymce_editor', 'Use TinyMCE')
+										: t('label.use_lexical_editor', 'Use Lexical')
+								}
+							/>
 							<Tooltip
 								label={saveDraftAllowedStatus?.reason}
 								disabled={saveDraftAllowedStatus?.allowed}
@@ -435,7 +448,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							<MemoizedSubjectRow editorId={editorId} />
 						</Container>
 						<EditAttachmentsBlock editorId={editorId} />
-						<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
+						{useLexicalEditor ? (
+							<LexicalEditorContainer editorId={editorId} />
+						) : (
+							<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
+						)}
 					</GapContainer>
 				</GapContainer>
 			</Container>
