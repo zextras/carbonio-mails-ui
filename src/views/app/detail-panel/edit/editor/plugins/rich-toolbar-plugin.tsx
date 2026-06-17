@@ -3,18 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $createHeadingNode, $createQuoteNode, type HeadingTagType } from '@lexical/rich-text';
 import { $patchStyleText, $setBlocksType } from '@lexical/selection';
+import { INSERT_TABLE_COMMAND } from '@lexical/table';
 import { Button, Dropdown, DropdownItem, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import {
 	$createParagraphNode,
 	$getSelection,
+	$isNodeSelection,
 	$isRangeSelection,
 	type ElementFormatType,
 	FORMAT_ELEMENT_COMMAND,
@@ -24,7 +26,9 @@ import {
 	UNDO_COMMAND
 } from 'lexical';
 
-import { INSERT_INLINE_IMAGE_COMMAND } from './image-plugin';
+import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
+import { $isImageNode, type ImageAlignment } from './nodes/image-node';
+import { TableGridPicker } from './table-grid-picker';
 import { useEditorAttachments } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
@@ -35,11 +39,35 @@ type RichToolbarPluginProps = {
 
 type BlockType = 'paragraph' | 'quote' | HeadingTagType;
 
+function $selectionHasImage(): boolean {
+	const selection = $getSelection();
+	return $isNodeSelection(selection) && selection.getNodes().some((node) => $isImageNode(node));
+}
+
 export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const { addInlineAttachments } = useEditorAttachments(editorId);
 	const colorInputRef = useRef<HTMLInputElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [tableMenuOpen, setTableMenuOpen] = useState(false);
+	const [isImageSelected, setIsImageSelected] = useState(false);
+
+	// Track whether the current selection is a single inline image, so the image
+	// alignment control can be shown only when relevant.
+	useEffect(
+		() =>
+			editor.registerUpdateListener(({ editorState }) => {
+				setIsImageSelected(editorState.read($selectionHasImage));
+			}),
+		[editor]
+	);
+
+	const alignImage = useCallback(
+		(alignment: ImageAlignment): void => {
+			editor.dispatchCommand(SET_INLINE_IMAGE_ALIGNMENT_COMMAND, alignment);
+		},
+		[editor]
+	);
 
 	const formatText = useCallback(
 		(format: TextFormatType): void => {
@@ -207,6 +235,51 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[editor]
 	);
 
+	const insertTable = useCallback(
+		(rows: number, columns: number): void => {
+			editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+				rows: String(rows),
+				columns: String(columns),
+				includeHeaders: false
+			});
+			setTableMenuOpen(false);
+		},
+		[editor]
+	);
+
+	const tableItems = useMemo<Array<DropdownItem>>(
+		() => [
+			{
+				id: 'table-grid',
+				label: t('label.table', 'Table'),
+				keepOpen: true,
+				customComponent: <TableGridPicker onSelect={insertTable} />
+			}
+		],
+		[insertTable]
+	);
+
+	const imageAlignItems = useMemo<Array<DropdownItem>>(
+		() => [
+			{
+				id: 'image-left',
+				label: t('label.align_left', 'Align left'),
+				onClick: () => alignImage('left')
+			},
+			{
+				id: 'image-center',
+				label: t('label.align_center', 'Center'),
+				onClick: () => alignImage('center')
+			},
+			{
+				id: 'image-right',
+				label: t('label.align_right', 'Align right'),
+				onClick: () => alignImage('right')
+			}
+		],
+		[alignImage]
+	);
+
 	return (
 		<Row
 			mainAlignment="flex-start"
@@ -291,6 +364,20 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 					onClick={(): void => undefined}
 				/>
 			</Dropdown>
+			<Dropdown
+				items={tableItems}
+				forceOpen={tableMenuOpen}
+				onClose={(): void => setTableMenuOpen(false)}
+				disableAutoFocus
+			>
+				<Button
+					type="ghost"
+					size="small"
+					icon="GridOutline"
+					label={t('label.table', 'Table')}
+					onClick={(): void => setTableMenuOpen((open) => !open)}
+				/>
+			</Dropdown>
 			<Button type="ghost" size="small" label={t('label.link', 'Link')} onClick={insertLink} />
 			<Button
 				type="ghost"
@@ -299,6 +386,17 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				label={t('label.image', 'Image')}
 				onClick={(): void => fileInputRef.current?.click()}
 			/>
+			{isImageSelected && (
+				<Dropdown items={imageAlignItems}>
+					<Button
+						type="ghost"
+						size="small"
+						icon="ImageOutline"
+						label={t('label.image_align', 'Align image')}
+						onClick={(): void => undefined}
+					/>
+				</Dropdown>
+			)}
 			<Button
 				type="ghost"
 				size="small"

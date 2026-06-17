@@ -15,7 +15,9 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -25,6 +27,8 @@ import { ImagePlugin } from '../plugins/image-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
+import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
+import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 
 const LexicalWrapper = styled.div<{
@@ -97,8 +101,178 @@ const LexicalWrapper = styled.div<{
 		max-width: 100%;
 	}
 
+	.mails-lexical-image-left {
+		float: left;
+		margin: 0 1rem 1rem 0;
+	}
+
+	.mails-lexical-image-right {
+		float: right;
+		margin: 0 0 1rem 1rem;
+	}
+
+	.mails-lexical-image-center {
+		display: block;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.mails-lexical-image-wrapper {
+		position: relative;
+		display: inline-block;
+		line-height: 0;
+	}
+
+	.mails-lexical-image-wrapper img {
+		cursor: default;
+	}
+
+	.mails-lexical-image-selected img {
+		outline: 0.125rem solid ${({ theme }): string => theme.palette.primary.regular};
+		outline-offset: 0.0625rem;
+	}
+
+	.mails-lexical-image-resizer {
+		position: absolute;
+		width: 0.5rem;
+		height: 0.5rem;
+		padding: 0;
+		border: 0.0625rem solid ${({ theme }): string => theme.palette.gray6.regular};
+		background: ${({ theme }): string => theme.palette.primary.regular};
+		appearance: none;
+		z-index: 2;
+	}
+
+	.mails-lexical-image-resizer-nw {
+		top: -0.25rem;
+		left: -0.25rem;
+		cursor: nwse-resize;
+	}
+
+	.mails-lexical-image-resizer-n {
+		top: -0.25rem;
+		left: 50%;
+		transform: translateX(-50%);
+		cursor: ns-resize;
+	}
+
+	.mails-lexical-image-resizer-ne {
+		top: -0.25rem;
+		right: -0.25rem;
+		cursor: nesw-resize;
+	}
+
+	.mails-lexical-image-resizer-e {
+		top: 50%;
+		right: -0.25rem;
+		transform: translateY(-50%);
+		cursor: ew-resize;
+	}
+
+	.mails-lexical-image-resizer-se {
+		bottom: -0.25rem;
+		right: -0.25rem;
+		cursor: nwse-resize;
+	}
+
+	.mails-lexical-image-resizer-s {
+		bottom: -0.25rem;
+		left: 50%;
+		transform: translateX(-50%);
+		cursor: ns-resize;
+	}
+
+	.mails-lexical-image-resizer-sw {
+		bottom: -0.25rem;
+		left: -0.25rem;
+		cursor: nesw-resize;
+	}
+
+	.mails-lexical-image-resizer-w {
+		top: 50%;
+		left: -0.25rem;
+		transform: translateY(-50%);
+		cursor: ew-resize;
+	}
+
 	a.mails-lexical-link {
 		color: ${({ theme }): string => theme.palette.primary.regular};
+	}
+
+	.mails-lexical-table {
+		border-collapse: collapse;
+		table-layout: fixed;
+		width: 100%;
+		margin: 0.5rem 0;
+	}
+
+	.mails-lexical-table td,
+	.mails-lexical-table th {
+		position: relative;
+		border: 0.0625rem solid ${({ theme }): string => theme.palette.gray3.regular};
+		padding: 0.375rem 0.5rem;
+		vertical-align: top;
+		min-width: 2.5rem;
+	}
+
+	.mails-lexical-table th {
+		background: ${({ theme }): string => theme.palette.gray5.regular};
+		font-weight: bold;
+		text-align: left;
+	}
+
+	.mails-lexical-table-cell-selected {
+		background: ${({ theme }): string => theme.palette.highlight.regular};
+	}
+
+	.mails-lexical-table-cell-action-button {
+		position: absolute;
+		z-index: 2;
+		transform: translate(-100%, 0);
+	}
+
+	.mails-lexical-table-resizer {
+		position: absolute;
+		z-index: 2;
+		padding: 0;
+		border: none;
+		background: transparent;
+		appearance: none;
+	}
+
+	.mails-lexical-table-resizer-column {
+		width: 0.375rem;
+		transform: translateX(-50%);
+		cursor: col-resize;
+	}
+
+	.mails-lexical-table-resizer-row {
+		height: 0.375rem;
+		transform: translateY(-50%);
+		cursor: row-resize;
+	}
+
+	.mails-lexical-table-resizer:hover {
+		background: ${({ theme }): string => theme.palette.primary.regular};
+	}
+
+	.mails-lexical-table-resizer-guide {
+		position: absolute;
+		z-index: 3;
+		background: ${({ theme }): string => theme.palette.primary.regular};
+		pointer-events: none;
+	}
+
+	.mails-lexical-table-resizer-guide-column {
+		top: 0;
+		bottom: 0;
+		width: 0.0625rem;
+	}
+
+	.mails-lexical-table-resizer-guide-row {
+		left: 0;
+		right: 0;
+		height: 0.0625rem;
 	}
 `;
 
@@ -116,7 +290,18 @@ export const RichTextEditorContainer = ({
 	const initialConfig = useMemo(
 		() => ({
 			namespace: 'MailsLexicalEditor',
-			nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, ImageNode],
+			nodes: [
+				HeadingNode,
+				QuoteNode,
+				ListNode,
+				ListItemNode,
+				LinkNode,
+				AutoLinkNode,
+				ImageNode,
+				TableNode,
+				TableRowNode,
+				TableCellNode
+			],
 			theme: {
 				text: {
 					bold: 'mails-lexical-bold',
@@ -126,7 +311,9 @@ export const RichTextEditorContainer = ({
 					underlineStrikethrough: 'mails-lexical-underline-strikethrough'
 				},
 				link: 'mails-lexical-link',
-				image: 'mails-lexical-image'
+				image: 'mails-lexical-image',
+				table: 'mails-lexical-table',
+				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
 			onError: (error: Error): void => {
 				throw error;
@@ -164,6 +351,9 @@ export const RichTextEditorContainer = ({
 					<HistoryPlugin />
 					<ListPlugin />
 					<LinkPlugin />
+					<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
+					<TableActionMenuPlugin />
+					<TableCellResizerPlugin />
 					<ImagePlugin />
 					<PastePlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />

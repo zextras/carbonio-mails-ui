@@ -31,7 +31,7 @@ vi.mock('helpers/external-tabs', () => ({
 	isFocusModeMailView: vi.fn().mockReturnValue(false)
 }));
 
-vi.mock('views/app/detail-panel/edit/legacyEditor/edit-view-board', () => ({
+vi.mock('views/app/detail-panel/edit/edit-view-board', () => ({
 	createEditBoard: vi.fn()
 }));
 
