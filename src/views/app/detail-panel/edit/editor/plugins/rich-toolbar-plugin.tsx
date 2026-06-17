@@ -11,19 +11,29 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $createHeadingNode, $createQuoteNode, type HeadingTagType } from '@lexical/rich-text';
 import { $patchStyleText, $setBlocksType } from '@lexical/selection';
 import { INSERT_TABLE_COMMAND } from '@lexical/table';
-import { Button, Dropdown, DropdownItem, Row } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	Container,
+	Dropdown,
+	DropdownItem,
+	IconButton,
+	Row,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import {
 	$createParagraphNode,
 	$getSelection,
+	$isElementNode,
 	$isNodeSelection,
 	$isRangeSelection,
 	type ElementFormatType,
+	type ElementNode,
 	FORMAT_ELEMENT_COMMAND,
 	FORMAT_TEXT_COMMAND,
-	REDO_COMMAND,
-	type TextFormatType,
-	UNDO_COMMAND
+	INDENT_CONTENT_COMMAND,
+	OUTDENT_CONTENT_COMMAND,
+	type TextFormatType
 } from 'lexical';
 
 import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
@@ -39,15 +49,46 @@ type RichToolbarPluginProps = {
 
 type BlockType = 'paragraph' | 'quote' | HeadingTagType;
 
+/**
+ * The Carbonio Design System icon set does not include dedicated rich-text
+ * formatting glyphs (bold, italic, alignment, indentation, ...). For every
+ * toolbar action without a matching CDS icon we fall back to this placeholder,
+ * so the toolbar layout mirrors the legacy TinyMCE one until proper icons are
+ * available.
+ */
+const PLACEHOLDER_ICON = 'AlertTriangleOutline';
+
 function $selectionHasImage(): boolean {
 	const selection = $getSelection();
 	return $isNodeSelection(selection) && selection.getNodes().some((node) => $isImageNode(node));
 }
 
+const ToolbarDivider = (): React.JSX.Element => (
+	<Container
+		width="0.0625rem"
+		height="1.5rem"
+		background={'gray3'}
+		margin={{ left: 'extrasmall', right: 'extrasmall' }}
+	/>
+);
+
+type ToolbarIconButtonProps = {
+	icon: string;
+	label: string;
+	onClick: () => void;
+};
+
+const ToolbarIconButton = ({ icon, label, onClick }: ToolbarIconButtonProps): React.JSX.Element => (
+	<Tooltip label={label}>
+		<IconButton icon={icon} type="ghost" size="large" onClick={onClick} aria-label={label} />
+	</Tooltip>
+);
+
 export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const { addInlineAttachments } = useEditorAttachments(editorId);
-	const colorInputRef = useRef<HTMLInputElement>(null);
+	const textColorInputRef = useRef<HTMLInputElement>(null);
+	const backgroundColorInputRef = useRef<HTMLInputElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
@@ -95,6 +136,26 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[editor]
 	);
 
+	const setDirection = useCallback(
+		(direction: 'ltr' | 'rtl'): void => {
+			editor.update(() => {
+				const selection = $getSelection();
+				if (!$isRangeSelection(selection)) {
+					return;
+				}
+				const topLevelElements = new Map<string, ElementNode>();
+				selection.getNodes().forEach((node) => {
+					const topLevel = node.getTopLevelElement();
+					if (topLevel && $isElementNode(topLevel)) {
+						topLevelElements.set(topLevel.getKey(), topLevel);
+					}
+				});
+				topLevelElements.forEach((element) => element.setDirection(direction));
+			});
+		},
+		[editor]
+	);
+
 	const formatBlock = useCallback(
 		(blockType: BlockType): void => {
 			editor.update(() => {
@@ -120,9 +181,28 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		editor.dispatchCommand(TOGGLE_LINK_COMMAND, url || null);
 	}, [editor]);
 
-	const onColorSelected = useCallback(
+	const insertImageByUrl = useCallback((): void => {
+		// eslint-disable-next-line no-alert
+		const url = window.prompt(t('label.insert_image_url', 'Image URL'));
+		if (url) {
+			editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
+				src: url,
+				cidUrl: undefined,
+				altText: 'image'
+			});
+		}
+	}, [editor]);
+
+	const onTextColorSelected = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>): void => {
 			patchStyle({ color: event.target.value });
+		},
+		[patchStyle]
+	);
+
+	const onBackgroundColorSelected = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>): void => {
+			patchStyle({ 'background-color': event.target.value });
 		},
 		[patchStyle]
 	);
@@ -193,48 +273,6 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[patchStyle]
 	);
 
-	const alignItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'left',
-				label: t('label.align_left', 'Align left'),
-				onClick: () => formatAlign('left')
-			},
-			{
-				id: 'center',
-				label: t('label.align_center', 'Center'),
-				onClick: () => formatAlign('center')
-			},
-			{
-				id: 'right',
-				label: t('label.align_right', 'Align right'),
-				onClick: () => formatAlign('right')
-			},
-			{
-				id: 'justify',
-				label: t('label.align_justify', 'Justify'),
-				onClick: () => formatAlign('justify')
-			}
-		],
-		[formatAlign]
-	);
-
-	const listItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'bullet',
-				label: t('label.bullet_list', 'Bulleted list'),
-				onClick: () => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
-			},
-			{
-				id: 'number',
-				label: t('label.numbered_list', 'Numbered list'),
-				onClick: () => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
-			}
-		],
-		[editor]
-	);
-
 	const insertTable = useCallback(
 		(rows: number, columns: number): void => {
 			editor.dispatchCommand(INSERT_TABLE_COMMAND, {
@@ -247,16 +285,18 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[editor]
 	);
 
+	const tableLabel = t('label.table', 'Table');
+
 	const tableItems = useMemo<Array<DropdownItem>>(
 		() => [
 			{
 				id: 'table-grid',
-				label: t('label.table', 'Table'),
+				label: tableLabel,
 				keepOpen: true,
 				customComponent: <TableGridPicker onSelect={insertTable} />
 			}
 		],
-		[insertTable]
+		[insertTable, tableLabel]
 	);
 
 	const imageAlignItems = useMemo<Array<DropdownItem>>(
@@ -283,19 +323,13 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	return (
 		<Row
 			mainAlignment="flex-start"
+			crossAlignment="center"
 			wrap="wrap"
 			padding={{ vertical: 'extrasmall' }}
 			gap="extrasmall"
 			width="fill"
 		>
-			<Dropdown items={blockItems}>
-				<Button
-					type="ghost"
-					size="small"
-					label={t('label.style', 'Style')}
-					onClick={(): void => undefined}
-				/>
-			</Dropdown>
+			{/* Font family / size / block style selectors */}
 			<Dropdown items={fontItems}>
 				<Button
 					type="ghost"
@@ -312,112 +346,208 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 					onClick={(): void => undefined}
 				/>
 			</Dropdown>
-			<Button
-				type="ghost"
-				size="small"
+			<Dropdown items={blockItems}>
+				<Button
+					type="ghost"
+					size="small"
+					label={t('label.paragraph', 'Paragraph')}
+					onClick={(): void => undefined}
+				/>
+			</Dropdown>
+
+			<ToolbarDivider />
+
+			{/* Text and background color */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.text_color', 'Text color')}
+				onClick={(): void => textColorInputRef.current?.click()}
+			/>
+			<ToolbarIconButton
+				icon="BrushOutline"
+				label={t('label.background_color', 'Background color')}
+				onClick={(): void => backgroundColorInputRef.current?.click()}
+			/>
+
+			<ToolbarDivider />
+
+			{/* Inline text formatting */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
 				label={t('label.bold', 'Bold')}
 				onClick={(): void => formatText('bold')}
 			/>
-			<Button
-				type="ghost"
-				size="small"
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
 				label={t('label.italic', 'Italic')}
 				onClick={(): void => formatText('italic')}
 			/>
-			<Button
-				type="ghost"
-				size="small"
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
 				label={t('label.underline', 'Underline')}
 				onClick={(): void => formatText('underline')}
 			/>
-			<Button
-				type="ghost"
-				size="small"
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
 				label={t('label.strikethrough', 'Strikethrough')}
 				onClick={(): void => formatText('strikethrough')}
 			/>
-			<Button
-				type="ghost"
-				size="small"
-				label={t('label.color', 'Color')}
-				onClick={(): void => colorInputRef.current?.click()}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.remove_format', 'Clear formatting')}
+				onClick={(): void =>
+					patchStyle({ color: '', 'background-color': '', 'font-size': '', 'font-family': '' })
+				}
 			/>
-			<Button
-				type="ghost"
-				size="small"
-				label={t('label.remove_format', 'Clear')}
-				onClick={(): void => patchStyle({ color: '', 'font-size': '', 'font-family': '' })}
+
+			<ToolbarDivider />
+
+			{/* Paragraph alignment */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.align_left', 'Align left')}
+				onClick={(): void => formatAlign('left')}
 			/>
-			<Dropdown items={alignItems}>
-				<Button
-					type="ghost"
-					size="small"
-					label={t('label.align', 'Align')}
-					onClick={(): void => undefined}
-				/>
-			</Dropdown>
-			<Dropdown items={listItems}>
-				<Button
-					type="ghost"
-					size="small"
-					label={t('label.list', 'List')}
-					onClick={(): void => undefined}
-				/>
-			</Dropdown>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.align_center', 'Center')}
+				onClick={(): void => formatAlign('center')}
+			/>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.align_right', 'Align right')}
+				onClick={(): void => formatAlign('right')}
+			/>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.align_justify', 'Justify')}
+				onClick={(): void => formatAlign('justify')}
+			/>
+
+			{/* Indentation */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.indent_decrease', 'Decrease indent')}
+				onClick={(): void => {
+					editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+				}}
+			/>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.indent_increase', 'Increase indent')}
+				onClick={(): void => {
+					editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+				}}
+			/>
+
+			{/* Text direction */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.ltr', 'Left to right')}
+				onClick={(): void => setDirection('ltr')}
+			/>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.rtl', 'Right to left')}
+				onClick={(): void => setDirection('rtl')}
+			/>
+
+			<ToolbarDivider />
+
+			{/* Lists */}
+			<ToolbarIconButton
+				icon="ListOutline"
+				label={t('label.bullet_list', 'Bulleted list')}
+				onClick={(): void => {
+					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+				}}
+			/>
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.numbered_list', 'Numbered list')}
+				onClick={(): void => {
+					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+				}}
+			/>
+
+			<ToolbarDivider />
+
+			{/* Insert link / table / images */}
+			<ToolbarIconButton icon="Link2Outline" label={t('label.link', 'Link')} onClick={insertLink} />
 			<Dropdown
 				items={tableItems}
 				forceOpen={tableMenuOpen}
 				onClose={(): void => setTableMenuOpen(false)}
 				disableAutoFocus
 			>
-				<Button
-					type="ghost"
-					size="small"
-					icon="GridOutline"
-					label={t('label.table', 'Table')}
-					onClick={(): void => setTableMenuOpen((open) => !open)}
-				/>
+				<Tooltip label={tableLabel}>
+					<IconButton
+						icon="GridOutline"
+						type="ghost"
+						size="large"
+						aria-label={tableLabel}
+						onClick={(): void => setTableMenuOpen((open) => !open)}
+					/>
+				</Tooltip>
 			</Dropdown>
-			<Button type="ghost" size="small" label={t('label.link', 'Link')} onClick={insertLink} />
-			<Button
-				type="ghost"
-				size="small"
+			<ToolbarIconButton
 				icon="ImageOutline"
 				label={t('label.image', 'Image')}
 				onClick={(): void => fileInputRef.current?.click()}
 			/>
+			<ToolbarIconButton
+				icon="FileImageOutline"
+				label={t('label.insert_image_url', 'Image from URL')}
+				onClick={insertImageByUrl}
+			/>
 			{isImageSelected && (
 				<Dropdown items={imageAlignItems}>
-					<Button
-						type="ghost"
-						size="small"
-						icon="ImageOutline"
-						label={t('label.image_align', 'Align image')}
-						onClick={(): void => undefined}
-					/>
+					<Tooltip label={t('label.image_align', 'Align image')}>
+						<IconButton
+							icon="ImageOutline"
+							type="ghost"
+							size="large"
+							aria-label={t('label.image_align', 'Align image')}
+							onClick={(): void => undefined}
+						/>
+					</Tooltip>
 				</Dropdown>
 			)}
-			<Button
-				type="ghost"
-				size="small"
-				label={t('label.undo', 'Undo')}
-				onClick={(): void => {
-					editor.dispatchCommand(UNDO_COMMAND, undefined);
-				}}
+
+			<ToolbarDivider />
+
+			{/* Special characters and emoji */}
+			<ToolbarIconButton
+				icon={PLACEHOLDER_ICON}
+				label={t('label.special_character', 'Special character')}
+				onClick={(): void => undefined}
 			/>
-			<Button
-				type="ghost"
-				size="small"
-				label={t('label.redo', 'Redo')}
-				onClick={(): void => {
-					editor.dispatchCommand(REDO_COMMAND, undefined);
-				}}
+			<ToolbarIconButton
+				icon="SmileOutline"
+				label={t('label.emoji', 'Emoji')}
+				onClick={(): void => undefined}
 			/>
+
+			<ToolbarDivider />
+
+			{/* Source code */}
+			<ToolbarIconButton
+				icon="CodeOutline"
+				label={t('label.source_code', 'Source code')}
+				onClick={(): void => undefined}
+			/>
+
 			<input
-				ref={colorInputRef}
+				ref={textColorInputRef}
 				type="color"
 				style={{ display: 'none' }}
-				onChange={onColorSelected}
+				onChange={onTextColorSelected}
+			/>
+			<input
+				ref={backgroundColorInputRef}
+				type="color"
+				style={{ display: 'none' }}
+				onChange={onBackgroundColorSelected}
 			/>
 			<input
 				ref={fileInputRef}
