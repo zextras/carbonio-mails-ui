@@ -6,7 +6,7 @@
 import React, { SyntheticEvent, useMemo } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import {
 	Folder,
 	FOLDERS,
@@ -16,11 +16,17 @@ import {
 import { noop, startsWith } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { LIST_LIMIT } from 'constants/index';
 import { getFolderIdParts } from 'helpers/folders';
+import { parseMessageSortingOptions } from 'helpers/parseMessageSortingOptions';
+import { getFilterQuery } from 'helpers/sorting';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import { useMessagesByFolder } from 'store/emails/store';
+import { SortBy } from 'types/sorting';
 import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 import { MoveMessage } from 'ui-actions/move-msg';
+import { getLocationOrigin } from 'views/app/detail-panel/preview/utils';
 import { DeleteModal } from 'views/sidebar/delete-modal';
 import { EditModal } from 'views/sidebar/edit-modal';
 import { EmptyModal } from 'views/sidebar/empty-modal';
@@ -29,14 +35,40 @@ import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 
 type FolderActionsProps = {
 	id: string;
-	icon: string;
+	icon?: string;
 	label: string;
-	onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	onClick?: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled?: boolean;
+	items?: Array<FolderActionsProps>;
 };
+
+function triggerFileDownload(url: string): void {
+	const link = document.createElement('a');
+	link.href = url;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
+
+// async function triggerFileDownload(url: string, filename?: string): Promise<void> {
+// 	const response = await fetch(url, { credentials: 'include' });
+// 	const blob = await response.blob();
+// 	const objectUrl = URL.createObjectURL(blob);
+
+// 	const link = document.createElement('a');
+// 	link.href = objectUrl;
+// 	if (filename) link.download = filename;
+// 	document.body.appendChild(link);
+// 	link.click();
+// 	document.body.removeChild(link);
+
+// 	URL.revokeObjectURL(objectUrl);
+// }
 
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { createModal, closeModal } = useModal();
+	const { name } = useUserAccount();
+	const { prefs } = useUserSettings();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
 	const messagesInFolder = useMessagesByFolder(folder.id);
 
@@ -327,9 +359,156 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						folderActionSoapApi({ folder, op: 'read', l: folder.id });
 					}
 				}
+			},
+
+			{
+				id: 'export',
+				'data-testid': `folder-action-export-option`,
+				icon: 'DownloadOutline',
+				label: t('label.export_archive', 'Export Archive'),
+				items: [
+					{
+						id: `export-tgz`,
+						icon: 'DownloadOutline',
+						'data-testid': `folder-action-export-tgz`,
+						label: t('label.export_archive_tgz', 'Carbonio archive (TGZ)'),
+						onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+							if (e) {
+								e.stopPropagation();
+							}
+							const user = folder.isLink ? (folder.owner ?? name) : name;
+							triggerFileDownload(
+								`${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=tgz&types=message,conversation&id=${folder.id}&filename=${folder.name}.tgz`
+							);
+						}
+					},
+					{
+						id: `export-mbox`,
+						icon: 'DownloadOutline',
+
+						'data-testid': `folder-action-export-mbox`,
+						label: t('label.export_archive_mbox', 'MBOX Archive'),
+						onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+							if (e) {
+								e.stopPropagation();
+							}
+							const user = folder.isLink ? (folder.owner ?? name) : name;
+
+							// ?? whats the format for the  mbox case??
+							// conversation non è un tipo supportato da fmt=mbox
+							triggerFileDownload(
+								// `${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=mbox&types=message&id=${folder.id}&filename=${folder.name}.mbox`
+								`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?auth=co&fmt=mbox&filename=${folder.name}.mbox`
+							);
+						}
+					}
+				]
+			},
+			{
+				id: 'import',
+				'data-testid': `folder-action-import-option`,
+				icon: 'UploadOutline',
+				label: t('label.import_archive', 'Import Archive'),
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+					if (e) {
+						e.stopPropagation();
+					}
+					const user = folder.isLink ? (folder.owner ?? name) : name;
+					const input = document.createElement('input');
+					input.type = 'file';
+					input.accept = '.tgz,.mbox';
+					input.onchange = (): void => {
+						const file = input.files?.[0];
+						if (!file) {
+							input.remove();
+							return;
+						}
+
+						const isMbox = file.name.endsWith('.mbox');
+						const fmt = isMbox ? 'mbox' : 'tgz';
+						const contentType = isMbox ? 'application/mbox' : 'application/x-compressed-tar';
+
+						createSnackbar({
+							key: 'import-archive',
+							replace: true,
+							severity: 'info',
+							label: t(
+								'messages.snackbar.import_archive_started',
+								'{{filename}} import has started. You will be notified when it’s ready',
+								{
+									filename: file.name
+								}
+							),
+							disableAutoHide: false,
+							hideButton: true
+						});
+						// chiamata sincrona, valutare cosa fare con file pesanti
+						fetch(
+							`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?fmt=${fmt}&auth=co`,
+							{
+								method: 'POST',
+								body: file,
+								headers: { 'Content-Type': contentType }
+							}
+						)
+							.then((response) => {
+								createSnackbar({
+									key: 'import-archive',
+									replace: true,
+									severity: response.ok ? 'success' : 'error',
+									label: response.ok
+										? t(
+												'messages.snackbar.import_archive_success',
+												'{{filename}} imported successfully',
+												{
+													filename: file.name
+												}
+											)
+										: t(
+												'messages.snackbar.import_archive_error',
+												'{{filename}} imported failed. Please try again or contact your administrator',
+												{
+													filename: file.name
+												}
+											),
+									disableAutoHide: true,
+									actionLabel: t('label.dismiss', 'Dismiss')
+								});
+								// if (response.ok) {
+								// 	const { sortType, sortDirection, filterType } = parseMessageSortingOptions(
+								// 		folder.id,
+								// 		prefs.zimbraPrefSortOrder as string
+								// 	);
+								// 	searchEmailStoreAction({
+								// 		limit: LIST_LIMIT.INITIAL_LIMIT,
+								// 		sortBy: `${sortType}${sortDirection}` as SortBy,
+								// 		query: getFilterQuery(filterType, folder.id),
+								// 		types: 'conversation',
+								// 		offset: 0,
+								// 		locale: prefs.zimbraPrefLocale as string
+								// 	});
+								// }
+							})
+							.catch(() => {
+								createSnackbar({
+									key: 'import-archive',
+									replace: true,
+									severity: 'error',
+									label: t('label.error_try_again', 'Something went wrong, please try again'),
+									autoHideTimeout: 3000,
+									hideButton: true
+								});
+							})
+							.finally(() => {
+								input.remove();
+							});
+					};
+					document.body.appendChild(input);
+					input.click();
+				}
 			}
 		],
-		[closeModal, createModal, createSnackbar, folder, folderIsTrash, trashMessages]
+		[folder, folderIsTrash, createModal, closeModal, trashMessages, createSnackbar, name]
 	);
 
 	const defaultFolderActions = useMemo(

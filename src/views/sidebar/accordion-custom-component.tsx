@@ -5,6 +5,7 @@
  */
 import React, { FC, useMemo } from 'react';
 
+import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import {
 	AccordionItem,
@@ -46,6 +47,17 @@ import {
 	handleDragEnter
 } from 'views/sidebar/utils';
 
+const rotateKeyframes = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+const SpinningIcon = styled(Icon)`
+	animation: ${rotateKeyframes} 2s linear infinite;
+`;
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
 	height: 3rem;
@@ -290,7 +302,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 		return (
 			<FittedRow>
 				<Padding left="small">
-					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="large" />
 				</Padding>
 				<Tooltip label={accordionItemToolTip} placement="right" maxWidth="100%">
 					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem} />
@@ -341,6 +353,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 											item={accordionItem}
 										>
 											{statusIcon}
+											{/* <SpinningIcon icon="LoaderOutline" color="primary" /> */}
 										</AccordionItem>
 									</Tooltip>
 								</FolderActionWrapper>
@@ -352,6 +365,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 											item={accordionItem}
 										>
 											{statusIcon}
+											<SpinningIcon icon="LoaderOutline" color="primary" />
 										</AccordionItem>
 									</Tooltip>
 								</Container>
