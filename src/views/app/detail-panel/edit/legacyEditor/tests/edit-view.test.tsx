@@ -22,7 +22,7 @@ import type { Mock } from 'vitest';
 import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import * as useQueryParam from '../../../../../../hooks/use-query-param';
-import { EditView } from '../../edit-view';
+import { EditView } from '../edit-view';
 import { setupTest, screen, within } from '@test-setup';
 import {
 	useBoard as mockedUseBoard,

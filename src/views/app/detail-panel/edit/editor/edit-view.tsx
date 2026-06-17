@@ -378,8 +378,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						gap={'medium'}
 					>
 						{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
+
 						<GapRow
-							background={'error'}
 							mainAlignment={'flex-end'}
 							gap={'medium'}
 							padding={{ top: 'small', right: 'small' }}

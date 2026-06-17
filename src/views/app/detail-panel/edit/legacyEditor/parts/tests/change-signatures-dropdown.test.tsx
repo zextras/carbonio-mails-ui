@@ -20,7 +20,7 @@ import {
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { Signature } from 'types/settings';
-import { EditView } from 'views/app/detail-panel/edit/edit-view';
+import { EditView } from 'views/app/detail-panel/edit/legacyEditor/edit-view';
 
 describe('Change signature while composing mail', () => {
 	beforeEach(() => {

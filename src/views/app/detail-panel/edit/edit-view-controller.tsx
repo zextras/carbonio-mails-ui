@@ -17,16 +17,18 @@ import {
 import { includes, noop } from 'lodash';
 
 import { EditViewBoardContext } from './edit-view-board';
+import { EditView as ClonedEditView } from './editor/edit-view';
+import { EditView as LegacyEditView, EditViewHandle } from './legacyEditor/edit-view';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';
 import { getFullMessageEmailStoreAction } from '../../../../store/emails/actions/get-message';
 import { useMessageById } from '../../../../store/emails/store';
 import { EditViewActions } from 'constants/index';
+import { useLegacyEditor } from 'hooks/use-legacy-editor';
 import { addEditor, useEditorSubject } from 'store/editor/index';
 import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
 import { MailMessage } from 'types/messages';
-import { EditView, EditViewHandle } from 'views/app/detail-panel/edit/edit-view';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -61,13 +63,15 @@ type EditViewControllerCoreProps = {
 	editor: MailsEditorV2;
 };
 
-const MemoizedEditView = memo(EditView);
+const MemoizedLegacyEditView = memo(LegacyEditView);
+const MemoizedClonedEditView = memo(ClonedEditView);
 
 const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => {
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const editViewRef = useRef<EditViewHandle>(null);
 	const isCloseRequestFromEditor = useRef<boolean>(false);
+	const { useLegacyEditor: shouldUseLegacyEditor } = useLegacyEditor();
 
 	const updateBoard = useMemo(() => boardUtilities?.updateBoard, [boardUtilities?.updateBoard]);
 
@@ -114,8 +118,18 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 		});
 	}
 
-	return (
-		<MemoizedEditView editorId={editor.id} ref={editViewRef} closeController={closeController} />
+	return shouldUseLegacyEditor ? (
+		<MemoizedLegacyEditView
+			editorId={editor.id}
+			ref={editViewRef}
+			closeController={closeController}
+		/>
+	) : (
+		<MemoizedClonedEditView
+			editorId={editor.id}
+			ref={editViewRef}
+			closeController={closeController}
+		/>
 	);
 };
 

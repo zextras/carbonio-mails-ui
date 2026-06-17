@@ -14,12 +14,12 @@ import { setupTest } from '@test-setup';
 import { useBoard as mockedUseBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
 import { getSignatureValue, replaceSignatureOnPlainTextBody } from 'helpers/signatures';
 import * as useQueryParam from 'hooks/use-query-param';
-import { generateMessage } from '__test__/generators/generateMessage';
-import { EditView } from 'views/app/detail-panel/edit/edit-view';
+import { EditView } from 'views/app/detail-panel/edit/legacyEditor/edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity
