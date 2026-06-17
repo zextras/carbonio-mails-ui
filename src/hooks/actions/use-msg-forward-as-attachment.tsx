@@ -13,7 +13,7 @@ import { isFocusModeMailView } from 'helpers/external-tabs';
 import { isDraft, isSpam } from 'helpers/folders';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { UnsavedAttachment } from 'types/attachments';
-import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgForwardAsAttachmentFn = (
 	messageIds: Array<string>,

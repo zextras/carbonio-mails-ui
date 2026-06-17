@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
 import { isDraft, isTrash } from 'helpers/folders';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
-import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgEditAsNewFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(

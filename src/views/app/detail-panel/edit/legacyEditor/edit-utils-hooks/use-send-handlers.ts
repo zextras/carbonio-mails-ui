@@ -11,7 +11,7 @@ import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
 
 import { checkSubjectAndAttachment } from '../check-subject-attachment';
 import { getErrorSnackbarProps } from './use-error-handler';
-import { createEditBoard } from '../edit-view-board';
+import { createEditBoard } from '../../edit-view-board';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
 import {
 	deleteEditor,

@@ -18,7 +18,7 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { openMessageStandalonePreview } from 'helpers/external-tabs';
 import { MessageListItemProps } from 'types/folder';
 import { MsgActionRequest } from 'types/soap/msg-action';
-import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 vi.mock('react-router-dom', async () => ({

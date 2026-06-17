@@ -7,7 +7,7 @@
 import { EditViewActions } from 'constants/index';
 import { EditorPrefillData } from 'types/editor';
 import { Participant } from 'types/participant';
-import { createEditBoard } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const mailToSharedFunction: (recipients: Array<Participant>, subject?: string) => void = (
 	recipients,

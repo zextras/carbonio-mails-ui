@@ -16,7 +16,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes, noop } from 'lodash';
 
-import { EditViewBoardContext } from './legacyEditor/edit-view-board';
+import { EditViewBoardContext } from './edit-view-board';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { generateEditor, resumeEditor } from '../../../../store/editor/editor-generators';

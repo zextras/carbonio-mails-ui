@@ -33,6 +33,8 @@ export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
 
 export const LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION = 'carbonio-mails-ui-split-layout_orientation';
 
+export const LOCAL_STORAGE_LEGACY_EDITOR = 'carbonio-mails-ui_legacyEditor';
+
 export const CERTIFICATES_ROUTE = 'certificates';
 
 export const MAILS_VIEW_LAYOUTS = {

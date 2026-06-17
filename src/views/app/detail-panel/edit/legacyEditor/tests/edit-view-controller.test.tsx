@@ -31,7 +31,7 @@ import { EditViewActions } from 'constants/index';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
-import { EditViewBoardContext } from 'views/app/detail-panel/edit/legacyEditor/edit-view-board';
+import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({

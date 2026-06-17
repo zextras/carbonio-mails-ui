@@ -7,7 +7,7 @@ import type { Mock } from 'vitest';
  */
 
 import { EditViewActions } from '../../../../../../constants';
-import { createEditBoard } from '../edit-view-board';
+import { createEditBoard } from '../../edit-view-board';
 
 const mockAddBoard = addBoard as Mock<typeof addBoard>;
 const mockGetBoardById = getBoardById as Mock<typeof getBoardById>;
