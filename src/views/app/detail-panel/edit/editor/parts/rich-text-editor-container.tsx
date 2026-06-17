@@ -1,377 +1,174 @@
 /*
- * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { AccountSettingsPrefs } from '@zextras/carbonio-ui-soap-lib';
-import { Composer } from '@zextras/carbonio-ui-text-composer';
-import { noop } from 'lodash';
-import type { TinyMCE, Editor } from 'tinymce';
+import styled from '@emotion/styled';
+import { AutoLinkNode, LinkNode } from '@lexical/link';
+import { ListItemNode, ListNode } from '@lexical/list';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { editorUtils } from './editor-utils';
-import { useEditorSetDirty } from '../../../../../../store/editor/hooks/statuses';
-import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
-import { buildArrayFromFileList } from 'helpers/files';
-import {
-	applyUserPreferenceStyles,
-	generateUserPreferenceStyles,
-	UserPreferenceStyle
-} from 'helpers/user-preference-styles';
-import {
-	useEditorAttachments,
-	useEditorsStore,
-	useEditorText,
-	useEditorTextProvider
-} from 'store/editor';
-import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
-import { MailsEditorV2 } from 'types/editor';
-import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
-import { handleEditorPaste } from 'views/app/detail-panel/edit/legacyEditor/parts/editor-paste-handler';
-import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/legacyEditor/parts/text-editor-container';
-import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
+import * as StyledComp from './edit-view-styled-components';
+import type { TextEditorContainerProps } from './text-editor-container';
+import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
+import { ImagePlugin } from '../plugins/image-plugin';
+import { ImageNode } from '../plugins/nodes/image-node';
+import { PastePlugin } from '../plugins/paste-plugin';
+import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
+import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 
-type FileSelectProps = {
-	editor: TinyMCE;
-	files: FileList | null | undefined;
-};
+const LexicalWrapper = styled.div<{
+	$fontFamily: string;
+	$fontSize?: string;
+	$color?: string;
+}>`
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
 
-type InlineAttachment = {
-	contentId: string | undefined;
-	cidUrl: string | undefined;
-	downloadServiceUrl: string | undefined;
-};
+	.mails-lexical-toolbar {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: ${({ theme }): string => theme.palette.gray6.regular};
+	}
 
-export const SAVE_EDITOR_DELAY = 2000;
+	.editor-inner {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+	}
 
-function getUserPreferenceStyle(prefs: AccountSettingsPrefs): UserPreferenceStyle {
-	return {
-		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-	};
-}
+	.mails-lexical-content-editable {
+		flex: 1;
+		min-height: 12.5rem;
+		padding: 0.5rem;
+		outline: none;
+		overflow-y: auto;
+		font-family: ${({ $fontFamily }): string => $fontFamily};
+		${({ $fontSize }): string => ($fontSize ? `font-size: ${$fontSize};` : '')}
+		${({ $color }): string => ($color ? `color: ${$color};` : '')}
+	}
+
+	.mails-lexical-placeholder {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		color: ${({ theme }): string => theme.palette.secondary.regular};
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.mails-lexical-bold {
+		font-weight: bold;
+	}
+
+	.mails-lexical-italic {
+		font-style: italic;
+	}
+
+	.mails-lexical-underline {
+		text-decoration: underline;
+	}
+
+	.mails-lexical-strikethrough {
+		text-decoration: line-through;
+	}
+
+	.mails-lexical-underline-strikethrough {
+		text-decoration: underline line-through;
+	}
+
+	.mails-lexical-image {
+		display: inline-block;
+		max-width: 100%;
+	}
+
+	a.mails-lexical-link {
+		color: ${({ theme }): string => theme.palette.primary.regular};
+	}
+`;
 
 export const RichTextEditorContainer = ({
 	editorId,
 	onDragOver
-}: TextEditorContainerProps): JSX.Element => {
-	const { getText, setText } = useEditorText(editorId);
-	const text = useMemo(() => getText().richText, [getText]);
-	const { setDirty } = useEditorSetDirty(editorId);
-	const composerRef = useRef<Editor>();
-
-	const initialValue = useRef(
-		replaceCidUrlWithServiceUrl(
-			text,
-			useEditorsStore.getState().editors[editorId]?.savedAttachments ?? []
-		)
-	);
-
-	const timeoutId = useRef<NodeJS.Timeout>();
-
-	const { setTextProvider } = useEditorTextProvider(editorId);
-	const { addInlineAttachments, keepOnlyInlineAttachments } = useEditorAttachments(editorId);
-
+}: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 
-	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
-		if (!composerRef.current) {
-			return null;
-		}
+	const fontFamily =
+		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
+	const fontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize as string | undefined;
+	const color = prefs?.zimbraPrefHtmlEditorDefaultFontColor as string | undefined;
 
-		const plainText = composerRef.current.getContent({ format: 'text' });
-		const richText = composerRef.current.getContent({ format: 'html' });
-
-		return { plainText, richText };
-	}, []);
-
-	const onExternalTextChanges = useCallback(
-		(value: MailsEditorV2['text']): void => {
-			if (!composerRef.current) {
-				return;
-			}
-			setDirty();
-			const savedAttachments = useEditorsStore.getState().editors[editorId]?.savedAttachments ?? [];
-			const richText = replaceCidUrlWithServiceUrl(value.richText, savedAttachments);
-			composerRef.current.setContent(richText);
-		},
-		[setDirty, editorId]
-	);
-
-	const onComposerInit = useCallback(
-		(_evt: Event, composer: Editor) => {
-			composerRef.current = composer;
-			setTextProvider({
-				setCurrentText: onExternalTextChanges,
-				getCurrentText
-			});
-		},
-		[getCurrentText, onExternalTextChanges, setTextProvider]
-	);
-
-	const cleanupUnusedAttachments = useCallback(
-		(html: string) => {
-			if (!composerRef.current) return;
-			const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: html });
-			keepOnlyInlineAttachments(usedCids);
-		},
-		[keepOnlyInlineAttachments]
-	);
-
-	const saveEditor = useCallback(() => {
-		if (!composerRef.current) {
-			return;
-		}
-
-		const plainText = composerRef.current.getContent({ format: 'text' });
-		let richText = composerRef.current.getContent({ format: 'html' });
-
-		const style = getUserPreferenceStyle(prefs);
-
-		richText = applyUserPreferenceStyles(richText, style, TINYMCE_BASE_CONTENT_STYLES);
-
-		cleanupUnusedAttachments(richText);
-		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [prefs, cleanupUnusedAttachments, setText]);
-
-	const onTextChange = useCallback(() => {
-		setDirty();
-		if (timeoutId.current) {
-			clearTimeout(timeoutId.current);
-		}
-		timeoutId.current = setTimeout(() => {
-			if (!composerRef.current) {
-				return;
-			}
-			saveEditor();
-			composerRef.current?.setDirty(false);
-		}, SAVE_EDITOR_DELAY);
-	}, [saveEditor, setDirty]);
-
-	const onComposerClose = useCallback(() => {
-		if (useEditorsStore.getState().editors[editorId]?.isDirty) {
-			saveEditor();
-		}
-
-		composerRef.current = undefined;
-		setTextProvider(undefined);
-	}, [editorId, saveEditor, setTextProvider]);
-
-	const onInlineAttachmentsSelected = useCallback(
-		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
-			if (!fileList) return;
-			const files = buildArrayFromFileList(fileList);
-
-			const insertSingleInlineAttachment = async (
-				editor: TinyMCE,
-				inlineAttachment: InlineAttachment
-			): Promise<void> => {
-				const url = inlineAttachment.downloadServiceUrl;
-				if (!url) return;
-				// get the updated image in order to avoid TinyMCE caching issues
-				const blob = await fetch(url).then((r) => r.blob());
-				const objectUrl = URL.createObjectURL(blob);
-
-				const img = `&nbsp;<img alt="Inline attachment"
-                data-pnsrc="${inlineAttachment.cidUrl}"
-                data-mce-src="${inlineAttachment.cidUrl}"
-                src="${objectUrl}" /><br/>`;
-
-				editor?.activeEditor?.insertContent(img);
-				onTextChange();
-			};
-
-			const handleSaveComplete = (inlineAttachments: InlineAttachment[]): void => {
-				const editor = tinymce;
-				const insertPromises = inlineAttachments.map((inlineAttachment) =>
-					insertSingleInlineAttachment(editor, inlineAttachment)
-				);
-
-				Promise.all(insertPromises).catch(console.error);
-			};
-
-			addInlineAttachments(files, {
-				onSaveComplete: handleSaveComplete
-			});
-		},
-		[addInlineAttachments, onTextChange]
-	);
-
-	const createPasteHandler = useCallback(
-		(editor: Editor, editorID: string) =>
-			async (event: ClipboardEvent): Promise<void> => {
-				const editViewWrapper = document.querySelector(
-					'[data-testid="edit-view-editor"]'
-				)?.parentElement;
-				await handleEditorPaste(editor, editorID, event);
-
-				// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
-				if (editViewWrapper) {
-					editViewWrapper.scrollTop = editorUtils.calculateScrollTop(editViewWrapper).position;
-				}
-
-				onTextChange();
+	const initialConfig = useMemo(
+		() => ({
+			namespace: 'MailsLexicalEditor',
+			nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, ImageNode],
+			theme: {
+				text: {
+					bold: 'mails-lexical-bold',
+					italic: 'mails-lexical-italic',
+					underline: 'mails-lexical-underline',
+					strikethrough: 'mails-lexical-strikethrough',
+					underlineStrikethrough: 'mails-lexical-underline-strikethrough'
+				},
+				link: 'mails-lexical-link',
+				image: 'mails-lexical-image'
 			},
-		[onTextChange]
-	);
-
-	// Allow the TinyMCE stick toolbar to remain fixed when the board is resized manually or toggled minimized/maximized
-	const setupResizeObserver = useCallback((editor: Editor): ResizeObserver | null => {
-		const boardElement = document.querySelector('[data-testid="MailEditorWrapper"]');
-		if (!boardElement) {
-			return null;
-		}
-
-		const observer = new ResizeObserver(() => {
-			editor.dispatch('ResizeWindow');
-		});
-		observer.observe(boardElement);
-
-		return observer;
-	}, []);
-
-	// Allow the TinyMCE stick toolbar to remain fixed when the board is moved
-	const setupMutationObserver = useCallback((editor: Editor): MutationObserver | null => {
-		const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-		if (!boardElement) {
-			return null;
-		}
-
-		const observer = new MutationObserver(() => {
-			editor.dispatch('ResizeWindow');
-		});
-
-		observer.observe(boardElement, {
-			attributes: true,
-			attributeFilter: ['style']
-		});
-
-		return observer;
-	}, []);
-
-	const composerCustomOptions = useMemo(() => {
-		const fontSizesOptions = getFontSizesOptions();
-		const fontFamilyOptions = getFonts();
-
-		const fontSizesOptionsToString = fontSizesOptions.join(' ');
-		const fontsOptionsToString = fontFamilyOptions
-			.map((font: { label: string; value: string }) => `${font.label}=${font.value};`)
-			.join('');
-
-		const style = getUserPreferenceStyle(prefs);
-		const userPreferenceStyles = generateUserPreferenceStyles(style);
-
-		return {
-			base_url: `${BASE_PATH}`,
-			toolbar_sticky: true,
-			ui_mode: 'split',
-			font_size_formats: fontSizesOptionsToString,
-			font_family_formats: fontsOptionsToString,
-			preview_styles: false,
-			content_css: false,
-			content_style: `${TINYMCE_BASE_CONTENT_STYLES}\n\t\t${userPreferenceStyles}`,
-			style_formats: [
-				// Headers
-				{ title: 'Heading 1', format: 'h1' },
-				{ title: 'Heading 2', format: 'h2' },
-				{ title: 'Heading 3', format: 'h3' },
-				{ title: 'Heading 4', format: 'h4' },
-				{ title: 'Heading 5', format: 'h5' },
-				{ title: 'Heading 6', format: 'h6' },
-				{ title: '' },
-				// Blocks
-				{ title: 'Paragraph', format: 'p' },
-				{ title: 'Pre', format: 'pre' },
-				{ title: 'Blockquote', format: 'blockquote' }
-			],
-			plugins: [
-				'advlist', // Enhances list functionality
-				'lists', // List support (bullist/numlist)
-				'link', // Link insertion
-				'autolink', // convert text link into clickable link
-				'image', // Image handling
-				'table', // Table support
-				'code', // Code view
-				'charmap', // Special characters
-				'quickbars', // Context toolbars
-				'directionality', // LTR/RTL support
-				'autoresize', // Auto-resize editor
-				'visualblocks', // Show block boundaries
-				'emoticons' // Emoji support
-			],
-			toolbar: [
-				// Fonts
-				'fontfamily fontsize styles',
-				// Font Style controls
-				'forecolor backcolor',
-				// Text formatting
-				'bold italic underline strikethrough removeformat',
-				// Alignment and direction
-				'alignleft aligncenter alignright alignjustify outdent indent ltr rtl',
-				// Lists and indentation
-				'bullist numlist',
-				// Insert elements
-				'link table insertfile image imageSelector charmap emoticons',
-				// View and blocks
-				'visualblocks code'
-			].join(' | '),
-
-			paste_data_images: false,
-			init_instance_callback: (editor: Editor): (() => void) => {
-				if (!editor) return noop;
-
-				// Call the init handler
-				onComposerInit({} as Event, editor);
-
-				const handlePaste = createPasteHandler(editor, editorId);
-				editor.on('paste', handlePaste);
-				editor.on('input', onTextChange);
-				editor.on('change', onTextChange);
-				editor.on('remove', onComposerClose);
-
-				// Handle drag over events
-				if (onDragOver) {
-					editor.on('dragover', (event: DragEvent) => {
-						onDragOver(event);
-					});
-				}
-
-				const resizeObserver = setupResizeObserver(editor);
-				const mutationObserver = setupMutationObserver(editor);
-				return () => {
-					resizeObserver?.disconnect();
-					mutationObserver?.disconnect();
-				};
+			onError: (error: Error): void => {
+				throw error;
 			}
-		};
-	}, [
-		createPasteHandler,
-		editorId,
-		onComposerClose,
-		onComposerInit,
-		onDragOver,
-		onTextChange,
-		prefs,
-		setupMutationObserver,
-		setupResizeObserver
-	]);
+		}),
+		[]
+	);
 
 	return (
 		<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-			<Composer
-				initialValue={initialValue.current}
-				onFileSelect={onInlineAttachmentsSelected}
-				customInitOptions={composerCustomOptions}
-				accountSettingsPrefs={{
-					zimbraPrefLocale: prefs?.zimbraPrefLocale,
-					zimbraPrefHtmlEditorDefaultFontFamily: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
-					zimbraPrefHtmlEditorDefaultFontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
-					zimbraPrefHtmlEditorDefaultFontColor: prefs?.zimbraPrefHtmlEditorDefaultFontColor
-				}}
-			/>
+			<LexicalComposer initialConfig={initialConfig}>
+				<LexicalWrapper $fontFamily={fontFamily} $fontSize={fontSize} $color={color}>
+					<div className="mails-lexical-toolbar">
+						<RichToolbarPlugin editorId={editorId} />
+					</div>
+					<div
+						className="editor-inner"
+						onDragOver={(event): void => onDragOver?.(event.nativeEvent)}
+					>
+						<RichTextPlugin
+							contentEditable={
+								<ContentEditable
+									className="mails-lexical-content-editable"
+									data-testid="edit-view-editor"
+								/>
+							}
+							placeholder={
+								<div className="mails-lexical-placeholder">
+									{t('messages.write_your_message', 'Write your message')}
+								</div>
+							}
+							ErrorBoundary={LexicalErrorBoundary}
+						/>
+					</div>
+					<HistoryPlugin />
+					<ListPlugin />
+					<LinkPlugin />
+					<ImagePlugin />
+					<PastePlugin editorId={editorId} />
+					<ControlledContentPlugin editorId={editorId} />
+				</LexicalWrapper>
+			</LexicalComposer>
 		</StyledComp.EditorWrapper>
 	);
 };
