@@ -148,8 +148,9 @@ const sendFromEditor = (
 						}
 					})
 			}
-			if (editor?.identityId) {
-				sendMsgFromEditor({ editor })
+			const editor2 = getEditor({ id: editorId });
+			if (editor2?.identityId) {
+				sendMsgFromEditor({ editor: editor2 })
 					.then((res) => {
 						if (res && 'm' in res) {
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
