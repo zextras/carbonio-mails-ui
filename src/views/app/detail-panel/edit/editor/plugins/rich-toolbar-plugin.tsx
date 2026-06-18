@@ -399,56 +399,48 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			crossAlignment="center"
 			wrap="wrap"
 			padding={{ vertical: 'extrasmall' }}
-			gap="extrasmall"
+			gap="0.25rem"
 			width="fill"
 		>
-			<Container
-				orientation="horizontal"
-				width="fit"
-				mainAlignment="flex-start"
-				crossAlignment="center"
-				gap="0.25rem"
-			>
-				<Container width="11.375rem" height="fit">
-					<Select
-						items={fontSelectItems}
-						label={t('label.font', 'Font')}
-						selection={selectedFont}
-						onChange={(value): void => {
-							if (value) {
-								patchStyle({ 'font-family': value });
-							}
-						}}
-						showCheckbox={false}
-						dropdownWidth="12.5rem"
-					/>
-				</Container>
-				<Container width="9.375rem" height="fit">
-					<Select
-						items={fontSizeSelectItems}
-						label={t('label.size', 'Size')}
-						selection={selectedFontSize}
-						onChange={(value): void => {
-							if (value) {
-								patchStyle({ 'font-size': value });
-							}
-						}}
-						showCheckbox={false}
-					/>
-				</Container>
-				<Container width="9.375rem" height="fit">
-					<Select<BlockType>
-						items={blockSelectItems}
-						label={t('label.paragraph', 'Paragraph')}
-						selection={selectedBlock}
-						onChange={(value): void => {
-							if (value) {
-								formatBlock(value);
-							}
-						}}
-						showCheckbox={false}
-					/>
-				</Container>
+			<Container width="11.375rem" height="fit">
+				<Select
+					items={fontSelectItems}
+					label={t('label.font', 'Font')}
+					selection={selectedFont}
+					onChange={(value): void => {
+						if (value) {
+							patchStyle({ 'font-family': value });
+						}
+					}}
+					showCheckbox={false}
+					dropdownWidth="12.5rem"
+				/>
+			</Container>
+			<Container width="9.375rem" height="fit">
+				<Select
+					items={fontSizeSelectItems}
+					label={t('label.size', 'Size')}
+					selection={selectedFontSize}
+					onChange={(value): void => {
+						if (value) {
+							patchStyle({ 'font-size': value });
+						}
+					}}
+					showCheckbox={false}
+				/>
+			</Container>
+			<Container width="9.375rem" height="fit">
+				<Select<BlockType>
+					items={blockSelectItems}
+					label={t('label.paragraph', 'Paragraph')}
+					selection={selectedBlock}
+					onChange={(value): void => {
+						if (value) {
+							formatBlock(value);
+						}
+					}}
+					showCheckbox={false}
+				/>
 			</Container>
 
 			<ToolbarDivider />
