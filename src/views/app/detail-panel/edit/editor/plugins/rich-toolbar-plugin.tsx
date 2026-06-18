@@ -8,8 +8,18 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $createHeadingNode, $createQuoteNode, type HeadingTagType } from '@lexical/rich-text';
-import { $patchStyleText, $setBlocksType } from '@lexical/selection';
+import {
+	$createHeadingNode,
+	$createQuoteNode,
+	$isHeadingNode,
+	$isQuoteNode,
+	type HeadingTagType
+} from '@lexical/rich-text';
+import {
+	$getSelectionStyleValueForProperty,
+	$patchStyleText,
+	$setBlocksType
+} from '@lexical/selection';
 import { INSERT_TABLE_COMMAND } from '@lexical/table';
 import {
 	Button,
@@ -17,6 +27,8 @@ import {
 	Dropdown,
 	DropdownItem,
 	Row,
+	Select,
+	SelectItem,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -61,6 +73,25 @@ function $selectionHasImage(): boolean {
 	const selection = $getSelection();
 	return $isNodeSelection(selection) && selection.getNodes().some((node) => $isImageNode(node));
 }
+
+function $getSelectionBlockType(): BlockType {
+	const selection = $getSelection();
+	if (!$isRangeSelection(selection)) {
+		return 'paragraph';
+	}
+	const anchorNode = selection.anchor.getNode();
+	const element = anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElement();
+	if ($isHeadingNode(element)) {
+		return element.getTag();
+	}
+	if ($isQuoteNode(element)) {
+		return 'quote';
+	}
+	return 'paragraph';
+}
+
+const normalizeCssValue = (value: string): string =>
+	value.toLowerCase().replace(/\s+/g, ' ').trim();
 
 const ToolbarDivider = (): React.JSX.Element => (
 	<Container
@@ -131,13 +162,25 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
+	const [currentFont, setCurrentFont] = useState('');
+	const [currentFontSize, setCurrentFontSize] = useState('');
+	const [currentBlock, setCurrentBlock] = useState<BlockType>('paragraph');
 
-	// Track whether the current selection is a single inline image, so the image
-	// alignment control can be shown only when relevant.
+	// Keep the toolbar in sync with the formatting at the caret: whether a single
+	// inline image is selected (to toggle the alignment control) and the active
+	// font / size / block style (to reflect them in the selectors).
 	useEffect(
 		() =>
 			editor.registerUpdateListener(({ editorState }) => {
-				setIsImageSelected(editorState.read($selectionHasImage));
+				editorState.read(() => {
+					setIsImageSelected($selectionHasImage());
+					setCurrentBlock($getSelectionBlockType());
+					const selection = $getSelection();
+					if ($isRangeSelection(selection)) {
+						setCurrentFont($getSelectionStyleValueForProperty(selection, 'font-family', ''));
+						setCurrentFontSize($getSelectionStyleValueForProperty(selection, 'font-size', ''));
+					}
+				});
 			}),
 		[editor]
 	);
@@ -256,46 +299,51 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[addInlineAttachments, editor]
 	);
 
-	const blockItems = useMemo<Array<DropdownItem>>(
+	const fontSelectItems = useMemo<Array<SelectItem>>(
+		() => getFonts().map((font) => ({ label: font.label, value: font.value })),
+		[]
+	);
+
+	const fontSizeSelectItems = useMemo<Array<SelectItem>>(
+		() => getFontSizesOptions().map((size) => ({ label: size, value: size })),
+		[]
+	);
+
+	const blockSelectItems = useMemo<Array<SelectItem<BlockType>>>(
 		() => [
-			{
-				id: 'paragraph',
-				label: t('label.paragraph', 'Paragraph'),
-				onClick: () => formatBlock('paragraph')
-			},
-			{ id: 'h1', label: t('label.heading_1', 'Heading 1'), onClick: () => formatBlock('h1') },
-			{ id: 'h2', label: t('label.heading_2', 'Heading 2'), onClick: () => formatBlock('h2') },
-			{ id: 'h3', label: t('label.heading_3', 'Heading 3'), onClick: () => formatBlock('h3') },
-			{ id: 'h4', label: t('label.heading_4', 'Heading 4'), onClick: () => formatBlock('h4') },
-			{ id: 'h5', label: t('label.heading_5', 'Heading 5'), onClick: () => formatBlock('h5') },
-			{ id: 'h6', label: t('label.heading_6', 'Heading 6'), onClick: () => formatBlock('h6') },
-			{
-				id: 'quote',
-				label: t('label.blockquote', 'Blockquote'),
-				onClick: () => formatBlock('quote')
-			}
+			{ label: t('label.paragraph', 'Paragraph'), value: 'paragraph' },
+			{ label: t('label.heading_1', 'Heading 1'), value: 'h1' },
+			{ label: t('label.heading_2', 'Heading 2'), value: 'h2' },
+			{ label: t('label.heading_3', 'Heading 3'), value: 'h3' },
+			{ label: t('label.heading_4', 'Heading 4'), value: 'h4' },
+			{ label: t('label.heading_5', 'Heading 5'), value: 'h5' },
+			{ label: t('label.heading_6', 'Heading 6'), value: 'h6' },
+			{ label: t('label.blockquote', 'Blockquote'), value: 'quote' }
 		],
-		[formatBlock]
+		[]
 	);
 
-	const fontItems = useMemo<Array<DropdownItem>>(
+	// Controlled selections: match the formatting at the caret against the
+	// available options, falling back to an empty placeholder so the selector
+	// shows its label when no predefined option applies.
+	const fontPlaceholder = useMemo<SelectItem>(() => ({ label: '', value: '' }), []);
+	const selectedFont = useMemo<SelectItem>(
 		() =>
-			getFonts().map((font) => ({
-				id: font.value,
-				label: font.label,
-				onClick: () => patchStyle({ 'font-family': font.value })
-			})),
-		[patchStyle]
+			fontSelectItems.find(
+				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFont)
+			) ?? fontPlaceholder,
+		[currentFont, fontPlaceholder, fontSelectItems]
 	);
-
-	const fontSizeItems = useMemo<Array<DropdownItem>>(
+	const selectedFontSize = useMemo<SelectItem>(
 		() =>
-			getFontSizesOptions().map((size) => ({
-				id: size,
-				label: size,
-				onClick: () => patchStyle({ 'font-size': size })
-			})),
-		[patchStyle]
+			fontSizeSelectItems.find(
+				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFontSize)
+			) ?? fontPlaceholder,
+		[currentFontSize, fontPlaceholder, fontSizeSelectItems]
+	);
+	const selectedBlock = useMemo<SelectItem<BlockType>>(
+		() => blockSelectItems.find((item) => item.value === currentBlock) ?? blockSelectItems[0],
+		[blockSelectItems, currentBlock]
 	);
 
 	const insertTable = useCallback(
@@ -354,31 +402,46 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			gap="extrasmall"
 			width="fill"
 		>
-			{/* Font family / size / block style selectors */}
-			<Dropdown items={fontItems}>
-				<Button
-					type="ghost"
-					size="small"
+			<Container width="9.375rem" height="fit">
+				<Select
+					items={fontSelectItems}
 					label={t('label.font', 'Font')}
-					onClick={(): void => undefined}
+					selection={selectedFont}
+					onChange={(value): void => {
+						if (value) {
+							patchStyle({ 'font-family': value });
+						}
+					}}
+					showCheckbox={false}
+					dropdownWidth="12.5rem"
 				/>
-			</Dropdown>
-			<Dropdown items={fontSizeItems}>
-				<Button
-					type="ghost"
-					size="small"
+			</Container>
+			<Container width="6.25rem" height="fit">
+				<Select
+					items={fontSizeSelectItems}
 					label={t('label.size', 'Size')}
-					onClick={(): void => undefined}
+					selection={selectedFontSize}
+					onChange={(value): void => {
+						if (value) {
+							patchStyle({ 'font-size': value });
+						}
+					}}
+					showCheckbox={false}
 				/>
-			</Dropdown>
-			<Dropdown items={blockItems}>
-				<Button
-					type="ghost"
-					size="small"
+			</Container>
+			<Container width="9.375rem" height="fit">
+				<Select<BlockType>
+					items={blockSelectItems}
 					label={t('label.paragraph', 'Paragraph')}
-					onClick={(): void => undefined}
+					selection={selectedBlock}
+					onChange={(value): void => {
+						if (value) {
+							formatBlock(value);
+						}
+					}}
+					showCheckbox={false}
 				/>
-			</Dropdown>
+			</Container>
 
 			<ToolbarDivider />
 
