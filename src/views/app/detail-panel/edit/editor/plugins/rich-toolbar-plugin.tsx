@@ -26,6 +26,7 @@ import {
 	Container,
 	Dropdown,
 	DropdownItem,
+	type IconProps,
 	Row,
 	Select,
 	SelectItem,
@@ -50,6 +51,7 @@ import {
 import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
 import { $isImageNode, type ImageAlignment } from './nodes/image-node';
 import { TableGridPicker } from './table-grid-picker';
+import { editorIcon } from '../icons/editor-icons';
 import { useEditorAttachments } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
@@ -59,15 +61,6 @@ type RichToolbarPluginProps = {
 };
 
 type BlockType = 'paragraph' | 'quote' | HeadingTagType;
-
-/**
- * The Carbonio Design System icon set does not include dedicated rich-text
- * formatting glyphs (bold, italic, alignment, indentation, ...). For every
- * toolbar action without a matching CDS icon we fall back to this placeholder,
- * so the toolbar layout mirrors the legacy TinyMCE one until proper icons are
- * available.
- */
-const PLACEHOLDER_ICON = 'AlertTriangleOutline';
 
 function $selectionHasImage(): boolean {
 	const selection = $getSelection();
@@ -103,19 +96,26 @@ const ToolbarDivider = (): React.JSX.Element => (
 );
 
 type ToolbarIconButtonProps = {
-	icon: string;
+	icon: IconProps['icon'];
 	label: string;
 	onClick: () => void;
 };
 
 const ToolbarIconButton = ({ icon, label, onClick }: ToolbarIconButtonProps): React.JSX.Element => (
 	<Tooltip label={label}>
-		<Button icon={icon} type="ghost" size="large" onClick={onClick} aria-label={label} />
+		<Button
+			icon={icon}
+			type="ghost"
+			size="large"
+			onClick={onClick}
+			aria-label={label}
+			color="text"
+		/>
 	</Tooltip>
 );
 
 type ColorToolbarButtonProps = {
-	icon: string;
+	icon: IconProps['icon'];
 	label: string;
 	onColorChange: (color: string) => void;
 };
@@ -447,12 +447,12 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Text and background color */}
 			<ColorToolbarButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('text-color')}
 				label={t('label.text_color', 'Text color')}
 				onColorChange={(color): void => patchStyle({ color })}
 			/>
 			<ColorToolbarButton
-				icon="BrushOutline"
+				icon={editorIcon('highlight-bg-color')}
 				label={t('label.background_color', 'Background color')}
 				onColorChange={(color): void => patchStyle({ 'background-color': color })}
 			/>
@@ -461,27 +461,27 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Inline text formatting */}
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('bold')}
 				label={t('label.bold', 'Bold')}
 				onClick={(): void => formatText('bold')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('italic')}
 				label={t('label.italic', 'Italic')}
 				onClick={(): void => formatText('italic')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('underline')}
 				label={t('label.underline', 'Underline')}
 				onClick={(): void => formatText('underline')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('strike-through')}
 				label={t('label.strikethrough', 'Strikethrough')}
 				onClick={(): void => formatText('strikethrough')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('remove-formatting')}
 				label={t('label.remove_format', 'Clear formatting')}
 				onClick={(): void =>
 					patchStyle({ color: '', 'background-color': '', 'font-size': '', 'font-family': '' })
@@ -492,36 +492,36 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Paragraph alignment */}
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('align-left')}
 				label={t('label.align_left', 'Align left')}
 				onClick={(): void => formatAlign('left')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('align-center')}
 				label={t('label.align_center', 'Center')}
 				onClick={(): void => formatAlign('center')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('align-right')}
 				label={t('label.align_right', 'Align right')}
 				onClick={(): void => formatAlign('right')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('align-justify')}
 				label={t('label.align_justify', 'Justify')}
 				onClick={(): void => formatAlign('justify')}
 			/>
 
 			{/* Indentation */}
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('outdent')}
 				label={t('label.indent_decrease', 'Decrease indent')}
 				onClick={(): void => {
 					editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
 				}}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('indent')}
 				label={t('label.indent_increase', 'Increase indent')}
 				onClick={(): void => {
 					editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
@@ -530,12 +530,12 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Text direction */}
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('ltr')}
 				label={t('label.ltr', 'Left to right')}
 				onClick={(): void => setDirection('ltr')}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('rtl')}
 				label={t('label.rtl', 'Right to left')}
 				onClick={(): void => setDirection('rtl')}
 			/>
@@ -544,14 +544,14 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Lists */}
 			<ToolbarIconButton
-				icon="ListOutline"
+				icon={editorIcon('unordered-list')}
 				label={t('label.bullet_list', 'Bulleted list')}
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
 				}}
 			/>
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('ordered-list')}
 				label={t('label.numbered_list', 'Numbered list')}
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
@@ -561,7 +561,11 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarDivider />
 
 			{/* Insert link / table / images */}
-			<ToolbarIconButton icon="Link2Outline" label={t('label.link', 'Link')} onClick={insertLink} />
+			<ToolbarIconButton
+				icon={editorIcon('link')}
+				label={t('label.link', 'Link')}
+				onClick={insertLink}
+			/>
 			<Tooltip label={tableLabel}>
 				<Dropdown
 					items={tableItems}
@@ -570,7 +574,8 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 					disableAutoFocus
 				>
 					<Button
-						icon="GridOutline"
+						icon={editorIcon('table')}
+						color="text"
 						type="ghost"
 						size="large"
 						aria-label={tableLabel}
@@ -579,12 +584,12 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				</Dropdown>
 			</Tooltip>
 			<ToolbarIconButton
-				icon="ImageOutline"
+				icon={editorIcon('image')}
 				label={t('label.image', 'Image')}
 				onClick={(): void => fileInputRef.current?.click()}
 			/>
 			<ToolbarIconButton
-				icon="FileImageOutline"
+				icon={editorIcon('edit-image')}
 				label={t('label.insert_image_url', 'Image from URL')}
 				onClick={insertImageByUrl}
 			/>
@@ -592,7 +597,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				<Tooltip label={t('label.image_align', 'Align image')}>
 					<Dropdown items={imageAlignItems}>
 						<Button
-							icon="ImageOutline"
+							icon={editorIcon('align-center')}
 							type="ghost"
 							size="large"
 							aria-label={t('label.image_align', 'Align image')}
@@ -606,12 +611,12 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Special characters and emoji */}
 			<ToolbarIconButton
-				icon={PLACEHOLDER_ICON}
+				icon={editorIcon('insert-character')}
 				label={t('label.special_character', 'Special character')}
 				onClick={(): void => undefined}
 			/>
 			<ToolbarIconButton
-				icon="SmileOutline"
+				icon={editorIcon('emoji')}
 				label={t('label.emoji', 'Emoji')}
 				onClick={(): void => undefined}
 			/>
@@ -620,7 +625,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Source code */}
 			<ToolbarIconButton
-				icon="CodeOutline"
+				icon={editorIcon('sourcecode')}
 				label={t('label.source_code', 'Source code')}
 				onClick={(): void => undefined}
 			/>

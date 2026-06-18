@@ -36,7 +36,7 @@ export type TableGridPickerProps = {
 
 /**
  * Visual NxM size picker for table insertion. Hovering highlights the top-left
- * rectangle up to the hovered cell (mirroring TinyMCE's table button) and shows
+ * rectangle up to the hovered cell and shows
  * the selected dimensions; clicking commits them through `onSelect`.
  */
 export const TableGridPicker = ({
@@ -49,8 +49,6 @@ export const TableGridPicker = ({
 
 	return (
 		<Container
-			padding="small"
-			gap="0.5rem"
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			data-testid="table-grid-picker"
