@@ -16,7 +16,6 @@ import {
 	Container,
 	Dropdown,
 	DropdownItem,
-	IconButton,
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
@@ -80,15 +79,55 @@ type ToolbarIconButtonProps = {
 
 const ToolbarIconButton = ({ icon, label, onClick }: ToolbarIconButtonProps): React.JSX.Element => (
 	<Tooltip label={label}>
-		<IconButton icon={icon} type="ghost" size="large" onClick={onClick} aria-label={label} />
+		<Button icon={icon} type="ghost" size="large" onClick={onClick} aria-label={label} />
 	</Tooltip>
 );
+
+type ColorToolbarButtonProps = {
+	icon: string;
+	label: string;
+	onColorChange: (color: string) => void;
+};
+
+const ColorToolbarButton = ({
+	icon,
+	label,
+	onColorChange
+}: ColorToolbarButtonProps): React.JSX.Element => {
+	const inputRef = useRef<HTMLInputElement>(null);
+	return (
+		<Container width="fit" height="fit" style={{ position: 'relative', display: 'inline-flex' }}>
+			<ToolbarIconButton
+				icon={icon}
+				label={label}
+				onClick={(): void => inputRef.current?.click()}
+			/>
+			<input
+				ref={inputRef}
+				type="color"
+				aria-hidden
+				tabIndex={-1}
+				style={{
+					position: 'absolute',
+					left: 0,
+					bottom: 0,
+					width: '0.0625rem',
+					height: '0.0625rem',
+					padding: 0,
+					margin: 0,
+					border: 0,
+					opacity: 0,
+					pointerEvents: 'none'
+				}}
+				onChange={(event): void => onColorChange(event.target.value)}
+			/>
+		</Container>
+	);
+};
 
 export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const { addInlineAttachments } = useEditorAttachments(editorId);
-	const textColorInputRef = useRef<HTMLInputElement>(null);
-	const backgroundColorInputRef = useRef<HTMLInputElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
@@ -192,20 +231,6 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			});
 		}
 	}, [editor]);
-
-	const onTextColorSelected = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>): void => {
-			patchStyle({ color: event.target.value });
-		},
-		[patchStyle]
-	);
-
-	const onBackgroundColorSelected = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>): void => {
-			patchStyle({ 'background-color': event.target.value });
-		},
-		[patchStyle]
-	);
 
 	const onImageFilesSelected = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -358,15 +383,15 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarDivider />
 
 			{/* Text and background color */}
-			<ToolbarIconButton
+			<ColorToolbarButton
 				icon={PLACEHOLDER_ICON}
 				label={t('label.text_color', 'Text color')}
-				onClick={(): void => textColorInputRef.current?.click()}
+				onColorChange={(color): void => patchStyle({ color })}
 			/>
-			<ToolbarIconButton
+			<ColorToolbarButton
 				icon="BrushOutline"
 				label={t('label.background_color', 'Background color')}
-				onClick={(): void => backgroundColorInputRef.current?.click()}
+				onColorChange={(color): void => patchStyle({ 'background-color': color })}
 			/>
 
 			<ToolbarDivider />
@@ -474,22 +499,22 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			{/* Insert link / table / images */}
 			<ToolbarIconButton icon="Link2Outline" label={t('label.link', 'Link')} onClick={insertLink} />
-			<Dropdown
-				items={tableItems}
-				forceOpen={tableMenuOpen}
-				onClose={(): void => setTableMenuOpen(false)}
-				disableAutoFocus
-			>
-				<Tooltip label={tableLabel}>
-					<IconButton
+			<Tooltip label={tableLabel}>
+				<Dropdown
+					items={tableItems}
+					forceOpen={tableMenuOpen}
+					onClose={(): void => setTableMenuOpen(false)}
+					disableAutoFocus
+				>
+					<Button
 						icon="GridOutline"
 						type="ghost"
 						size="large"
 						aria-label={tableLabel}
 						onClick={(): void => setTableMenuOpen((open) => !open)}
 					/>
-				</Tooltip>
-			</Dropdown>
+				</Dropdown>
+			</Tooltip>
 			<ToolbarIconButton
 				icon="ImageOutline"
 				label={t('label.image', 'Image')}
@@ -501,17 +526,17 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				onClick={insertImageByUrl}
 			/>
 			{isImageSelected && (
-				<Dropdown items={imageAlignItems}>
-					<Tooltip label={t('label.image_align', 'Align image')}>
-						<IconButton
+				<Tooltip label={t('label.image_align', 'Align image')}>
+					<Dropdown items={imageAlignItems}>
+						<Button
 							icon="ImageOutline"
 							type="ghost"
 							size="large"
 							aria-label={t('label.image_align', 'Align image')}
 							onClick={(): void => undefined}
 						/>
-					</Tooltip>
-				</Dropdown>
+					</Dropdown>
+				</Tooltip>
 			)}
 
 			<ToolbarDivider />
@@ -537,18 +562,6 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				onClick={(): void => undefined}
 			/>
 
-			<input
-				ref={textColorInputRef}
-				type="color"
-				style={{ display: 'none' }}
-				onChange={onTextColorSelected}
-			/>
-			<input
-				ref={backgroundColorInputRef}
-				type="color"
-				style={{ display: 'none' }}
-				onChange={onBackgroundColorSelected}
-			/>
 			<input
 				ref={fileInputRef}
 				type="file"
