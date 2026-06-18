@@ -29,6 +29,7 @@ import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
+import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 
 const LexicalWrapper = styled.div<{
@@ -274,6 +275,36 @@ const LexicalWrapper = styled.div<{
 		right: 0;
 		height: 0.0625rem;
 	}
+
+	.mails-lexical-table-hover-action {
+		position: absolute;
+		z-index: 3;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border: none;
+		border-radius: 0.125rem;
+		background: ${({ theme }): string => theme.palette.gray3.regular};
+		color: ${({ theme }): string => theme.palette.gray0.regular};
+		font-size: 0.875rem;
+		line-height: 1;
+		cursor: pointer;
+		appearance: none;
+	}
+
+	.mails-lexical-table-hover-action:hover {
+		background: ${({ theme }): string => theme.palette.primary.regular};
+		color: ${({ theme }): string => theme.palette.gray6.regular};
+	}
+
+	.mails-lexical-table-hover-action-row {
+		transform: translateY(0.1875rem);
+	}
+
+	.mails-lexical-table-hover-action-column {
+		transform: translateX(0.1875rem);
+	}
 `;
 
 export const RichTextEditorContainer = ({
@@ -354,6 +385,7 @@ export const RichTextEditorContainer = ({
 					<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
 					<TableActionMenuPlugin />
 					<TableCellResizerPlugin />
+					<TableHoverActionsPlugin />
 					<ImagePlugin />
 					<PastePlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />
