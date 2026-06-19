@@ -48,8 +48,10 @@ import {
 	type TextFormatType
 } from 'lexical';
 
+import { EmojiPicker, type Emoji } from './emoji-picker';
 import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
 import { $isImageNode, type ImageAlignment } from './nodes/image-node';
+import { SpecialCharacterPicker } from './special-character-picker';
 import { TableGridPicker } from './table-grid-picker';
 import { editorIcon } from '../icons/editor-icons';
 import { useEditorAttachments } from 'store/editor/index';
@@ -161,6 +163,8 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const { addInlineAttachments } = useEditorAttachments(editorId);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
+	const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
+	const [specialCharMenuOpen, setSpecialCharMenuOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
@@ -356,6 +360,62 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			setTableMenuOpen(false);
 		},
 		[editor]
+	);
+
+	const insertText = useCallback(
+		(text: string): void => {
+			editor.update(() => {
+				const selection = $getSelection();
+				if ($isRangeSelection(selection)) {
+					selection.insertText(text);
+				}
+			});
+		},
+		[editor]
+	);
+
+	const insertEmoji = useCallback(
+		(emoji: Emoji): void => {
+			insertText(emoji.native);
+			setEmojiMenuOpen(false);
+		},
+		[insertText]
+	);
+
+	const insertSpecialCharacter = useCallback(
+		(character: string): void => {
+			insertText(character);
+			setSpecialCharMenuOpen(false);
+		},
+		[insertText]
+	);
+
+	const emojiLabel = t('label.emoji', 'Emoji');
+
+	const specialCharLabel = t('label.special_character', 'Special character');
+
+	const emojiItems = useMemo<Array<DropdownItem>>(
+		() => [
+			{
+				id: 'emoji-picker',
+				label: emojiLabel,
+				keepOpen: true,
+				customComponent: <EmojiPicker onEmojiSelect={insertEmoji} />
+			}
+		],
+		[emojiLabel, insertEmoji]
+	);
+
+	const specialCharItems = useMemo<Array<DropdownItem>>(
+		() => [
+			{
+				id: 'special-character-picker',
+				label: specialCharLabel,
+				keepOpen: true,
+				customComponent: <SpecialCharacterPicker onSelect={insertSpecialCharacter} />
+			}
+		],
+		[insertSpecialCharacter, specialCharLabel]
 	);
 
 	const tableLabel = t('label.table', 'Table');
@@ -610,16 +670,44 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarDivider />
 
 			{/* Special characters and emoji */}
-			<ToolbarIconButton
-				icon={editorIcon('insert-character')}
-				label={t('label.special_character', 'Special character')}
-				onClick={(): void => undefined}
-			/>
-			<ToolbarIconButton
-				icon={editorIcon('emoji')}
-				label={t('label.emoji', 'Emoji')}
-				onClick={(): void => undefined}
-			/>
+			<Tooltip label={specialCharLabel}>
+				<Dropdown
+					items={specialCharItems}
+					forceOpen={specialCharMenuOpen}
+					onClose={(): void => setSpecialCharMenuOpen(false)}
+					width="fit-content"
+					maxWidth="unset"
+					disableAutoFocus
+				>
+					<Button
+						icon={editorIcon('insert-character')}
+						color="text"
+						type="ghost"
+						size="large"
+						aria-label={specialCharLabel}
+						onClick={(): void => setSpecialCharMenuOpen((open) => !open)}
+					/>
+				</Dropdown>
+			</Tooltip>
+			<Tooltip label={emojiLabel}>
+				<Dropdown
+					items={emojiItems}
+					forceOpen={emojiMenuOpen}
+					onClose={(): void => setEmojiMenuOpen(false)}
+					width="fit-content"
+					maxWidth="unset"
+					disableAutoFocus
+				>
+					<Button
+						icon={editorIcon('emoji')}
+						color="text"
+						type="ghost"
+						size="large"
+						aria-label={emojiLabel}
+						onClick={(): void => setEmojiMenuOpen((open) => !open)}
+					/>
+				</Dropdown>
+			</Tooltip>
 
 			<ToolbarDivider />
 

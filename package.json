@@ -96,6 +96,7 @@
 		"vitest-mock-commonjs": "1.0.2"
 	},
 	"dependencies": {
+		"@emoji-mart/data": "1.2.1",
 		"@emotion/jest": "11.13.0",
 		"@emotion/react": "11.14.0",
 		"@emotion/styled": "11.14.1",
@@ -123,6 +124,7 @@
 		"core-js": "3.36.0",
 		"darkreader": "4.9.117",
 		"date-fns": "4.1.0",
+		"emoji-mart": "5.6.0",
 		"eslint": "8.57.0",
 		"i18next": "22.5.1",
 		"immer": "9.0.19",
