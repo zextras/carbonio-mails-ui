@@ -13,6 +13,7 @@ import { MIMETYPE_EML } from 'helpers/attachments';
 import { useMsgForwardAsAttachmentFn } from 'hooks/actions/use-msg-forward-as-attachment';
 import { ActionFn, UIActionDescriptor, UnsavedAttachment } from 'types/index.d';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
+import { getMessageById } from 'store/emails/store';
 
 type ConvForwardAsAttachmentAction = {
 	firstMessageId: string;
@@ -32,13 +33,15 @@ export const useConvForwardAsAttachmentFn = ({
 	);
 
 	const execute = useCallback(() => {
+		const message = getMessageById(firstMessageId);
+
 		const attachments: Array<UnsavedAttachment> = [
 			{
-				mid: firstMessageId,
-				filename: `${firstMessageId}.eml`,
-				contentType: MIMETYPE_EML,
-				size: 0,
-				isInline: false
+			mid: firstMessageId,
+			filename: message?.subject ? `${message.subject}.eml` : `${firstMessageId}.eml`,
+			size: message?.size ?? 0,
+			contentType: MIMETYPE_EML,
+			isInline: false
 			}
 		];
 		if (canExecute()) {
