@@ -5,8 +5,14 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import styled from '@emotion/styled';
 import { TOGGLE_LINK_COMMAND } from '@lexical/link';
-import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
+import {
+	$isListNode,
+	INSERT_ORDERED_LIST_COMMAND,
+	INSERT_UNORDERED_LIST_COMMAND,
+	ListNode
+} from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
 	$createHeadingNode,
@@ -21,6 +27,7 @@ import {
 	$setBlocksType
 } from '@lexical/selection';
 import { INSERT_TABLE_COMMAND } from '@lexical/table';
+import { $getNearestNodeOfType } from '@lexical/utils';
 import {
 	Button,
 	Container,
@@ -89,6 +96,64 @@ function $getSelectionBlockType(): BlockType {
 const normalizeCssValue = (value: string): string =>
 	value.toLowerCase().replace(/\s+/g, ' ').trim();
 
+type TextFormatsState = {
+	bold: boolean;
+	italic: boolean;
+	underline: boolean;
+	strikethrough: boolean;
+};
+
+type ActiveFormatting = {
+	formats: TextFormatsState;
+	align: ElementFormatType;
+	direction: 'ltr' | 'rtl';
+	list: 'bullet' | 'number' | null;
+};
+
+const DEFAULT_ACTIVE_FORMATTING: ActiveFormatting = {
+	formats: { bold: false, italic: false, underline: false, strikethrough: false },
+	align: 'left',
+	direction: 'ltr',
+	list: null
+};
+
+/**
+ * Reads, for the current caret/selection, which toggle toolbar options are
+ * active: the inline text formats, the paragraph alignment, the text direction
+ * and the list type. Mirrors the legacy toolbar, where the matching control is
+ * highlighted. Must be called inside an editor read.
+ */
+function $readActiveFormatting(): ActiveFormatting {
+	const selection = $getSelection();
+	if (!$isRangeSelection(selection)) {
+		return DEFAULT_ACTIVE_FORMATTING;
+	}
+	const anchorNode = selection.anchor.getNode();
+	const topNode =
+		anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElementOrThrow();
+	const topElement = $isElementNode(topNode) ? topNode : null;
+	const listNode = $getNearestNodeOfType(anchorNode, ListNode);
+
+	let list: ActiveFormatting['list'] = null;
+	if ($isListNode(listNode)) {
+		list = listNode.getListType() === 'number' ? 'number' : 'bullet';
+	}
+
+	return {
+		formats: {
+			bold: selection.hasFormat('bold'),
+			italic: selection.hasFormat('italic'),
+			underline: selection.hasFormat('underline'),
+			strikethrough: selection.hasFormat('strikethrough')
+		},
+		// An unset element format and direction default to left / ltr, matching how
+		// the content actually renders.
+		align: (topElement ? topElement.getFormatType() : '') || 'left',
+		direction: topElement?.getDirection() === 'rtl' ? 'rtl' : 'ltr',
+		list
+	};
+}
+
 const ToolbarDivider = (): React.JSX.Element => (
 	<Container
 		width="0.0625rem"
@@ -102,18 +167,43 @@ type ToolbarIconButtonProps = {
 	icon: IconProps['icon'];
 	label: string;
 	onClick: () => void;
+	/**
+	 * For toggle controls, whether the option is active for the current selection.
+	 * When set, the button is highlighted and exposes `aria-pressed`; leave it
+	 * undefined for plain action buttons.
+	 */
+	active?: boolean;
 };
 
-const ToolbarIconButton = ({ icon, label, onClick }: ToolbarIconButtonProps): React.JSX.Element => (
+const ToolbarIconButton = ({
+	icon,
+	label,
+	onClick,
+	active
+}: ToolbarIconButtonProps): React.JSX.Element => (
 	<Tooltip label={label}>
-		<Button
-			icon={icon}
-			type="ghost"
-			size="large"
-			onClick={onClick}
-			aria-label={label}
-			color="text"
-		/>
+		{active ? (
+			<Button
+				icon={icon}
+				type="default"
+				size="extralarge"
+				onClick={onClick}
+				aria-label={label}
+				aria-pressed
+				backgroundColor="highlight"
+				labelColor="text"
+			/>
+		) : (
+			<Button
+				icon={icon}
+				type="ghost"
+				size="extralarge"
+				onClick={onClick}
+				aria-label={label}
+				aria-pressed={active === undefined ? undefined : false}
+				color="text"
+			/>
+		)}
 	</Tooltip>
 );
 
@@ -159,6 +249,22 @@ const ColorToolbarButton = ({
 	);
 };
 
+const CustomSelect = styled(Select)`
+	& > div > div {
+		padding: 0.5rem;
+		border-radius: 0.125rem;
+		align-items: center;
+	}
+
+	& > div > div > div > div:first-child {
+		padding-top: 0;
+	}
+
+	& [data-testid='divider'] {
+		display: none;
+	}
+`;
+
 export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const { addInlineAttachments } = useEditorAttachments(editorId);
@@ -171,16 +277,20 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
 	const [currentBlock, setCurrentBlock] = useState<BlockType>('paragraph');
+	const [activeFormatting, setActiveFormatting] =
+		useState<ActiveFormatting>(DEFAULT_ACTIVE_FORMATTING);
 
 	// Keep the toolbar in sync with the formatting at the caret: whether a single
-	// inline image is selected (to toggle the alignment control) and the active
-	// font / size / block style (to reflect them in the selectors).
+	// inline image is selected (to toggle the alignment control), the active
+	// font / size / block style (to reflect them in the selectors) and which
+	// toggle options (formats, alignment, direction, list) are active.
 	useEffect(
 		() =>
 			editor.registerUpdateListener(({ editorState }) => {
 				editorState.read(() => {
 					setIsImageSelected($selectionHasImage());
 					setCurrentBlock($getSelectionBlockType());
+					setActiveFormatting($readActiveFormatting());
 					const selection = $getSelection();
 					if ($isRangeSelection(selection)) {
 						setCurrentFont($getSelectionStyleValueForProperty(selection, 'font-family', ''));
@@ -329,24 +439,28 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[]
 	);
 
-	// Controlled selections: match the formatting at the caret against the
-	// available options, falling back to an empty placeholder so the selector
-	// shows its label when no predefined option applies.
-	const fontPlaceholder = useMemo<SelectItem>(() => ({ label: '', value: '' }), []);
+	// When the caret carries no explicit font/size, fall back to the first option
+	// of the corresponding selector so it always shows a concrete value.
+	const defaultFont = useMemo<SelectItem>(() => fontSelectItems[0], [fontSelectItems]);
+
+	const defaultFontSize = useMemo<SelectItem>(() => fontSizeSelectItems[0], [fontSizeSelectItems]);
+
 	const selectedFont = useMemo<SelectItem>(
 		() =>
 			fontSelectItems.find(
 				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFont)
-			) ?? fontPlaceholder,
-		[currentFont, fontPlaceholder, fontSelectItems]
+			) ?? defaultFont,
+		[currentFont, defaultFont, fontSelectItems]
 	);
+
 	const selectedFontSize = useMemo<SelectItem>(
 		() =>
 			fontSizeSelectItems.find(
 				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFontSize)
-			) ?? fontPlaceholder,
-		[currentFontSize, fontPlaceholder, fontSizeSelectItems]
+			) ?? defaultFontSize,
+		[currentFontSize, defaultFontSize, fontSizeSelectItems]
 	);
+
 	const selectedBlock = useMemo<SelectItem<BlockType>>(
 		() => blockSelectItems.find((item) => item.value === currentBlock) ?? blockSelectItems[0],
 		[blockSelectItems, currentBlock]
@@ -465,9 +579,8 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			width="fill"
 		>
 			<Container width="11.375rem" height="fit">
-				<Select
+				<CustomSelect
 					items={fontSelectItems}
-					label={t('label.font', 'Font')}
 					selection={selectedFont}
 					onChange={(value): void => {
 						if (value) {
@@ -479,9 +592,8 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				/>
 			</Container>
 			<Container width="9.375rem" height="fit">
-				<Select
+				<CustomSelect
 					items={fontSizeSelectItems}
-					label={t('label.size', 'Size')}
 					selection={selectedFontSize}
 					onChange={(value): void => {
 						if (value) {
@@ -492,9 +604,8 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				/>
 			</Container>
 			<Container width="9.375rem" height="fit">
-				<Select<BlockType>
+				<CustomSelect<BlockType>
 					items={blockSelectItems}
-					label={t('label.paragraph', 'Paragraph')}
 					selection={selectedBlock}
 					onChange={(value): void => {
 						if (value) {
@@ -526,21 +637,25 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				icon={editorIcon('bold')}
 				label={t('label.bold', 'Bold')}
 				onClick={(): void => formatText('bold')}
+				active={activeFormatting.formats.bold}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('italic')}
 				label={t('label.italic', 'Italic')}
 				onClick={(): void => formatText('italic')}
+				active={activeFormatting.formats.italic}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('underline')}
 				label={t('label.underline', 'Underline')}
 				onClick={(): void => formatText('underline')}
+				active={activeFormatting.formats.underline}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('strike-through')}
 				label={t('label.strikethrough', 'Strikethrough')}
 				onClick={(): void => formatText('strikethrough')}
+				active={activeFormatting.formats.strikethrough}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('remove-formatting')}
@@ -557,21 +672,25 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				icon={editorIcon('align-left')}
 				label={t('label.align_left', 'Align left')}
 				onClick={(): void => formatAlign('left')}
+				active={activeFormatting.align === 'left'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-center')}
 				label={t('label.align_center', 'Center')}
 				onClick={(): void => formatAlign('center')}
+				active={activeFormatting.align === 'center'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-right')}
 				label={t('label.align_right', 'Align right')}
 				onClick={(): void => formatAlign('right')}
+				active={activeFormatting.align === 'right'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-justify')}
 				label={t('label.align_justify', 'Justify')}
 				onClick={(): void => formatAlign('justify')}
+				active={activeFormatting.align === 'justify'}
 			/>
 
 			{/* Indentation */}
@@ -595,11 +714,13 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				icon={editorIcon('ltr')}
 				label={t('label.ltr', 'Left to right')}
 				onClick={(): void => setDirection('ltr')}
+				active={activeFormatting.direction === 'ltr'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('rtl')}
 				label={t('label.rtl', 'Right to left')}
 				onClick={(): void => setDirection('rtl')}
+				active={activeFormatting.direction === 'rtl'}
 			/>
 
 			<ToolbarDivider />
@@ -611,6 +732,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
 				}}
+				active={activeFormatting.list === 'bullet'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('ordered-list')}
@@ -618,6 +740,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
 				}}
+				active={activeFormatting.list === 'number'}
 			/>
 
 			<ToolbarDivider />

@@ -15,8 +15,14 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const DEFAULT_HTML = '<p>hello world</p>';
 const EDITOR_TESTID = 'edit-view-editor';
-const FONT_LABEL = 'label.font';
 const PARAGRAPH_LABEL = 'label.paragraph';
+const BOLD_LABEL = 'label.bold';
+const LINK_LABEL = 'label.link';
+const ALIGN_LEFT_LABEL = 'label.align_left';
+const ALIGN_CENTER_LABEL = 'label.align_center';
+// The font / size / paragraph selects render in this order; they carry no label,
+// so they are addressed by position.
+const SELECT_INDEX = { font: 0, size: 1, paragraph: 2 };
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -46,10 +52,19 @@ async function setupWithSelectedContent(richText = DEFAULT_HTML): Promise<{
 	return { editorId, user, editorElement };
 }
 
-/** Opens a toolbar `Select` (font / size / paragraph) by clicking its visible label. */
-async function openSelect(user: TestUser, label: string): Promise<void> {
-	const triggers = screen.getAllByText(label);
-	await user.click(triggers[triggers.length - 1]);
+/**
+ * Opens the font / size / paragraph `Select` at the given position. The selects
+ * render no label and the chevron icon has `pointer-events: none`, so the
+ * dropdown is opened by clicking the focusable trigger box around the chevron.
+ */
+async function openSelect(user: TestUser, index: number): Promise<void> {
+	const chevron = screen.getAllByTestId('icon: ArrowDown')[index];
+	// eslint-disable-next-line testing-library/no-node-access
+	const trigger = chevron.closest('[tabindex="0"]');
+	if (trigger === null) {
+		throw new Error('select trigger not found');
+	}
+	await user.click(trigger);
 }
 
 describe('RichToolbarPlugin', () => {
@@ -57,14 +72,14 @@ describe('RichToolbarPlugin', () => {
 		it('renders the formatting controls', () => {
 			setupEditor();
 
-			expect(screen.getByRole('button', { name: 'label.bold' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: BOLD_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.italic' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.underline' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.strikethrough' })).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'label.align_left' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: ALIGN_LEFT_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.bullet_list' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.numbered_list' })).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'label.link' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: LINK_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.table' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'label.image' })).toBeInTheDocument();
 		});
@@ -72,9 +87,9 @@ describe('RichToolbarPlugin', () => {
 		it('renders the font, size and paragraph selectors', () => {
 			setupEditor();
 
-			expect(screen.getByText(FONT_LABEL)).toBeInTheDocument();
-			expect(screen.getByText('label.size')).toBeInTheDocument();
-			// The paragraph selector renders its label and its current value.
+			// The three selects each render a chevron trigger...
+			expect(screen.getAllByTestId('icon: ArrowDown')).toHaveLength(3);
+			// ...and the paragraph selector shows its current block value.
 			expect(screen.getAllByText(PARAGRAPH_LABEL).length).toBeGreaterThan(0);
 		});
 	});
@@ -83,7 +98,7 @@ describe('RichToolbarPlugin', () => {
 		it('applies bold to the selection', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await user.click(screen.getByRole('button', { name: 'label.bold' }));
+			await user.click(screen.getByRole('button', { name: BOLD_LABEL }));
 
 			await waitFor(() => {
 				expect(richTextOf(editorId)).toContain('font-weight: bold');
@@ -123,7 +138,7 @@ describe('RichToolbarPlugin', () => {
 		it('clears inline styling with the remove-formatting control', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await openSelect(user, FONT_LABEL);
+			await openSelect(user, SELECT_INDEX.font);
 			await user.click(await screen.findByText('Tahoma'));
 			await waitFor(() => {
 				expect(richTextOf(editorId)).toContain('tahoma');
@@ -143,7 +158,7 @@ describe('RichToolbarPlugin', () => {
 		it('turns the selection into a heading', async () => {
 			const { editorElement, user } = await setupWithSelectedContent();
 
-			await openSelect(user, PARAGRAPH_LABEL);
+			await openSelect(user, SELECT_INDEX.paragraph);
 			await user.click(await screen.findByText('label.heading_1'));
 
 			expect(await within(editorElement).findByRole('heading', { level: 1 })).toBeInTheDocument();
@@ -152,7 +167,7 @@ describe('RichToolbarPlugin', () => {
 		it('turns the selection into a blockquote', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await openSelect(user, PARAGRAPH_LABEL);
+			await openSelect(user, SELECT_INDEX.paragraph);
 			await user.click(await screen.findByText('label.blockquote'));
 
 			await waitFor(() => {
@@ -185,7 +200,7 @@ describe('RichToolbarPlugin', () => {
 		it('aligns the paragraph to the center', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await user.click(screen.getByRole('button', { name: 'label.align_center' }));
+			await user.click(screen.getByRole('button', { name: ALIGN_CENTER_LABEL }));
 
 			await waitFor(() => {
 				expect(richTextOf(editorId)).toContain('text-align: center');
@@ -207,7 +222,7 @@ describe('RichToolbarPlugin', () => {
 		it('applies the chosen font family to the selection', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await openSelect(user, FONT_LABEL);
+			await openSelect(user, SELECT_INDEX.font);
 			await user.click(await screen.findByText('Tahoma'));
 
 			await waitFor(() => {
@@ -218,7 +233,7 @@ describe('RichToolbarPlugin', () => {
 		it('applies the chosen font size to the selection', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
-			await openSelect(user, 'label.size');
+			await openSelect(user, SELECT_INDEX.size);
 			await user.click(await screen.findByText('48pt'));
 
 			await waitFor(() => {
@@ -263,7 +278,7 @@ describe('RichToolbarPlugin', () => {
 			const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://example.com');
 			const { editorId, editorElement, user } = await setupWithSelectedContent();
 
-			await user.click(screen.getByRole('button', { name: 'label.link' }));
+			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
 			expect(await within(editorElement).findByRole('link')).toBeInTheDocument();
 			expect(richTextOf(editorId)).toContain('href="https://example.com"');
@@ -303,6 +318,59 @@ describe('RichToolbarPlugin', () => {
 			await user.click(image);
 
 			expect(await screen.findByRole('button', { name: 'label.image_align' })).toBeInTheDocument();
+		});
+	});
+
+	describe('active option highlighting', () => {
+		it('marks left alignment and ltr direction active by default', () => {
+			setupEditor();
+
+			expect(
+				screen.getByRole('button', { name: ALIGN_LEFT_LABEL, pressed: true })
+			).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'label.ltr', pressed: true })).toBeInTheDocument();
+			// Other alignments are not active.
+			expect(
+				screen.getByRole('button', { name: ALIGN_CENTER_LABEL, pressed: false })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole('button', { name: 'label.align_right', pressed: false })
+			).toBeInTheDocument();
+		});
+
+		it('does not expose a pressed state on plain action buttons', () => {
+			setupEditor();
+
+			// Action buttons (not toggles) carry no aria-pressed.
+			expect(screen.getByRole('button', { name: LINK_LABEL })).not.toHaveAttribute('aria-pressed');
+			expect(screen.getByRole('button', { name: 'label.image' })).not.toHaveAttribute(
+				'aria-pressed'
+			);
+		});
+
+		it('activates the bold control when the selection is bold', async () => {
+			const { user } = await setupWithSelectedContent();
+
+			expect(screen.getByRole('button', { name: BOLD_LABEL, pressed: false })).toBeInTheDocument();
+
+			await user.click(screen.getByRole('button', { name: BOLD_LABEL }));
+
+			expect(
+				await screen.findByRole('button', { name: BOLD_LABEL, pressed: true })
+			).toBeInTheDocument();
+		});
+
+		it('moves the active alignment when the paragraph is re-aligned', async () => {
+			const { user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: ALIGN_CENTER_LABEL }));
+
+			expect(
+				await screen.findByRole('button', { name: ALIGN_CENTER_LABEL, pressed: true })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole('button', { name: ALIGN_LEFT_LABEL, pressed: false })
+			).toBeInTheDocument();
 		});
 	});
 });
