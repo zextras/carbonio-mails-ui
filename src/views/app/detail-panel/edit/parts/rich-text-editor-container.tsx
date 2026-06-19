@@ -28,7 +28,7 @@ import {
 } from 'store/editor';
 import { MailsEditorV2 } from 'types/index.d';
 import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
-import { handleEditorPaste } from 'views/app/detail-panel/edit/parts/editor-paste-handler';
+import { handleEditorPowerPaste } from 'views/app/detail-panel/edit/parts/editor-powerpaste-handler';
 import type { TextEditorContainerProps } from 'views/app/detail-panel/edit/parts/text-editor-container';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
@@ -249,7 +249,7 @@ export const RichTextEditorContainer = ({
 				const editViewWrapper = document.querySelector(
 					'[data-testid="edit-view-editor"]'
 				)?.parentElement;
-				await handleEditorPaste(editor, editorID, event);
+				await handleEditorPowerPaste(editor, editorID, event);
 
 				// Restore scroll position. In firefox scrollbar trips on paste event, see bug [CO-1979]
 				if (editViewWrapper) {
