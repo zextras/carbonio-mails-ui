@@ -11,7 +11,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { linkifyText } from './text-linkify';
 import {
 	getOriginalTextContent,
-	getQuotedTextFromOriginalContent
+	getQuotedTextFromOriginalContent,
+	htmlEncode
 } from '../../get-quoted-text-util';
 
 type TextMessageRendererType = {
@@ -25,7 +26,9 @@ export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JS
 
 	const convertedHTML = useMemo(() => {
 		const content = showQuotedText ? body.content : originalText;
-		const html = linkifyText(content);
+		// html encode the content to prevent XSS, then linkify it, and finally convert new lines to <br /> for proper display in HTML.
+		const encodedContent = htmlEncode(content);
+		const html = linkifyText(encodedContent);
 		return html.replace(/\r\n|\r|\n/g, '<br />');
 	}, [showQuotedText, body.content, originalText]);
 
