@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors, EditViewActions } from 'constants/index';
 import { MIMETYPE_EML } from 'helpers/attachments';
 import { useMsgForwardAsAttachmentFn } from 'hooks/actions/use-msg-forward-as-attachment';
+import { getMessageById } from 'store/emails/store';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { UnsavedAttachment } from 'types/attachments';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
@@ -33,12 +34,14 @@ export const useConvForwardAsAttachmentFn = ({
 	);
 
 	const execute = useCallback(() => {
+		const message = getMessageById(firstMessageId);
+
 		const attachments: Array<UnsavedAttachment> = [
 			{
 				mid: firstMessageId,
-				filename: `${firstMessageId}.eml`,
+				filename: message?.subject ? `${message.subject}.eml` : `${firstMessageId}.eml`,
+				size: message?.size ?? 0,
 				contentType: MIMETYPE_EML,
-				size: 0,
 				isInline: false
 			}
 		];
