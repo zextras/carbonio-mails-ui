@@ -133,7 +133,11 @@ const IMAGE_URL_REGEX = new RegExp(
 	'i'
 );
 
-const IMG_TAG_REGEX = /<img[^>]+src=["'](http[^"']+)["']/i;
+const MYHOSTNAME = window.location.hostname;
+
+// <img[^>]+src=["'](http(?!s?://regex101\.com)[^"']+)["']
+
+const IMG_TAG_REGEX = new RegExp(`<img[^>]+src=["'](http(?!s?:\\/\\/${MYHOSTNAME}\/service\/home\/)[^"']+)["']`, 'i');
 const TABLE_TAG_REGEX = /<table/i;
 
 function isImageUrl(text: string): boolean {
@@ -182,6 +186,8 @@ export const handleEditorPaste = async (
 
 		// Upload local image files
 		event.preventDefault();
+		event.stopPropagation();
+		event.stopImmediatePropagation?.();
 		uploadQueue.push(...imageFiles);
 
 		if (!isUploading) {
