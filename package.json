@@ -100,6 +100,7 @@
 		"@emotion/jest": "11.13.0",
 		"@emotion/react": "11.14.0",
 		"@emotion/styled": "11.14.1",
+		"@lexical/code": "0.45.0",
 		"@lexical/html": "0.45.0",
 		"@lexical/link": "0.45.0",
 		"@lexical/list": "0.45.0",
