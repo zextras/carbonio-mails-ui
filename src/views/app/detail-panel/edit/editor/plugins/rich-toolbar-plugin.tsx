@@ -51,6 +51,7 @@ import {
 import { EmojiPicker, type Emoji } from './emoji-picker';
 import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
 import { $isImageNode, type ImageAlignment } from './nodes/image-node';
+import { SourceCodeModal } from './source-code-modal';
 import { SpecialCharacterPicker } from './special-character-picker';
 import { TableGridPicker } from './table-grid-picker';
 import { editorIcon } from '../icons/editor-icons';
@@ -165,6 +166,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
 	const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
 	const [specialCharMenuOpen, setSpecialCharMenuOpen] = useState(false);
+	const [sourceCodeOpen, setSourceCodeOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
@@ -715,7 +717,12 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarIconButton
 				icon={editorIcon('sourcecode')}
 				label={t('label.source_code', 'Source code')}
-				onClick={(): void => undefined}
+				onClick={(): void => setSourceCodeOpen(true)}
+			/>
+			<SourceCodeModal
+				editor={editor}
+				open={sourceCodeOpen}
+				onClose={(): void => setSourceCodeOpen(false)}
 			/>
 
 			<input
