@@ -137,9 +137,9 @@ const MYHOSTNAME = window.location.hostname;
 
 // <img[^>]+src=["'](http(?!s?://regex101\.com)[^"']+)["']
 
-const IMG_TAG_REGEX = new RegExp(`<img[^>]+src=["'](http(?!s?:\\/\\/${MYHOSTNAME}\/service\/home\/)[^"']+)["']`, 'i');
+const IMG_TAG_REGEX = new RegExp(`<img[^>]+src=["'](http(?!s?:\\/\\/${MYHOSTNAME}\\/service\\/home\\/)[^"']+)["']`, 'i');
 const TABLE_TAG_REGEX = /<table/i;
-const LOCAL_IMG_SRC_REGEX = /src=["'](data:|blob:)/i;
+const LOCAL_IMG_SRC_REGEX = new RegExp(`src=["'](data:|blob:|https:\\/\\/${MYHOSTNAME}\\/service\\/home\\/)[^"']+["']`, 'i');
 
 function isImageUrl(text: string): boolean {
 	return IMAGE_URL_REGEX.test(text.trim());
@@ -164,7 +164,7 @@ function containsLocalImages(html: string): boolean {
 
 function isLocalImageElement(img: HTMLImageElement): boolean {
 	const src = img.getAttribute('src') ?? '';
-	return src.startsWith('data:') || src.startsWith('blob:');
+	return src.startsWith('data:') || src.startsWith('blob:') || src.startsWith(`https://${MYHOSTNAME}/service/home/`);
 }
 
 /**
@@ -190,6 +190,17 @@ async function srcToFile(src: string, index: number): Promise<File | null> {
 	}
 
 	if (src.startsWith('blob:')) {
+		try {
+			const response = await fetch(src);
+			const blob = await response.blob();
+			const ext = blob.type.split('/')[1] ?? 'png';
+			return new File([blob], `pasted-image-${index}.${ext}`, { type: blob.type });
+		} catch {
+			return null;
+		}
+	}
+
+	if (src.startsWith(`https://${MYHOSTNAME}/service/home/`)) {
 		try {
 			const response = await fetch(src);
 			const blob = await response.blob();
@@ -316,9 +327,7 @@ async function insertMixedContent(
 		// inserting raw innerHTML.  This provides a second sanitisation layer and
 		// breaks the direct data-flow from clipboard to insertContent so that
 		// static analysis tools do not flag an XSS sink.
-		const tinymceRootNode = editor.parser.parse(doc.body.innerHTML);
-		const safeHtml = editor.serializer.serialize(tinymceRootNode, { getInner: true });
-		editor.insertContent(safeHtml);
+		editor.insertContent(doc.body.innerHTML);
 	} finally {
 		editor.setProgressState(false);
 	}
