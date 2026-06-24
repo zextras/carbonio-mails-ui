@@ -278,7 +278,7 @@ function processExcelPaste(html: string, editor: Editor): void {
 	// Strip dangerous elements and attributes (on*, javascript: URLs, etc.).
 	sanitizeDoc(doc);
 
-	editor.insertContent(editor.serializer.serialize(editor.parser.parse(doc.body.innerHTML)));
+	editor.insertContent(doc.body.innerHTML);
 }
 
 /**
