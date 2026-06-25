@@ -422,6 +422,24 @@ const getDefaultIdentity = (): IdentityDescriptor =>
 	);
 
 /**
+ * On new message editor, we need to get the identity that should be used to send the message.
+ * The identity is selected based on wich folder we are on it.
+ * @param folderOwnerAccount - The account that owns the folder where the message is being composed
+ */
+const getIdentityForNewMessage = (folderOwnerAccount: string): IdentityDescriptor => {
+	const identities = getIdentitiesDescriptors();
+	const defaultIdentity = getDefaultIdentity();
+
+	// Check if the folder owner account matches with any of the identities owner account
+	const matchingIdentity = identities.find(
+		(identity) => identity.ownerAccount === folderOwnerAccount
+	);
+
+	return matchingIdentity ?? defaultIdentity;
+};
+
+
+/**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
  * @param message - The message to analyze
@@ -572,6 +590,7 @@ export {
 	getNoIdentityPlaceholder,
 	getRecipientReplyIdentity,
 	getRecipients,
+	getIdentityForNewMessage,
 	PRIMARY_IDENTITY_NAME,
 	type IdentityDescriptor,
 	type MatchingReplyIdentity,

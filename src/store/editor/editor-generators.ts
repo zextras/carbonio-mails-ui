@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
+import { LinkFolder, ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments } from '../../helpers/attachments';
@@ -13,6 +13,7 @@ import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/inde
 import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
+	getIdentityForNewMessage,
 	getIdentityFromParticipant,
 	getRecipientReplyIdentity
 } from 'helpers/identities';
@@ -45,6 +46,7 @@ import {
 	Participant,
 	UnsavedAttachment
 } from 'types/index.d';
+import { useLocation, useParams } from 'react-router-dom';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;
@@ -64,16 +66,18 @@ const labels = {
  *
  */
 // FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
-export const generateNewMessageEditor = (): MailsEditorV2 => {
+export const generateNewMessageEditor = (folderOwner?: string): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: ``,
 		richText: ``
 	};
-	const defaultIdentity = getDefaultIdentity();
+
+	const from = folderOwner ? getIdentityForNewMessage(folderOwner) : getDefaultIdentity();
+
 	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
-		newSignatureId: defaultIdentity.defaultSignatureId
+		newSignatureId: from.defaultSignatureId
 	});
 	const userSettings = getUserSettings();
 	const prefs = userSettings?.prefs ?? {};
@@ -82,7 +86,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
+		identityId: from.id,
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
@@ -97,7 +101,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: isRequestReadReceipt,
-		signatureId: defaultIdentity.defaultSignatureId,
+		signatureId: from.defaultSignatureId,
 
 		size: 0
 	};
@@ -564,9 +568,39 @@ export const generateEditor = ({
 	message,
 	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
+
+
+	const { folderId: folderIdFromParams } = useParams<{ folderId?: string }>();
+	const { pathname } = useLocation();
+
+	const folderIdFromPath =
+		pathname.match(/\/folder\/([^/]+)/)?.[1]; // extracts segment after /folder/
+
+	const folderId = folderIdFromParams ?? folderIdFromPath;
+
+	let folderOwner = '';
+
+	// Get the folderId from the pathName
+	if (folderId && folderId !== '') {
+		// If the folderId is present in the path, we can use it to get the folder and its root
+		const rootsMap = getRootsMap();
+		// verify if folderId contains userId:folderId or just folderId, and extract the userId if present
+		const folderIdParts = folderId.split(':');
+		if (folderIdParts.length === 2) {
+			const [userId, folderIdOnly] = folderIdParts;
+			const getMap = rootsMap[userId+":1"];
+			if (getMap) {
+				// cast getMap as Folder link
+				const linkFolder = getMap as LinkFolder; // Assuming getMap is of type LinkFolder
+				folderOwner = linkFolder?.owner ? linkFolder.owner : '';
+			}
+		}
+
+	}
+
 	switch (action) {
 		case EditViewActions.NEW:
-			return generateNewMessageEditor();
+			return generateNewMessageEditor(folderOwner);
 		case EditViewActions.REPLY:
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
