@@ -52,7 +52,7 @@ function asAttrs(opts: Required<LinkifyOptions>): string {
 }
 
 /**
- * Converts raw text to HTML with linkified URLs, email addresses, MailTo, and Tel links.
+ * Converts raw text to escaped HTML(except links) with linkified URLs, email addresses, MailTo, and Tel links.
  *  If `options.autolinker === false`, only the email/mailto handling runs.
  *
  * @param rawText - The input text containing URLs and email addresses, Telephone numbers.
