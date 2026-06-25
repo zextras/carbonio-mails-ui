@@ -6,6 +6,7 @@
 
 import Autolinker from 'autolinker';
 import { AutolinkerConfig } from 'autolinker/dist/commonjs/autolinker';
+import { escape as escapeHtml } from 'lodash';
 
 export type LinkifyOptions = {
 	autolinker?: Partial<AutolinkerConfig> | false;
@@ -30,14 +31,19 @@ const DEFAULT_OPTIONS: Required<Omit<LinkifyOptions, 'autolinker'>> & {
 	linkEmails: true
 };
 
+// The query part allows '&' (to separate parameters) but stops at an escaped angle
+// bracket (&lt; / &gt;) so a bracketed <mailto:...> does not swallow its closing
+// bracket once the surrounding text has been HTML-escaped.
 const MAILTO_EMAIL_REGEX =
-	/mailto:([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))(\?[^\s<>]+)?/gu;
+	/mailto:([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))(\?(?:(?!&lt;|&gt;)[^\s<>])+)?/gu;
 
 const PLAIN_EMAIL_REGEX =
 	/(^|\s)([\p{L}\p{N}._%+-]+@(?:[\p{L}\p{N}.-]+\.[\p{L}\p{N}]{2,}|\[[^\]\s<>]+\]))/gu;
 
+// NOTE: angle brackets are HTML-escaped (via lodash `escape`) before this runs, so we
+// match the escaped entities &lt; ... &gt; rather than literal < ... >.
 const ANGLE_BRACKET_EMAIL_REGEX =
-	/<([a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9-]{2,}|\[[^\]\s<>]+])>/g;
+	/&lt;([a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9-]{2,}|\[[^\]\s<>]+])&gt;/g;
 
 function asAttrs(opts: Required<LinkifyOptions>): string {
 	const target = opts.openInNewTab ? ' target="_blank"' : '';
@@ -70,7 +76,11 @@ export function linkifyText(rawText: string, options?: LinkifyOptions): string {
 
 	const attrs = asAttrs(opts);
 
-	let processedText = rawText;
+	// Escape untrusted content up-front with lodash `escape` (handles & < > " '): the result
+	// is rendered via dangerouslySetInnerHTML, so it must not be able to inject markup
+	// (escaped < >) nor break out of the href="..." attributes of the anchors we build
+	// (escaped "). All anchors below are added after this point and are therefore unaffected.
+	let processedText = escapeHtml(rawText);
 
 	if (opts.linkEmails) {
 		// Re-create mailto anchors
