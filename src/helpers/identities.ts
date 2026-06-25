@@ -355,6 +355,26 @@ const computeIdentityWeight = (
 ): Array<RecipientWeight> => {
 	const result: Array<RecipientWeight> = [];
 
+	// if we have no recipient  but identities and folderOwnereAccount we can return the identities with the weight based on the folderOwnerAccount
+	if (recipients.length === 0 && identities.length > 0) {
+		identities.forEach((identity) => {
+			const accountMatch =
+				identity.ownerAccount === folderOwnerAccount ? 'match' : 'nomatch';
+
+			result.push({
+				recipientAddress: identity.fromAddress,
+				recipientFullName: identity.fromDisplay ?? identity.identityDisplayName,
+				role: ParticipantRole.CARBON_COPY,
+				matchingIdentity: identity,
+				weight:
+					AccountOwnershipWeights[accountMatch] *
+					RoleWeights[ParticipantRole.CARBON_COPY] *
+					IdentityTypeWeights[identity.type || UNKNOWN_ADDRESS_DEFAULT_TYPE]
+			});
+		});
+		return result;
+	}
+
 	// Cycle for every recipient in the message
 	recipients.forEach((recipient) => {
 		// Check if the recipient has a matching identity
