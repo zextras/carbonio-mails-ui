@@ -356,7 +356,7 @@ const computeIdentityWeight = (
 	const result: Array<RecipientWeight> = [];
 
 	// if we have no recipient  but identities and folderOwnereAccount we can return the identities with the weight based on the folderOwnerAccount
-	if (recipients.length === 0 && identities.length > 0) {
+	if (identities.length > 0) {
 		identities.forEach((identity) => {
 			const accountMatch =
 				identity.ownerAccount === folderOwnerAccount ? 'match' : 'nomatch';
@@ -372,7 +372,6 @@ const computeIdentityWeight = (
 					IdentityTypeWeights[identity.type || UNKNOWN_ADDRESS_DEFAULT_TYPE]
 			});
 		});
-		return result;
 	}
 
 	// Cycle for every recipient in the message
