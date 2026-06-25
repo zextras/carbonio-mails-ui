@@ -55,10 +55,29 @@ describe('linkifyToHtml', () => {
 		expect(output.match(/<a.*https:\/\/site\.com.*>/g)).toHaveLength(1);
 	});
 
-	it('does not escapes HTML tags in input', () => {
+	it('escapes HTML tags in input so they are not interpreted as markup', () => {
 		const input = '<b>foo@bar.com</b>';
 		const output = linkifyText(input);
-		expect(output).toBe(input);
+		expect(output).toBe('&lt;b&gt;foo@bar.com&lt;/b&gt;');
+	});
+
+	it('does not allow a quote in a mailto query to break out of the href attribute', () => {
+		const input = 'mailto:a@b.com?subject=x"onmouseover="alert(document.domain)';
+		const output = linkifyText(input);
+		// The double quote must be escaped so no event-handler attribute can be injected.
+		expect(output).not.toContain('"onmouseover');
+		expect(output).not.toMatch(/onmouseover\s*=\s*"/i);
+		expect(output).toContain('&quot;onmouseover');
+	});
+
+	it('neutralizes an <img onerror> XSS payload from a plain text body', () => {
+		const input =
+			'Hello this is an important message<img src=x onerror=window.location.replace("https://badsite.io/static/login/");>';
+		const output = linkifyText(input);
+		// No live tag/attribute may survive: angle brackets must be escaped.
+		expect(output).not.toContain('<img');
+		expect(output).not.toMatch(/<[^a/]/); // only the anchors we generate (<a ...) are allowed
+		expect(output).toContain('&lt;img src=x onerror=');
 	});
 
 	it('applies custom anchorRel and openInNewTab options', () => {
@@ -108,7 +127,7 @@ describe('linkifyToHtml', () => {
 		const input = 'Send to <test@example.com>';
 		const html = linkifyText(input, { linkEmails: false });
 
-		expect(html).toContain('<test@example.com>');
+		expect(html).toContain('&lt;test@example.com&gt;');
 		expect(html).not.toMatch(/mailto:/);
 	});
 
@@ -132,11 +151,14 @@ describe('linkifyToHtml', () => {
 		);
 	});
 
-	it('doest not linkify trailing angle bracket in mailto link', () => {
+	it('escapes the angle brackets around a bracketed mailto link', () => {
 		const input = 'Contact <mailto:test@example.com?subject=Hello>';
 		const output = linkifyText(input);
+		// Angle brackets are escaped so the bracketed form cannot inject markup,
+		// and the closing bracket is kept outside the anchor.
+		expect(output).not.toMatch(/<[^a/]/);
 		expect(output).toBe(
-			'Contact <<a href="mailto:test@example.com?subject=Hello" target="_blank" rel="noopener noreferrer">mailto:test@example.com?subject=Hello</a>>'
+			'Contact &lt;<a href="mailto:test@example.com?subject=Hello" target="_blank" rel="noopener noreferrer">mailto:test@example.com?subject=Hello</a>&gt;'
 		);
 	});
 });
