@@ -75,8 +75,8 @@ importers:
         specifier: 22.5.1
         version: 22.5.1
       immer:
-        specifier: 9.0.19
-        version: 9.0.19
+        specifier: 9.0.21
+        version: 9.0.21
       juice:
         specifier: 11.0.3
         version: 11.0.3
@@ -121,7 +121,7 @@ importers:
         version: 11.1.1
       zustand:
         specifier: 4.5.2
-        version: 4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1)
+        version: 4.5.2(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1)
     devDependencies:
       '@babel/core':
         specifier: 7.29.7
@@ -4406,7 +4406,7 @@ packages:
   git-raw-commits@4.0.0:
     resolution: {integrity: sha512-ICsMM1Wk8xSGMowkOmPrzo2Fgmfo4bMHLNX6ytHjajRJUqvHOw/TFapQ+QG75c3X/tTDDhOSRPGC52dDbNM8FQ==}
     engines: {node: '>=16'}
-    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
+    deprecated: Deprecated and no longer maintained. Use @conventional-changelog/git-client instead.
     hasBin: true
 
   glob-parent@5.1.2:
@@ -4684,9 +4684,6 @@ packages:
 
   immer@10.2.0:
     resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
-
-  immer@9.0.19:
-    resolution: {integrity: sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==}
 
   immer@9.0.21:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
@@ -10566,14 +10563,14 @@ snapshots:
       '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.36.0
       i18next: 22.5.1
-      immer: 9.0.19
+      immer: 9.0.21
       lodash: 4.18.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-i18next: 12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom: 6.30.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uuid: 9.0.1
-      zustand: 4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1)
+      zustand: 4.5.2(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -12854,8 +12851,6 @@ snapshots:
     optional: true
 
   immer@10.2.0: {}
-
-  immer@9.0.19: {}
 
   immer@9.0.21: {}
 
@@ -15790,12 +15785,12 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zustand@4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1):
+  zustand@4.5.2(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1):
     dependencies:
       use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.28
-      immer: 9.0.19
+      immer: 9.0.21
       react: 18.3.1
 
   zustand@5.0.12(@types/react@18.3.28)(immer@10.2.0)(react@18.3.1)(use-sync-external-store@1.6.0(react@18.3.1)):
