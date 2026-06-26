@@ -112,7 +112,7 @@
 		"asn1js": "3.0.7",
 		"autolinker": "4.1.5",
 		"axios": "1.15.2",
-		"core-js": "3.36.0",
+		"core-js": "3.49.0",
 		"darkreader": "4.9.117",
 		"date-fns": "4.1.0",
 		"eslint": "8.57.0",
