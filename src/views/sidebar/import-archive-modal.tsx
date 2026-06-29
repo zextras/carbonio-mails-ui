@@ -5,14 +5,7 @@
  */
 import React, { FC } from 'react';
 
-import {
-	Banner,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Text
-} from '@zextras/carbonio-design-system';
+import { Banner, Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 

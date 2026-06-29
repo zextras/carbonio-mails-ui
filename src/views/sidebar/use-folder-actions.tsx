@@ -39,12 +39,84 @@ type FolderActionsProps = {
 	items?: Array<FolderActionsProps>;
 };
 
+const IMPORT_ARCHIVE_SNACKBAR_KEY = 'import-archive';
+
+function getFileImportParams(file: File): { fmt: string; contentType: string } {
+	if (file.name.endsWith('.mbox')) {
+		return { fmt: 'mbox', contentType: 'application/mbox' };
+	}
+	if (file.name.endsWith('.zip')) {
+		return { fmt: 'zip', contentType: 'application/zip' };
+	}
+	return { fmt: 'tgz', contentType: 'application/x-compressed-tar' };
+}
+
+async function performFolderMove(
+	folder: Folder,
+	createSnackbar: ReturnType<typeof useUiUtilities>['createSnackbar'],
+	folderDestination: Folder | undefined,
+	setFolderDestination: (_folder: Folder | undefined) => void,
+	onClose: () => void
+): Promise<void> {
+	const restoreFolder = async (): Promise<void> => {
+		const res = await folderActionSoapApi({ folder, l: folder.l, op: 'move' });
+		if (!('Fault' in res)) {
+			createSnackbar({
+				key: 'move-folder',
+				replace: true,
+				severity: 'success',
+				label: t('messages.snackbar.folder_restored', 'Folder restored'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else {
+			createSnackbar({
+				key: 'move',
+				replace: true,
+				severity: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		}
+	};
+
+	const res = await folderActionSoapApi({
+		folder,
+		l: folderDestination?.id ?? FOLDERS.USER_ROOT,
+		op: 'move'
+	});
+
+	if (!('Fault' in res)) {
+		createSnackbar({
+			key: 'move',
+			replace: true,
+			severity: 'success',
+			label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+			autoHideTimeout: 5000,
+			hideButton: false,
+			actionLabel: t('label.undo', 'Undo'),
+			onActionClick: () => restoreFolder()
+		});
+	} else {
+		createSnackbar({
+			key: 'move',
+			replace: true,
+			severity: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again.'),
+			autoHideTimeout: 3000
+		});
+	}
+	setFolderDestination(undefined);
+	onClose();
+}
+
 function triggerFileDownload(url: string): void {
 	const link = document.createElement('a');
 	link.href = url;
 	document.body.appendChild(link);
 	link.click();
-	document.body.removeChild(link);
+	link.remove();
 }
 
 export function buildImportArchiveOnClick({
@@ -75,26 +147,13 @@ export function buildImportArchiveOnClick({
 				return;
 			}
 
-			const isMbox = file.name.endsWith('.mbox');
-			const isZip = file.name.endsWith('.zip');
-			let fmt: string;
-			let contentType: string;
-			if (isMbox) {
-				fmt = 'mbox';
-				contentType = 'application/mbox';
-			} else if (isZip) {
-				fmt = 'zip';
-				contentType = 'application/zip';
-			} else {
-				fmt = 'tgz';
-				contentType = 'application/x-compressed-tar';
-			}
+			const { fmt, contentType } = getFileImportParams(file);
 
 			const modalId = Date.now().toString();
-			const startImport = (): void => {
+			const startImport = async (): Promise<void> => {
 				closeModal(modalId);
 				createSnackbar({
-					key: 'import-archive',
+					key: IMPORT_ARCHIVE_SNACKBAR_KEY,
 					replace: true,
 					severity: 'info',
 					label: t(
@@ -105,47 +164,45 @@ export function buildImportArchiveOnClick({
 					disableAutoHide: false,
 					hideButton: true
 				});
-				fetch(
-					`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?fmt=${fmt}&auth=co`,
-					{
-						method: 'POST',
-						body: file,
-						headers: { 'Content-Type': contentType }
-					}
-				)
-					.then((response) => {
-						createSnackbar({
-							key: 'import-archive',
-							replace: true,
-							severity: response.ok ? 'success' : 'error',
-							label: response.ok
-								? t(
-										'messages.snackbar.import_archive_success',
-										'{{filename}} imported successfully',
-										{ filename: file.name }
-									)
-								: t(
-										'messages.snackbar.import_archive_error',
-										'{{filename}} imported failed. Please try again or contact your administrator',
-										{ filename: file.name }
-									),
-							disableAutoHide: true,
-							actionLabel: t('label.dismiss', 'Dismiss')
-						});
-					})
-					.catch(() => {
-						createSnackbar({
-							key: 'import-archive',
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					})
-					.finally(() => {
-						input.remove();
+				try {
+					const response = await fetch(
+						`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?fmt=${fmt}&auth=co`,
+						{
+							method: 'POST',
+							body: file,
+							headers: { 'Content-Type': contentType }
+						}
+					);
+					createSnackbar({
+						key: IMPORT_ARCHIVE_SNACKBAR_KEY,
+						replace: true,
+						severity: response.ok ? 'success' : 'error',
+						label: response.ok
+							? t(
+									'messages.snackbar.import_archive_success',
+									'{{filename}} imported successfully',
+									{ filename: file.name }
+								)
+							: t(
+									'messages.snackbar.import_archive_error',
+									'{{filename}} imported failed. Please try again or contact your administrator',
+									{ filename: file.name }
+								),
+						disableAutoHide: true,
+						actionLabel: t('label.dismiss', 'Dismiss')
 					});
+				} catch {
+					createSnackbar({
+						key: IMPORT_ARCHIVE_SNACKBAR_KEY,
+						replace: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} finally {
+					input.remove();
+				}
 			};
 
 			createModal({
@@ -197,7 +254,7 @@ export function buildExportArchiveOnClick({
 			confirmLabel: t('label.export', 'Export'),
 			onConfirm: (): void => {
 				const user = folder.isLink ? (folder.owner ?? name) : name;
-				const safeName = folder.name.replace(/\s+/g, '-');
+				const safeName = folder.name.replaceAll(' ', '-');
 				const url =
 					selectedFormat === 'tgz'
 						? `${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=tgz&types=message,conversation&id=${folder.id}&filename=archive-${safeName}.tgz`
