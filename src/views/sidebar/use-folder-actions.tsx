@@ -147,6 +147,12 @@ export function buildImportArchiveOnClick({
 				return;
 			}
 
+			const allowed = ['.tgz', '.mbox', '.zip'];
+			if (!allowed.some((ext) => file.name.toLowerCase().endsWith(ext))) {
+				input.remove();
+				return;
+			}
+
 			const { fmt, contentType } = getFileImportParams(file);
 
 			const modalId = Date.now().toString();

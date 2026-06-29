@@ -28,18 +28,21 @@ function formatFileSize(bytes: number): string {
 export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }) => {
 	const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
-	const fileTypeMap: Record<string, { label: string; description: string }> = {
+	const fileTypeMap: Record<string, { label: string; description: string; avatarColor: string }> = {
 		mbox: {
 			label: 'MBOX',
-			description: t('modal.import_archive.file_type.mbox', 'MBOX · Mailbox archive')
+			description: t('modal.import_archive.file_type.mbox', 'MBOX · Mailbox archive'),
+			avatarColor: '#FEEDED'
 		},
 		zip: {
 			label: 'ZIP',
-			description: t('modal.import_archive.file_type.zip', 'ZIP · Compressed mailbox archive')
+			description: t('modal.import_archive.file_type.zip', 'ZIP · Compressed mailbox archive'),
+			avatarColor: '#EEEDFE'
 		},
 		tgz: {
 			label: 'TGZ',
-			description: t('modal.import_archive.file_type.tgz', 'TGZ · Compressed mailbox archive')
+			description: t('modal.import_archive.file_type.tgz', 'TGZ · Compressed mailbox archive'),
+			avatarColor: '#E1F5EE'
 		}
 	};
 
@@ -53,26 +56,25 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 		<Container mainAlignment="flex-start" crossAlignment="flex-start">
 			<Container gap="1rem" mainAlignment="flex-start" crossAlignment="flex-start">
 				<Container
-					borderColor="gray3"
-					borderRadius="regular"
+					borderColor="gray2"
 					padding={{ all: 'medium' }}
 					background="gray6"
 					orientation="horizontal"
 					mainAlignment="flex-start"
 					crossAlignment="center"
 					gap="0.75rem"
+					style={{ borderRadius: '0.25rem' }}
 				>
 					<Container
-						width="2.5rem"
-						height="2.5rem"
-						minWidth="2.5rem"
-						background="#EEEDFE"
-						borderRadius="regular"
+						width="3rem"
+						height="3rem"
+						minWidth="3rem"
+						background={fileTypeMap[fileExtension ?? '']?.avatarColor || '#EEEDFE'}
 						mainAlignment="center"
 						crossAlignment="center"
-						style={{ flexShrink: 0 }}
+						style={{ flexShrink: 0, borderRadius: '0.25rem' }}
 					>
-						<Text size="small" weight="bold" color="text" style={{ letterSpacing: '-0.03em' }}>
+						<Text size="small" weight="regular" color="text">
 							{fileTypeLabel}
 						</Text>
 					</Container>
@@ -81,7 +83,7 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 							{file.name}
 						</Text>
 						<Padding bottom="small" />
-						<Text size="small" color="secondary">
+						<Text size="small" color="#5c5c5c">
 							{fileTypeDescription}
 						</Text>
 					</Container>
@@ -98,9 +100,10 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 						mainAlignment="flex-start"
 						padding={{ all: 'large' }}
 						width="fill"
-						background="gray3"
+						background="gray4"
+						style={{ borderRadius: '0.25rem' }}
 					>
-						<Text size="small" color="secondary">
+						<Text size="small" color="#5c5c5c">
 							{t('modal.import_archive.size_label', 'Size')}
 						</Text>
 						<Padding top="extrasmall" />
@@ -112,9 +115,9 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 						mainAlignment="flex-start"
 						padding={{ all: 'large' }}
 						width="fill"
-						background="gray3"
+						background="gray4"
 					>
-						<Text size="small" color="secondary">
+						<Text size="small" color="#5c5c5c">
 							{t('modal.import_archive.destination_label', 'Destination')}
 						</Text>
 						<Padding top="extrasmall" />

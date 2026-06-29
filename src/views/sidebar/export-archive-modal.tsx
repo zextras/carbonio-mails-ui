@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Button, Container, Text } from '@zextras/carbonio-design-system';
+import { Button, Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 
@@ -18,6 +18,7 @@ type FormatOption = {
 	avatarLabel: string;
 	filename: string;
 	description: string;
+	avatarColor: string;
 };
 
 type ExportArchiveModalProps = {
@@ -36,13 +37,15 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 				value: 'zip',
 				avatarLabel: 'ZIP',
 				filename: `${folderName}.zip`,
-				description: t('modal.export_archive.file_type.zip', 'ZIP · Compressed mailbox archive')
+				description: t('modal.export_archive.file_type.zip', 'ZIP · Compressed mailbox archive'),
+				avatarColor: '#EEEDFE'
 			},
 			{
 				value: 'tgz',
 				avatarLabel: 'TGZ',
 				filename: `${folderName}.tgz`,
-				description: t('modal.export_archive.file_type.tgz', 'TGZ · Carbonio Archive')
+				description: t('modal.export_archive.file_type.tgz', 'TGZ · Carbonio Archive'),
+				avatarColor: '#E1F5EE'
 			}
 		],
 		[folderName]
@@ -58,6 +61,14 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 
 	return (
 		<Container mainAlignment="flex-start" crossAlignment="flex-start">
+			<Padding bottom="small" />
+			<Text color="regular">
+				{t(
+					'modal.export_archive.description',
+					'Chose the format you would like to use for your export.'
+				)}
+			</Text>
+			<Padding bottom="large" />
 			<Container
 				gap="1rem"
 				orientation="horizontal"
@@ -71,32 +82,32 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 						gap="0.75rem"
 						padding={{ all: 'medium' }}
 						borderRadius="regular"
-						borderColor={selectedFormat === fmt.value ? 'primary' : 'gray3'}
+						borderColor={selectedFormat === fmt.value ? 'primary' : 'gray2'}
 						mainAlignment="flex-start"
 						crossAlignment="center"
 						width="fill"
 						onClick={(): void => handleSelect(fmt.value)}
-						style={{ cursor: 'pointer' }}
+						style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
 					>
 						<Button
 							icon={selectedFormat === fmt.value ? 'RadioButtonOn' : 'RadioButtonOff'}
 							type="default"
 							backgroundColor="white"
-							labelColor="primary"
+							labelColor={selectedFormat === fmt.value ? 'primary' : 'gray0'}
 							size="large"
 							onClick={(): void => handleSelect(fmt.value)}
 						/>
 						<Container
-							width="2.5rem"
-							height="2.5rem"
-							minWidth="2.5rem"
-							background="#EEEDFE"
+							width="3rem"
+							height="3rem"
+							minWidth="3rem"
+							background={fmt.avatarColor}
 							borderRadius="regular"
 							mainAlignment="center"
 							crossAlignment="center"
-							style={{ flexShrink: 0 }}
+							style={{ flexShrink: 0, borderRadius: '0.25rem' }}
 						>
-							<Text size="small" weight="bold" color="text" style={{ letterSpacing: '-0.03em' }}>
+							<Text size="small" weight="regular" color="text">
 								{fmt.avatarLabel}
 							</Text>
 						</Container>
@@ -104,7 +115,8 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 							<Text weight="bold" overflow="ellipsis">
 								{fmt.filename}
 							</Text>
-							<Text size="small" color="secondary">
+							<Padding bottom="small" />
+							<Text size="small" color="#5c5c5c">
 								{fmt.description}
 							</Text>
 						</Container>
