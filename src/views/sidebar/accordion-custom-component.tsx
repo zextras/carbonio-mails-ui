@@ -5,7 +5,6 @@
  */
 import React, { FC, useMemo } from 'react';
 
-import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import {
 	AccordionItem,
@@ -291,7 +290,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 		return (
 			<FittedRow>
 				<Padding left="small">
-					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="large" />
+					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
 				</Padding>
 				<Tooltip label={accordionItemToolTip} placement="right" maxWidth="100%">
 					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem} />
