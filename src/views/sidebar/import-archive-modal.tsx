@@ -6,7 +6,6 @@
 import React, { FC } from 'react';
 
 import {
-	Avatar,
 	Banner,
 	Container,
 	Icon,
@@ -70,13 +69,20 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 					crossAlignment="center"
 					gap="0.75rem"
 				>
-					<Avatar
-						label={fileTypeLabel}
-						shape="square"
-						size="medium"
-						color="text"
+					<Container
+						width="2.5rem"
+						height="2.5rem"
+						minWidth="2.5rem"
 						background="#EEEDFE"
-					/>
+						borderRadius="regular"
+						mainAlignment="center"
+						crossAlignment="center"
+						style={{ flexShrink: 0 }}
+					>
+						<Text size="small" weight="bold" color="text" style={{ letterSpacing: '-0.03em' }}>
+							{fileTypeLabel}
+						</Text>
+					</Container>
 					<Container mainAlignment="flex-start" crossAlignment="flex-start" width="fill">
 						<Text weight="bold" size="medium" overflow="ellipsis">
 							{file.name}

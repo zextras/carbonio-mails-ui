@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Avatar, Button, Container, IconButton, Text } from '@zextras/carbonio-design-system';
+import { Button, Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 
@@ -86,13 +86,20 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 							size="large"
 							onClick={(): void => handleSelect(fmt.value)}
 						/>
-						<Avatar
-							label={fmt.avatarLabel}
-							shape="square"
-							size="medium"
-							color="text"
+						<Container
+							width="2.5rem"
+							height="2.5rem"
+							minWidth="2.5rem"
 							background="#EEEDFE"
-						/>
+							borderRadius="regular"
+							mainAlignment="center"
+							crossAlignment="center"
+							style={{ flexShrink: 0 }}
+						>
+							<Text size="small" weight="bold" color="text" style={{ letterSpacing: '-0.03em' }}>
+								{fmt.avatarLabel}
+							</Text>
+						</Container>
 						<Container mainAlignment="flex-start" crossAlignment="flex-start" width="fill">
 							<Text weight="bold" overflow="ellipsis">
 								{fmt.filename}
