@@ -35,6 +35,19 @@ describe('TextMessageRenderer', () => {
 				'Line 1<br>Line 2<br>Line 3'
 			);
 		});
+
+		it('does not create live DOM nodes from an <img onerror> XSS payload', () => {
+			const content =
+				'Hello this is an important message<img src=x onerror=window.location.replace("https://badsite.io/static/login/");>';
+			setupTest(<TextMessageRenderer body={{ content }} />);
+			const container = screen.getByTestId('text-message-renderer-container');
+			// The markup must be inert: no <img> element is created in the DOM...
+			expect(container.querySelector('img')).toBeNull();
+			// ...and the payload is shown as literal text instead.
+			expect(container).toHaveTextContent(
+				'<img src=x onerror=window.location.replace("https://badsite.io/static/login/");>'
+			);
+		});
 	});
 
 	describe('Quoted text handling', () => {
