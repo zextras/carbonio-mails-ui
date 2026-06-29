@@ -6,7 +6,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { TOGGLE_LINK_COMMAND } from '@lexical/link';
 import {
 	$isListNode,
 	INSERT_ORDERED_LIST_COMMAND,
@@ -57,6 +56,7 @@ import {
 
 import { EmojiPicker, type Emoji } from './emoji-picker';
 import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
+import { LinkModal } from './link-modal';
 import { $isImageNode, type ImageAlignment } from './nodes/image-node';
 import { SourceCodeModal } from './source-code-modal';
 import { SpecialCharacterPicker } from './special-character-picker';
@@ -273,6 +273,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
 	const [specialCharMenuOpen, setSpecialCharMenuOpen] = useState(false);
 	const [sourceCodeOpen, setSourceCodeOpen] = useState(false);
+	const [linkModalOpen, setLinkModalOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
@@ -372,12 +373,6 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		},
 		[editor]
 	);
-
-	const insertLink = useCallback((): void => {
-		// eslint-disable-next-line no-alert
-		const url = window.prompt(t('label.insert_link_url', 'Link URL'));
-		editor.dispatchCommand(TOGGLE_LINK_COMMAND, url || null);
-	}, [editor]);
 
 	const insertImageByUrl = useCallback((): void => {
 		// eslint-disable-next-line no-alert
@@ -749,7 +744,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarIconButton
 				icon={editorIcon('link')}
 				label={t('label.link', 'Link')}
-				onClick={insertLink}
+				onClick={(): void => setLinkModalOpen(true)}
 			/>
 			<Tooltip label={tableLabel}>
 				<Dropdown
@@ -846,6 +841,11 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				editor={editor}
 				open={sourceCodeOpen}
 				onClose={(): void => setSourceCodeOpen(false)}
+			/>
+			<LinkModal
+				editor={editor}
+				open={linkModalOpen}
+				onClose={(): void => setLinkModalOpen(false)}
 			/>
 
 			<input

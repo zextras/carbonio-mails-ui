@@ -13,7 +13,8 @@ import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
 
-const DEFAULT_HTML = '<p>hello world</p>';
+const SELECTED_TEXT = 'hello world';
+const DEFAULT_HTML = `<p>${SELECTED_TEXT}</p>`;
 const EDITOR_TESTID = 'edit-view-editor';
 const PARAGRAPH_LABEL = 'label.paragraph';
 const BOLD_LABEL = 'label.bold';
@@ -32,7 +33,7 @@ function richTextOf(editorId: string): string {
 
 function setupEditor(richText = DEFAULT_HTML): { editorId: string; user: TestUser } {
 	const editor = generateNewMessageEditor();
-	editor.text = { plainText: 'hello world', richText };
+	editor.text = { plainText: SELECTED_TEXT, richText };
 	setupEditorStore({ editors: [editor] });
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 	return { editorId: editor.id, user };
@@ -46,7 +47,7 @@ async function setupWithSelectedContent(richText = DEFAULT_HTML): Promise<{
 }> {
 	const { editorId, user } = setupEditor(richText);
 	const editorElement = screen.getByTestId(EDITOR_TESTID);
-	await within(editorElement).findByText('hello world');
+	await within(editorElement).findByText(SELECTED_TEXT);
 	await user.click(editorElement);
 	await user.keyboard('{Control>}a{/Control}');
 	return { editorId, user, editorElement };
@@ -274,15 +275,46 @@ describe('RichToolbarPlugin', () => {
 	});
 
 	describe('links and images', () => {
-		it('wraps the selection in a link from the prompted URL', async () => {
-			const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://example.com');
+		it('inserts a link from the modal for the typed URL', async () => {
 			const { editorId, editorElement, user } = await setupWithSelectedContent();
 
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
+			expect(await screen.findByText('label.insert_edit_link')).toBeInTheDocument();
+			await user.type(screen.getByRole('textbox', { name: 'label.url' }), 'https://example.com');
+			await user.click(screen.getByRole('button', { name: 'label.save' }));
+
 			expect(await within(editorElement).findByRole('link')).toBeInTheDocument();
-			expect(richTextOf(editorId)).toContain('href="https://example.com"');
-			promptSpy.mockRestore();
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('href="https://example.com"');
+			});
+		});
+
+		it('pre-fills the text to display with the current selection', async () => {
+			const { user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
+
+			expect(await screen.findByRole('textbox', { name: 'label.text_to_display' })).toHaveValue(
+				SELECTED_TEXT
+			);
+		});
+
+		it('opens the link in a new window when selected', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
+			await user.type(screen.getByRole('textbox', { name: 'label.url' }), 'https://example.com');
+
+			await user.click(screen.getByText('label.current_window'));
+			await user.click(
+				within(screen.getByTestId('dropdown-popper-list')).getByText('label.new_window')
+			);
+			await user.click(screen.getByRole('button', { name: 'label.save' }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('target="_blank"');
+			});
 		});
 
 		it('inserts an image from the prompted URL', async () => {
