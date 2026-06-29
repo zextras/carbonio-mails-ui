@@ -26,23 +26,23 @@ type ExportArchiveModalProps = {
 };
 
 export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onFormatChange }) => {
-	const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('tgz');
+	const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('zip');
 
 	const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
 
 	const formats = useMemo<FormatOption[]>(
 		() => [
 			{
-				value: 'tgz',
-				avatarLabel: 'TGZ',
-				filename: `${folderName}.tgz`,
-				description: t('modal.export_archive.file_type.tgz', 'TGZ · Carbonio Archive')
-			},
-			{
 				value: 'zip',
 				avatarLabel: 'ZIP',
 				filename: `${folderName}.zip`,
 				description: t('modal.export_archive.file_type.zip', 'ZIP · Compressed mailbox archive')
+			},
+			{
+				value: 'tgz',
+				avatarLabel: 'TGZ',
+				filename: `${folderName}.tgz`,
+				description: t('modal.export_archive.file_type.tgz', 'TGZ · Carbonio Archive')
 			}
 		],
 		[folderName]
