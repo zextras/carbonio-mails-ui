@@ -232,8 +232,30 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
 		return this.__cidUrl;
 	}
 
+	getAltText(): string {
+		return this.__altText;
+	}
+
+	getWidth(): ImageDimension {
+		return this.__width;
+	}
+
+	getHeight(): ImageDimension {
+		return this.__height;
+	}
+
 	getAlignment(): ImageAlignment | undefined {
 		return this.__alignment;
+	}
+
+	setSrc(src: string): void {
+		const writable = this.getWritable();
+		writable.__src = src;
+	}
+
+	setAltText(altText: string): void {
+		const writable = this.getWritable();
+		writable.__altText = altText;
 	}
 
 	setAlignment(alignment: ImageAlignment | undefined): void {

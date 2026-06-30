@@ -45,6 +45,7 @@ import {
 	$isElementNode,
 	$isNodeSelection,
 	$isRangeSelection,
+	COMMAND_PRIORITY_LOW,
 	type ElementFormatType,
 	type ElementNode,
 	FORMAT_ELEMENT_COMMAND,
@@ -55,7 +56,12 @@ import {
 } from 'lexical';
 
 import { EmojiPicker, type Emoji } from './emoji-picker';
-import { INSERT_INLINE_IMAGE_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from './image-plugin';
+import { ImageModal } from './image-modal';
+import {
+	INSERT_INLINE_IMAGE_COMMAND,
+	OPEN_IMAGE_MODAL_COMMAND,
+	SET_INLINE_IMAGE_ALIGNMENT_COMMAND
+} from './image-plugin';
 import { LinkModal } from './link-modal';
 import { $isImageNode, type ImageAlignment } from './nodes/image-node';
 import { SourceCodeModal } from './source-code-modal';
@@ -274,6 +280,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 	const [specialCharMenuOpen, setSpecialCharMenuOpen] = useState(false);
 	const [sourceCodeOpen, setSourceCodeOpen] = useState(false);
 	const [linkModalOpen, setLinkModalOpen] = useState(false);
+	const [imageModalOpen, setImageModalOpen] = useState(false);
 	const [isImageSelected, setIsImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
@@ -299,6 +306,20 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 					}
 				});
 			}),
+		[editor]
+	);
+
+	// Let an image (e.g. on double-click) request the Insert/Edit Image dialog.
+	useEffect(
+		() =>
+			editor.registerCommand(
+				OPEN_IMAGE_MODAL_COMMAND,
+				() => {
+					setImageModalOpen(true);
+					return true;
+				},
+				COMMAND_PRIORITY_LOW
+			),
 		[editor]
 	);
 
@@ -374,17 +395,9 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 		[editor]
 	);
 
-	const insertImageByUrl = useCallback((): void => {
-		// eslint-disable-next-line no-alert
-		const url = window.prompt(t('label.insert_image_url', 'Image URL'));
-		if (url) {
-			editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-				src: url,
-				cidUrl: undefined,
-				altText: 'image'
-			});
-		}
-	}, [editor]);
+	const openImageModal = useCallback((): void => {
+		setImageModalOpen(true);
+	}, []);
 
 	const onImageFilesSelected = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -771,7 +784,7 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 			<ToolbarIconButton
 				icon={editorIcon('edit-image')}
 				label={t('label.insert_image_url', 'Image from URL')}
-				onClick={insertImageByUrl}
+				onClick={openImageModal}
 			/>
 			{isImageSelected && (
 				<Tooltip label={t('label.image_align', 'Align image')}>
@@ -846,6 +859,11 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 				editor={editor}
 				open={linkModalOpen}
 				onClose={(): void => setLinkModalOpen(false)}
+			/>
+			<ImageModal
+				editor={editor}
+				open={imageModalOpen}
+				onClose={(): void => setImageModalOpen(false)}
 			/>
 
 			<input

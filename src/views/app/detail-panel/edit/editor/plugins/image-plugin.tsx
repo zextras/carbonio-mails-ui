@@ -17,11 +17,16 @@ import {
 } from 'lexical';
 
 import { $createImageNode, $isImageNode, type ImageAlignment } from './nodes/image-node';
+import { type ImageDimension } from './nodes/image-types';
+
+export { OPEN_IMAGE_MODAL_COMMAND } from './nodes/image-types';
 
 export type InsertInlineImagePayload = {
 	src: string;
 	cidUrl: string | undefined;
 	altText?: string;
+	width?: ImageDimension;
+	height?: ImageDimension;
 };
 
 export const INSERT_INLINE_IMAGE_COMMAND: LexicalCommand<InsertInlineImagePayload> = createCommand(
@@ -57,9 +62,9 @@ export const ImagePlugin = (): null => {
 			mergeRegister(
 				editor.registerCommand<InsertInlineImagePayload>(
 					INSERT_INLINE_IMAGE_COMMAND,
-					({ src, cidUrl, altText }) => {
+					({ src, cidUrl, altText, width, height }) => {
 						editor.update(() => {
-							$insertNodes([$createImageNode(src, cidUrl, altText)]);
+							$insertNodes([$createImageNode(src, cidUrl, altText, width, height)]);
 						});
 						return true;
 					},

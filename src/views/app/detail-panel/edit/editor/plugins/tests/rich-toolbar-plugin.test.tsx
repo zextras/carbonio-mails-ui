@@ -317,27 +317,30 @@ describe('RichToolbarPlugin', () => {
 			});
 		});
 
-		it('inserts an image from the prompted URL', async () => {
-			const promptSpy = vi
-				.spyOn(window, 'prompt')
-				.mockReturnValue('https://example.com/picture.png');
-			const { editorElement, user } = await setupWithSelectedContent();
+		it('inserts an image from the URL entered in the modal', async () => {
+			const { user } = setupEditor();
+			const editorElement = screen.getByTestId(EDITOR_TESTID);
+			await user.click(editorElement);
 
 			await user.click(screen.getByRole('button', { name: 'label.insert_image_url' }));
+			await user.type(
+				screen.getByRole('textbox', { name: 'label.image_source' }),
+				'https://example.com/picture.png'
+			);
+			await user.type(screen.getByRole('textbox', { name: 'label.image_alt' }), 'a picture');
+			await user.click(screen.getByRole('button', { name: 'label.save' }));
 
 			const image = await within(editorElement).findByRole('img');
 			expect(image).toHaveAttribute('src', 'https://example.com/picture.png');
-			promptSpy.mockRestore();
 		});
 
-		it('does not insert an image when the URL prompt is dismissed', async () => {
-			const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue(null);
+		it('does not insert an image when the modal is dismissed', async () => {
 			const { editorElement, user } = await setupWithSelectedContent();
 
 			await user.click(screen.getByRole('button', { name: 'label.insert_image_url' }));
+			await user.click(screen.getByRole('button', { name: 'label.cancel' }));
 
 			expect(within(editorElement).queryByRole('img')).not.toBeInTheDocument();
-			promptSpy.mockRestore();
 		});
 
 		it('shows the image alignment control only while an image is selected', async () => {

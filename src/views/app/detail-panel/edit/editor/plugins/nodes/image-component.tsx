@@ -21,7 +21,7 @@ import {
 } from 'lexical';
 
 import { ImageResizer } from './image-resizer';
-import { type ImageDimension } from './image-types';
+import { type ImageDimension, OPEN_IMAGE_MODAL_COMMAND } from './image-types';
 
 export type ImageComponentProps = {
 	nodeKey: NodeKey;
@@ -67,6 +67,18 @@ export const ImageComponent = ({
 			return false;
 		},
 		[isSelected, nodeKey]
+	);
+
+	// Double-clicking an image selects it and opens the Insert/Edit Image dialog,
+	// which then reads the selected node to pre-fill its fields.
+	const onDoubleClick = useCallback(
+		(event: React.MouseEvent): void => {
+			event.preventDefault();
+			clearSelection();
+			setSelected(true);
+			editor.dispatchCommand(OPEN_IMAGE_MODAL_COMMAND, undefined);
+		},
+		[clearSelection, editor, setSelected]
 	);
 
 	useEffect(
@@ -117,6 +129,7 @@ export const ImageComponent = ({
 				src={src}
 				alt={altText}
 				draggable={false}
+				onDoubleClick={onDoubleClick}
 				style={{
 					width: dimensionToStyle(width),
 					height: dimensionToStyle(height),
