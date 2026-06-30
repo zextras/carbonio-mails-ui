@@ -40,8 +40,8 @@ const LexicalWrapper = styled.div<{
 }>`
 	display: flex;
 	flex-direction: column;
+	flex: 1 0 auto;
 	width: 100%;
-	height: 100%;
 
 	.mails-lexical-toolbar {
 		position: sticky;
@@ -54,16 +54,14 @@ const LexicalWrapper = styled.div<{
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		flex: 1;
-		min-height: 0;
+		flex: 1 0 auto;
 	}
 
 	.mails-lexical-content-editable {
-		flex: 1;
+		flex: 1 0 auto;
 		min-height: 12.5rem;
 		padding: 0.5rem;
 		outline: none;
-		overflow-y: auto;
 		font-family: ${({ $fontFamily }): string => $fontFamily};
 		${({ $fontSize }): string => ($fontSize ? `font-size: ${$fontSize};` : '')}
 		${({ $color }): string => ($color ? `color: ${$color};` : '')}

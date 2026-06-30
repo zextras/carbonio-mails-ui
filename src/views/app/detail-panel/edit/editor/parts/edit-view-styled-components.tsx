@@ -45,13 +45,11 @@ export const TextArea = styled.textarea`
 `;
 
 export const EditorWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	flex: 1 0 auto;
 	width: 100%;
-
-	.tox.tox-tinymce {
-		width: 100%;
-		height: 100%;
-		border: none;
-	}
+	background: ${(props): string => props.theme.palette.gray6.regular};
 `;
 
 export const BannerContainer = styled(Container)<{

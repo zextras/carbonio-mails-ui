@@ -368,7 +368,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						onDragLeaveEvent={handleDragLeave}
 					/>
 				)}
-				<GapContainer mainAlignment="flex-start" crossAlignment="flex-start" gap={'large'}>
+				<GapContainer
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+					gap={'large'}
+					height="fit"
+					minHeight="fill"
+				>
 					{/* Header start */}
 
 					<GapRow
@@ -426,7 +432,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						background={'gray6'}
 						padding={{ all: 'small' }}
 						gap={'small'}
-						height={'fill'}
+						height="fit"
+						flexGrow={1}
+						flexShrink={0}
+						flexBasis="auto"
 					>
 						<Container mainAlignment="flex-start" crossAlignment="flex-start" height={'fit'}>
 							<MemoizedRecipientsRows editorId={editorId} />
