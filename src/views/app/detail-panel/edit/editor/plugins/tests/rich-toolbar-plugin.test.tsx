@@ -408,4 +408,38 @@ describe('RichToolbarPlugin', () => {
 			).toBeInTheDocument();
 		});
 	});
+
+	describe('show blocks', () => {
+		it('renders the show blocks toggle inactive by default', () => {
+			setupEditor();
+
+			expect(
+				screen.getByRole('button', { name: 'label.show_blocks', pressed: false })
+			).toBeInTheDocument();
+			// No block-outline modifier on the editor surface while inactive.
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(document.querySelector('.mails-lexical-show-blocks')).not.toBeInTheDocument();
+		});
+
+		it('toggles the block outlines view aid on and off', async () => {
+			const { user } = setupEditor();
+			const button = screen.getByRole('button', { name: 'label.show_blocks' });
+
+			await user.click(button);
+
+			expect(
+				await screen.findByRole('button', { name: 'label.show_blocks', pressed: true })
+			).toBeInTheDocument();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(document.querySelector('.mails-lexical-show-blocks')).toBeInTheDocument();
+
+			await user.click(button);
+
+			expect(
+				await screen.findByRole('button', { name: 'label.show_blocks', pressed: false })
+			).toBeInTheDocument();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(document.querySelector('.mails-lexical-show-blocks')).not.toBeInTheDocument();
+		});
+	});
 });

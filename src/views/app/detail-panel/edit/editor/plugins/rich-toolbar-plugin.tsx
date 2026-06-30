@@ -74,6 +74,10 @@ import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 type RichToolbarPluginProps = {
 	editorId: MailsEditorV2['id'];
+	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
+	showBlocks: boolean;
+	/** Toggles the "Show blocks" view aid. */
+	onToggleShowBlocks: () => void;
 };
 
 type BlockType = 'paragraph' | 'quote' | HeadingTagType;
@@ -255,6 +259,9 @@ const ColorToolbarButton = ({
 	);
 };
 
+// `styled()` drops the generic call signature of the design-system `Select`,
+// which would type the `onChange` value as `{}` and reject the `<BlockType>`
+// type argument; cast it back to keep `Select`'s generics.
 const CustomSelect = styled(Select)`
 	& > div > div {
 		padding: 0.5rem;
@@ -269,9 +276,13 @@ const CustomSelect = styled(Select)`
 	& [data-testid='divider'] {
 		display: none;
 	}
-`;
+` as typeof Select;
 
-export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.JSX.Element => {
+export const RichToolbarPlugin = ({
+	editorId,
+	showBlocks,
+	onToggleShowBlocks
+}: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const { addInlineAttachments } = useEditorAttachments(editorId);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -844,7 +855,13 @@ export const RichToolbarPlugin = ({ editorId }: RichToolbarPluginProps): React.J
 
 			<ToolbarDivider />
 
-			{/* Source code */}
+			{/* Show blocks and source code */}
+			<ToolbarIconButton
+				icon={editorIcon('visualblocks')}
+				label={t('label.show_blocks', 'Show blocks')}
+				onClick={onToggleShowBlocks}
+				active={showBlocks}
+			/>
 			<ToolbarIconButton
 				icon={editorIcon('sourcecode')}
 				label={t('label.source_code', 'Source code')}

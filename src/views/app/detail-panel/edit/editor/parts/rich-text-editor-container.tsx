@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
@@ -18,7 +18,7 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
-import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as StyledComp from './edit-view-styled-components';
 import type { TextEditorContainerProps } from './text-editor-container';
@@ -76,6 +76,15 @@ const LexicalWrapper = styled.div<{
 		color: ${({ theme }): string => theme.palette.secondary.regular};
 		pointer-events: none;
 		user-select: none;
+	}
+
+	/* "Show blocks" view aid: dashed outlines around block-level elements. View
+	   only, never affects the saved HTML. */
+	.mails-lexical-show-blocks
+		.mails-lexical-content-editable
+		:is(p, h1, h2, h3, h4, h5, h6, blockquote, ul, ol, li, div, pre, table) {
+		outline: 0.0625rem dashed ${({ theme }): string => theme.palette.gray3.regular};
+		outline-offset: 0.125rem;
 	}
 
 	.mails-lexical-bold {
@@ -313,6 +322,7 @@ export const RichTextEditorContainer = ({
 	onDragOver
 }: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
+	const [showBlocks, setShowBlocks] = useState(false);
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
@@ -359,10 +369,14 @@ export const RichTextEditorContainer = ({
 			<LexicalComposer initialConfig={initialConfig}>
 				<LexicalWrapper $fontFamily={fontFamily} $fontSize={fontSize} $color={color}>
 					<div className="mails-lexical-toolbar">
-						<RichToolbarPlugin editorId={editorId} />
+						<RichToolbarPlugin
+							editorId={editorId}
+							showBlocks={showBlocks}
+							onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
+						/>
 					</div>
 					<div
-						className="editor-inner"
+						className={`editor-inner${showBlocks ? ' mails-lexical-show-blocks' : ''}`}
 						onDragOver={(event): void => onDragOver?.(event.nativeEvent)}
 					>
 						<RichTextPlugin
@@ -372,11 +386,7 @@ export const RichTextEditorContainer = ({
 									data-testid="edit-view-editor"
 								/>
 							}
-							placeholder={
-								<div className="mails-lexical-placeholder">
-									{t('messages.write_your_message', 'Write your message')}
-								</div>
-							}
+							placeholder={<div className="mails-lexical-placeholder" />}
 							ErrorBoundary={LexicalErrorBoundary}
 						/>
 					</div>
