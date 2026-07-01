@@ -1,3 +1,18 @@
+## <small>1.34.21 (2026-07-01)</small>
+
+* fix(deps): update dependency core-js to v3.49.0 (#1278) ([7c33744](https://github.com/zextras/carbonio-mails-ui/commit/7c33744)), closes [#1278](https://github.com/zextras/carbonio-mails-ui/issues/1278)
+* fix(deps): update dependency juice to v11.1.1 (#1279) ([680f5c8](https://github.com/zextras/carbonio-mails-ui/commit/680f5c8)), closes [#1279](https://github.com/zextras/carbonio-mails-ui/issues/1279)
+
+## <small>1.34.20 (2026-06-25)</small>
+
+* fix(CO-3874): enhance XSS protection by escaping HTML tags and attributes in plain text renderer (#1 ([2db0325](https://github.com/zextras/carbonio-mails-ui/commit/2db0325)), closes [#1281](https://github.com/zextras/carbonio-mails-ui/issues/1281)
+* chore(deps): update babel to v7.29.7 (#1250) ([a133261](https://github.com/zextras/carbonio-mails-ui/commit/a133261)), closes [#1250](https://github.com/zextras/carbonio-mails-ui/issues/1250)
+* chore(deps): update dependency @vitest/browser to v4.1.6 [security] ([dce8983](https://github.com/zextras/carbonio-mails-ui/commit/dce8983))
+* chore(deps): update dependency playwright to v1.61.1 (#1272) ([c88495d](https://github.com/zextras/carbonio-mails-ui/commit/c88495d)), closes [#1272](https://github.com/zextras/carbonio-mails-ui/issues/1272)
+* chore(deps): update dependency sonarqube-scanner to v4.3.8 (#1280) ([ff2d219](https://github.com/zextras/carbonio-mails-ui/commit/ff2d219)), closes [#1280](https://github.com/zextras/carbonio-mails-ui/issues/1280)
+* chore(deps): update dependency zextras/jenkins-lib-common to v2.11.3 (#1270) ([0356fac](https://github.com/zextras/carbonio-mails-ui/commit/0356fac)), closes [#1270](https://github.com/zextras/carbonio-mails-ui/issues/1270)
+* Merge pull request #1246 from zextras/renovate/npm-vitest-browser-vulnerability ([9c17e26](https://github.com/zextras/carbonio-mails-ui/commit/9c17e26)), closes [#1246](https://github.com/zextras/carbonio-mails-ui/issues/1246)
+
 ## <small>1.34.19 (2026-06-11)</small>
 
 * Merge branch 'devel' into co-3795-send-email-fast-generate-draft ([691fff0](https://github.com/zextras/carbonio-mails-ui/commit/691fff0))
