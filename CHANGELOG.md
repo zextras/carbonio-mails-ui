@@ -1,3 +1,7 @@
+## <small>1.34.22 (2026-07-01)</small>
+
+* fix(deps): update dependency zustand to v4.5.7 (#1264) ([c8eca3d](https://github.com/zextras/carbonio-mails-ui/commit/c8eca3d)), closes [#1264](https://github.com/zextras/carbonio-mails-ui/issues/1264)
+
 ## <small>1.34.21 (2026-07-01)</small>
 
 * fix(deps): update dependency core-js to v3.49.0 (#1278) ([7c33744](https://github.com/zextras/carbonio-mails-ui/commit/7c33744)), closes [#1278](https://github.com/zextras/carbonio-mails-ui/issues/1278)
