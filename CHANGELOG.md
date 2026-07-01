@@ -1,3 +1,7 @@
+## <small>1.34.23 (2026-07-01)</small>
+
+* fix(deps): update dependency immer to v9.0.21 (#1263) ([4d5a666](https://github.com/zextras/carbonio-mails-ui/commit/4d5a666)), closes [#1263](https://github.com/zextras/carbonio-mails-ui/issues/1263)
+
 ## <small>1.34.22 (2026-07-01)</small>
 
 * fix(deps): update dependency zustand to v4.5.7 (#1264) ([c8eca3d](https://github.com/zextras/carbonio-mails-ui/commit/c8eca3d)), closes [#1264](https://github.com/zextras/carbonio-mails-ui/issues/1264)
