@@ -168,7 +168,7 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 		<Modal
 			open={open}
 			title={t('label.insert_edit_link', 'Insert/Edit Link')}
-			size="medium"
+			size="small"
 			onClose={onClose}
 			onConfirm={onConfirm}
 			confirmLabel={t('label.save', 'Save')}

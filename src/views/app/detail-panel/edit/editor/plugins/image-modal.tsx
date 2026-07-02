@@ -51,14 +51,9 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 	const [width, setWidth] = useState('');
 	const [height, setHeight] = useState('');
 	const [locked, setLocked] = useState(true);
-	// Key of the image node being edited (single image selected), if any.
 	const editImageKey = useRef<string | null>(null);
-	// Natural width/height ratio of the current source, once it has loaded.
 	const naturalRatio = useRef<number | null>(null);
 
-	// Pre-fill the fields from the current selection each time the modal opens: a
-	// single selected image populates every field for editing, otherwise the
-	// dialog starts empty for a fresh insertion.
 	useEffect(() => {
 		if (!open) {
 			return;
@@ -92,8 +87,6 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 		setLocked(true);
 	}, [editor, open]);
 
-	// Read the natural ratio of the source: it feeds the aspect-ratio lock and,
-	// for a fresh insertion, pre-fills the dimensions with the natural size.
 	useEffect(() => {
 		if (!open || !src) {
 			return undefined;
@@ -193,7 +186,7 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 		<Modal
 			open={open}
 			title={t('label.insert_edit_image', 'Insert/Edit Image')}
-			size="medium"
+			size="small"
 			onClose={onClose}
 			onConfirm={onConfirm}
 			confirmLabel={t('label.save', 'Save')}
@@ -233,6 +226,7 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 						value={width}
 						onChange={onWidthChange}
 						background="gray5"
+						minWidth={0}
 					/>
 					<Input
 						label={t('label.height', 'Height')}
@@ -240,14 +234,17 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 						value={height}
 						onChange={onHeightChange}
 						background="gray5"
+						minWidth={0}
 					/>
 					<Tooltip label={lockLabel}>
 						<Button
 							icon={locked ? 'Lock' : 'Unlock'}
 							type="ghost"
 							color="text"
-							size="large"
+							size="extralarge"
+							minWidth="fit-content"
 							aria-label={lockLabel}
+							aria-pressed={locked}
 							onClick={(): void => setLocked((prev) => !prev)}
 						/>
 					</Tooltip>
