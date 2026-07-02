@@ -307,7 +307,7 @@ export const getAttachmentExtension = (
 	return { value: '?' };
 };
 
-const CALENDAR_CONTENT_TYPES = ['text/calendar', 'application/ics', 'application/x-ics'];
+const CALENDAR_CONTENT_TYPES = new Set(['text/calendar', 'application/ics', 'application/x-ics']);
 
 /**
  * Whether an attachment is an iCalendar file (`.ics`) that can be imported into a calendar.
@@ -317,7 +317,7 @@ export const isCalendarAttachment = (
 	contentType: string | undefined,
 	fileName: string | undefined = undefined
 ): boolean => {
-	if (contentType && CALENDAR_CONTENT_TYPES.includes(contentType.toLowerCase())) {
+	if (contentType && CALENDAR_CONTENT_TYPES.has(contentType.toLowerCase())) {
 		return true;
 	}
 	return fileName
