@@ -90,10 +90,9 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 				</Container>
 
 				<Container
-					gap="1rem"
 					orientation="horizontal"
 					mainAlignment="flex-start"
-					crossAlignment="flex-start"
+					crossAlignment="flex-between"
 				>
 					<Container
 						crossAlignment="flex-start"
@@ -109,6 +108,7 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 						<Padding top="extrasmall" />
 						<Text weight="bold">{fileSize}</Text>
 					</Container>
+					<Padding left="1rem" />
 
 					<Container
 						crossAlignment="flex-start"

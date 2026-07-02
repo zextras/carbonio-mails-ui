@@ -150,6 +150,17 @@ export function buildImportArchiveOnClick({
 			const allowed = ['.tgz', '.mbox', '.zip'];
 			if (!allowed.some((ext) => file.name.toLowerCase().endsWith(ext))) {
 				input.remove();
+				createSnackbar({
+					key: IMPORT_ARCHIVE_SNACKBAR_KEY,
+					replace: true,
+					severity: 'error',
+					label: t(
+						'label.unsupported_file_type',
+						'Unsupported file format. Please select a .zip, .tgz or .mbox archive'
+					),
+					disableAutoHide: true,
+					actionLabel: t('label.dismiss', 'Dismiss')
+				});
 				return;
 			}
 
@@ -191,7 +202,7 @@ export function buildImportArchiveOnClick({
 								)
 							: t(
 									'messages.snackbar.import_archive_error',
-									'{{filename}} imported failed. Please try again or contact your administrator',
+									'{{filename}} import failed. Please try again or contact your administrator',
 									{ filename: file.name }
 								),
 						disableAutoHide: true,

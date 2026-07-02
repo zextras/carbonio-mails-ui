@@ -112,7 +112,7 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 							</Text>
 						</Container>
 						<Container mainAlignment="flex-start" crossAlignment="flex-start" width="fill">
-							<Text weight="bold" overflow="ellipsis">
+							<Text weight="bold" overflow="ellipsis" style={{ maxWidth: '18rem' }}>
 								{fmt.filename}
 							</Text>
 							<Padding bottom="small" />
