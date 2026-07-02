@@ -276,13 +276,14 @@ const Attachment = ({
 					<ImportAppointmentsModal
 						messageId={messageId}
 						part={part}
+						fileName={filename}
 						onClose={(): void => closeModal(id)}
 					/>
 				)
 			},
 			true
 		);
-	}, [ImportAppointmentsModal, createModal, closeModal, messageId, part]);
+	}, [ImportAppointmentsModal, createModal, closeModal, messageId, part, filename]);
 	const isAValidDestination = useCallback(
 		(node: { permissions?: { can_write_file?: boolean } }) => node?.permissions?.can_write_file,
 		[]
@@ -369,7 +370,7 @@ const Attachment = ({
 			items.push({
 				id: 'import-to-calendar',
 				label: t('label.import_to_calendar', 'Import to Calendar'),
-				icon: 'CalendarModOutline',
+				icon: 'UploadOutline',
 				onClick: onImportAppointments
 			});
 		}
