@@ -711,7 +711,7 @@ describe('Import to Calendar in attachment dropdown', () => {
 		);
 
 		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
-		expect(await screen.findByText('Import to Calendar')).toBeVisible();
+		expect(await screen.findByText('Import to Calendars')).toBeVisible();
 	});
 
 	test('clicking Import to Calendar opens the import modal with messageId and part', async () => {
@@ -731,7 +731,7 @@ describe('Import to Calendar in attachment dropdown', () => {
 		);
 
 		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
-		await user.click(await screen.findByText('Import to Calendar'));
+		await user.click(await screen.findByText('Import to Calendars'));
 
 		// The integrated calendar modal is rendered with the attachment's mid/part
 		expect(await screen.findByTestId('import-appointments-modal')).toHaveTextContent('1:part1');
@@ -750,6 +750,6 @@ describe('Import to Calendar in attachment dropdown', () => {
 
 		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
 		await screen.findAllByText('Download');
-		expect(screen.queryByText('Import to Calendar')).not.toBeInTheDocument();
+		expect(screen.queryByText('Import to Calendars')).not.toBeInTheDocument();
 	});
 });

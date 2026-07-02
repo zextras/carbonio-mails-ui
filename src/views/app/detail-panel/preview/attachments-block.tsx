@@ -369,7 +369,7 @@ const Attachment = ({
 		if (isCalendarImportAvailable && isCalendarAttachment(att.contentType, att.filename)) {
 			items.push({
 				id: 'import-to-calendar',
-				label: t('label.import_to_calendar', 'Import to Calendar'),
+				label: t('label.import_to_calendar', 'Import to Calendars'),
 				icon: 'UploadOutline',
 				onClick: onImportAppointments
 			});
