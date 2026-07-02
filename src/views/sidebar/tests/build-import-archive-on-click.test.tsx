@@ -265,6 +265,26 @@ describe('buildImportArchiveOnClick', () => {
 			});
 		});
 
+		it('shows an error snackbar and does not open the modal for an unsupported file extension', () => {
+			const params = makeParams();
+			buildImportArchiveOnClick(params)(fakeEvent());
+
+			const input = getCapturedInput(appendSpy);
+			const removeSpy = vi.spyOn(input, 'remove');
+			setInputFile(input, new File(['data'], 'archive.pdf'));
+			input.onchange?.({} as Event);
+
+			expect(removeSpy).toHaveBeenCalled();
+			expect(params.createModal).not.toHaveBeenCalled();
+			expect(params.createSnackbar).toHaveBeenCalledWith(
+				expect.objectContaining({
+					key: 'import-archive',
+					severity: 'error',
+					label: 'label.unsupported_file_type'
+				})
+			);
+		});
+
 		it('shows generic error snackbar on network failure', async () => {
 			(global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('network error'));
 
