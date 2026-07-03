@@ -366,7 +366,11 @@ const Attachment = ({
 			});
 		}
 
-		if (isCalendarImportAvailable && isCalendarAttachment(att.contentType, att.filename)) {
+		if (
+			isCalendarImportAvailable &&
+			ImportAppointmentsModal &&
+			isCalendarAttachment(att.contentType, att.filename)
+		) {
 			items.push({
 				id: 'import-to-calendar',
 				label: t('label.import_to_calendar', 'Import to Calendars'),
