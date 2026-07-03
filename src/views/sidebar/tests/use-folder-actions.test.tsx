@@ -137,6 +137,22 @@ describe('useFolderActions', () => {
 				id: 'read',
 				label: 'label.mark_all_as_read',
 				onClick: expect.any(Function)
+			},
+			{
+				id: 'export',
+				'data-testid': 'folder-action-export-option',
+				icon: 'DownloadOutline',
+				label: t('label.export_archive', 'Export Archive'),
+				tooltipLabel: t('tooltip.export_archive_disabled', 'The folder is empty'),
+				disabled: true,
+				onClick: expect.any(Function)
+			},
+			{
+				id: 'import',
+				'data-testid': 'folder-action-import-option',
+				icon: 'UploadOutline',
+				label: t('label.import_archive', 'Import Archive'),
+				onClick: expect.any(Function)
 			}
 		]);
 	});

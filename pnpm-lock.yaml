@@ -75,8 +75,8 @@ importers:
         specifier: 22.5.1
         version: 22.5.1
       immer:
-        specifier: 9.0.19
-        version: 9.0.19
+        specifier: 9.0.21
+        version: 9.0.21
       juice:
         specifier: 11.1.1
         version: 11.1.1
@@ -120,8 +120,8 @@ importers:
         specifier: 11.1.1
         version: 11.1.1
       zustand:
-        specifier: 4.5.2
-        version: 4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1)
+        specifier: 4.5.7
+        version: 4.5.7(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1)
     devDependencies:
       '@babel/core':
         specifier: 7.29.7
@@ -4675,9 +4675,6 @@ packages:
   immer@10.2.0:
     resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
 
-  immer@9.0.19:
-    resolution: {integrity: sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==}
-
   immer@9.0.21:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
 
@@ -7138,11 +7135,6 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
-  use-sync-external-store@1.2.0:
-    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
   use-sync-external-store@1.6.0:
     resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
     peerDependencies:
@@ -7551,8 +7543,8 @@ packages:
     resolution: {integrity: sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==}
     engines: {node: '>=18'}
 
-  zustand@4.5.2:
-    resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==}
+  zustand@4.5.7:
+    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       '@types/react': '>=16.8'
@@ -10556,14 +10548,14 @@ snapshots:
       '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.49.0
       i18next: 22.5.1
-      immer: 9.0.19
+      immer: 9.0.21
       lodash: 4.18.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-i18next: 12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom: 6.30.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uuid: 9.0.1
-      zustand: 4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1)
+      zustand: 4.5.7(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -12831,8 +12823,6 @@ snapshots:
     optional: true
 
   immer@10.2.0: {}
-
-  immer@9.0.19: {}
 
   immer@9.0.21: {}
 
@@ -15303,10 +15293,6 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  use-sync-external-store@1.2.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -15767,12 +15753,12 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zustand@4.5.2(@types/react@18.3.28)(immer@9.0.19)(react@18.3.1):
+  zustand@4.5.7(@types/react@18.3.28)(immer@9.0.21)(react@18.3.1):
     dependencies:
-      use-sync-external-store: 1.2.0(react@18.3.1)
+      use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.28
-      immer: 9.0.19
+      immer: 9.0.21
       react: 18.3.1
 
   zustand@5.0.12(@types/react@18.3.28)(immer@10.2.0)(react@18.3.1)(use-sync-external-store@1.6.0(react@18.3.1)):

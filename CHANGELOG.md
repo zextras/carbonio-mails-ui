@@ -1,3 +1,32 @@
+## 1.35.0 (2026-07-02)
+
+* Merge branch 'devel' into co-3206-email-import-export ([f9f4b7d](https://github.com/zextras/carbonio-mails-ui/commit/f9f4b7d))
+* Merge branch 'devel' into co-3206-email-import-export ([f05efcb](https://github.com/zextras/carbonio-mails-ui/commit/f05efcb))
+* Merge pull request #1282 from zextras/co-3206-email-import-export ([84b04af](https://github.com/zextras/carbonio-mails-ui/commit/84b04af)), closes [#1282](https://github.com/zextras/carbonio-mails-ui/issues/1282)
+* test: improved import archive modal ([3ad1525](https://github.com/zextras/carbonio-mails-ui/commit/3ad1525))
+* test: unsupported extension test ([0a53507](https://github.com/zextras/carbonio-mails-ui/commit/0a53507))
+* fix: custom container for archive format ([891c377](https://github.com/zextras/carbonio-mails-ui/commit/891c377))
+* fix: custom container for archive format ([d86a544](https://github.com/zextras/carbonio-mails-ui/commit/d86a544))
+* fix: render improvements ([e48ce19](https://github.com/zextras/carbonio-mails-ui/commit/e48ce19))
+* fix: small grapic improvements ([12855d4](https://github.com/zextras/carbonio-mails-ui/commit/12855d4))
+* fix: zip as default export archive format ([56de502](https://github.com/zextras/carbonio-mails-ui/commit/56de502))
+* refactor: improved readability ([25ad98b](https://github.com/zextras/carbonio-mails-ui/commit/25ad98b))
+* feat: import/export archive modals and tests ([e1ab4f9](https://github.com/zextras/carbonio-mails-ui/commit/e1ab4f9))
+* wip: api first implementation ([665406a](https://github.com/zextras/carbonio-mails-ui/commit/665406a))
+
+## <small>1.34.23 (2026-07-01)</small>
+
+* fix(deps): update dependency immer to v9.0.21 (#1263) ([4d5a666](https://github.com/zextras/carbonio-mails-ui/commit/4d5a666)), closes [#1263](https://github.com/zextras/carbonio-mails-ui/issues/1263)
+
+## <small>1.34.22 (2026-07-01)</small>
+
+* fix(deps): update dependency zustand to v4.5.7 (#1264) ([c8eca3d](https://github.com/zextras/carbonio-mails-ui/commit/c8eca3d)), closes [#1264](https://github.com/zextras/carbonio-mails-ui/issues/1264)
+
+## <small>1.34.21 (2026-07-01)</small>
+
+* fix(deps): update dependency core-js to v3.49.0 (#1278) ([7c33744](https://github.com/zextras/carbonio-mails-ui/commit/7c33744)), closes [#1278](https://github.com/zextras/carbonio-mails-ui/issues/1278)
+* fix(deps): update dependency juice to v11.1.1 (#1279) ([680f5c8](https://github.com/zextras/carbonio-mails-ui/commit/680f5c8)), closes [#1279](https://github.com/zextras/carbonio-mails-ui/issues/1279)
+
 ## <small>1.34.20 (2026-06-25)</small>
 
 * fix(CO-3874): enhance XSS protection by escaping HTML tags and attributes in plain text renderer (#1 ([2db0325](https://github.com/zextras/carbonio-mails-ui/commit/2db0325)), closes [#1281](https://github.com/zextras/carbonio-mails-ui/issues/1281)
