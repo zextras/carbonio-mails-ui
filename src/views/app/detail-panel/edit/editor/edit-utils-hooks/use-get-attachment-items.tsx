@@ -21,11 +21,11 @@ type UseGetAttachItemsPropType = {
 type UseGetAttachItemsReturnType = {
 	customComponent?: ReactElement;
 	label: string;
-	id?: string | undefined;
-	icon?: string | undefined;
-	onClick?: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
-	type?: string | undefined;
-	primary?: boolean | undefined;
-	group?: string | undefined;
-	disabled?: boolean | undefined;
+	id?: string;
+	icon?: string;
+	onClick?: (ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	type?: string;
+	primary?: boolean;
+	group?: string;
+	disabled?: boolean;
 };

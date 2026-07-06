@@ -69,7 +69,6 @@ export type EditViewHandle = {
 	closeEditView: () => void;
 };
 
-// TODO: sendAllowedStatus is completely flawed and full of logical errors
 function evaluateSendDisabledReason(
 	invalidRecipientsPresent: boolean,
 	sendAllowedStatus: EditorOperationAllowedStatus | undefined
@@ -99,7 +98,6 @@ const SendToYourselfWarningBanner = ({
 }): React.JSX.Element | null => {
 	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
 
-	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
 	const isSendingToYourself = useMemo(() => {
 		const availableAddresses = map(
 			getAvailableAddresses(),
@@ -180,7 +178,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const close = useCallback(
 		(reason?: EditViewClosingReasons) => {
 			if (reason !== EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST) {
-				closeController && closeController();
+				closeController?.();
 			}
 		},
 		[closeController]
@@ -286,7 +284,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onUploadFiles: uploadFromFiles
 	});
 
-	// TODO complete with new attachment management
 	const handleDrop = useCallback(
 		(event: DragEvent): void => {
 			event.preventDefault();

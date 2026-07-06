@@ -18,7 +18,6 @@ import {
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 
 import { Divider } from '../../../../../../components/divider';
 import { PROCESS_STATUS } from '../../../../../../constants';
@@ -48,8 +47,6 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 	const { did: draftId } = useEditorDid(editorId);
 	const [t] = useTranslation();
 	const { closeModal } = useModal();
-
-	const { folderId: routeFolderId } = useParams();
 
 	const confirmationModalId = useMemo<string>(
 		() => `delete-draft-confirmation-${draftId}`,
@@ -94,7 +91,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 
 	const onDeleteComplete = useCallback((): void => {
 		closeModal(confirmationModalId);
-		onDraftDeleted && onDraftDeleted();
+		onDraftDeleted?.();
 	}, [closeModal, confirmationModalId, onDraftDeleted]);
 
 	const { execute: deleteDraft } = useMsgMoveToTrashDescriptor({

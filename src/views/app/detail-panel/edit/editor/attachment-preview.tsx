@@ -146,7 +146,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		if (uploadProcess?.status.status !== 'running') {
 			return;
 		}
-		uploadProcess && uploadProcess.cancel();
+		uploadProcess?.cancel();
 	}, [uploadProcess]);
 
 	const isDeletable = useMemo(

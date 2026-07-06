@@ -49,12 +49,14 @@ const createIdentitySelectorItemElement = (
 	useExtendedDescription: boolean,
 	fallbackDescription: string
 ): React.JSX.Element => {
-	// eslint-disable-next-line no-nested-ternary
-	const identityDescription = identity
-		? useExtendedDescription
-			? getIdentityDescription(identity, t)
-			: identity.fromAddress
-		: fallbackDescription;
+	let identityDescription: string | null;
+	if (!identity) {
+		identityDescription = fallbackDescription;
+	} else if (useExtendedDescription) {
+		identityDescription = getIdentityDescription(identity, t);
+	} else {
+		identityDescription = identity.fromAddress;
+	}
 
 	return (
 		<Container width="100%" orientation="horizontal" height="fit">

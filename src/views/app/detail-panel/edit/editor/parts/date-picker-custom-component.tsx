@@ -27,10 +27,12 @@ const CustomInputWrapper = styled(Row)`
 		border-bottom: 1px solid ${({ theme }): string => theme.palette.primary.regular};
 	}
 `;
+
 const CustomButtonWrapper = styled(Row)`
 	cursor: pointer;
 	padding: 0 !important;
 `;
+
 export const DatePickerCustomComponent: FC<CustomComponentProps> = forwardRef(
 	function DatePickerCustomComponentFn(
 		{ value, onClick, label }: CustomComponentProps,
@@ -45,7 +47,7 @@ export const DatePickerCustomComponent: FC<CustomComponentProps> = forwardRef(
 		return (
 			<CustomInputWrapper background="gray4">
 				<Row takeAvailableSpace minWidth="9.375rem" background="transparent">
-					<Input label={label} value={input} hideBorder disabled ref={ref} />
+					<Input label={label} value={input} disabled ref={ref} />
 				</Row>
 
 				<CustomButtonWrapper>

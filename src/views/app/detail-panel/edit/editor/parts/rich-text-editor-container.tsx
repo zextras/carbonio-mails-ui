@@ -324,8 +324,8 @@ export const RichTextEditorContainer = ({
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
-	const fontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize as string | undefined;
-	const color = prefs?.zimbraPrefHtmlEditorDefaultFontColor as string | undefined;
+	const fontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize;
+	const color = prefs?.zimbraPrefHtmlEditorDefaultFontColor;
 
 	const initialConfig = useMemo(
 		() => ({
