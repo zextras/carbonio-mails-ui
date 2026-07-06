@@ -390,21 +390,22 @@ const Attachment = ({
 
 		return items;
 	}, [
-		isUploadIntegrationAvailable,
-		uploadIntegration,
-		actionTarget,
-		saveProviders,
+		t,
 		downloadAttachment,
-		isEml,
-		removeAttachment,
+		isUploadIntegrationAvailable,
+		saveProviders,
 		isAvailable,
 		pType,
-		onCreateContact,
 		isCalendarImportAvailable,
-		onImportAppointments,
+		ImportAppointmentsModal,
 		att.contentType,
 		att.filename,
-		t
+		isEml,
+		uploadIntegration,
+		actionTarget,
+		onCreateContact,
+		onImportAppointments,
+		removeAttachment
 	]);
 
 	const showEMLPreview = useCallback(() => {
