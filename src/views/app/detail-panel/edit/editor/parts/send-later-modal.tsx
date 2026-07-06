@@ -11,7 +11,7 @@ import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import moment from 'moment';
 
-import { DatePickerCustomComponent } from 'views/app/detail-panel/edit/legacyEditor/parts/date-picker-custom-component';
+import { DatePickerCustomComponent } from 'views/app/detail-panel/edit/editor/parts/date-picker-custom-component';
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;

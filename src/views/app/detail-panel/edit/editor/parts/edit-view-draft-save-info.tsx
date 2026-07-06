@@ -11,7 +11,7 @@ import moment from 'moment';
 
 import { TIMEOUTS } from 'constants/index';
 import { DraftSaveProcessStatus } from 'types/editor';
-import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
+import * as StyledComp from 'views/app/detail-panel/edit/editor/parts/edit-view-styled-components';
 
 export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus }> = ({
 	processStatus

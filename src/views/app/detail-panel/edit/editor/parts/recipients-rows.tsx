@@ -19,7 +19,7 @@ import {
 } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
 import { Participant } from 'types/participant';
-import { RecipientsRow } from 'views/app/detail-panel/edit/legacyEditor/parts/recipients-row';
+import { RecipientsRow } from 'views/app/detail-panel/edit/editor/parts/recipients-row';
 
 export type RecipientsRowsProps = {
 	editorId: MailsEditorV2['id'];

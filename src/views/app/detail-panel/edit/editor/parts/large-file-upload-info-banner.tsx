@@ -7,7 +7,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { WarningBanner } from 'views/app/detail-panel/edit/legacyEditor/parts/warning-banner';
+import { WarningBanner } from 'views/app/detail-panel/edit/editor/parts/warning-banner';
 
 export const LargeFileUploadInfoBanner = (): JSX.Element => {
 	const { t } = useTranslation();

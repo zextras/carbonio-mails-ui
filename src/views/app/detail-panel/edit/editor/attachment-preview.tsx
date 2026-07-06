@@ -34,7 +34,7 @@ import { getEditor, useEditorAttachments, useEditorSubject } from 'store/editor/
 import StyledWrapper from 'styled-wrapper';
 import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
-import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/legacyEditor/attachment-upload-status';
+import { AttachmentUploadStatus } from 'views/app/detail-panel/edit/editor/attachment-upload-status';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;

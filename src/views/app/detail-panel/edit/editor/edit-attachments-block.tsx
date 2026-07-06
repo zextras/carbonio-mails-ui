@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { useEditorAttachments } from 'store/editor/index';
 import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
-import { AttachmentPreview } from 'views/app/detail-panel/edit/legacyEditor/attachment-preview';
-import * as StyledComp from 'views/app/detail-panel/edit/legacyEditor/parts/edit-view-styled-components';
+import { AttachmentPreview } from 'views/app/detail-panel/edit/editor/attachment-preview';
+import * as StyledComp from 'views/app/detail-panel/edit/editor/parts/edit-view-styled-components';
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];

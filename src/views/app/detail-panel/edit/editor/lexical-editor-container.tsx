@@ -87,11 +87,16 @@ export const LexicalEditorContainer = ({
 
 	const saveToStore = useCallback(
 		(editorState: EditorState, editor: LexicalEditor): void => {
-			editorState.read(() => {
-				const richText = $generateHtmlFromNodes(editor, null);
-				const plainText = $getRoot().getTextContent();
-				setText({ plainText, richText }, { syncTextProvider: false });
-			});
+			// Read with the editor bound as active context: `$generateHtmlFromNodes`
+			// -> `exportDOM` needs it.
+			editorState.read(
+				() => {
+					const richText = $generateHtmlFromNodes(editor, null);
+					const plainText = $getRoot().getTextContent();
+					setText({ plainText, richText }, { syncTextProvider: false });
+				},
+				{ editor }
+			);
 		},
 		[setText]
 	);
