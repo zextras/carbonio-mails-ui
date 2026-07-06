@@ -6,12 +6,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import {
-	$createCodeNode,
-	CodeHighlightNode,
-	CodeNode,
-	registerCodeHighlighting
-} from '@lexical/code';
+import { $createCodeNode, CodeHighlightNode, CodeNode } from '@lexical/code-core';
+import { registerCodeHighlighting } from '@lexical/code-shiki';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -28,53 +24,6 @@ type SourceCodeModalProps = {
 	editor: LexicalEditor;
 	open: boolean;
 	onClose: () => void;
-};
-
-/**
- * Theme mapping for the Prism token types emitted by `registerCodeHighlighting`.
- * Token types are grouped into a handful of color buckets (see `CodeViewWrapper`
- * for the actual colors), following Prism's default light palette.
- */
-const TOKEN_ATTR = 'token-attr';
-const TOKEN_PROPERTY = 'token-property';
-const TOKEN_SELECTOR = 'token-selector';
-const TOKEN_COMMENT = 'token-comment';
-const TOKEN_OPERATOR = 'token-operator';
-const TOKEN_FUNCTION = 'token-function';
-const TOKEN_VARIABLE = 'token-variable';
-const TOKEN_PUNCTUATION = 'token-punctuation';
-
-const CODE_HIGHLIGHT_THEME: Record<string, string> = {
-	atrule: TOKEN_ATTR,
-	attr: TOKEN_ATTR,
-	boolean: TOKEN_PROPERTY,
-	builtin: TOKEN_SELECTOR,
-	cdata: TOKEN_COMMENT,
-	char: TOKEN_SELECTOR,
-	class: TOKEN_FUNCTION,
-	'class-name': TOKEN_FUNCTION,
-	comment: TOKEN_COMMENT,
-	constant: TOKEN_PROPERTY,
-	deleted: TOKEN_PROPERTY,
-	doctype: TOKEN_COMMENT,
-	entity: TOKEN_OPERATOR,
-	function: TOKEN_FUNCTION,
-	important: TOKEN_VARIABLE,
-	inserted: TOKEN_SELECTOR,
-	keyword: TOKEN_ATTR,
-	namespace: TOKEN_VARIABLE,
-	number: TOKEN_PROPERTY,
-	operator: TOKEN_OPERATOR,
-	prolog: TOKEN_COMMENT,
-	property: TOKEN_PROPERTY,
-	punctuation: TOKEN_PUNCTUATION,
-	regex: TOKEN_VARIABLE,
-	selector: TOKEN_SELECTOR,
-	string: TOKEN_SELECTOR,
-	symbol: TOKEN_PROPERTY,
-	tag: TOKEN_PROPERTY,
-	url: TOKEN_OPERATOR,
-	variable: TOKEN_VARIABLE
 };
 
 const CodeViewWrapper = styled.div`
@@ -101,36 +50,12 @@ const CodeViewWrapper = styled.div`
 		box-sizing: border-box;
 		color: ${({ theme }): string => theme.palette.text.regular};
 	}
-
-	.token-comment {
-		color: #708090;
-	}
-	.token-punctuation {
-		color: #999999;
-	}
-	.token-property {
-		color: #990055;
-	}
-	.token-selector {
-		color: #669900;
-	}
-	.token-operator {
-		color: #9a6e3a;
-	}
-	.token-attr {
-		color: #0077aa;
-	}
-	.token-variable {
-		color: #ee9900;
-	}
-	.token-function {
-		color: #dd4a68;
-	}
 `;
 
 /**
- * Loads the given HTML into a code block and registers Prism-based syntax
- * highlighting on it. Building the content inside an `editor.update` (after
+ * Loads the given HTML into a code block and registers Shiki-based syntax
+ * highlighting on it (token colors are applied as inline styles from the
+ * tokenizer's theme). Building the content inside an `editor.update` (after
  * registration) marks the node dirty so the highlight transform runs.
  */
 const CodeHighlightPlugin = ({ html }: { html: string }): null => {
@@ -179,7 +104,7 @@ export const SourceCodeModal = ({
 		() => ({
 			namespace: 'MailsSourceCodeEditor',
 			nodes: [CodeNode, CodeHighlightNode],
-			theme: { code: 'mails-source-code', codeHighlight: CODE_HIGHLIGHT_THEME },
+			theme: { code: 'mails-source-code' },
 			onError: (error: Error): void => {
 				throw error;
 			}
