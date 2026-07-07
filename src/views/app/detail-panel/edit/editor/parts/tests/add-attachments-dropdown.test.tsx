@@ -195,7 +195,9 @@ describe('AddAttachmentsDropdown', () => {
 		// Trigger file change
 		// eslint-disable-next-line testing-library/prefer-user-event
 		fireEvent.change(fileInput);
-		await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
+
+		const modal = await screen.findByTestId('convert-to-smartlink-modal');
+		expect(modal).toBeVisible();
 	});
 
 	describe('Actions', () => {
@@ -222,7 +224,7 @@ describe('AddAttachmentsDropdown', () => {
 					).toBeTruthy();
 				});
 			});
-			it('should open the smartlink modal when files size is within the limit', async () => {
+			it('should open the smartlink modal when files size exceeds the limit', async () => {
 				const FILES_COUNT = 50;
 				generateFilesIntegrationMocks(FILES_COUNT);
 
@@ -233,7 +235,8 @@ describe('AddAttachmentsDropdown', () => {
 				await user.click(dropdownIcon);
 				await user.click(screen.getByText('composer.attachment.files'));
 
-				await screen.findByTestId('convert-to-smartlink-modal'); // Adjust based on your modal content
+				const modal = await screen.findByTestId('convert-to-smartlink-modal');
+				expect(modal).toBeVisible();
 			});
 		});
 	});
@@ -309,7 +312,8 @@ describe('AddAttachmentsDropdown', () => {
 			fireEvent.change(fileInput);
 
 			// Modal should appear
-			await screen.findByTestId('convert-to-smartlink-modal');
+			const modal = await screen.findByTestId('convert-to-smartlink-modal');
+			expect(modal).toBeVisible();
 		});
 
 		it('should show smartlink modal when combined file size exceeds limit', async () => {
@@ -339,7 +343,8 @@ describe('AddAttachmentsDropdown', () => {
 			fireEvent.change(fileInput);
 
 			// Modal should appear
-			await screen.findByTestId('convert-to-smartlink-modal');
+			const modal = await screen.findByTestId('convert-to-smartlink-modal');
+			expect(modal).toBeVisible();
 		});
 
 		it('should handle different file types correctly', async () => {
@@ -403,7 +408,8 @@ describe('AddAttachmentsDropdown', () => {
 			fireEvent.change(fileInput);
 
 			// Modal should appear because of BASE64 conversion
-			await screen.findByTestId('convert-to-smartlink-modal');
+			const modal = await screen.findByTestId('convert-to-smartlink-modal');
+			expect(modal).toBeVisible();
 		});
 
 		it('should handle empty file selection gracefully', async () => {

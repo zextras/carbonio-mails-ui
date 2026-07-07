@@ -5,7 +5,8 @@
  */
 import React from 'react';
 
-import { fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
+import { $setSelection, type LexicalEditor } from 'lexical';
 
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
@@ -19,6 +20,8 @@ const EDITOR_TESTID = 'edit-view-editor';
 const PARAGRAPH_LABEL = 'label.paragraph';
 const BOLD_LABEL = 'label.bold';
 const LINK_LABEL = 'label.link';
+const LTR_LABEL = 'label.ltr';
+const RTL_LABEL = 'label.rtl';
 const ALIGN_LEFT_LABEL = 'label.align_left';
 const ALIGN_CENTER_LABEL = 'label.align_center';
 // The font / size / paragraph selects render in this order; they carry no label,
@@ -219,6 +222,69 @@ describe('RichToolbarPlugin', () => {
 		});
 	});
 
+	describe('text direction', () => {
+		it('sets the selected paragraph direction to rtl and marks the rtl option active', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: RTL_LABEL }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('dir="rtl"');
+			});
+			expect(
+				await screen.findByRole('button', { name: RTL_LABEL, pressed: true })
+			).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: LTR_LABEL, pressed: false })).toBeInTheDocument();
+		});
+
+		it('restores the ltr direction on a paragraph previously set to rtl', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: RTL_LABEL }));
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('dir="rtl"');
+			});
+
+			await user.click(screen.getByRole('button', { name: LTR_LABEL }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('dir="ltr"');
+			});
+			expect(richTextOf(editorId)).not.toContain('dir="rtl"');
+		});
+
+		it('applies the direction to every top-level element in the selection', async () => {
+			const { editorId, user } = await setupWithSelectedContent(
+				`<p>${SELECTED_TEXT}</p><p>second paragraph</p>`
+			);
+
+			await user.click(screen.getByRole('button', { name: RTL_LABEL }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId).match(/dir="rtl"/g)).toHaveLength(2);
+			});
+		});
+
+		it('does nothing when there is no selection in the editor', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			// Clear the selection through the editor instance that Lexical exposes
+			// on the contentEditable root element.
+			const editorElement = screen.getByTestId(EDITOR_TESTID) as HTMLElement & {
+				__lexicalEditor: LexicalEditor;
+			};
+			act(() => {
+				editorElement.__lexicalEditor.update(() => {
+					$setSelection(null);
+				});
+			});
+
+			await user.click(screen.getByRole('button', { name: RTL_LABEL }));
+
+			expect(richTextOf(editorId)).not.toContain('dir="rtl"');
+		});
+	});
+
 	describe('font and size selectors', () => {
 		it('applies the chosen font family to the selection', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
@@ -363,7 +429,7 @@ describe('RichToolbarPlugin', () => {
 			expect(
 				screen.getByRole('button', { name: ALIGN_LEFT_LABEL, pressed: true })
 			).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'label.ltr', pressed: true })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: LTR_LABEL, pressed: true })).toBeInTheDocument();
 			// Other alignments are not active.
 			expect(
 				screen.getByRole('button', { name: ALIGN_CENTER_LABEL, pressed: false })
