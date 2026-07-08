@@ -1,3 +1,7 @@
+## 1.36.0 (2026-07-08)
+
+* feat(CO-3675): add calendar attachment detection and import functionality (#1283) ([cb812e5](https://github.com/zextras/carbonio-mails-ui/commit/cb812e5)), closes [#1283](https://github.com/zextras/carbonio-mails-ui/issues/1283)
+
 ## 1.35.0 (2026-07-02)
 
 * Merge branch 'devel' into co-3206-email-import-export ([f9f4b7d](https://github.com/zextras/carbonio-mails-ui/commit/f9f4b7d))

@@ -14,6 +14,7 @@ import {
 	getIntegratedFunction,
 	useActions,
 	useAppContext,
+	useIntegratedComponent,
 	useIntegratedFunction
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
@@ -676,5 +677,79 @@ describe('Import to Contacts in attachment dropdown', () => {
 		await user.click(screen.getByTestId('attachment-actions-contact.vcf'));
 		await screen.findAllByText('Download');
 		expect(screen.queryByText('Import to Contacts')).not.toBeInTheDocument();
+	});
+});
+
+describe('Import to Calendar in attachment dropdown', () => {
+	const icsAttachments = [
+		{
+			cd: 'attachment',
+			name: 'part1',
+			filename: 'invite.ics',
+			size: 500,
+			contentType: 'text/calendar'
+		} as const
+	];
+
+	beforeEach(() => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+	});
+
+	afterEach(() => {
+		(useIntegratedComponent as Mock).mockReturnValue([(): null => null, false]);
+	});
+
+	test('Import to Calendar item appears in dropdown for an ics attachment when integration is available', async () => {
+		(useIntegratedComponent as Mock).mockReturnValue([(): null => null, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={icsAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
+		expect(await screen.findByText('Import to Calendars')).toBeVisible();
+	});
+
+	test('clicking Import to Calendar opens the import modal with messageId and part', async () => {
+		const ImportModalMock = vi.fn(
+			({ messageId, part }: { messageId: string; part: string }): React.JSX.Element => (
+				<div data-testid="import-appointments-modal">{`${messageId}:${part}`}</div>
+			)
+		);
+		(useIntegratedComponent as Mock).mockReturnValue([ImportModalMock, true]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={icsAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
+		await user.click(await screen.findByText('Import to Calendars'));
+
+		// The integrated calendar modal is rendered with the attachment's mid/part
+		expect(await screen.findByTestId('import-appointments-modal')).toHaveTextContent('1:part1');
+	});
+
+	test('Import to Calendar does not appear in dropdown when integration is not available', async () => {
+		(useIntegratedComponent as Mock).mockReturnValue([(): null => null, false]);
+
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={icsAttachments}
+			/>
+		);
+
+		await user.click(screen.getByTestId('attachment-actions-invite.ics'));
+		await screen.findAllByText('Download');
+		expect(screen.queryByText('Import to Calendars')).not.toBeInTheDocument();
 	});
 });

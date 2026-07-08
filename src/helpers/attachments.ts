@@ -307,6 +307,24 @@ export const getAttachmentExtension = (
 	return { value: '?' };
 };
 
+const CALENDAR_CONTENT_TYPES = new Set(['text/calendar', 'application/ics', 'application/x-ics']);
+
+/**
+ * Whether an attachment is an iCalendar file (`.ics`) that can be imported into a calendar.
+ * Detection is primarily based on the content type, falling back to the `.ics` file extension.
+ */
+export const isCalendarAttachment = (
+	contentType: string | undefined,
+	fileName: string | undefined = undefined
+): boolean => {
+	if (contentType && CALENDAR_CONTENT_TYPES.has(contentType.toLowerCase())) {
+		return true;
+	}
+	return fileName
+		? getAttachmentExtension(undefined, fileName).value.toLowerCase() === 'ics'
+		: false;
+};
+
 export const getSizeDescription = (size: number): string => {
 	let value;
 	if (size < 1024000) {

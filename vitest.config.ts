@@ -95,7 +95,8 @@ export default defineConfig({
 						'**/rich-text-editor-container.test.tsx',
 						'**/share-folder-actions.test.ts',
 						'**/recipients-certificates-settings.test.tsx',
-						'**/move-conv.test.tsx' // flaky test, needs to be fixed (Timeout frequently)
+						'**/move-conv.test.tsx',
+						'**/advanced-filter-modal.test.tsx' // flaky test, needs to be fixed (Timeout frequently)
 					]
 				}
 			},

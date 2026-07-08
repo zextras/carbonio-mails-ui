@@ -13,7 +13,8 @@ import {
 	buildSavedAttachments,
 	getAttachmentExtension,
 	getFlattenedAttachmentParts,
-	getReferredContentIds
+	getReferredContentIds,
+	isCalendarAttachment
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { MailMessagePart } from 'types/messages';
@@ -1314,6 +1315,21 @@ describe('attachments', () => {
 			])('should work with %s from AttachmentPart', (_desc, contentType, filename, expected) => {
 				expect(getAttachmentExtension(contentType, filename)).toEqual(expected);
 			});
+		});
+	});
+
+	describe('isCalendarAttachment', () => {
+		test.each([
+			['text/calendar content type', 'text/calendar', 'meeting.ics', true],
+			['text/calendar uppercase', 'TEXT/CALENDAR', 'meeting.ics', true],
+			['application/ics content type', 'application/ics', undefined, true],
+			['application/x-ics content type', 'application/x-ics', undefined, true],
+			['.ics extension fallback without content type', undefined, 'invite.ics', true],
+			['.ICS uppercase extension fallback', undefined, 'invite.ICS', true],
+			['non-calendar content type', 'application/pdf', 'file.pdf', false],
+			['no content type and no filename', undefined, undefined, false]
+		])('should return %s for %s', (_desc, contentType, filename, expected) => {
+			expect(isCalendarAttachment(contentType, filename)).toBe(expected);
 		});
 	});
 });
