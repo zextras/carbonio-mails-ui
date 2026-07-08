@@ -24,6 +24,7 @@ import {
 	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	useAppContext,
+	useIntegratedComponent,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
@@ -42,7 +43,11 @@ import {
 	getLocationOrigin
 } from './utils';
 import { AppContext } from 'app-utils/app-context-initializer';
-import { getAttachmentExtension, useAttachmentIconColor } from 'helpers/attachments';
+import {
+	getAttachmentExtension,
+	isCalendarAttachment,
+	useAttachmentIconColor
+} from 'helpers/attachments';
 import { openEmlStandalonePreview } from 'helpers/external-tabs';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from 'store/emails/actions/delete-attachments-action';
@@ -153,6 +158,8 @@ const Attachment = ({
 
 	const pType = previewType(att.contentType);
 	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
+	const [ImportAppointmentsModal, isCalendarImportAvailable] =
+		useIntegratedComponent('import_appointments');
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -255,6 +262,28 @@ const Attachment = ({
 	const onCreateContact = useCallback(() => {
 		createContact({ messageId, part });
 	}, [createContact, messageId, part]);
+	const onImportAppointments = useCallback(() => {
+		const id = Date.now().toString();
+		createModal(
+			{
+				id,
+				maxHeight: '90vh',
+				size: 'small',
+				onClose: (): void => {
+					closeModal(id);
+				},
+				children: (
+					<ImportAppointmentsModal
+						messageId={messageId}
+						part={part}
+						fileName={filename}
+						onClose={(): void => closeModal(id)}
+					/>
+				)
+			},
+			true
+		);
+	}, [ImportAppointmentsModal, createModal, closeModal, messageId, part, filename]);
 	const isAValidDestination = useCallback(
 		(node: { permissions?: { can_write_file?: boolean } }) => node?.permissions?.can_write_file,
 		[]
@@ -337,6 +366,19 @@ const Attachment = ({
 			});
 		}
 
+		if (
+			isCalendarImportAvailable &&
+			ImportAppointmentsModal &&
+			isCalendarAttachment(att.contentType, att.filename)
+		) {
+			items.push({
+				id: 'import-to-calendar',
+				label: t('label.import_to_calendar', 'Import to Calendars'),
+				icon: 'UploadOutline',
+				onClick: onImportAppointments
+			});
+		}
+
 		if (!isEml) {
 			items.push({
 				id: 'delete',
@@ -348,17 +390,22 @@ const Attachment = ({
 
 		return items;
 	}, [
-		isUploadIntegrationAvailable,
-		uploadIntegration,
-		actionTarget,
-		saveProviders,
+		t,
 		downloadAttachment,
-		isEml,
-		removeAttachment,
+		isUploadIntegrationAvailable,
+		saveProviders,
 		isAvailable,
 		pType,
+		isCalendarImportAvailable,
+		ImportAppointmentsModal,
+		att.contentType,
+		att.filename,
+		isEml,
+		uploadIntegration,
+		actionTarget,
 		onCreateContact,
-		t
+		onImportAppointments,
+		removeAttachment
 	]);
 
 	const showEMLPreview = useCallback(() => {
