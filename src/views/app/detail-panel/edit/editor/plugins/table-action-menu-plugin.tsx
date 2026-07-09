@@ -31,6 +31,8 @@ import {
 } from 'lexical';
 import { createPortal } from 'react-dom';
 
+import { HiddenColorInput } from './hidden-color-input';
+
 type CellMenuState = {
 	cellKey: NodeKey;
 	top: number;
@@ -376,10 +378,13 @@ export const TableActionMenuPlugin = (): React.JSX.Element | null => {
 					onMouseDown={(event: React.MouseEvent): void => event.preventDefault()}
 				/>
 			</Dropdown>
-			<input
+			{/* Kept as a positioned 1px box (not display: none) so the browser
+			    anchors the native color picker popup to the cell's action button. */}
+			<HiddenColorInput
 				ref={colorInputRef}
 				type="color"
-				style={{ display: 'none' }}
+				aria-hidden
+				tabIndex={-1}
 				onChange={onBackgroundColorSelected}
 			/>
 		</div>,

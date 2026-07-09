@@ -56,6 +56,7 @@ import {
 } from 'lexical';
 
 import { EmojiPicker, type Emoji } from './emoji-picker';
+import { HiddenColorInput } from './hidden-color-input';
 import { ImageModal } from './image-modal';
 import {
 	INSERT_INLINE_IMAGE_COMMAND,
@@ -236,23 +237,11 @@ const ColorToolbarButton = ({
 				label={label}
 				onClick={(): void => inputRef.current?.click()}
 			/>
-			<input
+			<HiddenColorInput
 				ref={inputRef}
 				type="color"
 				aria-hidden
 				tabIndex={-1}
-				style={{
-					position: 'absolute',
-					left: 0,
-					bottom: 0,
-					width: '0.0625rem',
-					height: '0.0625rem',
-					padding: 0,
-					margin: 0,
-					border: 0,
-					opacity: 0,
-					pointerEvents: 'none'
-				}}
 				onChange={(event): void => onColorChange(event.target.value)}
 			/>
 		</Container>
