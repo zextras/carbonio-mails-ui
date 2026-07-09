@@ -23,7 +23,9 @@ type LinkInfo = {
 	left: number;
 };
 
-const HIDE_DELAY_MS = 250;
+// Grace period before the card hides once the pointer leaves the link: it must
+// be long enough to travel from the link down to the card without losing it.
+const HIDE_DELAY_MS = 500;
 
 const FloatingLinkCard = styled(Row)`
 	position: absolute;
@@ -33,6 +35,15 @@ const FloatingLinkCard = styled(Row)`
 	border: 0.0625rem solid ${({ theme }): string => theme.palette.gray3.regular};
 	border-radius: 0.25rem;
 	box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: -0.25rem;
+		left: 0;
+		right: 0;
+		height: 0.25rem;
+	}
 `;
 
 const UrlLink = styled(Link)`
@@ -50,7 +61,9 @@ const findLinkElement = (target: EventTarget | null): HTMLElement | null =>
  * card is shown only while the pointer hovers a link or after the link is pressed
  * (which pins it open so its actions stay reachable); it exposes the destination
  * URL (opening in a new tab) plus actions to edit the link (reusing the
- * "Insert/Edit Link" modal) or to remove it.
+ * "Insert/Edit Link" modal) or to remove it. When the pointer leaves the link,
+ * the card lingers for a grace period so it can be reached without being
+ * dismissed mid-travel; hovering the card keeps it open.
  *
  * The card is portaled into the positioned `.editor-inner` wrapper (the same
  * target used by the table plugins), so its coordinates are computed relative to
@@ -63,6 +76,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 	// The link is "pinned" (kept open regardless of hover) once it is pressed.
 	const pinnedRef = useRef(false);
 	const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const cardRef = useRef<HTMLDivElement | null>(null);
 
 	const clearHide = useCallback((): void => {
 		if (hideTimer.current !== null) {
@@ -71,14 +85,41 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		}
 	}, []);
 
+	// Mouse enter/leave events can miss a transition (the card overlays the
+	// editor content), so before hiding we ask the browser directly whether the
+	// pointer still sits on the card or on a link.
+	const isPointerOnCardOrLink = useCallback((): boolean => {
+		try {
+			return (
+				cardRef.current?.matches(':hover') === true ||
+				editor.getRootElement()?.querySelector('a:hover') != null
+			);
+		} catch {
+			// Selector engines without hover tracking (e.g. jsdom): fall back to
+			// the enter/leave events alone.
+			return false;
+		}
+	}, [editor]);
+
 	const scheduleHide = useCallback((): void => {
 		clearHide();
-		hideTimer.current = setTimeout(() => {
-			if (!pinnedRef.current) {
+		const arm = (): void => {
+			hideTimer.current = setTimeout(() => {
+				hideTimer.current = null;
+				if (pinnedRef.current) {
+					return;
+				}
+				if (isPointerOnCardOrLink()) {
+					// The pointer is actually still on the card or on a link (the
+					// enter event was missed): keep the card and check again later.
+					arm();
+					return;
+				}
 				setLinkInfo(null);
-			}
-		}, HIDE_DELAY_MS);
-	}, [clearHide]);
+			}, HIDE_DELAY_MS);
+		};
+		arm();
+	}, [clearHide, isPointerOnCardOrLink]);
 
 	// Reads the link node behind the given anchor element and positions the card
 	// just below it, relative to the positioned `.editor-inner` wrapper.
@@ -207,6 +248,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				!editOpen &&
 				createPortal(
 					<FloatingLinkCard
+						ref={cardRef}
 						width="fit"
 						height="fit"
 						mainAlignment="flex-start"

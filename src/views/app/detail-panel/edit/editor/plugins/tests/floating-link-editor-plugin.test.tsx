@@ -67,6 +67,42 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(screen.getByRole('button', { name: REMOVE_LINK_LABEL })).toBeInTheDocument();
 	});
 
+	it('keeps the card visible for a grace period after the pointer leaves the link', async () => {
+		const { user, link } = await setupWithLink();
+
+		await user.hover(link);
+		await screen.findByRole('button', { name: EDIT_LINK_LABEL });
+
+		await user.unhover(link);
+
+		// Right after leaving the link the card is still there: hiding is delayed
+		// so the pointer can travel from the link to the card.
+		expect(screen.getByRole('button', { name: EDIT_LINK_LABEL })).toBeInTheDocument();
+		// Once the grace period expires without reaching the card, it hides.
+		await waitFor(
+			() => {
+				expect(screen.queryByRole('button', { name: EDIT_LINK_LABEL })).not.toBeInTheDocument();
+			},
+			{ timeout: 2000 }
+		);
+	});
+
+	it('does not hide the card while the pointer hovers the card itself', async () => {
+		const { user, link } = await setupWithLink();
+
+		await user.hover(link);
+		const editButton = await screen.findByRole('button', { name: EDIT_LINK_LABEL });
+
+		await user.unhover(link);
+		await user.hover(editButton);
+
+		// Wait well past the grace period: hovering the card cancels the hide.
+		await new Promise((resolve) => {
+			setTimeout(resolve, 800);
+		});
+		expect(screen.getByRole('button', { name: EDIT_LINK_LABEL })).toBeInTheDocument();
+	});
+
 	it('removes the link when the remove action is clicked', async () => {
 		const { editorId, user, link } = await setupWithLink();
 
