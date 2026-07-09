@@ -39,6 +39,9 @@ export const InitialContentPlugin = ({ html }: InitialContentPluginProps): null 
 				root.clear();
 				root.select();
 				$insertNodes(nodes);
+				// Open at the top of the content rather than at the end, where
+				// `$insertNodes` leaves the caret.
+				root.selectStart();
 			},
 			{ tag: 'history-merge' }
 		);
