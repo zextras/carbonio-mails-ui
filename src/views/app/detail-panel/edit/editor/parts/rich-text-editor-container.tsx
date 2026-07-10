@@ -26,6 +26,8 @@ import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { ImagePlugin } from '../plugins/image-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
+import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
+import { SignatureNode } from '../plugins/nodes/signature-node';
 import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
@@ -338,6 +340,8 @@ export const RichTextEditorContainer = ({
 				LinkNode,
 				AutoLinkNode,
 				ImageNode,
+				QuotedSeparatorNode,
+				SignatureNode,
 				TableNode,
 				TableRowNode,
 				TableCellNode
