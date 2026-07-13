@@ -374,7 +374,7 @@ const Attachment = ({
 			items.push({
 				id: 'import-to-calendar',
 				label: t('label.import_to_calendar', 'Import to Calendars'),
-				icon: 'UploadOutline',
+				icon: 'CalendarOutline',
 				onClick: onImportAppointments
 			});
 		}
