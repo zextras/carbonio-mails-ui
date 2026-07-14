@@ -40,7 +40,7 @@ async function setupEditorWithTable(): Promise<{
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
 	await user.click(screen.getByTestId('edit-view-editor'));
-	await user.click(screen.getByRole('button', { name: 'label.table' }));
+	await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 	await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
 	const editorElement = screen.getByTestId('edit-view-editor');
@@ -56,16 +56,16 @@ describe('TableCellResizerPlugin', () => {
 		hoverCell(cells[0]);
 
 		expect(
-			await screen.findByRole('button', { name: 'label.table_resize_column' })
+			await screen.findByRole('button', { name: 'lexical-label.table_resize_column' })
 		).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'label.table_resize_row' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'lexical-label.table_resize_row' })).toBeInTheDocument();
 	});
 
 	it('persists the new column width after dragging the column handle', async () => {
 		const { editorId, cells } = await setupEditorWithTable();
 
 		hoverCell(cells[0]);
-		const columnHandle = await screen.findByRole('button', { name: 'label.table_resize_column' });
+		const columnHandle = await screen.findByRole('button', { name: 'lexical-label.table_resize_column' });
 
 		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
 		fireEvent.mouseDown(columnHandle, { clientX: 0, clientY: 0 });
@@ -82,7 +82,7 @@ describe('TableCellResizerPlugin', () => {
 		const { editorId, cells } = await setupEditorWithTable();
 
 		hoverCell(cells[0]);
-		const rowHandle = await screen.findByRole('button', { name: 'label.table_resize_row' });
+		const rowHandle = await screen.findByRole('button', { name: 'lexical-label.table_resize_row' });
 
 		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
 		fireEvent.mouseDown(rowHandle, { clientX: 0, clientY: 0 });

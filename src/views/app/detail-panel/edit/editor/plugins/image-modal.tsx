@@ -179,13 +179,13 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 	}, [altText, editor, height, onClose, src, width]);
 
 	const lockLabel = locked
-		? t('label.unlock_aspect_ratio', 'Unlock aspect ratio')
-		: t('label.lock_aspect_ratio', 'Lock aspect ratio');
+		? t('lexical-label.unlock_aspect_ratio', 'Unlock aspect ratio')
+		: t('lexical-label.lock_aspect_ratio', 'Lock aspect ratio');
 
 	return (
 		<Modal
 			open={open}
-			title={t('label.insert_edit_image', 'Insert/Edit Image')}
+			title={t('lexical-label.insert_edit_image', 'Insert/Edit Image')}
 			size="small"
 			onClose={onClose}
 			onConfirm={onConfirm}
@@ -202,13 +202,13 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 				crossAlignment="flex-start"
 			>
 				<Input
-					label={t('label.image_source', 'Source')}
+					label={t('lexical-label.image_source', 'Source')}
 					value={src}
 					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => setSrc(ev.target.value)}
 					background="gray5"
 				/>
 				<Input
-					label={t('label.image_alt', 'Alternative description')}
+					label={t('lexical-label.image_alt', 'Alternative description')}
 					value={altText}
 					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => setAltText(ev.target.value)}
 					background="gray5"
@@ -221,7 +221,7 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 					width="fill"
 				>
 					<Input
-						label={t('label.width', 'Width')}
+						label={t('lexical-label.width', 'Width')}
 						type="number"
 						value={width}
 						onChange={onWidthChange}
@@ -229,7 +229,7 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 						minWidth={0}
 					/>
 					<Input
-						label={t('label.height', 'Height')}
+						label={t('lexical-label.height', 'Height')}
 						type="number"
 						value={height}
 						onChange={onHeightChange}

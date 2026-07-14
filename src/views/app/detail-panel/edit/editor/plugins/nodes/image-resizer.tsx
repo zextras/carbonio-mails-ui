@@ -129,7 +129,7 @@ export const ImageResizer = ({
 				<button
 					key={direction}
 					type="button"
-					aria-label={t('label.image_resize', 'Resize image')}
+					aria-label={t('lexical-label.image_resize', 'Resize image')}
 					className={`mails-lexical-image-resizer mails-lexical-image-resizer-${direction}`}
 					data-testid={`image-resizer-${direction}`}
 					onMouseDown={(event): void => onHandleMouseDown(direction, event)}

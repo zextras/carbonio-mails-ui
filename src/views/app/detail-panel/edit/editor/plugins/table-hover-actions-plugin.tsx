@@ -166,8 +166,8 @@ export const TableHoverActionsPlugin = (): React.JSX.Element | null => {
 
 	const label =
 		hoverAction.type === 'row'
-			? t('label.table_add_row', 'Add row')
-			: t('label.table_add_column', 'Add column');
+			? t('lexical-label.table_add_row', 'Add row')
+			: t('lexical-label.table_add_column', 'Add column');
 
 	return createPortal(
 		<button

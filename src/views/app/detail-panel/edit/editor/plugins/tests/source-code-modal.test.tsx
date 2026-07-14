@@ -15,7 +15,7 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const EDITOR_TESTID = 'edit-view-editor';
 const CONTENT = 'hello source code';
-const SOURCE_CODE_LABEL = 'label.source_code';
+const SOURCE_CODE_LABEL = 'lexical-label.source_code';
 const SAVE_LABEL = 'label.save';
 
 type TestUser = ReturnType<typeof setupTest>['user'];

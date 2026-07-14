@@ -12,8 +12,8 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
 
-const ADD_ROW_LABEL = 'label.table_add_row';
-const ADD_COLUMN_LABEL = 'label.table_add_column';
+const ADD_ROW_LABEL = 'lexical-label.table_add_row';
+const ADD_COLUMN_LABEL = 'lexical-label.table_add_column';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -38,7 +38,7 @@ async function setupEditorWithTable(): Promise<{
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
 	await user.click(screen.getByTestId('edit-view-editor'));
-	await user.click(screen.getByRole('button', { name: 'label.table' }));
+	await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 	await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
 	const editorElement = screen.getByTestId('edit-view-editor');

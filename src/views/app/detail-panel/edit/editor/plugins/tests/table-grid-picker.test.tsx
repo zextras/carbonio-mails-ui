@@ -30,10 +30,10 @@ describe('TableGridPicker', () => {
 	it('updates the size label when a cell is hovered', async () => {
 		const { user } = setupTest(<TableGridPicker onSelect={vi.fn()} />);
 
-		expect(screen.getByText('label.insert_table')).toBeVisible();
+		expect(screen.getByText('lexical-label.insert_table')).toBeVisible();
 
 		await user.hover(screen.getByTestId('table-grid-cell-2-3'));
 
-		expect(screen.getByText('label.table_size')).toBeVisible();
+		expect(screen.getByText('lexical-label.table_size')).toBeVisible();
 	});
 });

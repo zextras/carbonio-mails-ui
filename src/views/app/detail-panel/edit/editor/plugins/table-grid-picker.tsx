@@ -82,11 +82,11 @@ export const TableGridPicker = ({
 			</Grid>
 			<Text size="small">
 				{hoveredRows > 0
-					? t('label.table_size', '{{rows}} x {{columns}}', {
+					? t('lexical-label.table_size', '{{rows}} x {{columns}}', {
 							rows: hoveredRows,
 							columns: hoveredColumns
 						})
-					: t('label.insert_table', 'Insert table')}
+					: t('lexical-label.insert_table', 'Insert table')}
 			</Text>
 		</Container>
 	);

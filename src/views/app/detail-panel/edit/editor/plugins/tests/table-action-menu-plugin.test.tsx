@@ -33,7 +33,7 @@ async function setupEditorWithTable(): Promise<{
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
 	await user.click(screen.getByTestId(EDITOR_TESTID));
-	await user.click(screen.getByRole('button', { name: 'label.table' }));
+	await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 	await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
 	const editorElement = screen.getByTestId(EDITOR_TESTID);
@@ -52,7 +52,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('cell')).toHaveLength(4);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('label.table_insert_column_right'));
+		await user.click(await screen.findByText('lexical-label.table_insert_column_right'));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(6);
@@ -64,7 +64,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('row')).toHaveLength(2);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('label.table_delete_row'));
+		await user.click(await screen.findByText('lexical-label.table_delete_row'));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('row')).toHaveLength(1);
@@ -76,7 +76,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('cell')).toHaveLength(4);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('label.table_delete_column'));
+		await user.click(await screen.findByText('lexical-label.table_delete_column'));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(2);
@@ -88,7 +88,7 @@ describe('TableActionMenuPlugin', () => {
 		const editorElement = screen.getByTestId(EDITOR_TESTID);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('label.table_delete'));
+		await user.click(await screen.findByText('lexical-label.table_delete'));
 
 		await waitFor(() => {
 			expect(within(editorElement).queryByRole('table')).not.toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).queryByRole('columnheader')).not.toBeInTheDocument();
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('label.table_toggle_row_header'));
+		await user.click(await screen.findByText('lexical-label.table_toggle_row_header'));
 
 		expect(await within(table).findByRole('columnheader')).toBeInTheDocument();
 	});
@@ -132,7 +132,7 @@ describe('TableActionMenuPlugin', () => {
 
 		await openCellMenu(user);
 
-		expect(await screen.findByText('label.table_insert_row_above')).toBeInTheDocument();
-		expect(screen.queryByText('label.table_merge_cells')).not.toBeInTheDocument();
+		expect(await screen.findByText('lexical-label.table_insert_row_above')).toBeInTheDocument();
+		expect(screen.queryByText('lexical-label.table_merge_cells')).not.toBeInTheDocument();
 	});
 });

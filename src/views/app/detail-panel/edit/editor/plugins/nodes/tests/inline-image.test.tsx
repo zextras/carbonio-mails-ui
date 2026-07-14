@@ -80,8 +80,8 @@ describe('Inline image editing', () => {
 		const image = await findEditorImage();
 		await user.click(image);
 
-		await user.click(await screen.findByRole('button', { name: 'label.image_align' }));
-		await user.click(await screen.findByText('label.align_center'));
+		await user.click(await screen.findByRole('button', { name: 'lexical-label.image_align' }));
+		await user.click(await screen.findByText('lexical-label.align_center'));
 
 		await waitFor(() => {
 			expect(richTextOf(editorId)).toContain('margin-left: auto');

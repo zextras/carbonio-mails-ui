@@ -191,7 +191,7 @@ export const TableCellResizerPlugin = (): React.JSX.Element | null => {
 					<button
 						type="button"
 						className="mails-lexical-table-resizer mails-lexical-table-resizer-column"
-						aria-label={t('label.table_resize_column', 'Resize column')}
+						aria-label={t('lexical-label.table_resize_column', 'Resize column')}
 						style={{
 							top: hoveredCell.top,
 							left: hoveredCell.left + hoveredCell.width,
@@ -202,7 +202,7 @@ export const TableCellResizerPlugin = (): React.JSX.Element | null => {
 					<button
 						type="button"
 						className="mails-lexical-table-resizer mails-lexical-table-resizer-row"
-						aria-label={t('label.table_resize_row', 'Resize row')}
+						aria-label={t('lexical-label.table_resize_row', 'Resize row')}
 						style={{
 							top: hoveredCell.top + hoveredCell.height,
 							left: hoveredCell.left,

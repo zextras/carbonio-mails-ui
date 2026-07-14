@@ -140,8 +140,8 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 
 	const targetItems = useMemo<Array<SelectItem>>(
 		() => [
-			{ label: t('label.current_window', 'Current window'), value: 'self' },
-			{ label: t('label.new_window', 'New window'), value: 'blank' }
+			{ label: t('lexical-label.current_window', 'Current window'), value: 'self' },
+			{ label: t('lexical-label.new_window', 'New window'), value: 'blank' }
 		],
 		[]
 	);
@@ -167,7 +167,7 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 	return (
 		<Modal
 			open={open}
-			title={t('label.insert_edit_link', 'Insert/Edit Link')}
+			title={t('lexical-label.insert_edit_link', 'Insert/Edit Link')}
 			size="small"
 			onClose={onClose}
 			onConfirm={onConfirm}
@@ -184,25 +184,25 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 				crossAlignment="flex-start"
 			>
 				<Input
-					label={t('label.url', 'URL')}
+					label={t('lexical-label.url', 'URL')}
 					value={url}
 					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => setUrl(ev.target.value)}
 					background="gray5"
 				/>
 				<Input
-					label={t('label.text_to_display', 'Text to display')}
+					label={t('lexical-label.text_to_display', 'Text to display')}
 					value={text}
 					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => setText(ev.target.value)}
 					background="gray5"
 				/>
 				<Input
-					label={t('label.link_title', 'Title')}
+					label={t('lexical-label.link_title', 'Title')}
 					value={title}
 					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => setTitle(ev.target.value)}
 					background="gray5"
 				/>
 				<Select
-					label={t('label.open_link_in', 'Open link in…')}
+					label={t('lexical-label.open_link_in', 'Open link in…')}
 					items={targetItems}
 					selection={targetSelection}
 					onChange={(value): void => setTarget(value === 'blank' ? 'blank' : 'self')}

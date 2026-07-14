@@ -152,7 +152,7 @@ describe('ControlledContentPlugin', () => {
 
 		await user.click(editorElement);
 		await user.keyboard('{Control>}a{/Control}');
-		await user.click(screen.getByRole('button', { name: 'label.bold' }));
+		await user.click(screen.getByRole('button', { name: 'lexical-label.bold' }));
 
 		await waitFor(() => {
 			expect(editorState(editorId).isDirty).toBe(true);
@@ -170,7 +170,7 @@ describe('ControlledContentPlugin', () => {
 		// Produce an edit so the store holds the editor's own emitted HTML.
 		await user.click(editorElement);
 		await user.keyboard('{Control>}a{/Control}');
-		await user.click(screen.getByRole('button', { name: 'label.bold' }));
+		await user.click(screen.getByRole('button', { name: 'lexical-label.bold' }));
 		await waitFor(() => {
 			expect(editorState(editorId).richText).toContain('font-weight: bold');
 		});

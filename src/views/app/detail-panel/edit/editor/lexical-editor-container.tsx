@@ -165,7 +165,7 @@ export const LexicalEditorContainer = ({
 							contentEditable={<ContentEditable className="mails-lexical-content-editable" />}
 							placeholder={
 								<div className="mails-lexical-placeholder">
-									{t('messages.write_your_message', 'Write your message')}
+									{t('lexical-messages.write_your_message', 'Write your message')}
 								</div>
 							}
 							ErrorBoundary={LexicalErrorBoundary}

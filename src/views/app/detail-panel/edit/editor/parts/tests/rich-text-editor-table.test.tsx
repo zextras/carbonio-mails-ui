@@ -24,7 +24,7 @@ describe('RichTextEditorContainer table insertion', () => {
 		await user.click(screen.getByTestId('edit-view-editor'));
 
 		// Open the toolbar Table dropdown and pick a 2x2 size from the grid.
-		await user.click(screen.getByRole('button', { name: 'label.table' }));
+		await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 		await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
 		const editorElement = screen.getByTestId('edit-view-editor');
@@ -71,7 +71,7 @@ describe('RichTextEditorContainer table insertion', () => {
 		);
 
 		await user.click(screen.getByTestId('edit-view-editor'));
-		await user.click(screen.getByRole('button', { name: 'label.table' }));
+		await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 		await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
 		const table = await within(screen.getByTestId('edit-view-editor')).findByRole('table');
@@ -79,7 +79,7 @@ describe('RichTextEditorContainer table insertion', () => {
 
 		// Open the floating cell action menu and insert a row below.
 		await user.click(await screen.findByRoleWithIcon('button', { icon: 'icon: ChevronDown' }));
-		await user.click(await screen.findByText('label.table_insert_row_below'));
+		await user.click(await screen.findByText('lexical-label.table_insert_row_below'));
 
 		expect(within(table).getAllByRole('row')).toHaveLength(3);
 	});

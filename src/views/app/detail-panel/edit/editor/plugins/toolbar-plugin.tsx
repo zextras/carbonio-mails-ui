@@ -35,19 +35,19 @@ export const ToolbarPlugin = (): React.JSX.Element => {
 			<Button
 				type="ghost"
 				size="small"
-				label={t('label.bold', 'Bold')}
+				label={t('lexical-label.bold', 'Bold')}
 				onClick={(): void => formatText('bold')}
 			/>
 			<Button
 				type="ghost"
 				size="small"
-				label={t('label.italic', 'Italic')}
+				label={t('lexical-label.italic', 'Italic')}
 				onClick={(): void => formatText('italic')}
 			/>
 			<Button
 				type="ghost"
 				size="small"
-				label={t('label.underline', 'Underline')}
+				label={t('lexical-label.underline', 'Underline')}
 				onClick={(): void => formatText('underline')}
 			/>
 		</Row>

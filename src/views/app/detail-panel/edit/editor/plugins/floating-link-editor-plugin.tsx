@@ -268,7 +268,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 							type="ghost"
 							size="small"
 							color="text"
-							aria-label={t('label.edit_link', 'Edit link')}
+							aria-label={t('lexical-label.edit_link', 'Edit link')}
 							onClick={openEdit}
 						/>
 						<Button
@@ -276,7 +276,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 							type="ghost"
 							size="small"
 							color="text"
-							aria-label={t('label.remove_link', 'Remove link')}
+							aria-label={t('lexical-label.remove_link', 'Remove link')}
 							onClick={removeLink}
 						/>
 					</FloatingLinkCard>,

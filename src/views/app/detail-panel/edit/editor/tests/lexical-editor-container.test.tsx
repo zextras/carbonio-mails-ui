@@ -43,9 +43,9 @@ describe('LexicalEditorContainer', () => {
 		setupEditor();
 
 		expect(screen.getByTestId(CONTAINER_TESTID)).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'label.bold' })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'label.italic' })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'label.underline' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'lexical-label.bold' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'lexical-label.italic' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'lexical-label.underline' })).toBeInTheDocument();
 	});
 
 	it('loads the initial draft HTML into the editor on mount', async () => {
@@ -59,7 +59,7 @@ describe('LexicalEditorContainer', () => {
 	it('shows the placeholder when there is no initial content', () => {
 		setupEditor('');
 
-		expect(screen.getByText('messages.write_your_message')).toBeInTheDocument();
+		expect(screen.getByText('lexical-messages.write_your_message')).toBeInTheDocument();
 	});
 
 	it('marks the editor dirty and saves the text to the store after a user edit', async () => {
@@ -100,7 +100,7 @@ describe('LexicalEditorContainer', () => {
 
 		await user.click(within(container).getByText(INITIAL_TEXT));
 		await user.keyboard('{Control>}a{/Control}');
-		await user.click(screen.getByRole('button', { name: 'label.bold' }));
+		await user.click(screen.getByRole('button', { name: 'lexical-label.bold' }));
 
 		await waitFor(
 			() => {

@@ -134,7 +134,7 @@ export const SourceCodeModal = ({
 	return (
 		<Modal
 			open={open}
-			title={t('label.source_code', 'Source code')}
+			title={t('lexical-label.source_code', 'Source code')}
 			size="large"
 			minHeight="75vh"
 			maxHeight="90vh"

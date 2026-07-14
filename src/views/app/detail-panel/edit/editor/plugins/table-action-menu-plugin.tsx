@@ -158,44 +158,44 @@ function buildTableMenuItems({
 	const items: Array<DropdownItem> = [
 		{
 			id: 'insert-row-above',
-			label: t('label.table_insert_row_above', 'Insert row above'),
+			label: t('lexical-label.table_insert_row_above', 'Insert row above'),
 			icon: 'PlusOutline',
 			onClick: () => runOnActiveCell(() => $insertTableRowAtSelection(false))
 		},
 		{
 			id: 'insert-row-below',
-			label: t('label.table_insert_row_below', 'Insert row below'),
+			label: t('lexical-label.table_insert_row_below', 'Insert row below'),
 			icon: 'PlusOutline',
 			onClick: () => runOnActiveCell(() => $insertTableRowAtSelection(true))
 		},
 		{
 			id: 'insert-column-left',
-			label: t('label.table_insert_column_left', 'Insert column left'),
+			label: t('lexical-label.table_insert_column_left', 'Insert column left'),
 			icon: 'PlusOutline',
 			onClick: () => runOnActiveCell(() => $insertTableColumnAtSelection(false))
 		},
 		{
 			id: 'insert-column-right',
-			label: t('label.table_insert_column_right', 'Insert column right'),
+			label: t('lexical-label.table_insert_column_right', 'Insert column right'),
 			icon: 'PlusOutline',
 			onClick: () => runOnActiveCell(() => $insertTableColumnAtSelection(true))
 		},
 		{ id: 'divider-1', type: 'divider' },
 		{
 			id: 'delete-row',
-			label: t('label.table_delete_row', 'Delete row'),
+			label: t('lexical-label.table_delete_row', 'Delete row'),
 			icon: 'Trash2Outline',
 			onClick: () => runOnActiveCell(() => $deleteTableRowAtSelection())
 		},
 		{
 			id: 'delete-column',
-			label: t('label.table_delete_column', 'Delete column'),
+			label: t('lexical-label.table_delete_column', 'Delete column'),
 			icon: 'Trash2Outline',
 			onClick: () => runOnActiveCell(() => $deleteTableColumnAtSelection())
 		},
 		{
 			id: 'delete-table',
-			label: t('label.table_delete', 'Delete table'),
+			label: t('lexical-label.table_delete', 'Delete table'),
 			icon: 'Trash2Outline',
 			onClick: () =>
 				runOnActiveCell((cellNode) => $getTableNodeFromLexicalNodeOrThrow(cellNode).remove())
@@ -203,25 +203,25 @@ function buildTableMenuItems({
 		{ id: 'divider-2', type: 'divider' },
 		{
 			id: 'toggle-row-header',
-			label: t('label.table_toggle_row_header', 'Toggle header row'),
+			label: t('lexical-label.table_toggle_row_header', 'Toggle header row'),
 			onClick: () =>
 				runOnSelectedCells((cellNode) => cellNode.toggleHeaderStyle(TableCellHeaderStates.ROW))
 		},
 		{
 			id: 'toggle-column-header',
-			label: t('label.table_toggle_column_header', 'Toggle header column'),
+			label: t('lexical-label.table_toggle_column_header', 'Toggle header column'),
 			onClick: () =>
 				runOnSelectedCells((cellNode) => cellNode.toggleHeaderStyle(TableCellHeaderStates.COLUMN))
 		},
 		{ id: 'divider-3', type: 'divider' },
 		{
 			id: 'cell-background',
-			label: t('label.table_cell_background', 'Cell background'),
+			label: t('lexical-label.table_cell_background', 'Cell background'),
 			onClick: openColorPicker
 		},
 		{
 			id: 'cell-background-clear',
-			label: t('label.table_cell_background_clear', 'Clear background'),
+			label: t('lexical-label.table_cell_background_clear', 'Clear background'),
 			onClick: () => runOnSelectedCells((cellNode) => cellNode.setBackgroundColor(null))
 		}
 	];
@@ -231,7 +231,7 @@ function buildTableMenuItems({
 			{ id: 'divider-merge', type: 'divider' },
 			{
 				id: 'merge-cells',
-				label: t('label.table_merge_cells', 'Merge cells'),
+				label: t('lexical-label.table_merge_cells', 'Merge cells'),
 				onClick: mergeSelectedCells
 			}
 		);
@@ -239,7 +239,7 @@ function buildTableMenuItems({
 	if (canUnmerge) {
 		items.push({
 			id: 'unmerge-cells',
-			label: t('label.table_unmerge_cells', 'Unmerge cells'),
+			label: t('lexical-label.table_unmerge_cells', 'Unmerge cells'),
 			onClick: () => runOnActiveCell(() => $unmergeCell())
 		});
 	}

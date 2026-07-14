@@ -16,8 +16,8 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 const LINK_URL = 'https://custom-link.com';
 const LINK_TEXT = 'lexical';
 const EDITOR_TESTID = 'edit-view-editor';
-const EDIT_LINK_LABEL = 'label.edit_link';
-const REMOVE_LINK_LABEL = 'label.remove_link';
+const EDIT_LINK_LABEL = 'lexical-label.edit_link';
+const REMOVE_LINK_LABEL = 'lexical-label.remove_link';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -122,8 +122,8 @@ describe('FloatingLinkEditorPlugin', () => {
 		await user.click(link);
 		await user.click(await screen.findByRole('button', { name: EDIT_LINK_LABEL }));
 
-		expect(await screen.findByText('label.insert_edit_link')).toBeInTheDocument();
-		expect(screen.getByRole('textbox', { name: 'label.url' })).toHaveValue(LINK_URL);
-		expect(screen.getByRole('textbox', { name: 'label.text_to_display' })).toHaveValue(LINK_TEXT);
+		expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
+		expect(screen.getByRole('textbox', { name: 'lexical-label.url' })).toHaveValue(LINK_URL);
+		expect(screen.getByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(LINK_TEXT);
 	});
 });

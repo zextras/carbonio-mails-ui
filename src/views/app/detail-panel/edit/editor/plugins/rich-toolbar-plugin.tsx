@@ -435,14 +435,14 @@ export const RichToolbarPlugin = ({
 
 	const blockSelectItems = useMemo<Array<SelectItem<BlockType>>>(
 		() => [
-			{ label: t('label.paragraph', 'Paragraph'), value: 'paragraph' },
-			{ label: t('label.heading_1', 'Heading 1'), value: 'h1' },
-			{ label: t('label.heading_2', 'Heading 2'), value: 'h2' },
-			{ label: t('label.heading_3', 'Heading 3'), value: 'h3' },
-			{ label: t('label.heading_4', 'Heading 4'), value: 'h4' },
-			{ label: t('label.heading_5', 'Heading 5'), value: 'h5' },
-			{ label: t('label.heading_6', 'Heading 6'), value: 'h6' },
-			{ label: t('label.blockquote', 'Blockquote'), value: 'quote' }
+			{ label: t('lexical-label.paragraph', 'Paragraph'), value: 'paragraph' },
+			{ label: t('lexical-label.heading_1', 'Heading 1'), value: 'h1' },
+			{ label: t('lexical-label.heading_2', 'Heading 2'), value: 'h2' },
+			{ label: t('lexical-label.heading_3', 'Heading 3'), value: 'h3' },
+			{ label: t('lexical-label.heading_4', 'Heading 4'), value: 'h4' },
+			{ label: t('lexical-label.heading_5', 'Heading 5'), value: 'h5' },
+			{ label: t('lexical-label.heading_6', 'Heading 6'), value: 'h6' },
+			{ label: t('lexical-label.blockquote', 'Blockquote'), value: 'quote' }
 		],
 		[]
 	);
@@ -514,9 +514,9 @@ export const RichToolbarPlugin = ({
 		[insertText]
 	);
 
-	const emojiLabel = t('label.emoji', 'Emoji');
+	const emojiLabel = t('lexical-label.emoji', 'Emoji');
 
-	const specialCharLabel = t('label.special_character', 'Special character');
+	const specialCharLabel = t('lexical-label.special_character', 'Special character');
 
 	const emojiItems = useMemo<Array<DropdownItem>>(
 		() => [
@@ -542,7 +542,7 @@ export const RichToolbarPlugin = ({
 		[insertSpecialCharacter, specialCharLabel]
 	);
 
-	const tableLabel = t('label.table', 'Table');
+	const tableLabel = t('lexical-label.table', 'Table');
 
 	const tableItems = useMemo<Array<DropdownItem>>(
 		() => [
@@ -560,17 +560,17 @@ export const RichToolbarPlugin = ({
 		() => [
 			{
 				id: 'image-left',
-				label: t('label.align_left', 'Align left'),
+				label: t('lexical-label.align_left', 'Align left'),
 				onClick: () => alignImage('left')
 			},
 			{
 				id: 'image-center',
-				label: t('label.align_center', 'Center'),
+				label: t('lexical-label.align_center', 'Center'),
 				onClick: () => alignImage('center')
 			},
 			{
 				id: 'image-right',
-				label: t('label.align_right', 'Align right'),
+				label: t('lexical-label.align_right', 'Align right'),
 				onClick: () => alignImage('right')
 			}
 		],
@@ -629,12 +629,12 @@ export const RichToolbarPlugin = ({
 			{/* Text and background color */}
 			<ColorToolbarButton
 				icon={editorIcon('text-color')}
-				label={t('label.text_color', 'Text color')}
+				label={t('lexical-label.text_color', 'Text color')}
 				onColorChange={(color): void => patchStyle({ color })}
 			/>
 			<ColorToolbarButton
 				icon={editorIcon('highlight-bg-color')}
-				label={t('label.background_color', 'Background color')}
+				label={t('lexical-label.background_color', 'Background color')}
 				onColorChange={(color): void => patchStyle({ 'background-color': color })}
 			/>
 
@@ -643,31 +643,31 @@ export const RichToolbarPlugin = ({
 			{/* Inline text formatting */}
 			<ToolbarIconButton
 				icon={editorIcon('bold')}
-				label={t('label.bold', 'Bold')}
+				label={t('lexical-label.bold', 'Bold')}
 				onClick={(): void => formatText('bold')}
 				active={activeFormatting.formats.bold}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('italic')}
-				label={t('label.italic', 'Italic')}
+				label={t('lexical-label.italic', 'Italic')}
 				onClick={(): void => formatText('italic')}
 				active={activeFormatting.formats.italic}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('underline')}
-				label={t('label.underline', 'Underline')}
+				label={t('lexical-label.underline', 'Underline')}
 				onClick={(): void => formatText('underline')}
 				active={activeFormatting.formats.underline}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('strike-through')}
-				label={t('label.strikethrough', 'Strikethrough')}
+				label={t('lexical-label.strikethrough', 'Strikethrough')}
 				onClick={(): void => formatText('strikethrough')}
 				active={activeFormatting.formats.strikethrough}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('remove-formatting')}
-				label={t('label.remove_format', 'Clear formatting')}
+				label={t('lexical-label.remove_format', 'Clear formatting')}
 				onClick={(): void =>
 					patchStyle({ color: '', 'background-color': '', 'font-size': '', 'font-family': '' })
 				}
@@ -678,25 +678,25 @@ export const RichToolbarPlugin = ({
 			{/* Paragraph alignment */}
 			<ToolbarIconButton
 				icon={editorIcon('align-left')}
-				label={t('label.align_left', 'Align left')}
+				label={t('lexical-label.align_left', 'Align left')}
 				onClick={(): void => formatAlign('left')}
 				active={activeFormatting.align === 'left'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-center')}
-				label={t('label.align_center', 'Center')}
+				label={t('lexical-label.align_center', 'Center')}
 				onClick={(): void => formatAlign('center')}
 				active={activeFormatting.align === 'center'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-right')}
-				label={t('label.align_right', 'Align right')}
+				label={t('lexical-label.align_right', 'Align right')}
 				onClick={(): void => formatAlign('right')}
 				active={activeFormatting.align === 'right'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('align-justify')}
-				label={t('label.align_justify', 'Justify')}
+				label={t('lexical-label.align_justify', 'Justify')}
 				onClick={(): void => formatAlign('justify')}
 				active={activeFormatting.align === 'justify'}
 			/>
@@ -704,14 +704,14 @@ export const RichToolbarPlugin = ({
 			{/* Indentation */}
 			<ToolbarIconButton
 				icon={editorIcon('outdent')}
-				label={t('label.indent_decrease', 'Decrease indent')}
+				label={t('lexical-label.indent_decrease', 'Decrease indent')}
 				onClick={(): void => {
 					editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
 				}}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('indent')}
-				label={t('label.indent_increase', 'Increase indent')}
+				label={t('lexical-label.indent_increase', 'Increase indent')}
 				onClick={(): void => {
 					editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
 				}}
@@ -720,13 +720,13 @@ export const RichToolbarPlugin = ({
 			{/* Text direction */}
 			<ToolbarIconButton
 				icon={editorIcon('ltr')}
-				label={t('label.ltr', 'Left to right')}
+				label={t('lexical-label.ltr', 'Left to right')}
 				onClick={(): void => setDirection('ltr')}
 				active={activeFormatting.direction === 'ltr'}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('rtl')}
-				label={t('label.rtl', 'Right to left')}
+				label={t('lexical-label.rtl', 'Right to left')}
 				onClick={(): void => setDirection('rtl')}
 				active={activeFormatting.direction === 'rtl'}
 			/>
@@ -736,7 +736,7 @@ export const RichToolbarPlugin = ({
 			{/* Lists */}
 			<ToolbarIconButton
 				icon={editorIcon('unordered-list')}
-				label={t('label.bullet_list', 'Bulleted list')}
+				label={t('lexical-label.bullet_list', 'Bulleted list')}
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
 				}}
@@ -744,7 +744,7 @@ export const RichToolbarPlugin = ({
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('ordered-list')}
-				label={t('label.numbered_list', 'Numbered list')}
+				label={t('lexical-label.numbered_list', 'Numbered list')}
 				onClick={(): void => {
 					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
 				}}
@@ -756,7 +756,7 @@ export const RichToolbarPlugin = ({
 			{/* Insert link / table / images */}
 			<ToolbarIconButton
 				icon={editorIcon('link')}
-				label={t('label.link', 'Link')}
+				label={t('lexical-label.link', 'Link')}
 				onClick={(): void => setLinkModalOpen(true)}
 			/>
 			<Tooltip label={tableLabel}>
@@ -778,22 +778,22 @@ export const RichToolbarPlugin = ({
 			</Tooltip>
 			<ToolbarIconButton
 				icon={editorIcon('image')}
-				label={t('label.image', 'Image')}
+				label={t('lexical-label.image', 'Image')}
 				onClick={(): void => fileInputRef.current?.click()}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('edit-image')}
-				label={t('label.insert_image_url', 'Image from URL')}
+				label={t('lexical-label.insert_image_url', 'Image from URL')}
 				onClick={openImageModal}
 			/>
 			{isImageSelected && (
-				<Tooltip label={t('label.image_align', 'Align image')}>
+				<Tooltip label={t('lexical-label.image_align', 'Align image')}>
 					<Dropdown items={imageAlignItems}>
 						<Button
 							icon={editorIcon('align-center')}
 							type="ghost"
 							size="large"
-							aria-label={t('label.image_align', 'Align image')}
+							aria-label={t('lexical-label.image_align', 'Align image')}
 							onClick={(): void => undefined}
 						/>
 					</Dropdown>
@@ -847,13 +847,13 @@ export const RichToolbarPlugin = ({
 			{/* Show blocks and source code */}
 			<ToolbarIconButton
 				icon={editorIcon('visualblocks')}
-				label={t('label.show_blocks', 'Show blocks')}
+				label={t('lexical-label.show_blocks', 'Show blocks')}
 				onClick={onToggleShowBlocks}
 				active={showBlocks}
 			/>
 			<ToolbarIconButton
 				icon={editorIcon('sourcecode')}
-				label={t('label.source_code', 'Source code')}
+				label={t('lexical-label.source_code', 'Source code')}
 				onClick={(): void => setSourceCodeOpen(true)}
 			/>
 			<SourceCodeModal
