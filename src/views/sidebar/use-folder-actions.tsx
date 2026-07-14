@@ -592,7 +592,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				icon: 'DownloadOutline',
 				tooltipLabel:
 					folder.n === 0 && folder.children?.length === 0
-						? t('tooltip.export_archive_disabled', 'The folder is empty')
+						? t('tooltip.export_archive_disabled', "This folder is empty and can't be exported")
 						: undefined,
 				label: t('label.export_archive', 'Export Archive'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
