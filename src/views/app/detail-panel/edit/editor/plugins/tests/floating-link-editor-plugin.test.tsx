@@ -124,6 +124,8 @@ describe('FloatingLinkEditorPlugin', () => {
 
 		expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
 		expect(screen.getByRole('textbox', { name: 'lexical-label.url' })).toHaveValue(LINK_URL);
-		expect(screen.getByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(LINK_TEXT);
+		expect(screen.getByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(
+			LINK_TEXT
+		);
 	});
 });

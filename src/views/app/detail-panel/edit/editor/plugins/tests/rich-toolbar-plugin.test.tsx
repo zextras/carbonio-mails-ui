@@ -79,10 +79,14 @@ describe('RichToolbarPlugin', () => {
 			expect(screen.getByRole('button', { name: BOLD_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'lexical-label.italic' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'lexical-label.underline' })).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'lexical-label.strikethrough' })).toBeInTheDocument();
+			expect(
+				screen.getByRole('button', { name: 'lexical-label.strikethrough' })
+			).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: ALIGN_LEFT_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'lexical-label.bullet_list' })).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'lexical-label.numbered_list' })).toBeInTheDocument();
+			expect(
+				screen.getByRole('button', { name: 'lexical-label.numbered_list' })
+			).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: LINK_LABEL })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'lexical-label.table' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'lexical-label.image' })).toBeInTheDocument();
@@ -347,7 +351,10 @@ describe('RichToolbarPlugin', () => {
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
 			expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
-			await user.type(screen.getByRole('textbox', { name: 'lexical-label.url' }), 'https://example.com');
+			await user.type(
+				screen.getByRole('textbox', { name: 'lexical-label.url' }),
+				'https://example.com'
+			);
 			await user.click(screen.getByRole('button', { name: 'label.save' }));
 
 			expect(await within(editorElement).findByRole('link')).toBeInTheDocument();
@@ -361,16 +368,19 @@ describe('RichToolbarPlugin', () => {
 
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
-			expect(await screen.findByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(
-				SELECTED_TEXT
-			);
+			expect(
+				await screen.findByRole('textbox', { name: 'lexical-label.text_to_display' })
+			).toHaveValue(SELECTED_TEXT);
 		});
 
 		it('opens the link in a new window when selected', async () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
-			await user.type(screen.getByRole('textbox', { name: 'lexical-label.url' }), 'https://example.com');
+			await user.type(
+				screen.getByRole('textbox', { name: 'lexical-label.url' }),
+				'https://example.com'
+			);
 
 			await user.click(screen.getByText('lexical-label.current_window'));
 			await user.click(
@@ -393,7 +403,10 @@ describe('RichToolbarPlugin', () => {
 				screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
 				'https://example.com/picture.png'
 			);
-			await user.type(screen.getByRole('textbox', { name: 'lexical-label.image_alt' }), 'a picture');
+			await user.type(
+				screen.getByRole('textbox', { name: 'lexical-label.image_alt' }),
+				'a picture'
+			);
 			await user.click(screen.getByRole('button', { name: 'label.save' }));
 
 			const image = await within(editorElement).findByRole('img');
@@ -414,11 +427,15 @@ describe('RichToolbarPlugin', () => {
 			const editorElement = screen.getByTestId(EDITOR_TESTID);
 			const image = await within(editorElement).findByRole('img');
 
-			expect(screen.queryByRole('button', { name: 'lexical-label.image_align' })).not.toBeInTheDocument();
+			expect(
+				screen.queryByRole('button', { name: 'lexical-label.image_align' })
+			).not.toBeInTheDocument();
 
 			await user.click(image);
 
-			expect(await screen.findByRole('button', { name: 'lexical-label.image_align' })).toBeInTheDocument();
+			expect(
+				await screen.findByRole('button', { name: 'lexical-label.image_align' })
+			).toBeInTheDocument();
 		});
 	});
 

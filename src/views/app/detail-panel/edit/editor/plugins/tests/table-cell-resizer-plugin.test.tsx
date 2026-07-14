@@ -58,14 +58,18 @@ describe('TableCellResizerPlugin', () => {
 		expect(
 			await screen.findByRole('button', { name: 'lexical-label.table_resize_column' })
 		).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'lexical-label.table_resize_row' })).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', { name: 'lexical-label.table_resize_row' })
+		).toBeInTheDocument();
 	});
 
 	it('persists the new column width after dragging the column handle', async () => {
 		const { editorId, cells } = await setupEditorWithTable();
 
 		hoverCell(cells[0]);
-		const columnHandle = await screen.findByRole('button', { name: 'lexical-label.table_resize_column' });
+		const columnHandle = await screen.findByRole('button', {
+			name: 'lexical-label.table_resize_column'
+		});
 
 		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
 		fireEvent.mouseDown(columnHandle, { clientX: 0, clientY: 0 });
