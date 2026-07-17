@@ -1,3 +1,11 @@
+## 1.37.0 (2026-07-17)
+
+* feat: Migrate mail composer from TinyMCE to Lexical editor (#1284) ([57b800b](https://github.com/zextras/carbonio-mails-ui/commit/57b800b)), closes [#1284](https://github.com/zextras/carbonio-mails-ui/issues/1284)
+* Merge branch 'devel' into import-export-translation-change ([6339148](https://github.com/zextras/carbonio-mails-ui/commit/6339148))
+* Merge pull request #1285 from zextras/import-export-translation-change ([f9ee19a](https://github.com/zextras/carbonio-mails-ui/commit/f9ee19a)), closes [#1285](https://github.com/zextras/carbonio-mails-ui/issues/1285)
+* chore: update import icon to use CalendarOutline for better clarity (#1286) ([ba4b46b](https://github.com/zextras/carbonio-mails-ui/commit/ba4b46b)), closes [#1286](https://github.com/zextras/carbonio-mails-ui/issues/1286)
+* fix: translation fallback change ([497302e](https://github.com/zextras/carbonio-mails-ui/commit/497302e))
+
 ## 1.36.0 (2026-07-08)
 
 * feat(CO-3675): add calendar attachment detection and import functionality (#1283) ([cb812e5](https://github.com/zextras/carbonio-mails-ui/commit/cb812e5)), closes [#1283](https://github.com/zextras/carbonio-mails-ui/issues/1283)
