@@ -214,6 +214,7 @@ const getMailBodyWithSignature = ({
 export {
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL,
+	SIGNATURE_CLASS,
 	getSignatures,
 	getSignature,
 	getSignatureValue,
