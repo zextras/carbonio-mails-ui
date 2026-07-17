@@ -48,6 +48,20 @@ async function setupEditorWithTable(): Promise<{
 	return { user, table, cells };
 }
 
+/**
+ * Returns the index of the table cell holding the caret. Focusing the content
+ * editable (clicking the hover button moved the focus out) makes Lexical
+ * reconcile its tracked selection back into the DOM, where it can be read from
+ * `window.getSelection()`.
+ */
+function caretCellIndex(table: HTMLElement): number {
+	screen.getByTestId('edit-view-editor').focus();
+	const anchorNode = window.getSelection()?.anchorNode ?? null;
+	return within(table)
+		.getAllByRole('cell')
+		.findIndex((cell) => anchorNode !== null && cell.contains(anchorNode));
+}
+
 describe('TableHoverActionsPlugin', () => {
 	it('does not show any hover affordance before hovering a table cell', async () => {
 		await setupEditorWithTable();
@@ -84,6 +98,30 @@ describe('TableHoverActionsPlugin', () => {
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(6);
 		});
+	});
+
+	it('keeps the caret in the hovered cell when appending a row', async () => {
+		const { user, table, cells } = await setupEditorWithTable();
+
+		hoverCell(cells[2]);
+		await user.click(await screen.findByRole('button', { name: ADD_ROW_LABEL }));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(3);
+		});
+
+		expect(caretCellIndex(table)).toBe(2);
+	});
+
+	it('keeps the caret in the hovered cell when appending a column', async () => {
+		const { user, table, cells } = await setupEditorWithTable();
+
+		hoverCell(cells[1]);
+		await user.click(await screen.findByRole('button', { name: ADD_COLUMN_LABEL }));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(6);
+		});
+
+		expect(caretCellIndex(table)).toBe(1);
 	});
 
 	it('hides the hover affordance when the pointer leaves the table cells', async () => {

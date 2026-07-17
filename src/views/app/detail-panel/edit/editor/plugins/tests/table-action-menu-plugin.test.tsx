@@ -46,6 +46,20 @@ async function openCellMenu(user: TestUser): Promise<void> {
 	await user.click(await screen.findByRoleWithIcon('button', { icon: CHEVRON_ICON }));
 }
 
+/**
+ * Returns the index of the table cell holding the caret. Focusing the content
+ * editable (interacting with the portaled menu moved the focus out) makes
+ * Lexical reconcile its tracked selection back into the DOM, where it can be
+ * read from `window.getSelection()`.
+ */
+function caretCellIndex(table: HTMLElement): number {
+	screen.getByTestId(EDITOR_TESTID).focus();
+	const anchorNode = window.getSelection()?.anchorNode ?? null;
+	return within(table)
+		.getAllByRole('cell')
+		.findIndex((cell) => anchorNode !== null && cell.contains(anchorNode));
+}
+
 describe('TableActionMenuPlugin', () => {
 	it('inserts a column to the right', async () => {
 		const { user, table } = await setupEditorWithTable();
@@ -57,6 +71,58 @@ describe('TableActionMenuPlugin', () => {
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(6);
 		});
+	});
+
+	// The table is inserted with the caret in its first cell: after every
+	// insertion the caret must still be in that same (possibly shifted) cell.
+	it('keeps the caret in the original cell when inserting a column to the right', async () => {
+		const { user, table } = await setupEditorWithTable();
+
+		await openCellMenu(user);
+		await user.click(await screen.findByText('lexical-label.table_insert_column_right'));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(6);
+		});
+
+		expect(caretCellIndex(table)).toBe(0);
+	});
+
+	it('keeps the caret in the original cell when inserting a column to the left', async () => {
+		const { user, table } = await setupEditorWithTable();
+
+		await openCellMenu(user);
+		await user.click(await screen.findByText('lexical-label.table_insert_column_left'));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(6);
+		});
+
+		// The original cell is shifted right by the new column.
+		expect(caretCellIndex(table)).toBe(1);
+	});
+
+	it('keeps the caret in the original cell when inserting a row above', async () => {
+		const { user, table } = await setupEditorWithTable();
+
+		await openCellMenu(user);
+		await user.click(await screen.findByText('lexical-label.table_insert_row_above'));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(3);
+		});
+
+		// The original cell is shifted down by the new row.
+		expect(caretCellIndex(table)).toBe(2);
+	});
+
+	it('keeps the caret in the original cell when inserting a row below', async () => {
+		const { user, table } = await setupEditorWithTable();
+
+		await openCellMenu(user);
+		await user.click(await screen.findByText('lexical-label.table_insert_row_below'));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(3);
+		});
+
+		expect(caretCellIndex(table)).toBe(0);
 	});
 
 	it('deletes a row', async () => {
