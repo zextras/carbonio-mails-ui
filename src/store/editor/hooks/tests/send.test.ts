@@ -17,6 +17,8 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/editor';
 
+const RECIPIENT_ADDRESS = 'text@demo.com';
+
 describe('send', () => {
 	it('should return an object with send and status', () => {
 		const editor = generateNewMessageEditor();
@@ -24,7 +26,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}
@@ -50,7 +52,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}
@@ -79,7 +81,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}
@@ -112,7 +114,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}
@@ -145,7 +147,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}
@@ -168,6 +170,82 @@ describe('send', () => {
 
 		expect(removeListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 	});
+	it('should call onSendStart when the send request is issued to the server', async () => {
+		createSoapAPIInterceptor('SendMsg');
+
+		const editor = generateNewMessageEditor();
+		const composedEditor: MailsEditorV2 = {
+			...editor,
+			subject: 'title',
+			recipients: {
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
+				cc: [],
+				bcc: []
+			}
+		};
+
+		setupEditorStore({ editors: [composedEditor] });
+		computeAndUpdateEditorStatus(composedEditor.id);
+
+		const onSendStart = vi.fn();
+		const onComplete = vi.fn();
+
+		const { result } = setupHook(useEditorSend, {
+			initialProps: [composedEditor.id]
+		});
+
+		act(() => {
+			result.current.send({ onSendStart, onComplete });
+		});
+
+		// During the countdown the request has not been issued yet
+		expect(onSendStart).not.toHaveBeenCalled();
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(5000);
+		});
+
+		expect(onSendStart).toHaveBeenCalledTimes(1);
+		expect(onComplete).toHaveBeenCalledTimes(1);
+	});
+	it('should not call onSendStart when the countdown is canceled before the request is issued', async () => {
+		createSoapAPIInterceptor('SendMsg');
+
+		const editor = generateNewMessageEditor();
+		const composedEditor: MailsEditorV2 = {
+			...editor,
+			subject: 'title',
+			recipients: {
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
+				cc: [],
+				bcc: []
+			}
+		};
+
+		setupEditorStore({ editors: [composedEditor] });
+		computeAndUpdateEditorStatus(composedEditor.id);
+
+		const onSendStart = vi.fn();
+
+		const { result } = setupHook(useEditorSend, {
+			initialProps: [composedEditor.id]
+		});
+
+		let sendResult: ReturnType<typeof result.current.send> = {};
+		act(() => {
+			sendResult = result.current.send({ onSendStart });
+		});
+
+		act(() => {
+			sendResult.cancel?.();
+		});
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(5000);
+		});
+
+		expect(onSendStart).not.toHaveBeenCalled();
+	});
 	it('should delay SendMsg until a draft save started during the countdown completes', async () => {
 		const sendMsgCalled = createSoapAPIInterceptor('SendMsg');
 		let sendMsgHasBeenCalled = false;
@@ -180,7 +258,7 @@ describe('send', () => {
 			...editor,
 			subject: 'title',
 			recipients: {
-				to: [{ type: ParticipantRole.TO, address: 'text@demo.com' }],
+				to: [{ type: ParticipantRole.TO, address: RECIPIENT_ADDRESS }],
 				cc: [],
 				bcc: []
 			}

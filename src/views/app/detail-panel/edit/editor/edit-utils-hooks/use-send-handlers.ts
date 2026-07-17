@@ -72,6 +72,17 @@ export const useSendHandlers = (
 		[createSnackbar, editorId]
 	);
 
+	const onSendStart = useCallback((): void => {
+		createSnackbar({
+			key: `mail-${editorId}`,
+			replace: true,
+			severity: 'info',
+			label: t('messages.snackbar.sending_in_progress', 'Sending message, please wait...'),
+			disableAutoHide: true,
+			hideButton: true
+		});
+	}, [createSnackbar, editorId]);
+
 	const onSendError = useCallback(
 		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
 			const { message, timeout } = getErrorSnackbarProps(error);
@@ -107,6 +118,7 @@ export const useSendHandlers = (
 		const onConfirmCallback = async (): Promise<void> => {
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
+				onSendStart,
 				onComplete: onSendComplete,
 				onError: onSendError
 			});
@@ -127,6 +139,7 @@ export const useSendHandlers = (
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
+		onSendStart,
 		savedStandardAttachments.length,
 		sendMessage
 	]);
