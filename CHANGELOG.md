@@ -1,3 +1,7 @@
+## <small>1.37.2 (2026-07-20)</small>
+
+* fix(ci): cap vitest forks to 2 to prevent k8s CPU saturation (#1289) ([c9edf0b](https://github.com/zextras/carbonio-mails-ui/commit/c9edf0b)), closes [#1289](https://github.com/zextras/carbonio-mails-ui/issues/1289)
+
 ## <small>1.37.1 (2026-07-20)</small>
 
 * fix: cursor keep the position when a new row or column is added (#1287) ([25f272b](https://github.com/zextras/carbonio-mails-ui/commit/25f272b)), closes [#1287](https://github.com/zextras/carbonio-mails-ui/issues/1287)
