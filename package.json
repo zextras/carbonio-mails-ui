@@ -119,7 +119,7 @@
 		"@zextras/carbonio-shell-ui": "14.2.2",
 		"@zextras/carbonio-ui-commons": "2.2.0",
 		"@zextras/carbonio-ui-preview": "5.0.1",
-		"@zextras/carbonio-ui-soap-lib": "1.2.0",
+		"@zextras/carbonio-ui-soap-lib": "1.3.0",
 		"@zextras/carbonio-ui-text-composer": "1.2.0",
 		"asn1js": "3.0.7",
 		"autolinker": "4.1.5",
@@ -156,7 +156,7 @@
 	],
 	"pnpm": {
 		"overrides": {
-			"@zextras/carbonio-ui-soap-lib": "1.1.0"
+			"@zextras/carbonio-ui-soap-lib": "1.3.0"
 		},
 		"onlyBuiltDependencies": [
 			"@zextras/carbonio-search-ui",
