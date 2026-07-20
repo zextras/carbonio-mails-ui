@@ -1,3 +1,9 @@
+## <small>1.37.1 (2026-07-20)</small>
+
+* fix: cursor keep the position when a new row or column is added (#1287) ([25f272b](https://github.com/zextras/carbonio-mails-ui/commit/25f272b)), closes [#1287](https://github.com/zextras/carbonio-mails-ui/issues/1287)
+* chore(deps): update dependency @types/react to v18.3.31 (#1251) ([49898b1](https://github.com/zextras/carbonio-mails-ui/commit/49898b1)), closes [#1251](https://github.com/zextras/carbonio-mails-ui/issues/1251)
+* chore(deps): update semantic-release monorepo (#1256) ([9969cdf](https://github.com/zextras/carbonio-mails-ui/commit/9969cdf)), closes [#1256](https://github.com/zextras/carbonio-mails-ui/issues/1256)
+
 ## 1.37.0 (2026-07-17)
 
 * feat: Migrate mail composer from TinyMCE to Lexical editor (#1284) ([57b800b](https://github.com/zextras/carbonio-mails-ui/commit/57b800b)), closes [#1284](https://github.com/zextras/carbonio-mails-ui/issues/1284)
