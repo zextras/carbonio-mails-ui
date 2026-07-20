@@ -92,6 +92,17 @@ function $computeCellMenu(editor: LexicalEditor): CellMenuComputation {
 }
 
 /**
+ * Inserts a column next to the given cell and moves the caret back into it:
+ * `@lexical/table` moves the selection into the new column (while row insertion
+ * leaves it in place), so restore it for a consistent behavior between the two.
+ * Must be called inside an `editor.update`.
+ */
+function $insertColumnKeepingCaret(cellNode: TableCellNode, insertAfter: boolean): void {
+	$insertTableColumnAtSelection(insertAfter);
+	cellNode.selectStart();
+}
+
+/**
  * Collapses the selection to the start of the given cell and runs a table
  * utility on it. Must be called inside an `editor.update`.
  */
@@ -172,13 +183,13 @@ function buildTableMenuItems({
 			id: 'insert-column-left',
 			label: t('lexical-label.table_insert_column_left', 'Insert column left'),
 			icon: 'PlusOutline',
-			onClick: () => runOnActiveCell(() => $insertTableColumnAtSelection(false))
+			onClick: () => runOnActiveCell((cellNode) => $insertColumnKeepingCaret(cellNode, false))
 		},
 		{
 			id: 'insert-column-right',
 			label: t('lexical-label.table_insert_column_right', 'Insert column right'),
 			icon: 'PlusOutline',
-			onClick: () => runOnActiveCell(() => $insertTableColumnAtSelection(true))
+			onClick: () => runOnActiveCell((cellNode) => $insertColumnKeepingCaret(cellNode, true))
 		},
 		{ id: 'divider-1', type: 'divider' },
 		{

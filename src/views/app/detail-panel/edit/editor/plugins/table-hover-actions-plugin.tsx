@@ -80,6 +80,9 @@ function $readHoverAction(
 /**
  * Anchors the selection to the end of the hovered cell and appends a row below
  * (or a column to the right), so the new row/column lands at the table edge.
+ * The caret is kept in the hovered cell for both insertions: `@lexical/table`
+ * moves the selection into a newly inserted column (while row insertion leaves
+ * it in place), so restore it for a consistent behavior between the two.
  */
 function $insertAtTableEdge(cellElement: HTMLElement, type: 'row' | 'column'): void {
 	const cellNode = $getNearestNodeFromDOMNode(cellElement);
@@ -91,6 +94,7 @@ function $insertAtTableEdge(cellElement: HTMLElement, type: 'row' | 'column'): v
 		$insertTableRowAtSelection(true);
 	} else {
 		$insertTableColumnAtSelection(true);
+		cellNode.selectEnd();
 	}
 }
 
