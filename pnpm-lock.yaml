@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@zextras/carbonio-ui-soap-lib': 1.1.0
+  '@zextras/carbonio-ui-soap-lib': 1.3.0
 
 importers:
 
@@ -73,13 +73,13 @@ importers:
         version: 14.2.2(7c872bff923a912e1ee95d345bf6fd6b)
       '@zextras/carbonio-ui-commons':
         specifier: 2.2.0
-        version: 2.2.0(850847729e6891bdc4a0a106897e70b8)
+        version: 2.2.0(d67d49d65b0fede0feba757d1e42accb)
       '@zextras/carbonio-ui-preview':
         specifier: 5.0.1
         version: 5.0.1(@types/react@18.3.31)(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-ui-soap-lib':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.3.0
+        version: 1.3.0
       '@zextras/carbonio-ui-text-composer':
         specifier: 1.2.0
         version: 1.2.0(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-i18next@12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
@@ -2934,7 +2934,7 @@ packages:
       '@mui/material': ^5.15.12
       '@zextras/carbonio-design-system': '>=12.0.0'
       '@zextras/carbonio-shell-ui': '>=12.0.0'
-      '@zextras/carbonio-ui-soap-lib': 1.1.0
+      '@zextras/carbonio-ui-soap-lib': 1.3.0
       lodash: ^4.17.21
       react: ^18.3.1
       react-dom: ^18.3.1
@@ -2959,8 +2959,8 @@ packages:
     engines: {node: v22, pnpm: '>=9'}
     hasBin: true
 
-  '@zextras/carbonio-ui-soap-lib@1.1.0':
-    resolution: {integrity: sha512-i11CNTX6dQSjmWo7B/oDihvUdiNuB793rNZU37AxfbW3BkeutWA4FVXuGKHVxge1QEvrRtYOwGs8HKvrhQyAsw==}
+  '@zextras/carbonio-ui-soap-lib@1.3.0':
+    resolution: {integrity: sha512-8Gu1Xrcihc4gppuWPcThRyLXysMKSz1bwfhb8rx/IDErxyvNbYPRnO061Z2nzUhGv9N30CgS3FEnX79F7lJBqg==}
 
   '@zextras/carbonio-ui-text-composer@1.2.0':
     resolution: {integrity: sha512-ZjfhUTJ79dlLAmqpBdq9mL3RL86FK5b7acbFlprQGj5tQn2NNLLnt2V6WWiaBFuSyzzibDdvLpPLvuzUVDy/yg==}
@@ -11026,7 +11026,7 @@ snapshots:
   '@zextras/carbonio-shell-ui@14.0.1(2def54cae9c9e5fdfa038fde01a95605)':
     dependencies:
       '@fontsource/roboto': 5.2.10
-      '@zextras/carbonio-ui-soap-lib': 1.1.0
+      '@zextras/carbonio-ui-soap-lib': 1.3.0
       core-js: 3.49.0
       darkreader: 4.9.117
       date-fns: 4.1.0
@@ -11054,7 +11054,7 @@ snapshots:
   '@zextras/carbonio-shell-ui@14.2.2(7c872bff923a912e1ee95d345bf6fd6b)':
     dependencies:
       '@fontsource/roboto': 5.2.10
-      '@zextras/carbonio-ui-soap-lib': 1.1.0
+      '@zextras/carbonio-ui-soap-lib': 1.3.0
       core-js: 3.49.0
       darkreader: 4.9.120
       date-fns: 4.1.0
@@ -11079,7 +11079,7 @@ snapshots:
       - encoding
       - use-sync-external-store
 
-  '@zextras/carbonio-ui-commons@2.2.0(850847729e6891bdc4a0a106897e70b8)':
+  '@zextras/carbonio-ui-commons@2.2.0(d67d49d65b0fede0feba757d1e42accb)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.3.31)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
@@ -11087,7 +11087,7 @@ snapshots:
       '@mui/material': 5.16.13(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-design-system': 12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-shell-ui': 14.2.2(7c872bff923a912e1ee95d345bf6fd6b)
-      '@zextras/carbonio-ui-soap-lib': 1.1.0
+      '@zextras/carbonio-ui-soap-lib': 1.3.0
       core-js: 3.49.0
       i18next: 22.5.1
       immer: 9.0.21
@@ -11186,7 +11186,7 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@zextras/carbonio-ui-soap-lib@1.1.0':
+  '@zextras/carbonio-ui-soap-lib@1.3.0':
     dependencies:
       '@types/ua-parser-js': 0.7.39
       ua-parser-js: 1.0.41
