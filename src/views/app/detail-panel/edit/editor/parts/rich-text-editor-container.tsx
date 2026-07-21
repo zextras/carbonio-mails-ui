@@ -22,6 +22,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as StyledComp from './edit-view-styled-components';
 import type { TextEditorContainerProps } from './text-editor-container';
+import { AutoLinkPlugin } from '../plugins/auto-link-plugin';
 import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { ImagePlugin } from '../plugins/image-plugin';
@@ -395,6 +396,7 @@ export const RichTextEditorContainer = ({
 					<HistoryPlugin />
 					<ListPlugin />
 					<LinkPlugin />
+					<AutoLinkPlugin />
 					<FloatingLinkEditorPlugin />
 					<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
 					<TableActionMenuPlugin />
