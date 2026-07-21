@@ -35,6 +35,18 @@ export const PastePlugin = ({ editorId }: PastePluginProps): null => {
 						return false;
 					}
 
+					// Copying a table (or any rich selection) from Excel, Pages, Word
+					// etc. populates the clipboard with both an HTML representation
+					// and a flattened image snapshot, for apps that can't handle rich
+					// paste. Whenever HTML is present it takes priority — the default
+					// handler below already knows how to turn it into real table/
+					// formatted nodes — otherwise this would wrongly paste the image
+					// snapshot instead of the actual table.
+					const html = event.clipboardData?.getData('text/html') ?? '';
+					if (html.trim() !== '') {
+						return false;
+					}
+
 					const imageFiles = Array.from(items)
 						.filter((item) => item.kind === 'file' && item.type.startsWith('image/'))
 						.map((item) => item.getAsFile())
