@@ -1,3 +1,7 @@
+## 1.38.0 (2026-07-21)
+
+* feat: update ui-commons + peer dependencies and test stability (#1292) ([337df92](https://github.com/zextras/carbonio-mails-ui/commit/337df92)), closes [#1292](https://github.com/zextras/carbonio-mails-ui/issues/1292)
+
 ## <small>1.37.3 (2026-07-21)</small>
 
 * fix: color picker keep the current selction (#1291) ([ba82c61](https://github.com/zextras/carbonio-mails-ui/commit/ba82c61)), closes [#1291](https://github.com/zextras/carbonio-mails-ui/issues/1291)
