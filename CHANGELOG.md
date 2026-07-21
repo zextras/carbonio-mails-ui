@@ -1,3 +1,21 @@
+## <small>1.37.2 (2026-07-20)</small>
+
+* fix(ci): cap vitest forks to 2 to prevent k8s CPU saturation (#1289) ([c9edf0b](https://github.com/zextras/carbonio-mails-ui/commit/c9edf0b)), closes [#1289](https://github.com/zextras/carbonio-mails-ui/issues/1289)
+
+## <small>1.37.1 (2026-07-20)</small>
+
+* fix: cursor keep the position when a new row or column is added (#1287) ([25f272b](https://github.com/zextras/carbonio-mails-ui/commit/25f272b)), closes [#1287](https://github.com/zextras/carbonio-mails-ui/issues/1287)
+* chore(deps): update dependency @types/react to v18.3.31 (#1251) ([49898b1](https://github.com/zextras/carbonio-mails-ui/commit/49898b1)), closes [#1251](https://github.com/zextras/carbonio-mails-ui/issues/1251)
+* chore(deps): update semantic-release monorepo (#1256) ([9969cdf](https://github.com/zextras/carbonio-mails-ui/commit/9969cdf)), closes [#1256](https://github.com/zextras/carbonio-mails-ui/issues/1256)
+
+## 1.37.0 (2026-07-17)
+
+* feat: Migrate mail composer from TinyMCE to Lexical editor (#1284) ([57b800b](https://github.com/zextras/carbonio-mails-ui/commit/57b800b)), closes [#1284](https://github.com/zextras/carbonio-mails-ui/issues/1284)
+* Merge branch 'devel' into import-export-translation-change ([6339148](https://github.com/zextras/carbonio-mails-ui/commit/6339148))
+* Merge pull request #1285 from zextras/import-export-translation-change ([f9ee19a](https://github.com/zextras/carbonio-mails-ui/commit/f9ee19a)), closes [#1285](https://github.com/zextras/carbonio-mails-ui/issues/1285)
+* chore: update import icon to use CalendarOutline for better clarity (#1286) ([ba4b46b](https://github.com/zextras/carbonio-mails-ui/commit/ba4b46b)), closes [#1286](https://github.com/zextras/carbonio-mails-ui/issues/1286)
+* fix: translation fallback change ([497302e](https://github.com/zextras/carbonio-mails-ui/commit/497302e))
+
 ## 1.36.0 (2026-07-08)
 
 * feat(CO-3675): add calendar attachment detection and import functionality (#1283) ([cb812e5](https://github.com/zextras/carbonio-mails-ui/commit/cb812e5)), closes [#1283](https://github.com/zextras/carbonio-mails-ui/issues/1283)
