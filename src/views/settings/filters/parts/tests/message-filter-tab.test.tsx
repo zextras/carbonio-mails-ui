@@ -104,7 +104,7 @@ describe('Message filters tab', () => {
 			name: 'Filter Name*'
 		});
 		await user.clear(filterNameInput);
-		await user.type(filterNameInput, 'Edited filter 1');
+		await user.paste('Edited filter 1');
 		const saveButton = screen.getByRole('button', {
 			name: 'Save'
 		});
@@ -131,7 +131,7 @@ describe('Message filters tab', () => {
 			name: 'Filter Name*'
 		});
 		await user.clear(filterNameInput);
-		await user.type(filterNameInput, 'My new filter');
+		await user.paste('My new filter');
 		const saveButton = within(createModal).getByRole('button', {
 			name: 'Create'
 		});
@@ -159,7 +159,7 @@ describe('Message filters tab', () => {
 			name: 'Filter Name*'
 		});
 		await user.clear(filterNameInput);
-		await user.type(filterNameInput, 'My new filter');
+		await user.paste('My new filter');
 		const saveButton = within(createModal).getByRole('button', {
 			name: 'Create'
 		});

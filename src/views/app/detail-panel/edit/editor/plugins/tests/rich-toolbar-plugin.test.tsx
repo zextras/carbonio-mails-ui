@@ -385,7 +385,7 @@ describe('RichToolbarPlugin', () => {
 			});
 
 			await user.clear(hexInput);
-			await user.type(hexInput, 'ff0000');
+			await user.paste('ff0000');
 
 			await waitFor(() => {
 				expect(richTextOf(editorId)).toContain('color: rgb(255, 0, 0)');
@@ -450,7 +450,7 @@ describe('RichToolbarPlugin', () => {
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
 			expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.url' }),
 				'https://example.com'
 			);
@@ -476,7 +476,7 @@ describe('RichToolbarPlugin', () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.url' }),
 				'https://example.com'
 			);
@@ -498,11 +498,11 @@ describe('RichToolbarPlugin', () => {
 			await user.click(editorElement);
 
 			await user.click(screen.getByRole('button', { name: 'lexical-label.insert_image_url' }));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
 				'https://example.com/picture.png'
 			);
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.image_alt' }),
 				'a picture'
 			);
