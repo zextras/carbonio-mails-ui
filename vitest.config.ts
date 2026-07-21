@@ -83,8 +83,14 @@ export default defineConfig({
 							url: 'http://localhost'
 						}
 					},
-					testTimeout: 20000,
-					hookTimeout: 20000,
+					// Modal/editor tests render large Design System trees and drive them with
+					// userEvent. Every keystroke re-renders the tree and Emotion re-serializes
+					// its styles (~300ms per interaction), so these tests legitimately take
+					// 10-25s. Under CI's reduced parallelism they exceeded the previous 20s
+					// limit, which is also what made move-conv and advanced-filter-modal look
+					// flaky; both pass reliably with this timeout.
+					testTimeout: 60000,
+					hookTimeout: 60000,
 					exclude: [
 						...configDefaults.exclude,
 						'**/*.browser-test.*',
@@ -94,9 +100,7 @@ export default defineConfig({
 						'**/recover-messages.test.tsx',
 						'**/rich-text-editor-container.test.tsx',
 						'**/share-folder-actions.test.ts',
-						'**/recipients-certificates-settings.test.tsx',
-						'**/move-conv.test.tsx',
-						'**/advanced-filter-modal.test.tsx' // flaky test, needs to be fixed (Timeout frequently)
+						'**/recipients-certificates-settings.test.tsx'
 					]
 				}
 			},
