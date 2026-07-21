@@ -72,8 +72,8 @@ importers:
         specifier: 14.2.2
         version: 14.2.2(7c872bff923a912e1ee95d345bf6fd6b)
       '@zextras/carbonio-ui-commons':
-        specifier: 2.2.0
-        version: 2.2.0(850847729e6891bdc4a0a106897e70b8)
+        specifier: 2.3.4
+        version: 2.3.4(850847729e6891bdc4a0a106897e70b8)
       '@zextras/carbonio-ui-preview':
         specifier: 5.0.1
         version: 5.0.1(@types/react@18.3.31)(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2924,22 +2924,22 @@ packages:
       react-router-dom:
         optional: true
 
-  '@zextras/carbonio-ui-commons@2.2.0':
-    resolution: {integrity: sha512-bvL8LI/GEvisxhtDd8deUfNGS0zs8QoX73xwBg2VPw01MUmDJXji4+CanZpVVbK9TTUUUOJiu5jG/rKwZLvvHg==}
-    engines: {node: v22, npm: v10}
+  '@zextras/carbonio-ui-commons@2.3.4':
+    resolution: {integrity: sha512-1PGO6Rl+i76ZxTOPEZCwTxxpPmf2pXR2NvAt3fRAGJ7KEAeteYCXsyZ4M2TyfBR1ymcJpcYr98iENCZHyPrlrA==}
+    engines: {node: v22, pnpm: '>=10'}
     peerDependencies:
-      '@emotion/react': ^11.14.0
-      '@emotion/styled': ^11.14.0
-      '@mui/icons-material': ^5.15.12
-      '@mui/material': ^5.15.12
-      '@zextras/carbonio-design-system': '>=12.0.0'
-      '@zextras/carbonio-shell-ui': '>=12.0.0'
+      '@emotion/react': 11.14.0
+      '@emotion/styled': 11.14.1
+      '@mui/icons-material': 5.18.0
+      '@mui/material': 5.18.0
+      '@zextras/carbonio-design-system': '>=12.0.4'
+      '@zextras/carbonio-shell-ui': '>=14.0.0'
       '@zextras/carbonio-ui-soap-lib': 1.1.0
-      lodash: ^4.17.21
-      react: ^18.3.1
-      react-dom: ^18.3.1
-      react-i18next: ^12.2.0
-      react-router-dom: ^6.30.0
+      lodash: 4.18.1
+      react: 18.3.1
+      react-dom: 18.3.1
+      react-i18next: 12.3.1
+      react-router-dom: 6.30.3
 
   '@zextras/carbonio-ui-configs@2.1.0':
     resolution: {integrity: sha512-eBHiSyLyGpWUJIfGHVBRVV0cY98oaQCNrTcjA4Jjh711t+LxdQd4sNYSwnsGBKAeVo21SNKH54jHj3SQSFBvPQ==}
@@ -3648,6 +3648,9 @@ packages:
 
   core-js@3.39.0:
     resolution: {integrity: sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==}
+
+  core-js@3.47.0:
+    resolution: {integrity: sha512-c3Q2VVkGAUyupsjRnaNX6u8Dq2vAdzm9iuPj5FW0fRxzlxgq9Q39MDq10IvmQSpLgHQNyQzQmOo6bgGHmH3NNg==}
 
   core-js@3.49.0:
     resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
@@ -7438,11 +7441,6 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -11082,7 +11080,7 @@ snapshots:
       - encoding
       - use-sync-external-store
 
-  '@zextras/carbonio-ui-commons@2.2.0(850847729e6891bdc4a0a106897e70b8)':
+  '@zextras/carbonio-ui-commons@2.3.4(850847729e6891bdc4a0a106897e70b8)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.3.31)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
@@ -11091,7 +11089,7 @@ snapshots:
       '@zextras/carbonio-design-system': 12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-shell-ui': 14.2.2(7c872bff923a912e1ee95d345bf6fd6b)
       '@zextras/carbonio-ui-soap-lib': 1.1.0
-      core-js: 3.49.0
+      core-js: 3.47.0
       i18next: 22.5.1
       immer: 9.0.21
       lodash: 4.18.1
@@ -11099,7 +11097,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-i18next: 12.3.1(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom: 6.30.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      uuid: 9.0.1
+      redux: 4.2.1
+      uuid: 11.1.1
       zustand: 4.5.7(@types/react@18.3.31)(immer@9.0.21)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
@@ -11925,6 +11924,8 @@ snapshots:
       browserslist: 4.28.2
 
   core-js@3.39.0: {}
+
+  core-js@3.47.0: {}
 
   core-js@3.49.0: {}
 
@@ -15996,8 +15997,6 @@ snapshots:
   uuid@11.1.1: {}
 
   uuid@8.3.2: {}
-
-  uuid@9.0.1: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
