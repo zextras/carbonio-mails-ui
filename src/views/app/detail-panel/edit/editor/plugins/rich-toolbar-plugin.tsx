@@ -45,6 +45,7 @@ import {
 	$isElementNode,
 	$isNodeSelection,
 	$isRangeSelection,
+	$setSelection,
 	COMMAND_PRIORITY_LOW,
 	type ElementFormatType,
 	type ElementNode,
@@ -52,11 +53,12 @@ import {
 	FORMAT_TEXT_COMMAND,
 	INDENT_CONTENT_COMMAND,
 	OUTDENT_CONTENT_COMMAND,
+	type RangeSelection,
 	type TextFormatType
 } from 'lexical';
 
+import { ColorSwatchPicker } from './color-swatch-picker';
 import { EmojiPicker, type Emoji } from './emoji-picker';
-import { HiddenColorInput } from './hidden-color-input';
 import { ImageModal } from './image-modal';
 import {
 	INSERT_INLINE_IMAGE_COMMAND,
@@ -218,32 +220,75 @@ const ToolbarIconButton = ({
 	</Tooltip>
 );
 
-type ColorToolbarButtonProps = {
+const ColorPickerPopover = styled(Container)`
+	position: absolute;
+	top: calc(100% + 0.25rem);
+	left: 0;
+	z-index: 10;
+	border-radius: 0.25rem;
+	box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.15);
+	background: ${({ theme }): string => theme.palette.gray6.regular};
+`;
+
+type ColorPickerToolbarButtonProps = {
 	icon: IconProps['icon'];
 	label: string;
+	color: string;
 	onColorChange: (color: string) => void;
 };
 
-const ColorToolbarButton = ({
+/**
+ * Toolbar trigger + floating panel for text/background color, built as a
+ * plain positioned popover (not a CDS `Dropdown`) so it never takes DOM
+ * focus/selection away from the editor and never intercepts keyboard input:
+ * the caret keeps blinking in the text and typing keeps working normally
+ * while this is open. The panel only closes when a mousedown lands outside
+ * of it — including a click straight into the editor, which then places the
+ * caret at the clicked position exactly as it would with the panel closed.
+ */
+const ColorPickerToolbarButton = ({
 	icon,
 	label,
+	color,
 	onColorChange
-}: ColorToolbarButtonProps): React.JSX.Element => {
-	const inputRef = useRef<HTMLInputElement>(null);
+}: ColorPickerToolbarButtonProps): React.JSX.Element => {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		if (!open) {
+			return undefined;
+		}
+		const handleOutsideMouseDown = (event: MouseEvent): void => {
+			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+				setOpen(false);
+			}
+		};
+		document.addEventListener('mousedown', handleOutsideMouseDown);
+		return (): void => document.removeEventListener('mousedown', handleOutsideMouseDown);
+	}, [open]);
+
 	return (
-		<Container width="fit" height="fit" style={{ position: 'relative', display: 'inline-flex' }}>
+		<Container
+			ref={containerRef}
+			width="fit"
+			height="fit"
+			style={{ position: 'relative', display: 'inline-flex' }}
+		>
 			<ToolbarIconButton
 				icon={icon}
 				label={label}
-				onClick={(): void => inputRef.current?.click()}
+				onClick={(): void => setOpen((isOpen) => !isOpen)}
 			/>
-			<HiddenColorInput
-				ref={inputRef}
-				type="color"
-				aria-hidden
-				tabIndex={-1}
-				onChange={(event): void => onColorChange(event.target.value)}
-			/>
+			{open && (
+				<ColorPickerPopover width="fit" height="fit">
+					<ColorSwatchPicker
+						color={color}
+						onChange={onColorChange}
+						onColorCommit={(): void => setOpen(false)}
+					/>
+				</ColorPickerPopover>
+			)}
 		</Container>
 	);
 };
@@ -284,9 +329,17 @@ export const RichToolbarPlugin = ({
 	const [isImageSelected, setIsImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
+	const [currentTextColor, setCurrentTextColor] = useState('');
+	const [currentBackgroundColor, setCurrentBackgroundColor] = useState('');
 	const [currentBlock, setCurrentBlock] = useState<BlockType>('paragraph');
 	const [activeFormatting, setActiveFormatting] =
 		useState<ActiveFormatting>(DEFAULT_ACTIVE_FORMATTING);
+	// Holds the last selection seen while it was still a valid RangeSelection.
+	// Opening the native color-picker input steals DOM focus from the
+	// contenteditable, which makes Lexical null the live selection while the
+	// (potentially long-lived) native dialog is open; this ref lets style
+	// commands still target the text the user had selected before that happened.
+	const lastRangeSelectionRef = useRef<RangeSelection | null>(null);
 
 	// Keep the toolbar in sync with the formatting at the caret: whether a single
 	// inline image is selected (to toggle the alignment control), the active
@@ -303,6 +356,11 @@ export const RichToolbarPlugin = ({
 					if ($isRangeSelection(selection)) {
 						setCurrentFont($getSelectionStyleValueForProperty(selection, 'font-family', ''));
 						setCurrentFontSize($getSelectionStyleValueForProperty(selection, 'font-size', ''));
+						setCurrentTextColor($getSelectionStyleValueForProperty(selection, 'color', ''));
+						setCurrentBackgroundColor(
+							$getSelectionStyleValueForProperty(selection, 'background-color', '')
+						);
+						lastRangeSelectionRef.current = selection.clone();
 					}
 				});
 			}),
@@ -348,8 +406,19 @@ export const RichToolbarPlugin = ({
 		(styles: Record<string, string>): void => {
 			editor.update(() => {
 				const selection = $getSelection();
-				if ($isRangeSelection(selection)) {
-					$patchStyleText(selection, styles);
+				// Fall back to the last known valid selection: the color inputs open a
+				// native, focus-stealing dialog, which by the time it resolves may have
+				// left the live selection null even though the user's intent still
+				// targets the text they had selected before opening it.
+				const targetSelection = $isRangeSelection(selection)
+					? selection
+					: lastRangeSelectionRef.current;
+				if ($isRangeSelection(targetSelection)) {
+					// $patchStyleText resolves the nodes to style via $getSelection()
+					// internally rather than the selection argument, so the target
+					// selection must be (re)installed as the active selection first.
+					$setSelection(targetSelection);
+					$patchStyleText(targetSelection, styles);
 				}
 			});
 		},
@@ -556,6 +625,9 @@ export const RichToolbarPlugin = ({
 		[insertTable, tableLabel]
 	);
 
+	const textColorLabel = t('lexical-label.text_color', 'Text color');
+	const backgroundColorLabel = t('lexical-label.background_color', 'Background color');
+
 	const imageAlignItems = useMemo<Array<DropdownItem>>(
 		() => [
 			{
@@ -627,14 +699,16 @@ export const RichToolbarPlugin = ({
 			<ToolbarDivider />
 
 			{/* Text and background color */}
-			<ColorToolbarButton
+			<ColorPickerToolbarButton
 				icon={editorIcon('text-color')}
-				label={t('lexical-label.text_color', 'Text color')}
+				label={textColorLabel}
+				color={currentTextColor}
 				onColorChange={(color): void => patchStyle({ color })}
 			/>
-			<ColorToolbarButton
+			<ColorPickerToolbarButton
 				icon={editorIcon('highlight-bg-color')}
-				label={t('lexical-label.background_color', 'Background color')}
+				label={backgroundColorLabel}
+				color={currentBackgroundColor}
 				onColorChange={(color): void => patchStyle({ 'background-color': color })}
 			/>
 
