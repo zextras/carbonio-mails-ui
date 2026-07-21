@@ -1,3 +1,8 @@
+## <small>1.37.3 (2026-07-21)</small>
+
+* fix: color picker keep the current selction (#1291) ([ba82c61](https://github.com/zextras/carbonio-mails-ui/commit/ba82c61)), closes [#1291](https://github.com/zextras/carbonio-mails-ui/issues/1291)
+* chore(deps): update vitest to v4.1.10 (#1258) ([b1735fc](https://github.com/zextras/carbonio-mails-ui/commit/b1735fc)), closes [#1258](https://github.com/zextras/carbonio-mails-ui/issues/1258)
+
 ## <small>1.37.2 (2026-07-20)</small>
 
 * fix(ci): cap vitest forks to 2 to prevent k8s CPU saturation (#1289) ([c9edf0b](https://github.com/zextras/carbonio-mails-ui/commit/c9edf0b)), closes [#1289](https://github.com/zextras/carbonio-mails-ui/issues/1289)
