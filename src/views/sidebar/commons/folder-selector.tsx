@@ -28,7 +28,7 @@ export type FolderSelectorProps = {
 	showTrashFolder?: boolean;
 };
 
-export const FolderSelector = ({
+const FolderSelectorComponent = ({
 	inputLabel,
 	onNewFolderClick,
 	selectedFolderId,
@@ -113,3 +113,13 @@ export const FolderSelector = ({
 		</>
 	);
 };
+
+/**
+ * Rendering the folder tree is expensive, so the component is memoized to avoid
+ * re-rendering it whenever the parent modal re-renders for unrelated reasons
+ * (e.g. on every keystroke in the folder name input of the "new folder" modal).
+ *
+ * This is safe because the folders are read through the `useFolders` store
+ * subscription, so changes to the folders still trigger a re-render.
+ */
+export const FolderSelector = React.memo(FolderSelectorComponent);

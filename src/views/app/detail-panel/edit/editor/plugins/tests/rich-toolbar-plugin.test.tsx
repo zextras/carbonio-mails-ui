@@ -5,14 +5,41 @@
  */
 import React from 'react';
 
-import { act, fireEvent, waitFor } from '@testing-library/react';
-import { $setSelection, type LexicalEditor } from 'lexical';
+import { act, waitFor } from '@testing-library/react';
+import {
+	$getRoot,
+	$getSelection,
+	$isRangeSelection,
+	$setSelection,
+	type LexicalEditor
+} from 'lexical';
 
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
+
+// jsdom's `Range` doesn't implement `getBoundingClientRect`, which Lexical's
+// reconciler calls (to scroll the caret into view) whenever a collapsed
+// selection commits while the editor root has focus — a path only exercised
+// by tests that actually type into the editor while it's focused.
+beforeAll(() => {
+	if (typeof Range.prototype.getBoundingClientRect !== 'function') {
+		Range.prototype.getBoundingClientRect = (): DOMRect =>
+			({
+				bottom: 0,
+				height: 0,
+				left: 0,
+				right: 0,
+				top: 0,
+				width: 0,
+				x: 0,
+				y: 0,
+				toJSON: () => ({})
+			}) as DOMRect;
+	}
+});
 
 const SELECTED_TEXT = 'hello world';
 const DEFAULT_HTML = `<p>${SELECTED_TEXT}</p>`;
@@ -24,6 +51,8 @@ const LTR_LABEL = 'lexical-label.ltr';
 const RTL_LABEL = 'lexical-label.rtl';
 const ALIGN_LEFT_LABEL = 'lexical-label.align_left';
 const ALIGN_CENTER_LABEL = 'lexical-label.align_center';
+const TEXT_COLOR_LABEL = 'lexical-label.text_color';
+const BACKGROUND_COLOR_LABEL = 'lexical-label.background_color';
 // The font / size / paragraph selects render in this order; they carry no label,
 // so they are addressed by position.
 const SELECT_INDEX = { font: 0, size: 1, paragraph: 2 };
@@ -315,32 +344,102 @@ describe('RichToolbarPlugin', () => {
 
 	describe('colors', () => {
 		it('applies the selected text color', async () => {
-			const { editorId } = await setupWithSelectedContent();
-			// The color pickers are aria-hidden native inputs co-located with their
-			// toolbar buttons, so there is no accessible query for them.
-			// eslint-disable-next-line testing-library/no-node-access
-			const [textColorInput] = document.querySelectorAll<HTMLInputElement>('input[type="color"]');
+			const { editorId, user } = await setupWithSelectedContent();
 
-			// eslint-disable-next-line testing-library/prefer-user-event -- native color input has no user-event equivalent
-			fireEvent.change(textColorInput, { target: { value: '#ff0000' } });
+			await user.click(screen.getByRole('button', { name: TEXT_COLOR_LABEL }));
+			await user.click(await screen.findByTestId('color-swatch-red'));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('color: rgb(239, 83, 80)');
+			});
+		});
+
+		it('applies the selected background color', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: BACKGROUND_COLOR_LABEL }));
+			await user.click(await screen.findByTestId('color-swatch-blue'));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('background-color: rgb(43, 115, 210)');
+			});
+		});
+
+		it('still applies the color after the editor selection is lost, as happens while typing a hex value', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: TEXT_COLOR_LABEL }));
+			const hexInput = await screen.findByTestId('color-swatch-picker-hex-input');
+
+			// Simulate the live selection being lost while the picker is open (the
+			// same failure mode the native color-picker dialog used to trigger),
+			// then confirm committing a color through the hex field still lands on
+			// the text that was selected before the selection was lost.
+			const editorElement = screen.getByTestId(EDITOR_TESTID) as HTMLElement & {
+				__lexicalEditor: LexicalEditor;
+			};
+			act(() => {
+				editorElement.__lexicalEditor.update(() => {
+					$setSelection(null);
+				});
+			});
+
+			await user.clear(hexInput);
+			await user.paste('ff0000');
 
 			await waitFor(() => {
 				expect(richTextOf(editorId)).toContain('color: rgb(255, 0, 0)');
 			});
 		});
 
-		it('applies the selected background color', async () => {
-			const { editorId } = await setupWithSelectedContent();
-			// eslint-disable-next-line testing-library/no-node-access
-			const colorInputs = document.querySelectorAll<HTMLInputElement>('input[type="color"]');
-			const backgroundColorInput = colorInputs[1];
+		it('sets the pending format for the next typed characters when picking a color with the caret collapsed (no selection)', async () => {
+			// This is the bug report's exact scenario: "write something, pick a
+			// different color, start writing again" — the new color must apply to
+			// characters typed *after* the caret, not just to already-selected
+			// text. For a collapsed selection Lexical tracks that as a pending
+			// `style` on the live `RangeSelection` (see `$patchStyleText`'s
+			// collapsed-selection branch), so this asserts that field directly
+			// rather than simulating the rest of the keystrokes: jsdom's zeroed
+			// layout geometry makes it resolve any further real click back into
+			// the editor to an imprecise caret position, which would reset the
+			// pending format the same way it would for an actual (non-buggy)
+			// click to a different spot in a real browser — an environment
+			// limitation, not something this fix controls.
+			const { user } = await setupWithSelectedContent();
 
-			// eslint-disable-next-line testing-library/prefer-user-event -- native color input has no user-event equivalent
-			fireEvent.change(backgroundColorInput, { target: { value: '#00ff00' } });
-
-			await waitFor(() => {
-				expect(richTextOf(editorId)).toContain('background-color: rgb(0, 255, 0)');
+			const editorElement = screen.getByTestId(EDITOR_TESTID) as HTMLElement & {
+				__lexicalEditor: LexicalEditor;
+			};
+			act(() => {
+				editorElement.__lexicalEditor.update(() => {
+					$getRoot().getLastDescendant()?.selectEnd();
+				});
 			});
+
+			await user.click(screen.getByRole('button', { name: TEXT_COLOR_LABEL }));
+			await user.click(await screen.findByTestId('color-swatch-red'));
+
+			let pendingStyle = '';
+			editorElement.__lexicalEditor.getEditorState().read(() => {
+				const selection = $getSelection();
+				if ($isRangeSelection(selection)) {
+					pendingStyle = selection.style;
+				}
+			});
+			expect(pendingStyle).toContain('color: #ef5350');
+		});
+
+		it('closes the picker and hands focus back to the editor after picking a preset swatch', async () => {
+			const { user } = await setupWithSelectedContent();
+			const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+			await user.click(screen.getByRole('button', { name: TEXT_COLOR_LABEL }));
+			expect(screen.getByTestId('color-swatch-picker')).toBeVisible();
+
+			await user.click(await screen.findByTestId('color-swatch-red'));
+
+			expect(screen.queryByTestId('color-swatch-picker')).not.toBeInTheDocument();
+			expect(editorElement).toHaveFocus();
 		});
 	});
 
@@ -351,7 +450,7 @@ describe('RichToolbarPlugin', () => {
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
 			expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.url' }),
 				'https://example.com'
 			);
@@ -377,7 +476,7 @@ describe('RichToolbarPlugin', () => {
 			const { editorId, user } = await setupWithSelectedContent();
 
 			await user.click(screen.getByRole('button', { name: LINK_LABEL }));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.url' }),
 				'https://example.com'
 			);
@@ -399,11 +498,11 @@ describe('RichToolbarPlugin', () => {
 			await user.click(editorElement);
 
 			await user.click(screen.getByRole('button', { name: 'lexical-label.insert_image_url' }));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
 				'https://example.com/picture.png'
 			);
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', { name: 'lexical-label.image_alt' }),
 				'a picture'
 			);

@@ -45,8 +45,14 @@ describe('ImageModal', () => {
 		await user.click(screen.getByRole('button', { name: INSERT_IMAGE_LABEL }));
 
 		expect(await screen.findByText('lexical-label.insert_edit_image')).toBeInTheDocument();
-		await user.type(screen.getByRole('textbox', { name: 'lexical-label.image_source' }), IMAGE_URL);
-		await user.type(screen.getByRole('textbox', { name: 'lexical-label.image_alt' }), 'a picture');
+		await user.pasteInto(
+			screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
+			IMAGE_URL
+		);
+		await user.pasteInto(
+			screen.getByRole('textbox', { name: 'lexical-label.image_alt' }),
+			'a picture'
+		);
 		await user.click(screen.getByRole('button', { name: 'label.save' }));
 
 		await waitFor(() => {
@@ -63,7 +69,10 @@ describe('ImageModal', () => {
 		expect(await screen.findByText('lexical-label.insert_edit_image')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'label.save' })).toBeDisabled();
 
-		await user.type(screen.getByRole('textbox', { name: 'lexical-label.image_source' }), IMAGE_URL);
+		await user.pasteInto(
+			screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
+			IMAGE_URL
+		);
 
 		expect(screen.getByRole('button', { name: 'label.save' })).toBeEnabled();
 	});
@@ -83,7 +92,7 @@ describe('ImageModal', () => {
 
 		const altInput = screen.getByRole('textbox', { name: 'lexical-label.image_alt' });
 		await user.clear(altInput);
-		await user.type(altInput, 'updated alt');
+		await user.paste('updated alt');
 		await user.click(screen.getByRole('button', { name: 'label.save' }));
 
 		await waitFor(() => {
@@ -110,7 +119,10 @@ describe('ImageModal', () => {
 
 		await user.click(screen.getByRole('button', { name: INSERT_IMAGE_LABEL }));
 		expect(await screen.findByText('lexical-label.insert_edit_image')).toBeInTheDocument();
-		await user.type(screen.getByRole('textbox', { name: 'lexical-label.image_source' }), IMAGE_URL);
+		await user.pasteInto(
+			screen.getByRole('textbox', { name: 'lexical-label.image_source' }),
+			IMAGE_URL
+		);
 
 		// The natural size pre-fills both dimensions once the source loads.
 		const widthInput = screen.getByRole('spinbutton', { name: 'lexical-label.width' });
@@ -119,7 +131,7 @@ describe('ImageModal', () => {
 
 		// Editing the width keeps the height proportional (400/200 = 2 -> 100/50).
 		await user.clear(widthInput);
-		await user.type(widthInput, '100');
+		await user.paste('100');
 
 		expect(screen.getByRole('spinbutton', { name: 'lexical-label.height' })).toHaveValue(50);
 	});
