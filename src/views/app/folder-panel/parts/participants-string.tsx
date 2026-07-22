@@ -109,13 +109,9 @@ const useParticipantsString = ({
 }): string => {
 	const account = useUserAccount();
 	const [t] = useTranslation();
-	// The `folder/:folderId` routes belong to the detail panel, so `useParams` yields nothing when
-	// this renders inside a list. Callers that know which folder they are showing pass it in.
 	const { folderId: folderIdFromRoute } = useParams<DetailPanelRoutesParams>();
 	const folderId = folderIdFromProps ?? folderIdFromRoute;
 
-	// Hooks cannot be called conditionally: for a message this yields an empty list and the
-	// fallback below is a no-op.
 	const conversationMessages = useConversationMessages(isConversation(item) ? item.id : '');
 
 	const participantRole = useMemo(() => {
