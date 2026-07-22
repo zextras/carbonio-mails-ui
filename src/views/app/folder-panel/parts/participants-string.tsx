@@ -8,17 +8,21 @@ import React, { useMemo } from 'react';
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { getRootsMap, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
-import { reduce, trimStart, uniqBy } from 'lodash';
+import { filter, flatMap, reduce, trimStart, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { participantToString } from '../../../../commons/utils';
 import { getFolderOwnerAccountName, isDraft, isInbox, isSent } from '../../../../helpers/folders';
 import { isConversation } from '../../../../helpers/messages';
-import { getConversationMessagesParents } from '../../../../store/emails/store';
+import {
+	getConversationMessagesParents,
+	useConversationMessages
+} from '../../../../store/emails/store';
 import { DetailPanelMessageRouteParams, DetailPanelRoutesParams } from '../../../../types/routes';
 import { NormalizedConversation } from 'types/conversations';
 import { MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 
 const getUserAddress = (
 	item: NormalizedConversation | MailMessage,
@@ -35,25 +39,37 @@ const getUserAddress = (
 	return getFolderOwnerAccountName(item.parent, folderRoots);
 };
 
+const resolveRoleByFolder = (folderId: string): ParticipantRoleType | undefined => {
+	if (isInbox(folderId)) {
+		return ParticipantRole.FROM;
+	}
+	if (isSent(folderId) || isDraft(folderId)) {
+		return ParticipantRole.TO;
+	}
+	return undefined;
+};
+
 const resolveConversationRole = (
 	item: NormalizedConversation,
 	folderId?: string
 ): ParticipantRoleType => {
-	if (folderId) {
-		if (isInbox(folderId)) {
-			return ParticipantRole.FROM;
-		}
-		if (isSent(folderId)) {
-			return ParticipantRole.TO;
-		}
+	const roleByFolder = folderId ? resolveRoleByFolder(folderId) : undefined;
+	if (roleByFolder) {
+		return roleByFolder;
 	}
 	const messagesParents = getConversationMessagesParents(item.id);
 
-	if (messagesParents.every(isInbox)) {
-		return ParticipantRole.FROM;
-	}
-	if (messagesParents.every(isSent)) {
-		return ParticipantRole.TO;
+	// `[].every()` is `true`, so an empty list would resolve to FROM. That happens whenever the
+	// conversation is known but its messages have not been fetched yet (e.g. right after a
+	// notification creates it), and it makes a Sent conversation look for a sender it doesn't
+	// have, falling back to the "[Empty 'To' Field]" label until something triggers a fetch.
+	if (messagesParents.length > 0) {
+		if (messagesParents.every(isInbox)) {
+			return ParticipantRole.FROM;
+		}
+		if (messagesParents.every(isSent)) {
+			return ParticipantRole.TO;
+		}
 	}
 	const userAddress = getUserAddress(item, messagesParents[0], folderId);
 
@@ -85,13 +101,22 @@ const resolveMessageRole = (item: MailMessage): ParticipantRoleType => {
 };
 
 const useParticipantsString = ({
-	item
+	item,
+	folderId: folderIdFromProps
 }: {
 	item: NormalizedConversation | MailMessage;
+	folderId?: string;
 }): string => {
 	const account = useUserAccount();
 	const [t] = useTranslation();
-	const { folderId } = useParams<DetailPanelRoutesParams>();
+	// The `folder/:folderId` routes belong to the detail panel, so `useParams` yields nothing when
+	// this renders inside a list. Callers that know which folder they are showing pass it in.
+	const { folderId: folderIdFromRoute } = useParams<DetailPanelRoutesParams>();
+	const folderId = folderIdFromProps ?? folderIdFromRoute;
+
+	// Hooks cannot be called conditionally: for a message this yields an empty list and the
+	// fallback below is a no-op.
+	const conversationMessages = useConversationMessages(isConversation(item) ? item.id : '');
 
 	const participantRole = useMemo(() => {
 		if (isConversation(item)) {
@@ -101,7 +126,14 @@ const useParticipantsString = ({
 	}, [folderId, item]);
 
 	return useMemo(() => {
-		const activeParticipants = item.participants?.filter((p) => p.type === participantRole);
+		const matchesRole = (participant: Participant): boolean => participant.type === participantRole;
+		// A conversation summary does not always carry the participants for the role being
+		// displayed: a notification can describe it with the senders only, which left a freshly
+		// sent conversation showing the "empty field" placeholder until a later fetch replaced it.
+		// The messages of the conversation hold the complete list, so use them as the fallback.
+		const activeParticipants = item.participants?.some(matchesRole)
+			? filter(item.participants, matchesRole)
+			: flatMap(conversationMessages, (message) => filter(message.participants, matchesRole));
 		const participantsToReduce = uniqBy(activeParticipants, (em) => em.address);
 		if (participantsToReduce.length === 0) {
 			return t('recipient.toField.missing', `[Empty 'To' Field]`);
@@ -111,16 +143,20 @@ const useParticipantsString = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, participantRole, t, item?.participants]);
+	}, [account, participantRole, t, item?.participants, conversationMessages]);
 };
 
 export const ParticipantsString = ({
-	item
+	item,
+	folderId: folderIdFromProps
 }: {
 	item: NormalizedConversation | MailMessage;
+	folderId?: string;
 }): React.JSX.Element => {
-	const participantsString = useParticipantsString({ item });
-	const { folderId } = useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+	const participantsString = useParticipantsString({ item, folderId: folderIdFromProps });
+	const { folderId: folderIdFromRoute } =
+		useParams<DetailPanelRoutesParams>() as DetailPanelMessageRouteParams;
+	const folderId = folderIdFromProps ?? folderIdFromRoute;
 	const [t] = useTranslation();
 
 	return (

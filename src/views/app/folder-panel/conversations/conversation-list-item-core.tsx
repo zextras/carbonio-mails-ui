@@ -125,7 +125,7 @@ export const ConversationListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsString item={conversation} />
+					<ParticipantsString item={conversation} folderId={folderParent} />
 					<RowInfo item={conversation} tags={tags} />
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">

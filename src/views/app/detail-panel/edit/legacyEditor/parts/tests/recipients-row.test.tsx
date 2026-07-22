@@ -271,16 +271,40 @@ describe('recipients-row', () => {
 				]);
 			});
 
-			it('should set name to undefined for distribution lists', async () => {
+			it('should set the display name for distribution lists', async () => {
 				const valueToAdd = {
 					...generateMockContactInputItem(),
 					value: {
 						id: '1',
 						email: 'list@test.com',
 						type: CONTACT_TYPES.DISTRIBUTION_LIST,
-						firstName: 'List',
-						lastName: 'Name',
 						fullName: 'List Name'
+					}
+				};
+				mockContactInput({ valueToAdd });
+				const mockOnChange = vi.fn();
+
+				const { user } = setupTest(
+					<RecipientsRow
+						dataTestid={'mockedContactInput'}
+						type="f"
+						label="label"
+						recipients={[]}
+						onRecipientsChange={mockOnChange}
+					></RecipientsRow>
+				);
+				await triggerOnAdd(user);
+
+				expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ name: 'List Name' })]);
+			});
+
+			it('should set name to undefined for distribution lists without a display name', async () => {
+				const valueToAdd = {
+					...generateMockContactInputItem(),
+					value: {
+						id: '1',
+						email: 'list@test.com',
+						type: CONTACT_TYPES.DISTRIBUTION_LIST
 					}
 				};
 				mockContactInput({ valueToAdd });

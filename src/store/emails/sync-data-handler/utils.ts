@@ -168,7 +168,11 @@ function handleNotifyMessagesCreated(
 
 	function addMessagesToMessageSlice(state: EmailsStoreState): void {
 		state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
-			acc[msg.id] = msg;
+			// Notifications carry a partial message: `normalizeMailMessageFromSoap` drops the
+			// fields the payload doesn't mention, so the entry has to be merged over the stored
+			// one. Replacing it would blank out data already fetched (e.g. the participants,
+			// making the list fall back to the "[Empty 'To' Field]" label until the next fetch).
+			acc[msg.id] = { ...acc[msg.id], ...msg };
 			return acc;
 		}, state.populatedItemsSlice.messages);
 		state.messageIndexSlice.messageListIndex = Array.from(
@@ -254,7 +258,17 @@ function handleNotifyConversationsCreated(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = conversation;
+				const stored = acc[conversation.id];
+				acc[conversation.id] = {
+					...stored,
+					...conversation,
+					// A notification without an `<e>` list normalizes to an empty array. Keep the
+					// participants already in the store, otherwise the list label falls back to
+					// "[Empty 'To' Field]" until something triggers a new fetch.
+					participants: conversation.participants.length
+						? conversation.participants
+						: (stored?.participants ?? [])
+				};
 				return acc;
 			}, populatedItemsSlice.conversations);
 			conversationIndexSlice.conversationListIndex = Array.from(
