@@ -192,7 +192,6 @@ describe('partial notifications', () => {
 		handleNotifyMessagesCreated([partialNotification]);
 
 		const { result } = renderHook(() => useMessageById(message.id));
-		// wait for the notification to be applied before asserting on what it preserved
 		await waitFor(async () => {
 			expect(result.current?.subject).toBe(NOTIFIED_SUBJECT);
 		});
@@ -208,7 +207,6 @@ describe('partial notifications', () => {
 		]);
 
 		const { result } = renderHook(() => useConversationById('123'));
-		// wait for the notification to be applied before asserting on what it preserved
 		await waitFor(async () => {
 			expect(result.current.subject).toBe(NOTIFIED_SUBJECT);
 		});

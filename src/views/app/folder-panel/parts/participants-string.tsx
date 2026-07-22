@@ -59,10 +59,6 @@ const resolveConversationRole = (
 	}
 	const messagesParents = getConversationMessagesParents(item.id);
 
-	// `[].every()` is `true`, so an empty list would resolve to FROM. That happens whenever the
-	// conversation is known but its messages have not been fetched yet (e.g. right after a
-	// notification creates it), and it makes a Sent conversation look for a sender it doesn't
-	// have, falling back to the "[Empty 'To' Field]" label until something triggers a fetch.
 	if (messagesParents.length > 0) {
 		if (messagesParents.every(isInbox)) {
 			return ParticipantRole.FROM;

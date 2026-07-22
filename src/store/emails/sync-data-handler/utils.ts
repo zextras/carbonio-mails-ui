@@ -171,7 +171,6 @@ function handleNotifyMessagesCreated(
 			// Notifications carry a partial message: `normalizeMailMessageFromSoap` drops the
 			// fields the payload doesn't mention, so the entry has to be merged over the stored
 			// one. Replacing it would blank out data already fetched (e.g. the participants,
-			// making the list fall back to the "[Empty 'To' Field]" label until the next fetch).
 			acc[msg.id] = { ...acc[msg.id], ...msg };
 			return acc;
 		}, state.populatedItemsSlice.messages);
@@ -262,9 +261,6 @@ function handleNotifyConversationsCreated(
 				acc[conversation.id] = {
 					...stored,
 					...conversation,
-					// A notification without an `<e>` list normalizes to an empty array. Keep the
-					// participants already in the store, otherwise the list label falls back to
-					// "[Empty 'To' Field]" until something triggers a new fetch.
 					participants: conversation.participants.length
 						? conversation.participants
 						: (stored?.participants ?? [])
