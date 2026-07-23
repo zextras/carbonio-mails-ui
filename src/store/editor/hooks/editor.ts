@@ -5,10 +5,13 @@
  */
 import { useCallback, useMemo } from 'react';
 
+import { filter } from 'lodash';
+
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/editor';
+import { isValidEmail } from 'views/search/parts/utils';
 
 /**
  * TODO for future refactors
@@ -494,4 +497,24 @@ export const useEditorIsSmimeEncrypt = (
 		}),
 		[id, debouncedSaveDraft, setter, value, setDirty]
 	);
+};
+
+/**
+ * Returns whether the editor has invalid recipients
+ * @param editorId The id of the editor
+ * @returns A boolean indicating if invalid recipients are present
+ */
+export const useEditorAreInvalidRecipients = (editorId: MailsEditorV2['id']): boolean => {
+	const recipients = useEditorsStore((state) => state.editors[editorId].recipients);
+
+	const invalidRecipients = useMemo(
+		() =>
+			filter(
+				[...recipients.to, ...recipients.cc, ...recipients.bcc],
+				(recipient) => !isValidEmail(recipient.address)
+			),
+		[recipients]
+	);
+
+	return useMemo(() => invalidRecipients.length > 0, [invalidRecipients]);
 };

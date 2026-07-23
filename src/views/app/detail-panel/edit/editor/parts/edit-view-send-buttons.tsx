@@ -9,7 +9,7 @@ import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
-import { useEditorRecipients, useEditorSend } from 'store/editor';
+import { useEditorAreInvalidRecipients, useEditorRecipients, useEditorSend } from 'store/editor';
 import { EditorOperationAllowedStatus } from 'types/editor';
 import { SendLaterModal } from 'views/app/detail-panel/edit/editor/parts/send-later-modal';
 import { isValidEmail } from 'views/search/parts/utils';
@@ -41,14 +41,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	const { attrs } = useUserSettings();
 	const { createModal, closeModal } = useModal();
 
-	const {
-		recipients: { to, cc, bcc }
-	} = useEditorRecipients(editorId);
-
-	const invalidRecipientsPresent = useMemo(
-		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
-		[bcc, cc, to]
-	);
+	const invalidRecipientsPresent = useEditorAreInvalidRecipients(editorId);
 
 	const { status: sendAllowedStatus } = useEditorSend(editorId);
 
