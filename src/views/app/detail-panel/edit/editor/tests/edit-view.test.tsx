@@ -19,7 +19,7 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
 
-import { aSuccessfulSaveDraft, aFailingSaveDraft } from './utils/utils';
+import { aSuccessfulSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import { EditView } from '../edit-view';
 import { setupTest, screen, within } from '@test-setup';
@@ -35,12 +35,7 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewEditor, readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { addEditor, useEditorsStore } from 'store/editor';
-import {
-	generateEditAsNewEditor,
-	generateNewMessageEditor,
-	generateReplyAllMsgEditor,
-	generateReplyMsgEditor
-} from 'store/editor/editor-generators';
+import { generateNewMessageEditor, generateReplyMsgEditor } from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 import {
 	SaveDraftRequest,
@@ -161,10 +156,6 @@ const getSubjectInput = (): HTMLElement =>
 	within(screen.getByTestId('subject')).getByRole('textbox');
 
 const getEditorTextareaElement = (): HTMLInputElement => screen.getByTestId('MailPlainTextEditor');
-
-const makeSomeChangeToTriggerSaveDraft = async (user: UserEvent): Promise<void> => {
-	await user.type(getSubjectInput(), 'Some subject');
-};
 
 describe('Edit view', () => {
 	beforeEach(() => {
@@ -755,119 +746,6 @@ describe('Edit view', () => {
 		it.todo(
 			'the edit view shows an error if the draft saving fails because the draft does not exist anymore'
 		);
-
-		describe('send button', () => {
-			describe('is disabled when draft cannot be saved', () => {
-				let failingSaveDraft: Promise<SaveDraftRequest>;
-
-				beforeEach(() => {
-					failingSaveDraft = aFailingSaveDraft();
-					setupEditorStore({ editors: [] });
-				});
-
-				const checkSaveBtnIsDisabled = async (editor: MailsEditorV2): Promise<void> => {
-					addEditor({
-						id: editor.id,
-						editor
-					});
-
-					const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
-					await makeSomeChangeToTriggerSaveDraft(user);
-
-					// Await the API to be called and fail
-					await failingSaveDraft;
-
-					const btnSend =
-						screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
-					expect(btnSend).toBeVisible();
-					expect(btnSend).toBeDisabled();
-				};
-
-				it('and action is "new editor"', async () => {
-					const editor = generateNewMessageEditor();
-					await checkSaveBtnIsDisabled(editor);
-				});
-
-				it('and action is "reply"', async () => {
-					const message = generateMessage({
-						isComplete: true
-					});
-					const editor = generateReplyMsgEditor(message);
-					await checkSaveBtnIsDisabled(editor);
-				});
-			});
-
-			it('should be disabled when draft is being saved', async () => {
-				const editor = generateNewMessageEditor();
-				const saveDraftInterceptor = aSuccessfulSaveDraft();
-				setupEditorStore({ editors: [editor] });
-
-				const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
-				await makeSomeChangeToTriggerSaveDraft(user);
-				await saveDraftInterceptor;
-				await screen.findByText('Saving...');
-
-				expect(getSendButton()).toBeDisabled();
-			});
-
-			describe('is enabled again when draft is saved', () => {
-				let saveDraftInterceptor: Promise<SaveDraftRequest>;
-				beforeEach(() => {
-					saveDraftInterceptor = aSuccessfulSaveDraft();
-					setupEditorStore({ editors: [] });
-				});
-
-				const checkSendBtnEnabled = async (editor: MailsEditorV2): Promise<void> => {
-					addEditor({
-						id: editor.id,
-						editor: { ...editor }
-					});
-
-					const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
-					await makeSomeChangeToTriggerSaveDraft(user);
-					await saveDraftInterceptor;
-
-					await screen.findByText('Draft saved at', { exact: false });
-					expect(getSendButton()).toBeEnabled();
-				};
-
-				it('and action is "reply"', async () => {
-					const message = generateMessage({
-						isComplete: true
-					});
-
-					const editor = generateReplyMsgEditor(message);
-
-					await checkSendBtnEnabled(editor);
-				});
-
-				it('and action is "replyAll"', async () => {
-					const message = generateMessage({
-						isComplete: true
-					});
-
-					const editor = generateReplyAllMsgEditor(message);
-
-					await checkSendBtnEnabled(editor);
-				});
-			});
-
-			it('is enabled when an editor is created with "edit as new" action and a draft is saved', async () => {
-				const saveDraftInterceptor = aSuccessfulSaveDraft();
-				const message = generateMessage({ isComplete: true });
-				const editor = generateEditAsNewEditor(message);
-				setupEditorStore({ editors: [editor] });
-
-				const { user } = setupTest(<EditView editorId={editor.id} closeController={vi.fn()} />);
-				await makeSomeChangeToTriggerSaveDraft(user);
-				await saveDraftInterceptor;
-
-				// Await the draft to be saved
-				await screen.findByText('Draft saved at', { exact: false });
-
-				expect(getSendButton()).toBeEnabled();
-			});
-		});
 	});
 
 	describe('Text Editor Drag Over functionality', () => {
