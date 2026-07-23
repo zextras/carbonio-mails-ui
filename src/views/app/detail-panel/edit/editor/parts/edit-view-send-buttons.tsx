@@ -7,12 +7,10 @@ import React, { FC, useCallback, useMemo } from 'react';
 
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { some } from 'lodash';
 
-import { useEditorAreInvalidRecipients, useEditorRecipients, useEditorSend } from 'store/editor';
+import { useEditorAreInvalidRecipients, useEditorSend } from 'store/editor';
 import { EditorOperationAllowedStatus } from 'types/editor';
 import { SendLaterModal } from 'views/app/detail-panel/edit/editor/parts/send-later-modal';
-import { isValidEmail } from 'views/search/parts/utils';
 
 export type EditViewSendButtonsProps = {
 	onSendLater: (autoSendTime: number) => void;
@@ -103,9 +101,6 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						onClick={onSendNow}
 						disabledPrimary={disabled}
 						disabledSecondary={disabled}
-						// TOFIX: remove this ts-ignore once SHELL 5.3.0 is released
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						icon={'ChevronDownOutline'}
 						items={multiBtnActions}
 					/>
