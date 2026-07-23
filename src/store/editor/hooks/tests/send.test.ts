@@ -8,7 +8,6 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorSend } from '../send';
-import { computeAndUpdateEditorStatus } from '../statuses';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
@@ -31,7 +30,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -57,7 +55,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -86,7 +83,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -119,7 +115,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -152,7 +147,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -187,7 +181,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const { result } = setupHook(useEditorSend, {
 			initialProps: [composedEditor.id]
@@ -197,9 +190,9 @@ describe('send', () => {
 			result.current.send();
 		});
 
-		// Simulate a draft save starting during the countdown (e.g. from a pending debounce)
-		// Set directly without computeAndUpdateEditorStatus so sendAllowedStatus stays 'allowed'
-		// (the countdown is already running; the status check at sendFromEditor start already passed)
+		// Simulate a draft save starting during the countdown (e.g. from a pending debounce).
+		// The send-allowed status is derived on read, but the countdown is already running and
+		// the status check at sendFromEditor start already passed, so the send is not blocked.
 		useEditorsStore.getState().setDraftSaveProcessStatus(composedEditor.id, { status: 'running' });
 
 		// Advance time past the countdown — send should now be waiting for the draft save

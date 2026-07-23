@@ -11,9 +11,9 @@ import { find } from 'lodash';
 import { sendMsgFromEditor } from 'api/send-msg';
 import { createCancelableTimer } from 'helpers/timers';
 import { getEditor } from 'store/editor/hooks/editors';
-import { computeAndUpdateEditorStatus } from 'store/editor/hooks/statuses';
+import { computeSendAllowedStatus, useEditorSendAllowedStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
-import { MailsEditorV2 } from 'types/editor';
+import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
 import { SaveDraftResponse } from 'types/soap/save-draft';
 
 export type SendMessageOptions = {
@@ -65,7 +65,7 @@ const sendFromEditor = (
 		return {};
 	}
 
-	if (!editorExist.sendAllowedStatus?.allowed) {
+	if (!computeSendAllowedStatus(editorExist).allowed) {
 		return {};
 	}
 
@@ -87,7 +87,6 @@ const sendFromEditor = (
 			status: 'aborted',
 			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
 		});
-		computeAndUpdateEditorStatus(editorId);
 	};
 	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
 
@@ -116,13 +115,11 @@ const sendFromEditor = (
 								status: 'aborted',
 								abortReason: errorDescription
 							});
-							computeAndUpdateEditorStatus(editorId);
 							options?.onError && options.onError(res);
 						} else {
 							useEditorsStore.getState().setSendProcessStatus(editorId, {
 								status: 'completed'
 							});
-							computeAndUpdateEditorStatus(editorId);
 							options?.onComplete && options.onComplete();
 						}
 					})
@@ -131,7 +128,6 @@ const sendFromEditor = (
 							status: 'aborted',
 							abortReason: err
 						});
-						computeAndUpdateEditorStatus(editorId);
 						options?.onError && options.onError(err);
 					});
 		})
@@ -140,7 +136,6 @@ const sendFromEditor = (
 				status: 'aborted',
 				abortReason: err
 			});
-			computeAndUpdateEditorStatus(editorId);
 			options?.onError && options.onError(err);
 		})
 		.finally(() => {
@@ -151,7 +146,6 @@ const sendFromEditor = (
 		status: 'running',
 		cancel: cancelableTimer.cancel
 	});
-	computeAndUpdateEditorStatus(editorId);
 
 	return {
 		cancel: cancelableTimer.cancel
@@ -161,10 +155,10 @@ const sendFromEditor = (
 export const useEditorSend = (
 	editorId: MailsEditorV2['id']
 ): {
-	status: MailsEditorV2['sendAllowedStatus'];
+	status: EditorOperationAllowedStatus;
 	send: (options?: SendMessageOptions) => SendMessageResult;
 } => {
-	const status = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
+	const status = useEditorSendAllowedStatus(editorId);
 	const sendInvoker = useCallback(
 		(options?: SendMessageOptions): SendMessageResult => sendFromEditor(editorId, options),
 		[editorId]

@@ -8,20 +8,12 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { EditViewActions } from '../../constants';
 import { getDefaultIdentity } from '../../helpers/identities';
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
 import { SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
 
-const alignState = (editor: MailsEditorV2): void => {
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-};
-
 export const generateEditorV2Case = async (id: number): Promise<MailsEditorV2> => {
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}.ts`);
-	const editor = buildEditorCase();
-	alignState(editor);
-	return editor;
+	return buildEditorCase();
 };
 
 export const readyToBeSentEditorTestCase = async (
@@ -35,7 +27,6 @@ export const readyToBeSentEditorTestCase = async (
 		bcc: []
 	};
 	editor = { ...editor, ...editorPropsOverride };
-	alignState(editor);
 	return editor;
 };
 
@@ -62,9 +53,6 @@ export function generateNewEditor(customData: Partial<MailsEditorV2> = {}): Mail
 		isDirty: false,
 		isRichText: false,
 		isUrgent: false,
-		sendAllowedStatus: {
-			allowed: true
-		},
 		requestReadReceipt: false,
 		savedAttachments: [],
 		size: 0,

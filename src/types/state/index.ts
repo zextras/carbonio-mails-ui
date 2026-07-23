@@ -39,19 +39,9 @@ export type EditorsStateTypeV2 = {
 		recipients: MailsEditorV2['recipients']['bcc']
 	) => void;
 
-	setDraftSaveAllowedStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['draftSaveAllowedStatus']
-	) => void;
-
 	setDraftSaveProcessStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['draftSaveProcessStatus']
-	) => void;
-
-	setSendAllowedStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['sendAllowedStatus']
 	) => void;
 
 	setSendProcessStatus: (
