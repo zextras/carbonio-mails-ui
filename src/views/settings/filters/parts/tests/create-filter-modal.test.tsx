@@ -7,9 +7,8 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 
-import { makeListItemsVisible, setupTest } from '@test-setup';
+import { makeListItemsVisible, setupTest, UserEvent } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import CreateFilterModal from 'views/settings/filters/parts/create-filter-modal';
 
@@ -25,7 +24,7 @@ const fillFilterName = async (user: UserEvent, filterName: string): Promise<void
 	const filterInputElement = screen.getByRole('textbox', {
 		name: 'Filter Name*'
 	});
-	await user.type(filterInputElement, filterName);
+	await user.pasteInto(filterInputElement, filterName);
 };
 
 describe('create filter modal', () => {
@@ -42,7 +41,7 @@ describe('create filter modal', () => {
 		const filterInputElement = screen.getByRole('textbox', {
 			name: 'Filter Name*'
 		});
-		await user.type(filterInputElement, 'My filter');
+		await user.pasteInto(filterInputElement, 'My filter');
 
 		const createButton = screen.getByRole('button', {
 			name: 'Create'
@@ -113,7 +112,7 @@ describe('create filter modal', () => {
 		const filterInputElement = screen.getByRole('textbox', {
 			name: 'Filter Name*'
 		});
-		await user.type(filterInputElement, 'My filter');
+		await user.pasteInto(filterInputElement, 'My filter');
 
 		const createButton = screen.getByRole('button', {
 			name: 'Create'
@@ -133,7 +132,7 @@ describe('create filter modal', () => {
 			const filterInputElement = screen.getByRole('textbox', {
 				name: 'Filter Name*'
 			});
-			await user.type(filterInputElement, 'My filter');
+			await user.pasteInto(filterInputElement, 'My filter');
 			const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 				'icon: Square'
 			);
@@ -255,7 +254,7 @@ describe('create filter modal', () => {
 			await fillFilterName(user, 'any name');
 			await user.click(screen.getByText('Subject'));
 			await user.click(screen.getByText('From'));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', {
 					name: 'Keyword'
 				}),
@@ -293,7 +292,7 @@ describe('create filter modal', () => {
 			await fillFilterName(user, 'any name');
 			await user.click(screen.getByText('Subject'));
 			await user.click(screen.getByText('From'));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', {
 					name: 'Keyword'
 				}),
@@ -302,7 +301,7 @@ describe('create filter modal', () => {
 			await addCondition(user);
 			await user.click(screen.getByText('Subject'));
 			await user.click(within(screen.getByTestId('dropdown-popper-list')).getByText('From'));
-			await user.type(
+			await user.pasteInto(
 				screen.getAllByRole('textbox', {
 					name: 'Keyword'
 				})[1],
@@ -346,14 +345,14 @@ describe('create filter modal', () => {
 			await fillFilterName(user, 'any name');
 			await user.click(screen.getByText('Subject'));
 			await user.click(screen.getByText('From'));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', {
 					name: 'Keyword'
 				}),
 				'anyemail'
 			);
 			await addCondition(user);
-			await user.type(
+			await user.pasteInto(
 				screen.getAllByRole('textbox', {
 					name: 'Keyword'
 				})[1],
@@ -398,14 +397,14 @@ describe('create filter modal', () => {
 			await fillFilterName(user, 'any name');
 			await user.click(screen.getByText('Subject'));
 			await user.click(screen.getByText('From'));
-			await user.type(
+			await user.pasteInto(
 				screen.getByRole('textbox', {
 					name: 'Keyword'
 				}),
 				'anyemail'
 			);
 			await addCondition(user);
-			await user.type(
+			await user.pasteInto(
 				screen.getAllByRole('textbox', {
 					name: 'Keyword'
 				})[1],

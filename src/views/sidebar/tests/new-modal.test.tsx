@@ -64,7 +64,7 @@ describe('new-modal', () => {
 		const folderName = faker.lorem.word();
 
 		await user.clear(folderInputElement);
-		await user.type(folderInputElement, folderName);
+		await user.paste(folderName);
 
 		expect(screen.getByRole('button', { name: /label.create/i })).toBeEnabled();
 	});
@@ -100,7 +100,7 @@ describe('new-modal', () => {
 		const apiInterceptor = createSoapAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
 		await user.clear(folderInputElement);
-		await user.type(folderInputElement, folderName);
+		await user.paste(folderName);
 		await user.click(screen.getByRole('button', { name: /label.create/i }));
 
 		const { folder: newFolder } = await apiInterceptor;
@@ -121,7 +121,7 @@ describe('new-modal', () => {
 		);
 
 		await user.clear(folderInputElement);
-		await user.type(folderInputElement, 'Inbox');
+		await user.paste('Inbox');
 
 		expect(screen.getByTestId('error-message')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /label.create/i })).toBeDisabled();
