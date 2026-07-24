@@ -11,7 +11,6 @@ import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, waitFor, fireEvent } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
@@ -23,7 +22,7 @@ import { aSuccessfullSaveDraft, aFailingSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import * as useQueryParam from '../../../../../../hooks/use-query-param';
 import { EditView } from '../edit-view';
-import { setupTest, screen, within } from '@test-setup';
+import { setupTest, screen, within, UserEvent } from '@test-setup';
 import {
 	useBoard as mockedUseBoard,
 	useBoard
@@ -178,7 +177,7 @@ const getSubjectInput = (): HTMLElement =>
 const getEditorTextareaElement = (): HTMLInputElement => screen.getByTestId('MailPlainTextEditor');
 
 const makeSomeChangeToTriggerSaveDraft = async (user: UserEvent): Promise<void> => {
-	await user.type(getSubjectInput(), 'Some subject');
+	await user.pasteInto(getSubjectInput(), 'Some subject');
 };
 
 describe('Edit view', () => {
@@ -359,7 +358,7 @@ describe('Edit view', () => {
 
 			// Insert a subject
 			await act(async () => {
-				await user.type(getSubjectInput(), subject);
+				await user.pasteInto(getSubjectInput(), subject);
 			});
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');

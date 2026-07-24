@@ -11,7 +11,6 @@ import React, { useState } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, waitFor, fireEvent } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
@@ -22,7 +21,7 @@ import type { Mock } from 'vitest';
 import { aSuccessfulSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import { EditView } from '../edit-view';
-import { setupTest, screen, within } from '@test-setup';
+import { setupTest, screen, within, UserEvent } from '@test-setup';
 import {
 	createSoapAPIInterceptor,
 	createAPIInterceptor
@@ -156,6 +155,10 @@ const getSubjectInput = (): HTMLElement =>
 	within(screen.getByTestId('subject')).getByRole('textbox');
 
 const getEditorTextareaElement = (): HTMLInputElement => screen.getByTestId('MailPlainTextEditor');
+
+const makeSomeChangeToTriggerSaveDraft = async (user: UserEvent): Promise<void> => {
+	await user.pasteInto(getSubjectInput(), 'Some subject');
+};
 
 describe('Edit view', () => {
 	beforeEach(() => {
@@ -335,7 +338,7 @@ describe('Edit view', () => {
 
 			// Insert a subject
 			await act(async () => {
-				await user.type(getSubjectInput(), subject);
+				await user.pasteInto(getSubjectInput(), subject);
 			});
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
