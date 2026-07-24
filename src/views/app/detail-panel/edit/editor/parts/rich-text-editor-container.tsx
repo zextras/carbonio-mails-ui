@@ -72,6 +72,19 @@ export const LexicalWrapper = styled.div<{
 		${({ $color }): string => ($color ? `color: ${$color};` : '')}
 	}
 
+	/* Match the paragraph spacing baked into the saved/previewed HTML
+	   (TINYMCE_BASE_CONTENT_STYLES) so blank lines look the same while typing
+	   as they do once the draft is saved and rendered in the preview. */
+	.mails-lexical-content-editable p {
+		margin: 0;
+		padding: 0;
+		margin-bottom: 16px;
+	}
+
+	.mails-lexical-content-editable p:last-child {
+		margin-bottom: 0;
+	}
+
 	.mails-lexical-placeholder {
 		position: absolute;
 		top: 0.5rem;

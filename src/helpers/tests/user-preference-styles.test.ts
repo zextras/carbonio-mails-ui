@@ -25,7 +25,7 @@ describe('user-preference-styles', () => {
 			const result = generateUserPreferenceStyles(style);
 
 			// a default font-family is always applied as a fallback
-			expect(result).toContain('p { margin: 0; }');
+			expect(result).toContain('p { margin-top: 0; }');
 			expect(result).toContain('font-family: arial, helvetica, sans-serif;');
 			expect(result).not.toContain('color:');
 			expect(result).not.toContain('font-size:');
@@ -614,6 +614,14 @@ describe('user-preference-styles', () => {
 
 			expect(result).toContain('font-family: Georgia');
 			expect(result).not.toMatch(/<td[^>]*arial, helvetica, sans-serif/);
+		});
+
+		it('should preserve the base paragraph spacing instead of collapsing it to 0', () => {
+			const content = `<p>First</p><p>Second</p>`;
+
+			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+
+			expect(result).toMatch(/<p style="[^"]*margin-bottom: 16px/);
 		});
 
 		it('should not apply the fallback font to signature table cells', () => {
