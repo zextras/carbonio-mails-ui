@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.38.0",
+	"version": "1.39.0",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"packageManager": "pnpm@10.32.1",
@@ -106,6 +106,7 @@
 		"@lexical/html": "0.45.0",
 		"@lexical/link": "0.45.0",
 		"@lexical/list": "0.45.0",
+		"@lexical/markdown": "0.45.0",
 		"@lexical/react": "0.45.0",
 		"@lexical/rich-text": "0.45.0",
 		"@lexical/selection": "0.45.0",

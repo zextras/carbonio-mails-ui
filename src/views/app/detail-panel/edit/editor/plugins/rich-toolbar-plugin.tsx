@@ -71,16 +71,27 @@ import { SourceCodeModal } from './source-code-modal';
 import { SpecialCharacterPicker } from './special-character-picker';
 import { TableGridPicker } from './table-grid-picker';
 import { editorIcon } from '../icons/editor-icons';
-import { useEditorAttachments } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/editor';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
+export type UploadedInlineImage = {
+	downloadServiceUrl?: string;
+	cidUrl?: string;
+};
+
 type RichToolbarPluginProps = {
-	editorId: MailsEditorV2['id'];
 	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
 	showBlocks: boolean;
 	/** Toggles the "Show blocks" view aid. */
 	onToggleShowBlocks: () => void;
+	/**
+	 * Uploads image files picked from the "insert image from device" button and
+	 * hands back their resolved URLs. When omitted, that button is hidden — the
+	 * store-agnostic "insert image from URL" button is always available.
+	 */
+	onUploadInlineImages?: (
+		files: File[],
+		onComplete: (attachments: UploadedInlineImage[]) => void
+	) => void;
 };
 
 type BlockType = 'paragraph' | 'quote' | HeadingTagType;
@@ -313,12 +324,11 @@ const CustomSelect = styled(Select)`
 ` as typeof Select;
 
 export const RichToolbarPlugin = ({
-	editorId,
 	showBlocks,
-	onToggleShowBlocks
+	onToggleShowBlocks,
+	onUploadInlineImages
 }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
-	const { addInlineAttachments } = useEditorAttachments(editorId);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tableMenuOpen, setTableMenuOpen] = useState(false);
 	const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
@@ -471,25 +481,23 @@ export const RichToolbarPlugin = ({
 	const onImageFilesSelected = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>): void => {
 			const fileList = event.target.files;
-			if (!fileList?.length) {
+			if (!fileList?.length || !onUploadInlineImages) {
 				return;
 			}
-			addInlineAttachments(Array.from(fileList), {
-				onSaveComplete: (inlineAttachments) => {
-					inlineAttachments.forEach((attachment) => {
-						if (attachment.downloadServiceUrl) {
-							editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-								src: attachment.downloadServiceUrl,
-								cidUrl: attachment.cidUrl,
-								altText: 'Inline attachment'
-							});
-						}
-					});
-				}
+			onUploadInlineImages(Array.from(fileList), (inlineAttachments) => {
+				inlineAttachments.forEach((attachment) => {
+					if (attachment.downloadServiceUrl) {
+						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
+							src: attachment.downloadServiceUrl,
+							cidUrl: attachment.cidUrl,
+							altText: 'Inline attachment'
+						});
+					}
+				});
 			});
 			event.target.value = '';
 		},
-		[addInlineAttachments, editor]
+		[onUploadInlineImages, editor]
 	);
 
 	const fontSelectItems = useMemo<Array<SelectItem>>(
@@ -850,11 +858,13 @@ export const RichToolbarPlugin = ({
 					/>
 				</Dropdown>
 			</Tooltip>
-			<ToolbarIconButton
-				icon={editorIcon('image')}
-				label={t('lexical-label.image', 'Image')}
-				onClick={(): void => fileInputRef.current?.click()}
-			/>
+			{onUploadInlineImages && (
+				<ToolbarIconButton
+					icon={editorIcon('image')}
+					label={t('lexical-label.image', 'Image')}
+					onClick={(): void => fileInputRef.current?.click()}
+				/>
+			)}
 			<ToolbarIconButton
 				icon={editorIcon('edit-image')}
 				label={t('lexical-label.insert_image_url', 'Image from URL')}

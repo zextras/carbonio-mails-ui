@@ -27,6 +27,7 @@ type FakeClipboardItem = {
 };
 
 const PLAIN_TEXT = 'text/plain';
+const HTML = 'text/html';
 
 // jsdom (20) implements neither DragEvent nor ClipboardEvent, yet Lexical's
 // default paste handler does `instanceof` checks against both. Two distinct
@@ -60,16 +61,24 @@ function renderEditor(): void {
  * Dispatches a synthetic paste event with a hand-built clipboard payload, since
  * jsdom cannot represent files on a real `DataTransfer` / `userEvent.paste`.
  */
-function pasteInto(target: HTMLElement, items: Array<FakeClipboardItem>, text = ''): void {
+function pasteInto(
+	target: HTMLElement,
+	items: Array<FakeClipboardItem>,
+	text = '',
+	html = ''
+): void {
+	const types = [text && PLAIN_TEXT, html && HTML].filter((type): type is string => Boolean(type));
 	// eslint-disable-next-line testing-library/prefer-user-event
 	fireEvent.paste(target, {
 		clipboardData: {
 			items,
 			files: [],
-			// Only plain text is available; other types (html, lexical payload)
-			// must return empty so the default handler does not try to parse them.
-			getData: (type: string): string => (type === PLAIN_TEXT ? text : ''),
-			types: text ? [PLAIN_TEXT] : []
+			getData: (type: string): string => {
+				if (type === PLAIN_TEXT) return text;
+				if (type === HTML) return html;
+				return '';
+			},
+			types
 		}
 	});
 }
@@ -126,6 +135,31 @@ describe('PastePlugin', () => {
 		);
 
 		// No image upload was attempted and no inline image was inserted.
+		await waitFor(() => {
+			expect(addInlineAttachments).not.toHaveBeenCalled();
+		});
+		expect(within(editorElement).queryByRole('img')).not.toBeInTheDocument();
+	});
+
+	it('prefers the HTML table over the flattened image snapshot when pasting from Excel/Pages', async () => {
+		// Copying a table out of Excel, Pages, Word etc. puts both a real HTML
+		// table and a flattened image snapshot of the same selection on the
+		// clipboard, for apps that can't handle rich paste. This must let the
+		// HTML through to the default handler instead of uploading the image.
+		const file = new File(['x'], 'snapshot.png', { type: 'image/png' });
+		const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
+		mockEditorAttachments(addInlineAttachments);
+
+		renderEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		pasteInto(
+			editorElement,
+			[{ kind: 'file', type: 'image/png', getAsFile: (): File => file }],
+			'Header\tValue',
+			'<table><tr><td>Header</td><td>Value</td></tr></table>'
+		);
+
 		await waitFor(() => {
 			expect(addInlineAttachments).not.toHaveBeenCalled();
 		});
