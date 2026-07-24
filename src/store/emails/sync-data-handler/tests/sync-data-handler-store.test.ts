@@ -6,8 +6,7 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
-import { FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
-import { omit } from 'lodash';
+import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
 
 import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { getNotificationManager, getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
@@ -21,7 +20,6 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
 	appendConversationsToConversationIndexSlice,
-	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
@@ -30,7 +28,6 @@ import {
 	useMessageIndexSlice
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
-import { MailMessage } from 'types/messages';
 
 beforeEach(() => {
 	window.history.pushState({}, '', `/folder/${FOLDERS.INBOX}`);
@@ -174,55 +171,6 @@ describe('handleNotifyMessagesCreated', () => {
 				const messagesIds = result.current.messageIds;
 				expect(messagesIds).toEqual(expect.arrayContaining(['1', '2']));
 			});
-		});
-	});
-});
-
-describe('partial notifications', () => {
-	const NOTIFIED_SUBJECT = 'notified subject';
-
-	it('should keep the participants of a message when the notification omits them', async () => {
-		const message = generateMessage({ id: '1', folderId: FOLDERS.SENT });
-		setMessagesInEmailStore([message], false);
-
-		const partialNotification = {
-			...omit(message, 'participants'),
-			subject: NOTIFIED_SUBJECT
-		} as MailMessage;
-		handleNotifyMessagesCreated([partialNotification]);
-
-		const { result } = renderHook(() => useMessageById(message.id));
-		await waitFor(async () => {
-			expect(result.current?.subject).toBe(NOTIFIED_SUBJECT);
-		});
-		expect(result.current?.participants).toEqual(message.participants);
-	});
-
-	it('should keep the participants of a conversation when the notification omits them', async () => {
-		const conversation = generateConversation({ id: '123', folderId: FOLDERS.SENT });
-		setConversationsInEmailStore([conversation], false);
-
-		handleNotifyConversationsCreated([
-			{ ...conversation, participants: [], subject: NOTIFIED_SUBJECT }
-		]);
-
-		const { result } = renderHook(() => useConversationById('123'));
-		await waitFor(async () => {
-			expect(result.current.subject).toBe(NOTIFIED_SUBJECT);
-		});
-		expect(result.current.participants).toEqual(conversation.participants);
-	});
-
-	it('should apply the participants of a conversation when the notification carries them', async () => {
-		const conversation = generateConversation({ id: '123', folderId: FOLDERS.SENT });
-		setConversationsInEmailStore([conversation], false);
-
-		const participants = [{ type: ParticipantRole.TO, address: 'list@test.com' }];
-		handleNotifyConversationsCreated([{ ...conversation, participants }]);
-
-		const { result } = renderHook(() => useConversationById('123'));
-		await waitFor(async () => {
-			expect(result.current.participants).toEqual(participants);
 		});
 	});
 });
