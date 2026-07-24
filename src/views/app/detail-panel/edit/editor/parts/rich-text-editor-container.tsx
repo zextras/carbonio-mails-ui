@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
@@ -22,20 +22,24 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as StyledComp from './edit-view-styled-components';
 import type { TextEditorContainerProps } from './text-editor-container';
+import { AutoLinkPlugin } from '../plugins/auto-link-plugin';
 import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
+import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
+import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
 import { PastePlugin } from '../plugins/paste-plugin';
-import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
+import { RichToolbarPlugin, type UploadedInlineImage } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
+import { useEditorAttachments } from 'store/editor/index';
 
-const LexicalWrapper = styled.div<{
+export const LexicalWrapper = styled.div<{
 	$fontFamily: string;
 	$fontSize?: string;
 	$color?: string;
@@ -67,6 +71,19 @@ const LexicalWrapper = styled.div<{
 		font-family: ${({ $fontFamily }): string => $fontFamily};
 		${({ $fontSize }): string => ($fontSize ? `font-size: ${$fontSize};` : '')}
 		${({ $color }): string => ($color ? `color: ${$color};` : '')}
+	}
+
+	/* Match the paragraph spacing baked into the saved/previewed HTML
+	   (TINYMCE_BASE_CONTENT_STYLES) so blank lines look the same while typing
+	   as they do once the draft is saved and rendered in the preview. */
+	.mails-lexical-content-editable p {
+		margin: 0;
+		padding: 0;
+		margin-bottom: 16px;
+	}
+
+	.mails-lexical-content-editable p:last-child {
+		margin-bottom: 0;
 	}
 
 	.mails-lexical-placeholder {
@@ -323,6 +340,14 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 	const [showBlocks, setShowBlocks] = useState(false);
+	const { addInlineAttachments } = useEditorAttachments(editorId);
+
+	const onUploadInlineImages = useCallback(
+		(files: File[], onComplete: (attachments: UploadedInlineImage[]) => void): void => {
+			addInlineAttachments(files, { onSaveComplete: onComplete });
+		},
+		[addInlineAttachments]
+	);
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
@@ -359,6 +384,7 @@ export const RichTextEditorContainer = ({
 				table: 'mails-lexical-table',
 				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
+			html: { import: STYLE_PRESERVING_HTML_IMPORT },
 			onError: (error: Error): void => {
 				throw error;
 			}
@@ -372,9 +398,9 @@ export const RichTextEditorContainer = ({
 				<LexicalWrapper $fontFamily={fontFamily} $fontSize={fontSize} $color={color}>
 					<div className="mails-lexical-toolbar">
 						<RichToolbarPlugin
-							editorId={editorId}
 							showBlocks={showBlocks}
 							onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
+							onUploadInlineImages={onUploadInlineImages}
 						/>
 					</div>
 					<div
@@ -394,7 +420,9 @@ export const RichTextEditorContainer = ({
 					</div>
 					<HistoryPlugin />
 					<ListPlugin />
+					<ListMarkdownShortcutPlugin />
 					<LinkPlugin />
+					<AutoLinkPlugin />
 					<FloatingLinkEditorPlugin />
 					<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
 					<TableActionMenuPlugin />
