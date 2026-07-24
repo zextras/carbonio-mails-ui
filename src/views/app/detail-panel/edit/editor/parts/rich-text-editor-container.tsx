@@ -27,6 +27,7 @@ import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
+import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
@@ -419,6 +420,7 @@ export const RichTextEditorContainer = ({
 					</div>
 					<HistoryPlugin />
 					<ListPlugin />
+					<ListMarkdownShortcutPlugin />
 					<LinkPlugin />
 					<AutoLinkPlugin />
 					<FloatingLinkEditorPlugin />
