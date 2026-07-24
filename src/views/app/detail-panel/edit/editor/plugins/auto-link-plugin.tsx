@@ -12,11 +12,9 @@ import {
 
 const URL_REGEX =
 	// eslint-disable-next-line max-len
-	/((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)(?<![-.+():%])/;
+	/((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(?<![-.+():%])/;
 
-const EMAIL_REGEX =
-	// eslint-disable-next-line max-len
-	/(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+const EMAIL_REGEX = /[^<>()[\]\\,;:\s@"]{1,64}@[a-zA-Z\d-]{1,253}\.[a-zA-Z]{2,24}/;
 
 const MATCHERS = [
 	createLinkMatcherWithRegExp(URL_REGEX, (text) =>
