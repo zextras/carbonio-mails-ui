@@ -13,8 +13,8 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { isValidEmail } from 'views/search/parts/utils';
 import { Participant } from 'types/participant';
+import { isValidEmail } from 'views/search/parts/utils';
 
 /**
  * Get the name for a contact based on available fields
@@ -22,19 +22,25 @@ import { Participant } from 'types/participant';
  * @returns The contact name or undefined
  */
 const getContactName = (contact: ContactInputItem): string | undefined => {
-	if (contact.value.type !== CONTACT_TYPES.CONTACT) {
+	const { value } = contact;
+
+	if (value.type === CONTACT_TYPES.DISTRIBUTION_LIST) {
+		return value.fullName;
+	}
+
+	if (value.type !== CONTACT_TYPES.CONTACT) {
 		return undefined;
 	}
 
-	if (contact.value.fullName) {
-		return contact.value.fullName;
+	if (value.fullName) {
+		return value.fullName;
 	}
 
-	if (contact.value.firstName && contact.value.lastName) {
-		return `${contact.value.firstName} ${contact.value.lastName}`;
+	if (value.firstName && value.lastName) {
+		return `${value.firstName} ${value.lastName}`;
 	}
 
-	return contact.value.firstName;
+	return value.firstName;
 };
 
 export type RecipientsRowProps = {
@@ -99,13 +105,15 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			map<Participant, ContactInputItem>(recipients, (recipient) => {
 				const email = recipient.address;
 				const exists = contacts[email];
+				const name = recipient.fullName ?? recipient.name;
 				return (
 					exists ?? {
 						id: recipient.address,
-						label: recipient.address,
+						label: name ?? recipient.address,
 						value: {
 							id: recipient.address,
 							email: recipient.address,
+							fullName: name,
 							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 						},
 						error: !isValidEmail(recipient.address)
