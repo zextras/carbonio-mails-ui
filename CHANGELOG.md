@@ -1,3 +1,8 @@
+## 1.39.0 (2026-07-24)
+
+* feat(CO-3998): show distribution list display name in RecipientsRow (#1293) ([36a5e34](https://github.com/zextras/carbonio-mails-ui/commit/36a5e34)), closes [#1293](https://github.com/zextras/carbonio-mails-ui/issues/1293)
+* chore(deps): update typescript (#1257) ([0c8d97d](https://github.com/zextras/carbonio-mails-ui/commit/0c8d97d)), closes [#1257](https://github.com/zextras/carbonio-mails-ui/issues/1257)
+
 ## 1.38.0 (2026-07-21)
 
 * feat: update ui-commons + peer dependencies and test stability (#1292) ([337df92](https://github.com/zextras/carbonio-mails-ui/commit/337df92)), closes [#1292](https://github.com/zextras/carbonio-mails-ui/issues/1292)
