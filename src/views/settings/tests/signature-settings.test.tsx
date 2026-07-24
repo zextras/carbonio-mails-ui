@@ -9,9 +9,11 @@ import { within } from '@testing-library/react';
 import { times } from 'lodash';
 
 import { setupTest, screen } from '@test-setup';
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { handleGetSignaturesRequest } from '@test-utils/network/msw/handle-get-signatures';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { buildSignature } from '__test__/generators/signatures';
+import { LOCAL_STORAGE_LEGACY_EDITOR } from 'constants/index';
 import { SignatureSettingsPropsType, SignItemType } from 'types/settings';
 import SignatureSettings from 'views/settings/signature-settings';
 
@@ -40,6 +42,12 @@ vi.mock('@zextras/carbonio-ui-text-composer', () => ({
 }));
 
 const FIND_TIMEOUT = 2000;
+
+const mockLegacyEditor = (useLegacy: boolean): void => {
+	useLocalStorage.mockImplementation((key: string) =>
+		key === LOCAL_STORAGE_LEGACY_EDITOR ? [useLegacy, vi.fn()] : [undefined, vi.fn()]
+	);
+};
 
 const buildProps = ({
 	updatedIdentities = [],
@@ -79,6 +87,7 @@ describe('Signature settings', () => {
 	beforeAll(() => {
 		handleGetSignaturesRequest([]);
 	});
+
 	it('should render the section title', () => {
 		setupTest(<SignatureSettings {...buildProps({})} />);
 		expect(screen.getByText('signatures.signature_heading')).toBeVisible();
@@ -281,5 +290,161 @@ describe('Signature settings', () => {
 		const signatures: Array<SignItemType> = [{ ...buildSignature({}) }];
 		setupTest(<SignatureSettings {...buildProps({ signatures })} />);
 		expect(screen.getByTestId(TESTID_SELECTORS.signatureEditor)).toBeEnabled();
+	});
+
+	describe('when the new rich text editor is enabled', () => {
+		beforeEach(() => {
+			mockLegacyEditor(false);
+		});
+
+		it('should render the new editor instead of the legacy composer', () => {
+			setupTest(<SignatureSettings {...buildProps({})} />);
+			expect(screen.getByTestId(TESTID_SELECTORS.signatureEditor)).toBeVisible();
+			expect(screen.queryByTestId('signature-editor-textarea')).not.toBeInTheDocument();
+		});
+
+		it('should display the content of the currently selected signature', async () => {
+			const signature = buildSignature({});
+			const description = signature.description ?? '';
+			const signatures: Array<SignItemType> = [signature];
+			handleGetSignaturesRequest(signatures);
+			setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+			await within(editor).findByText(description);
+		});
+
+		it('should update the signature description when the user types in the editor', async () => {
+			const signature = buildSignature({});
+			const description = signature.description ?? '';
+			const signatures: Array<SignItemType> = [signature];
+			handleGetSignaturesRequest(signatures);
+			const { user } = setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+			const textNode = await within(editor).findByText(description);
+			await user.click(textNode);
+			await user.keyboard(' edited');
+
+			await within(editor).findByText(`${description} edited`);
+		});
+
+		it('should show the content of the newly selected signature after editing and switching away from another one', async () => {
+			const signatureA = buildSignature({
+				label: 'Signature A',
+				name: 'Signature A',
+				content: [{ type: 'text/html', _content: 'content A' }]
+			});
+			const signatureB = buildSignature({
+				label: 'Signature B',
+				name: 'Signature B',
+				content: [{ type: 'text/html', _content: 'content B' }]
+			});
+			const signatures: Array<SignItemType> = [signatureA, signatureB];
+			handleGetSignaturesRequest(signatures);
+			const { user } = setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signatureA.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+
+			const textA = await within(editor).findByText('content A');
+			await user.click(textA);
+			await user.keyboard(' edited');
+			await within(editor).findByText('content A edited');
+
+			await user.click(await within(list).findByText(signatureB.name));
+			await within(editor).findByText('content B');
+			expect(within(editor).queryByText(/content A/)).not.toBeInTheDocument();
+
+			await user.click(await within(list).findByText(signatureA.name));
+			await within(editor).findByText('content A edited');
+			expect(within(editor).queryByText('content B')).not.toBeInTheDocument();
+		});
+
+		it('should disable the signature content editor if no signature is currently selected', () => {
+			setupTest(<SignatureSettings {...buildProps({})} />);
+			const contentEditable = screen.getByTestId('signature-editor-content-editable');
+			expect(contentEditable).toHaveAttribute('contenteditable', 'false');
+		});
+
+		it('should keep the applied text color after switching to another signature and back', async () => {
+			const signatureA = buildSignature({
+				label: 'Signature A',
+				name: 'Signature A',
+				content: [{ type: 'text/html', _content: 'colored text' }]
+			});
+			const signatureB = buildSignature({
+				label: 'Signature B',
+				name: 'Signature B',
+				content: [{ type: 'text/html', _content: 'content B' }]
+			});
+			const signatures: Array<SignItemType> = [signatureA, signatureB];
+			handleGetSignaturesRequest(signatures);
+			const { user } = setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signatureA.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+
+			const textA = await within(editor).findByText('colored text');
+			await user.click(textA);
+			await user.keyboard('{Control>}a{/Control}');
+			await user.click(screen.getByRole('button', { name: 'lexical-label.text_color' }));
+			await user.click(await screen.findByTestId('color-swatch-red'));
+
+			const coloredNode = await within(editor).findByText('colored text');
+			expect(coloredNode).toHaveStyle({ color: 'rgb(239, 83, 80)' });
+
+			await user.click(await within(list).findByText(signatureB.name));
+			await within(editor).findByText('content B');
+
+			await user.click(await within(list).findByText(signatureA.name));
+			const reloadedNode = await within(editor).findByText('colored text');
+			expect(reloadedNode).toHaveStyle({ color: 'rgb(239, 83, 80)' });
+		});
+
+		it('should preserve the color from a signature authored with legacy <font color> markup', async () => {
+			const signature = buildSignature({
+				content: [{ type: 'text/html', _content: '<font color="#ff0000">legacy red text</font>' }]
+			});
+			const signatures: Array<SignItemType> = [signature];
+			handleGetSignaturesRequest(signatures);
+			setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+			const coloredNode = await within(editor).findByText('legacy red text');
+			expect(coloredNode).toHaveStyle({ color: '#ff0000' });
+		});
+
+		it('should preserve color combined with another format (e.g. italic) after reload', async () => {
+			const signature = buildSignature({
+				content: [
+					{
+						type: 'text/html',
+						_content:
+							'<p><i><em style="color: rgb(239, 83, 80); white-space: pre-wrap;">Developer</em></i></p>'
+					}
+				]
+			});
+			const signatures: Array<SignItemType> = [signature];
+			handleGetSignaturesRequest(signatures);
+			setupTest(<SettingsViewMock preloadedSignatures={signatures} />);
+
+			await screen.findByText(signature.name, undefined, { timeout: FIND_TIMEOUT });
+
+			const editor = screen.getByTestId(TESTID_SELECTORS.signatureEditor);
+			const coloredNode = await within(editor).findByText('Developer');
+			expect(coloredNode).toHaveStyle({ color: 'rgb(239, 83, 80)' });
+			expect(coloredNode.tagName.toLowerCase()).toBe('em');
+		});
 	});
 });

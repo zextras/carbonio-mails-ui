@@ -24,8 +24,10 @@ import { reject, concat, map } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from 'helpers/signatures';
+import { useLegacyEditor } from 'hooks/use-legacy-editor';
 import { SignatureSettingsPropsType, SignItemType } from 'types/settings';
 import SelectIdentitySignature from 'views/settings/components/select-identity-signature';
+import { SignatureRichTextEditor } from 'views/settings/components/signature-rich-text-editor';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 import { ListOld } from 'views/settings/list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from 'views/settings/subsections';
@@ -70,6 +72,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	setSignatures
 }): ReactElement => {
 	const [currentSignature, setCurrentSignature] = useState<SignItemType | undefined>(undefined);
+	const { useLegacyEditor: shouldUseLegacyEditor } = useLegacyEditor();
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const editorRef = useRef<{ editor: EditorType | undefined }>({
@@ -226,18 +229,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
 	);
 
-	const onSignatureContentChange = useCallback(
-		(values: [string, string]): void => {
-			if (!getEditor()?.hasFocus()) {
-				return;
-			}
-
+	const applySignatureDescription = useCallback(
+		(newDescription: string): void => {
 			if (currentSignature === undefined) {
 				return;
 			}
-
-			// Rich text signature - values[1] contains the HTML content
-			const newDescription = values[1];
 
 			if (currentSignature?.description === newDescription) {
 				return;
@@ -264,6 +260,25 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			setSignatures(updatedSign);
 		},
 		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
+	);
+
+	const onSignatureContentChange = useCallback(
+		(values: [string, string]): void => {
+			if (!getEditor()?.hasFocus()) {
+				return;
+			}
+
+			// Rich text signature - values[1] contains the HTML content
+			applySignatureDescription(values[1]);
+		},
+		[applySignatureDescription]
+	);
+
+	const onSignatureRichTextChange = useCallback(
+		(html: string): void => {
+			applySignatureDescription(html);
+		},
+		[applySignatureDescription]
 	);
 
 	const onEditorInitialization = (editor: EditorType): void => {
@@ -319,17 +334,26 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								label={t('signatures.name', 'Name')}
 								value={currentSignature?.name ?? ''}
 								disabled={editingDisabled}
-								backgroundColor="gray5"
+								color="gray5"
 								onChange={onSignatureNameChange}
 							/>
 							<EditorWrapper>
-								<Composer
-									data-testid={'signature-editor'}
-									value={currentSignature?.description ?? ''}
-									customInitOptions={composerCustomOptions}
-									onEditorChange={onSignatureContentChange}
-									disabled={editingDisabled}
-								/>
+								{shouldUseLegacyEditor ? (
+									<Composer
+										data-testid={'signature-editor'}
+										value={currentSignature?.description ?? ''}
+										customInitOptions={composerCustomOptions}
+										onEditorChange={onSignatureContentChange}
+										disabled={editingDisabled}
+									/>
+								) : (
+									<SignatureRichTextEditor
+										data-testid={'signature-editor'}
+										value={currentSignature?.description ?? ''}
+										onChange={onSignatureRichTextChange}
+										disabled={editingDisabled}
+									/>
+								)}
 							</EditorWrapper>
 						</Container>
 					</Container>
