@@ -18,7 +18,7 @@ beforeAll(() => {
 	installRangeRectPolyfill();
 });
 
-export const headingSelector = (editorElement: HTMLElement, level: number) =>
+export const headingSelector = (editorElement: HTMLElement, level: number): HTMLElement =>
 	within(editorElement).getByRole('heading', { level });
 
 describe('RichToolbarPlugin - block styles and lists', () => {
