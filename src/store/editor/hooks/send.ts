@@ -19,6 +19,7 @@ import { SaveDraftResponse } from 'types/soap/save-draft';
 export type SendMessageOptions = {
 	cancelable?: boolean;
 	onCountdownTick?: (countdown: number, cancel: () => void) => void;
+	onSendStart?: () => void;
 	onComplete?: () => void;
 	onError?: (error: SaveDraftResponse | ErrorSoapBodyResponse) => void;
 	onCancel?: () => void;
@@ -49,6 +50,46 @@ const waitForDraftSaveComplete = (editorId: MailsEditorV2['id']): Promise<void> 
 			resolve();
 		}
 	});
+
+/**
+ * Issues the send request to the server and updates the editor status according to the outcome.
+ * Notifies the caller through the relevant callback when the request starts, completes or fails.
+ * @param editorId
+ * @param options
+ */
+const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOptions): void => {
+	const editor = getEditor({ id: editorId });
+	if (!editor?.identityId) {
+		return;
+	}
+	options?.onSendStart && options.onSendStart();
+	sendMsgFromEditor({ editor })
+		.then((res) => {
+			if ('Fault' in res) {
+				const errorDescription: string = res.Fault.Reason.Text;
+				useEditorsStore.getState().setSendProcessStatus(editorId, {
+					status: 'aborted',
+					abortReason: errorDescription
+				});
+				computeAndUpdateEditorStatus(editorId);
+				options?.onError && options.onError(res);
+			} else {
+				useEditorsStore.getState().setSendProcessStatus(editorId, {
+					status: 'completed'
+				});
+				computeAndUpdateEditorStatus(editorId);
+				options?.onComplete && options.onComplete();
+			}
+		})
+		.catch((err) => {
+			useEditorsStore.getState().setSendProcessStatus(editorId, {
+				status: 'aborted',
+				abortReason: err
+			});
+			computeAndUpdateEditorStatus(editorId);
+			options?.onError && options.onError(err);
+		});
+};
 
 /**
  *
@@ -106,34 +147,7 @@ const sendFromEditor = (
 			if (sendStatus !== 'running') {
 				return;
 			}
-			const editor = getEditor({ id: editorId });
-			editor?.identityId &&
-				sendMsgFromEditor({ editor })
-					.then((res) => {
-						if ('Fault' in res) {
-							const errorDescription: string = res.Fault.Reason.Text;
-							useEditorsStore.getState().setSendProcessStatus(editorId, {
-								status: 'aborted',
-								abortReason: errorDescription
-							});
-							computeAndUpdateEditorStatus(editorId);
-							options?.onError && options.onError(res);
-						} else {
-							useEditorsStore.getState().setSendProcessStatus(editorId, {
-								status: 'completed'
-							});
-							computeAndUpdateEditorStatus(editorId);
-							options?.onComplete && options.onComplete();
-						}
-					})
-					.catch((err) => {
-						useEditorsStore.getState().setSendProcessStatus(editorId, {
-							status: 'aborted',
-							abortReason: err
-						});
-						computeAndUpdateEditorStatus(editorId);
-						options?.onError && options.onError(err);
-					});
+			issueSendRequest(editorId, options);
 		})
 		.catch((err) => {
 			useEditorsStore.getState().setSendProcessStatus(editorId, {
