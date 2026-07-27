@@ -21,6 +21,7 @@ import {
 	type HeadingTagType
 } from '@lexical/rich-text';
 import {
+	$forEachSelectedTextNode,
 	$getSelectionStyleValueForProperty,
 	$patchStyleText,
 	$setBlocksType
@@ -416,17 +417,10 @@ export const RichToolbarPlugin = ({
 		(styles: Record<string, string>): void => {
 			editor.update(() => {
 				const selection = $getSelection();
-				// Fall back to the last known valid selection: the color inputs open a
-				// native, focus-stealing dialog, which by the time it resolves may have
-				// left the live selection null even though the user's intent still
-				// targets the text they had selected before opening it.
 				const targetSelection = $isRangeSelection(selection)
 					? selection
 					: lastRangeSelectionRef.current;
 				if ($isRangeSelection(targetSelection)) {
-					// $patchStyleText resolves the nodes to style via $getSelection()
-					// internally rather than the selection argument, so the target
-					// selection must be (re)installed as the active selection first.
 					$setSelection(targetSelection);
 					$patchStyleText(targetSelection, styles);
 				}
@@ -434,6 +428,33 @@ export const RichToolbarPlugin = ({
 		},
 		[editor]
 	);
+
+	const clearFormatting = useCallback((): void => {
+		editor.update(() => {
+			const selection = $getSelection();
+			const targetSelection = $isRangeSelection(selection)
+				? selection
+				: lastRangeSelectionRef.current;
+			if ($isRangeSelection(targetSelection)) {
+				$setSelection(targetSelection);
+
+				const blocksToReset = new Map<string, ElementNode>();
+				targetSelection.getNodes().forEach((node) => {
+					const topLevel = node.getTopLevelElement();
+					if ($isElementNode(topLevel) && ($isHeadingNode(topLevel) || $isQuoteNode(topLevel))) {
+						blocksToReset.set(topLevel.getKey(), topLevel);
+					}
+				});
+
+				$forEachSelectedTextNode((textNode) => {
+					textNode.setFormat(0);
+					textNode.setStyle('');
+				});
+
+				blocksToReset.forEach((block) => block.replace($createParagraphNode(), true));
+			}
+		});
+	}, [editor]);
 
 	const setDirection = useCallback(
 		(direction: 'ltr' | 'rtl'): void => {
@@ -750,9 +771,7 @@ export const RichToolbarPlugin = ({
 			<ToolbarIconButton
 				icon={editorIcon('remove-formatting')}
 				label={t('lexical-label.remove_format', 'Clear formatting')}
-				onClick={(): void =>
-					patchStyle({ color: '', 'background-color': '', 'font-size': '', 'font-family': '' })
-				}
+				onClick={clearFormatting}
 			/>
 
 			<ToolbarDivider />

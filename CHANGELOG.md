@@ -1,3 +1,12 @@
+## 1.40.0 (2026-07-27)
+
+* fix: fix clear formatting functionality in RichToolbarPlugin (#1297) ([9dca596](https://github.com/zextras/carbonio-mails-ui/commit/9dca596)), closes [#1297](https://github.com/zextras/carbonio-mails-ui/issues/1297)
+* feat: add onSendStart callback to notify user when send request is initiated ([e075999](https://github.com/zextras/carbonio-mails-ui/commit/e075999))
+
+## <small>1.39.1 (2026-07-24)</small>
+
+* fix(CO-4023): copy paste table from excel does not keep the style and missing signature in settings  ([743183f](https://github.com/zextras/carbonio-mails-ui/commit/743183f)), closes [#1295](https://github.com/zextras/carbonio-mails-ui/issues/1295)
+
 ## 1.39.0 (2026-07-24)
 
 * feat(CO-3998): show distribution list display name in RecipientsRow (#1293) ([36a5e34](https://github.com/zextras/carbonio-mails-ui/commit/36a5e34)), closes [#1293](https://github.com/zextras/carbonio-mails-ui/issues/1293)
