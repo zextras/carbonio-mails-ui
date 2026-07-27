@@ -10,6 +10,7 @@ import {
 	$getRoot,
 	$getSelection,
 	$isRangeSelection,
+	$isTextNode,
 	$setSelection,
 	type LexicalEditor
 } from 'lexical';
@@ -186,8 +187,116 @@ describe('RichToolbarPlugin', () => {
 			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
 
 			await waitFor(() => {
-				expect(richTextOf(editorId)).not.toContain('font-family: tahoma');
+				expect(richTextOf(editorId)).not.toContain('tahoma');
 			});
+		});
+
+		it('clears active bold/italic/underline/strikethrough with the remove-formatting control', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: BOLD_LABEL }));
+			await user.click(screen.getByRole('button', { name: 'lexical-label.italic' }));
+			await user.click(screen.getByRole('button', { name: 'lexical-label.underline' }));
+			await user.click(screen.getByRole('button', { name: 'lexical-label.strikethrough' }));
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('font-weight: bold');
+			});
+			expect(richTextOf(editorId)).toContain('font-style: italic');
+			expect(richTextOf(editorId)).toContain('text-decoration');
+
+			await user.click(screen.getByTestId(EDITOR_TESTID));
+			await user.keyboard('{Control>}a{/Control}');
+			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).not.toContain('font-weight: bold');
+			});
+			expect(richTextOf(editorId)).not.toContain('font-style: italic');
+			expect(richTextOf(editorId)).not.toContain('text-decoration');
+		});
+
+		it('clears bold from a selection that only covers part of an already-bold node', async () => {
+			const { editorId, user, editorElement } = await setupWithSelectedContent();
+
+			await user.click(screen.getByRole('button', { name: BOLD_LABEL }));
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('font-weight: bold');
+			});
+
+			const editorWithInstance = editorElement as HTMLElement & {
+				__lexicalEditor: LexicalEditor;
+			};
+			act(() => {
+				editorWithInstance.__lexicalEditor.update(() => {
+					const textNode = $getRoot().getFirstDescendant();
+					if ($isTextNode(textNode)) {
+						// Selects only "world" out of the fully-bold "hello world" node.
+						textNode.select(6, 11);
+					}
+				});
+			});
+
+			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+			await waitFor(() => {
+				expect(screen.getByText('world')).not.toHaveStyle({ fontWeight: 'bold' });
+			});
+			expect(screen.getByText('hello')).toHaveStyle({ fontWeight: 'bold' });
+		});
+
+		it('clears formatting across a selection spanning lines with different formats', async () => {
+			const richText = '<p><strong>hello</strong></p><p><em>world</em></p><p>plain</p>';
+			const { editorId, user } = setupEditor(richText);
+			const editorElement = screen.getByTestId(EDITOR_TESTID);
+			await within(editorElement).findByText('plain');
+			await user.click(editorElement);
+			await user.keyboard('{Control>}a{/Control}');
+
+			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).not.toContain('font-weight: bold');
+			});
+			expect(richTextOf(editorId)).not.toContain('<strong');
+			expect(richTextOf(editorId)).not.toContain('font-style: italic');
+			expect(richTextOf(editorId)).not.toContain('<em>');
+		});
+
+		it('resets a heading back to a paragraph with the remove-formatting control', async () => {
+			const { editorId, editorElement, user } = await setupWithSelectedContent();
+
+			await openSelect(user, SELECT_INDEX.paragraph);
+			await user.click(await screen.findByText('lexical-label.heading_1'));
+			await within(editorElement).findByRole('heading', { level: 1 });
+
+			await user.click(screen.getByTestId(EDITOR_TESTID));
+			await user.keyboard('{Control>}a{/Control}');
+			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+			await waitFor(() => {
+				expect(within(editorElement).queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
+			});
+			expect(richTextOf(editorId)).not.toContain('<h1');
+			expect(richTextOf(editorId)).toContain('<p ');
+		});
+
+		it('resets a blockquote back to a paragraph with the remove-formatting control', async () => {
+			const { editorId, user } = await setupWithSelectedContent();
+
+			await openSelect(user, SELECT_INDEX.paragraph);
+			await user.click(await screen.findByText('lexical-label.blockquote'));
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain('<blockquote');
+			});
+
+			await user.click(screen.getByTestId(EDITOR_TESTID));
+			await user.keyboard('{Control>}a{/Control}');
+			await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).not.toContain('<blockquote');
+			});
+			expect(richTextOf(editorId)).toContain('<p ');
 		});
 	});
 
@@ -371,10 +480,6 @@ describe('RichToolbarPlugin', () => {
 			await user.click(screen.getByRole('button', { name: TEXT_COLOR_LABEL }));
 			const hexInput = await screen.findByTestId('color-swatch-picker-hex-input');
 
-			// Simulate the live selection being lost while the picker is open (the
-			// same failure mode the native color-picker dialog used to trigger),
-			// then confirm committing a color through the hex field still lands on
-			// the text that was selected before the selection was lost.
 			const editorElement = screen.getByTestId(EDITOR_TESTID) as HTMLElement & {
 				__lexicalEditor: LexicalEditor;
 			};
@@ -393,18 +498,6 @@ describe('RichToolbarPlugin', () => {
 		});
 
 		it('sets the pending format for the next typed characters when picking a color with the caret collapsed (no selection)', async () => {
-			// This is the bug report's exact scenario: "write something, pick a
-			// different color, start writing again" — the new color must apply to
-			// characters typed *after* the caret, not just to already-selected
-			// text. For a collapsed selection Lexical tracks that as a pending
-			// `style` on the live `RangeSelection` (see `$patchStyleText`'s
-			// collapsed-selection branch), so this asserts that field directly
-			// rather than simulating the rest of the keystrokes: jsdom's zeroed
-			// layout geometry makes it resolve any further real click back into
-			// the editor to an imprecise caret position, which would reset the
-			// pending format the same way it would for an actual (non-buggy)
-			// click to a different spot in a real browser — an environment
-			// limitation, not something this fix controls.
 			const { user } = await setupWithSelectedContent();
 
 			const editorElement = screen.getByTestId(EDITOR_TESTID) as HTMLElement & {
