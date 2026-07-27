@@ -1,3 +1,7 @@
+## <small>1.39.1 (2026-07-24)</small>
+
+* fix(CO-4023): copy paste table from excel does not keep the style and missing signature in settings  ([743183f](https://github.com/zextras/carbonio-mails-ui/commit/743183f)), closes [#1295](https://github.com/zextras/carbonio-mails-ui/issues/1295)
+
 ## 1.39.0 (2026-07-24)
 
 * feat(CO-3998): show distribution list display name in RecipientsRow (#1293) ([36a5e34](https://github.com/zextras/carbonio-mails-ui/commit/36a5e34)), closes [#1293](https://github.com/zextras/carbonio-mails-ui/issues/1293)
