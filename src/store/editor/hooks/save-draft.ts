@@ -26,22 +26,50 @@ export type SaveDraftOptions = {
 
 export type SaveDraftFunction = (options?: SaveDraftOptions) => void;
 
+const DURATION_UNIT_TO_MILLIS: Record<string, number> = {
+	ms: 1,
+	s: 1000,
+	m: 60 * 1000,
+	h: 60 * 60 * 1000,
+	d: 24 * 60 * 60 * 1000
+};
+
+const DURATION_PATTERN = /^(\d+)(ms|[smhd])$/;
+
+/**
+ * Parses a Zimbra duration string (e.g. `30s`, `2m`, `500ms`) into milliseconds.
+ * Returns `undefined` when the value is missing or does not match a supported
+ * `<amount><unit>` format.
+ */
+function parseDurationToMillis(value: string | undefined): number | undefined {
+	if (!value) {
+		return undefined;
+	}
+	const match = DURATION_PATTERN.exec(value.trim());
+	if (!match) {
+		return undefined;
+	}
+	const [, amount, unit] = match;
+	return parseInt(amount, 10) * DURATION_UNIT_TO_MILLIS[unit];
+}
+
+/**
+ * Returns the delay used to debounce the draft auto-save, reading it from the
+ * `zimbraPrefAutoSaveDraftInterval` user preference.
+ *
+ * The configured value is respected as-is. When the preference is missing,
+ * invalid or set to zero (auto-save disabled from a Zimbra standpoint is not
+ * supported here) the default {@link TIMEOUTS.DRAFT_SAVE_DELAY} is used.
+ */
 function getDraftSaveDelay(): number {
-	const maximumDraftSaveDelay = TIMEOUTS.DRAFT_SAVE_DELAY;
-	const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval as string;
-	if (!autoSaveDraftSettings || autoSaveDraftSettings === '0') {
+	const autoSaveDraftInterval = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval as
+		| string
+		| undefined;
+	const configuredDelay = parseDurationToMillis(autoSaveDraftInterval);
+	if (configuredDelay === undefined || configuredDelay <= 0) {
 		return TIMEOUTS.DRAFT_SAVE_DELAY;
 	}
-	if (autoSaveDraftSettings.includes('s')) {
-		autoSaveDraftSettings.replace('s', '');
-		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000, maximumDraftSaveDelay);
-	}
-	// FIXME: comparing minutes with 2 seconds will always result in 2 seconds to be the minimum, consider to remove this code if this is the case
-	if (autoSaveDraftSettings.includes('m')) {
-		autoSaveDraftSettings.replace('m', '');
-		return Math.min(parseInt(autoSaveDraftSettings, 10) * 1000 * 60, maximumDraftSaveDelay);
-	}
-	return TIMEOUTS.DRAFT_SAVE_DELAY;
+	return configuredDelay;
 }
 
 /**

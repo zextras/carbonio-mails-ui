@@ -88,6 +88,7 @@ describe('useEditorDraftSave', () => {
 	});
 	describe('Debounced save draft', () => {
 		it('calls the SaveDraft after 2s by default', async () => {
+			unSetSaveDraftDelaySetting();
 			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
 				initialProps: [editor.id]
@@ -100,6 +101,7 @@ describe('useEditorDraftSave', () => {
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('stops the previous save draft call when invoked again', async () => {
+			unSetSaveDraftDelaySetting();
 			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
 				initialProps: [editor.id]
@@ -129,7 +131,7 @@ describe('useEditorDraftSave', () => {
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
-		it('calls SaveDraft after 2s if save draft setting is 3s (more than default)', async () => {
+		it('calls SaveDraft after 3s if save draft setting is 3s (more than default)', async () => {
 			setSaveDraftDelaySetting('3s');
 			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
@@ -139,8 +141,8 @@ describe('useEditorDraftSave', () => {
 
 			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
-			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
-			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
+			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting is not set', async () => {
 			unSetSaveDraftDelaySetting();
@@ -156,8 +158,7 @@ describe('useEditorDraftSave', () => {
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
 
-		// FIXME: this is probably a bug in th code
-		it('calls SaveDraft after 0s if save draft setting is 0s', async () => {
+		it('calls SaveDraft after 2s (default) if save draft setting is 0s', async () => {
 			setSaveDraftDelaySetting('0s');
 			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
@@ -166,7 +167,9 @@ describe('useEditorDraftSave', () => {
 			const { saveDraftApi } = setupSaveDraftApi();
 
 			act(() => hookResult.current.debouncedSaveDraft());
-			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 1 });
+			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting is 0', async () => {
 			setSaveDraftDelaySetting('0');
@@ -181,7 +184,7 @@ describe('useEditorDraftSave', () => {
 			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
 			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
 		});
-		it('calls SaveDraft after 2s if save draft setting is 2m (minutes)', async () => {
+		it('calls SaveDraft after 2m if save draft setting is 2m (minutes)', async () => {
 			setSaveDraftDelaySetting('2m');
 			const { editor } = setupSaveDraftTest();
 			const { result: hookResult } = setupHook(useSaveDraftFromEditor, {
@@ -191,8 +194,8 @@ describe('useEditorDraftSave', () => {
 
 			act(() => hookResult.current.debouncedSaveDraft());
 			await expectedCallsAfterSeconds({ seconds: 0, api: saveDraftApi, calls: 0 });
-			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 0 });
-			await expectedCallsAfterSeconds({ seconds: 2, api: saveDraftApi, calls: 1 });
+			await expectedCallsAfterSeconds({ seconds: 119, api: saveDraftApi, calls: 0 });
+			await expectedCallsAfterSeconds({ seconds: 1, api: saveDraftApi, calls: 1 });
 		});
 		it('calls SaveDraft after 2s if save draft setting has no unit and is not 0', async () => {
 			setSaveDraftDelaySetting('100');
