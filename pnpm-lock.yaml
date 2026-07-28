@@ -63,8 +63,8 @@ importers:
         specifier: 5.18.0
         version: 5.18.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/webpack':
-        specifier: 5.28.2
-        version: 5.28.2(postcss@8.5.3)
+        specifier: 5.28.5
+        version: 5.28.5(postcss@8.5.3)
       '@types/webpack-env':
         specifier: 1.18.1
         version: 1.18.1
@@ -2410,8 +2410,8 @@ packages:
   '@types/webpack-env@1.18.1':
     resolution: {integrity: sha512-D0HJET2/UY6k9L6y3f5BL+IDxZmPkYmPT4+qBrRdmRLYRuV0qNKizMgTvYxXZYn+36zjPeoDZAEYBCM6XB+gww==}
 
-  '@types/webpack@5.28.2':
-    resolution: {integrity: sha512-7tcxyrIOd7WGimZIcWU6pDsNh2edGGnwYExOvd3l/nMvuxqwVPrFXnnTbYCnplqV9BJoU7Mo2mfFtiH8CNFvYw==}
+  '@types/webpack@5.28.5':
+    resolution: {integrity: sha512-wR87cgvxj3p6D0Crt1r5avwqffqPXUkNlnQ1mjU93G7gCuFjufZR4I6j8cz5g1F1tTYpfOOFvly+cmIQwL9wvw==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -10418,7 +10418,7 @@ snapshots:
 
   '@types/webpack-env@1.18.1': {}
 
-  '@types/webpack@5.28.2(postcss@8.5.3)':
+  '@types/webpack@5.28.5(postcss@8.5.3)':
     dependencies:
       '@types/node': 25.9.1
       tapable: 2.3.3
