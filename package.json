@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.40.0",
+	"version": "1.40.1",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"packageManager": "pnpm@10.32.1",
@@ -114,7 +114,7 @@
 		"@lexical/utils": "0.45.0",
 		"@mui/icons-material": "5.18.0",
 		"@mui/material": "5.18.0",
-		"@types/webpack": "5.28.2",
+		"@types/webpack": "5.28.5",
 		"@types/webpack-env": "1.18.1",
 		"@zextras/carbonio-design-system": "12.0.4",
 		"@zextras/carbonio-shell-ui": "14.2.2",

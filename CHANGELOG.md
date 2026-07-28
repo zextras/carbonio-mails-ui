@@ -1,3 +1,7 @@
+## <small>1.40.1 (2026-07-28)</small>
+
+* fix(deps): update dependency @types/webpack to v5.28.5 (#1259) ([75868ca](https://github.com/zextras/carbonio-mails-ui/commit/75868ca)), closes [#1259](https://github.com/zextras/carbonio-mails-ui/issues/1259)
+
 ## 1.40.0 (2026-07-27)
 
 * fix: fix clear formatting functionality in RichToolbarPlugin (#1297) ([9dca596](https://github.com/zextras/carbonio-mails-ui/commit/9dca596)), closes [#1297](https://github.com/zextras/carbonio-mails-ui/issues/1297)
