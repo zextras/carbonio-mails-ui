@@ -3,81 +3,37 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-import styled from '@emotion/styled';
-import {
-	$isListNode,
-	INSERT_ORDERED_LIST_COMMAND,
-	INSERT_UNORDERED_LIST_COMMAND,
-	ListNode
-} from '@lexical/list';
+import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import {
-	$createHeadingNode,
-	$createQuoteNode,
-	$isHeadingNode,
-	$isQuoteNode,
-	type HeadingTagType
-} from '@lexical/rich-text';
-import {
-	$forEachSelectedTextNode,
-	$getSelectionStyleValueForProperty,
-	$patchStyleText,
-	$setBlocksType
-} from '@lexical/selection';
-import { INSERT_TABLE_COMMAND } from '@lexical/table';
-import { $getNearestNodeOfType } from '@lexical/utils';
-import {
-	Button,
-	Container,
-	Dropdown,
-	DropdownItem,
-	type IconProps,
-	Row,
-	Select,
-	SelectItem,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Button, Container, Dropdown, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import {
-	$createParagraphNode,
-	$getSelection,
-	$isElementNode,
-	$isNodeSelection,
-	$isRangeSelection,
-	$setSelection,
-	COMMAND_PRIORITY_LOW,
-	type ElementFormatType,
-	type ElementNode,
-	FORMAT_ELEMENT_COMMAND,
-	FORMAT_TEXT_COMMAND,
-	INDENT_CONTENT_COMMAND,
-	OUTDENT_CONTENT_COMMAND,
-	type RangeSelection,
-	type TextFormatType
-} from 'lexical';
+import { INDENT_CONTENT_COMMAND, OUTDENT_CONTENT_COMMAND } from 'lexical';
 
-import { ColorSwatchPicker } from './color-swatch-picker';
-import { EmojiPicker, type Emoji } from './emoji-picker';
+import { ColorPickerToolbarButton } from './color-picker-toolbar-button';
 import { ImageModal } from './image-modal';
-import {
-	INSERT_INLINE_IMAGE_COMMAND,
-	OPEN_IMAGE_MODAL_COMMAND,
-	SET_INLINE_IMAGE_ALIGNMENT_COMMAND
-} from './image-plugin';
 import { LinkModal } from './link-modal';
-import { $isImageNode, type ImageAlignment } from './nodes/image-node';
+import { useAlignmentAndDirection } from './rich-toolbar-plugin-hooks/use-alignment-and-direction';
+import { useBlockType } from './rich-toolbar-plugin-hooks/use-block-type';
+import { useEmojiAndSpecialCharacters } from './rich-toolbar-plugin-hooks/use-emoji-and-special-characters';
+import { useFontAndSizeSelects } from './rich-toolbar-plugin-hooks/use-font-and-size-selects';
+import {
+	useImageActions,
+	type UploadedInlineImage
+} from './rich-toolbar-plugin-hooks/use-image-actions';
+import { useStylePatching } from './rich-toolbar-plugin-hooks/use-style-patching';
+import { useTableInsert } from './rich-toolbar-plugin-hooks/use-table-insert';
+import { useTextFormatting } from './rich-toolbar-plugin-hooks/use-text-formatting';
+import { useToolbarSelectionSync } from './rich-toolbar-plugin-hooks/use-toolbar-selection-sync';
+import { type BlockType } from './rich-toolbar-plugin-model';
 import { SourceCodeModal } from './source-code-modal';
-import { SpecialCharacterPicker } from './special-character-picker';
-import { TableGridPicker } from './table-grid-picker';
+import { ToolbarDivider } from './toolbar-divider';
+import { ToolbarIconButton } from './toolbar-icon-button';
+import { ToolbarSelect } from './toolbar-select';
 import { editorIcon } from '../icons/editor-icons';
-import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
-export type UploadedInlineImage = {
-	downloadServiceUrl?: string;
-	cidUrl?: string;
-};
+export type { UploadedInlineImage } from './rich-toolbar-plugin-hooks/use-image-actions';
 
 type RichToolbarPluginProps = {
 	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
@@ -95,235 +51,6 @@ type RichToolbarPluginProps = {
 	) => void;
 };
 
-type BlockType = 'paragraph' | 'quote' | HeadingTagType;
-
-function $selectionHasImage(): boolean {
-	const selection = $getSelection();
-	return $isNodeSelection(selection) && selection.getNodes().some((node) => $isImageNode(node));
-}
-
-function $getSelectionBlockType(): BlockType {
-	const selection = $getSelection();
-	if (!$isRangeSelection(selection)) {
-		return 'paragraph';
-	}
-	const anchorNode = selection.anchor.getNode();
-	const element = anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElement();
-	if ($isHeadingNode(element)) {
-		return element.getTag();
-	}
-	if ($isQuoteNode(element)) {
-		return 'quote';
-	}
-	return 'paragraph';
-}
-
-const normalizeCssValue = (value: string): string =>
-	value.toLowerCase().replace(/\s+/g, ' ').trim();
-
-type TextFormatsState = {
-	bold: boolean;
-	italic: boolean;
-	underline: boolean;
-	strikethrough: boolean;
-};
-
-type ActiveFormatting = {
-	formats: TextFormatsState;
-	align: ElementFormatType;
-	direction: 'ltr' | 'rtl';
-	list: 'bullet' | 'number' | null;
-};
-
-const DEFAULT_ACTIVE_FORMATTING: ActiveFormatting = {
-	formats: { bold: false, italic: false, underline: false, strikethrough: false },
-	align: 'left',
-	direction: 'ltr',
-	list: null
-};
-
-/**
- * Reads, for the current caret/selection, which toggle toolbar options are
- * active: the inline text formats, the paragraph alignment, the text direction
- * and the list type. Mirrors the legacy toolbar, where the matching control is
- * highlighted. Must be called inside an editor read.
- */
-function $readActiveFormatting(): ActiveFormatting {
-	const selection = $getSelection();
-	if (!$isRangeSelection(selection)) {
-		return DEFAULT_ACTIVE_FORMATTING;
-	}
-	const anchorNode = selection.anchor.getNode();
-	const topNode =
-		anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElementOrThrow();
-	const topElement = $isElementNode(topNode) ? topNode : null;
-	const listNode = $getNearestNodeOfType(anchorNode, ListNode);
-
-	let list: ActiveFormatting['list'] = null;
-	if ($isListNode(listNode)) {
-		list = listNode.getListType() === 'number' ? 'number' : 'bullet';
-	}
-
-	return {
-		formats: {
-			bold: selection.hasFormat('bold'),
-			italic: selection.hasFormat('italic'),
-			underline: selection.hasFormat('underline'),
-			strikethrough: selection.hasFormat('strikethrough')
-		},
-		// An unset element format and direction default to left / ltr, matching how
-		// the content actually renders.
-		align: (topElement ? topElement.getFormatType() : '') || 'left',
-		direction: topElement?.getDirection() === 'rtl' ? 'rtl' : 'ltr',
-		list
-	};
-}
-
-const ToolbarDivider = (): React.JSX.Element => (
-	<Container
-		width="0.0625rem"
-		height="1.5rem"
-		background={'gray3'}
-		margin={{ left: 'extrasmall', right: 'extrasmall' }}
-	/>
-);
-
-type ToolbarIconButtonProps = {
-	icon: IconProps['icon'];
-	label: string;
-	onClick: () => void;
-	/**
-	 * For toggle controls, whether the option is active for the current selection.
-	 * When set, the button is highlighted and exposes `aria-pressed`; leave it
-	 * undefined for plain action buttons.
-	 */
-	active?: boolean;
-};
-
-const ToolbarIconButton = ({
-	icon,
-	label,
-	onClick,
-	active
-}: ToolbarIconButtonProps): React.JSX.Element => (
-	<Tooltip label={label}>
-		{active ? (
-			<Button
-				icon={icon}
-				type="default"
-				size="extralarge"
-				onClick={onClick}
-				aria-label={label}
-				aria-pressed
-				backgroundColor="highlight"
-				labelColor="text"
-			/>
-		) : (
-			<Button
-				icon={icon}
-				type="ghost"
-				size="extralarge"
-				onClick={onClick}
-				aria-label={label}
-				aria-pressed={active === undefined ? undefined : false}
-				color="text"
-			/>
-		)}
-	</Tooltip>
-);
-
-const ColorPickerPopover = styled(Container)`
-	position: absolute;
-	top: calc(100% + 0.25rem);
-	left: 0;
-	z-index: 10;
-	border-radius: 0.25rem;
-	box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.15);
-	background: ${({ theme }): string => theme.palette.gray6.regular};
-`;
-
-type ColorPickerToolbarButtonProps = {
-	icon: IconProps['icon'];
-	label: string;
-	color: string;
-	onColorChange: (color: string) => void;
-};
-
-/**
- * Toolbar trigger + floating panel for text/background color, built as a
- * plain positioned popover (not a CDS `Dropdown`) so it never takes DOM
- * focus/selection away from the editor and never intercepts keyboard input:
- * the caret keeps blinking in the text and typing keeps working normally
- * while this is open. The panel only closes when a mousedown lands outside
- * of it — including a click straight into the editor, which then places the
- * caret at the clicked position exactly as it would with the panel closed.
- */
-const ColorPickerToolbarButton = ({
-	icon,
-	label,
-	color,
-	onColorChange
-}: ColorPickerToolbarButtonProps): React.JSX.Element => {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const [open, setOpen] = useState(false);
-
-	useEffect(() => {
-		if (!open) {
-			return undefined;
-		}
-		const handleOutsideMouseDown = (event: MouseEvent): void => {
-			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-				setOpen(false);
-			}
-		};
-		document.addEventListener('mousedown', handleOutsideMouseDown);
-		return (): void => document.removeEventListener('mousedown', handleOutsideMouseDown);
-	}, [open]);
-
-	return (
-		<Container
-			ref={containerRef}
-			width="fit"
-			height="fit"
-			style={{ position: 'relative', display: 'inline-flex' }}
-		>
-			<ToolbarIconButton
-				icon={icon}
-				label={label}
-				onClick={(): void => setOpen((isOpen) => !isOpen)}
-			/>
-			{open && (
-				<ColorPickerPopover width="fit" height="fit">
-					<ColorSwatchPicker
-						color={color}
-						onChange={onColorChange}
-						onColorCommit={(): void => setOpen(false)}
-					/>
-				</ColorPickerPopover>
-			)}
-		</Container>
-	);
-};
-
-// `styled()` drops the generic call signature of the design-system `Select`,
-// which would type the `onChange` value as `{}` and reject the `<BlockType>`
-// type argument; cast it back to keep `Select`'s generics.
-const CustomSelect = styled(Select)`
-	& > div > div {
-		padding: 0.5rem;
-		border-radius: 0.125rem;
-		align-items: center;
-	}
-
-	& > div > div > div > div:first-child {
-		padding-top: 0;
-	}
-
-	& [data-testid='divider'] {
-		display: none;
-	}
-` as typeof Select;
-
 export const RichToolbarPlugin = ({
 	showBlocks,
 	onToggleShowBlocks,
@@ -331,352 +58,47 @@ export const RichToolbarPlugin = ({
 }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [tableMenuOpen, setTableMenuOpen] = useState(false);
-	const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
-	const [specialCharMenuOpen, setSpecialCharMenuOpen] = useState(false);
-	const [sourceCodeOpen, setSourceCodeOpen] = useState(false);
 	const [linkModalOpen, setLinkModalOpen] = useState(false);
-	const [imageModalOpen, setImageModalOpen] = useState(false);
-	const [isImageSelected, setIsImageSelected] = useState(false);
-	const [currentFont, setCurrentFont] = useState('');
-	const [currentFontSize, setCurrentFontSize] = useState('');
-	const [currentTextColor, setCurrentTextColor] = useState('');
-	const [currentBackgroundColor, setCurrentBackgroundColor] = useState('');
-	const [currentBlock, setCurrentBlock] = useState<BlockType>('paragraph');
-	const [activeFormatting, setActiveFormatting] =
-		useState<ActiveFormatting>(DEFAULT_ACTIVE_FORMATTING);
-	// Holds the last selection seen while it was still a valid RangeSelection.
-	// Opening the native color-picker input steals DOM focus from the
-	// contenteditable, which makes Lexical null the live selection while the
-	// (potentially long-lived) native dialog is open; this ref lets style
-	// commands still target the text the user had selected before that happened.
-	const lastRangeSelectionRef = useRef<RangeSelection | null>(null);
+	const [sourceCodeOpen, setSourceCodeOpen] = useState(false);
 
-	// Keep the toolbar in sync with the formatting at the caret: whether a single
-	// inline image is selected (to toggle the alignment control), the active
-	// font / size / block style (to reflect them in the selectors) and which
-	// toggle options (formats, alignment, direction, list) are active.
-	useEffect(
-		() =>
-			editor.registerUpdateListener(({ editorState }) => {
-				editorState.read(() => {
-					setIsImageSelected($selectionHasImage());
-					setCurrentBlock($getSelectionBlockType());
-					setActiveFormatting($readActiveFormatting());
-					const selection = $getSelection();
-					if ($isRangeSelection(selection)) {
-						setCurrentFont($getSelectionStyleValueForProperty(selection, 'font-family', ''));
-						setCurrentFontSize($getSelectionStyleValueForProperty(selection, 'font-size', ''));
-						setCurrentTextColor($getSelectionStyleValueForProperty(selection, 'color', ''));
-						setCurrentBackgroundColor(
-							$getSelectionStyleValueForProperty(selection, 'background-color', '')
-						);
-						lastRangeSelectionRef.current = selection.clone();
-					}
-				});
-			}),
-		[editor]
-	);
+	const {
+		isImageSelected,
+		currentBlock,
+		activeFormatting,
+		currentFont,
+		currentFontSize,
+		currentTextColor,
+		currentBackgroundColor,
+		lastRangeSelectionRef
+	} = useToolbarSelectionSync(editor);
 
-	// Let an image (e.g. on double-click) request the Insert/Edit Image dialog.
-	useEffect(
-		() =>
-			editor.registerCommand(
-				OPEN_IMAGE_MODAL_COMMAND,
-				() => {
-					setImageModalOpen(true);
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-		[editor]
-	);
-
-	const alignImage = useCallback(
-		(alignment: ImageAlignment): void => {
-			editor.dispatchCommand(SET_INLINE_IMAGE_ALIGNMENT_COMMAND, alignment);
-		},
-		[editor]
-	);
-
-	const formatText = useCallback(
-		(format: TextFormatType): void => {
-			editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-		},
-		[editor]
-	);
-
-	const formatAlign = useCallback(
-		(alignment: ElementFormatType): void => {
-			editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment);
-		},
-		[editor]
-	);
-
-	const patchStyle = useCallback(
-		(styles: Record<string, string>): void => {
-			editor.update(() => {
-				const selection = $getSelection();
-				const targetSelection = $isRangeSelection(selection)
-					? selection
-					: lastRangeSelectionRef.current;
-				if ($isRangeSelection(targetSelection)) {
-					$setSelection(targetSelection);
-					$patchStyleText(targetSelection, styles);
-				}
-			});
-		},
-		[editor]
-	);
-
-	const clearFormatting = useCallback((): void => {
-		editor.update(() => {
-			const selection = $getSelection();
-			const targetSelection = $isRangeSelection(selection)
-				? selection
-				: lastRangeSelectionRef.current;
-			if ($isRangeSelection(targetSelection)) {
-				$setSelection(targetSelection);
-
-				const blocksToReset = new Map<string, ElementNode>();
-				targetSelection.getNodes().forEach((node) => {
-					const topLevel = node.getTopLevelElement();
-					if ($isElementNode(topLevel) && ($isHeadingNode(topLevel) || $isQuoteNode(topLevel))) {
-						blocksToReset.set(topLevel.getKey(), topLevel);
-					}
-				});
-
-				$forEachSelectedTextNode((textNode) => {
-					textNode.setFormat(0);
-					textNode.setStyle('');
-				});
-
-				blocksToReset.forEach((block) => block.replace($createParagraphNode(), true));
-			}
-		});
-	}, [editor]);
-
-	const setDirection = useCallback(
-		(direction: 'ltr' | 'rtl'): void => {
-			editor.update(() => {
-				const selection = $getSelection();
-				if (!$isRangeSelection(selection)) {
-					return;
-				}
-				const topLevelElements = new Map<string, ElementNode>();
-				selection.getNodes().forEach((node) => {
-					const topLevel = node.getTopLevelElement();
-					if (topLevel && $isElementNode(topLevel)) {
-						topLevelElements.set(topLevel.getKey(), topLevel);
-					}
-				});
-				topLevelElements.forEach((element) => element.setDirection(direction));
-			});
-		},
-		[editor]
-	);
-
-	const formatBlock = useCallback(
-		(blockType: BlockType): void => {
-			editor.update(() => {
-				const selection = $getSelection();
-				if (!$isRangeSelection(selection)) {
-					return;
-				}
-				if (blockType === 'paragraph') {
-					$setBlocksType(selection, () => $createParagraphNode());
-				} else if (blockType === 'quote') {
-					$setBlocksType(selection, () => $createQuoteNode());
-				} else {
-					$setBlocksType(selection, () => $createHeadingNode(blockType));
-				}
-			});
-		},
-		[editor]
-	);
-
-	const openImageModal = useCallback((): void => {
-		setImageModalOpen(true);
-	}, []);
-
-	const onImageFilesSelected = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>): void => {
-			const fileList = event.target.files;
-			if (!fileList?.length || !onUploadInlineImages) {
-				return;
-			}
-			onUploadInlineImages(Array.from(fileList), (inlineAttachments) => {
-				inlineAttachments.forEach((attachment) => {
-					if (attachment.downloadServiceUrl) {
-						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-							src: attachment.downloadServiceUrl,
-							cidUrl: attachment.cidUrl,
-							altText: 'Inline attachment'
-						});
-					}
-				});
-			});
-			event.target.value = '';
-		},
-		[onUploadInlineImages, editor]
-	);
-
-	const fontSelectItems = useMemo<Array<SelectItem>>(
-		() => getFonts().map((font) => ({ label: font.label, value: font.value })),
-		[]
-	);
-
-	const fontSizeSelectItems = useMemo<Array<SelectItem>>(
-		() => getFontSizesOptions().map((size) => ({ label: size, value: size })),
-		[]
-	);
-
-	const blockSelectItems = useMemo<Array<SelectItem<BlockType>>>(
-		() => [
-			{ label: t('lexical-label.paragraph', 'Paragraph'), value: 'paragraph' },
-			{ label: t('lexical-label.heading_1', 'Heading 1'), value: 'h1' },
-			{ label: t('lexical-label.heading_2', 'Heading 2'), value: 'h2' },
-			{ label: t('lexical-label.heading_3', 'Heading 3'), value: 'h3' },
-			{ label: t('lexical-label.heading_4', 'Heading 4'), value: 'h4' },
-			{ label: t('lexical-label.heading_5', 'Heading 5'), value: 'h5' },
-			{ label: t('lexical-label.heading_6', 'Heading 6'), value: 'h6' },
-			{ label: t('lexical-label.blockquote', 'Blockquote'), value: 'quote' }
-		],
-		[]
-	);
-
-	// When the caret carries no explicit font/size, fall back to the first option
-	// of the corresponding selector so it always shows a concrete value.
-	const defaultFont = useMemo<SelectItem>(() => fontSelectItems[0], [fontSelectItems]);
-
-	const defaultFontSize = useMemo<SelectItem>(() => fontSizeSelectItems[0], [fontSizeSelectItems]);
-
-	const selectedFont = useMemo<SelectItem>(
-		() =>
-			fontSelectItems.find(
-				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFont)
-			) ?? defaultFont,
-		[currentFont, defaultFont, fontSelectItems]
-	);
-
-	const selectedFontSize = useMemo<SelectItem>(
-		() =>
-			fontSizeSelectItems.find(
-				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFontSize)
-			) ?? defaultFontSize,
-		[currentFontSize, defaultFontSize, fontSizeSelectItems]
-	);
-
-	const selectedBlock = useMemo<SelectItem<BlockType>>(
-		() => blockSelectItems.find((item) => item.value === currentBlock) ?? blockSelectItems[0],
-		[blockSelectItems, currentBlock]
-	);
-
-	const insertTable = useCallback(
-		(rows: number, columns: number): void => {
-			editor.dispatchCommand(INSERT_TABLE_COMMAND, {
-				rows: String(rows),
-				columns: String(columns),
-				includeHeaders: false
-			});
-			setTableMenuOpen(false);
-		},
-		[editor]
-	);
-
-	const insertText = useCallback(
-		(text: string): void => {
-			editor.update(() => {
-				const selection = $getSelection();
-				if ($isRangeSelection(selection)) {
-					selection.insertText(text);
-				}
-			});
-		},
-		[editor]
-	);
-
-	const insertEmoji = useCallback(
-		(emoji: Emoji): void => {
-			insertText(emoji.native);
-			setEmojiMenuOpen(false);
-		},
-		[insertText]
-	);
-
-	const insertSpecialCharacter = useCallback(
-		(character: string): void => {
-			insertText(character);
-			setSpecialCharMenuOpen(false);
-		},
-		[insertText]
-	);
-
-	const emojiLabel = t('lexical-label.emoji', 'Emoji');
-
-	const specialCharLabel = t('lexical-label.special_character', 'Special character');
-
-	const emojiItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'emoji-picker',
-				label: emojiLabel,
-				keepOpen: true,
-				customComponent: <EmojiPicker onEmojiSelect={insertEmoji} />
-			}
-		],
-		[emojiLabel, insertEmoji]
-	);
-
-	const specialCharItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'special-character-picker',
-				label: specialCharLabel,
-				keepOpen: true,
-				customComponent: <SpecialCharacterPicker onSelect={insertSpecialCharacter} />
-			}
-		],
-		[insertSpecialCharacter, specialCharLabel]
-	);
-
-	const tableLabel = t('lexical-label.table', 'Table');
-
-	const tableItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'table-grid',
-				label: tableLabel,
-				keepOpen: true,
-				customComponent: <TableGridPicker onSelect={insertTable} />
-			}
-		],
-		[insertTable, tableLabel]
-	);
+	const { patchStyle } = useStylePatching(editor, lastRangeSelectionRef);
+	const { formatText, clearFormatting } = useTextFormatting(editor, lastRangeSelectionRef);
+	const { formatAlign, setDirection } = useAlignmentAndDirection(editor);
+	const { formatBlock, blockSelectItems, selectedBlock } = useBlockType(editor, currentBlock);
+	const { fontSelectItems, fontSizeSelectItems, selectedFont, selectedFontSize } =
+		useFontAndSizeSelects(currentFont, currentFontSize);
+	const {
+		imageAlignItems,
+		openImageModal,
+		onImageFilesSelected,
+		imageModalOpen,
+		setImageModalOpen
+	} = useImageActions(editor, onUploadInlineImages);
+	const { tableItems, tableLabel, tableMenuOpen, setTableMenuOpen } = useTableInsert(editor);
+	const {
+		emojiItems,
+		specialCharItems,
+		emojiLabel,
+		specialCharLabel,
+		emojiMenuOpen,
+		setEmojiMenuOpen,
+		specialCharMenuOpen,
+		setSpecialCharMenuOpen
+	} = useEmojiAndSpecialCharacters(editor);
 
 	const textColorLabel = t('lexical-label.text_color', 'Text color');
 	const backgroundColorLabel = t('lexical-label.background_color', 'Background color');
-
-	const imageAlignItems = useMemo<Array<DropdownItem>>(
-		() => [
-			{
-				id: 'image-left',
-				label: t('lexical-label.align_left', 'Align left'),
-				onClick: () => alignImage('left')
-			},
-			{
-				id: 'image-center',
-				label: t('lexical-label.align_center', 'Center'),
-				onClick: () => alignImage('center')
-			},
-			{
-				id: 'image-right',
-				label: t('lexical-label.align_right', 'Align right'),
-				onClick: () => alignImage('right')
-			}
-		],
-		[alignImage]
-	);
 
 	return (
 		<Row
@@ -688,7 +110,7 @@ export const RichToolbarPlugin = ({
 			width="fill"
 		>
 			<Container width="11.375rem" height="fit">
-				<CustomSelect
+				<ToolbarSelect
 					items={fontSelectItems}
 					selection={selectedFont}
 					onChange={(value): void => {
@@ -701,7 +123,7 @@ export const RichToolbarPlugin = ({
 				/>
 			</Container>
 			<Container width="9.375rem" height="fit">
-				<CustomSelect
+				<ToolbarSelect
 					items={fontSizeSelectItems}
 					selection={selectedFontSize}
 					onChange={(value): void => {
@@ -713,7 +135,7 @@ export const RichToolbarPlugin = ({
 				/>
 			</Container>
 			<Container width="9.375rem" height="fit">
-				<CustomSelect<BlockType>
+				<ToolbarSelect<BlockType>
 					items={blockSelectItems}
 					selection={selectedBlock}
 					onChange={(value): void => {
@@ -921,7 +343,7 @@ export const RichToolbarPlugin = ({
 						type="ghost"
 						size="large"
 						aria-label={specialCharLabel}
-						onClick={(): void => setSpecialCharMenuOpen((open) => !open)}
+						onClick={(): void => setSpecialCharMenuOpen(!specialCharMenuOpen)}
 					/>
 				</Dropdown>
 			</Tooltip>
@@ -940,7 +362,7 @@ export const RichToolbarPlugin = ({
 						type="ghost"
 						size="large"
 						aria-label={emojiLabel}
-						onClick={(): void => setEmojiMenuOpen((open) => !open)}
+						onClick={(): void => setEmojiMenuOpen(!emojiMenuOpen)}
 					/>
 				</Dropdown>
 			</Tooltip>
