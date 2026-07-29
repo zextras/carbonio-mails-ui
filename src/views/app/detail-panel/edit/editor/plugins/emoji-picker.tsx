@@ -6,15 +6,12 @@
 import React, { useEffect, useRef } from 'react';
 
 import data from '@emoji-mart/data';
+import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Picker } from 'emoji-mart';
 import moment from 'moment';
 
-/**
- * Shape of the object emitted by `emoji-mart`'s `onEmojiSelect`. Only `native`
- * (the glyph itself) is consumed here; the remaining fields mirror the type
- * used by `carbonio-ws-collaboration-ui` for cross-module consistency.
- */
 export type Emoji = {
 	emoticons: string[];
 	id: string;
@@ -29,15 +26,24 @@ type EmojiPickerProps = {
 	onEmojiSelect: (emoji: Emoji) => void;
 };
 
-/**
- * Wraps `emoji-mart`'s imperative `Picker` (the same library used by
- * `carbonio-ws-collaboration-ui`). The picker is instantiated into a container
- * ref on mount and torn down on unmount. Open/close is managed by the hosting
- * CDS `Dropdown`, so no hover logic is needed here.
- */
+const PickerContainer = styled(Container)`
+	& > em-emoji-picker {
+		--border-radius: 0.25rem;
+	}
+`;
+
 export const EmojiPicker = ({ onEmojiSelect }: EmojiPickerProps): React.JSX.Element => {
 	const pickerContainerRef = useRef<HTMLDivElement>(null);
 	const pickerRef = useRef<Picker | null>(null);
+
+	const {
+		prefs: { carbonioPrefDarkMode }
+	} = useUserSettings();
+
+	const darkModeEnabled =
+		carbonioPrefDarkMode === 'enabled' ||
+		(carbonioPrefDarkMode === 'auto' &&
+			!!window.matchMedia?.('(prefers-color-scheme: dark)').matches);
 
 	useEffect(() => {
 		pickerRef.current = new Picker({
@@ -46,14 +52,20 @@ export const EmojiPicker = ({ onEmojiSelect }: EmojiPickerProps): React.JSX.Elem
 			ref: pickerContainerRef,
 			locale: moment.locale(),
 			previewPosition: 'none',
-			skinTonePosition: 'none'
+			skinTonePosition: 'none',
+			theme: darkModeEnabled ? 'dark' : 'light'
 		});
 		return (): void => {
 			pickerRef.current = null;
 		};
-	}, [onEmojiSelect]);
+	}, [onEmojiSelect, darkModeEnabled]);
 
 	return (
-		<Container ref={pickerContainerRef} width="22rem" height="fit" data-testid="emojiPicker" />
+		<PickerContainer
+			ref={pickerContainerRef}
+			width="22rem"
+			height="fit"
+			data-testid="emojiPicker"
+		/>
 	);
 };
