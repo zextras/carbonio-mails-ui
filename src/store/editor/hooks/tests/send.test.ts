@@ -179,7 +179,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const onSendStart = vi.fn();
 		const onComplete = vi.fn();
@@ -217,7 +216,6 @@ describe('send', () => {
 		};
 
 		setupEditorStore({ editors: [composedEditor] });
-		computeAndUpdateEditorStatus(composedEditor.id);
 
 		const onSendStart = vi.fn();
 

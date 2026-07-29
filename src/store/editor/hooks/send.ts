@@ -71,13 +71,11 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 					status: 'aborted',
 					abortReason: errorDescription
 				});
-				computeAndUpdateEditorStatus(editorId);
 				options?.onError && options.onError(res);
 			} else {
 				useEditorsStore.getState().setSendProcessStatus(editorId, {
 					status: 'completed'
 				});
-				computeAndUpdateEditorStatus(editorId);
 				options?.onComplete && options.onComplete();
 			}
 		})
@@ -86,7 +84,6 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 				status: 'aborted',
 				abortReason: err
 			});
-			computeAndUpdateEditorStatus(editorId);
 			options?.onError && options.onError(err);
 		});
 };

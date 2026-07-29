@@ -6,6 +6,7 @@
 import { act, waitFor } from '@testing-library/react';
 import { $getRoot, $isTextNode, type LexicalEditor } from 'lexical';
 
+import { headingSelector } from './rich-toolbar-plugin-block-styles.test';
 import {
 	BOLD_LABEL,
 	EDITOR_TESTID,
@@ -17,7 +18,6 @@ import {
 	setupWithSelectedContent
 } from './rich-toolbar-plugin-test-utils';
 import { screen, within } from '@test-setup';
-import { headingSelector } from './rich-toolbar-plugin-block-styles.test';
 
 beforeAll(() => {
 	installRangeRectPolyfill();
