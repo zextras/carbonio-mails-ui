@@ -5,10 +5,13 @@
  */
 import { useMemo } from 'react';
 
+import { some } from 'lodash';
+
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks/editors';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/editor';
+import { EditorsStateTypeV2 } from 'types/state';
 
 /**
  * Analyzes the given editor and updates in the store the allow status for the
@@ -36,6 +39,15 @@ export const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): voi
  */
 export const useEditorIsDirty = (id: MailsEditorV2['id']): MailsEditorV2['isDirty'] =>
 	useEditorsStore((state) => state.editors[id].isDirty);
+
+const hasDirtyEditors = (state: EditorsStateTypeV2): boolean =>
+	some(state.editors, (editor) => editor.isDirty);
+
+/**
+ * Returns a reactive flag which tells if at least one of the open editors
+ * holds changes which haven't been persisted in a draft yet
+ */
+export const useHasDirtyEditors = (): boolean => useEditorsStore(hasDirtyEditors);
 
 /**
  * Returns reactive reference to the isModified value and to its setter

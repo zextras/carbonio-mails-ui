@@ -10,6 +10,7 @@ import { AppContextInitializer } from 'app-utils/app-context-initializer';
 import { BackupSearchComponentToggler } from 'app-utils/backup-search-component-toggler';
 import { SearchRegistration } from 'app-utils/search-registration';
 import { ShellRegistrations } from 'app-utils/shell-registrations';
+import { UnsavedChangesGuard } from 'app-utils/unsaved-changes-guard';
 import { AuthGuard } from 'auth-guard';
 import { GlobalModalManager } from 'views/global-modal-manager';
 import { InitializeFolders } from 'views/sidebar/initialize-folders';
@@ -21,6 +22,7 @@ import { SyncDataHandler } from 'views/sidebar/sync-data-handler';
 const App = (): React.JSX.Element => (
 	<AuthGuard>
 		<AppContextInitializer />
+		<UnsavedChangesGuard />
 		<ShellRegistrations />
 		<BackupSearchComponentToggler />
 		<SearchRegistration />
