@@ -1,3 +1,7 @@
+## <small>1.40.3 (2026-07-28)</small>
+
+* refactor(editor): add rich text toolbar plugin tests and utility functions (#1298) ([cfea6a3](https://github.com/zextras/carbonio-mails-ui/commit/cfea6a3)), closes [#1298](https://github.com/zextras/carbonio-mails-ui/issues/1298)
+
 ## <small>1.40.2 (2026-07-28)</small>
 
 * fix(CO-3925): invalid recipient error shows raw placeholder and only one address (#1296) ([b41949a](https://github.com/zextras/carbonio-mails-ui/commit/b41949a)), closes [#1296](https://github.com/zextras/carbonio-mails-ui/issues/1296)
