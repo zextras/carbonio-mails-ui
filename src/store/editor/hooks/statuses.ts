@@ -12,6 +12,7 @@ import { useStoreWithEqualityFn } from 'zustand/traditional';
 import { PROCESS_STATUS } from 'constants/index';
 import { useEditorsStore } from 'store/editor/store';
 import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
+import { isValidEmail } from 'views/search/parts/utils';
 
 /**
  * Computes whether a draft save is currently allowed for the given editor.
@@ -98,7 +99,9 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	}
 
 	const participants = concat(editor.recipients.to, editor.recipients.bcc, editor.recipients.cc);
-	if (some(participants, { error: true })) {
+	if (
+		some(participants, (participant) => participant.error || !isValidEmail(participant.address))
+	) {
 		return {
 			allowed: false,
 			reason: t('label.invalid_recipients', `One or more recipients are invalid`)

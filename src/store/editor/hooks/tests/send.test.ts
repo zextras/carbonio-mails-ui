@@ -42,6 +42,33 @@ describe('send', () => {
 			send: expect.any(Function)
 		});
 	});
+	it('should not start the send when a recipient address is invalid', () => {
+		const addListenerSpy = vi.spyOn(window, 'addEventListener');
+
+		const editor = generateNewMessageEditor();
+		const composedEditor: MailsEditorV2 = {
+			...editor,
+			subject: 'title',
+			recipients: {
+				to: [{ type: ParticipantRole.TO, address: 'not-an-email' }],
+				cc: [],
+				bcc: []
+			}
+		};
+
+		setupEditorStore({ editors: [composedEditor] });
+
+		const { result } = setupHook(useEditorSend, {
+			initialProps: [composedEditor.id]
+		});
+
+		act(() => {
+			result.current.send();
+		});
+
+		expect(addListenerSpy).not.toHaveBeenCalledWith('beforeunload', expect.any(Function));
+		expect(useEditorsStore.getState().editors[composedEditor.id].sendProcessStatus).toBeUndefined();
+	});
 	it('should add beforeunload event listener when send is called', () => {
 		const addListenerSpy = vi.spyOn(window, 'addEventListener');
 

@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 
 import { EditView } from '../../edit-view';
@@ -125,6 +126,46 @@ describe('EditViewSendButtons', () => {
 				const editor = generateReplyAllMsgEditor(message);
 
 				await checkSendBtnEnabled(editor);
+			});
+		});
+
+		describe('recipients validation', () => {
+			beforeEach(() => {
+				setupEditorStore({ editors: [] });
+			});
+
+			const buildEditorWithRecipients = (
+				recipients: MailsEditorV2['recipients']
+			): MailsEditorV2 => ({
+				...generateNewMessageEditor(),
+				subject: 'Some subject',
+				recipients
+			});
+
+			it('is enabled when all the recipients are valid', () => {
+				const editor = buildEditorWithRecipients({
+					to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+					cc: [],
+					bcc: []
+				});
+				addEditor({ id: editor.id, editor });
+
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+				expect(getSendButton()).toBeEnabled();
+			});
+
+			it('is disabled when a recipient address is invalid', () => {
+				const editor = buildEditorWithRecipients({
+					to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+					cc: [{ type: ParticipantRole.CARBON_COPY, address: 'not-an-email' }],
+					bcc: []
+				});
+				addEditor({ id: editor.id, editor });
+
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+				expect(getSendButton()).toBeDisabled();
 			});
 		});
 

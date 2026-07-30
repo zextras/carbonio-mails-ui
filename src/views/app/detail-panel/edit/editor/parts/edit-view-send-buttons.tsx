@@ -8,8 +8,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { useEditorAreInvalidRecipients, useEditorSend } from 'store/editor';
-import { EditorOperationAllowedStatus } from 'types/editor';
+import { useEditorSend } from 'store/editor';
 import { SendLaterModal } from 'views/app/detail-panel/edit/editor/parts/send-later-modal';
 
 export type EditViewSendButtonsProps = {
@@ -17,19 +16,6 @@ export type EditViewSendButtonsProps = {
 	onSendNow: () => void;
 	editorId: string;
 };
-
-function evaluateSendDisabledReason(
-	invalidRecipientsPresent: boolean,
-	sendAllowedStatus: EditorOperationAllowedStatus | undefined
-): string | undefined {
-	let sendDisabledReason;
-	if (invalidRecipientsPresent) {
-		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
-	} else {
-		sendDisabledReason = sendAllowedStatus?.reason;
-	}
-	return sendDisabledReason;
-}
 
 export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendLater,
@@ -39,13 +25,11 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	const { attrs } = useUserSettings();
 	const { createModal, closeModal } = useModal();
 
-	const invalidRecipientsPresent = useEditorAreInvalidRecipients(editorId);
-
 	const { status: sendAllowedStatus } = useEditorSend(editorId);
 
-	const disabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
+	const disabled = !sendAllowedStatus?.allowed;
 
-	const tooltip = evaluateSendDisabledReason(invalidRecipientsPresent, sendAllowedStatus);
+	const tooltip = sendAllowedStatus?.reason;
 
 	const onSendLaterClick = useCallback(() => {
 		const modalId = Date.now().toString();
