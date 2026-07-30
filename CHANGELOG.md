@@ -1,3 +1,8 @@
+## <small>1.40.4 (2026-07-30)</small>
+
+* fix(deps): update dependency @types/webpack-env to v1.18.8 (#1260) ([32b31f0](https://github.com/zextras/carbonio-mails-ui/commit/32b31f0)), closes [#1260](https://github.com/zextras/carbonio-mails-ui/issues/1260)
+* chore(deps): update dependency msw to v2.15.0 (#1268) ([5d6ef13](https://github.com/zextras/carbonio-mails-ui/commit/5d6ef13)), closes [#1268](https://github.com/zextras/carbonio-mails-ui/issues/1268)
+
 ## <small>1.40.3 (2026-07-28)</small>
 
 * refactor(editor): add rich text toolbar plugin tests and utility functions (#1298) ([cfea6a3](https://github.com/zextras/carbonio-mails-ui/commit/cfea6a3)), closes [#1298](https://github.com/zextras/carbonio-mails-ui/issues/1298)
