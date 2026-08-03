@@ -6,24 +6,9 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
+import { useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { MailsEditorV2 } from 'types/editor';
-
-/**
- * TODO for future refactors
- * instead of calling imperatively the computeAndUpdateEditorStatus function
- * to update the status of the store a subscription-based logic can be implemented.
- *
- * Using the subscriptionWithSelector functionality of Zustand we can subscribe
- * for changes on the store and perform the status update only when the selected
- * fields change.
- * (see https://docs.pmnd.rs/zustand/recipes/recipes#reading/writing-state-and-reacting-to-changes-outside-of-components)
- *
- * The list of the fields to take into consideration can be provide by a specific
- * function/constant so the code will be more clear and future changes/additions
- * will be easier to perform.
- */
 
 /**
  * Returns reactive references to the subject value and to its setter
@@ -231,7 +216,6 @@ export const useEditorRecipients = (
 			setRecipients: (val: MailsEditorV2['recipients']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),
@@ -260,7 +244,6 @@ export const useEditorToRecipients = (
 			setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),
@@ -289,7 +272,6 @@ export const useEditorCcRecipients = (
 			setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),
@@ -318,7 +300,6 @@ export const useEditorBccRecipients = (
 			setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),
@@ -347,7 +328,6 @@ export const useEditorIdentityId = (
 			setIdentityId: (val: MailsEditorV2['identityId']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),
@@ -432,7 +412,6 @@ export const useEditorSignatureId = (
 			setSignatureId: (val: MailsEditorV2['signatureId']): void => {
 				setter(editorId, val);
 				setDirty();
-				computeAndUpdateEditorStatus(editorId);
 				debouncedSaveDraft();
 			}
 		}),

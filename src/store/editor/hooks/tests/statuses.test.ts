@@ -4,11 +4,141 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act } from '@testing-library/react';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { setupEditorStore } from '../../../../__test__/generators/editor-store';
 import { setupHook } from '../../../../__test__/test-setup';
 import { generateNewMessageEditor } from '../../editor-generators';
-import { useEditorIsDirty, useEditorSetDirty } from '../statuses';
+import { useEditorsStore } from '../../store';
+import { useEditorIsDirty, useEditorSendAllowedStatus, useEditorSetDirty } from '../statuses';
+
+describe('useEditorSendAllowedStatus', () => {
+	describe('recipients validation', () => {
+		it('does not allow the send when there are no recipients', () => {
+			const editor = generateNewMessageEditor();
+			editor.recipients = { to: [], cc: [], bcc: [] };
+			setupEditorStore({ editors: [editor] });
+
+			const { result } = setupHook(useEditorSendAllowedStatus, {
+				initialProps: [editor.id]
+			});
+
+			expect(result.current).toEqual({
+				allowed: false,
+				reason: 'label.missing_recipients'
+			});
+		});
+
+		it('allows the send when all "to", "cc" and "bcc" recipients are valid', () => {
+			const editor = generateNewMessageEditor();
+			editor.recipients = {
+				to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+				cc: [{ type: ParticipantRole.CARBON_COPY, address: 'cc@demo.com' }],
+				bcc: [{ type: ParticipantRole.BLIND_CARBON_COPY, address: 'bcc@demo.com' }]
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { result } = setupHook(useEditorSendAllowedStatus, {
+				initialProps: [editor.id]
+			});
+
+			expect(result.current).toEqual({ allowed: true });
+		});
+
+		it.each([
+			[
+				'to',
+				{
+					to: [{ type: ParticipantRole.TO, address: 'not-an-email' }],
+					cc: [],
+					bcc: []
+				}
+			],
+			[
+				'cc',
+				{
+					to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+					cc: [{ type: ParticipantRole.CARBON_COPY, address: 'not-an-email' }],
+					bcc: []
+				}
+			],
+			[
+				'bcc',
+				{
+					to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+					cc: [],
+					bcc: [{ type: ParticipantRole.BLIND_CARBON_COPY, address: 'not-an-email' }]
+				}
+			]
+		])(
+			'does not allow the send when the "%s" recipients contain an invalid address',
+			(_, recipients) => {
+				const editor = generateNewMessageEditor();
+				editor.recipients = recipients;
+				setupEditorStore({ editors: [editor] });
+
+				const { result } = setupHook(useEditorSendAllowedStatus, {
+					initialProps: [editor.id]
+				});
+
+				expect(result.current).toEqual({
+					allowed: false,
+					reason: 'label.invalid_recipients'
+				});
+			}
+		);
+
+		it('does not allow the send when a recipient is flagged with an error', () => {
+			const editor = generateNewMessageEditor();
+			editor.recipients = {
+				to: [{ type: ParticipantRole.TO, address: 'to@demo.com', error: true }],
+				cc: [],
+				bcc: []
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { result } = setupHook(useEditorSendAllowedStatus, {
+				initialProps: [editor.id]
+			});
+
+			expect(result.current).toEqual({
+				allowed: false,
+				reason: 'label.invalid_recipients'
+			});
+		});
+
+		it('updates reactively when recipients are changed to invalid values', () => {
+			const editor = generateNewMessageEditor();
+			editor.recipients = {
+				to: [{ type: ParticipantRole.TO, address: 'to@demo.com' }],
+				cc: [],
+				bcc: []
+			};
+			setupEditorStore({ editors: [editor] });
+
+			const { result, rerender } = setupHook(useEditorSendAllowedStatus, {
+				initialProps: [editor.id]
+			});
+
+			expect(result.current).toEqual({ allowed: true });
+
+			const setter = useEditorsStore.getState().setRecipients;
+			act(() => {
+				setter(editor.id, {
+					to: [{ type: ParticipantRole.TO, address: 'not-an-email' }],
+					cc: [],
+					bcc: []
+				});
+			});
+			rerender([editor.id]);
+
+			expect(result.current).toEqual({
+				allowed: false,
+				reason: 'label.invalid_recipients'
+			});
+		});
+	});
+});
 
 describe('useEditorIsDirty', () => {
 	it('returns true when the editor has unsaved changes', () => {

@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 
 import { selectUnsavedAttachmentByUploadId } from '../store-selectors';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
-import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
+import { useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { AttachmentUploadProcessStatus } from 'types/attachments';
 import { MailsEditorV2 } from 'types/editor';
@@ -44,7 +44,6 @@ export const useEditorUploadProcess = (
 			cancel: (): void => {
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
-				computeAndUpdateEditorStatus(editorId);
 				setDirty();
 				debouncedSaveDraft();
 			}

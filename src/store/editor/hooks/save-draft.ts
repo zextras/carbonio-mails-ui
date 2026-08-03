@@ -14,10 +14,14 @@ import { buildSavedAttachments } from '../../../helpers/attachments';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { getEditor } from 'store/editor/hooks/editors';
-import { computeAndUpdateEditorStatus, useEditorSetDirty } from 'store/editor/hooks/statuses';
+import {
+	computeDraftSaveAllowedStatus,
+	useEditorDraftSaveAllowedStatus,
+	useEditorSetDirty
+} from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { saveDraftEmailStoreAction } from 'store/emails/actions/save-draft-action';
-import { MailsEditorV2 } from 'types/editor';
+import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;
@@ -67,7 +71,7 @@ export const useSaveDraftFromEditor = (
 				return;
 			}
 
-			if (!editor.draftSaveAllowedStatus?.allowed) {
+			if (!computeDraftSaveAllowedStatus(editor).allowed) {
 				return;
 			}
 
@@ -84,7 +88,6 @@ export const useSaveDraftFromEditor = (
 					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
-				computeAndUpdateEditorStatus(editorId);
 				options?.onError && options.onError(err);
 			};
 
@@ -118,7 +121,6 @@ export const useSaveDraftFromEditor = (
 						status: 'completed',
 						lastSaveTimestamp: new Date()
 					});
-					computeAndUpdateEditorStatus(editorId);
 					resetDirty();
 					options?.onComplete?.();
 				})
@@ -127,8 +129,6 @@ export const useSaveDraftFromEditor = (
 						status: 'aborted',
 						abortReason: err
 					});
-					// FIXME use a subscription to the store update
-					computeAndUpdateEditorStatus(editorId);
 					handleError(err);
 					options?.onError?.(err);
 				});
@@ -136,8 +136,6 @@ export const useSaveDraftFromEditor = (
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'running'
 			});
-			// FIXME use a subscription to the store update
-			computeAndUpdateEditorStatus(editorId);
 		},
 		[createSnackbar, editorId, resetDirty, t]
 	);
@@ -165,11 +163,11 @@ export const useSaveDraftFromEditor = (
 export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
 ): {
-	status: MailsEditorV2['draftSaveAllowedStatus'];
+	status: EditorOperationAllowedStatus;
 	saveDraft: (options?: SaveDraftOptions) => void;
 } => {
 	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
-	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const status = useEditorDraftSaveAllowedStatus(editorId);
 	const { resetDirty } = useEditorSetDirty(editorId);
 
 	const immediateInvoker = useCallback(
