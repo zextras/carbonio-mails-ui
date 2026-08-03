@@ -9,6 +9,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { concat, some } from 'lodash';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 
+import { EditorsStateTypeV2 } from '../../../types/state';
 import { PROCESS_STATUS } from 'constants/index';
 import { useEditorsStore } from 'store/editor/store';
 import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';

@@ -10,7 +10,12 @@ import { setupEditorStore } from '../../../../__test__/generators/editor-store';
 import { setupHook } from '../../../../__test__/test-setup';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
-import { useEditorIsDirty, useEditorSendAllowedStatus, useEditorSetDirty } from '../statuses';
+import {
+	useEditorIsDirty,
+	useEditorSendAllowedStatus,
+	useEditorSetDirty,
+	useHasDirtyEditors
+} from '../statuses';
 
 describe('useEditorSendAllowedStatus', () => {
 	describe('recipients validation', () => {
