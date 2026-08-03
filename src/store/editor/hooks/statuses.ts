@@ -5,8 +5,6 @@
  */
 import { useMemo } from 'react';
 
-import { some } from 'lodash';
-
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, some } from 'lodash';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
