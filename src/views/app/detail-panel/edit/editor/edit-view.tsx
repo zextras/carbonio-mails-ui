@@ -14,7 +14,7 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map, partition, some } from 'lodash';
+import { filter, map, partition } from 'lodash';
 
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
@@ -49,16 +49,13 @@ import { isFulfilled } from 'helpers/promises';
 import { useSmimeFeatureStore } from 'store/certificates/store';
 import {
 	useEditorDraftSave,
-	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	useEditorRecipients,
 	useEditorDid
 } from 'store/editor';
 import { useEditorIsDirty } from 'store/editor/hooks/statuses';
-import { EditorOperationAllowedStatus, EditViewClosingReasons } from 'types/editor';
-import { isValidEmail } from 'views/search/parts/utils';
+import { EditViewClosingReasons } from 'types/editor';
 
 type EditViewProp = {
 	editorId: string;
@@ -68,19 +65,6 @@ type EditViewProp = {
 export type EditViewHandle = {
 	closeEditView: () => void;
 };
-
-function evaluateSendDisabledReason(
-	invalidRecipientsPresent: boolean,
-	sendAllowedStatus: EditorOperationAllowedStatus | undefined
-): string | undefined {
-	let sendDisabledReason;
-	if (invalidRecipientsPresent) {
-		sendDisabledReason = t('label.invalid_recipients', `One or more recipients are invalid`);
-	} else {
-		sendDisabledReason = sendAllowedStatus?.reason;
-	}
-	return sendDisabledReason;
-}
 
 const MemoizedFooter = memo(EditViewFooter);
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
@@ -146,15 +130,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		handleEncryptDeselected
 	} = useSmimeHandlers(editorId);
 
-	const {
-		recipients: { to, cc, bcc }
-	} = useEditorRecipients(editorId);
-	const invalidRecipientsPresent = useMemo(
-		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
-		[bcc, cc, to]
-	);
-
-	const { status: sendAllowedStatus } = useEditorSend(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addLocalFiles } = useLocalAttachmentOrSmartlink({ editorId });
@@ -339,13 +314,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		close(EDIT_VIEW_CLOSING_REASONS.DRAFT_DELETED);
 	}, [close]);
 
-	const sendDisabled = !sendAllowedStatus?.allowed || invalidRecipientsPresent;
-
-	const sendDisabledReason = evaluateSendDisabledReason(
-		invalidRecipientsPresent,
-		sendAllowedStatus
-	);
-
 	return (
 		<Container flexGrow={1} height="100%" mainAlignment="flex-start" crossAlignment="flex-start">
 			<Container
@@ -414,8 +382,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							<EditViewSendButtons
 								onSendLater={onSendLaterClick}
 								onSendNow={onSendClick}
-								disabled={sendDisabled}
-								tooltip={sendDisabledReason ?? ''}
+								editorId={editorId}
 							/>
 						</GapRow>
 					</GapRow>

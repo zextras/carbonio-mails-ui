@@ -223,17 +223,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()(
 					'EDITOR/SET_REQUEST_READ_RECEIPT'
 				);
 			},
-			setDraftSaveAllowedStatus: (id, status): void => {
-				set(
-					produce((state: EditorsStateTypeV2) => {
-						if (state?.editors?.[id]) {
-							state.editors[id].draftSaveAllowedStatus = status;
-						}
-					}),
-					false,
-					'EDITOR/SET_DRAFT_SAVE_ALLOWED_STATUS'
-				);
-			},
 			setDraftSaveProcessStatus: (id, status): void => {
 				set(
 					produce((state: EditorsStateTypeV2) => {
@@ -243,17 +232,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()(
 					}),
 					false,
 					'EDITOR/SET_DRAFT_SAVE_PROCESS_STATUS'
-				);
-			},
-			setSendAllowedStatus: (id, status): void => {
-				set(
-					produce((state: EditorsStateTypeV2) => {
-						if (state?.editors?.[id]) {
-							state.editors[id].sendAllowedStatus = status;
-						}
-					}),
-					false,
-					'EDITOR/SET_SEND_ALLOWED_STATUS'
 				);
 			},
 			setSendProcessStatus: (id, status): void => {

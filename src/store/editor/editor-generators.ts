@@ -19,11 +19,7 @@ import {
 import { getFromParticipantFromMessage } from 'helpers/messages';
 import { getMailBodyWithSignature } from 'helpers/signatures';
 import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
-import {
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus,
-	filterSavedInlineAttachment
-} from 'store/editor/editor-utils';
+import { filterSavedInlineAttachment } from 'store/editor/editor-utils';
 import { getEditor } from 'store/editor/hooks';
 import {
 	extractBody,
@@ -102,8 +98,6 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		size: 0
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 	return editor;
 };
 
@@ -230,8 +224,6 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		signatureId: defaultIdentity.defaultSignatureId
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 	return editor;
 };
 
@@ -311,9 +303,6 @@ const generateReplyAndReplyAllMsgEditor = (
 		signatureId
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-
 	return editor;
 };
 
@@ -380,9 +369,6 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		signatureId
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-
 	return editor;
 };
 
@@ -440,9 +426,6 @@ export const generateForwardAsAttachmentMsgEditor = (
 		signatureId
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-
 	return editor;
 };
 
@@ -492,9 +475,6 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		draftSaveProcessStatus
 	};
 
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-
 	return editor;
 };
 
@@ -538,9 +518,6 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		originalMessage,
 		size: originalMessage.size
 	};
-
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 
 	return editor;
 };

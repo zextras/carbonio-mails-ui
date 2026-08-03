@@ -165,12 +165,8 @@ export type MailsEditorV2 = {
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
-	// allowed status of the draft save
-	draftSaveAllowedStatus?: EditorOperationAllowedStatus;
 	// status of the draft save
 	draftSaveProcessStatus?: DraftSaveProcessStatus;
-	// allowed status of the message send
-	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// status of the message send
 	sendProcessStatus?: SendProcessStatus;
 	// Id of the current selected signature

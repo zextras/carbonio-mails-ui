@@ -1,3 +1,8 @@
+## <small>1.40.5 (2026-08-03)</small>
+
+* refactor(CO-2942): move recipients check inside editor logic (#1294) ([2a5014f](https://github.com/zextras/carbonio-mails-ui/commit/2a5014f)), closes [#1294](https://github.com/zextras/carbonio-mails-ui/issues/1294)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.1.4 (#1300) ([ae7cae0](https://github.com/zextras/carbonio-mails-ui/commit/ae7cae0)), closes [#1300](https://github.com/zextras/carbonio-mails-ui/issues/1300)
+
 ## <small>1.40.4 (2026-07-30)</small>
 
 * fix(deps): update dependency @types/webpack-env to v1.18.8 (#1260) ([32b31f0](https://github.com/zextras/carbonio-mails-ui/commit/32b31f0)), closes [#1260](https://github.com/zextras/carbonio-mails-ui/issues/1260)
