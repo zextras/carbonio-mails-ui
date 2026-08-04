@@ -1,3 +1,7 @@
+## 1.41.0 (2026-08-04)
+
+* feat: implement dynamic draft save delay based on zimbraPrefAutoSaveDraftInterval ([c6e7ab3](https://github.com/zextras/carbonio-mails-ui/commit/c6e7ab3))
+
 ## <small>1.40.5 (2026-08-03)</small>
 
 * refactor(CO-2942): move recipients check inside editor logic (#1294) ([2a5014f](https://github.com/zextras/carbonio-mails-ui/commit/2a5014f)), closes [#1294](https://github.com/zextras/carbonio-mails-ui/issues/1294)
