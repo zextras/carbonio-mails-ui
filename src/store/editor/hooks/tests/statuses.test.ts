@@ -10,7 +10,12 @@ import { setupEditorStore } from '../../../../__test__/generators/editor-store';
 import { setupHook } from '../../../../__test__/test-setup';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';
-import { useEditorIsDirty, useEditorSendAllowedStatus, useEditorSetDirty } from '../statuses';
+import {
+	useEditorIsDirty,
+	useEditorSendAllowedStatus,
+	useEditorSetDirty,
+	useHasDirtyEditors
+} from '../statuses';
 
 describe('useEditorSendAllowedStatus', () => {
 	describe('recipients validation', () => {
@@ -163,6 +168,62 @@ describe('useEditorIsDirty', () => {
 		} = setupHook(useEditorIsDirty, { initialProps: [editor.id] });
 
 		expect(isDirty).toBe(false);
+	});
+});
+
+describe('useHasDirtyEditors', () => {
+	beforeEach(() => {
+		useEditorsStore.setState({ editors: {} });
+	});
+
+	it('returns false when there are no editors', () => {
+		const {
+			result: { current: hasDirtyEditors }
+		} = setupHook(useHasDirtyEditors);
+
+		expect(hasDirtyEditors).toBe(false);
+	});
+
+	it('returns false when none of the editors has unsaved changes', () => {
+		const firstEditor = generateNewMessageEditor();
+		firstEditor.isDirty = false;
+		const secondEditor = generateNewMessageEditor();
+		secondEditor.isDirty = false;
+
+		setupEditorStore({ editors: [firstEditor, secondEditor] });
+		const {
+			result: { current: hasDirtyEditors }
+		} = setupHook(useHasDirtyEditors);
+
+		expect(hasDirtyEditors).toBe(false);
+	});
+
+	it('returns true when one of the editors has unsaved changes', () => {
+		const cleanEditor = generateNewMessageEditor();
+		cleanEditor.isDirty = false;
+		const dirtyEditor = generateNewMessageEditor();
+		dirtyEditor.isDirty = true;
+
+		setupEditorStore({ editors: [cleanEditor, dirtyEditor] });
+		const {
+			result: { current: hasDirtyEditors }
+		} = setupHook(useHasDirtyEditors);
+
+		expect(hasDirtyEditors).toBe(true);
+	});
+
+	it('returns false after the editor with unsaved changes is closed', () => {
+		const editor = generateNewMessageEditor();
+		editor.isDirty = true;
+
+		setupEditorStore({ editors: [editor] });
+		const { result } = setupHook(useHasDirtyEditors);
+
+		act(() => {
+			useEditorsStore.getState().deleteEditor(editor.id);
+		});
+
+		expect(result.current).toBe(false);
 	});
 });
 

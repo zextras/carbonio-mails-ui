@@ -9,6 +9,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { concat, some } from 'lodash';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 
+import { EditorsStateTypeV2 } from '../../../types/state';
 import { PROCESS_STATUS } from 'constants/index';
 import { useEditorsStore } from 'store/editor/store';
 import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
@@ -183,6 +184,15 @@ export const useEditorDraftSaveAllowedStatus = (
  */
 export const useEditorIsDirty = (id: MailsEditorV2['id']): MailsEditorV2['isDirty'] =>
 	useEditorsStore((state) => state.editors[id].isDirty);
+
+const hasDirtyEditors = (state: EditorsStateTypeV2): boolean =>
+	some(state.editors, (editor) => editor.isDirty);
+
+/**
+ * Returns a reactive flag which tells if at least one of the open editors
+ * holds changes which haven't been persisted in a draft yet
+ */
+export const useHasDirtyEditors = (): boolean => useEditorsStore(hasDirtyEditors);
 
 /**
  * Returns reactive reference to the isModified value and to its setter
