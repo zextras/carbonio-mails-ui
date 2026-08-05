@@ -172,7 +172,6 @@
 		"name": "carbonio-mails-ui",
 		"priority": 5,
 		"type": "carbonio",
-		"attrKey": "zimbraFeatureMailEnabled",
 		"display": "Mails",
 		"icon": "MailModOutline"
 	}
