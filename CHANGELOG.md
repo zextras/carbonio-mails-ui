@@ -1,3 +1,7 @@
+## <small>1.41.1 (2026-08-05)</small>
+
+* fix: remove legacy attribute zimbraFeatureMailEnabled (#1301) ([8eb5381](https://github.com/zextras/carbonio-mails-ui/commit/8eb5381)), closes [#1301](https://github.com/zextras/carbonio-mails-ui/issues/1301)
+
 ## 1.41.0 (2026-08-04)
 
 * feat: implement dynamic draft save delay based on zimbraPrefAutoSaveDraftInterval ([c6e7ab3](https://github.com/zextras/carbonio-mails-ui/commit/c6e7ab3))
