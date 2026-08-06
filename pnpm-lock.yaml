@@ -325,8 +325,8 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/browser-playwright@4.1.10)(@vitest/browser-preview@4.1.10)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(jsdom@20.0.3)(msw@2.15.0(@types/node@25.9.1)(typescript@5.9.3))(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(less@4.2.2)(terser@5.48.0))
       vitest-browser-react:
-        specifier: 2.1.0
-        version: 2.1.0(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.1.10)
+        specifier: 2.2.0
+        version: 2.2.0(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.1.10)
       vitest-mock-commonjs:
         specifier: 1.0.2
         version: 1.0.2
@@ -7503,8 +7503,8 @@ packages:
       yaml:
         optional: true
 
-  vitest-browser-react@2.1.0:
-    resolution: {integrity: sha512-/cOVQ+dZojhavfsbHjcfzB3zrUxG39HIbGdvK9vSBdGc8b8HRu5Bql0p8aXtKw4sb8/E8n5XEncQxvqHtfjjag==}
+  vitest-browser-react@2.2.0:
+    resolution: {integrity: sha512-oY3KM6305kwJMa6nHo92vVtkOsih7mjEf12dLKuphaF+9ywWPEc+qanIBd394SZ6m5LadVEaG6dicvvizOzmjA==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
@@ -16037,7 +16037,7 @@ snapshots:
       less: 4.2.2
       terser: 5.48.0
 
-  vitest-browser-react@2.1.0(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.1.10):
+  vitest-browser-react@2.2.0(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@4.1.10):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
