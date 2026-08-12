@@ -17,6 +17,7 @@ import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-
 import { useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { useTagBackgroundColor } from 'hooks/use-tag-background-color';
 import { MessageListItemProps } from 'types/index.d';
 import { MessageListItemActionWrapper } from 'views/app/folder-panel/messages/message-list-item-action-wrapper';
 import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
@@ -103,8 +104,15 @@ export const MessageListItem = memo(function MessageListItem({
 
 	const { ref, hasBeenHovered } = useOnMouseHover();
 
+	const backgroundColor = useTagBackgroundColor(message, { active });
+
 	return (
-		<Container ref={ref} mainAlignment="flex-start" data-testid={`MessageListItem-${message.id}`}>
+		<Container
+			ref={ref}
+			mainAlignment="flex-start"
+			data-testid={`MessageListItem-${message.id}`}
+			background={backgroundColor}
+		>
 			{hasBeenHovered ? (
 				<MessageListItemActionWrapper
 					item={message}
