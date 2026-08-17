@@ -21,6 +21,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import { Folder, FOLDERS } from '@zextras/carbonio-ui-commons';
+import { useTranslation } from 'react-i18next';
 
 import { FlatFolder, type FlaFolderProps } from 'views/sidebar/commons/flatten-folders/flat-folder';
 
@@ -52,6 +53,7 @@ export const FlatRoot = ({
 }: FlatRootProps): React.JSX.Element => {
 	const [open, setOpen] = useState(isOpen);
 	const account = useUserAccount();
+	const [t] = useTranslation();
 
 	const rootLabel = folder.id === FOLDERS.USER_ROOT ? account.name : folder.name;
 	const toggleOpen = useCallback(
@@ -114,6 +116,7 @@ export const FlatRoot = ({
 						color={'gray0'}
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 						onClick={toggleOpen}
+						aria-label={open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')}
 					/>
 				</Padding>
 			</CustomContainer>

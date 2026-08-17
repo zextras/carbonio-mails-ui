@@ -55,6 +55,7 @@ export const DatePickerCustomComponent: FC<CustomComponentProps> = forwardRef(
 						onClick={onClick}
 						type={'ghost'}
 						color={'gray0'}
+						aria-label={label}
 					/>
 				</CustomButtonWrapper>
 			</CustomInputWrapper>

@@ -578,6 +578,7 @@ const Attachment = ({
 										size="medium"
 										icon="DownloadOutline"
 										onClick={downloadAttachment}
+										aria-label={t('label.download', 'Download')}
 									/>
 								</Tooltip>
 							</Padding>
@@ -594,6 +595,7 @@ const Attachment = ({
 											size="medium"
 											icon="DeletePermanentlyOutline"
 											onClick={removeAttachment}
+											aria-label={t('label.delete', 'Delete')}
 										/>
 									</Tooltip>
 								</Padding>
@@ -624,6 +626,7 @@ const Attachment = ({
 											data-testid={`attachment-actions-${filename}`}
 											icon={openDropdown ? 'ChevronUpOutline' : 'ChevronDownOutline'}
 											onClick={(): undefined => undefined}
+											aria-label={t('label.view_all_actions', 'View all actions')}
 										/>
 									</FullHeightButtonWrapper>
 								</Row>

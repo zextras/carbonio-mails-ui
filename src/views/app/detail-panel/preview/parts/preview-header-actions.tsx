@@ -98,6 +98,7 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 							type="ghost"
 							color={'gray0'}
 							onClick={onIconClick}
+							aria-label={t('label.tags', 'Tags')}
 						/>
 					</Padding>
 				</Dropdown>
@@ -110,7 +111,16 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 				</Tooltip>
 			</Padding>
 		);
-	}, [tags, showMultiTagIcon, tagIcon, tagIconColor, showDropdown, onDropdownClose, onIconClick]);
+	}, [
+		tags,
+		showMultiTagIcon,
+		tagIcon,
+		tagIconColor,
+		showDropdown,
+		onDropdownClose,
+		onIconClick,
+		t
+	]);
 
 	return (
 		<Row wrap="nowrap" mainAlignment="flex-end">

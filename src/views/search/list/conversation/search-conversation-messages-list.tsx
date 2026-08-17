@@ -7,6 +7,7 @@
 import React, { memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
@@ -84,7 +85,14 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
 		return (
 			<Container height={64 * length}>
-				<Button loading disabled label="" type="ghost" onClick={noop} />
+				<Button
+					loading
+					disabled
+					label=""
+					type="ghost"
+					onClick={noop}
+					aria-label={t('label.loading', 'Loading')}
+				/>
 			</Container>
 		);
 	}

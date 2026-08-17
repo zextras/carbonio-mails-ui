@@ -165,6 +165,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 											icon={action.icon}
 											size="medium"
 											onClick={noop}
+											aria-label={action.label}
 										/>
 									</Dropdown>
 								</Tooltip>
@@ -181,6 +182,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 									size="medium"
 									icon={action.icon}
 									onClick={stopPropagationWrapperForButton(action.execute)}
+									aria-label={action.label}
 								/>
 							</Tooltip>
 						);

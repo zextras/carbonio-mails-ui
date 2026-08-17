@@ -94,6 +94,7 @@ export const MultipleSelectionActionsPanel = ({
 							size={'large'}
 							onClick={arrowBackOnClick}
 							data-testid={'action-button-deselect-all'}
+							aria-label={iconButtonTooltip}
 						/>
 					</Tooltip>
 					<Button

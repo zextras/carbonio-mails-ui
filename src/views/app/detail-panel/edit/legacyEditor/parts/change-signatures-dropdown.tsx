@@ -84,6 +84,7 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 						onClick={noop}
 						type={'ghost'}
 						color={'gray0'}
+						aria-label={t('label.change_signature', 'Change signature')}
 					/>
 				</Dropdown>
 			)}

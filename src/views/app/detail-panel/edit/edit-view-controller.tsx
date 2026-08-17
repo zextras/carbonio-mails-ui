@@ -232,7 +232,14 @@ const EditViewController = (): React.JSX.Element => {
 		<MemoizedEditViewControllerCore entityId={id} action={action} editor={editor} />
 	) : (
 		<Container data-testid={'EditViewControllerLoader'}>
-			<Button loading disabled label="" type="ghost" onClick={noop} />
+			<Button
+				loading
+				disabled
+				label=""
+				type="ghost"
+				onClick={noop}
+				aria-label={t('label.loading', 'Loading')}
+			/>
 		</Container>
 	);
 };

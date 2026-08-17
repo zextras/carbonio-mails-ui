@@ -178,6 +178,7 @@ const ShowAllCertificatesModal = ({
 								size="large"
 								type="ghost"
 								color="error"
+								aria-label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}
 							/>
 						</Tooltip>
 					</Container>

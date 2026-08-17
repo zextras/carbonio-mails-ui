@@ -28,6 +28,7 @@ const ListItemHoverAction = ({ action }: { action: UIActionDescriptor }): ReactE
 				size={'medium'}
 				type="ghost"
 				color="text"
+				aria-label={action.label}
 			/>
 		</Tooltip>
 	);

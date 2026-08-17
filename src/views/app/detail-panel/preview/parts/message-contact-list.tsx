@@ -129,6 +129,7 @@ const MessageContactList: FC<{
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 						onClick={toggleOpen}
 						data-testid="contacs-list-toggle-icon"
+						aria-label={toggleExpandButtonLabel}
 					/>
 				</Tooltip>
 			</Container>

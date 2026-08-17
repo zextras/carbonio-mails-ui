@@ -96,6 +96,7 @@ export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onForm
 							labelColor={selectedFormat === fmt.value ? 'primary' : 'gray0'}
 							size="large"
 							onClick={(): void => handleSelect(fmt.value)}
+							aria-label={fmt.avatarLabel}
 						/>
 						<Container
 							width="3rem"
