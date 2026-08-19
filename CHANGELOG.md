@@ -1,3 +1,7 @@
+## <small>1.41.2 (2026-08-19)</small>
+
+* fix: aria  labels added (#1303) ([02886a0](https://github.com/zextras/carbonio-mails-ui/commit/02886a0)), closes [#1303](https://github.com/zextras/carbonio-mails-ui/issues/1303)
+
 ## <small>1.41.1 (2026-08-05)</small>
 
 * fix: remove legacy attribute zimbraFeatureMailEnabled (#1301) ([8eb5381](https://github.com/zextras/carbonio-mails-ui/commit/8eb5381)), closes [#1301](https://github.com/zextras/carbonio-mails-ui/issues/1301)
