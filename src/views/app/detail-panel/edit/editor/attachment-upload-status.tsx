@@ -59,6 +59,7 @@ export const AttachmentUploadStatus: FC<{
 						type={'ghost'}
 						color={'gray0'}
 						onClick={cancelUpload}
+						aria-label={t('label.cancel', 'Cancel')}
 					/>
 				</>
 			)}

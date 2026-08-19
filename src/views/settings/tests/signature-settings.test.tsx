@@ -33,6 +33,7 @@ vi.mock('@zextras/carbonio-ui-text-composer', () => ({
 		<div data-testid={testId}>
 			<textarea
 				data-testid="signature-editor-textarea"
+				aria-label="Signature editor"
 				value={value ?? ''}
 				onChange={(e): void | undefined => onEditorChange?.([e.target.value, e.target.value])}
 				disabled={disabled}

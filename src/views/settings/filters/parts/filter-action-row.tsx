@@ -113,7 +113,13 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<Button icon="PlusOutline" onClick={onAddingNewAction} color="primary" type="outlined" />
+					<Button
+						icon="PlusOutline"
+						onClick={onAddingNewAction}
+						color="primary"
+						type="outlined"
+						aria-label={t('settings.add_action', 'Add new action')}
+					/>
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
@@ -123,6 +129,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 							onClick={onRemove}
 							color="secondary"
 							type="outlined"
+							aria-label={t('settings.remove_action', 'Remove this action')}
 						/>
 					</Tooltip>
 				</Padding>

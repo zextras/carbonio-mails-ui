@@ -143,6 +143,7 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 				<Tooltip label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}>
 					<Button
 						icon="Trash2Outline"
+						aria-label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}
 						onClick={(): void => {
 							createModal(
 								{

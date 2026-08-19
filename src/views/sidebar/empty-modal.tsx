@@ -86,7 +86,14 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						{modalTitle}
 					</Text>
 				</Row>
-				<Button type="ghost" color={'gray0'} icon="CloseOutline" onClick={onClose} size="medium" />
+				<Button
+					type="ghost"
+					color={'gray0'}
+					icon="CloseOutline"
+					onClick={onClose}
+					size="medium"
+					aria-label={t('label.close', 'Close')}
+				/>
 			</Container>
 			<Divider />
 			<Container padding={{ top: 'medium' }} crossAlignment="flex-start">

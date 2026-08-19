@@ -106,6 +106,7 @@ export const PreviewPanelHeader = ({
 						type="default"
 						labelColor="text"
 						backgroundColor="transparent"
+						aria-label={t('label.close', 'Close')}
 					/>
 				)}
 			</Container>

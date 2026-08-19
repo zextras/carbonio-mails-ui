@@ -92,7 +92,13 @@ export const FilterConditionRow: FC<FilterConditionRowrops> = ({
 
 			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
-					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
+					<Button
+						icon="PlusOutline"
+						onClick={addFilterCondition}
+						color="primary"
+						type="outlined"
+						aria-label={t('settings.add_condition', 'Add new condition')}
+					/>
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
@@ -102,6 +108,7 @@ export const FilterConditionRow: FC<FilterConditionRowrops> = ({
 							onClick={onRemove}
 							color="secondary"
 							type="outlined"
+							aria-label={t('settings.remove_condition', 'Remove this condition')}
 						/>
 					</Tooltip>
 				</Padding>

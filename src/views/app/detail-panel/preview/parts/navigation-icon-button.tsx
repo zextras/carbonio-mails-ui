@@ -22,6 +22,7 @@ export const NavigationIconButton = ({
 			color={'gray0'}
 			disabled={item.disabled}
 			icon={item.icon}
+			aria-label={item.tooltipLabel}
 		/>
 	</Tooltip>
 );

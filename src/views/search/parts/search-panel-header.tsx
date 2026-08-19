@@ -70,6 +70,7 @@ export const SearchPanelHeader: FC<{
 					type="default"
 					labelColor="text"
 					backgroundColor="transparent"
+					aria-label={t('label.close', 'Close')}
 				/>
 			</Container>
 			<Divider />

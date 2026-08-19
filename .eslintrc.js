@@ -5,7 +5,7 @@
  */
 module.exports = {
 	extends: [require.resolve('@zextras/carbonio-ui-configs/rules/eslint')],
-	plugins: ['unused-imports', 'jest-dom', 'testing-library', 'notice'],
+	plugins: ['unused-imports', 'jest-dom', 'testing-library', 'notice', 'jsx-a11y'],
 	overrides: [
 		{
 			// enable eslint-plugin-testing-library rules or preset only for test files
@@ -83,7 +83,14 @@ module.exports = {
 			'warn',
 			{ props: true, ignorePropertyModificationsFor: ['accumulator', 'state', 'event'] }
 		],
-		'unused-imports/no-unused-imports': 'warn'
+		'unused-imports/no-unused-imports': 'warn',
+		'jsx-a11y/control-has-associated-label': [
+			'error',
+			{
+				controlComponents: ['Button', 'IconButton', 'IconCheckbox'],
+				labelAttributes: ['label']
+			}
+		]
 	},
 	settings: {
 		'import/resolver': {

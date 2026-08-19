@@ -153,6 +153,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 							type={'ghost'}
 							color={'gray0'}
 							onClick={noop}
+							aria-label={t('label.change_identity', 'Change identity')}
 						/>
 					</Row>
 				</Dropdown>

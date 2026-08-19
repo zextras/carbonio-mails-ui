@@ -404,6 +404,8 @@ export const RichToolbarPlugin = ({
 				multiple
 				style={{ display: 'none' }}
 				onChange={onImageFilesSelected}
+				aria-hidden="true"
+				tabIndex={-1}
 			/>
 		</Row>
 	);
