@@ -89,6 +89,7 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 					onClick={(): void => setRetentionState({ showPolicy: !showPolicy })}
 					icon={showPolicy ? 'ChevronUpOutline' : 'ChevronDownOutline'}
 					data-testid="retention_policy-icon"
+					aria-label={t('label.retention_policy', 'Retention policy')}
 				/>
 			</Row>
 			<Collapse orientation="vertical" open={showPolicy}>

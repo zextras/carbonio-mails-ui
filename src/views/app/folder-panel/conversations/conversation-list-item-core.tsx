@@ -156,6 +156,7 @@ export const ConversationListItemCore = ({
 									backgroundColor="transparent"
 									icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
 									onClick={toggleCollapseElementCallback}
+									aria-label={toggleExpandButtonLabel}
 								/>
 							</Tooltip>
 						)}

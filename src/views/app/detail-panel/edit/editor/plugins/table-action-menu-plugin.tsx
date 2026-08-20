@@ -387,6 +387,7 @@ export const TableActionMenuPlugin = (): React.JSX.Element | null => {
 					// mousedown outside the contenteditable would collapse it, dropping
 					// the multi-cell selection needed by merge.
 					onMouseDown={(event: React.MouseEvent): void => event.preventDefault()}
+					aria-label={t('lexical-label.table_cell_actions', 'Table cell actions')}
 				/>
 			</Dropdown>
 			{/* Kept as a positioned 1px box (not display: none) so the browser

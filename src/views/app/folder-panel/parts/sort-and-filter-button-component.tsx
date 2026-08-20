@@ -103,6 +103,11 @@ const useListHeaderDropdownItems = ({ folderId }: { folderId: string }): Dropdow
 								? SORT_ICONS.ASCENDING
 								: SORT_ICONS.DESCENDING
 						}
+						aria-label={
+							sortDirection === SORTING_DIRECTION.ASCENDING
+								? t('sorting_dropdown.descendingOrder', 'Descending order')
+								: t('sorting_dropdown.ascendingOrder', 'Ascending order')
+						}
 					/>
 					<Text>
 						{sortDirection === SORTING_DIRECTION.ASCENDING
@@ -231,11 +236,13 @@ export const SortAndFilterButtonComponent = ({
 		folderId
 	});
 
+	const sortAndFilterLabel = t(
+		'label.change_filtering_sorting_options',
+		'Change filtering and sorting options'
+	);
+
 	return (
-		<Tooltip
-			label={t('label.change_filtering_sorting_options', 'Change filtering and sorting options')}
-			placement="top"
-		>
+		<Tooltip label={sortAndFilterLabel} placement="top">
 			<Dropdown
 				maxHeight={'100vh'}
 				disableAutoFocus
@@ -246,7 +253,14 @@ export const SortAndFilterButtonComponent = ({
 				selectedBackgroundColor="highlight"
 				data-testid="sorting-dropdown"
 			>
-				<Button type="ghost" icon={buttonIcon} color="gray0" size="large" onClick={noop} />
+				<Button
+					type="ghost"
+					icon={buttonIcon}
+					color="gray0"
+					size="large"
+					onClick={noop}
+					aria-label={sortAndFilterLabel}
+				/>
 			</Dropdown>
 		</Tooltip>
 	);

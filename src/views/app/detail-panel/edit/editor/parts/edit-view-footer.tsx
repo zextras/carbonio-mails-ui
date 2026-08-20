@@ -133,6 +133,7 @@ export const EditViewFooter = ({ editorId, onDraftDeleted }: EditViewFooterProps
 						icon="Trash2Outline"
 						onClick={onDeleteClick}
 						disabled={isDeleteDisabled}
+						aria-label={t('editView.footer.deleteDraft', 'Delete draft')}
 					/>
 				</Tooltip>
 			</Container>

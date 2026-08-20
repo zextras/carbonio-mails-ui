@@ -29,7 +29,13 @@ export const MultipleSelectionActionsComponent = ({
 					<Padding key={action.id} right="small">
 						<Tooltip label={action.label}>
 							<Dropdown items={action.items.filter((item) => !item.disabled)}>
-								<Button icon={action.icon} onClick={noop} size="large" type="ghost" />
+								<Button
+									icon={action.icon}
+									onClick={noop}
+									size="large"
+									type="ghost"
+									aria-label={action.label}
+								/>
 							</Dropdown>
 						</Tooltip>
 					</Padding>
@@ -44,6 +50,7 @@ export const MultipleSelectionActionsComponent = ({
 							onClick={action.execute}
 							size="large"
 							type="ghost"
+							aria-label={action.label}
 						/>
 					</Tooltip>
 				);

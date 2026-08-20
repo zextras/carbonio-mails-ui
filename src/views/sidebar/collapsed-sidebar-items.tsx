@@ -18,14 +18,15 @@ import {
 const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);
 	const folderIconLabel = useMemo(() => getFolderIconName(folder), [folder]);
+	const folderLabel = useMemo(
+		() => getSystemFolderTranslatedName({ folderName: folder.name }),
+		[folder.name]
+	);
 
 	return (
 		<Link to={`folder/${folder.id}`} style={{ width: '100%', textDecoration: 'none' }}>
 			<Row mainAlignment="flex-start" takeAvailableSpace>
-				<Tooltip
-					label={getSystemFolderTranslatedName({ folderName: folder.name })}
-					placement="right"
-				>
+				<Tooltip label={folderLabel} placement="right">
 					<Padding all="extrasmall">
 						<Button
 							size="large"
@@ -33,6 +34,7 @@ const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 							onClick={(): null => null}
 							color={folderIconColor}
 							type={'ghost'}
+							aria-label={folderLabel}
 						/>
 					</Padding>
 				</Tooltip>

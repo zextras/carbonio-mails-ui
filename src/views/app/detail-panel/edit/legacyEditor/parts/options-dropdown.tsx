@@ -135,6 +135,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 				color={'gray0'}
 				icon="MoreVertical"
 				onClick={noop}
+				aria-label={t('label.more_options', 'More options')}
 			/>
 		</Dropdown>
 	);

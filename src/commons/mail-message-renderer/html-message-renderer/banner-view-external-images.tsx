@@ -86,6 +86,7 @@ export const BannerViewExternalImages = ({
 					size="large"
 					type={'ghost'}
 					color={'gray0'}
+					aria-label={t('label.close', 'Close')}
 				/>
 			</Row>
 		</WarningBanner>

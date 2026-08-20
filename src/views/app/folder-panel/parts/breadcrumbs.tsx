@@ -77,6 +77,7 @@ export const Breadcrumbs: FC<{
 								size="regular"
 								onChange={noop}
 								onClick={(): void => setIsSelectModeOn((prev) => !prev)}
+								aria-label={t('label.activate_selection_mode', 'Activate selection mode')}
 							/>
 						</Tooltip>
 						{folderPathFirstPart?.trim()?.length > 0 && (
