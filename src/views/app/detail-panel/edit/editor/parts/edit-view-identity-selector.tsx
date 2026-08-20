@@ -23,6 +23,7 @@ import {
 	getIdentitiesDescriptors,
 	getIdentityDescription,
 	getIdentityDescriptor,
+	getIdentityDisplayName,
 	getNoIdentityPlaceholder,
 	IdentityDescriptor
 } from 'helpers/identities';
@@ -58,11 +59,13 @@ const createIdentitySelectorItemElement = (
 		identityDescription = identity.fromAddress;
 	}
 
+	const identityDisplayName = identity ? getIdentityDisplayName(identity) : fallbackDescription;
+
 	return (
 		<Container width="100%" orientation="horizontal" height="fit">
-			<Avatar label={identity?.identityName || identity?.fromDisplay || fallbackDescription} />
+			<Avatar label={identityDisplayName} />
 			<Container width="100%" crossAlignment="flex-start" height="fit" padding={{ left: 'medium' }}>
-				<Text weight="bold">{identity?.identityDisplayName || fallbackDescription}</Text>
+				<Text weight="bold">{identityDisplayName}</Text>
 				<Text size="small" color="gray1">
 					{identityDescription}
 				</Text>
