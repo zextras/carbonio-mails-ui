@@ -118,7 +118,7 @@
 		"@types/webpack": "5.28.5",
 		"@types/webpack-env": "1.18.8",
 		"@zextras/carbonio-design-system": "12.0.4",
-		"@zextras/carbonio-shell-ui": "14.2.2",
+		"@zextras/carbonio-shell-ui": "14.3.1",
 		"@zextras/carbonio-ui-commons": "2.4.0",
 		"@zextras/carbonio-ui-preview": "5.0.1",
 		"@zextras/carbonio-ui-soap-lib": "1.2.0",
