@@ -91,6 +91,8 @@ export const LexicalWrapper = styled.div<{
 		top: 0.5rem;
 		left: 0.5rem;
 		color: ${({ theme }): string => theme.palette.secondary.regular};
+		font-family: ${({ $fontFamily }): string => $fontFamily};
+		${({ $fontSize }): string => ($fontSize ? `font-size: ${$fontSize};` : '')}
 		pointer-events: none;
 		user-select: none;
 	}
@@ -401,6 +403,8 @@ export const RichTextEditorContainer = ({
 							showBlocks={showBlocks}
 							onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
 							onUploadInlineImages={onUploadInlineImages}
+							fontFamily={fontFamily}
+							fontSize={fontSize}
 						/>
 					</div>
 					<div
