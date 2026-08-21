@@ -168,6 +168,52 @@ const sortIdentities = (
 };
 
 /**
+ * The shape of a target of a delegation right, as it is returned by the server
+ */
+type DelegationTarget = { d: string; type: string; email: Array<{ addr: string }> };
+
+/**
+ * Returns the email address of the target of a delegation right
+ *
+ * @param target
+ */
+const getDelegationTargetAddress = (target: DelegationTarget): string =>
+	target.email?.[0]?.addr ?? '';
+
+/**
+ * Creates the descriptor of the "virtual" identity of an account or of a distribution list
+ * on which the user has a delegation right.
+ *
+ * The display name of the target is optional: if the target has no display name (e.g. an
+ * account created without the displayName attribute) the names of the descriptor are left
+ * empty, so that the consumers can fall back on the address of the identity
+ *
+ * @param target
+ * @param right
+ * @param ownerAccount
+ */
+const createDelegationIdentityDescriptor = (
+	target: DelegationTarget,
+	right: string,
+	ownerAccount: string
+): IdentityDescriptor => {
+	const address = getDelegationTargetAddress(target);
+	const displayName = target.d?.trim() ?? '';
+
+	return {
+		ownerAccount,
+		receivingAddress: address,
+		id: generateIdentityId(address, right),
+		identityName: displayName,
+		identityDisplayName: displayName,
+		fromDisplay: displayName || undefined,
+		fromAddress: address,
+		type: 'delegation',
+		right
+	};
+};
+
+/**
  * Returns the list of all the identities for the account. For each identity a type
  * is give, by matching the email address with all the available addresses, or by
  * setting a default one if the address does not match any of the available addresses.
@@ -232,33 +278,21 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 
 	const delegationIdentities = flatten(
 		map(delegationAccounts, (ele) =>
-			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
-				ownerAccount: item.email[0].addr ?? account?.name ?? NO_ACCOUNT_NAME,
-				receivingAddress: item.email[0].addr,
-				id: generateIdentityId(item.email[0].addr, ele.right),
-				identityName: item.d,
-				identityDisplayName: item.d,
-				fromDisplay: item.d,
-				fromAddress: item.email[0].addr,
-				type: 'delegation',
-				right: ele.right
-			}))
+			map(ele?.target, (item: DelegationTarget) =>
+				createDelegationIdentityDescriptor(
+					item,
+					ele.right,
+					getDelegationTargetAddress(item) || account?.name || NO_ACCOUNT_NAME
+				)
+			)
 		)
 	);
 
 	const delegationIdentitiesDL = flatten(
 		map(delegationDistList, (ele) =>
-			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
-				ownerAccount: account?.name ?? NO_ACCOUNT_NAME,
-				receivingAddress: item.email[0].addr,
-				id: generateIdentityId(item.email[0].addr, ele.right),
-				identityName: item.d,
-				identityDisplayName: item.d,
-				fromDisplay: item.d,
-				fromAddress: item.email[0].addr,
-				type: 'delegation',
-				right: ele.right
-			}))
+			map(ele?.target, (item: DelegationTarget) =>
+				createDelegationIdentityDescriptor(item, ele.right, account?.name ?? NO_ACCOUNT_NAME)
+			)
 		)
 	);
 
@@ -510,6 +544,20 @@ const getMessageSenderAccount = (message: MailMessage): string | null => {
 };
 
 /**
+ * Returns the name to display for the given identity. Identities without any name
+ * (e.g. the delegation identities of an account created without a display name) are
+ * described by their address
+ *
+ * @param identity
+ */
+const getIdentityDisplayName = (identity: IdentityDescriptor): string =>
+	identity.identityDisplayName ||
+	identity.fromDisplay ||
+	identity.identityName ||
+	identity.fromAddress ||
+	identity.receivingAddress;
+
+/**
  *
  * @param identity
  * @param t
@@ -519,13 +567,20 @@ const getIdentityDescription = (identity: IdentityDescriptor, t: TFunction): str
 		return null;
 	}
 
-	const defaultIdentity = getDefaultIdentity();
+	const identityName = identity.fromDisplay || identity.identityName;
+	const nameAndAddress = identityName
+		? `${identityName} <${identity.fromAddress}>`
+		: `<${identity.fromAddress}>`;
 
-	return identity.right === 'sendOnBehalfOf'
-		? `${defaultIdentity.fromDisplay} ${t('label.on_behalf_of', 'on behalf of')} ${
-				identity.fromDisplay ?? identity.identityName
-			} <${identity.fromAddress}>`
-		: `${identity.fromDisplay ?? identity.identityName} <${identity.fromAddress}>`;
+	if (identity.right !== 'sendOnBehalfOf') {
+		return nameAndAddress;
+	}
+
+	const defaultIdentity = getDefaultIdentity();
+	const delegateName =
+		defaultIdentity.fromDisplay || defaultIdentity.fromAddress || defaultIdentity.receivingAddress;
+
+	return `${delegateName} ${t('label.on_behalf_of', 'on behalf of')} ${nameAndAddress}`;
 };
 
 export function getExtraAccountsIds(): Array<string> {
@@ -548,6 +603,7 @@ export {
 	getDefaultIdentity,
 	getIdentitiesDescriptors,
 	getIdentityDescription,
+	getIdentityDisplayName,
 	getIdentityFromParticipant,
 	getMessageSenderAccount,
 	getMessageSenderAddress,
