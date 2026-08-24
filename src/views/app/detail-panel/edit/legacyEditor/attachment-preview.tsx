@@ -227,6 +227,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 											icon="DeletePermanentlyOutline"
 											data-testid={'btn-delete-attachment'}
 											onClick={removeAttachment}
+											aria-label={t('label.delete', 'Delete')}
 										/>
 									</Tooltip>
 								</Padding>

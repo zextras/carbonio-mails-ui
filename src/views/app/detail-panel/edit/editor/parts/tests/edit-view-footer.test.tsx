@@ -28,7 +28,7 @@ const getConfirmationModalMessage = (): HTMLElement | null =>
 	screen.queryByText('Are you sure you want to delete this draft?');
 
 const getConfirmationModalButton = (): HTMLElement =>
-	screen.getByRole('button', { name: /delete/i });
+	screen.getByRole('button', { name: 'Delete' });
 
 const awaitModalOpening = (): void => {
 	act(() => {

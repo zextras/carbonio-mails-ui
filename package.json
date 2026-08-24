@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.41.1",
+	"version": "1.41.2",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"packageManager": "pnpm@10.32.1",
@@ -80,6 +80,7 @@
 		"@zextras/carbonio-ui-sdk": "1.8.0-beta.2",
 		"babel-plugin-transform-import-meta": "2.3.3",
 		"eslint-import-resolver-typescript": "3.10.1",
+		"eslint-plugin-jsx-a11y": "6.10.2",
 		"eslint-plugin-notice": "0.9.10",
 		"eslint-plugin-testing-library": "5.10.1",
 		"eslint-plugin-unused-imports": "2.0.0",
