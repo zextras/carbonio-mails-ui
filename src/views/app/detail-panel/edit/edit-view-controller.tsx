@@ -200,6 +200,7 @@ const EditViewController = (): React.JSX.Element => {
 	 */
 	const existingEditorId = boardContext?.editorId;
 	const compositionData = boardContext?.compositionData;
+	const originFolderId = boardContext?.originFolderId;
 
 	// Create or resume editor
 	const editor = useMemo(() => {
@@ -219,14 +220,23 @@ const EditViewController = (): React.JSX.Element => {
 			action,
 			id,
 			message,
-			compositionData
+			compositionData,
+			folderId: originFolderId
 		});
 		if (generatedEditor) {
 			addEditor({ id: generatedEditor.id, editor: generatedEditor });
 		}
 
 		return generatedEditor;
-	}, [action, compositionData, existingEditorId, id, isMessageLoadingRequired, message]);
+	}, [
+		action,
+		compositionData,
+		existingEditorId,
+		id,
+		isMessageLoadingRequired,
+		message,
+		originFolderId
+	]);
 
 	return editor ? (
 		<MemoizedEditViewControllerCore entityId={id} action={action} editor={editor} />

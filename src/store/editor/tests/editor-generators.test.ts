@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { vi } from 'vitest';
 
 import { useEditorsStore } from '../store';
 import * as shell from '@test-mocks/@zextras/carbonio-shell-ui';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions, PROCESS_STATUS } from 'constants/index';
+import { getDefaultIdentity, getFolderOwnerIdentity } from 'helpers/identities';
 import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
 import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
 import { MailMessage } from 'types/messages';
@@ -221,6 +225,50 @@ describe('generateEditor', () => {
 				});
 				expect(editor5?.subject).toBe('');
 			});
+		});
+	});
+
+	describe('NEW action', () => {
+		const mocksContext = getMocksContext();
+
+		it('should pre-select the identity of the shared mailbox the folder belongs to', () => {
+			populateFoldersStore();
+			const sharedIdentity = mocksContext.identities.sendAs[0];
+
+			const editor = generateEditor({
+				action: EditViewActions.NEW,
+				folderId: `${sharedIdentity.identity.id}:${FOLDERS.INBOX}`
+			});
+
+			const expectedIdentity = getFolderOwnerIdentity(
+				`${sharedIdentity.identity.id}:${FOLDERS.INBOX}`
+			);
+			expect(expectedIdentity.fromAddress).toBe(sharedIdentity.identity.email);
+			expect(editor?.identityId).toBe(expectedIdentity.id);
+			expect(editor?.signatureId).toBe(sharedIdentity.signatures?.newEmailSignature?.id);
+		});
+
+		it('should select the default identity if the folder belongs to the primary account', () => {
+			populateFoldersStore();
+			const defaultIdentity = getDefaultIdentity();
+
+			const editor = generateEditor({
+				action: EditViewActions.NEW,
+				folderId: FOLDERS.INBOX
+			});
+
+			expect(editor?.identityId).toBe(defaultIdentity.id);
+			expect(editor?.signatureId).toBe(defaultIdentity.defaultSignatureId);
+		});
+
+		it('should select the default identity if no folder id is given', () => {
+			populateFoldersStore();
+			const defaultIdentity = getDefaultIdentity();
+
+			const editor = generateEditor({ action: EditViewActions.NEW });
+
+			expect(editor?.identityId).toBe(defaultIdentity.id);
+			expect(editor?.signatureId).toBe(defaultIdentity.defaultSignatureId);
 		});
 	});
 

@@ -11,6 +11,7 @@ import { EditorPrefillData, EditViewActionsType } from 'types/editor';
 export type EditViewBoardContext = {
 	originAction: EditViewActionsType;
 	originActionTargetId?: string;
+	originFolderId?: string;
 	editorId?: string;
 	compositionData?: EditorPrefillData;
 	onConfirm?: (param: { editor: { text: [string, string] }; onBoardClose: () => void }) => void;
@@ -19,6 +20,8 @@ export type EditViewBoardContext = {
 type CreateEditBoardParams = {
 	action: EditViewActionsType;
 	actionTargetId?: string;
+	/** Id of the folder the action originates from, used to pre-select the sender identity */
+	folderId?: string;
 	title?: string;
 	compositionData?: EditorPrefillData;
 	onConfirm?: () => void;
@@ -43,6 +46,7 @@ const getDraftBoardId = (
 export const createEditBoard = ({
 	action,
 	actionTargetId,
+	folderId,
 	compositionData,
 	onConfirm,
 	title = ''
@@ -64,6 +68,7 @@ export const createEditBoard = ({
 		context: {
 			originAction: action,
 			originActionTargetId: actionTargetId,
+			originFolderId: folderId,
 			onConfirm,
 			compositionData
 		}

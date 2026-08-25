@@ -4,14 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { FOLDERS, getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS, getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
+import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
-import { getMessageOwnerAccountName } from 'helpers/folders';
+import { getFolderOwnerAccountName, getMessageOwnerAccountName } from 'helpers/folders';
 import {
 	getAddressOwnerAccount,
+	getDefaultIdentity,
 	getExtraAccountsIds,
+	getFolderOwnerIdentity,
 	getIdentitiesDescriptors,
 	getMessageSenderAccount,
 	getMessageSenderAddress
@@ -229,5 +232,76 @@ describe('getIdentitiesDescriptors', () => {
 				expect(identity.right).toBeUndefined();
 			}
 		});
+	});
+});
+
+describe('getFolderOwnerIdentity', () => {
+	const mocksContext = getMocksContext();
+
+	test('returns the identity of the shared account if the folder belongs to an account on which the user has the "sendAs" right', () => {
+		populateFoldersStore();
+		const sharedIdentity = mocksContext.identities.sendAs[0];
+		const folderId = `${sharedIdentity.identity.id}:${FOLDERS.INBOX}`;
+
+		expect(getFolderOwnerIdentity(folderId)).toMatchObject({
+			fromAddress: sharedIdentity.identity.email,
+			defaultSignatureId: sharedIdentity.signatures?.newEmailSignature?.id
+		});
+	});
+
+	test('returns the identity of the shared account if the folder belongs to an account on which the user has the "sendOnBehalf" right', () => {
+		populateFoldersStore();
+		const sharedIdentity = mocksContext.identities.sendOnBehalf[0];
+		const folderId = `${sharedIdentity.identity.id}:${FOLDERS.INBOX}`;
+
+		expect(getFolderOwnerIdentity(folderId)).toMatchObject({
+			fromAddress: sharedIdentity.identity.email,
+			defaultSignatureId: sharedIdentity.signatures?.newEmailSignature?.id
+		});
+	});
+
+	test('returns the identity of the shared account also for a sub-folder of the shared account', () => {
+		populateFoldersStore();
+		const sharedIdentity = mocksContext.identities.sendAs[0];
+		const folderId = `${sharedIdentity.identity.id}:1234`;
+
+		expect(getFolderOwnerIdentity(folderId)).toMatchObject({
+			fromAddress: sharedIdentity.identity.email
+		});
+	});
+
+	test('returns the default identity if the folder belongs to the primary account', () => {
+		populateFoldersStore();
+
+		expect(getFolderOwnerIdentity(FOLDERS.INBOX)).toEqual(getDefaultIdentity());
+	});
+
+	test('returns the default identity if no folder id is given', () => {
+		populateFoldersStore();
+
+		expect(getFolderOwnerIdentity()).toEqual(getDefaultIdentity());
+	});
+
+	test('returns the default identity if the folder id does not belong to any known root', () => {
+		populateFoldersStore();
+		const folderId = `${mocksContext.otherUsersIdentities[0].id}:${FOLDERS.INBOX}`;
+
+		expect(getFolderOwnerIdentity(folderId)).toEqual(getDefaultIdentity());
+	});
+
+	test('returns the default identity if the folder belongs to a shared account without a matching identity', () => {
+		const otherUser = mocksContext.otherUsersIdentities[0];
+		const otherUserRoot = {
+			...generateFolder({ id: `${otherUser.id}:${FOLDERS.USER_ROOT}` }),
+			owner: otherUser.email
+		};
+		populateFoldersStore({
+			additionalFolders: { [otherUserRoot.id]: otherUserRoot as Folder }
+		});
+		const folderId = `${otherUser.id}:${FOLDERS.INBOX}`;
+
+		// Ensures the folder is actually resolved as owned by the other user
+		expect(getFolderOwnerAccountName(folderId, getRootsMap())).toBe(otherUser.email);
+		expect(getFolderOwnerIdentity(folderId)).toEqual(getDefaultIdentity());
 	});
 });
