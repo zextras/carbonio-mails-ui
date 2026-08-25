@@ -1,3 +1,8 @@
+## 1.42.0 (2026-08-25)
+
+* feat: implement folder-based identity selection for new email composition ([ed31158](https://github.com/zextras/carbonio-mails-ui/commit/ed31158))
+* chore: point semantic-release at main (devel -> main branch rename) ([c9401c0](https://github.com/zextras/carbonio-mails-ui/commit/c9401c0))
+
 ## <small>1.41.2 (2026-08-19)</small>
 
 * fix: aria  labels added (#1303) ([02886a0](https://github.com/zextras/carbonio-mails-ui/commit/02886a0)), closes [#1303](https://github.com/zextras/carbonio-mails-ui/issues/1303)
