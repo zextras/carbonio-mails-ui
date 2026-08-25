@@ -1,3 +1,7 @@
+## <small>1.42.1 (2026-08-25)</small>
+
+* fix: use defualt account settings for font size and font ([76a2c15](https://github.com/zextras/carbonio-mails-ui/commit/76a2c15))
+
 ## 1.42.0 (2026-08-25)
 
 * feat: implement folder-based identity selection for new email composition ([ed31158](https://github.com/zextras/carbonio-mails-ui/commit/ed31158))
