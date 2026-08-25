@@ -49,12 +49,18 @@ type RichToolbarPluginProps = {
 		files: File[],
 		onComplete: (attachments: UploadedInlineImage[]) => void
 	) => void;
+	/** Account's default font family, used as the font selector's default value. */
+	fontFamily?: string;
+	/** Account's default font size, used as the size selector's default value. */
+	fontSize?: string;
 };
 
 export const RichToolbarPlugin = ({
 	showBlocks,
 	onToggleShowBlocks,
-	onUploadInlineImages
+	onUploadInlineImages,
+	fontFamily,
+	fontSize
 }: RichToolbarPluginProps): React.JSX.Element => {
 	const [editor] = useLexicalComposerContext();
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +83,7 @@ export const RichToolbarPlugin = ({
 	const { formatAlign, setDirection } = useAlignmentAndDirection(editor);
 	const { formatBlock, blockSelectItems, selectedBlock } = useBlockType(editor, currentBlock);
 	const { fontSelectItems, fontSizeSelectItems, selectedFont, selectedFontSize } =
-		useFontAndSizeSelects(currentFont, currentFontSize);
+		useFontAndSizeSelects(currentFont, currentFontSize, fontFamily, fontSize);
 	const {
 		imageAlignItems,
 		openImageModal,
