@@ -122,7 +122,7 @@ export const newEmailActionOnClick = (
 	 */
 	createEditBoard({
 		action: EditViewActions.NEW,
-		folderId: getFolderIdFromPathname(window.location.pathname),
+		folderId: getFolderIdFromPathname(globalThis.location.pathname),
 		title: t('label.new_email', 'New E-mail')
 	});
 };
