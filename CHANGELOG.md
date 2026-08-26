@@ -1,3 +1,7 @@
+## <small>1.43.1 (2026-08-26)</small>
+
+* fix: clean up function on after bullet list creation (#1311) ([f25f05f](https://github.com/zextras/carbonio-mails-ui/commit/f25f05f)), closes [#1311](https://github.com/zextras/carbonio-mails-ui/issues/1311)
+
 ## 1.43.0 (2026-08-26)
 
 * feat: add delegation identity handling and display name logic for identities without display names ([382c96c](https://github.com/zextras/carbonio-mails-ui/commit/382c96c))
