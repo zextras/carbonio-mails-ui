@@ -11,6 +11,7 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { isArray, isString, some } from 'lodash';
 
 import { EditViewActions, MAIL_APP_ID } from 'constants/index';
+import { getFolderIdFromPathname } from 'helpers/routes';
 import { mailToSharedFunction } from 'integrations/shared-functions';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
@@ -114,8 +115,14 @@ export const newEmailActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent
 ): void => {
 	e?.preventDefault?.();
+
+	/*
+	 * The action is registered on the shell, hence it runs outside the module's router
+	 * and the folder currently in focus can only be obtained from the location
+	 */
 	createEditBoard({
 		action: EditViewActions.NEW,
+		folderId: getFolderIdFromPathname(globalThis.location.pathname),
 		title: t('label.new_email', 'New E-mail')
 	});
 };

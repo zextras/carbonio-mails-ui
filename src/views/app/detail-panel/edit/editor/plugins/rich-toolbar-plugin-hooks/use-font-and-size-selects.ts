@@ -19,7 +19,9 @@ type FontAndSizeSelects = {
 
 export function useFontAndSizeSelects(
 	currentFont: string,
-	currentFontSize: string
+	currentFontSize: string,
+	preferredFontFamily?: string,
+	preferredFontSize?: string
 ): FontAndSizeSelects {
 	const fontSelectItems = useMemo<Array<SelectItem>>(
 		() => getFonts().map((font) => ({ label: font.label, value: font.value })),
@@ -31,9 +33,21 @@ export function useFontAndSizeSelects(
 		[]
 	);
 
-	const defaultFont = useMemo<SelectItem>(() => fontSelectItems[0], [fontSelectItems]);
+	const defaultFont = useMemo<SelectItem>(
+		() =>
+			fontSelectItems.find(
+				(item) => normalizeCssValue(item.value) === normalizeCssValue(preferredFontFamily ?? '')
+			) ?? fontSelectItems[0],
+		[fontSelectItems, preferredFontFamily]
+	);
 
-	const defaultFontSize = useMemo<SelectItem>(() => fontSizeSelectItems[0], [fontSizeSelectItems]);
+	const defaultFontSize = useMemo<SelectItem>(
+		() =>
+			fontSizeSelectItems.find(
+				(item) => normalizeCssValue(item.value) === normalizeCssValue(preferredFontSize ?? '')
+			) ?? fontSizeSelectItems[0],
+		[fontSizeSelectItems, preferredFontSize]
+	);
 
 	const selectedFont = useMemo<SelectItem>(
 		() =>
