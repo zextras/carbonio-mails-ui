@@ -4,11 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+import * as shell from '@zextras/carbonio-shell-ui';
 import { Folder, FOLDERS, getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { TFunction } from 'i18next';
 
+import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { getFolderOwnerAccountName, getMessageOwnerAccountName } from 'helpers/folders';
 import {
 	getAddressOwnerAccount,
@@ -16,10 +20,12 @@ import {
 	getExtraAccountsIds,
 	getFolderOwnerIdentity,
 	getIdentitiesDescriptors,
+	getIdentityDescription,
+	getIdentityDisplayName,
 	getMessageSenderAccount,
-	getMessageSenderAddress
+	getMessageSenderAddress,
+	type IdentityDescriptor
 } from 'helpers/identities';
-import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('Message sender address', () => {
 	test('returns the address if sender is a participant of type FROM', () => {
@@ -232,6 +238,162 @@ describe('getIdentitiesDescriptors', () => {
 				expect(identity.right).toBeUndefined();
 			}
 		});
+	});
+});
+
+describe('Delegation identities of accounts without a display name', () => {
+	const delegateAddress = 'user1@demo.zextras.io';
+	const delegateDisplayName = 'User One';
+	const sendAsAddress = 'account1@demo.zextras.io';
+	const sendOnBehalfOfAddress = 'account2@demo.zextras.io';
+	const sharedAccountDisplayName = 'Shared Account';
+
+	const t = ((key: string, fallback: string): string => fallback) as unknown as TFunction;
+
+	/**
+	 * Generates an account which is a delegate of two accounts, one with the "sendAs" right
+	 * and one with the "sendOnBehalfOf" right.
+	 *
+	 * @param targetDisplayName - display name of the delegated accounts. If omitted the
+	 * targets are generated without the "d" attribute, as the server does for the accounts
+	 * created without a displayName
+	 * @param delegateFromDisplay - display name of the delegate account, null if the delegate
+	 * account has no display name
+	 */
+	const generateDelegateAccount = (
+		targetDisplayName?: string,
+		delegateFromDisplay: string | null = delegateDisplayName
+	): shell.Account => {
+		const generateTarget = (address: string): unknown => ({
+			id: address,
+			name: address,
+			type: 'account',
+			email: [{ addr: address }],
+			...(targetDisplayName !== undefined ? { d: targetDisplayName } : {})
+		});
+
+		return {
+			...generateAccount(),
+			id: '1',
+			name: delegateAddress,
+			displayName: delegateFromDisplay ?? '',
+			identities: {
+				identity: [
+					{
+						id: '1',
+						name: 'DEFAULT',
+						_attrs: {
+							zimbraPrefIdentityId: '1',
+							zimbraPrefIdentityName: 'DEFAULT',
+							zimbraPrefFromAddress: delegateAddress,
+							zimbraPrefFromDisplay: delegateFromDisplay ?? undefined
+						}
+					}
+				]
+			},
+			rights: {
+				targets: [
+					{ right: 'sendAs', target: [generateTarget(sendAsAddress)] },
+					{ right: 'sendOnBehalfOf', target: [generateTarget(sendOnBehalfOfAddress)] }
+				]
+			} as never // cannot import AccountRights from carbonio-shell-ui
+		};
+	};
+
+	const mockAccount = (
+		targetDisplayName?: string,
+		delegateFromDisplay: string | null = delegateDisplayName
+	): void => {
+		vi.spyOn(shell, 'getUserAccount').mockReturnValue(
+			generateDelegateAccount(targetDisplayName, delegateFromDisplay)
+		);
+		vi.spyOn(shell, 'getUserSettings').mockReturnValue({
+			attrs: {}
+		} as unknown as shell.AccountSettings);
+	};
+
+	const getDelegationIdentity = (address: string): IdentityDescriptor => {
+		const identity = getIdentitiesDescriptors().find(
+			(identityDescriptor) => identityDescriptor.fromAddress === address
+		);
+		if (!identity) {
+			throw new Error(`No identity found for the address ${address}`);
+		}
+		return identity;
+	};
+
+	afterEach(() => {
+		/*
+		 * The shell functions are already auto-mocked with a default implementation, so
+		 * vi.spyOn returns the very same mock and a restore has nothing to restore to:
+		 * the mocked delegate account would leak into the following tests. A reset brings
+		 * back the default implementation of the auto-mock instead.
+		 */
+		vi.mocked(shell.getUserAccount).mockReset();
+		vi.mocked(shell.getUserSettings).mockReset();
+	});
+
+	test('generates the descriptor with empty names and no display name', () => {
+		mockAccount();
+
+		expect(getDelegationIdentity(sendAsAddress)).toEqual(
+			expect.objectContaining({
+				type: 'delegation',
+				right: 'sendAs',
+				ownerAccount: sendAsAddress,
+				receivingAddress: sendAsAddress,
+				fromAddress: sendAsAddress,
+				identityName: '',
+				identityDisplayName: '',
+				fromDisplay: undefined
+			})
+		);
+	});
+
+	test('displays the address of the delegated account instead of an empty name', () => {
+		mockAccount();
+
+		expect(getIdentityDisplayName(getDelegationIdentity(sendAsAddress))).toBe(sendAsAddress);
+	});
+
+	test('describes a "sendAs" identity without repeating any undefined name', () => {
+		mockAccount();
+
+		expect(getIdentityDescription(getDelegationIdentity(sendAsAddress), t)).toBe(
+			`<${sendAsAddress}>`
+		);
+	});
+
+	test('describes a "sendOnBehalfOf" identity without repeating any undefined name', () => {
+		mockAccount();
+
+		expect(getIdentityDescription(getDelegationIdentity(sendOnBehalfOfAddress), t)).toBe(
+			`${delegateDisplayName} on behalf of <${sendOnBehalfOfAddress}>`
+		);
+	});
+
+	test('describes a "sendOnBehalfOf" identity with the delegate address if the delegate has no display name', () => {
+		mockAccount(undefined, null);
+
+		expect(getIdentityDescription(getDelegationIdentity(sendOnBehalfOfAddress), t)).toBe(
+			`${delegateAddress} on behalf of <${sendOnBehalfOfAddress}>`
+		);
+	});
+
+	test('keeps using the display name of the delegated account when it is available', () => {
+		mockAccount(sharedAccountDisplayName);
+
+		const sendAsIdentity = getDelegationIdentity(sendAsAddress);
+		expect(sendAsIdentity.identityName).toBe(sharedAccountDisplayName);
+		expect(sendAsIdentity.identityDisplayName).toBe(sharedAccountDisplayName);
+		expect(sendAsIdentity.fromDisplay).toBe(sharedAccountDisplayName);
+		expect(getIdentityDisplayName(sendAsIdentity)).toBe(sharedAccountDisplayName);
+		expect(getIdentityDescription(sendAsIdentity, t)).toBe(
+			`${sharedAccountDisplayName} <${sendAsAddress}>`
+		);
+		expect(getIdentityDescription(getDelegationIdentity(sendOnBehalfOfAddress), t)).toBe(
+			`${delegateDisplayName} on behalf of ${sharedAccountDisplayName} <${sendOnBehalfOfAddress}>`
+		);
 	});
 });
 
