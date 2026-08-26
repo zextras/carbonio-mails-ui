@@ -69,6 +69,12 @@ type EditorAttachmentHook = {
 	addInlineAttachments: (
 		files: Array<File>,
 		options?: UploadCallbacks & {
+			/**
+			 * Saves the draft as soon as the uploads end, instead of waiting for the
+			 * auto-save interval. Needed when the caller has to act on the resulting
+			 * content ids without keeping a `data:` URI in the body meanwhile.
+			 */
+			saveImmediately?: boolean;
 			onSaveComplete?: (
 				inlineAttachments: Array<{
 					contentId: string | undefined;
@@ -85,7 +91,7 @@ type EditorAttachmentHook = {
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
+	const { debouncedSaveDraft, immediateSaveDraft } = useSaveDraftFromEditor(editorId);
 	const { setDirty } = useEditorSetDirty(editorId);
 	const notifyUploadError = useNotifyUploadError();
 
@@ -171,11 +177,12 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		files: Array<File>,
 		areInline: boolean,
 		callbacks?: UploadAttachmentsOptions & {
+			saveImmediately?: boolean;
 			onSaveComplete?: (savedContentIds: Array<string>) => void;
 		}
 	): Array<UnsavedAttachment> => {
 		const customizedCallbacks = {
-			...callbacks,
+			...omit(callbacks, 'saveImmediately'),
 			onUploadsEnd: (completedUploadsId: Array<string>, failedUploadsId: Array<string>): void => {
 				const editor = getEditor({ id: editorId });
 				if (editor) {
@@ -200,7 +207,12 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 						}
 					};
 					setDirty();
-					debouncedSaveDraft(saveDraftOptions);
+					if (callbacks?.saveImmediately) {
+						debouncedSaveDraft.cancel();
+						immediateSaveDraft(saveDraftOptions);
+					} else {
+						debouncedSaveDraft(saveDraftOptions);
+					}
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -262,6 +274,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 	const addInlineAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks & {
+			saveImmediately?: boolean;
 			onSaveComplete?: (
 				inlineAttachments: Array<{
 					contentId: string | undefined;
