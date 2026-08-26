@@ -57,8 +57,8 @@ export const dataUriToFile = (dataUri: string, fileName: string): File | undefin
 
 	const [, mimeType, payload] = match;
 	try {
-		const binary = atob(payload.replace(/\s/g, ''));
-		const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+		const binary = atob(payload.replaceAll(/\s/g, ''));
+		const bytes = Uint8Array.from(binary, (char) => char.codePointAt(0) ?? 0);
 		return new File([bytes], fileName, { type: mimeType });
 	} catch {
 		return undefined;

@@ -10,28 +10,12 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
 
 import {
-	INSERT_INLINE_IMAGE_COMMAND,
+	insertResolvedInlineImages,
 	OPEN_IMAGE_MODAL_COMMAND,
-	SET_INLINE_IMAGE_ALIGNMENT_COMMAND
+	SET_INLINE_IMAGE_ALIGNMENT_COMMAND,
+	type ResolveInlineImages
 } from '../image-plugin';
 import { type ImageAlignment } from '../nodes/image-node';
-
-/**
- * An image picked from the device, resolved into something the editor can
- * display. How it is resolved depends on the host editor: the mail composer
- * uploads the file as an inline attachment (so `src` is a download-service URL
- * and `cidUrl` the matching cid), while the signature editor embeds it as a
- * `data:` URI (so there is no cid).
- */
-export type ResolvedInlineImage = {
-	src?: string;
-	cidUrl?: string;
-};
-
-export type ResolveInlineImages = (
-	files: File[],
-	onComplete: (images: ResolvedInlineImage[]) => void
-) => void;
 
 type ImageActions = {
 	alignImage: (alignment: ImageAlignment) => void;
@@ -78,17 +62,9 @@ export function useImageActions(
 			if (!fileList?.length || !onResolveInlineImages) {
 				return;
 			}
-			onResolveInlineImages(Array.from(fileList), (images) => {
-				images.forEach((image) => {
-					if (image.src) {
-						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-							src: image.src,
-							cidUrl: image.cidUrl,
-							altText: 'Inline attachment'
-						});
-					}
-				});
-			});
+			onResolveInlineImages(Array.from(fileList), (images) =>
+				insertResolvedInlineImages(editor, images)
+			);
 			event.target.value = '';
 		},
 		[onResolveInlineImages, editor]

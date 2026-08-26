@@ -8,8 +8,7 @@ import { useEffect } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { COMMAND_PRIORITY_LOW, PASTE_COMMAND } from 'lexical';
 
-import { INSERT_INLINE_IMAGE_COMMAND } from './image-plugin';
-import { type ResolveInlineImages } from './rich-toolbar-plugin-hooks/use-image-actions';
+import { insertResolvedInlineImages, type ResolveInlineImages } from './image-plugin';
 
 type PastePluginProps = {
 	/**
@@ -63,17 +62,7 @@ export const PastePlugin = ({ onResolveInlineImages }: PastePluginProps): null =
 					}
 
 					event.preventDefault();
-					onResolveInlineImages(imageFiles, (images) => {
-						images.forEach((image) => {
-							if (image.src) {
-								editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-									src: image.src,
-									cidUrl: image.cidUrl,
-									altText: 'Inline attachment'
-								});
-							}
-						});
-					});
+					onResolveInlineImages(imageFiles, (images) => insertResolvedInlineImages(editor, images));
 					return true;
 				},
 				COMMAND_PRIORITY_LOW

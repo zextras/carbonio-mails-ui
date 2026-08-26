@@ -13,15 +13,13 @@ import { INDENT_CONTENT_COMMAND, OUTDENT_CONTENT_COMMAND } from 'lexical';
 
 import { ColorPickerToolbarButton } from './color-picker-toolbar-button';
 import { ImageModal } from './image-modal';
+import { type ResolveInlineImages } from './image-plugin';
 import { LinkModal } from './link-modal';
 import { useAlignmentAndDirection } from './rich-toolbar-plugin-hooks/use-alignment-and-direction';
 import { useBlockType } from './rich-toolbar-plugin-hooks/use-block-type';
 import { useEmojiAndSpecialCharacters } from './rich-toolbar-plugin-hooks/use-emoji-and-special-characters';
 import { useFontAndSizeSelects } from './rich-toolbar-plugin-hooks/use-font-and-size-selects';
-import {
-	useImageActions,
-	type ResolveInlineImages
-} from './rich-toolbar-plugin-hooks/use-image-actions';
+import { useImageActions } from './rich-toolbar-plugin-hooks/use-image-actions';
 import { useStylePatching } from './rich-toolbar-plugin-hooks/use-style-patching';
 import { useTableInsert } from './rich-toolbar-plugin-hooks/use-table-insert';
 import { useTextFormatting } from './rich-toolbar-plugin-hooks/use-text-formatting';
@@ -33,10 +31,7 @@ import { ToolbarIconButton } from './toolbar-icon-button';
 import { ToolbarSelect } from './toolbar-select';
 import { editorIcon } from '../icons/editor-icons';
 
-export type {
-	ResolvedInlineImage,
-	ResolveInlineImages
-} from './rich-toolbar-plugin-hooks/use-image-actions';
+export type { ResolvedInlineImage, ResolveInlineImages } from './image-plugin';
 
 /**
  * The file input behind the "insert image from device" button is hidden (it is

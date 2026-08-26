@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $dfs } from '@lexical/utils';
-import { $getNodeByKey, type NodeKey } from 'lexical';
+import { $getNodeByKey, type LexicalEditor, type NodeKey } from 'lexical';
 
-import { $isImageNode, ImageNode } from './nodes/image-node';
+import { $isImageNode } from './nodes/image-node';
 import { dataUriToFile, getDataUriFileName, isDataImageUri } from 'helpers/inline-images';
 import { useEditorAttachments } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
@@ -17,6 +17,40 @@ import { MailsEditorV2 } from 'types/editor';
 type InlineDataImageUploadPluginProps = {
 	editorId: MailsEditorV2['id'];
 };
+
+type PendingDataUriImage = {
+	key: NodeKey;
+	src: string;
+};
+
+/**
+ * Collects the images still carrying a `data:` URI which have not been attempted
+ * yet. Must run inside an editor state read, since it walks the current tree.
+ */
+function $collectPendingDataUriImages(attemptedKeys: Set<NodeKey>): Array<PendingDataUriImage> {
+	return $dfs().reduce<Array<PendingDataUriImage>>((pending, { node }) => {
+		if ($isImageNode(node) && !attemptedKeys.has(node.getKey()) && isDataImageUri(node.getSrc())) {
+			pending.push({ key: node.getKey(), src: node.getSrc() });
+		}
+		return pending;
+	}, []);
+}
+
+/** Points an image node at its uploaded counterpart, cid included. */
+function repointImageNode(
+	editor: LexicalEditor,
+	key: NodeKey,
+	src: string,
+	cidUrl: string | undefined
+): void {
+	editor.update(() => {
+		const node = $getNodeByKey(key);
+		if ($isImageNode(node)) {
+			node.setSrc(src);
+			node.setCidUrl(cidUrl);
+		}
+	});
+}
 
 /**
  * Turns base64 `data:` images into real inline attachments.
@@ -47,46 +81,37 @@ export const InlineDataImageUploadPlugin = ({
 	const attemptedKeysRef = useRef<Set<NodeKey>>(new Set());
 	const uploadCountRef = useRef(0);
 
-	useEffect(() => {
-		const uploadImage = (key: NodeKey, dataUri: string): void => {
+	const uploadImage = useCallback(
+		({ key, src }: PendingDataUriImage): void => {
 			attemptedKeysRef.current.add(key);
 			uploadCountRef.current += 1;
-			const file = dataUriToFile(dataUri, getDataUriFileName(dataUri, uploadCountRef.current));
+			const file = dataUriToFile(src, getDataUriFileName(src, uploadCountRef.current));
 			if (!file) {
 				return;
 			}
 
 			addInlineAttachments([file], {
-				onSaveComplete: (inlineAttachments) => {
+				onSaveComplete: (inlineAttachments): void => {
 					const { downloadServiceUrl, cidUrl } = inlineAttachments[0] ?? {};
-					if (!downloadServiceUrl) {
-						return;
+					if (downloadServiceUrl) {
+						repointImageNode(editor, key, downloadServiceUrl, cidUrl);
 					}
-					editor.update(() => {
-						const node = $getNodeByKey(key);
-						if ($isImageNode(node)) {
-							node.setSrc(downloadServiceUrl);
-							node.setCidUrl(cidUrl);
-						}
-					});
 				}
 			});
-		};
+		},
+		[addInlineAttachments, editor]
+	);
 
-		return editor.registerUpdateListener(({ editorState }) => {
-			const dataImages = editorState.read(() =>
-				$dfs()
-					.map(({ node }) => node)
-					.filter((node): node is ImageNode => $isImageNode(node))
-					.filter(
-						(node) => !attemptedKeysRef.current.has(node.getKey()) && isDataImageUri(node.getSrc())
-					)
-					.map((node) => ({ key: node.getKey(), src: node.getSrc() }))
-			);
-
-			dataImages.forEach(({ key, src }) => uploadImage(key, src));
-		});
-	}, [addInlineAttachments, editor]);
+	useEffect(
+		() =>
+			editor.registerUpdateListener(({ editorState }) => {
+				const pending = editorState.read(() =>
+					$collectPendingDataUriImages(attemptedKeysRef.current)
+				);
+				pending.forEach(uploadImage);
+			}),
+		[editor, uploadImage]
+	);
 
 	return null;
 };
