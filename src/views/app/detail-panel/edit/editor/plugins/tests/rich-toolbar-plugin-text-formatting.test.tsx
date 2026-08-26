@@ -187,4 +187,40 @@ describe('RichToolbarPlugin - inline text formatting', () => {
 		});
 		expect(richTextOf(editorId)).toContain('<p ');
 	});
+
+	it('resets a bulleted list back to a paragraph with the remove-formatting control', async () => {
+		const { editorId, user } = await setupWithSelectedContent();
+
+		await user.click(screen.getByRole('button', { name: 'lexical-label.bullet_list' }));
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain('<ul');
+		});
+
+		await user.click(screen.getByTestId(EDITOR_TESTID));
+		await user.keyboard('{Control>}a{/Control}');
+		await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<ul');
+		});
+		expect(richTextOf(editorId)).toContain('<p ');
+	});
+
+	it('resets a numbered list back to a paragraph with the remove-formatting control', async () => {
+		const { editorId, user } = await setupWithSelectedContent();
+
+		await user.click(screen.getByRole('button', { name: 'lexical-label.numbered_list' }));
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain('<ol');
+		});
+
+		await user.click(screen.getByTestId(EDITOR_TESTID));
+		await user.keyboard('{Control>}a{/Control}');
+		await user.click(screen.getByRole('button', { name: 'lexical-label.remove_format' }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<ol');
+		});
+		expect(richTextOf(editorId)).toContain('<p ');
+	});
 });
