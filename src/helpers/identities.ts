@@ -10,7 +10,11 @@ import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, map, remove } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
-import { getFolderIdParts, getMessageOwnerAccountName } from 'helpers/folders';
+import {
+	getFolderIdParts,
+	getFolderOwnerAccountName,
+	getMessageOwnerAccountName
+} from 'helpers/folders';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
 import { MailMessage } from 'types/messages';
 import { Participant } from 'types/participant';
@@ -438,6 +442,42 @@ const getDefaultIdentity = (): IdentityDescriptor =>
 	);
 
 /**
+ * Returns the identity that should be used to compose a new message from the given folder.
+ *
+ * If the folder belongs to a delegated shared mailbox, the identity matching the shared
+ * mailbox address is returned, so that the message is sent with the right sender and
+ * signature. The default identity is returned for the folders of the primary account,
+ * for the folders of a shared mailbox without a matching identity and when no folder
+ * is given.
+ *
+ * If more than one identity matches the shared mailbox address, the first one is
+ * returned: the identities are sorted by #sortIdentities, hence the primary identity
+ * comes first, followed by the others in the order they are defined in the account
+ *
+ * @param folderId the id of the folder the user is composing the message from
+ */
+const getFolderOwnerIdentity = (folderId?: string): IdentityDescriptor => {
+	const defaultIdentity = getDefaultIdentity();
+	if (!folderId) {
+		return defaultIdentity;
+	}
+
+	const folderOwnerAccount = getFolderOwnerAccountName(folderId, getRootsMap());
+	if (!folderOwnerAccount || folderOwnerAccount === defaultIdentity.ownerAccount) {
+		return defaultIdentity;
+	}
+
+	const identities = getIdentitiesDescriptors();
+
+	return (
+		identities.find((identity) => identity.fromAddress === folderOwnerAccount) ??
+		identities.find((identity) => identity.receivingAddress === folderOwnerAccount) ??
+		identities.find((identity) => identity.ownerAccount === folderOwnerAccount) ??
+		defaultIdentity
+	);
+};
+
+/**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
  * @param message - The message to analyze
@@ -601,6 +641,7 @@ export {
 	filterMatchingRecipients,
 	getAddressOwnerAccount,
 	getDefaultIdentity,
+	getFolderOwnerIdentity,
 	getIdentitiesDescriptors,
 	getIdentityDescription,
 	getIdentityDisplayName,

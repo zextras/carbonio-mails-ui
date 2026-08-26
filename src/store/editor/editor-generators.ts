@@ -13,6 +13,7 @@ import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/inde
 import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
+	getFolderOwnerIdentity,
 	getIdentityFromParticipant,
 	getRecipientReplyIdentity
 } from 'helpers/identities';
@@ -57,19 +58,20 @@ const labels = {
 };
 
 /**
- *
+ * @param folderId the id of the folder the message is composed from. It is used to
+ * pre-select the identity matching the shared mailbox the folder belongs to
  */
 // FIXME: this is a plain text editor and it is not clear, cleanup the generators or rename them
-export const generateNewMessageEditor = (): MailsEditorV2 => {
+export const generateNewMessageEditor = (folderId?: string): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: ``,
 		richText: ``
 	};
-	const defaultIdentity = getDefaultIdentity();
+	const identity = getFolderOwnerIdentity(folderId);
 	const textWithSignature = getMailBodyWithSignature({
 		editorText: text,
-		newSignatureId: defaultIdentity.defaultSignatureId
+		newSignatureId: identity.defaultSignatureId
 	});
 	const userSettings = getUserSettings();
 	const prefs = userSettings?.prefs ?? {};
@@ -78,7 +80,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.NEW,
-		identityId: getDefaultIdentity().id,
+		identityId: identity.id,
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
@@ -93,7 +95,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: isRequestReadReceipt,
-		signatureId: defaultIdentity.defaultSignatureId,
+		signatureId: identity.defaultSignatureId,
 
 		size: 0
 	};
@@ -527,6 +529,7 @@ export type GenerateEditorParams = {
 	id?: string;
 	message?: MailMessage | null;
 	compositionData?: EditorPrefillData;
+	folderId?: string;
 };
 
 export const resumeEditor = (id: string): MailsEditorV2 | null => {
@@ -539,16 +542,19 @@ export const resumeEditor = (id: string): MailsEditorV2 | null => {
  * @param action
  * @param id
  * @param message
+ * @param compositionData
+ * @param folderId
  */
 export const generateEditor = ({
 	action,
 	id,
 	message,
-	compositionData
+	compositionData,
+	folderId
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
 		case EditViewActions.NEW:
-			return generateNewMessageEditor();
+			return generateNewMessageEditor(folderId);
 		case EditViewActions.REPLY:
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');

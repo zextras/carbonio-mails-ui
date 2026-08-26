@@ -6,6 +6,7 @@
 
 import { addBoard, registerActions } from '@zextras/carbonio-shell-ui';
 
+import { mockWindowLocation } from '@test-utils/utils/window';
 import {
 	mailToAction,
 	mailToActionOnClick,
@@ -15,6 +16,7 @@ import {
 	newEmailActionOnClick,
 	registerShellActions
 } from 'app-utils/register-shell-actions';
+import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
 import * as sharedFunctions from 'integrations/shared-functions';
 
 describe('registerShellActions', () => {
@@ -168,6 +170,12 @@ describe('newEmailAction', () => {
 });
 
 describe('newEmailActionOnClick', () => {
+	const originalLocation = window.location;
+
+	afterEach(() => {
+		mockWindowLocation(originalLocation);
+	});
+
 	it('when called it should invoke addBoard with the correct parameters', async () => {
 		newEmailActionOnClick({} as KeyboardEvent);
 		expect(addBoard).toHaveBeenCalledWith(
@@ -177,6 +185,38 @@ describe('newEmailActionOnClick', () => {
 					originAction: 'new'
 				},
 				title: 'label.new_email'
+			})
+		);
+	});
+
+	it('should set the id of the folder in focus in the board context', async () => {
+		const folderId = 'a79fa996-e90e-4f04-97c4-c84209bb8277:2';
+		// The shell is served under a base path, which is part of window.location.pathname
+		mockWindowLocation({ pathname: `/carbonio/${MAILS_ROUTE}/folder/${folderId}` });
+
+		newEmailActionOnClick({} as KeyboardEvent);
+
+		expect(addBoard).toHaveBeenCalledWith(
+			expect.objectContaining({
+				context: expect.objectContaining({
+					originAction: 'new',
+					originFolderId: folderId
+				})
+			})
+		);
+	});
+
+	it('should not set any folder id in the board context if the user is not on a folder', async () => {
+		mockWindowLocation({ pathname: `/carbonio/${SEARCH_ROUTE}/any` });
+
+		newEmailActionOnClick({} as KeyboardEvent);
+
+		expect(addBoard).toHaveBeenCalledWith(
+			expect.objectContaining({
+				context: expect.objectContaining({
+					originAction: 'new',
+					originFolderId: undefined
+				})
 			})
 		);
 	});
