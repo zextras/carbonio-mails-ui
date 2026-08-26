@@ -253,6 +253,11 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
 		writable.__src = src;
 	}
 
+	setCidUrl(cidUrl: string | undefined): void {
+		const writable = this.getWritable();
+		writable.__cidUrl = cidUrl;
+	}
+
 	setAltText(altText: string): void {
 		const writable = this.getWritable();
 		writable.__altText = altText;

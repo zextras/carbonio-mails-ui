@@ -16,10 +16,22 @@ import {
 } from '../image-plugin';
 import { type ImageAlignment } from '../nodes/image-node';
 
-export type UploadedInlineImage = {
-	downloadServiceUrl?: string;
+/**
+ * An image picked from the device, resolved into something the editor can
+ * display. How it is resolved depends on the host editor: the mail composer
+ * uploads the file as an inline attachment (so `src` is a download-service URL
+ * and `cidUrl` the matching cid), while the signature editor embeds it as a
+ * `data:` URI (so there is no cid).
+ */
+export type ResolvedInlineImage = {
+	src?: string;
 	cidUrl?: string;
 };
+
+export type ResolveInlineImages = (
+	files: File[],
+	onComplete: (images: ResolvedInlineImage[]) => void
+) => void;
 
 type ImageActions = {
 	alignImage: (alignment: ImageAlignment) => void;
@@ -32,10 +44,7 @@ type ImageActions = {
 
 export function useImageActions(
 	editor: LexicalEditor,
-	onUploadInlineImages?: (
-		files: File[],
-		onComplete: (attachments: UploadedInlineImage[]) => void
-	) => void
+	onResolveInlineImages?: ResolveInlineImages
 ): ImageActions {
 	const [imageModalOpen, setImageModalOpen] = useState(false);
 
@@ -66,15 +75,15 @@ export function useImageActions(
 	const onImageFilesSelected = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
 			const fileList = event.target.files;
-			if (!fileList?.length || !onUploadInlineImages) {
+			if (!fileList?.length || !onResolveInlineImages) {
 				return;
 			}
-			onUploadInlineImages(Array.from(fileList), (inlineAttachments) => {
-				inlineAttachments.forEach((attachment) => {
-					if (attachment.downloadServiceUrl) {
+			onResolveInlineImages(Array.from(fileList), (images) => {
+				images.forEach((image) => {
+					if (image.src) {
 						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-							src: attachment.downloadServiceUrl,
-							cidUrl: attachment.cidUrl,
+							src: image.src,
+							cidUrl: image.cidUrl,
 							altText: 'Inline attachment'
 						});
 					}
@@ -82,7 +91,7 @@ export function useImageActions(
 			});
 			event.target.value = '';
 		},
-		[onUploadInlineImages, editor]
+		[onResolveInlineImages, editor]
 	);
 
 	const imageAlignItems = useMemo<Array<DropdownItem>>(
