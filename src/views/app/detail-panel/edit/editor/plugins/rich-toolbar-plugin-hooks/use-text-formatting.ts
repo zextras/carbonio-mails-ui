@@ -5,6 +5,7 @@
  */
 import { type MutableRefObject, useCallback } from 'react';
 
+import { $isListNode, $removeList } from '@lexical/list';
 import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
 import { $forEachSelectedTextNode } from '@lexical/selection';
 import {
@@ -46,10 +47,14 @@ export function useTextFormatting(
 				$setSelection(targetSelection);
 
 				const blocksToReset = new Map<string, ElementNode>();
+				let hasListSelected = false;
 				targetSelection.getNodes().forEach((node) => {
 					const topLevel = node.getTopLevelElement();
 					if ($isElementNode(topLevel) && ($isHeadingNode(topLevel) || $isQuoteNode(topLevel))) {
 						blocksToReset.set(topLevel.getKey(), topLevel);
+					}
+					if ($isListNode(topLevel)) {
+						hasListSelected = true;
 					}
 				});
 
@@ -59,6 +64,9 @@ export function useTextFormatting(
 				});
 
 				blocksToReset.forEach((block) => block.replace($createParagraphNode(), true));
+				if (hasListSelected) {
+					$removeList();
+				}
 			}
 		});
 	}, [editor, lastRangeSelectionRef]);
