@@ -6,7 +6,7 @@
 import React, { SyntheticEvent, useMemo } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
-import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import {
 	Folder,
 	FOLDERS,
@@ -294,6 +294,9 @@ export function buildExportArchiveOnClick({
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { createModal, closeModal } = useModal();
 	const { name } = useUserAccount();
+	const { attrs } = useUserSettings();
+	const isImportArchiveEnabled = attrs?.zimbraFeatureImportFolderEnabled !== 'FALSE';
+	const isExportArchiveEnabled = attrs?.zimbraFeatureExportFolderEnabled !== 'FALSE';
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
 	const messagesInFolder = useMessagesByFolder(folder.id);
 
@@ -586,33 +589,54 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			},
 
-			{
-				id: 'export',
-				'data-testid': `folder-action-export-option`,
-				icon: 'DownloadOutline',
-				tooltipLabel:
-					folder.n === 0 && folder.children?.length === 0
-						? t('tooltip.export_archive_disabled', "This folder is empty and can't be exported")
-						: undefined,
-				label: t('label.export_archive', 'Export Archive'),
-				disabled: folder.n === 0 && folder.children?.length === 0,
-				onClick: buildExportArchiveOnClick({ folder, name, createModal, closeModal })
-			},
-			{
-				id: 'import',
-				'data-testid': `folder-action-import-option`,
-				icon: 'UploadOutline',
-				label: t('label.import_archive', 'Import Archive'),
-				onClick: buildImportArchiveOnClick({
-					folder,
-					name,
-					createModal,
-					closeModal,
-					createSnackbar
-				})
-			}
+			...(isExportArchiveEnabled
+				? [
+						{
+							id: 'export',
+							'data-testid': `folder-action-export-option`,
+							icon: 'DownloadOutline',
+							tooltipLabel:
+								folder.n === 0 && folder.children?.length === 0
+									? t(
+											'tooltip.export_archive_disabled',
+											"This folder is empty and can't be exported"
+										)
+									: undefined,
+							label: t('label.export_archive', 'Export Archive'),
+							disabled: folder.n === 0 && folder.children?.length === 0,
+							onClick: buildExportArchiveOnClick({ folder, name, createModal, closeModal })
+						}
+					]
+				: []),
+			...(isImportArchiveEnabled
+				? [
+						{
+							id: 'import',
+							'data-testid': `folder-action-import-option`,
+							icon: 'UploadOutline',
+							label: t('label.import_archive', 'Import Archive'),
+							onClick: buildImportArchiveOnClick({
+								folder,
+								name,
+								createModal,
+								closeModal,
+								createSnackbar
+							})
+						}
+					]
+				: [])
 		],
-		[folder, folderIsTrash, createModal, closeModal, trashMessages, createSnackbar, name]
+		[
+			folder,
+			folderIsTrash,
+			createModal,
+			closeModal,
+			trashMessages,
+			createSnackbar,
+			name,
+			isExportArchiveEnabled,
+			isImportArchiveEnabled
+		]
 	);
 
 	const defaultFolderActions = useMemo(
