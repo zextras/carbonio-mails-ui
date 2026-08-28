@@ -1,3 +1,7 @@
+## <small>1.44.1 (2026-08-28)</small>
+
+* fix: table copy paste and resize (#1313) ([9c75690](https://github.com/zextras/carbonio-mails-ui/commit/9c75690)), closes [#1313](https://github.com/zextras/carbonio-mails-ui/issues/1313)
+
 ## 1.44.0 (2026-08-28)
 
 * Merge branch 'main' into co-4036-import-export-archive ([5c742aa](https://github.com/zextras/carbonio-mails-ui/commit/5c742aa))
