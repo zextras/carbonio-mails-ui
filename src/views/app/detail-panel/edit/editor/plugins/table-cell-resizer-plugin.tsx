@@ -13,14 +13,54 @@ import {
 	$getTableNodeFromLexicalNodeOrThrow,
 	$getTableRowNodeFromTableCellNodeOrThrow,
 	$isTableCellNode,
-	getDOMCellFromTarget
+	getDOMCellFromTarget,
+	TableMapType,
+	TableNode
 } from '@lexical/table';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNearestNodeFromDOMNode } from 'lexical';
+import { $getNearestNodeFromDOMNode, LexicalEditor } from 'lexical';
 import { createPortal } from 'react-dom';
 
 const MIN_COLUMN_WIDTH = 40;
 const MIN_ROW_HEIGHT = 24;
+
+/**
+ * Tables pasted from sources like Excel define widths via <colgroup><col>,
+ * which the "table-layout: fixed" CSS rule prioritizes over <td> width. Keeps
+ * TableNode.colWidths in sync with the resized column so the drag is actually
+ * reflected, while every other column keeps its current on-screen width —
+ * leaving it unset would default it to MIN_COLUMN_WIDTH and visibly collapse
+ * it, since most tables (anything not pasted with per-cell widths) have no
+ * existing colWidths/cell width to fall back on.
+ */
+function computeColWidthsAfterColumnResize(
+	editor: LexicalEditor,
+	tableNode: TableNode,
+	tableMap: TableMapType,
+	columnIndex: number,
+	newWidth: number
+): Array<number> {
+	const existingColWidths = tableNode.getColWidths();
+	return Array.from({ length: tableNode.getColumnCount() }, (_, index) => {
+		if (index === columnIndex) {
+			return newWidth;
+		}
+		const existingWidth =
+			existingColWidths?.[index] ??
+			tableMap.reduce<number | undefined>(
+				(found, row) => found ?? row[index]?.cell.getWidth(),
+				undefined
+			);
+		if (existingWidth) {
+			return existingWidth;
+		}
+		const columnCellKey = tableMap[0]?.[index]?.cell.getKey();
+		const columnElement = columnCellKey ? editor.getElementByKey(columnCellKey) : null;
+		return columnElement
+			? Math.round(columnElement.getBoundingClientRect().width)
+			: MIN_COLUMN_WIDTH;
+	});
+}
 
 type HoveredCell = {
 	cellElement: HTMLElement;
@@ -137,9 +177,17 @@ export const TableCellResizerPlugin = (): React.JSX.Element | null => {
 					const tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode);
 					const columnIndex = $getTableColumnIndexFromTableCellNode(cellNode);
 					const [tableMap] = $computeTableMap(tableNode, cellNode, cellNode);
+					const newColWidths = computeColWidthsAfterColumnResize(
+						editor,
+						tableNode,
+						tableMap,
+						columnIndex,
+						newWidth
+					);
 					tableMap.forEach((row) => {
 						row[columnIndex]?.cell.setWidth(newWidth);
 					});
+					tableNode.setColWidths(newColWidths);
 				} else {
 					const newHeight = Math.max(
 						MIN_ROW_HEIGHT,
