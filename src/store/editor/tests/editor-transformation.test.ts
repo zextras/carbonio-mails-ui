@@ -7,8 +7,11 @@
 import {
 	composeAttachMpField,
 	composeCidUrlFromContentId,
-	convertCidUrlToServiceUrl
+	convertCidUrlToServiceUrl,
+	replaceCidUrlWithServiceUrl,
+	replaceServiceUrlWithCidUrl
 } from '../editor-transformations';
+import { SavedAttachment } from 'types/attachments';
 
 describe('editor-transformations', () => {
 	describe('composeAttachMpField', () => {
@@ -264,6 +267,76 @@ describe('editor-transformations', () => {
 				const serviceUrl = convertCidUrlToServiceUrl(cidUrl!, attachments);
 				expect(serviceUrl).toContain('id=email-999');
 				expect(serviceUrl).toContain('part=2.3');
+			});
+		});
+	});
+
+	describe('inline images src conversions', () => {
+		const CID_URL = 'cid:image@carbonio';
+		const PREVIEW_SRC = 'blob:http://localhost/abcd';
+
+		/**
+		 * Mimics what the editor serializes for an inline image: the src to display
+		 * plus the cid reference, written on both `data-pnsrc` and `data-mce-src`
+		 * (see `ImageNode.exportDOM`).
+		 */
+		const inlineImageHtml = (src: string): string =>
+			`<img src="${src}" data-pnsrc="${CID_URL}" data-mce-src="${CID_URL}" />`;
+
+		const srcOf = (html: string): string | null =>
+			new DOMParser()
+				.parseFromString(html, 'text/html')
+				.querySelector('img')
+				?.getAttribute('src') ?? null;
+
+		const savedInlineAttachment: SavedAttachment = {
+			contentId: 'image@carbonio',
+			messageId: 'msg-1',
+			partName: '2',
+			contentType: 'image/png',
+			size: 1000,
+			isInline: true,
+			filename: 'test.png'
+		};
+
+		describe('replaceServiceUrlWithCidUrl', () => {
+			it('should replace a download service url with the referred cid url', () => {
+				const content = inlineImageHtml('/service/home/~/?auth=co&id=msg-1&part=2');
+
+				expect(srcOf(replaceServiceUrlWithCidUrl(content))).toBe(CID_URL);
+			});
+
+			it('should replace the local preview url of a pending inline image with its cid url', () => {
+				// An inline image whose upload/draft save is still pending is displayed
+				// through a local object url, which must never reach the server.
+				const content = inlineImageHtml(PREVIEW_SRC);
+
+				expect(srcOf(replaceServiceUrlWithCidUrl(content))).toBe(CID_URL);
+			});
+
+			it('should leave an external image url untouched', () => {
+				const content = '<img src="https://example.com/picture.png" />';
+
+				expect(srcOf(replaceServiceUrlWithCidUrl(content))).toBe('https://example.com/picture.png');
+			});
+		});
+
+		describe('replaceCidUrlWithServiceUrl', () => {
+			it('should replace a cid url with the download url of the saved attachment', () => {
+				const content = inlineImageHtml(CID_URL);
+
+				const result = srcOf(replaceCidUrlWithServiceUrl(content, [savedInlineAttachment]));
+
+				expect(result).toContain('id=msg-1');
+				expect(result).toContain('part=2');
+			});
+
+			it('should keep the local preview url of an inline image which is not saved yet', () => {
+				// The cid of a pending inline image cannot be resolved to any saved
+				// attachment: overwriting the preview would make the image unloadable.
+				const content = inlineImageHtml(PREVIEW_SRC);
+
+				expect(srcOf(replaceCidUrlWithServiceUrl(content, []))).toBe(PREVIEW_SRC);
 			});
 		});
 	});

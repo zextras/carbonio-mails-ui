@@ -9,17 +9,12 @@ import { type DropdownItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
 
-import {
-	INSERT_INLINE_IMAGE_COMMAND,
-	OPEN_IMAGE_MODAL_COMMAND,
-	SET_INLINE_IMAGE_ALIGNMENT_COMMAND
-} from '../image-plugin';
+import { OPEN_IMAGE_MODAL_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from '../image-plugin';
 import { type ImageAlignment } from '../nodes/image-node';
-
-export type UploadedInlineImage = {
-	downloadServiceUrl?: string;
-	cidUrl?: string;
-};
+import {
+	uploadAndInsertInlineImages,
+	type UploadInlineImagesHandler
+} from '../use-inline-image-upload';
 
 type ImageActions = {
 	alignImage: (alignment: ImageAlignment) => void;
@@ -32,10 +27,7 @@ type ImageActions = {
 
 export function useImageActions(
 	editor: LexicalEditor,
-	onUploadInlineImages?: (
-		files: File[],
-		onComplete: (attachments: UploadedInlineImage[]) => void
-	) => void
+	onUploadInlineImages?: UploadInlineImagesHandler
 ): ImageActions {
 	const [imageModalOpen, setImageModalOpen] = useState(false);
 
@@ -69,17 +61,7 @@ export function useImageActions(
 			if (!fileList?.length || !onUploadInlineImages) {
 				return;
 			}
-			onUploadInlineImages(Array.from(fileList), (inlineAttachments) => {
-				inlineAttachments.forEach((attachment) => {
-					if (attachment.downloadServiceUrl) {
-						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-							src: attachment.downloadServiceUrl,
-							cidUrl: attachment.cidUrl,
-							altText: 'Inline attachment'
-						});
-					}
-				});
-			});
+			uploadAndInsertInlineImages(editor, onUploadInlineImages, Array.from(fileList));
 			event.target.value = '';
 		},
 		[onUploadInlineImages, editor]

@@ -12,6 +12,7 @@ import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import {
 	composeAttachmentDownloadUrl,
 	getCidFromCidUrl,
+	isBlobUrl,
 	isCidUrl,
 	isDownloadServicedUrl
 } from 'helpers/attachments';
@@ -100,6 +101,12 @@ export const replaceCidUrlWithServiceUrl = (
 			if (newSrc === src) {
 				return false || result;
 			}
+			// An inline image whose upload/draft save is still pending has no saved
+			// attachment to resolve its cid against: keep the local preview instead
+			// of replacing it with the (not yet loadable) cid url.
+			if (newSrc === referenceCid && src && isBlobUrl(src)) {
+				return false || result;
+			}
 			img.setAttribute('src', newSrc);
 			img.setAttribute('pnsrc', referenceCid);
 			img.setAttribute('data-src', referenceCid);
@@ -123,7 +130,10 @@ export const replaceServiceUrlWithCidUrl = (content: string): string => {
 
 	forEach(images, (p: HTMLImageElement) => {
 		const src = p.getAttribute('src');
-		if (!src || !isDownloadServicedUrl(src)) {
+		// Blob urls are the temporary src of an inline image whose upload/draft save
+		// is still pending: they too must be turned back into their cid reference,
+		// so that the outgoing message never carries a local-only url.
+		if (!src || (!isDownloadServicedUrl(src) && !isBlobUrl(src))) {
 			return;
 		}
 

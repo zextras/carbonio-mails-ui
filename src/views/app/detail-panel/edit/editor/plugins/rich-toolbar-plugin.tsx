@@ -18,10 +18,7 @@ import { useAlignmentAndDirection } from './rich-toolbar-plugin-hooks/use-alignm
 import { useBlockType } from './rich-toolbar-plugin-hooks/use-block-type';
 import { useEmojiAndSpecialCharacters } from './rich-toolbar-plugin-hooks/use-emoji-and-special-characters';
 import { useFontAndSizeSelects } from './rich-toolbar-plugin-hooks/use-font-and-size-selects';
-import {
-	useImageActions,
-	type UploadedInlineImage
-} from './rich-toolbar-plugin-hooks/use-image-actions';
+import { useImageActions } from './rich-toolbar-plugin-hooks/use-image-actions';
 import { useStylePatching } from './rich-toolbar-plugin-hooks/use-style-patching';
 import { useTableInsert } from './rich-toolbar-plugin-hooks/use-table-insert';
 import { useTextFormatting } from './rich-toolbar-plugin-hooks/use-text-formatting';
@@ -31,9 +28,10 @@ import { SourceCodeModal } from './source-code-modal';
 import { ToolbarDivider } from './toolbar-divider';
 import { ToolbarIconButton } from './toolbar-icon-button';
 import { ToolbarSelect } from './toolbar-select';
+import { type UploadInlineImagesHandler } from './use-inline-image-upload';
 import { editorIcon } from '../icons/editor-icons';
 
-export type { UploadedInlineImage } from './rich-toolbar-plugin-hooks/use-image-actions';
+export type { UploadInlineImagesHandler } from './use-inline-image-upload';
 
 type RichToolbarPluginProps = {
 	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
@@ -41,14 +39,11 @@ type RichToolbarPluginProps = {
 	/** Toggles the "Show blocks" view aid. */
 	onToggleShowBlocks: () => void;
 	/**
-	 * Uploads image files picked from the "insert image from device" button and
-	 * hands back their resolved URLs. When omitted, that button is hidden — the
+	 * Uploads image files picked from the "insert image from device" button as
+	 * inline attachments of the draft. When omitted, that button is hidden — the
 	 * store-agnostic "insert image from URL" button is always available.
 	 */
-	onUploadInlineImages?: (
-		files: File[],
-		onComplete: (attachments: UploadedInlineImage[]) => void
-	) => void;
+	onUploadInlineImages?: UploadInlineImagesHandler;
 	/** Account's default font family, used as the font selector's default value. */
 	fontFamily?: string;
 	/** Account's default font size, used as the size selector's default value. */
@@ -412,6 +407,7 @@ export const RichToolbarPlugin = ({
 				onChange={onImageFilesSelected}
 				aria-hidden="true"
 				tabIndex={-1}
+				data-testid="inline-image-file-input"
 			/>
 		</Row>
 	);

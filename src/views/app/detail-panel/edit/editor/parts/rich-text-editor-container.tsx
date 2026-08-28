@@ -27,17 +27,18 @@ import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
+import { InlineImageSrcSyncPlugin } from '../plugins/inline-image-src-sync-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
 import { PastePlugin } from '../plugins/paste-plugin';
-import { RichToolbarPlugin, type UploadedInlineImage } from '../plugins/rich-toolbar-plugin';
+import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
+import { useInlineImageUpload } from '../plugins/use-inline-image-upload';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
-import { useEditorAttachments } from 'store/editor/index';
 
 export const LexicalWrapper = styled.div<{
 	$fontFamily: string;
@@ -342,14 +343,7 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 	const [showBlocks, setShowBlocks] = useState(false);
-	const { addInlineAttachments } = useEditorAttachments(editorId);
-
-	const onUploadInlineImages = useCallback(
-		(files: File[], onComplete: (attachments: UploadedInlineImage[]) => void): void => {
-			addInlineAttachments(files, { onSaveComplete: onComplete });
-		},
-		[addInlineAttachments]
-	);
+	const onUploadInlineImages = useInlineImageUpload(editorId);
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
@@ -433,6 +427,7 @@ export const RichTextEditorContainer = ({
 					<TableCellResizerPlugin />
 					<TableHoverActionsPlugin />
 					<ImagePlugin />
+					<InlineImageSrcSyncPlugin editorId={editorId} />
 					<PastePlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />
 				</LexicalWrapper>
