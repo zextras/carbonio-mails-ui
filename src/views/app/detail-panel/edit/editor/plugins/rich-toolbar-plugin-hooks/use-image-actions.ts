@@ -10,16 +10,12 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
 
 import {
-	INSERT_INLINE_IMAGE_COMMAND,
+	insertResolvedInlineImages,
 	OPEN_IMAGE_MODAL_COMMAND,
-	SET_INLINE_IMAGE_ALIGNMENT_COMMAND
+	SET_INLINE_IMAGE_ALIGNMENT_COMMAND,
+	type ResolveInlineImages
 } from '../image-plugin';
 import { type ImageAlignment } from '../nodes/image-node';
-
-export type UploadedInlineImage = {
-	downloadServiceUrl?: string;
-	cidUrl?: string;
-};
 
 type ImageActions = {
 	alignImage: (alignment: ImageAlignment) => void;
@@ -32,10 +28,7 @@ type ImageActions = {
 
 export function useImageActions(
 	editor: LexicalEditor,
-	onUploadInlineImages?: (
-		files: File[],
-		onComplete: (attachments: UploadedInlineImage[]) => void
-	) => void
+	onResolveInlineImages?: ResolveInlineImages
 ): ImageActions {
 	const [imageModalOpen, setImageModalOpen] = useState(false);
 
@@ -66,23 +59,15 @@ export function useImageActions(
 	const onImageFilesSelected = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
 			const fileList = event.target.files;
-			if (!fileList?.length || !onUploadInlineImages) {
+			if (!fileList?.length || !onResolveInlineImages) {
 				return;
 			}
-			onUploadInlineImages(Array.from(fileList), (inlineAttachments) => {
-				inlineAttachments.forEach((attachment) => {
-					if (attachment.downloadServiceUrl) {
-						editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-							src: attachment.downloadServiceUrl,
-							cidUrl: attachment.cidUrl,
-							altText: 'Inline attachment'
-						});
-					}
-				});
-			});
+			onResolveInlineImages(Array.from(fileList), (images) =>
+				insertResolvedInlineImages(editor, images)
+			);
 			event.target.value = '';
 		},
-		[onUploadInlineImages, editor]
+		[onResolveInlineImages, editor]
 	);
 
 	const imageAlignItems = useMemo<Array<DropdownItem>>(

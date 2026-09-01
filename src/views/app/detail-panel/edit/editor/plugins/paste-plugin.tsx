@@ -8,22 +8,26 @@ import { useEffect } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { COMMAND_PRIORITY_LOW, PASTE_COMMAND } from 'lexical';
 
-import { INSERT_INLINE_IMAGE_COMMAND } from './image-plugin';
-import { useEditorAttachments } from 'store/editor/index';
-import { MailsEditorV2 } from 'types/editor';
+import { insertResolvedInlineImages, type ResolveInlineImages } from './image-plugin';
 
 type PastePluginProps = {
-	editorId: MailsEditorV2['id'];
+	/**
+	 * Resolves the pasted image files into sources the editor can display, the
+	 * same way the toolbar's "insert image from device" button does: an upload as
+	 * inline attachment in the mail composer, a `data:` URI in the signature
+	 * editor.
+	 */
+	onResolveInlineImages: ResolveInlineImages;
 };
 
 /**
- * cid-aware paste handling: image files in the clipboard are uploaded as inline
- * attachments and inserted as {@link ImageNode}s (preserving the cid), while
- * plain text and HTML paste fall through to the default RichTextPlugin handler.
+ * Paste handling for images: image files in the clipboard are resolved through
+ * {@link PastePluginProps.onResolveInlineImages} and inserted as
+ * {@link ImageNode}s (preserving the cid, when there is one), while plain text
+ * and HTML paste fall through to the default RichTextPlugin handler.
  */
-export const PastePlugin = ({ editorId }: PastePluginProps): null => {
+export const PastePlugin = ({ onResolveInlineImages }: PastePluginProps): null => {
 	const [editor] = useLexicalComposerContext();
-	const { addInlineAttachments } = useEditorAttachments(editorId);
 
 	useEffect(
 		() =>
@@ -58,24 +62,12 @@ export const PastePlugin = ({ editorId }: PastePluginProps): null => {
 					}
 
 					event.preventDefault();
-					addInlineAttachments(imageFiles, {
-						onSaveComplete: (inlineAttachments) => {
-							inlineAttachments.forEach((attachment) => {
-								if (attachment.downloadServiceUrl) {
-									editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
-										src: attachment.downloadServiceUrl,
-										cidUrl: attachment.cidUrl,
-										altText: 'Inline attachment'
-									});
-								}
-							});
-						}
-					});
+					onResolveInlineImages(imageFiles, (images) => insertResolvedInlineImages(editor, images));
 					return true;
 				},
 				COMMAND_PRIORITY_LOW
 			),
-		[editor, addInlineAttachments]
+		[editor, onResolveInlineImages]
 	);
 
 	return null;

@@ -27,12 +27,13 @@ import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
+import { InlineDataImageUploadPlugin } from '../plugins/inline-data-image-upload-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
 import { PastePlugin } from '../plugins/paste-plugin';
-import { RichToolbarPlugin, type UploadedInlineImage } from '../plugins/rich-toolbar-plugin';
+import { RichToolbarPlugin, type ResolvedInlineImage } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
@@ -344,9 +345,17 @@ export const RichTextEditorContainer = ({
 	const [showBlocks, setShowBlocks] = useState(false);
 	const { addInlineAttachments } = useEditorAttachments(editorId);
 
-	const onUploadInlineImages = useCallback(
-		(files: File[], onComplete: (attachments: UploadedInlineImage[]) => void): void => {
-			addInlineAttachments(files, { onSaveComplete: onComplete });
+	const onResolveInlineImages = useCallback(
+		(files: File[], onComplete: (images: ResolvedInlineImage[]) => void): void => {
+			addInlineAttachments(files, {
+				onSaveComplete: (inlineAttachments): void =>
+					onComplete(
+						inlineAttachments.map(({ downloadServiceUrl, cidUrl }) => ({
+							src: downloadServiceUrl,
+							cidUrl
+						}))
+					)
+			});
 		},
 		[addInlineAttachments]
 	);
@@ -402,7 +411,7 @@ export const RichTextEditorContainer = ({
 						<RichToolbarPlugin
 							showBlocks={showBlocks}
 							onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
-							onUploadInlineImages={onUploadInlineImages}
+							onResolveInlineImages={onResolveInlineImages}
 							fontFamily={fontFamily}
 							fontSize={fontSize}
 						/>
@@ -433,7 +442,8 @@ export const RichTextEditorContainer = ({
 					<TableCellResizerPlugin />
 					<TableHoverActionsPlugin />
 					<ImagePlugin />
-					<PastePlugin editorId={editorId} />
+					<PastePlugin onResolveInlineImages={onResolveInlineImages} />
+					<InlineDataImageUploadPlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />
 				</LexicalWrapper>
 			</LexicalComposer>
