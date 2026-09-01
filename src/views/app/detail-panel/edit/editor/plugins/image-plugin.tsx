@@ -6,18 +6,22 @@
 import { useEffect } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils';
+import { $dfs, mergeRegister } from '@lexical/utils';
 import {
 	$getSelection,
 	$insertNodes,
 	$isNodeSelection,
-	$nodesOfType,
 	COMMAND_PRIORITY_EDITOR,
 	createCommand,
 	type LexicalCommand
 } from 'lexical';
 
-import { $createImageNode, $isImageNode, ImageNode, type ImageAlignment } from './nodes/image-node';
+import {
+	$createImageNode,
+	$isImageNode,
+	type ImageNode,
+	type ImageAlignment
+} from './nodes/image-node';
 import { type ImageDimension } from './nodes/image-types';
 
 export { OPEN_IMAGE_MODAL_COMMAND } from './nodes/image-types';
@@ -54,12 +58,29 @@ export const REMOVE_INLINE_IMAGE_COMMAND: LexicalCommand<RemoveInlineImagePayloa
 );
 
 /**
+ * All the inline images of the editor content.
+ */
+export function $getInlineImageNodes(): Array<ImageNode> {
+	return $dfs()
+		.map(({ node }) => node)
+		.filter($isImageNode);
+}
+
+/**
  * All the inline images referring the given cid. There is normally just one, but
  * the same image can be duplicated by a copy/paste inside the editor, in which
  * case every copy has to be kept in sync.
  */
 function $getImageNodesByCidUrl(cidUrl: string): Array<ImageNode> {
-	return $nodesOfType(ImageNode).filter((node) => node.getCidUrl() === cidUrl);
+	return $getInlineImageNodes().filter((node) => node.getCidUrl() === cidUrl);
+}
+
+function $setImageNodesSrcByCidUrl(cidUrl: string, src: string): void {
+	$getImageNodesByCidUrl(cidUrl).forEach((node) => node.setSrc(src));
+}
+
+function $removeImageNodesByCidUrl(cidUrl: string): void {
+	$getImageNodesByCidUrl(cidUrl).forEach((node) => node.remove());
 }
 
 function $applyImageAlignment(alignment: ImageAlignment | undefined): void {
@@ -116,9 +137,7 @@ export const ImagePlugin = (): null => {
 						// Not tagged as `history-merge`, so that the change reaches the
 						// store through the OnChangePlugin and the persisted html holds the
 						// download url instead of the local preview one.
-						editor.update(() => {
-							$getImageNodesByCidUrl(cidUrl).forEach((node) => node.setSrc(src));
-						});
+						editor.update(() => $setImageNodesSrcByCidUrl(cidUrl, src));
 						return true;
 					},
 					COMMAND_PRIORITY_EDITOR
@@ -126,9 +145,7 @@ export const ImagePlugin = (): null => {
 				editor.registerCommand<RemoveInlineImagePayload>(
 					REMOVE_INLINE_IMAGE_COMMAND,
 					({ cidUrl }) => {
-						editor.update(() => {
-							$getImageNodesByCidUrl(cidUrl).forEach((node) => node.remove());
-						});
+						editor.update(() => $removeImageNodesByCidUrl(cidUrl));
 						return true;
 					},
 					COMMAND_PRIORITY_EDITOR

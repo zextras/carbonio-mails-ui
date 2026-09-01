@@ -6,10 +6,8 @@
 import { useEffect } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $nodesOfType } from 'lexical';
 
-import { REPLACE_INLINE_IMAGE_SRC_COMMAND } from './image-plugin';
-import { ImageNode } from './nodes/image-node';
+import { $getInlineImageNodes, REPLACE_INLINE_IMAGE_SRC_COMMAND } from './image-plugin';
 import { isBlobUrl } from 'helpers/attachments';
 import { convertCidUrlToServiceUrl } from 'store/editor/editor-transformations';
 import { useEditorsStore } from 'store/editor/store';
@@ -42,7 +40,7 @@ export const InlineImageSrcSyncPlugin = ({ editorId }: InlineImageSrcSyncPluginP
 
 		const resolvedSrcByCidUrl = new Map<string, string>();
 		editor.getEditorState().read(() => {
-			$nodesOfType(ImageNode).forEach((node) => {
+			$getInlineImageNodes().forEach((node) => {
 				const cidUrl = node.getCidUrl();
 				if (!cidUrl || !isBlobUrl(node.getSrc()) || resolvedSrcByCidUrl.has(cidUrl)) {
 					return;
