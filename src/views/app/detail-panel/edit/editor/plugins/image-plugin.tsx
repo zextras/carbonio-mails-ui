@@ -13,7 +13,8 @@ import {
 	$isNodeSelection,
 	COMMAND_PRIORITY_EDITOR,
 	createCommand,
-	type LexicalCommand
+	type LexicalCommand,
+	type LexicalEditor
 } from 'lexical';
 
 import {
@@ -56,6 +57,49 @@ export type RemoveInlineImagePayload = {
 export const REMOVE_INLINE_IMAGE_COMMAND: LexicalCommand<RemoveInlineImagePayload> = createCommand(
 	'REMOVE_INLINE_IMAGE_COMMAND'
 );
+
+/**
+ * An image picked from the device, resolved into something the editor can
+ * display. How it is resolved depends on the host editor: the mail composer
+ * uploads the file as an inline attachment (so `src` is the local preview of the
+ * upload in flight, later swapped for the download-service URL, and `cidUrl` the
+ * matching cid), while the signature editor embeds it as a `data:` URI (so there
+ * is no cid).
+ */
+export type ResolvedInlineImage = {
+	src?: string;
+	cidUrl?: string;
+};
+
+/**
+ * The editor is handed over so that a resolver can act on the inserted images
+ * afterwards: the mail composer drops the ones whose upload ends up failing
+ * ({@link REMOVE_INLINE_IMAGE_COMMAND}).
+ */
+export type ResolveInlineImages = (
+	editor: LexicalEditor,
+	files: File[],
+	onComplete: (images: ResolvedInlineImage[]) => void
+) => void;
+
+/**
+ * Inserts the resolved images at the current selection, skipping the ones whose
+ * resolution failed. Shared by the toolbar's image button and the paste handler.
+ */
+export const insertResolvedInlineImages = (
+	editor: LexicalEditor,
+	images: ResolvedInlineImage[]
+): void => {
+	images.forEach((image) => {
+		if (image.src) {
+			editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
+				src: image.src,
+				cidUrl: image.cidUrl,
+				altText: 'Inline attachment'
+			});
+		}
+	});
+};
 
 /**
  * All the inline images of the editor content.

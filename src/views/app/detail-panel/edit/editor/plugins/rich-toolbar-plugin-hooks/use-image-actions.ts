@@ -9,12 +9,13 @@ import { type DropdownItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
 
-import { OPEN_IMAGE_MODAL_COMMAND, SET_INLINE_IMAGE_ALIGNMENT_COMMAND } from '../image-plugin';
-import { type ImageAlignment } from '../nodes/image-node';
 import {
-	uploadAndInsertInlineImages,
-	type UploadInlineImagesHandler
-} from '../use-inline-image-upload';
+	insertResolvedInlineImages,
+	OPEN_IMAGE_MODAL_COMMAND,
+	SET_INLINE_IMAGE_ALIGNMENT_COMMAND,
+	type ResolveInlineImages
+} from '../image-plugin';
+import { type ImageAlignment } from '../nodes/image-node';
 
 type ImageActions = {
 	alignImage: (alignment: ImageAlignment) => void;
@@ -27,7 +28,7 @@ type ImageActions = {
 
 export function useImageActions(
 	editor: LexicalEditor,
-	onUploadInlineImages?: UploadInlineImagesHandler
+	onResolveInlineImages?: ResolveInlineImages
 ): ImageActions {
 	const [imageModalOpen, setImageModalOpen] = useState(false);
 
@@ -58,13 +59,15 @@ export function useImageActions(
 	const onImageFilesSelected = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
 			const fileList = event.target.files;
-			if (!fileList?.length || !onUploadInlineImages) {
+			if (!fileList?.length || !onResolveInlineImages) {
 				return;
 			}
-			uploadAndInsertInlineImages(editor, onUploadInlineImages, Array.from(fileList));
+			onResolveInlineImages(editor, Array.from(fileList), (images) =>
+				insertResolvedInlineImages(editor, images)
+			);
 			event.target.value = '';
 		},
-		[onUploadInlineImages, editor]
+		[onResolveInlineImages, editor]
 	);
 
 	const imageAlignItems = useMemo<Array<DropdownItem>>(

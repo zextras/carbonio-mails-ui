@@ -13,6 +13,7 @@ import { INDENT_CONTENT_COMMAND, OUTDENT_CONTENT_COMMAND } from 'lexical';
 
 import { ColorPickerToolbarButton } from './color-picker-toolbar-button';
 import { ImageModal } from './image-modal';
+import { type ResolveInlineImages } from './image-plugin';
 import { LinkModal } from './link-modal';
 import { useAlignmentAndDirection } from './rich-toolbar-plugin-hooks/use-alignment-and-direction';
 import { useBlockType } from './rich-toolbar-plugin-hooks/use-block-type';
@@ -28,10 +29,15 @@ import { SourceCodeModal } from './source-code-modal';
 import { ToolbarDivider } from './toolbar-divider';
 import { ToolbarIconButton } from './toolbar-icon-button';
 import { ToolbarSelect } from './toolbar-select';
-import { type UploadInlineImagesHandler } from './use-inline-image-upload';
 import { editorIcon } from '../icons/editor-icons';
 
-export type { UploadInlineImagesHandler } from './use-inline-image-upload';
+export type { ResolvedInlineImage, ResolveInlineImages } from './image-plugin';
+
+/**
+ * The file input behind the "insert image from device" button is hidden (it is
+ * driven by the button), so it can only be reached by test id.
+ */
+export const INLINE_IMAGE_FILE_INPUT_TESTID = 'inline-image-file-input';
 
 type RichToolbarPluginProps = {
 	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
@@ -39,11 +45,12 @@ type RichToolbarPluginProps = {
 	/** Toggles the "Show blocks" view aid. */
 	onToggleShowBlocks: () => void;
 	/**
-	 * Uploads image files picked from the "insert image from device" button as
-	 * inline attachments of the draft. When omitted, that button is hidden — the
-	 * store-agnostic "insert image from URL" button is always available.
+	 * Resolves the image files picked from the "insert image from device" button
+	 * into sources the editor can display (an upload in the mail composer, a
+	 * `data:` URI in the signature editor). When omitted, that button is hidden —
+	 * the store-agnostic "insert image from URL" button is always available.
 	 */
-	onUploadInlineImages?: UploadInlineImagesHandler;
+	onResolveInlineImages?: ResolveInlineImages;
 	/** Account's default font family, used as the font selector's default value. */
 	fontFamily?: string;
 	/** Account's default font size, used as the size selector's default value. */
@@ -53,7 +60,7 @@ type RichToolbarPluginProps = {
 export const RichToolbarPlugin = ({
 	showBlocks,
 	onToggleShowBlocks,
-	onUploadInlineImages,
+	onResolveInlineImages,
 	fontFamily,
 	fontSize
 }: RichToolbarPluginProps): React.JSX.Element => {
@@ -85,7 +92,7 @@ export const RichToolbarPlugin = ({
 		onImageFilesSelected,
 		imageModalOpen,
 		setImageModalOpen
-	} = useImageActions(editor, onUploadInlineImages);
+	} = useImageActions(editor, onResolveInlineImages);
 	const { tableItems, tableLabel, tableMenuOpen, setTableMenuOpen } = useTableInsert(editor);
 	const {
 		emojiItems,
@@ -300,7 +307,7 @@ export const RichToolbarPlugin = ({
 					/>
 				</Dropdown>
 			</Tooltip>
-			{onUploadInlineImages && (
+			{onResolveInlineImages && (
 				<ToolbarIconButton
 					icon={editorIcon('image')}
 					label={t('lexical-label.image', 'Image')}
@@ -400,6 +407,7 @@ export const RichToolbarPlugin = ({
 
 			<input
 				ref={fileInputRef}
+				data-testid={INLINE_IMAGE_FILE_INPUT_TESTID}
 				type="file"
 				accept="image/*"
 				multiple
@@ -407,7 +415,6 @@ export const RichToolbarPlugin = ({
 				onChange={onImageFilesSelected}
 				aria-hidden="true"
 				tabIndex={-1}
-				data-testid="inline-image-file-input"
 			/>
 		</Row>
 	);

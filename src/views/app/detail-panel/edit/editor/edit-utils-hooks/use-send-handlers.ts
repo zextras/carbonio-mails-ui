@@ -12,6 +12,7 @@ import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
 import { checkSubjectAndAttachment } from '../check-subject-attachment';
 import { getErrorSnackbarProps } from './use-error-handler';
 import { createEditBoard } from '../../edit-view-board';
+import { ensureInlineImagesConverted } from '../plugins/inline-image-conversion-registry';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
 import {
 	deleteEditor,
@@ -116,6 +117,11 @@ export const useSendHandlers = (
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
+			// A reply or a forward can be sent without ever being edited, so the
+			// signature's inline images may still be `data:` URIs. Convert them now,
+			// while the editor is still mounted: it unmounts as soon as the send
+			// countdown starts.
+			await ensureInlineImagesConverted(editorId);
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onSendStart,
@@ -147,6 +153,7 @@ export const useSendHandlers = (
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
+				await ensureInlineImagesConverted(editorId);
 				setAutoSendTime(scheduledTime);
 				saveDraft();
 				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);

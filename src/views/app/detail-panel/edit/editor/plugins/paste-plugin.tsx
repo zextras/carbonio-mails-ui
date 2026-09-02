@@ -8,22 +8,26 @@ import { useEffect } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { COMMAND_PRIORITY_LOW, PASTE_COMMAND } from 'lexical';
 
-import { uploadAndInsertInlineImages, useInlineImageUpload } from './use-inline-image-upload';
-import { MailsEditorV2 } from 'types/editor';
+import { insertResolvedInlineImages, type ResolveInlineImages } from './image-plugin';
 
 type PastePluginProps = {
-	editorId: MailsEditorV2['id'];
+	/**
+	 * Resolves the pasted image files into sources the editor can display, the
+	 * same way the toolbar's "insert image from device" button does: an upload as
+	 * inline attachment in the mail composer, a `data:` URI in the signature
+	 * editor.
+	 */
+	onResolveInlineImages: ResolveInlineImages;
 };
 
 /**
- * cid-aware paste handling: image files in the clipboard are uploaded as inline
- * attachments and inserted as {@link ImageNode}s straight away (preserving the
- * cid), while plain text and HTML paste fall through to the default
- * RichTextPlugin handler.
+ * Paste handling for images: image files in the clipboard are resolved through
+ * {@link PastePluginProps.onResolveInlineImages} and inserted as
+ * {@link ImageNode}s (preserving the cid, when there is one), while plain text
+ * and HTML paste fall through to the default RichTextPlugin handler.
  */
-export const PastePlugin = ({ editorId }: PastePluginProps): null => {
+export const PastePlugin = ({ onResolveInlineImages }: PastePluginProps): null => {
 	const [editor] = useLexicalComposerContext();
-	const uploadInlineImages = useInlineImageUpload(editorId);
 
 	useEffect(
 		() =>
@@ -58,12 +62,14 @@ export const PastePlugin = ({ editorId }: PastePluginProps): null => {
 					}
 
 					event.preventDefault();
-					uploadAndInsertInlineImages(editor, uploadInlineImages, imageFiles);
+					onResolveInlineImages(editor, imageFiles, (images) =>
+						insertResolvedInlineImages(editor, images)
+					);
 					return true;
 				},
 				COMMAND_PRIORITY_LOW
 			),
-		[editor, uploadInlineImages]
+		[editor, onResolveInlineImages]
 	);
 
 	return null;

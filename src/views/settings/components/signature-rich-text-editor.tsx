@@ -23,6 +23,7 @@ import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { $getRoot, $insertNodes, type EditorState, type LexicalEditor } from 'lexical';
 
+import { isImageFile, readFileAsDataUri } from 'helpers/inline-images';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 import { LexicalWrapper } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
 import { AutoLinkPlugin } from 'views/app/detail-panel/edit/editor/plugins/auto-link-plugin';
@@ -30,7 +31,11 @@ import { FloatingLinkEditorPlugin } from 'views/app/detail-panel/edit/editor/plu
 import { STYLE_PRESERVING_HTML_IMPORT } from 'views/app/detail-panel/edit/editor/plugins/html-import-style';
 import { ImagePlugin } from 'views/app/detail-panel/edit/editor/plugins/image-plugin';
 import { ImageNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/image-node';
-import { RichToolbarPlugin } from 'views/app/detail-panel/edit/editor/plugins/rich-toolbar-plugin';
+import { PastePlugin } from 'views/app/detail-panel/edit/editor/plugins/paste-plugin';
+import {
+	RichToolbarPlugin,
+	type ResolveInlineImages
+} from 'views/app/detail-panel/edit/editor/plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-hover-actions-plugin';
@@ -116,11 +121,35 @@ const SignatureContentSyncPlugin = ({
 };
 
 /**
+ * Resolves the images picked from the toolbar (or pasted) into `data:` URIs.
+ *
+ * A signature has no draft to attach files to, so an inline image can only be
+ * embedded in the signature's own HTML. It is converted into a real inline
+ * attachment later, by `InlineDataImageUploadPlugin`, once the signature reaches
+ * a mail composer — a `data:` URI left in a sent message would be stripped by
+ * several mail clients.
+ */
+const resolveInlineImagesAsDataUris: ResolveInlineImages = (_editor, files, onComplete) => {
+	const images = files.filter(isImageFile);
+	if (images.length === 0) {
+		return;
+	}
+	Promise.all(images.map((file) => readFileAsDataUri(file).catch(() => undefined))).then(
+		(dataUris) => {
+			onComplete(
+				dataUris.filter((src): src is string => src !== undefined).map((src) => ({ src }))
+			);
+		}
+	);
+};
+
+/**
  * Store-agnostic rich text editor for editing a signature's HTML `description`,
  * built from the same Lexical nodes/plugins as the mail composer's
  * `RichTextEditorContainer`, minus the mail-only nodes (`SignatureNode`,
- * `QuotedSeparatorNode`) and the attachment-upload path of `RichToolbarPlugin`
- * (a signature has no draft/attachments to upload against).
+ * `QuotedSeparatorNode`). Inline images are embedded as `data:` URIs instead of
+ * being uploaded as attachments, since a signature has no draft to attach them
+ * to (see {@link resolveInlineImagesAsDataUris}).
  */
 export const SignatureRichTextEditor = ({
 	value,
@@ -184,6 +213,7 @@ export const SignatureRichTextEditor = ({
 					<RichToolbarPlugin
 						showBlocks={showBlocks}
 						onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
+						onResolveInlineImages={resolveInlineImagesAsDataUris}
 					/>
 				</div>
 				<div className={`editor-inner${showBlocks ? ' mails-lexical-show-blocks' : ''}`}>
@@ -208,6 +238,7 @@ export const SignatureRichTextEditor = ({
 				<TableCellResizerPlugin />
 				<TableHoverActionsPlugin />
 				<ImagePlugin />
+				<PastePlugin onResolveInlineImages={resolveInlineImagesAsDataUris} />
 				<SignatureContentSyncPlugin value={value} onChange={onChange} disabled={disabled} />
 			</LexicalWrapper>
 		</LexicalComposer>

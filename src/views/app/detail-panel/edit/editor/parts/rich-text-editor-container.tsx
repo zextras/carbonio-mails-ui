@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
@@ -27,6 +27,7 @@ import { ControlledContentPlugin } from '../plugins/controlled-content-plugin';
 import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin';
 import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
+import { InlineDataImageUploadPlugin } from '../plugins/inline-data-image-upload-plugin';
 import { InlineImageSrcSyncPlugin } from '../plugins/inline-image-src-sync-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
@@ -37,7 +38,7 @@ import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
-import { useInlineImageUpload } from '../plugins/use-inline-image-upload';
+import { useInlineImageResolver } from '../plugins/use-inline-image-upload';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 
 export const LexicalWrapper = styled.div<{
@@ -343,7 +344,7 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 	const [showBlocks, setShowBlocks] = useState(false);
-	const onUploadInlineImages = useInlineImageUpload(editorId);
+	const onResolveInlineImages = useInlineImageResolver(editorId);
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
@@ -396,7 +397,7 @@ export const RichTextEditorContainer = ({
 						<RichToolbarPlugin
 							showBlocks={showBlocks}
 							onToggleShowBlocks={(): void => setShowBlocks((previous) => !previous)}
-							onUploadInlineImages={onUploadInlineImages}
+							onResolveInlineImages={onResolveInlineImages}
 							fontFamily={fontFamily}
 							fontSize={fontSize}
 						/>
@@ -427,8 +428,9 @@ export const RichTextEditorContainer = ({
 					<TableCellResizerPlugin />
 					<TableHoverActionsPlugin />
 					<ImagePlugin />
+					<PastePlugin onResolveInlineImages={onResolveInlineImages} />
 					<InlineImageSrcSyncPlugin editorId={editorId} />
-					<PastePlugin editorId={editorId} />
+					<InlineDataImageUploadPlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />
 				</LexicalWrapper>
 			</LexicalComposer>

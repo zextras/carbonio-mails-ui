@@ -1,3 +1,16 @@
+## <small>1.44.1 (2026-08-28)</small>
+
+* fix: table copy paste and resize (#1313) ([9c75690](https://github.com/zextras/carbonio-mails-ui/commit/9c75690)), closes [#1313](https://github.com/zextras/carbonio-mails-ui/issues/1313)
+
+## 1.44.0 (2026-08-28)
+
+* Merge branch 'main' into co-4036-import-export-archive ([5c742aa](https://github.com/zextras/carbonio-mails-ui/commit/5c742aa))
+* Merge branch 'main' into co-4036-import-export-archive ([5bd4a4e](https://github.com/zextras/carbonio-mails-ui/commit/5bd4a4e))
+* Merge branch 'main' into co-4036-import-export-archive ([d5b3c50](https://github.com/zextras/carbonio-mails-ui/commit/d5b3c50))
+* Merge pull request #1306 from zextras/co-4036-import-export-archive ([320edc7](https://github.com/zextras/carbonio-mails-ui/commit/320edc7)), closes [#1306](https://github.com/zextras/carbonio-mails-ui/issues/1306)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.9.2 ([ccd4b45](https://github.com/zextras/carbonio-mails-ui/commit/ccd4b45))
+* feat: dynamically show import and export archive functionality ([d77151e](https://github.com/zextras/carbonio-mails-ui/commit/d77151e))
+
 ## <small>1.43.1 (2026-08-26)</small>
 
 * fix: clean up function on after bullet list creation (#1311) ([f25f05f](https://github.com/zextras/carbonio-mails-ui/commit/f25f05f)), closes [#1311](https://github.com/zextras/carbonio-mails-ui/issues/1311)

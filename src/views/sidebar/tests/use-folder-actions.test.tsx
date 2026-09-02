@@ -6,6 +6,7 @@
 import React, { act } from 'react';
 
 import { renderHook, screen, waitFor, within } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
 import type { Mock } from 'vitest';
@@ -13,6 +14,7 @@ import type { Mock } from 'vitest';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { setMessagesInEmailStore } from 'store/emails/store';
@@ -497,5 +499,44 @@ describe('useFolderActions', () => {
 		expect(moveAction.disabled).toBe(true);
 		expect(deleteAction.disabled).toBe(true);
 		expect(editAction.disabled).toBe(true);
+	});
+
+	it('should hide the export action when zimbraFeatureExportFolderEnabled is FALSE', () => {
+		const settings = generateSettings({
+			attrs: { zimbraFeatureExportFolderEnabled: 'FALSE' }
+		});
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
+
+		expect(actions.current.find((action) => action.id === 'export')).toBeUndefined();
+		expect(actions.current.find((action) => action.id === 'import')).toBeDefined();
+	});
+
+	it('should hide the import action when zimbraFeatureImportFolderEnabled is FALSE', () => {
+		const settings = generateSettings({
+			attrs: { zimbraFeatureImportFolderEnabled: 'FALSE' }
+		});
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
+
+		expect(actions.current.find((action) => action.id === 'import')).toBeUndefined();
+		expect(actions.current.find((action) => action.id === 'export')).toBeDefined();
+	});
+
+	it('should show both export and import actions when the attributes are undefined (default enabled)', () => {
+		const settings = generateSettings({
+			attrs: {
+				zimbraFeatureExportFolderEnabled: undefined,
+				zimbraFeatureImportFolderEnabled: undefined
+			}
+		});
+		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
+
+		expect(actions.current.find((action) => action.id === 'export')).toBeDefined();
+		expect(actions.current.find((action) => action.id === 'import')).toBeDefined();
 	});
 });
