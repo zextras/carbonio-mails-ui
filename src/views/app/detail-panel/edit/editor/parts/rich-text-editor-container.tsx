@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
@@ -28,17 +28,18 @@ import { FloatingLinkEditorPlugin } from '../plugins/floating-link-editor-plugin
 import { STYLE_PRESERVING_HTML_IMPORT } from '../plugins/html-import-style';
 import { ImagePlugin } from '../plugins/image-plugin';
 import { InlineDataImageUploadPlugin } from '../plugins/inline-data-image-upload-plugin';
+import { InlineImageSrcSyncPlugin } from '../plugins/inline-image-src-sync-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
 import { PastePlugin } from '../plugins/paste-plugin';
-import { RichToolbarPlugin, type ResolvedInlineImage } from '../plugins/rich-toolbar-plugin';
+import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
+import { useInlineImageResolver } from '../plugins/use-inline-image-upload';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
-import { useEditorAttachments } from 'store/editor/index';
 
 export const LexicalWrapper = styled.div<{
 	$fontFamily: string;
@@ -343,22 +344,7 @@ export const RichTextEditorContainer = ({
 }: TextEditorContainerProps): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 	const [showBlocks, setShowBlocks] = useState(false);
-	const { addInlineAttachments } = useEditorAttachments(editorId);
-
-	const onResolveInlineImages = useCallback(
-		(files: File[], onComplete: (images: ResolvedInlineImage[]) => void): void => {
-			addInlineAttachments(files, {
-				onSaveComplete: (inlineAttachments): void =>
-					onComplete(
-						inlineAttachments.map(({ downloadServiceUrl, cidUrl }) => ({
-							src: downloadServiceUrl,
-							cidUrl
-						}))
-					)
-			});
-		},
-		[addInlineAttachments]
-	);
+	const onResolveInlineImages = useInlineImageResolver(editorId);
 
 	const fontFamily =
 		(prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string) || DEFAULT_FONT_FAMILY;
@@ -443,6 +429,7 @@ export const RichTextEditorContainer = ({
 					<TableHoverActionsPlugin />
 					<ImagePlugin />
 					<PastePlugin onResolveInlineImages={onResolveInlineImages} />
+					<InlineImageSrcSyncPlugin editorId={editorId} />
 					<InlineDataImageUploadPlugin editorId={editorId} />
 					<ControlledContentPlugin editorId={editorId} />
 				</LexicalWrapper>

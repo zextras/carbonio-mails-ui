@@ -6,8 +6,15 @@
 /* eslint-disable max-classes-per-file -- two minimal Event stubs cover a jsdom gap (see below) */
 import React from 'react';
 
-import { fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 
+import {
+	DOWNLOAD_SERVICE_URL,
+	mockInlineImageUpload,
+	PREVIEW_SRC,
+	saveInlineAttachment,
+	stubObjectUrls
+} from './inline-image-upload-test-utils';
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
@@ -38,8 +45,8 @@ class StubDragEvent extends Event {}
 class StubClipboardEvent extends Event {}
 
 /**
- * Replaces `useEditorAttachments` so the paste handler's upload step resolves
- * synchronously with a ready-to-insert inline attachment.
+ * Replaces `useEditorAttachments` with a fake that never uploads anything, for
+ * the cases where no upload is expected at all.
  */
 function mockEditorAttachments(addInlineAttachments: AddInlineAttachments): void {
 	vi.spyOn(editorStoreIndex, 'useEditorAttachments').mockReturnValue({
@@ -50,11 +57,12 @@ function mockEditorAttachments(addInlineAttachments: AddInlineAttachments): void
 	} as unknown as ReturnType<typeof editorStoreIndex.useEditorAttachments>);
 }
 
-function renderEditor(): void {
+function renderEditor(): { editorId: string } {
 	const editor = generateNewMessageEditor();
 	editor.text = { plainText: '', richText: '<p></p>' };
 	setupEditorStore({ editors: [editor] });
 	setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+	return { editorId: editor.id };
 }
 
 /**
@@ -96,18 +104,19 @@ describe('PastePlugin', () => {
 		globalScope.ClipboardEvent = originalClipboardEvent;
 	});
 
+	let restoreObjectUrls: () => void;
+	beforeEach(() => {
+		restoreObjectUrls = stubObjectUrls();
+	});
+
 	afterEach(() => {
+		restoreObjectUrls();
 		vi.restoreAllMocks();
 	});
 
-	it('uploads pasted image files and inserts them as inline images', async () => {
+	it('uploads pasted image files and previews them before the draft is saved', async () => {
 		const file = new File(['x'], 'pic.png', { type: 'image/png' });
-		const addInlineAttachments = vi.fn((_files, { onSaveComplete }) => {
-			onSaveComplete([
-				{ downloadServiceUrl: 'https://service/pasted.png', cidUrl: 'cid:pasted@carbonio' }
-			]);
-		}) as unknown as AddInlineAttachments;
-		mockEditorAttachments(addInlineAttachments);
+		const { addInlineAttachments } = mockInlineImageUpload();
 
 		renderEditor();
 		const editorElement = screen.getByTestId(EDITOR_TESTID);
@@ -117,8 +126,52 @@ describe('PastePlugin', () => {
 		expect(addInlineAttachments).toHaveBeenCalledTimes(1);
 		expect(addInlineAttachments).toHaveBeenCalledWith([file], expect.anything());
 
+		// The draft save has not completed yet: the image is already rendered
+		// through its local preview.
 		const image = await within(editorElement).findByRole('img');
-		expect(image).toHaveAttribute('src', 'https://service/pasted.png');
+		expect(image).toHaveAttribute('src', PREVIEW_SRC);
+		expect(URL.createObjectURL).toHaveBeenCalledWith(file);
+	});
+
+	it('replaces the preview with the download url once the draft is saved', async () => {
+		const file = new File(['x'], 'pic.png', { type: 'image/png' });
+		mockInlineImageUpload();
+
+		const { editorId } = renderEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		pasteInto(editorElement, [{ kind: 'file', type: 'image/png', getAsFile: (): File => file }]);
+		await within(editorElement).findByRole('img');
+
+		act(() => {
+			saveInlineAttachment(editorId);
+		});
+
+		await waitFor(() => {
+			expect(within(editorElement).getByRole('img')).toHaveAttribute('src', DOWNLOAD_SERVICE_URL);
+		});
+		// The image is updated in place, not inserted a second time.
+		expect(within(editorElement).getAllByRole('img')).toHaveLength(1);
+	});
+
+	it('removes the pasted image when its upload fails', async () => {
+		const file = new File(['x'], 'pic.png', { type: 'image/png' });
+		const { failUpload } = mockInlineImageUpload();
+
+		renderEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		pasteInto(editorElement, [{ kind: 'file', type: 'image/png', getAsFile: (): File => file }]);
+		await within(editorElement).findByRole('img');
+
+		act(() => {
+			failUpload();
+		});
+
+		await waitFor(() => {
+			expect(within(editorElement).queryByRole('img')).not.toBeInTheDocument();
+		});
+		expect(URL.revokeObjectURL).toHaveBeenCalledWith(PREVIEW_SRC);
 	});
 
 	it('ignores text-only paste and lets the default handler deal with it', async () => {
