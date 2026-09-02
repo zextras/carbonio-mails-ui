@@ -1,3 +1,7 @@
+## 1.45.0 (2026-09-01)
+
+* feat: add inline image support in signature editor and rich text editor ([afc3609](https://github.com/zextras/carbonio-mails-ui/commit/afc3609))
+
 ## <small>1.44.1 (2026-08-28)</small>
 
 * fix: table copy paste and resize (#1313) ([9c75690](https://github.com/zextras/carbonio-mails-ui/commit/9c75690)), closes [#1313](https://github.com/zextras/carbonio-mails-ui/issues/1313)
