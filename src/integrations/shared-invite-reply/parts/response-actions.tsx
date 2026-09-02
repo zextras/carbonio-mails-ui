@@ -7,14 +7,40 @@ import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } 
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
+import { FOLDER_VIEW, FOLDERS, getFoldersMap } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
+import { some } from 'lodash';
 
 import ColorSelect from 'integrations/shared-invite-reply/parts/color-select';
 import { useAccept, useDecline } from 'integrations/shared-invite-reply/parts/share-folder-actions';
 import { ResponseActionsProps } from 'types/share';
 
-function getProposedFolderName(sharedFolderName: string, ownerName: string, t: TFunction): string {
+/**
+ * Whether a folder with this name already exists among the primary
+ * account's top-level folders of the given view (i.e. would collide with
+ * the mountpoint that accepting this share would create there).
+ */
+function isFolderNameUsedInMainAccount(name: string, view: string): boolean {
+	const folders = getFoldersMap();
+	const normalizedName = name.trim().toLowerCase();
+	return some(
+		folders,
+		(folder) =>
+			folder.view === view &&
+			folder.l === FOLDERS.USER_ROOT &&
+			folder.name.trim().toLowerCase() === normalizedName
+	);
+}
+
+function getProposedFolderName(
+	sharedFolderName: string,
+	ownerName: string,
+	view: string,
+	t: TFunction
+): string {
+	if (!isFolderNameUsedInMainAccount(sharedFolderName, view)) {
+		return sharedFolderName;
+	}
 	const of = t('label.of', 'of');
 	return `${sharedFolderName} ${of} ${ownerName}`;
 }
@@ -35,7 +61,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
 	const niceFolderName = ['message', 'appointment', 'contact'].includes(view)
-		? getProposedFolderName(sharedFolderName, owner, t)
+		? getProposedFolderName(sharedFolderName, owner, view, t)
 		: sharedFolderName;
 	const [folderName, setFolderName] = useState(niceFolderName);
 	const [selectedColor, setSelectedColor] = useState<string | null>('0');
