@@ -348,7 +348,7 @@ describe('handleEditorPowerPaste', () => {
 		expect(insertedHtml).toContain(`data-pnsrc="cid:${mockContentId}"`);
 	});
 
-	it('should strip a dead file:// image reference (no recoverable clipboard data) instead of losing the whole paste', async () => {
+	it('should replace a dead file:// image reference with a placeholder (no recoverable clipboard data) instead of losing the whole paste', async () => {
 		const editor = createMockEditor();
 		const htmlWithFileRef = `<p>Before</p><img src="file:///C:/Users/John/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"><p>After</p>`;
 		const event = {
@@ -370,9 +370,12 @@ describe('handleEditorPowerPaste', () => {
 		expect(insertedHtml).toContain('After');
 		expect(insertedHtml).not.toContain('file:');
 		expect(insertedHtml).not.toContain('<img');
+		expect(insertedHtml).toContain('pn-unresolvable-image-placeholder');
+		expect(insertedHtml).toContain('label.pasted_image_unavailable');
+		expect(insertedHtml).toContain('clip_image001.png');
 	});
 
-	it('should strip a dead file:// image inside non-Excel table content when no clipboard image data is available', async () => {
+	it('should replace a dead file:// image with a placeholder inside non-Excel table content when no clipboard image data is available', async () => {
 		const editor = createMockEditor();
 		const tableHtmlWithFileRef = `<table><tr><td>Signature</td><td><img src="file:///C:/Users/Jane/Pictures/logo.png"></td></tr></table>`;
 		const event = {
@@ -394,6 +397,10 @@ describe('handleEditorPowerPaste', () => {
 		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
 		expect(insertedHtml).toContain('Signature');
 		expect(insertedHtml).not.toContain('file:');
+		expect(insertedHtml).not.toContain('<img');
+		expect(insertedHtml).toContain('pn-unresolvable-image-placeholder');
+		expect(insertedHtml).toContain('label.pasted_image_unavailable');
+		expect(insertedHtml).toContain('logo.png');
 	});
 });
 

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { t } from '@zextras/carbonio-shell-ui';
 import type { Editor } from 'tinymce';
 import { v4 as uuid } from 'uuid';
 
@@ -480,20 +481,42 @@ async function insertMixedContent(
 }
 
 /**
- * Removes <img> elements whose src uses the `file:` scheme from a pasted
- * HTML fragment. These reference local temp files (e.g. the ones Word and
- * Outlook embed on Windows: file:///C:/Users/.../clip_image001.png) that
- * only exist on the sender's machine and can never be fetched from the
- * browser (opaque-origin CORS restriction on the file: scheme). Leaving
- * them in place would insert a permanently-broken <img> that also leaks
- * the sender's local file path; stripping them preserves everything else
- * in the paste (surrounding text, table layout, other valid images).
+ * Builds the inline element that replaces an unresolvable `file:` image so
+ * the user knows content was dropped from the paste and can act on it,
+ * instead of the image silently disappearing.
  */
-function stripUnresolvableImages(html: string): string {
+function buildUnresolvableImagePlaceholder(doc: Document, img: HTMLImageElement): HTMLElement {
+	const label = t(
+		'label.pasted_image_unavailable',
+		'Image removed \u2014 please attach it manually'
+	);
+	const originalName =
+		img.getAttribute('alt')?.trim() || img.getAttribute('src')?.split(/[\\/]/).pop();
+	const placeholder = doc.createElement('span');
+	placeholder.className = 'pn-unresolvable-image-placeholder';
+	placeholder.setAttribute('style', 'color:#8a8f99;font-style:italic;');
+	placeholder.textContent = originalName ? `[${label}: ${originalName}]` : `[${label}]`;
+	return placeholder;
+}
+
+/**
+ * Replaces <img> elements whose src uses the `file:` scheme with a text
+ * placeholder in a pasted HTML fragment. These reference local temp files
+ * (e.g. the ones Word and Outlook embed on Windows:
+ * file:///C:/Users/.../clip_image001.png) that only exist on the sender's
+ * machine and can never be fetched from the browser (opaque-origin CORS
+ * restriction on the file: scheme). Leaving them in place would insert a
+ * permanently-broken <img> that also leaks the sender's local file path;
+ * dropping them silently would hide the fact that content was lost. The
+ * placeholder keeps everything else in the paste intact (surrounding text,
+ * table layout, other valid images) while telling the user an image could
+ * not be pasted and must be attached manually.
+ */
+function replaceUnresolvableImages(html: string): string {
 	const doc = new DOMParser().parseFromString(html, 'text/html');
 	doc.querySelectorAll('img').forEach((img) => {
 		if ((img.getAttribute('src') ?? '').toLowerCase().startsWith('file:')) {
-			img.parentNode?.removeChild(img);
+			img.replaceWith(buildUnresolvableImagePlaceholder(doc, img));
 		}
 	});
 	sanitizeDoc(doc);
@@ -579,17 +602,27 @@ export const handleEditorPowerPaste = async (
 	// --- Local file:// references with no recoverable clipboard image data ---
 	// Windows Office clients (Word/Outlook) fall back to a file:///C:/...
 	// temp-file reference when no other image data is on the clipboard. It
-	// can never be resolved into real bytes from the browser, so strip the
-	// dead <img> rather than let native paste insert a permanently-broken,
-	// path-leaking element.
+	// can never be resolved into real bytes from the browser, so replace the
+	// dead <img> with a text placeholder rather than let native paste insert
+	// a permanently-broken, path-leaking element.
 	if (html && containsUnresolvableLocalImages(html)) {
 		event.preventDefault();
 		event.stopPropagation();
 		event.stopImmediatePropagation?.();
-		editor.insertContent(stripUnresolvableImages(html));
+		editor.insertContent(replaceUnresolvableImages(html));
 		return;
 	}
 	// If there are no images allow default TinyMCE paste behaviour.
 };
 
-export const testingPurposeOnly = { uploadImage, srcToFile, insertMixedContent, isPastedFromExcel, filterMsoProperties, inlineStylesFromStyleBlock, processExcelPaste, containsUnresolvableLocalImages, stripUnresolvableImages };
+export const testingPurposeOnly = {
+	uploadImage,
+	srcToFile,
+	insertMixedContent,
+	isPastedFromExcel,
+	filterMsoProperties,
+	inlineStylesFromStyleBlock,
+	processExcelPaste,
+	containsUnresolvableLocalImages,
+	replaceUnresolvableImages
+};
