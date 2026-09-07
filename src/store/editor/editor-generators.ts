@@ -7,7 +7,7 @@ import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { LinkFolder, ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { v4 as uuid } from 'uuid';
 
-import { buildSavedAttachments } from '../../helpers/attachments';
+import { buildSavedAttachments, buildSavedAttachmentsOnForward } from '../../helpers/attachments';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/index';
 import {
@@ -326,7 +326,7 @@ export const generateReplyAllMsgEditor = (originalMessage: MailMessage): MailsEd
  */
 export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEditorV2 => {
 	const editorId = uuid();
-	const savedAttachments = buildSavedAttachments(originalMessage);
+	const savedAttachments = buildSavedAttachmentsOnForward(originalMessage);
 
 	const text = {
 		plainText: ``,

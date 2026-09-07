@@ -262,6 +262,68 @@ function flattenAndAddDisposition(
 }
 
 /**
+ * Forward-only copy of {@link flattenAndAddDisposition}.
+ * Kept as a separate function so forward-action attachment handling can
+ * diverge from the generic disposition logic without affecting reply,
+ * edit-as-draft, edit-as-new, or the message body renderer.
+ *
+ * @param parts - Message parts to process
+ * @param referredCIDs - Content-IDs referenced in HTML content
+ * @param filtered - Accumulated results array
+ * @returns Flattened array of parts with proper disposition set
+ */
+function flattenAndAddDispositionOnForward(
+	parts: Array<MailMessagePart>,
+	referredCIDs: Array<string>,
+	filtered: Array<MailMessagePartWithDisposition> = []
+): Array<MailMessagePartWithDisposition> {
+	return reduce(
+		parts,
+		(incoming, part) => {
+			const isReferredByCid = part.ci && isReferredCID(part.ci, referredCIDs);
+			const partShouldBeIncluded =
+				isAttachmentDisposition(part.disposition) ||
+				(isInlineDisposition(part.disposition) && (part.filename || isReferredByCid)) ||
+				(isInlineDisposition(part.disposition) && part.name) ||
+				(part.disposition === undefined &&
+					(isReferredByCid ||
+						(!part.parts &&
+							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+							part.contentType !== MIMETYPE_PLAINTEXT &&
+							part.contentType !== MIMETYPE_RICHTEXT &&
+							part.name)));
+
+			if (partShouldBeIncluded && !part.body) {
+				// Determine disposition: inline if referenced, attachment otherwise
+				if (part.disposition === undefined) {
+					incoming.push({
+						...part,
+						disposition: isReferredByCid &&
+										part.contentType.startsWith('image/') ? DISPOSITION_INLINE : DISPOSITION_ATTACHMENT
+					});
+				} else if (isReferredByCid && part.contentType.startsWith('image/')) {
+					incoming.push({
+						...part,
+						disposition: DISPOSITION_INLINE
+					});
+				} else {
+					incoming.push({
+						...part,
+						disposition: DISPOSITION_ATTACHMENT
+					});
+				}
+			}
+
+			if (part.parts && !isEml(part)) {
+				flattenAndAddDispositionOnForward(part.parts, referredCIDs, incoming);
+			}
+			return incoming;
+		},
+		filtered
+	);
+}
+
+/**
  * Flattens the message parts and adds disposition to each part.
  * It returns flattened attachments with disposition.
  */
@@ -271,6 +333,19 @@ export function getFlattenedAttachmentParts(
 	const mailMessageParts = mailMessage.parts;
 	const referredCIDS = getReferredContentIds(mailMessageParts);
 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
+}
+
+/**
+ * Forward-only variant of {@link getFlattenedAttachmentParts}.
+ * Uses {@link flattenAndAddDispositionOnForward} so the forward action can
+ * evolve its disposition logic independently of reply/edit/render flows.
+ */
+export function getFlattenedAttachmentPartsOnForward(
+	mailMessage: MailMessage
+): Array<MailMessagePartWithDisposition> {
+	const mailMessageParts = mailMessage.parts;
+	const referredCIDS = getReferredContentIds(mailMessageParts);
+	return flattenAndAddDispositionOnForward(mailMessageParts, referredCIDS);
 }
 
 export const getAttachmentExtension = (
@@ -322,6 +397,24 @@ export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): strin
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getFlattenedAttachmentParts(message);
+	return attachmentsParts.map((part) => ({
+		messageId: message.id,
+		isInline: isInlineDisposition(part.disposition) && !!part.ci,
+		contentId: (part.ci && removeAngleBrackets(part.ci)) ?? undefined,
+		filename: part.filename ?? '',
+		partName: part.name,
+		contentType: part.contentType,
+		size: part.size
+	}));
+};
+
+/**
+ * Forward-only variant of {@link buildSavedAttachments}, backed by
+ * {@link getFlattenedAttachmentPartsOnForward}. Use this exclusively when
+ * building the editor for the forward action.
+ */
+export const buildSavedAttachmentsOnForward = (message: MailMessage): Array<SavedAttachment> => {
+	const attachmentsParts = getFlattenedAttachmentPartsOnForward(message);
 	return attachmentsParts.map((part) => ({
 		messageId: message.id,
 		isInline: isInlineDisposition(part.disposition) && !!part.ci,
