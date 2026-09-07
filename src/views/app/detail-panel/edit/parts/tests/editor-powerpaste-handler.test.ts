@@ -137,23 +137,88 @@ describe('handleEditorPowerPaste', () => {
 		expect(event.preventDefault).not.toHaveBeenCalled();
 	});
 
-	it('should return early for Excel table content even when clipboard has an image', async () => {
+	it('should let TinyMCE handle plain, image-free table content natively', async () => {
 		const editor = createMockEditor();
-		const excelHtml = `<table><tr><td>A</td></tr></table>`;
+		const plainTableHtml = `<table><tr><td>A</td></tr></table>`;
 		const event = {
 			preventDefault: vi.fn(),
 			clipboardData: {
-				items: [
-					{
-						type: 'image/png',
-						getAsFile: vi.fn(() => new File(['x'], 'shot.png', { type: 'image/png' }))
-					}
-				],
-				getData: vi.fn((format: string) => (format === 'text/html' ? excelHtml : ''))
+				items: [{ type: 'text/plain', getAsFile: vi.fn(() => null) }],
+				getData: vi.fn((format: string) => (format === 'text/html' ? plainTableHtml : ''))
 			}
 		} as unknown as ClipboardEvent;
 		await handleEditorPowerPaste(editor, 'editor-1', event);
 		expect(event.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('should upload the clipboard image instead of dropping it when non-Excel table content is pasted alongside it (Windows Outlook/Word signatures wrap content in tables)', async () => {
+		const mockAid = 'aid-table-item';
+		const mockFile = new File(['x'], 'shot.png', { type: 'image/png' });
+		const mockContentId = `${mockAid}@carbonio`;
+		setupUploadMocks(mockAid, mockContentId, mockFile);
+
+		const fakeBlob = new Blob(['img'], { type: 'image/png' });
+		global.fetch = vi.fn(() =>
+			Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
+		) as Mock;
+		global.URL.createObjectURL = vi.fn(() => 'blob://fake-object-url');
+
+		const editor = createMockEditor();
+		const tableHtml = `<table><tr><td>A</td></tr></table>`;
+		const event = {
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+			stopImmediatePropagation: vi.fn(),
+			clipboardData: {
+				items: [
+					{
+						type: 'image/png',
+						getAsFile: vi.fn(() => mockFile)
+					}
+				],
+				getData: vi.fn((format: string) => (format === 'text/html' ? tableHtml : ''))
+			}
+		} as unknown as ClipboardEvent;
+		await handleEditorPowerPaste(editor, 'editor-1', event);
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(editor.insertContent).toHaveBeenCalledTimes(1);
+		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
+		expect(insertedHtml).toContain(`data-pnsrc="cid:${mockContentId}"`);
+	});
+
+	it('should upload a locally-embedded image found inside non-Excel table content and preserve the surrounding table', async () => {
+		const mockAid = 'aid-table-inline';
+		const mockFile = new File(['x'], 'pasted-image-0.png', { type: 'image/png' });
+		const mockContentId = `${mockAid}@carbonio`;
+		setupUploadMocks(mockAid, mockContentId, mockFile);
+
+		const fakeBlob = new Blob(['img'], { type: 'image/png' });
+		global.fetch = vi.fn(() =>
+			Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
+		) as Mock;
+		global.URL.createObjectURL = vi.fn(() => 'blob://fake-object-url');
+
+		const editor = createMockEditor();
+		const tableHtmlWithImage = `<table><tr><td>Signature</td><td><img src="${TINY_PNG_DATA_URL}"/></td></tr></table>`;
+		const event = {
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+			stopImmediatePropagation: vi.fn(),
+			clipboardData: {
+				items: [],
+				getData: vi.fn((format: string) =>
+					format === 'text/html' ? tableHtmlWithImage : ''
+				)
+			}
+		} as unknown as ClipboardEvent;
+		await handleEditorPowerPaste(editor, 'editor-1', event);
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(editor.insertContent).toHaveBeenCalledTimes(1);
+		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
+		expect(insertedHtml).toContain('<table');
+		expect(insertedHtml).toContain('Signature');
+		expect(insertedHtml).toContain(`data-pnsrc="cid:${mockContentId}"`);
+		expect(insertedHtml).not.toContain('data:image/png');
 	});
 
 	it('should return early if HTML contains external images', async () => {
@@ -248,6 +313,87 @@ describe('handleEditorPowerPaste', () => {
 		expect(editor.insertContent).toHaveBeenCalledTimes(1);
 		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
 		expect(insertedHtml).toContain(`data-pnsrc="cid:${mockContentId}"`);
+	});
+
+	it('should prefer a real clipboard image item over a dead file:// html reference (Word/Outlook single-image paste)', async () => {
+		const mockAid = 'aid-file-with-item';
+		const mockFile = new File(['x'], 'clip.png', { type: 'image/png' });
+		const mockContentId = `${mockAid}@carbonio`;
+		setupUploadMocks(mockAid, mockContentId, mockFile);
+
+		const fakeBlob = new Blob(['img'], { type: 'image/png' });
+		global.fetch = vi.fn(() =>
+			Promise.resolve({ blob: () => Promise.resolve(fakeBlob) })
+		) as Mock;
+		global.URL.createObjectURL = vi.fn(() => 'blob://fake-object-url');
+
+		const htmlWithFileRef = `<img src="file:///C:/Users/John/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png">`;
+		const editor = createMockEditor();
+		const event = {
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+			stopImmediatePropagation: vi.fn(),
+			clipboardData: {
+				items: [{ type: 'image/png', getAsFile: vi.fn(() => mockFile) }],
+				getData: vi.fn((format: string) => (format === 'text/html' ? htmlWithFileRef : ''))
+			}
+		} as unknown as ClipboardEvent;
+
+		await handleEditorPowerPaste(editor, 'editor-1', event);
+
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(editor.insertContent).toHaveBeenCalledTimes(1);
+		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
+		// The real clipboard bitmap must be used, uploaded, and inserted.
+		expect(insertedHtml).toContain(`data-pnsrc="cid:${mockContentId}"`);
+	});
+
+	it('should strip a dead file:// image reference (no recoverable clipboard data) instead of losing the whole paste', async () => {
+		const editor = createMockEditor();
+		const htmlWithFileRef = `<p>Before</p><img src="file:///C:/Users/John/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"><p>After</p>`;
+		const event = {
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+			stopImmediatePropagation: vi.fn(),
+			clipboardData: {
+				items: [],
+				getData: vi.fn((format: string) => (format === 'text/html' ? htmlWithFileRef : ''))
+			}
+		} as unknown as ClipboardEvent;
+
+		await handleEditorPowerPaste(editor, 'editor-1', event);
+
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(editor.insertContent).toHaveBeenCalledTimes(1);
+		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
+		expect(insertedHtml).toContain('Before');
+		expect(insertedHtml).toContain('After');
+		expect(insertedHtml).not.toContain('file:');
+		expect(insertedHtml).not.toContain('<img');
+	});
+
+	it('should strip a dead file:// image inside non-Excel table content when no clipboard image data is available', async () => {
+		const editor = createMockEditor();
+		const tableHtmlWithFileRef = `<table><tr><td>Signature</td><td><img src="file:///C:/Users/Jane/Pictures/logo.png"></td></tr></table>`;
+		const event = {
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+			stopImmediatePropagation: vi.fn(),
+			clipboardData: {
+				items: [],
+				getData: vi.fn((format: string) =>
+					format === 'text/html' ? tableHtmlWithFileRef : ''
+				)
+			}
+		} as unknown as ClipboardEvent;
+
+		await handleEditorPowerPaste(editor, 'editor-1', event);
+
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(editor.insertContent).toHaveBeenCalledTimes(1);
+		const insertedHtml: string = (editor.insertContent as Mock).mock.calls[0][0];
+		expect(insertedHtml).toContain('Signature');
+		expect(insertedHtml).not.toContain('file:');
 	});
 });
 

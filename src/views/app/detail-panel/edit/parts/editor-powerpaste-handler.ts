@@ -140,6 +140,7 @@ const MYHOSTNAME = window.location.hostname;
 const IMG_TAG_REGEX = new RegExp(`<img[^>]+src=["'](http(?!s?:\\/\\/${MYHOSTNAME}\\/service\\/home\\/)[^"']+)["']`, 'i');
 const TABLE_TAG_REGEX = /<table/i;
 const LOCAL_IMG_SRC_REGEX = new RegExp(`src=["'](data:|blob:|https:\\/\\/${MYHOSTNAME}\\/service\\/home\\/)[^"']+["']`, 'i');
+const FILE_IMG_SRC_REGEX = /<img[^>]+src=["']file:[^"']*["']/i;
 
 /**
  * Matches markers that Microsoft Excel embeds in its clipboard HTML output:
@@ -290,9 +291,26 @@ function containsLocalImages(html: string): boolean {
 	return LOCAL_IMG_SRC_REGEX.test(html);
 }
 
+/**
+ * Returns true when the HTML snippet contains an <img> whose src uses the
+ * `file:` scheme. Windows Office clients (Word/Outlook) reference pasted
+ * pictures this way (e.g. file:///C:/Users/.../clip_image001.png) when no
+ * other clipboard image data is present. Browsers refuse to fetch file:
+ * URLs from an http(s) origin (opaque-origin CORS restriction), so these
+ * can never be resolved into real image bytes from the page.
+ */
+function containsUnresolvableLocalImages(html: string): boolean {
+	return FILE_IMG_SRC_REGEX.test(html);
+}
+
 function isLocalImageElement(img: HTMLImageElement): boolean {
 	const src = img.getAttribute('src') ?? '';
-	return src.startsWith('data:') || src.startsWith('blob:') || src.startsWith(`https://${MYHOSTNAME}/service/home/`);
+	return (
+		src.startsWith('data:') ||
+		src.startsWith('blob:') ||
+		src.startsWith('file:') ||
+		src.startsWith(`https://${MYHOSTNAME}/service/home/`)
+	);
 }
 
 /**
@@ -461,6 +479,27 @@ async function insertMixedContent(
 	}
 }
 
+/**
+ * Removes <img> elements whose src uses the `file:` scheme from a pasted
+ * HTML fragment. These reference local temp files (e.g. the ones Word and
+ * Outlook embed on Windows: file:///C:/Users/.../clip_image001.png) that
+ * only exist on the sender's machine and can never be fetched from the
+ * browser (opaque-origin CORS restriction on the file: scheme). Leaving
+ * them in place would insert a permanently-broken <img> that also leaks
+ * the sender's local file path; stripping them preserves everything else
+ * in the paste (surrounding text, table layout, other valid images).
+ */
+function stripUnresolvableImages(html: string): string {
+	const doc = new DOMParser().parseFromString(html, 'text/html');
+	doc.querySelectorAll('img').forEach((img) => {
+		if ((img.getAttribute('src') ?? '').toLowerCase().startsWith('file:')) {
+			img.parentNode?.removeChild(img);
+		}
+	});
+	sanitizeDoc(doc);
+	return doc.body.innerHTML;
+}
+
 export const handleEditorPowerPaste = async (
 	editor: Editor,
 	editorId: string,
@@ -481,10 +520,28 @@ export const handleEditorPowerPaste = async (
 			event.stopPropagation();
 			event.stopImmediatePropagation?.();
 			processExcelPaste(html, editor);
+			return;
 		}
-		// For all other table content (e.g. a table copied from a web page)
-		// let TinyMCE handle the paste natively.
-		return;
+
+		// Windows mail/office clients (Outlook, Word) routinely wrap even simple
+		// content - e.g. signatures - in a <table> for layout, and carry any
+		// embedded image only as a locally-sourced <img> (data:/blob:) or as a
+		// raw bitmap clipboard item, never as an external URL. Bailing out
+		// unconditionally here used to hand such pastes to TinyMCE's native
+		// paste, which is configured with `paste_data_images: false` and
+		// silently drops the image. Only skip our handling for genuinely
+		// image-free tabular content (e.g. a table copied from a spreadsheet
+		// or web page); otherwise fall through so the image branches below can
+		// upload and preserve it.
+		if (
+			!containsLocalImages(html) &&
+			!containsUnresolvableLocalImages(html) &&
+			getImageFilesFromClipboard(clipboardData).length === 0
+		) {
+			// For all other table content (e.g. a table copied from a web page)
+			// let TinyMCE handle the paste natively.
+			return;
+		}
 	}
 
 	// Check for external image URLs in plain text.
@@ -516,8 +573,23 @@ export const handleEditorPowerPaste = async (
 		if (!isUploading) {
 			await processNextUpload(editor, editorId);
 		}
+		return;
+	}
+
+	// --- Local file:// references with no recoverable clipboard image data ---
+	// Windows Office clients (Word/Outlook) fall back to a file:///C:/...
+	// temp-file reference when no other image data is on the clipboard. It
+	// can never be resolved into real bytes from the browser, so strip the
+	// dead <img> rather than let native paste insert a permanently-broken,
+	// path-leaking element.
+	if (html && containsUnresolvableLocalImages(html)) {
+		event.preventDefault();
+		event.stopPropagation();
+		event.stopImmediatePropagation?.();
+		editor.insertContent(stripUnresolvableImages(html));
+		return;
 	}
 	// If there are no images allow default TinyMCE paste behaviour.
 };
 
-export const testingPurposeOnly = { uploadImage, srcToFile, insertMixedContent, isPastedFromExcel, filterMsoProperties, inlineStylesFromStyleBlock, processExcelPaste };
+export const testingPurposeOnly = { uploadImage, srcToFile, insertMixedContent, isPastedFromExcel, filterMsoProperties, inlineStylesFromStyleBlock, processExcelPaste, containsUnresolvableLocalImages, stripUnresolvableImages };
