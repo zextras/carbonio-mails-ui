@@ -1,0 +1,9 @@
+ignoredBuiltDependencies:
+  - core-js
+  - esbuild
+  - msw
+  - protobufjs
+  - unrs-resolver
+
+onlyBuiltDependencies:
+  - '@zextras/carbonio-search-ui'
