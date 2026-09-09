@@ -62,7 +62,9 @@ export const PastePlugin = ({ onResolveInlineImages }: PastePluginProps): null =
 					}
 
 					event.preventDefault();
-					onResolveInlineImages(imageFiles, (images) => insertResolvedInlineImages(editor, images));
+					onResolveInlineImages(editor, imageFiles, (images) =>
+						insertResolvedInlineImages(editor, images)
+					);
 					return true;
 				},
 				COMMAND_PRIORITY_LOW

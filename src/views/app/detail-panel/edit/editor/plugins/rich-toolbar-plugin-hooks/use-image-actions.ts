@@ -62,7 +62,7 @@ export function useImageActions(
 			if (!fileList?.length || !onResolveInlineImages) {
 				return;
 			}
-			onResolveInlineImages(Array.from(fileList), (images) =>
+			onResolveInlineImages(editor, Array.from(fileList), (images) =>
 				insertResolvedInlineImages(editor, images)
 			);
 			event.target.value = '';

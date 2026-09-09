@@ -351,6 +351,15 @@ export const useAttachmentIconColor = (
 export const isDownloadServicedUrl = (url: string): boolean =>
 	new RegExp(DOWNLOADSERVICEURL_REGEX, 'g').test(url);
 
+/**
+ * Whether the url is a local object url (`URL.createObjectURL`), used as the
+ * temporary src of an inline image whose upload/draft save is still pending.
+ *
+ * Note: {@link isCidUrl} cannot be used to tell those apart, since its pattern
+ * matches any non-empty string.
+ */
+export const isBlobUrl = (url: string): boolean => url.startsWith('blob:');
+
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
 

@@ -34,7 +34,7 @@ import { ImageNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/imag
 import { PastePlugin } from 'views/app/detail-panel/edit/editor/plugins/paste-plugin';
 import {
 	RichToolbarPlugin,
-	type ResolvedInlineImage
+	type ResolveInlineImages
 } from 'views/app/detail-panel/edit/editor/plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-cell-resizer-plugin';
@@ -129,10 +129,7 @@ const SignatureContentSyncPlugin = ({
  * a mail composer — a `data:` URI left in a sent message would be stripped by
  * several mail clients.
  */
-const resolveInlineImagesAsDataUris = (
-	files: File[],
-	onComplete: (images: ResolvedInlineImage[]) => void
-): void => {
+const resolveInlineImagesAsDataUris: ResolveInlineImages = (_editor, files, onComplete) => {
 	const images = files.filter(isImageFile);
 	if (images.length === 0) {
 		return;
