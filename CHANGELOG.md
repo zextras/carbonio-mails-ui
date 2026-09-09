@@ -1,3 +1,7 @@
+## 1.46.0 (2026-09-09)
+
+* feat: implement inline image upload with immediate preview and synchronization ([7f9366b](https://github.com/zextras/carbonio-mails-ui/commit/7f9366b))
+
 ## 1.45.0 (2026-09-01)
 
 * feat: add inline image support in signature editor and rich text editor ([afc3609](https://github.com/zextras/carbonio-mails-ui/commit/afc3609))
