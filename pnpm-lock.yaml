@@ -316,8 +316,8 @@ importers:
         specifier: 25.0.8
         version: 25.0.8(typescript@5.9.3)
       sonarqube-scanner:
-        specifier: 4.3.8
-        version: 4.3.8
+        specifier: 4.4.0
+        version: 4.4.0
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@types/node@25.9.1)(typescript@5.9.3)
@@ -6799,8 +6799,8 @@ packages:
   sockjs@0.3.24:
     resolution: {integrity: sha512-GJgLTZ7vYb/JtPSSZ10hsOYIvEYsjbNU+zPdIHcUaWVNUEPivzxku31865sSSud0Da0W4lEeOPlmw93zLQchuQ==}
 
-  sonarqube-scanner@4.3.8:
-    resolution: {integrity: sha512-mkxxVmUJB5ammq4y8RJSWuW79MdV0tW5Bpi/rzi7hytu1ahyQwFdSoBlAoH1UsLSvfd1iM5R+5sjZbWlaOhGhA==}
+  sonarqube-scanner@4.4.0:
+    resolution: {integrity: sha512-j1hXSmkTCrFQbOL2BurcvLXS92uI+SetwLzwed11H0QJkFMam9nLvZM2hgg/QNelO/D902R+jJ09yLc7HhS/Yw==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -10492,7 +10492,7 @@ snapshots:
       graphemer: 1.4.0
       ignore: 5.3.2
       natural-compare: 1.4.0
-      semver: 7.8.1
+      semver: 7.8.4
       ts-api-utils: 1.4.3(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
@@ -10649,7 +10649,7 @@ snapshots:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.9.3)
       eslint: 8.57.0
       eslint-scope: 5.1.1
-      semver: 7.8.1
+      semver: 7.8.4
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -11861,7 +11861,7 @@ snapshots:
       conventional-commits-filter: 5.0.0
       handlebars: 4.7.9
       meow: 13.2.0
-      semver: 7.8.1
+      semver: 7.8.4
 
   conventional-commits-filter@5.0.0: {}
 
@@ -11965,7 +11965,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.3)
       postcss-modules-values: 4.0.0(postcss@8.5.3)
       postcss-value-parser: 4.2.0
-      semver: 7.8.1
+      semver: 7.8.4
     optionalDependencies:
       webpack: 5.105.4(postcss@8.5.3)
 
@@ -13474,7 +13474,7 @@ snapshots:
 
   is-bun-module@2.0.0:
     dependencies:
-      semver: 7.8.1
+      semver: 7.8.4
 
   is-callable@1.2.7: {}
 
@@ -14554,7 +14554,7 @@ snapshots:
       cosmiconfig: 9.0.1(typescript@5.9.3)
       jiti: 2.7.0
       postcss: 8.5.3
-      semver: 7.8.1
+      semver: 7.8.4
     optionalDependencies:
       webpack: 5.105.4(postcss@8.5.3)
     transitivePeerDependencies:
@@ -15336,7 +15336,7 @@ snapshots:
       uuid: 8.3.2
       websocket-driver: 0.7.4
 
-  sonarqube-scanner@4.3.8:
+  sonarqube-scanner@4.4.0:
     dependencies:
       adm-zip: 0.5.17
       axios: 1.17.0
