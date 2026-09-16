@@ -11,6 +11,7 @@ import moment from 'moment';
 import { htmlEncode } from 'commons/get-quoted-text-util';
 import { LineType } from 'commons/utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
+import { wrapInHtmlDocument } from 'helpers/html-document';
 import { getAddressOwnerAccount, getIdentityDescriptor } from 'helpers/identities';
 import { extractBodyWithInlinedStyles } from 'helpers/inline-styles';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
@@ -315,16 +316,18 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 };
 
 /**
- * @deprecated Use applyUserPreferenceStyles from helpers/user-preference-styles.ts instead
- * Wraps content with user preference styles applied via CSS, ensuring signature content is not affected.
+ * Builds the outgoing text/html mime part body: applies the user preference styles
+ * (without affecting the signature content) and wraps the result into a complete
+ * HTML document. The <body> wrapper is required by the MTA domain disclaimer (CO-4171).
  * @param content - The HTML content to wrap
  * @param style - User preference styles (font, fontSize, color)
- * @returns HTML content with inlined styles
+ * @returns A complete HTML document with inlined styles, suitable for the outgoing text/html mime part
  */
 export const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+): string =>
+	wrapInHtmlDocument(applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES));
 
 export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	// TODO FIX MP TYPE ERROR
