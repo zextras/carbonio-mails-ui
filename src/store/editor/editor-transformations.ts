@@ -16,6 +16,7 @@ import {
 	isCidUrl,
 	isDownloadServicedUrl
 } from 'helpers/attachments';
+import { wrapInHtmlDocument } from 'helpers/html-document';
 import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
 import { applyUserPreferenceStyles } from 'helpers/user-preference-styles';
 import {
@@ -153,16 +154,18 @@ export const replaceServiceUrlWithCidUrl = (content: string): string => {
 };
 
 /**
- * @deprecated Use applyUserPreferenceStyles from helpers/user-preference-styles.ts instead
- * Wraps content with user preference styles applied via CSS, ensuring signature content is not affected.
+ * Builds the outgoing text/html mime part body: applies the user preference styles
+ * (without affecting the signature content) and wraps the result into a complete
+ * HTML document. The <body> wrapper is required by the MTA domain disclaimer (CO-4171).
  * @param content - The HTML content to wrap
  * @param style - User preference styles (font, fontSize, color)
- * @returns HTML content with inlined styles
+ * @returns A complete HTML document with inlined styles, suitable for the outgoing text/html mime part
  */
 const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
-): string => applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
+): string =>
+	wrapInHtmlDocument(applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES));
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
