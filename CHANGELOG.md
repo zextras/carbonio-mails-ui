@@ -1,3 +1,9 @@
+## 1.47.0 (2026-09-16)
+
+* feat(CO-4171): wrap outgoing HTML in complete HTML document (#1324) ([e097668](https://github.com/zextras/carbonio-mails-ui/commit/e097668)), closes [#1324](https://github.com/zextras/carbonio-mails-ui/issues/1324)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.10.7 ([b4a6843](https://github.com/zextras/carbonio-mails-ui/commit/b4a6843))
+* chore(deps): update sonarqube-scanner to 4.4.0 ([1b067c2](https://github.com/zextras/carbonio-mails-ui/commit/1b067c2))
+
 ## 1.46.0 (2026-09-09)
 
 * feat: implement inline image upload with immediate preview and synchronization ([7f9366b](https://github.com/zextras/carbonio-mails-ui/commit/7f9366b))
