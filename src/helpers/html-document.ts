@@ -19,10 +19,9 @@ const BODY_TAG_REGEX = /<body[\s>]/i;
  * @param content - The HTML fragment (body innerHTML) to wrap
  * @returns A complete HTML document string
  */
-export const wrapInHtmlDocument = (content: string | undefined): string => {
-	const body = content ?? '';
-	if (BODY_TAG_REGEX.test(body)) {
-		return body;
+export const wrapInHtmlDocument = (content = ''): string => {
+	if (BODY_TAG_REGEX.test(content)) {
+		return content;
 	}
-	return `<html><body>${body}</body></html>`;
+	return `<html><body>${content}</body></html>`;
 };
