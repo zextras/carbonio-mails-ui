@@ -21,7 +21,7 @@ describe('share folder actions', () => {
 		const view = FOLDER_VIEW.message;
 		const rid = 'rid';
 		const folderName = 'folderName';
-		const color = 1;
+		const rgb = '#2b73d2';
 		const accounts = [{ name: 'account name' }];
 		const link: ISoapFolderObj = {
 			activesyncdisabled: false,
@@ -66,7 +66,7 @@ describe('share folder actions', () => {
 			view,
 			rid,
 			folderName,
-			color,
+			rgb,
 			accounts,
 			msgId: 'msgId',
 			sharedFolderName: folderName,
@@ -91,7 +91,7 @@ describe('share folder actions', () => {
 		const view = FOLDER_VIEW.message;
 		const rid = 'rid';
 		const folderName = 'folderName';
-		const color = 1;
+		const rgb = '#2b73d2';
 		const accounts = [{ name: 'account name' }];
 		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({
 			detailCode: CreateMountpointError.FOLDER_ALREADY_EXISTS
@@ -107,7 +107,7 @@ describe('share folder actions', () => {
 			view,
 			rid,
 			folderName,
-			color,
+			rgb,
 			accounts,
 			msgId: 'msgId',
 			sharedFolderName: folderName,

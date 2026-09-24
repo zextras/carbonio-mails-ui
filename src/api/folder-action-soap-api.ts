@@ -13,6 +13,7 @@ import { FolderActionResponse } from 'types/soap/soap';
 export type FolderActionProps = {
 	folder: Folder | DataProps | Omit<Folder, 'parent'>;
 	color?: number;
+	rgb?: string;
 	zid?: string;
 	op: string;
 	name?: string;
@@ -25,6 +26,7 @@ export type FolderActionProps = {
 export async function folderActionSoapApi({
 	folder,
 	color,
+	rgb,
 	zid,
 	op,
 	name,
@@ -43,7 +45,8 @@ export async function folderActionSoapApi({
 							l,
 							recursive,
 							name,
-							color
+							color,
+							rgb
 						},
 						_jsns: 'urn:zimbraMail'
 					},
@@ -67,6 +70,7 @@ export async function folderActionSoapApi({
 						recursive,
 						name,
 						color,
+						rgb,
 						zid,
 						...(type && { type })
 					},

@@ -13,7 +13,8 @@ import {
 	FOLDERS,
 	isValidFolderName,
 	ModalFooter,
-	ModalHeader
+	ModalHeader,
+	resolveFolderColorHex
 } from '@zextras/carbonio-ui-commons';
 import type { Grant } from '@zextras/carbonio-ui-commons';
 import { includes, isEmpty } from 'lodash';
@@ -50,7 +51,12 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 	onRevokeGrant
 }) => {
 	const [folderNameInputValue, setFolderNameInputValue] = useState(folder.name);
-	const [folderColor, setFolderColor] = useState<number>(folder.color ?? 0);
+	const initialFolderColorHex = useMemo(
+		() => resolveFolderColorHex(folder.color, folder.rgb),
+		[folder.color, folder.rgb]
+	);
+	const [folderColorHex, setFolderColorHex] = useState(initialFolderColorHex);
+	const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 	const [retentionState, setRetentionState] = useState<RetentionPolicyState>({
 		showPolicy: false,
 		dsblMsgDis: false,
@@ -200,7 +206,9 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 			folder: { ...folder, parent: folder.l ?? '', children: [] },
 			name: folderNameInputValue,
 			op: 'update',
-			color: Number(folderColor),
+			// Always sent as `rgb`, even for a standard color: an update carrying only `color` doesn't
+			// clear an existing `rgb`, so the folder would keep showing its previous custom color.
+			rgb: folderColorHex !== initialFolderColorHex ? folderColorHex : undefined,
 			retentionPolicy
 		}).then((res) => {
 			const isSuccess = !('Fault' in res);
@@ -218,12 +226,26 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 
 		setFolderNameInputValue('');
 		onClose();
-	}, [retentionState, folderNameInputValue, folder, folderColor, onClose, createSnackbar]);
+	}, [
+		retentionState,
+		folderNameInputValue,
+		folder,
+		folderColorHex,
+		initialFolderColorHex,
+		onClose,
+		createSnackbar
+	]);
+
+	const onCloseModal = useCallback(() => {
+		if (!isColorPickerOpen) {
+			onClose();
+		}
+	}, [isColorPickerOpen, onClose]);
 
 	return (
 		<>
 			<ModalHeader
-				onClose={onClose}
+				onClose={onCloseModal}
 				title={t('label.edit_folder_properties', {
 					name: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
 					defaultValue: 'Edit {{name}} properties'
@@ -235,8 +257,10 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 				setInputValue={setFolderNameInputValue}
 				inputValue={folderNameInputValue}
 				inpDisable={inpDisable}
-				folderColor={folderColor}
-				setFolderColor={setFolderColor}
+				folderColorHex={folderColorHex}
+				setFolderColorHex={setFolderColorHex}
+				isColorPickerOpen={isColorPickerOpen}
+				onColorPickerOpenChange={setIsColorPickerOpen}
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'small' }}>
 				<FolderDetails folder={folder} />
@@ -260,8 +284,10 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 					label={t('label.edit', 'Edit')}
 					secondaryAction={onAddShare}
 					secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
-					disabled={disableSubmit}
-					secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
+					disabled={disableSubmit || isColorPickerOpen}
+					secondaryDisabled={
+						isColorPickerOpen || !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
+					}
 					secondaryBtnType="outlined"
 					secondaryColor="primary"
 					tooltip={
