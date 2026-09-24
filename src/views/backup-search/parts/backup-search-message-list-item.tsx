@@ -51,6 +51,15 @@ export const BackupSearchMessageListItem = ({
 		[onSelect, index, message.id]
 	);
 
+	// A shift+click natively extends the browser text selection across the list rows.
+	// Mousedown is the only moment early enough to suppress it: the preventDefault of
+	// handleClick runs after the selection has already been painted.
+	const handleMouseDown = useCallback((e: React.MouseEvent) => {
+		if (e.shiftKey) {
+			e.preventDefault();
+		}
+	}, []);
+
 	return (
 		<HoverContainer
 			$hoverBackground={active ? 'highlight' : 'gray6'}
@@ -61,6 +70,7 @@ export const BackupSearchMessageListItem = ({
 			<div style={{ alignSelf: 'center' }}>
 				<Avatar
 					onClick={handleClick}
+					onMouseDown={handleMouseDown}
 					selecting
 					selected={messageIsSelected}
 					label={message.to}
