@@ -195,7 +195,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					/>
 				</Row>
 			</Row>
-			<Row width="fill" mainAlignment="flex-start">
+			<Row width="fill" mainAlignment="flex-start" padding={{ vertical: 'small' }}>
 				<Input
 					label={folderNameLabel}
 					backgroundColor="gray5"
