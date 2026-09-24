@@ -855,23 +855,30 @@ describe('edit-modal', () => {
 		const getCustomizeTrigger = (): HTMLElement =>
 			screen.getByRoleWithIcon('button', { icon: 'icon: PlusCircleOutline' });
 
-		it('should send the picked standard color as rgb', async () => {
+		it('should send the picked standard color as rgb in a separate color action', async () => {
 			const folder: Folder = aFolderWithoutSharePermission({ color: 1 });
 			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
-			const interceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
 
 			await user.click(screen.getByRole('button', { name: ZIMBRA_STANDARD_COLORS[5].zLabel }));
 			await user.click(screen.getByRole('button', { name: /label\.edit/i }));
 
-			const { action } = await interceptor;
-			expect(action).toEqual(expect.objectContaining({ rgb: ZIMBRA_STANDARD_COLORS[5].hex }));
-			expect(action).not.toHaveProperty('color');
+			const { FolderActionRequest } = await interceptor;
+			const [update, colorAction] = FolderActionRequest?.map(({ action }) => action) ?? [];
+			expect(update).toEqual(expect.objectContaining({ id: folder.id, op: 'update' }));
+			expect(update).not.toHaveProperty('rgb');
+			expect(update).not.toHaveProperty('color');
+			expect(colorAction).toEqual({
+				id: folder.id,
+				op: 'color',
+				rgb: ZIMBRA_STANDARD_COLORS[5].hex
+			});
 		});
 
 		it('should send a custom color chosen from the picker as rgb', async () => {
 			const folder: Folder = aFolderWithoutSharePermission();
 			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
-			const interceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
 
 			await user.click(getCustomizeTrigger());
 			const hexInput = screen.getByRole('textbox', { name: /hex color/i });
@@ -880,8 +887,12 @@ describe('edit-modal', () => {
 			await user.click(screen.getByRole('button', { name: /choose/i }));
 			await user.click(screen.getByRole('button', { name: /label\.edit/i }));
 
-			const { action } = await interceptor;
-			expect(action).toEqual(expect.objectContaining({ rgb: '#123456' }));
+			const { FolderActionRequest } = await interceptor;
+			expect(FolderActionRequest?.map(({ action }) => action)).toContainEqual({
+				id: folder.id,
+				op: 'color',
+				rgb: '#123456'
+			});
 		});
 
 		it('should preselect the folder custom rgb color', () => {

@@ -35,47 +35,38 @@ export async function folderActionSoapApi({
 	retentionPolicy,
 	type
 }: FolderActionProps): Promise<FolderActionResponse> {
-	const result = !isEmpty(retentionPolicy)
+	const mainAction = omitBy(
+		{
+			id: folder.id,
+			op,
+			l,
+			recursive,
+			name,
+			color,
+			zid,
+			...(type && { type })
+		},
+		isNil
+	);
+	// The server ignores `rgb` on any operation but `color`, so a custom color is always sent as a
+	// separate `color` action next to the main one.
+	const additionalActions = [
+		...(rgb ? [{ id: folder.id, op: 'color', rgb }] : []),
+		...(!isEmpty(retentionPolicy)
+			? [{ id: folder.id, op: 'retentionpolicy', retentionPolicy }]
+			: [])
+	];
+
+	const result = additionalActions.length
 		? await legacySoapFetch('Batch', {
-				FolderActionRequest: [
-					{
-						action: {
-							id: folder.id,
-							op,
-							l,
-							recursive,
-							name,
-							color,
-							rgb
-						},
-						_jsns: 'urn:zimbraMail'
-					},
-					{
-						action: {
-							id: folder.id,
-							op: 'retentionpolicy',
-							retentionPolicy
-						},
-						_jsns: 'urn:zimbraMail'
-					}
-				],
+				FolderActionRequest: [mainAction, ...additionalActions].map((action) => ({
+					action,
+					_jsns: 'urn:zimbraMail'
+				})),
 				_jsns: 'urn:zimbra'
 			})
 		: await legacySoapFetch('FolderAction', {
-				action: omitBy(
-					{
-						id: folder.id,
-						op,
-						l,
-						recursive,
-						name,
-						color,
-						rgb,
-						zid,
-						...(type && { type })
-					},
-					isNil
-				),
+				action: mainAction,
 				_jsns: 'urn:zimbraMail'
 			});
 	return result as FolderActionResponse;
