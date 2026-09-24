@@ -506,6 +506,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						{
 							id: modalId,
 							maxHeight: '90vh',
+							size: 'medium',
 							onClose: (): void => {
 								closeModal(modalId);
 							},

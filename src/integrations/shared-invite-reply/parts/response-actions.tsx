@@ -7,10 +7,13 @@ import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } 
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
+import {
+	FOLDER_VIEW,
+	FolderColorPicker,
+	resolveFolderColorHex
+} from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 
-import ColorSelect from 'integrations/shared-invite-reply/parts/color-select';
 import { useAccept, useDecline } from 'integrations/shared-invite-reply/parts/share-folder-actions';
 import { ResponseActionsProps } from 'types/share';
 
@@ -38,7 +41,10 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		? getProposedFolderName(sharedFolderName, owner, t)
 		: sharedFolderName;
 	const [folderName, setFolderName] = useState(niceFolderName);
-	const [selectedColor, setSelectedColor] = useState<string | null>('0');
+	const [selectedColorHex, setSelectedColorHex] = useState(() =>
+		resolveFolderColorHex(undefined, undefined)
+	);
+	const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 	const accounts = useUserAccounts();
 
 	const folderNameLabel = useMemo(() => {
@@ -51,6 +57,26 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				return t('label.addressbook_name', 'Address book name');
 			default:
 				return t('label.type_name_here', 'Item name');
+		}
+	}, [t, view]);
+
+	const colorCaption = useMemo(() => {
+		switch (view) {
+			case FOLDER_VIEW.appointment:
+				return t(
+					'label.choose_color_caption',
+					'Choose a color to make this calendar easier to recognize'
+				);
+			case FOLDER_VIEW.contact:
+				return t(
+					'label.choose_address_book_color_caption',
+					'Choose a color to make this address book easier to recognize'
+				);
+			default:
+				return t(
+					'label.choose_folder_color_caption',
+					'Choose a color to make this folder easier to recognize'
+				);
 		}
 	}, [t, view]);
 
@@ -83,7 +109,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				view,
 				rid,
 				folderName,
-				color: parseInt(selectedColor ?? '0', 10),
+				rgb: selectedColorHex,
 				accounts,
 				t,
 				msgId,
@@ -102,7 +128,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			view,
 			rid,
 			folderName,
-			selectedColor,
+			selectedColorHex,
 			accounts,
 			t,
 			msgId,
@@ -153,6 +179,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 							value={notifyOrganizer}
 							onClick={(): void => setNotifyOrganizer(!notifyOrganizer)}
 							label={t('label.notify_organizer', 'Notify Organizer')}
+							disabled={isColorPickerOpen}
 						/>
 					</Padding>
 				</Row>
@@ -164,32 +191,28 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 							setCustomMessage(ev.target.value);
 						}}
 						backgroundColor="gray6"
-						disabled={!notifyOrganizer}
+						disabled={!notifyOrganizer || isColorPickerOpen}
 					/>
 				</Row>
 			</Row>
-			<Row width="fill" mainAlignment="space-around">
-				<Row width="50%" mainAlignment="flex-start">
-					<Input
-						label={folderNameLabel}
-						backgroundColor="gray5"
-						value={folderName}
-						hasError={hasNameError}
-						description={nameError}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setFolderName(e.target.value)}
-					/>
-				</Row>
-				<Row
-					width="50%"
-					mainAlignment="flex-start"
-					padding={{ horizontal: 'small', vertical: 'small' }}
-				>
-					<ColorSelect
-						onChange={(a: string | null): void => setSelectedColor(a)}
-						defaultColor={0}
-						label={t('label.calendar_color', `Item color`)}
-					/>
-				</Row>
+			<Row width="fill" mainAlignment="flex-start" padding={{ vertical: 'small' }}>
+				<Input
+					label={folderNameLabel}
+					backgroundColor="gray5"
+					value={folderName}
+					hasError={hasNameError}
+					description={nameError}
+					onChange={(e: ChangeEvent<HTMLInputElement>): void => setFolderName(e.target.value)}
+					disabled={isColorPickerOpen}
+				/>
+			</Row>
+			<Row width="fill" mainAlignment="flex-start" padding={{ vertical: 'small' }}>
+				<FolderColorPicker
+					value={selectedColorHex}
+					onChange={setSelectedColorHex}
+					onOpenChange={setIsColorPickerOpen}
+					caption={colorCaption}
+				/>
 			</Row>
 			<Divider />
 			<Row
@@ -204,7 +227,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.accept', 'Accept')}
 					icon="Checkmark"
 					onClick={acceptShare}
-					disabled={isConfirmDisabled}
+					disabled={isConfirmDisabled || isColorPickerOpen}
 				/>
 				<Padding horizontal="small" />
 				<Button
@@ -213,6 +236,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.decline', 'Decline')}
 					icon="CloseOutline"
 					onClick={declined}
+					disabled={isColorPickerOpen}
 				/>
 				<Padding horizontal="small" />
 			</Row>

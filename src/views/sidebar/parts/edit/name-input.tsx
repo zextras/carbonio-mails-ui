@@ -6,26 +6,28 @@
 import React, { ChangeEvent, FC, useEffect, useRef } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { isValidFolderName } from '@zextras/carbonio-ui-commons';
+import { FolderColorPicker, isValidFolderName } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
-
-import ColorPicker from 'integrations/shared-invite-reply/parts/color-select';
 
 type NameInputRowProps = {
 	setInputValue: (value: string) => void;
 	inputValue: string;
 	showWarning: boolean;
 	inpDisable: boolean;
-	folderColor: number;
-	setFolderColor: (value: number) => void;
+	folderColorHex: string;
+	setFolderColorHex: (hex: string) => void;
+	isColorPickerOpen: boolean;
+	onColorPickerOpenChange: (open: boolean) => void;
 };
 export const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
 	inpDisable,
 	showWarning,
 	inputValue,
-	folderColor,
-	setFolderColor
+	folderColorHex,
+	setFolderColorHex,
+	isColorPickerOpen,
+	onColorPickerOpenChange
 }) => {
 	const [t] = useTranslation();
 
@@ -36,9 +38,9 @@ export const NameInputRow: FC<NameInputRowProps> = ({
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start">
 			<Input
-				label={`${t('label.folder_name', 'Folder name')}*`}
+				label={`${t('label.choose_representative_name', 'Choose a representative name')}*`}
 				onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
-				disabled={inpDisable}
+				disabled={inpDisable || isColorPickerOpen}
 				value={inputValue}
 				hasError={showWarning && !inpDisable}
 				data-testid="folder-name"
@@ -57,11 +59,14 @@ export const NameInputRow: FC<NameInputRowProps> = ({
 				</Padding>
 			)}
 			<Padding top="small" />
-			<ColorPicker
-				onChange={(color: string | null): void => setFolderColor(Number(color))}
-				label={t('label.select_color', 'Select Color')}
-				defaultColor={folderColor}
-				data-testid="folder-color"
+			<FolderColorPicker
+				value={folderColorHex}
+				onChange={setFolderColorHex}
+				onOpenChange={onColorPickerOpenChange}
+				caption={t(
+					'label.choose_folder_color_caption',
+					'Choose a color to make this folder easier to recognize'
+				)}
 			/>
 		</Container>
 	);

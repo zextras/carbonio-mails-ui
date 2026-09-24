@@ -40,7 +40,7 @@ export type MountSharedFolderParams = {
 	view: string;
 	rid: string;
 	folderName: string;
-	color: number;
+	rgb: string;
 	accounts: Array<{ name: string }>;
 };
 
@@ -55,7 +55,7 @@ export const mountSharedFolderSoapApi = async (
 			zid: params.zid,
 			rid: params.rid,
 			view: params.view,
-			color: params.color,
+			rgb: params.rgb,
 			f: '#'
 		}
 	};
