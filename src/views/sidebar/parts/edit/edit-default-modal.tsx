@@ -208,7 +208,7 @@ export const MainEditModal: FC<MainEditModalProps> = ({
 			op: 'update',
 			// Always sent as `rgb`, even for a standard color: an update carrying only `color` doesn't
 			// clear an existing `rgb`, so the folder would keep showing its previous custom color.
-			rgb: folderColorHex !== initialFolderColorHex ? folderColorHex : undefined,
+			rgb: folderColorHex === initialFolderColorHex ? undefined : folderColorHex,
 			retentionPolicy
 		}).then((res) => {
 			const isSuccess = !('Fault' in res);

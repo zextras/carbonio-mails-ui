@@ -52,9 +52,7 @@ export async function folderActionSoapApi({
 	// separate `color` action next to the main one.
 	const additionalActions = [
 		...(rgb ? [{ id: folder.id, op: 'color', rgb }] : []),
-		...(!isEmpty(retentionPolicy)
-			? [{ id: folder.id, op: 'retentionpolicy', retentionPolicy }]
-			: [])
+		...(isEmpty(retentionPolicy) ? [] : [{ id: folder.id, op: 'retentionpolicy', retentionPolicy }])
 	];
 
 	const result = additionalActions.length
