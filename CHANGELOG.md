@@ -1,3 +1,15 @@
+## 1.48.0 (2026-09-29)
+
+* feat(CO-4314): use the shared color picker for folder colors ([e31950e](https://github.com/zextras/carbonio-mails-ui/commit/e31950e))
+* chore(deps): update dependency @types/lodash to v4.17.25 (#1326) ([a030cb0](https://github.com/zextras/carbonio-mails-ui/commit/a030cb0)), closes [#1326](https://github.com/zextras/carbonio-mails-ui/issues/1326)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.8 (#1327) ([1310bee](https://github.com/zextras/carbonio-mails-ui/commit/1310bee)), closes [#1327](https://github.com/zextras/carbonio-mails-ui/issues/1327)
+* chore(deps): update dependency @zextras/carbonio-ui-configs to v2.1.1 (#1328) ([5620803](https://github.com/zextras/carbonio-mails-ui/commit/5620803)), closes [#1328](https://github.com/zextras/carbonio-mails-ui/issues/1328)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.10.11 (#1323) ([58dbdc6](https://github.com/zextras/carbonio-mails-ui/commit/58dbdc6)), closes [#1323](https://github.com/zextras/carbonio-mails-ui/issues/1323)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.12.2 (#1325) ([32dae73](https://github.com/zextras/carbonio-mails-ui/commit/32dae73)), closes [#1325](https://github.com/zextras/carbonio-mails-ui/issues/1325)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.12.3 (#1330) ([ec73c78](https://github.com/zextras/carbonio-mails-ui/commit/ec73c78)), closes [#1330](https://github.com/zextras/carbonio-mails-ui/issues/1330)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.13.0 (#1332) ([b516f17](https://github.com/zextras/carbonio-mails-ui/commit/b516f17)), closes [#1332](https://github.com/zextras/carbonio-mails-ui/issues/1332)
+* chore(deps): update semantic-release monorepo (#1329) ([a552bbe](https://github.com/zextras/carbonio-mails-ui/commit/a552bbe)), closes [#1329](https://github.com/zextras/carbonio-mails-ui/issues/1329)
+
 ## 1.47.0 (2026-09-16)
 
 * feat(CO-4171): wrap outgoing HTML in complete HTML document (#1324) ([e097668](https://github.com/zextras/carbonio-mails-ui/commit/e097668)), closes [#1324](https://github.com/zextras/carbonio-mails-ui/issues/1324)
