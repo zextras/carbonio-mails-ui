@@ -13,8 +13,8 @@ import {
 	FOLDERS,
 	isSystemFolder,
 	OnDropActionProps,
-	ROOT_NAME,
-	ZIMBRA_STANDARD_COLORS
+	resolveFolderColorHex,
+	ROOT_NAME
 } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
@@ -27,14 +27,8 @@ export const capitalise = (word: string): string => {
 	return word ? newChar + word.substring(1) : '';
 };
 
-export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
-	if ('color' in f && f?.color) {
-		return Number(f.color) < 10
-			? ZIMBRA_STANDARD_COLORS[Number(f.color)].hex
-			: (f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex);
-	}
-	return ZIMBRA_STANDARD_COLORS[0].hex;
-};
+export const getFolderIconColor = (f: Folder | AccordionItemType): string =>
+	resolveFolderColorHex('color' in f ? f.color : undefined, 'rgb' in f ? f.rgb : undefined);
 
 /**
  * Get the icon name for a folder

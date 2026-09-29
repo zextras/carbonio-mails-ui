@@ -22,7 +22,7 @@ type Accept = {
 	view: string;
 	rid: string;
 	folderName: string;
-	color: number;
+	rgb: string;
 	accounts: any;
 	t: TFunction;
 	msgId: Array<string> | any;
@@ -132,7 +132,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			view,
 			rid,
 			folderName,
-			color,
+			rgb,
 			accounts,
 			msgId,
 			sharedFolderName,
@@ -149,7 +149,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 				view,
 				rid,
 				folderName,
-				color,
+				rgb,
 				accounts
 			})
 				.then((): Promise<SaveDraftResponse | void> => {

@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, within } from '@testing-library/react';
 import { BatchResponse, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import {
 	Folder,
@@ -21,7 +21,7 @@ import * as soapLib from '@zextras/carbonio-ui-soap-lib';
 import { http } from 'msw';
 
 import { getSetupServer } from '../../../__test__/vitest-setup';
-import { setupTest } from '@test-setup';
+import { screen, setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
@@ -67,21 +67,15 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(
-			<EditModal onClose={(): void => closeModal()} folder={folder} />,
-			{}
-		);
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		const folderInputElement = screen.getByRole('textbox', { name: /folder name/i });
+		const folderInputElement = screen.getByRole('textbox', {
+			name: /choose a representative name/i
+		});
 		expect(folderInputElement).toBeEnabled();
 
-		const selectColor = screen.getByText(/select color/i);
-		expect(selectColor).toBeInTheDocument();
-		await act(async () => {
-			await user.click(selectColor);
-		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(el.zLabel);
+			expect(screen.getByRole('button', { name: el.zLabel })).toBeVisible();
 		});
 		const addShareButton = screen.getByRole('button', {
 			name: /folder\.modal\.edit\.add_share/i
@@ -123,20 +117,12 @@ describe('edit-modal', () => {
 			depth: 1
 		};
 
-		const { user } = setupTest(
-			<EditModal onClose={(): void => closeModal()} folder={folder} />,
-			{}
-		);
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
+		expect(screen.getByText(/choose a representative name/i)).toBeInTheDocument();
 
-		const selectColor = screen.getByText(/select color/i);
-		expect(selectColor).toBeInTheDocument();
-		await act(async () => {
-			await user.click(selectColor);
-		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(el.zLabel);
+			expect(screen.getByRole('button', { name: el.zLabel })).toBeVisible();
 		});
 		const addShareButton = screen.getByRole('button', {
 			name: /folder\.modal\.edit\.add_share/i
@@ -181,8 +167,8 @@ describe('edit-modal', () => {
 
 		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
-		expect(screen.getByText(/folder name/i)).toBeEnabled();
+		expect(screen.getByText(/choose a representative name/i)).toBeInTheDocument();
+		expect(screen.getByText(/choose a representative name/i)).toBeEnabled();
 		const retentionPolicy = within(screen.getByTestId('retention_policy-icon')).getByTestId(
 			'icon: ChevronDownOutline'
 		);
@@ -221,8 +207,8 @@ describe('edit-modal', () => {
 
 		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
-		expect(screen.getByText(/folder name/i)).toBeEnabled();
+		expect(screen.getByText(/choose a representative name/i)).toBeInTheDocument();
+		expect(screen.getByText(/choose a representative name/i)).toBeEnabled();
 		const retentionPolicy = within(screen.getByTestId('retention_policy-icon')).getByTestId(
 			'icon: ChevronDownOutline'
 		);
@@ -260,7 +246,7 @@ describe('edit-modal', () => {
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('update');
-		expect(action.color).toBe(folder?.color ?? 0);
+		expect(action).not.toHaveProperty('rgb');
 		expect(action.name).toBe(folder.name);
 	});
 
@@ -327,7 +313,7 @@ describe('edit-modal', () => {
 
 		expect(action.id).toBe(folder.id);
 		expect(action.op).toBe('update');
-		expect(action.color).toBe(folder?.color ?? 0);
+		expect(action).not.toHaveProperty('rgb');
 		expect(action.name).toBe(folderName);
 	});
 
@@ -862,6 +848,87 @@ describe('edit-modal', () => {
 			expect(
 				await screen.findByText('The retention duration must be a positive number')
 			).toBeVisible();
+		});
+	});
+
+	describe('Folder color', () => {
+		const getCustomizeTrigger = (): HTMLElement =>
+			screen.getByRoleWithIcon('button', { icon: 'icon: PlusCircleOutline' });
+
+		it('should send the picked standard color as rgb in a separate color action', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ color: 1 });
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+
+			await user.click(screen.getByRole('button', { name: ZIMBRA_STANDARD_COLORS[5].zLabel }));
+			await user.click(screen.getByRole('button', { name: /label\.edit/i }));
+
+			const { FolderActionRequest } = await interceptor;
+			const [update, colorAction] = FolderActionRequest?.map(({ action }) => action) ?? [];
+			expect(update).toEqual(expect.objectContaining({ id: folder.id, op: 'update' }));
+			expect(update).not.toHaveProperty('rgb');
+			expect(update).not.toHaveProperty('color');
+			expect(colorAction).toEqual({
+				id: folder.id,
+				op: 'color',
+				rgb: ZIMBRA_STANDARD_COLORS[5].hex
+			});
+		});
+
+		it('should send a custom color chosen from the picker as rgb', async () => {
+			const folder: Folder = aFolderWithoutSharePermission();
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+
+			await user.click(getCustomizeTrigger());
+			const hexInput = screen.getByRole('textbox', { name: /hex color/i });
+			await user.clear(hexInput);
+			await user.type(hexInput, '#123456');
+			await user.click(screen.getByRole('button', { name: /choose/i }));
+			await user.click(screen.getByRole('button', { name: /label\.edit/i }));
+
+			const { FolderActionRequest } = await interceptor;
+			expect(FolderActionRequest?.map(({ action }) => action)).toContainEqual({
+				id: folder.id,
+				op: 'color',
+				rgb: '#123456'
+			});
+		});
+
+		it('should preselect the folder custom rgb color', () => {
+			const folder: Folder = { ...aFolderWithoutSharePermission(), rgb: '#abcdef' };
+			setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+
+			expect(screen.getByRole('button', { name: /custom color \(#abcdef\)/i })).toHaveAttribute(
+				'aria-pressed',
+				'true'
+			);
+		});
+
+		it('should disable the name input and the footer while the color picker is open', async () => {
+			const folder: Folder = aFolderWithoutSharePermission();
+			const { user } = setupTest(<EditModal onClose={vi.fn()} folder={folder} />, {});
+
+			await user.click(getCustomizeTrigger());
+
+			expect(within(screen.getByTestId('folder-name')).getByRole('textbox')).toBeDisabled();
+			const footer = within(screen.getByTestId('edit-folder-footer'));
+			expect(footer.getByRole('button', { name: /label\.edit/i })).toBeDisabled();
+			expect(footer.getByRole('button', { name: /add_share/i })).toBeDisabled();
+		});
+
+		it('should not close the modal from the header while the color picker is open', async () => {
+			const onClose = vi.fn();
+			const folder: Folder = aFolderWithoutSharePermission();
+			const { user } = setupTest(<EditModal onClose={onClose} folder={folder} />, {});
+
+			await user.click(getCustomizeTrigger());
+			await user.click(screen.getByRoleWithIcon('button', { icon: 'icon: CloseOutline' }));
+			expect(onClose).not.toHaveBeenCalled();
+
+			// The first click only dismissed the picker; with it closed the header closes the modal.
+			await user.click(screen.getByRoleWithIcon('button', { icon: 'icon: CloseOutline' }));
+			expect(onClose).toHaveBeenCalled();
 		});
 	});
 });
