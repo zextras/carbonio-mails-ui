@@ -35,7 +35,7 @@ export const SearchConversationList = ({
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [anchorId, setAnchorId] = useState<string | null>(null);
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
 
@@ -59,8 +59,8 @@ export const SearchConversationList = ({
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
-		lastSelectedIndex,
-		setLastSelectedIndex,
+		anchorId,
+		setAnchorId,
 		allAvailableItems: conversationIds,
 		selectedItems,
 		setSelectedItems

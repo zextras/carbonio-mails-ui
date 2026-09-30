@@ -22,15 +22,15 @@ describe('useMultipleSelection', () => {
 
 	const testSetup = (
 		selectedItemsInit = new Set<string>(),
-		lastSelectedIndexInit: number | null = null
+		anchorIdInit: string | null = null
 	): {
 		result: { current: ReturnType<typeof useMultipleSelection> };
 		setSelectedItems: Mock;
-		setLastSelectedIndex: Mock;
+		setAnchorId: Mock;
 		rerender: () => void;
 	} => {
 		let selectedItems = selectedItemsInit;
-		let lastSelectedIndex = lastSelectedIndexInit;
+		let anchorId = anchorIdInit;
 
 		const setSelectedItems = vi.fn((updater: (prev: Set<string>) => Set<string>) => {
 			if (typeof updater === 'function') {
@@ -38,8 +38,8 @@ describe('useMultipleSelection', () => {
 			}
 		}) as Mock;
 
-		const setLastSelectedIndex = vi.fn((index: number | null) => {
-			lastSelectedIndex = index;
+		const setAnchorId = vi.fn((id: string | null) => {
+			anchorId = id;
 		}) as Mock;
 
 		const { result, rerender } = renderHook(() =>
@@ -47,12 +47,12 @@ describe('useMultipleSelection', () => {
 				allAvailableItems: allItems,
 				selectedItems,
 				setSelectedItems,
-				lastSelectedIndex,
-				setLastSelectedIndex
+				anchorId,
+				setAnchorId
 			})
 		);
 
-		return { result, setSelectedItems, setLastSelectedIndex, rerender };
+		return { result, setSelectedItems, setAnchorId, rerender };
 	};
 
 	it('should start with selection mode off', () => {
@@ -219,33 +219,42 @@ describe('useMultipleSelection', () => {
 	});
 
 	describe('selectRange - Shift+Click functionality', () => {
-		const createMockEvent = (shiftKey: boolean): React.MouseEvent =>
+		const createMockEvent = (
+			shiftKey: boolean,
+			modifiers: { ctrlKey?: boolean; metaKey?: boolean } = {}
+		): React.MouseEvent =>
 			({
 				shiftKey,
+				ctrlKey: false,
+				metaKey: false,
+				...modifiers,
 				preventDefault: vi.fn(),
 				stopPropagation: vi.fn()
 			}) as unknown as React.MouseEvent;
 
 		describe('when shift key is pressed and selection mode is ON', () => {
-			it('should select range from last selected index to current index (forward selection)', () => {
-				const { result, setLastSelectedIndex } = testSetup();
+			it('should select range from the anchor to the current index (forward selection)', () => {
+				const { result, setSelectedItems, setAnchorId } = testSetup();
 				// Enable selection mode and select first item
 				act(() => {
 					result.current.setIsSelectModeOn(true);
 					result.current.selectRange(1, 'item2', createMockEvent(false));
 				});
-				expect(setLastSelectedIndex).toHaveBeenCalledWith(1);
+				expect(setAnchorId).toHaveBeenCalledWith('item2');
 				// Shift+click on item4 (index 3)
 				act(() => {
 					result.current.selectRange(3, 'item4', createMockEvent(true));
 				});
 				// Should have selected items 2, 3, and 4 (indices 1, 2, 3)
+				const updaterFn = setSelectedItems.mock.calls[1][0];
+				const newSet = updaterFn(new Set(['item2']));
+				expect(Array.from(newSet)).toEqual(['item2', 'item3', 'item4']);
 				expect(result.current.isSelectModeOn).toBe(true);
 			});
 
 			it('should select range from last selected index to current index (backward selection)', () => {
 				const selectedItems = new Set<string>();
-				const { result, setSelectedItems } = testSetup(new Set(), 3);
+				const { result, setSelectedItems } = testSetup(new Set(), 'item4');
 
 				// Enable selection mode and set initial state
 				act(() => {
@@ -272,7 +281,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should add to existing selection when shift+clicking', () => {
-				const { result, setSelectedItems } = testSetup(new Set(['item1']), 2);
+				const { result, setSelectedItems } = testSetup(new Set(['item1']), 'item3');
 
 				// Enable selection mode
 				act(() => {
@@ -294,8 +303,8 @@ describe('useMultipleSelection', () => {
 				expect(newSet.size).toBe(4);
 			});
 
-			it('should handle shift+click on the same index as lastSelectedIndex', () => {
-				const { result, setSelectedItems } = testSetup(new Set(['item3']), 2);
+			it('should handle shift+click on the same index as the anchor', () => {
+				const { result, setSelectedItems } = testSetup(new Set(['item3']), 'item3');
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -313,8 +322,8 @@ describe('useMultipleSelection', () => {
 				expect(newSet.size).toBe(1);
 			});
 
-			it('should handle shift+click when lastSelectedIndex is null', () => {
-				const { result, setSelectedItems, setLastSelectedIndex } = testSetup(new Set(), null);
+			it('should handle shift+click when there is no anchor', () => {
+				const { result, setSelectedItems, setAnchorId } = testSetup(new Set(), null);
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -327,11 +336,11 @@ describe('useMultipleSelection', () => {
 
 				// Should perform regular toggle selection (not range selection)
 				expect(setSelectedItems).toHaveBeenCalled();
-				expect(setLastSelectedIndex).toHaveBeenCalledWith(2);
+				expect(setAnchorId).toHaveBeenCalledWith('item3');
 			});
 
 			it('should handle range selection at boundaries (first to last item)', () => {
-				const { result, setSelectedItems } = testSetup(new Set(), 0);
+				const { result, setSelectedItems } = testSetup(new Set(), 'item1');
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -353,7 +362,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should maintain selection mode after shift+click range selection', () => {
-				const { result } = testSetup(new Set(), 0);
+				const { result } = testSetup(new Set(), 'item1');
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -373,7 +382,7 @@ describe('useMultipleSelection', () => {
 
 		describe('when shift key is NOT pressed', () => {
 			it('should toggle selection for clicked item only', () => {
-				const { result, setLastSelectedIndex } = testSetup(new Set(['item2']), 1);
+				const { result, setAnchorId } = testSetup(new Set(['item2']), 'item2');
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -384,8 +393,8 @@ describe('useMultipleSelection', () => {
 					result.current.selectRange(3, 'item4', createMockEvent(false));
 				});
 
-				// Should update lastSelectedIndex
-				expect(setLastSelectedIndex).toHaveBeenCalledWith(3);
+				// Should update the anchor
+				expect(setAnchorId).toHaveBeenCalledWith('item4');
 			});
 
 			it('should enable selection mode when clicking without shift in non-selection mode', () => {
@@ -411,8 +420,8 @@ describe('useMultipleSelection', () => {
 						allAvailableItems: [],
 						selectedItems: new Set(),
 						setSelectedItems: vi.fn(),
-						lastSelectedIndex: null,
-						setLastSelectedIndex: vi.fn()
+						anchorId: null,
+						setAnchorId: vi.fn()
 					})
 				);
 
@@ -429,7 +438,7 @@ describe('useMultipleSelection', () => {
 			});
 
 			it('should handle out-of-bounds indices gracefully', () => {
-				const { result, setSelectedItems } = testSetup(new Set(), 1);
+				const { result, setSelectedItems } = testSetup(new Set(), 'item2');
 
 				act(() => {
 					result.current.setIsSelectModeOn(true);
@@ -446,6 +455,227 @@ describe('useMultipleSelection', () => {
 				// Should only select valid items within bounds
 				expect(newSet.has('item10')).toBe(false);
 				expect(newSet.size).toBeLessThanOrEqual(allItems.length);
+			});
+
+			it('should fall back to a single toggle when the anchor is no longer in the list', () => {
+				// 'gone' stands for an anchor whose item was deleted, moved or filtered out
+				// by a new search query: the id simply is not in allAvailableItems anymore.
+				const { result, setSelectedItems, setAnchorId } = testSetup(new Set(['item1']), 'gone');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+
+				expect(() => {
+					act(() => {
+						result.current.selectRange(4, 'item5', createMockEvent(true));
+					});
+				}).not.toThrow();
+
+				// No range: only the clicked item is added, and it becomes the new anchor
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set(['item1']));
+				expect(Array.from(newSet)).toEqual(['item1', 'item5']);
+				expect(setAnchorId).toHaveBeenCalledWith('item5');
+			});
+		});
+
+		describe('the range is additive', () => {
+			it('should produce the same selection forward and backward', () => {
+				const { setSelectedItems: forwardSet, result: forwardResult } = testSetup(
+					new Set(),
+					'item2'
+				);
+				act(() => {
+					forwardResult.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					forwardResult.current.selectRange(3, 'item4', createMockEvent(true));
+				});
+
+				const { setSelectedItems: backwardSet, result: backwardResult } = testSetup(
+					new Set(),
+					'item4'
+				);
+				act(() => {
+					backwardResult.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					backwardResult.current.selectRange(1, 'item2', createMockEvent(true));
+				});
+
+				const forward = forwardSet.mock.calls[0][0](new Set());
+				const backward = backwardSet.mock.calls[0][0](new Set());
+				expect(Array.from(forward)).toEqual(['item2', 'item3', 'item4']);
+				expect(Array.from(backward)).toEqual(Array.from(forward));
+			});
+
+			it('should fill the gaps without toggling already selected items off', () => {
+				// item1 sits outside the range and item3 inside it, so a range that replaced
+				// the selection instead of adding to it would drop item1, and a range that
+				// toggled instead of adding would drop item3. The range is item2..item4, not
+				// the whole list, so both mistakes are observable here.
+				const { result, setSelectedItems } = testSetup(new Set(['item1', 'item3']), 'item2');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					result.current.selectRange(3, 'item4', createMockEvent(true));
+				});
+
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set(['item1', 'item3']));
+				// Sorted, because a Set keeps insertion order and the already selected items
+				// were inserted first.
+				expect(Array.from(newSet).sort()).toEqual(['item1', 'item2', 'item3', 'item4']);
+			});
+		});
+
+		describe('when ctrl or cmd is pressed', () => {
+			it('should toggle a single item without clearing the rest on ctrl+click', () => {
+				const { result, setSelectedItems } = testSetup(new Set(['item1', 'item2']), 'item1');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					result.current.selectRange(3, 'item4', createMockEvent(false, { ctrlKey: true }));
+				});
+
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set(['item1', 'item2']));
+				expect(Array.from(newSet)).toEqual(['item1', 'item2', 'item4']);
+			});
+
+			it('should deselect an already selected item on cmd+click', () => {
+				const { result, setSelectedItems } = testSetup(new Set(['item1', 'item2']), 'item1');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					result.current.selectRange(1, 'item2', createMockEvent(false, { metaKey: true }));
+				});
+
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set(['item1', 'item2']));
+				expect(Array.from(newSet)).toEqual(['item1']);
+				expect(result.current.isSelectModeOn).toBe(true);
+			});
+
+			it('should make the ctrl+clicked item the new anchor', () => {
+				const { result, setAnchorId } = testSetup(new Set(['item1']), 'item1');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+				act(() => {
+					result.current.selectRange(3, 'item4', createMockEvent(false, { ctrlKey: true }));
+				});
+
+				expect(setAnchorId).toHaveBeenCalledWith('item4');
+			});
+		});
+
+		describe('when selection mode is off', () => {
+			it('should select only the clicked item on the first shift+click', () => {
+				const { result, setSelectedItems, setAnchorId } = testSetup(new Set(), null);
+
+				expect(result.current.isSelectModeOn).toBe(false);
+				act(() => {
+					result.current.selectRange(3, 'item4', createMockEvent(true));
+				});
+
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set());
+				expect(Array.from(newSet)).toEqual(['item4']);
+				expect(result.current.isSelectModeOn).toBe(true);
+				expect(setAnchorId).toHaveBeenCalledWith('item4');
+			});
+
+			it('should select only the clicked item on the first ctrl+click', () => {
+				const { result, setSelectedItems, setAnchorId } = testSetup(new Set(), null);
+
+				expect(result.current.isSelectModeOn).toBe(false);
+				act(() => {
+					result.current.selectRange(3, 'item4', createMockEvent(false, { ctrlKey: true }));
+				});
+
+				const updaterFn = setSelectedItems.mock.calls[0][0];
+				const newSet = updaterFn(new Set());
+				expect(Array.from(newSet)).toEqual(['item4']);
+				expect(result.current.isSelectModeOn).toBe(true);
+				expect(setAnchorId).toHaveBeenCalledWith('item4');
+			});
+		});
+
+		describe('anchor reset', () => {
+			it('should drop the anchor when a toggle empties the selection', () => {
+				const { result, setAnchorId } = testSetup(new Set(['item2']), 'item2');
+
+				act(() => {
+					result.current.setIsSelectModeOn(true);
+				});
+				setAnchorId.mockClear();
+				act(() => {
+					result.current.selectRange(1, 'item2', createMockEvent(false));
+				});
+
+				expect(setAnchorId).toHaveBeenCalledWith(null);
+				expect(result.current.isSelectModeOn).toBe(false);
+			});
+
+			it.each([
+				[
+					'deselectAll',
+					(hook: ReturnType<typeof useMultipleSelection>): void => hook.deselectAll()
+				],
+				[
+					'selectAllModeOff',
+					(hook: ReturnType<typeof useMultipleSelection>): void => hook.selectAllModeOff()
+				],
+				['selectAll', (hook: ReturnType<typeof useMultipleSelection>): void => hook.selectAll()]
+			])('should drop the anchor on %s', (_name, action) => {
+				const { result, setAnchorId } = testSetup(new Set(['item2']), 'item2');
+
+				setAnchorId.mockClear();
+				act(() => action(result.current));
+
+				expect(setAnchorId).toHaveBeenCalledWith(null);
+			});
+
+			it('should drop the anchor when resetAnchorKey changes', () => {
+				const setAnchorId = vi.fn();
+				const { rerender } = renderHook(
+					({ resetAnchorKey }: { resetAnchorKey: string }) =>
+						useMultipleSelection({
+							allAvailableItems: allItems,
+							selectedItems: new Set(['item2']),
+							setSelectedItems: vi.fn(),
+							anchorId: 'item2',
+							setAnchorId,
+							resetAnchorKey
+						}),
+					{ initialProps: { resetAnchorKey: 'folder-2|dateDesc' } }
+				);
+
+				// Mounting must not reset on its own
+				expect(setAnchorId).not.toHaveBeenCalled();
+
+				// Folder change
+				rerender({ resetAnchorKey: 'folder-7|dateDesc' });
+				expect(setAnchorId).toHaveBeenCalledWith(null);
+
+				// Sorting change
+				setAnchorId.mockClear();
+				rerender({ resetAnchorKey: 'folder-7|subjAsc' });
+				expect(setAnchorId).toHaveBeenCalledWith(null);
+
+				// Same key, no reset
+				setAnchorId.mockClear();
+				rerender({ resetAnchorKey: 'folder-7|subjAsc' });
+				expect(setAnchorId).not.toHaveBeenCalled();
 			});
 		});
 	});
