@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { resolveTagColorHex, Tag, useTags } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +52,7 @@ export const ConversationListItemCore = ({
 								...v,
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex
+								color: resolveTagColorHex(v)
 							});
 						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
