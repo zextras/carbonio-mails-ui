@@ -52,7 +52,8 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	useEditorDid
+	useEditorDid,
+	useInitialFocusTarget
 } from 'store/editor';
 import { useEditorIsDirty } from 'store/editor/hooks/statuses';
 import { EditViewClosingReasons } from 'types/editor';
@@ -121,6 +122,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 	const { did: draftId } = useEditorDid(editorId);
+	const initialFocusTarget = useInitialFocusTarget(editorId);
 	const subscribeBusEvent = useEventSubscribe();
 	const { onSendClick, onSendLaterClick } = useSendHandlers(editorId, closeController);
 	const {
@@ -402,10 +404,16 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						flexBasis="auto"
 					>
 						<Container mainAlignment="flex-start" crossAlignment="flex-start" height={'fit'}>
-							<MemoizedRecipientsRows editorId={editorId} />
+							<MemoizedRecipientsRows
+								editorId={editorId}
+								autoFocusTo={initialFocusTarget === 'to'}
+							/>
 						</Container>
 						<Container mainAlignment="flex-start" crossAlignment="flex-start" height={'fit'}>
-							<MemoizedSubjectRow editorId={editorId} />
+							<MemoizedSubjectRow
+								editorId={editorId}
+								autoFocusSubject={initialFocusTarget === 'subject'}
+							/>
 						</Container>
 						<EditAttachmentsBlock editorId={editorId} />
 						<MemoizedTextEditorContainer onDragOver={handleEditorDragOver} editorId={editorId} />
