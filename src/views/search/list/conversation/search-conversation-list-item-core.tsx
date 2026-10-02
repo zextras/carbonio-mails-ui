@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { resolveTagColorHex, Tag, useTags } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +52,7 @@ export const SearchConversationListItemCore = ({
 							acc.push({
 								...v,
 								// casting type to avoid tsignore
-								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex as unknown as number
+								color: resolveTagColorHex(v) as unknown as number
 							});
 						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(

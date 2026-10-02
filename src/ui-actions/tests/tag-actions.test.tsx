@@ -187,6 +187,17 @@ describe('Tag Actions', () => {
 			expect(tagItem).toBeVisible();
 		});
 
+		it('should color the tag icon with the custom color of the tag', () => {
+			setupTest(
+				<TagsDropdownItem
+					checked={false}
+					actionDescriptor={{ ...mockActionDescriptor, rgb: '#abcdef' } as any}
+				/>
+			);
+
+			expect(screen.getByTestId('icon: TagOutline')).toHaveStyleRule('color', '#abcdef');
+		});
+
 		it('should use correct color from ZIMBRA_STANDARD_COLORS', () => {
 			setupTest(
 				<TagsDropdownItem checked={false} actionDescriptor={mockActionDescriptor as any} />
@@ -273,6 +284,17 @@ describe('Tag Actions', () => {
 			expect(result.current).toHaveLength(1);
 			expect(result.current[0].id).toBe('tag-1');
 			expect(result.current[0].name).toBe('Important');
+		});
+
+		it('should resolve the custom color of tags from store', () => {
+			const mockTagInStore: Tag = { id: 'tag-1', name: 'Work', rgb: '#abcdef' };
+			populateTagsStore({ [mockTagInStore.id]: mockTagInStore });
+
+			const { result } = renderHook(() => useGetTagsList(['tag-1']), {
+				wrapper: ProvidersWrapper
+			});
+
+			expect(result.current[0].color).toBe('#abcdef');
 		});
 
 		it('should add hex color to tags from store', () => {

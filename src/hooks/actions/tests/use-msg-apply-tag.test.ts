@@ -49,6 +49,16 @@ describe('useMsgApplyTag', () => {
 	});
 
 	describe('SubDescriptors', () => {
+		it('Should carry the custom color of the tag', () => {
+			useTagStore.setState({ tags: { t1: { id: 't1', name: 'custom', rgb: '#abcdef' } } });
+			const {
+				result: { current: descriptor }
+			} = setupHook(useMsgApplyTagSubDescriptors, {
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: [] }]
+			});
+			expect(descriptor[0]).toEqual(expect.objectContaining({ id: 't1', rgb: '#abcdef' }));
+		});
+
 		it('Should return an object with specific icon if message does not contains the tag', () => {
 			useTagStore.setState({ tags: mockTags });
 			const {
