@@ -9,6 +9,7 @@ import { Button, Container } from '@zextras/carbonio-design-system';
 import {
 	updateBoardContext,
 	closeBoard,
+	getBoardById,
 	t,
 	useBoard,
 	useBoardHooks,
@@ -17,6 +18,7 @@ import {
 import { includes, noop } from 'lodash';
 
 import { EditViewBoardContext } from './edit-view-board';
+import type { FileNode } from './editor/edit-utils-hooks/use-upload-from-files';
 import { EditView as ClonedEditView } from './editor/edit-view';
 import { EditView as LegacyEditView, EditViewHandle } from './legacyEditor/edit-view';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
@@ -104,6 +106,28 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 	}, [board.id]);
 
 	/*
+	 * The Files nodes passed when the board is opened are kept here, because this component
+	 * is not re-mounted when the user switches between the legacy and the new editor,
+	 * so that the edit view adds them only once
+	 */
+	const pendingFilesNodesRef = useRef(board.context?.pendingFilesNodes);
+
+	const consumePendingFilesNodes = useCallback((): Array<FileNode> | undefined => {
+		const filesNodes = pendingFilesNodesRef.current;
+		pendingFilesNodesRef.current = undefined;
+		/*
+		 * Remove the nodes from the board context too, reading the current one: the context
+		 * captured at the first render does not contain the editor id yet, and restoring it
+		 * would generate a new editor
+		 */
+		const context = getBoardById<EditViewBoardContext>(board.id)?.context;
+		if (filesNodes && context) {
+			updateBoardContext(board.id, { ...context, pendingFilesNodes: undefined });
+		}
+		return filesNodes;
+	}, [board.id]);
+
+	/*
 	 * Store the editor id inside the board context (if existing)
 	 * to retrieve the same editor if the board re-renders
 	 */
@@ -123,12 +147,14 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 			editorId={editor.id}
 			ref={editViewRef}
 			closeController={closeController}
+			consumePendingFilesNodes={consumePendingFilesNodes}
 		/>
 	) : (
 		<MemoizedClonedEditView
 			editorId={editor.id}
 			ref={editViewRef}
 			closeController={closeController}
+			consumePendingFilesNodes={consumePendingFilesNodes}
 		/>
 	);
 };

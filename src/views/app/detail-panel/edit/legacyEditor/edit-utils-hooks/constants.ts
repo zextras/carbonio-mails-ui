@@ -11,3 +11,8 @@
 export const BASE_64_CONVERSION_RATE = 1.33;
 
 export const EDITOR_ADD_ATTACHMENT_PROVIDER_TYPE = 'mails-editor-add-attachment-provider';
+
+/**
+ * HTTP status returned by the Files upload-to endpoint when the file exceeds the allowed size
+ */
+export const PAYLOAD_TOO_LARGE_STATUS = 413;

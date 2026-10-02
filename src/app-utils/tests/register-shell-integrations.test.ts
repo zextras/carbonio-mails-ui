@@ -19,6 +19,10 @@ describe('registerShellIntegrations', () => {
 			{
 				id: 'composePrefillMessage',
 				fn: expect.anything()
+			},
+			{
+				id: 'composeWithFilesNodes',
+				fn: expect.anything()
 			}
 		);
 	});
