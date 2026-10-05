@@ -34,7 +34,13 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewEditor, readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { addEditor, useEditorsStore } from 'store/editor';
-import { generateNewMessageEditor, generateReplyMsgEditor } from 'store/editor/editor-generators';
+import {
+	generateEditAsDraftEditor,
+	generateForwardMsgEditor,
+	generateNewMessageEditor,
+	generateReplyAllMsgEditor,
+	generateReplyMsgEditor
+} from 'store/editor/editor-generators';
 import { MailsEditorV2 } from 'types/editor';
 import {
 	SaveDraftRequest,
@@ -277,6 +283,90 @@ describe('Edit view', () => {
 			expect(await screen.findByText('DEFAULT')).toBeVisible();
 			expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
 			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+		});
+	});
+
+	describe('Initial focus', () => {
+		it('should focus the To field when composing a new email', async () => {
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+			expect(getToInput()).toHaveFocus();
+		});
+
+		it('should focus the To field when forwarding an email', async () => {
+			const originalMessage = generateMessage({ id: '1' });
+			const editor = generateForwardMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+			expect(getToInput()).toHaveFocus();
+		});
+
+		it('should not focus the To field when replying to an email', async () => {
+			const originalMessage = generateMessage({ id: '1' });
+			const editor = generateReplyMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+			expect(getToInput()).not.toHaveFocus();
+			expect(getSubjectInput()).not.toHaveFocus();
+		});
+
+		it('should not focus the To field when replying to all recipients of an email', async () => {
+			const originalMessage = generateMessage({ id: '1' });
+			const editor = generateReplyAllMsgEditor(originalMessage);
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+			expect(getToInput()).not.toHaveFocus();
+			expect(getSubjectInput()).not.toHaveFocus();
+		});
+
+		describe('opening a draft', () => {
+			it('should focus the To field when the draft has no recipient', async () => {
+				const originalMessage = generateMessage({ id: '1', to: [], subject: 'A subject' });
+				const editor = generateEditAsDraftEditor(originalMessage);
+				setupEditorStore({ editors: [editor] });
+
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+				expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+				expect(getToInput()).toHaveFocus();
+			});
+
+			it('should focus the Subject field when the draft has a recipient but no subject', async () => {
+				const originalMessage = generateMessage({ id: '1', subject: '' });
+				const editor = generateEditAsDraftEditor(originalMessage);
+				setupEditorStore({ editors: [editor] });
+
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+				expect(await screen.findByTestId('subject')).toBeVisible();
+				expect(getToInput()).not.toHaveFocus();
+				expect(getSubjectInput()).toHaveFocus();
+			});
+
+			it('should not focus the To or Subject fields when the draft has both a recipient and a subject', async () => {
+				const originalMessage = generateMessage({ id: '1', subject: 'A subject' });
+				const editor = generateEditAsDraftEditor(originalMessage);
+				setupEditorStore({ editors: [editor] });
+
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+				expect(await screen.findByTestId('RecipientTo')).toBeVisible();
+				expect(getToInput()).not.toHaveFocus();
+				expect(getSubjectInput()).not.toHaveFocus();
+			});
 		});
 	});
 

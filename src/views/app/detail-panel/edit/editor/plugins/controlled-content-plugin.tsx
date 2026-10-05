@@ -17,9 +17,12 @@ import {
 	$isElementNode,
 	$isRangeSelection,
 	$isTextNode,
+	SKIP_DOM_SELECTION_TAG,
+	SKIP_SELECTION_FOCUS_TAG,
 	type EditorState,
 	type LexicalEditor,
-	type LexicalNode
+	type LexicalNode,
+	type UpdateTag
 } from 'lexical';
 
 import { editorUtils } from '../parts/editor-utils';
@@ -28,7 +31,7 @@ import { applyUserPreferenceStyles, UserPreferenceStyle } from 'helpers/user-pre
 import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorSetDirty } from 'store/editor/hooks/statuses';
-import { useEditorAttachments, useEditorsStore } from 'store/editor/index';
+import { useEditorAttachments, useEditorsStore, useInitialFocusTarget } from 'store/editor/index';
 import { MailsEditorV2 } from 'types/editor';
 
 type ControlledContentPluginProps = {
@@ -153,6 +156,7 @@ export const ControlledContentPlugin = ({
 	const { setDirty } = useEditorSetDirty(editorId);
 	const { debouncedSaveDraft } = useSaveDraftFromEditor(editorId);
 	const { keepOnlyInlineAttachments } = useEditorAttachments(editorId);
+	const initialFocusTarget = useInitialFocusTarget(editorId);
 
 	const storeRichText = useEditorsStore((state) => state.editors[editorId]?.text.richText);
 
@@ -202,6 +206,30 @@ export const ControlledContentPlugin = ({
 		const savedAttachments = useEditorsStore.getState().editors[editorId]?.savedAttachments ?? [];
 		const html = replaceCidUrlWithServiceUrl(incoming, savedAttachments);
 
+		/*
+		 * Setting a selection below moves the browser focus onto the editor root
+		 * (Lexical's reconciler focuses the root whenever it applies a selection
+		 * and the root isn't already focused). That's undesirable whenever the
+		 * initial focus is meant to land somewhere else (the "To" or Subject
+		 * field).
+		 *
+		 * SKIP_SELECTION_FOCUS_TAG is safe to apply on every such sync: it only
+		 * changes anything when the root doesn't already have focus, which is
+		 * exactly the unwanted steal. SKIP_DOM_SELECTION_TAG is stronger (skips
+		 * DOM selection syncing entirely) and is scoped to the very first sync
+		 * only, so later syncs (e.g. switching identity/signature mid-compose)
+		 * keep restoring the caret normally while the body has focus.
+		 */
+		const shouldFocusBody = initialFocusTarget === 'body';
+		const isInitialLoad = currentHtmlRef.current === undefined;
+		const tags: UpdateTag[] = ['history-merge'];
+		if (!shouldFocusBody) {
+			tags.push(SKIP_SELECTION_FOCUS_TAG);
+			if (isInitialLoad) {
+				tags.push(SKIP_DOM_SELECTION_TAG);
+			}
+		}
+
 		editor.update(
 			() => {
 				// Capture the caret before wiping the content so it can be restored
@@ -224,11 +252,11 @@ export const ControlledContentPlugin = ({
 					$selectAtAbsoluteOffset(previousOffset);
 				}
 			},
-			{ tag: 'history-merge' }
+			{ tag: tags }
 		);
 
 		currentHtmlRef.current = incoming;
-	}, [editor, editorId, storeRichText]);
+	}, [initialFocusTarget, editor, editorId, storeRichText]);
 
 	return <OnChangePlugin onChange={onChange} ignoreSelectionChange />;
 };
