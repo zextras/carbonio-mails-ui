@@ -293,13 +293,17 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onUploadFiles: uploadFromFiles
 	});
 
-	// Add the Files nodes passed by another module when the editor was opened
+	// Add the Files nodes passed by another module when the editor was opened,
+	// once the upload from Files is available, so that they are not lost
 	useEffect((): void => {
+		if (!isUploadFromFiles) {
+			return;
+		}
 		const filesNodes = consumePendingFilesNodes?.();
 		if (filesNodes?.length) {
 			addFilesFromFiles(filesNodes);
 		}
-	}, [addFilesFromFiles, consumePendingFilesNodes]);
+	}, [addFilesFromFiles, consumePendingFilesNodes, isUploadFromFiles]);
 
 	// TODO complete with new attachment management
 	const handleDrop = useCallback(

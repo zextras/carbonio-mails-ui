@@ -1696,6 +1696,35 @@ describe('Edit view', () => {
 			expect(uploadTo).toHaveBeenCalledTimes(1);
 			expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments).toHaveLength(0);
 		});
+
+		it('should take the nodes only when the upload from Files is available', async () => {
+			(hooks.useIntegratedFunction as Mock).mockImplementation(() => [vi.fn(), false]);
+			const attachmentId = faker.string.uuid();
+			const uploadTo = vi.fn().mockResolvedValue({ attachmentId });
+			const consumePendingFilesNodes = vi.fn().mockReturnValueOnce([createFileNode(1000)]);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const renderEditView = (): React.JSX.Element => (
+				<EditView
+					editorId={editor.id}
+					closeController={noop}
+					consumePendingFilesNodes={consumePendingFilesNodes}
+				/>
+			);
+
+			const { rerender } = setupTest(renderEditView());
+			expect(consumePendingFilesNodes).not.toHaveBeenCalled();
+
+			mockFilesIntegrations(uploadTo);
+			rerender(renderEditView());
+
+			await waitFor(() =>
+				expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments).toEqual([
+					expect.objectContaining({ aid: attachmentId })
+				])
+			);
+			expect(uploadTo).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('Container layout', () => {

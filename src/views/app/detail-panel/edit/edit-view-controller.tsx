@@ -9,7 +9,7 @@ import { Button, Container } from '@zextras/carbonio-design-system';
 import {
 	updateBoardContext,
 	closeBoard,
-	getBoardById,
+	getBoardContextById,
 	t,
 	useBoard,
 	useBoardHooks,
@@ -106,22 +106,16 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 	}, [board.id]);
 
 	/*
-	 * The Files nodes passed when the board is opened are kept here, because this component
-	 * is not re-mounted when the user switches between the legacy and the new editor,
-	 * so that the edit view adds them only once
+	 * Return the Files nodes passed when the board is opened and remove them from the board
+	 * context, so that the edit view adds them only once, also when it is re-mounted switching
+	 * between the legacy and the new editor. The current context is read from the store: the one
+	 * captured at the first render does not contain the editor id yet, and restoring it would
+	 * generate a new editor
 	 */
-	const pendingFilesNodesRef = useRef(board.context?.pendingFilesNodes);
-
 	const consumePendingFilesNodes = useCallback((): Array<FileNode> | undefined => {
-		const filesNodes = pendingFilesNodesRef.current;
-		pendingFilesNodesRef.current = undefined;
-		/*
-		 * Remove the nodes from the board context too, reading the current one: the context
-		 * captured at the first render does not contain the editor id yet, and restoring it
-		 * would generate a new editor
-		 */
-		const context = getBoardById<EditViewBoardContext>(board.id)?.context;
-		if (filesNodes && context) {
+		const context = getBoardContextById<EditViewBoardContext>(board.id);
+		const filesNodes = context?.pendingFilesNodes;
+		if (context && filesNodes) {
 			updateBoardContext(board.id, { ...context, pendingFilesNodes: undefined });
 		}
 		return filesNodes;

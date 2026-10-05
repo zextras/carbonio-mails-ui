@@ -8,7 +8,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, waitFor } from '@testing-library/react';
-import { Board, getBoardById } from '@zextras/carbonio-shell-ui';
+import { Board, getBoardContextById } from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { http, HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
@@ -368,10 +368,9 @@ describe('EditViewController', () => {
 			updateBoardContext.mockImplementation((_id: string, newContext: EditViewBoardContext) => {
 				context = newContext;
 			});
-			vi.mocked(getBoardById).mockImplementation((() => ({
-				...board,
-				context
-			})) as typeof getBoardById);
+			vi.mocked(getBoardContextById).mockImplementation(
+				(() => context) as typeof getBoardContextById
+			);
 			return { board, getContext: () => context };
 		};
 
