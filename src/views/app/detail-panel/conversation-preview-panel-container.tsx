@@ -22,9 +22,18 @@ import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getFolderIdParts } from 'helpers/folders';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import { useConversationMessages } from 'store/emails/store';
+import { useConversationMessages, useMessageById } from 'store/emails/store';
 import { ConversationPreviewPanel } from 'views/app/detail-panel/conversation-preview-panel';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
+
+/*
+ * A conversation with a single message has a virtual negative id (-<messageId>).
+ * Returns the id of that message, or undefined if the conversation id is not virtual
+ */
+const getSingleMessageIdFromConversationId = (conversationId: string): string | undefined => {
+	const match = /^(.*:)?-(\d+)$/.exec(conversationId);
+	return match ? `${match[1] ?? ''}${match[2]}` : undefined;
+};
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -49,13 +58,40 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		[navigate]
 	);
 
+	/*
+	 * When a message is added to a single-message conversation, the backend replaces
+	 * the virtual negative id with a new one. The route must follow the new id,
+	 * otherwise the conversation is no longer highlighted in the list
+	 */
+	const singleMessage = useMessageById(getSingleMessageIdFromConversationId(conversationId) ?? '');
+	const updatedConversationId =
+		singleMessage?.conversation && singleMessage.conversation !== conversationId
+			? singleMessage.conversation
+			: undefined;
+
 	useEffect(() => {
-		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
+		if (updatedConversationId) {
+			onConversationIdChange(updatedConversationId);
+		}
+	}, [onConversationIdChange, updatedConversationId]);
+
+	useEffect(() => {
+		if (
+			!updatedConversationId &&
+			isEmpty(conversation) &&
+			conversationStatus !== API_REQUEST_STATUS.fulfilled
+		) {
 			const prefs = getUserSettings()?.prefs;
 			const html = prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
 			getConvEmailStoreAction({ id: conversationId, onConversationIdChange, html });
 		}
-	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
+	}, [
+		conversation,
+		conversationId,
+		conversationStatus,
+		onConversationIdChange,
+		updatedConversationId
+	]);
 
 	useEffect(() => {
 		if (isFocusModeMailView() && conversation?.subject) {
