@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
+import { useModal } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { BASE_64_CONVERSION_RATE } from './constants';
-import { useSmartlinkFromFilesModal } from './use-smartlink-from-files-modal';
 import { FileNode } from './use-upload-from-files';
+import { SmartlinkFromFilesModal } from '../parts/smartlink-modal/smartlink-from-files-modal';
 import { useEditorsStore } from 'store/editor';
 
 type UseFilesAttachmentOrSmartlinkArgs = {
@@ -38,7 +39,7 @@ export const useFilesAttachmentOrSmartlink = ({
 	const editor = useEditorsStore((state) => state.editors[editorId]);
 	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
 	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
-	const { openSmartlinkFromFilesModal } = useSmartlinkFromFilesModal({ editorId });
+	const { createModal, closeModal } = useModal();
 
 	/**
 	 * Adds files from Files app as either attachments or smartlinks based on size validation.
@@ -51,15 +52,33 @@ export const useFilesAttachmentOrSmartlink = ({
 		(fileNodes: FileNode[]): Promise<null> | void => {
 			const filesSize = fileNodes.reduce((acc, file) => acc + file.size, 0);
 			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const modalId = 'smartlink-from-files-modal';
 
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
 				return onUploadFiles(fileNodes);
 			}
 
-			openSmartlinkFromFilesModal(fileNodes);
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					size: 'medium',
+					onClose: (): void => {
+						closeModal(modalId);
+					},
+					children: (
+						<SmartlinkFromFilesModal
+							onClose={(): void => closeModal(modalId)}
+							fileNodes={fileNodes}
+							editorId={editorId}
+						/>
+					)
+				},
+				true
+			);
 			return Promise.resolve(null);
 		},
-		[editor.size, maxAllowedMailSize, onUploadFiles, openSmartlinkFromFilesModal]
+		[closeModal, createModal, editor.size, editorId, maxAllowedMailSize, onUploadFiles]
 	);
 
 	return {

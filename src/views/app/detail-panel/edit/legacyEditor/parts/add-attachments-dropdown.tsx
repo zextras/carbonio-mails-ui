@@ -15,7 +15,6 @@ import { useEditorAddAttachmentProviders } from '../edit-utils-hooks/use-editor-
 import { useEditorOriginalAttachments } from '../edit-utils-hooks/use-editor-original-attachments';
 import { useFilesAttachmentOrSmartlink } from '../edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from '../edit-utils-hooks/use-local-attachment-or-smartlink';
-import { useSmartlinkFromFilesModal } from '../edit-utils-hooks/use-smartlink-from-files-modal';
 import { buildArrayFromFileList } from 'helpers/files';
 import { isFulfilled } from 'helpers/promises';
 import { useEditorAttachments, useEditorText } from 'store/editor/index';
@@ -92,10 +91,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	);
 
 	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
-	const { openSmartlinkFromFilesModal } = useSmartlinkFromFilesModal({ editorId });
 	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
-		onComplete: onUploadFromFilesComplete,
-		onFileSizeExceeded: openSmartlinkFromFilesModal
+		onComplete: onUploadFromFilesComplete
 	});
 
 	const { addFilesFromFiles } = useFilesAttachmentOrSmartlink({

@@ -21,7 +21,6 @@ import { EditAttachmentsBlock } from './edit-attachments-block';
 import { useFilesAttachmentOrSmartlink } from './edit-utils-hooks/use-files-attachment-or-smartlink';
 import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-attachment-or-smartlink';
 import { useSendHandlers } from './edit-utils-hooks/use-send-handlers';
-import { useSmartlinkFromFilesModal } from './edit-utils-hooks/use-smartlink-from-files-modal';
 import { useSmimeHandlers } from './edit-utils-hooks/use-smime-handlers';
 import {
 	FileNode,
@@ -221,11 +220,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[addUploadedAttachment]
 	);
 
-	const { openSmartlinkFromFilesModal } = useSmartlinkFromFilesModal({ editorId });
-
 	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
-		onComplete: onUploadFromFilesComplete,
-		onFileSizeExceeded: openSmartlinkFromFilesModal
+		onComplete: onUploadFromFilesComplete
 	});
 
 	const processDragOver = useCallback(

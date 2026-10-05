@@ -1677,26 +1677,6 @@ describe('Edit view', () => {
 			expect(uploadTo).not.toHaveBeenCalled();
 		});
 
-		it('should propose to add the nodes as smart links if the server refuses them because they are too large', async () => {
-			const uploadTo = vi.fn().mockRejectedValue({ status: 413, statusText: 'Payload Too Large' });
-			mockFilesIntegrations(uploadTo);
-			const editor = generateNewMessageEditor();
-			setupEditorStore({ editors: [editor] });
-
-			setupTest(
-				<EditView
-					editorId={editor.id}
-					closeController={noop}
-					consumePendingFilesNodes={vi.fn().mockReturnValueOnce([createFileNode(1000)])}
-				/>
-			);
-
-			const modal = await screen.findByTestId('convert-to-smartlink-modal');
-			await waitFor(() => expect(modal).toBeVisible());
-			expect(uploadTo).toHaveBeenCalledTimes(1);
-			expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments).toHaveLength(0);
-		});
-
 		it('should take the nodes only when the upload from Files is available', async () => {
 			(hooks.useIntegratedFunction as Mock).mockImplementation(() => [vi.fn(), false]);
 			const attachmentId = faker.string.uuid();
