@@ -607,6 +607,43 @@ describe('Edit view', () => {
 
 			expect(await screen.findByText('error.invalid_recipient')).toBeVisible();
 		});
+
+		it('should show the denied distribution list message when the sender is not allowed to send to it', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createCheckSmimeEnabledAPIInterceptor();
+
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId'
+			});
+			setupEditorStore({ editors: [editor] });
+			addEditor({ id: editor.id, editor });
+
+			createSoapAPIInterceptor(
+				'SendMsg',
+				buildSoapErrorResponseBody({
+					code: 'soap:Sender',
+					detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+					reason: 'Sender is not allowed to email this distribution list: dl@example.com',
+					trace: 'qtp630298110-27889:1754665448505:7f9325b88e4f881d'
+				})
+			);
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const btnSend = await screen.findByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			await user.click(btnSend);
+
+			vi.advanceTimersByTime(4000);
+
+			expect(await screen.findByText('error.distribution_list_send_denied')).toBeVisible();
+		});
 	});
 
 	describe('Draft', () => {
