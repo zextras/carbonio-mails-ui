@@ -121,6 +121,7 @@ export const useConvApplyTagSubDescriptors = ({
 					icon,
 					label: tag.name,
 					color: tag.color,
+					rgb: tag.rgb,
 					execute,
 					canExecute
 				};

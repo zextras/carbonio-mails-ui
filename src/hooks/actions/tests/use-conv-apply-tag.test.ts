@@ -50,6 +50,16 @@ describe('useConvApplyTag', () => {
 	});
 
 	describe('SubDescriptors', () => {
+		it('Should carry the custom color of the tag', () => {
+			useTagStore.setState({ tags: { t1: { id: 't1', name: 'custom', rgb: '#abcdef' } } });
+			const {
+				result: { current: descriptor }
+			} = setupHook(useConvApplyTagSubDescriptors, {
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }]
+			});
+			expect(descriptor[0]).toEqual(expect.objectContaining({ id: 't1', rgb: '#abcdef' }));
+		});
+
 		it('Should return an object with specific icon if conversation does not contains the tag', () => {
 			useTagStore.setState({ tags: { [tagA.id]: tagA } });
 			const {

@@ -1,3 +1,11 @@
+## 1.50.0 (2026-10-05)
+
+* feat(CO-3659): place initial focus on To/Subject/body based on compose context (#1335) ([fc9f847](https://github.com/zextras/carbonio-mails-ui/commit/fc9f847)), closes [#1335](https://github.com/zextras/carbonio-mails-ui/issues/1335)
+
+## 1.49.0 (2026-10-02)
+
+* feat(CO-4361): support custom tag colors with the shared color picker (#1333) ([6f9e5e3](https://github.com/zextras/carbonio-mails-ui/commit/6f9e5e3)), closes [#1333](https://github.com/zextras/carbonio-mails-ui/issues/1333)
+
 ## 1.48.0 (2026-09-29)
 
 * feat(CO-4314): use the shared color picker for folder colors ([e31950e](https://github.com/zextras/carbonio-mails-ui/commit/e31950e))

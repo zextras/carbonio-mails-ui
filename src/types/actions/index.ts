@@ -31,6 +31,7 @@ export type ActionDescriptor = {
 	label: string;
 	icon: keyof Theme['icons'];
 	color?: number;
+	rgb?: string;
 };
 
 export type UIActionDescriptor = ActionFn & ActionDescriptor;

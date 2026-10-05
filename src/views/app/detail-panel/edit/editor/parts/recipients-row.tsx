@@ -50,6 +50,7 @@ export type RecipientsRowProps = {
 	onRecipientsChange: (recipients: Array<Participant>) => void;
 	dataTestid?: string;
 	orderedAccountIds?: Array<string>;
+	inputRef?: React.ForwardedRef<HTMLInputElement>;
 };
 
 /**
@@ -60,6 +61,7 @@ export type RecipientsRowProps = {
  * @param onRecipientsChange
  * @param dataTestid
  * @param orderedAccountIds
+ * @param inputRef
  * @constructor
  */
 export const RecipientsRow: FC<RecipientsRowProps> = ({
@@ -68,7 +70,8 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	recipients,
 	onRecipientsChange,
 	dataTestid,
-	orderedAccountIds
+	orderedAccountIds,
+	inputRef
 }) => {
 	const ContactInput = useContactInput();
 	const [contacts, setContacts] = useState<Record<string, ContactInputItem | undefined>>({});
@@ -132,6 +135,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			hasError={some(recipientsAsContacts ?? [], { error: true })}
 			dragAndDropEnabled
 			orderedAccountIds={orderedAccountIds}
+			inputRef={inputRef}
 		/>
 	);
 };

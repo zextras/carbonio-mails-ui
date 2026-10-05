@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import { EditViewActions } from 'constants/index';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorSetDirty } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
@@ -305,6 +306,40 @@ export const useEditorBccRecipients = (
 		}),
 		[editorId, debouncedSaveDraft, setter, value, setDirty]
 	);
+};
+
+/**
+ * Returns the action the editor was created for (e.g. NEW, REPLY, FORWARD, ...)
+ * @param editorId
+ */
+export const useEditorAction = (editorId: MailsEditorV2['id']): MailsEditorV2['action'] =>
+	useEditorsStore((state) => state.editors[editorId].action);
+
+export type InitialFocusTarget = 'to' | 'subject' | 'body';
+
+/**
+ * Returns where the compose editor should place the initial focus, decided
+ * once from the editor's action and content as they are on mount:
+ * - replies always keep the focus on the body
+ * - otherwise, the first empty field among "To" and Subject wins, or the
+ *   body if both are already filled in (e.g. resuming a draft)
+ * @param editorId
+ */
+export const useInitialFocusTarget = (editorId: MailsEditorV2['id']): InitialFocusTarget => {
+	const [target] = useState<InitialFocusTarget>(() => {
+		const editor = useEditorsStore.getState().editors[editorId];
+		if (editor.action === EditViewActions.REPLY || editor.action === EditViewActions.REPLY_ALL) {
+			return 'body';
+		}
+		if (editor.recipients.to.length === 0) {
+			return 'to';
+		}
+		if (!editor.subject.trim()) {
+			return 'subject';
+		}
+		return 'body';
+	});
+	return target;
 };
 
 /**
