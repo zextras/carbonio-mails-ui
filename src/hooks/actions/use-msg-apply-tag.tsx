@@ -100,6 +100,7 @@ export const useMsgApplyTagSubDescriptors = ({
 					icon,
 					label: tag.name,
 					color: tag.color,
+					rgb: tag.rgb,
 					execute,
 					canExecute: () => canExecute(folderId)
 				};

@@ -16,7 +16,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Folder, getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { Folder, getTags, resolveTagColorHex, Tag } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { Controller, UseFormSetValue } from 'react-hook-form';
 
@@ -48,7 +48,7 @@ export const TagFolderRow = ({
 						<Row takeAvailableSpace mainAlignment="space-between">
 							<Row mainAlignment="flex-end">
 								<Padding right="small">
-									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
+									<Icon icon="Tag" color={resolveTagColorHex(item)} />
 								</Padding>
 							</Row>
 							<Row takeAvailableSpace mainAlignment="flex-start">
@@ -109,7 +109,7 @@ export const TagFolderRow = ({
 				false,
 				true,
 				'Tag',
-				ZIMBRA_STANDARD_COLORS[chipBg[0]?.color ?? 0].hex
+				resolveTagColorHex(chipBg[0])
 			);
 		},
 		[chipOnAdd, tagOptions]

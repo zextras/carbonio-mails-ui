@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useRef } from 'react';
 
 import { Container, Icon, Input, Padding, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -19,14 +19,22 @@ import { MailsEditorV2 } from 'types/editor';
 
 export type SubjectRowProps = {
 	editorId: MailsEditorV2['id'];
+	autoFocusSubject?: boolean;
 };
 
-export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
+export const SubjectRow: FC<SubjectRowProps> = ({ editorId, autoFocusSubject }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
 	const { isSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (autoFocusSubject) {
+			inputRef.current?.focus();
+		}
+	}, [autoFocusSubject]);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -48,6 +56,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 					label={t('label.subject', 'Subject')}
 					value={subject}
 					onChange={onSubjectChange}
+					inputRef={inputRef}
 				/>
 			</Container>
 			{(requestReadReceipt || isUrgent || isSmimeSign || isSmimeEncrypt) && (
