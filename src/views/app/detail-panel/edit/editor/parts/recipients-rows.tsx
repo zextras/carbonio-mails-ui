@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Button, Container, Padding, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -23,9 +23,13 @@ import { RecipientsRow } from 'views/app/detail-panel/edit/editor/parts/recipien
 
 export type RecipientsRowsProps = {
 	editorId: MailsEditorV2['id'];
+	autoFocusTo?: boolean;
 };
 
-export const RecipientsRows = ({ editorId }: RecipientsRowsProps): React.JSX.Element => {
+export const RecipientsRows = ({
+	editorId,
+	autoFocusTo
+}: RecipientsRowsProps): React.JSX.Element => {
 	const { toRecipients, setToRecipients } = useEditorToRecipients(editorId);
 	const { ccRecipients, setCcRecipients } = useEditorCcRecipients(editorId);
 	const { bccRecipients, setBccRecipients } = useEditorBccRecipients(editorId);
@@ -33,6 +37,13 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): React.JSX.Ele
 	const { identityId } = useEditorIdentityId(editorId);
 	const [showCc, setShowCc] = useState(ccRecipients.length > 0);
 	const [showBcc, setShowBcc] = useState(bccRecipients.length > 0);
+	const toInputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (autoFocusTo) {
+			toInputRef.current?.focus();
+		}
+	}, [autoFocusTo]);
 
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
@@ -88,6 +99,7 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): React.JSX.Ele
 						recipients={toRecipients}
 						onRecipientsChange={onToChange}
 						orderedAccountIds={orderedAccountIds}
+						inputRef={toInputRef}
 					/>
 				</Container>
 				<Container
