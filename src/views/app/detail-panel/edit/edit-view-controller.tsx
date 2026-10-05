@@ -9,6 +9,7 @@ import { Button, Container } from '@zextras/carbonio-design-system';
 import {
 	updateBoardContext,
 	closeBoard,
+	getBoardContextById,
 	t,
 	useBoard,
 	useBoardHooks,
@@ -17,6 +18,7 @@ import {
 import { includes, noop } from 'lodash';
 
 import { EditViewBoardContext } from './edit-view-board';
+import type { FileNode } from './editor/edit-utils-hooks/use-upload-from-files';
 import { EditView as ClonedEditView } from './editor/edit-view';
 import { EditView as LegacyEditView, EditViewHandle } from './legacyEditor/edit-view';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
@@ -104,6 +106,22 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 	}, [board.id]);
 
 	/*
+	 * Return the Files nodes passed when the board is opened and remove them from the board
+	 * context, so that the edit view adds them only once, also when it is re-mounted switching
+	 * between the legacy and the new editor. The current context is read from the store: the one
+	 * captured at the first render does not contain the editor id yet, and restoring it would
+	 * generate a new editor
+	 */
+	const consumePendingFilesNodes = useCallback((): Array<FileNode> | undefined => {
+		const context = getBoardContextById<EditViewBoardContext>(board.id);
+		const filesNodes = context?.pendingFilesNodes;
+		if (context && filesNodes) {
+			updateBoardContext(board.id, { ...context, pendingFilesNodes: undefined });
+		}
+		return filesNodes;
+	}, [board.id]);
+
+	/*
 	 * Store the editor id inside the board context (if existing)
 	 * to retrieve the same editor if the board re-renders
 	 */
@@ -123,12 +141,14 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ editor }) => 
 			editorId={editor.id}
 			ref={editViewRef}
 			closeController={closeController}
+			consumePendingFilesNodes={consumePendingFilesNodes}
 		/>
 	) : (
 		<MemoizedClonedEditView
 			editorId={editor.id}
 			ref={editViewRef}
 			closeController={closeController}
+			consumePendingFilesNodes={consumePendingFilesNodes}
 		/>
 	);
 };

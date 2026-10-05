@@ -23,6 +23,7 @@ import { useLocalAttachmentOrSmartlink } from './edit-utils-hooks/use-local-atta
 import { useSendHandlers } from './edit-utils-hooks/use-send-handlers';
 import { useSmimeHandlers } from './edit-utils-hooks/use-smime-handlers';
 import {
+	FileNode,
 	isValidFileNode,
 	useUploadFromFiles,
 	UseUploadFromFilesResult
@@ -63,6 +64,8 @@ import { isValidEmail } from 'views/search/parts/utils';
 type EditViewProp = {
 	editorId: string;
 	closeController?: () => void;
+	/** Returns the Files nodes to add to the editor, only the first time it is called */
+	consumePendingFilesNodes?: () => Array<FileNode> | undefined;
 };
 
 export type EditViewHandle = {
@@ -131,7 +134,7 @@ const SendToYourselfWarningBanner = ({
 };
 
 export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function EditViewFn(
-	{ editorId, closeController },
+	{ editorId, closeController, consumePendingFilesNodes },
 	ref
 ) {
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
@@ -285,6 +288,18 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		editorId,
 		onUploadFiles: uploadFromFiles
 	});
+
+	// Add the Files nodes passed by another module when the editor was opened,
+	// once the upload from Files is available, so that they are not lost
+	useEffect((): void => {
+		if (!isUploadFromFiles) {
+			return;
+		}
+		const filesNodes = consumePendingFilesNodes?.();
+		if (filesNodes?.length) {
+			addFilesFromFiles(filesNodes);
+		}
+	}, [addFilesFromFiles, consumePendingFilesNodes, isUploadFromFiles]);
 
 	// TODO complete with new attachment management
 	const handleDrop = useCallback(

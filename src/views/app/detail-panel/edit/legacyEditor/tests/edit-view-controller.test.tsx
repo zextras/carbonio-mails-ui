@@ -7,32 +7,41 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act } from '@testing-library/react';
-import { Board } from '@zextras/carbonio-shell-ui';
+import { act, waitFor } from '@testing-library/react';
+import { Board, getBoardContextById } from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
-import { HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
+import type { Mock } from 'vitest';
+import { create } from 'zustand';
 
+import { getSetupServer } from '../../../../../../__test__/vitest-setup';
 import { updateMessages } from '../../../../../../store/emails/store';
 import { setupTest, screen } from '@test-setup';
 import {
 	updateBoardContext,
 	useBoard,
-	getUserSettings
+	getUserSettings,
+	useIntegratedFunction,
+	useLocalStorage,
+	useUserSettings
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { ASSERTIONS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
-import { EditViewActions } from 'constants/index';
+import { EditViewActions, LOCAL_STORAGE_LEGACY_EDITOR } from 'constants/index';
+import { useEditorsStore } from 'store/editor';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
 import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
+import { FileNode } from 'views/app/detail-panel/edit/editor/edit-utils-hooks/use-upload-from-files';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),
@@ -310,5 +319,138 @@ describe('EditViewController', () => {
 		await getMsgInterceptor;
 
 		expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+	});
+
+	describe('Files nodes passed when the board is opened', () => {
+		const MAX_MESSAGE_SIZE = 10485760;
+
+		const useLegacyEditorPreferenceStore = create<{ enabled: boolean }>(() => ({
+			enabled: true
+		}));
+
+		function useLocalStorageMock(key: string): [unknown, () => void] {
+			const legacyEditorEnabled = useLegacyEditorPreferenceStore((state) => state.enabled);
+			return [key === LOCAL_STORAGE_LEGACY_EDITOR ? legacyEditorEnabled : vi.fn(), vi.fn()];
+		}
+
+		const getEditView = (): HTMLElement => screen.getByTestId('edit-view-editor');
+
+		const mockUploadTo = (uploadTo: Mock): void => {
+			useIntegratedFunction.mockImplementation((id: string) =>
+				id === 'upload-to-target-and-get-target-id' ? [uploadTo, true] : [vi.fn(), false]
+			);
+		};
+
+		const createFileNode = (size: number): FileNode => ({
+			id: faker.string.uuid(),
+			name: faker.system.fileName(),
+			size,
+			mime_type: 'application/pdf',
+			__typename: 'File'
+		});
+
+		/*
+		 * Keep the board context in a variable, as the shell boards store does,
+		 * so that the context updated by the controller can be read again
+		 */
+		const setupBoard = (
+			filesNodes: Array<FileNode>
+		): {
+			board: Board<EditViewBoardContext>;
+			getContext: () => EditViewBoardContext | undefined;
+		} => {
+			const board = createBoardMock({
+				originAction: EditViewActions.PREFILL_COMPOSE,
+				pendingFilesNodes: filesNodes
+			});
+			let { context } = board;
+			useBoard.mockImplementation(() => ({ ...board, context }));
+			updateBoardContext.mockImplementation((_id: string, newContext: EditViewBoardContext) => {
+				context = newContext;
+			});
+			vi.mocked(getBoardContextById).mockImplementation(
+				(() => context) as typeof getBoardContextById
+			);
+			return { board, getContext: () => context };
+		};
+
+		beforeEach(() => {
+			useLegacyEditorPreferenceStore.setState({ enabled: true });
+			useLocalStorage.mockImplementation(useLocalStorageMock);
+			const settings = generateSettings({
+				attrs: { zimbraMtaMaxMessageSize: `${MAX_MESSAGE_SIZE}` }
+			});
+			useUserSettings.mockReturnValue(settings);
+			// the compose format set by the other tests is kept, so reset it
+			getUserSettings.mockReturnValue(settings);
+			// each mounted edit view sends its own request, so each one needs its own response
+			getSetupServer().use(
+				http.get('/service/extension/encryption/password/enabled', () =>
+					HttpResponse.json({ enabled: false })
+				)
+			);
+		});
+
+		it('should remove the nodes from the board context keeping the editor id', async () => {
+			const uploadTo = vi.fn().mockResolvedValue({ attachmentId: faker.string.uuid() });
+			mockUploadTo(uploadTo);
+			const { board } = setupBoard([createFileNode(1000)]);
+
+			await act(async () => setupTest(<EditViewController />));
+
+			await waitFor(() => expect(uploadTo).toHaveBeenCalled());
+			// the first update of the context is the one which stores the id of the generated editor
+			const { editorId } = updateBoardContext.mock.calls[0][1];
+			expect(editorId).toBeDefined();
+			expect(updateBoardContext).toHaveBeenLastCalledWith(
+				board.id,
+				expect.objectContaining<Partial<EditViewBoardContext>>({
+					editorId,
+					pendingFilesNodes: undefined
+				})
+			);
+		});
+
+		it('should upload the nodes only once if the edit view is re-mounted switching the editor', async () => {
+			const attachmentId = faker.string.uuid();
+			const uploadTo = vi.fn().mockResolvedValue({ attachmentId });
+			mockUploadTo(uploadTo);
+			const { getContext } = setupBoard([createFileNode(1000)]);
+
+			await act(async () => setupTest(<EditViewController />));
+			const legacyEditView = getEditView();
+			await waitFor(() => expect(uploadTo).toHaveBeenCalled());
+
+			act(() => {
+				useLegacyEditorPreferenceStore.setState({ enabled: false });
+			});
+
+			await waitFor(() => expect(getEditView()).not.toBe(legacyEditView));
+			const editorId = getContext()?.editorId ?? '';
+			await waitFor(() =>
+				expect(useEditorsStore.getState().editors[editorId].unsavedAttachments).toEqual([
+					expect.objectContaining({ aid: attachmentId })
+				])
+			);
+			expect(uploadTo).toHaveBeenCalledTimes(1);
+		});
+
+		it('should propose the smart links only once if the edit view is re-mounted switching the editor', async () => {
+			const uploadTo = vi.fn();
+			mockUploadTo(uploadTo);
+			setupBoard([createFileNode(MAX_MESSAGE_SIZE)]);
+
+			await act(async () => setupTest(<EditViewController />));
+			expect(await screen.findAllByTestId('convert-to-smartlink-modal')).toHaveLength(1);
+			const legacyEditView = getEditView();
+
+			act(() => {
+				useLegacyEditorPreferenceStore.setState({ enabled: false });
+			});
+
+			await waitFor(() => expect(getEditView()).not.toBe(legacyEditView));
+			expect(screen.getAllByTestId('convert-to-smartlink-modal')).toHaveLength(1);
+			expect(uploadTo).not.toHaveBeenCalled();
+		});
 	});
 });
