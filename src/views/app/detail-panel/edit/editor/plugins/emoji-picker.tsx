@@ -46,7 +46,11 @@ export const EmojiPicker = ({ onEmojiSelect }: EmojiPickerProps): React.JSX.Elem
 			!!window.matchMedia?.('(prefers-color-scheme: dark)').matches);
 
 	useEffect(() => {
-		pickerRef.current = new Picker({
+		// em-emoji-picker can be registered only once per page: if another module (e.g. Chats) bundling its
+		// own emoji-mart registered it first, constructing our Picker class throws "Illegal constructor"
+		const PickerClass =
+			(customElements.get('em-emoji-picker') as typeof Picker | undefined) ?? Picker;
+		pickerRef.current = new PickerClass({
 			data,
 			onEmojiSelect,
 			ref: pickerContainerRef,
