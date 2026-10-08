@@ -16,6 +16,7 @@ import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-previe
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
+import { useTagBackgroundColor } from 'hooks/use-tag-background-color';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
 import { NormalizedConversation } from 'types/conversations';
@@ -142,11 +143,14 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[debouncedPushHistory, previewOnSeparatedWindow]
 	);
 
+	const backgroundColor = useTagBackgroundColor(conversation, { active });
+
 	return (
 		<Container
 			ref={ref}
 			mainAlignment="flex-start"
 			data-testid={`ConversationListItem-${conversation.id}`}
+			background={backgroundColor}
 		>
 			{hasBeenHovered ? (
 				<ConversationListItemActionWrapper

@@ -10,7 +10,6 @@ import {
 	Row,
 	FormSubSection,
 	Select,
-	Input,
 	Padding,
 	RadioGroup,
 	Radio,
@@ -18,9 +17,12 @@ import {
 	Icon,
 	Text,
 	FormSection,
-	Container
+	Container,
+	Checkbox,
+	Input
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { isNil } from 'lodash';
 
 import { MAIL_APP_ID } from 'constants/index';
 import type { DisplayingMessagesSettingsProps } from 'types/index.d';
@@ -81,6 +83,14 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 			: // Default to the 3-second option to maintain consistency with the expected default behavior
 				unsendTimeOptions[1];
 	}, [unsendTimeOptions, updatedProps?.mails_snackbar_delay]);
+
+	const highlightTaggedMessages = useMemo(
+		() =>
+			isNil(updatedProps?.highlight_tagged_messages?.value)
+				? false
+				: updatedProps?.highlight_tagged_messages?.value === 'TRUE',
+		[updatedProps?.highlight_tagged_messages?.value]
+	);
 
 	return (
 		<FormSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
@@ -212,6 +222,25 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					/>
 					<Radio width="100%" label={t('label.by_message', 'By Message')} value="message" />
 				</RadioGroup>
+				<Checkbox
+					defaultChecked={highlightTaggedMessages}
+					label={t('label.highlight_tagged_messages', 'Set message color according to the tag')}
+					onChange={(value): void => {
+						if (value !== highlightTaggedMessages) {
+							updateProps({
+								target: {
+									name: 'highlight_tagged_messages',
+									value: {
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
+										app: MAIL_APP_ID,
+										value: value ? 'TRUE' : 'FALSE'
+									}
+								}
+							});
+						}
+					}}
+				/>
 			</FormSubSection>
 			<FormSubSection label={t('settings.label.default_mail_search', 'Default Mail Search')}>
 				<Input
