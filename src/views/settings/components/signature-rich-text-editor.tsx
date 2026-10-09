@@ -19,7 +19,6 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { $getRoot, $insertNodes, type EditorState, type LexicalEditor } from 'lexical';
 
@@ -30,7 +29,10 @@ import { AutoLinkPlugin } from 'views/app/detail-panel/edit/editor/plugins/auto-
 import { FloatingLinkEditorPlugin } from 'views/app/detail-panel/edit/editor/plugins/floating-link-editor-plugin';
 import { STYLE_PRESERVING_HTML_IMPORT } from 'views/app/detail-panel/edit/editor/plugins/html-import-style';
 import { ImagePlugin } from 'views/app/detail-panel/edit/editor/plugins/image-plugin';
+import { GenericContainerNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/generic-container-node';
 import { ImageNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/image-node';
+import { StyledParagraphNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/styled-paragraph-node';
+import { TABLE_NODES } from 'views/app/detail-panel/edit/editor/plugins/nodes/table-nodes';
 import { PastePlugin } from 'views/app/detail-panel/edit/editor/plugins/paste-plugin';
 import {
 	RichToolbarPlugin,
@@ -176,9 +178,9 @@ export const SignatureRichTextEditor = ({
 				LinkNode,
 				AutoLinkNode,
 				ImageNode,
-				TableNode,
-				TableRowNode,
-				TableCellNode
+				GenericContainerNode,
+				StyledParagraphNode,
+				...TABLE_NODES
 			],
 			theme: {
 				text: {
