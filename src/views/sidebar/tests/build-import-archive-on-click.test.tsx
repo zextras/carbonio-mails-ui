@@ -58,12 +58,12 @@ describe('buildImportArchiveOnClick', () => {
 	});
 
 	describe('file input creation', () => {
-		it('appends a file input with accept=.tgz,.mbox,.zip to the body', () => {
+		it('appends a file input with accept=.tgz,.zip to the body', () => {
 			buildImportArchiveOnClick(makeParams())(fakeEvent());
 
 			const input = getCapturedInput(appendSpy);
 			expect(input.type).toBe('file');
-			expect(input.accept).toBe('.tgz,.mbox,.zip');
+			expect(input.accept).toBe('.tgz,.zip');
 		});
 
 		it('removes the input and does not open the modal when no file is selected', () => {
@@ -94,7 +94,7 @@ describe('buildImportArchiveOnClick', () => {
 			);
 		});
 
-		it('opens the modal with the correct title when a .mbox file is selected', () => {
+		it('shows an error snackbar and does not open the modal when a .mbox file is selected', () => {
 			const params = makeParams();
 			buildImportArchiveOnClick(params)(fakeEvent());
 
@@ -102,8 +102,9 @@ describe('buildImportArchiveOnClick', () => {
 			setInputFile(input, new File(['data'], 'archive.mbox'));
 			input.onchange?.({} as Event);
 
-			expect(params.createModal).toHaveBeenCalledWith(
-				expect.objectContaining({ title: 'modal.import.title' })
+			expect(params.createModal).not.toHaveBeenCalled();
+			expect(params.createSnackbar).toHaveBeenCalledWith(
+				expect.objectContaining({ severity: 'error', label: 'label.unsupported_file_type' })
 			);
 		});
 
@@ -179,23 +180,6 @@ describe('buildImportArchiveOnClick', () => {
 					method: 'POST',
 					body: file,
 					headers: { 'Content-Type': 'application/x-compressed-tar' }
-				})
-			);
-		});
-
-		it('POSTs the file to the correct URL with fmt=mbox for a .mbox archive', () => {
-			const params = makeParams({ absFolderPath: '/Inbox', isLink: false });
-			const file = new File(['data'], 'archive.mbox');
-			const { onConfirm } = triggerImport(params, file);
-
-			onConfirm();
-
-			expect(global.fetch).toHaveBeenCalledWith(
-				`${window.location.origin}/service/home/user@example.com/Inbox?fmt=mbox&auth=co`,
-				expect.objectContaining({
-					method: 'POST',
-					body: file,
-					headers: { 'Content-Type': 'application/mbox' }
 				})
 			);
 		});
