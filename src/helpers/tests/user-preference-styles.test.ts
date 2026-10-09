@@ -616,12 +616,12 @@ describe('user-preference-styles', () => {
 			expect(result).not.toMatch(/<td[^>]*arial, helvetica, sans-serif/);
 		});
 
-		it('should preserve the base paragraph spacing instead of collapsing it to 0', () => {
+		it('should not force a bottom margin on paragraphs', () => {
 			const content = `<p>First</p><p>Second</p>`;
 
 			const result = applyUserPreferenceStyles(content, style, TINYMCE_BASE_CONTENT_STYLES);
 
-			expect(result).toMatch(/<p style="[^"]*margin-bottom: 16px/);
+			expect(result).not.toMatch(/<p style="[^"]*margin-bottom: 16px/);
 		});
 
 		it('should not apply the fallback font to signature table cells', () => {
