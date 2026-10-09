@@ -25,7 +25,11 @@ import { getLocationOrigin } from 'views/app/detail-panel/preview/utils';
 import { DeleteModal } from 'views/sidebar/delete-modal';
 import { EditModal } from 'views/sidebar/edit-modal';
 import { EmptyModal } from 'views/sidebar/empty-modal';
-import { ExportArchiveModal, ExportFormat } from 'views/sidebar/export-archive-modal';
+import {
+	DEFAULT_EXPORT_FORMAT,
+	ExportArchiveModal,
+	ExportFormat
+} from 'views/sidebar/export-archive-modal';
 import { ImportArchiveModal } from 'views/sidebar/import-archive-modal';
 import { NewModal } from 'views/sidebar/new-modal';
 import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
@@ -42,9 +46,6 @@ type FolderActionsProps = {
 const IMPORT_ARCHIVE_SNACKBAR_KEY = 'import-archive';
 
 function getFileImportParams(file: File): { fmt: string; contentType: string } {
-	if (file.name.endsWith('.mbox')) {
-		return { fmt: 'mbox', contentType: 'application/mbox' };
-	}
 	if (file.name.endsWith('.zip')) {
 		return { fmt: 'zip', contentType: 'application/zip' };
 	}
@@ -139,7 +140,7 @@ export function buildImportArchiveOnClick({
 		const user = folder.isLink ? (folder.owner ?? name) : name;
 		const input = document.createElement('input');
 		input.type = 'file';
-		input.accept = '.tgz,.mbox,.zip';
+		input.accept = '.tgz,.zip';
 		input.onchange = (): void => {
 			const file = input.files?.[0];
 			if (!file) {
@@ -147,7 +148,7 @@ export function buildImportArchiveOnClick({
 				return;
 			}
 
-			const allowed = ['.tgz', '.mbox', '.zip'];
+			const allowed = ['.tgz', '.zip'];
 			if (!allowed.some((ext) => file.name.toLowerCase().endsWith(ext))) {
 				input.remove();
 				createSnackbar({
@@ -156,7 +157,7 @@ export function buildImportArchiveOnClick({
 					severity: 'error',
 					label: t(
 						'label.unsupported_file_type',
-						'Unsupported file format. Please select a .zip, .tgz or .mbox archive'
+						'Unsupported file format. Please select a .zip or .tgz archive'
 					),
 					disableAutoHide: true,
 					actionLabel: t('label.dismiss', 'Dismiss')
@@ -257,7 +258,7 @@ export function buildExportArchiveOnClick({
 			e.stopPropagation();
 		}
 
-		let selectedFormat: ExportFormat = 'tgz';
+		let selectedFormat: ExportFormat = DEFAULT_EXPORT_FORMAT;
 		const modalId = Date.now().toString();
 
 		createModal({
@@ -272,10 +273,7 @@ export function buildExportArchiveOnClick({
 			onConfirm: (): void => {
 				const user = folder.isLink ? (folder.owner ?? name) : name;
 				const safeName = folder.name.replaceAll(' ', '-');
-				const url =
-					selectedFormat === 'tgz'
-						? `${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=tgz&types=message,conversation&id=${folder.id}&filename=archive-${safeName}.tgz`
-						: `${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=zip&types=message,conversation&id=${folder.id}&filename=archive-${safeName}.zip`;
+				const url = `${getLocationOrigin()}/service/home/${user}/?auth=co&fmt=${selectedFormat}&types=message,conversation&id=${folder.id}&filename=archive-${safeName}.${selectedFormat}`;
 				triggerFileDownload(url);
 				closeModal(modalId);
 			},

@@ -29,11 +29,6 @@ export const ImportArchiveModal: FC<ImportArchiveModalProps> = ({ folder, file }
 	const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
 	const fileTypeMap: Record<string, { label: string; description: string; avatarColor: string }> = {
-		mbox: {
-			label: 'MBOX',
-			description: t('modal.import_archive.file_type.mbox', 'MBOX · Mailbox archive'),
-			avatarColor: '#FEEDED'
-		},
 		zip: {
 			label: 'ZIP',
 			description: t('modal.import_archive.file_type.zip', 'ZIP · Compressed mailbox archive'),

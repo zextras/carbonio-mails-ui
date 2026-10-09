@@ -5,12 +5,12 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
-import { ExportArchiveModal } from 'views/sidebar/export-archive-modal';
+import { DEFAULT_EXPORT_FORMAT, ExportArchiveModal } from 'views/sidebar/export-archive-modal';
 
 describe('ExportArchiveModal', () => {
 	it('renders the TGZ format option', () => {
@@ -58,5 +58,21 @@ describe('ExportArchiveModal', () => {
 		setupTest(<ExportArchiveModal folder={folder} onFormatChange={onFormatChange} />);
 
 		expect(onFormatChange).not.toHaveBeenCalled();
+	});
+
+	it('uses ZIP as the default export format', () => {
+		expect(DEFAULT_EXPORT_FORMAT).toBe('zip');
+	});
+
+	it('shows the ZIP option as selected on initial render', () => {
+		const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
+		setupTest(<ExportArchiveModal folder={folder} onFormatChange={vi.fn()} />);
+
+		expect(
+			within(screen.getByRole('button', { name: 'ZIP' })).getByTestId('icon: RadioButtonOn')
+		).toBeInTheDocument();
+		expect(
+			within(screen.getByRole('button', { name: 'TGZ' })).getByTestId('icon: RadioButtonOff')
+		).toBeInTheDocument();
 	});
 });

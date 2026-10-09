@@ -86,26 +86,39 @@ describe('buildExportArchiveOnClick', () => {
 			return { onConfirm, onFormatChange: children.props.onFormatChange };
 		}
 
-		it('downloads a TGZ file by default when confirmed without changing format', () => {
+		it('downloads a ZIP file by default when confirmed without changing format', () => {
 			const params = makeParams({ id: FOLDERS.INBOX, name: 'Inbox' });
 			const { onConfirm } = triggerExport(params);
 
 			onConfirm();
 
-			expect(getDownloadedHref(appendSpy)).toContain('fmt=tgz');
+			const href = getDownloadedHref(appendSpy);
+			expect(href).toContain('fmt=zip');
+			expect(href).toContain('filename=archive-Inbox.zip');
 		});
 
-		it('downloads a ZIP file when the ZIP format is selected before confirming', () => {
+		it('downloads a TGZ file when the TGZ format is selected before confirming', () => {
 			const params = makeParams({ id: FOLDERS.INBOX, name: 'Inbox' });
 			const { onConfirm, onFormatChange } = triggerExport(params);
 
+			onFormatChange('tgz');
+			onConfirm();
+
+			expect(getDownloadedHref(appendSpy)).toContain('fmt=tgz');
+		});
+
+		it('downloads a ZIP file when switching back to ZIP after selecting TGZ', () => {
+			const params = makeParams({ id: FOLDERS.INBOX, name: 'Inbox' });
+			const { onConfirm, onFormatChange } = triggerExport(params);
+
+			onFormatChange('tgz');
 			onFormatChange('zip');
 			onConfirm();
 
 			expect(getDownloadedHref(appendSpy)).toContain('fmt=zip');
 		});
 
-		it('includes the folder id in the TGZ download URL', () => {
+		it('includes the folder id in the download URL', () => {
 			const params = makeParams({ id: FOLDERS.INBOX, name: 'Inbox' });
 			const { onConfirm } = triggerExport(params);
 
@@ -117,8 +130,9 @@ describe('buildExportArchiveOnClick', () => {
 		it('includes the folder name with .tgz extension in the TGZ download URL', () => {
 			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
 			const params = { ...makeParams(), folder };
-			const { onConfirm } = triggerExport(params);
+			const { onConfirm, onFormatChange } = triggerExport(params);
 
+			onFormatChange('tgz');
 			onConfirm();
 
 			expect(getDownloadedHref(appendSpy)).toContain(`filename=archive-${folder.name}.tgz`);
@@ -127,9 +141,8 @@ describe('buildExportArchiveOnClick', () => {
 		it('includes the folder name with .zip extension in the ZIP download URL', () => {
 			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
 			const params = { ...makeParams(), folder };
-			const { onConfirm, onFormatChange } = triggerExport(params);
+			const { onConfirm } = triggerExport(params);
 
-			onFormatChange('zip');
 			onConfirm();
 
 			expect(getDownloadedHref(appendSpy)).toContain(`filename=archive-${folder.name}.zip`);
@@ -142,7 +155,7 @@ describe('buildExportArchiveOnClick', () => {
 
 			onConfirm();
 
-			expect(getDownloadedHref(appendSpy)).toContain('filename=archive-My-Folder.tgz');
+			expect(getDownloadedHref(appendSpy)).toContain('filename=archive-My-Folder.zip');
 		});
 
 		it('uses folder.owner in the download URL for linked folders', () => {

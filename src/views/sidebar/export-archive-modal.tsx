@@ -13,6 +13,8 @@ import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 export type ExportFormat = 'tgz' | 'zip';
 
+export const DEFAULT_EXPORT_FORMAT: ExportFormat = 'zip';
+
 type FormatOption = {
 	value: ExportFormat;
 	avatarLabel: string;
@@ -27,7 +29,7 @@ type ExportArchiveModalProps = {
 };
 
 export const ExportArchiveModal: FC<ExportArchiveModalProps> = ({ folder, onFormatChange }) => {
-	const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('zip');
+	const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(DEFAULT_EXPORT_FORMAT);
 
 	const folderName = getFolderTranslatedName({ folderName: folder.name, folderId: folder.id });
 
