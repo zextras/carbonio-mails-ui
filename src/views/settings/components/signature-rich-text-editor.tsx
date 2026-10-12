@@ -222,7 +222,7 @@ export const SignatureRichTextEditor = ({
 					<RichTextPlugin
 						contentEditable={
 							<ContentEditable
-								className="mails-lexical-content-editable"
+								className="mails-lexical-content-editable carbonio-bypass-context-menu"
 								data-testid="signature-editor-content-editable"
 							/>
 						}
