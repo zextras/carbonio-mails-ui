@@ -1,3 +1,20 @@
+## <small>1.47.1 (2026-10-12)</small>
+
+* fix: preserve mail's HTML styles in Lexical ([d12bac5](https://github.com/zextras/carbonio-mails-ui/commit/d12bac5))
+* fix: preserve mail's HTML styles in Lexical ([2aeb7b0](https://github.com/zextras/carbonio-mails-ui/commit/2aeb7b0))
+* fix: re-enable browser context menu on mail composer ([fa446d1](https://github.com/zextras/carbonio-mails-ui/commit/fa446d1))
+* fix: re-enable browser context menu on mail composer ([9cfd525](https://github.com/zextras/carbonio-mails-ui/commit/9cfd525))
+* fix(ci): bump jenkins-lib-common to v4.14.3 ([c15151f](https://github.com/zextras/carbonio-mails-ui/commit/c15151f))
+* fix(ci): bump jenkins-lib-common to v4.14.3 ([153a357](https://github.com/zextras/carbonio-mails-ui/commit/153a357)), closes [#217](https://github.com/zextras/carbonio-mails-ui/issues/217)
+* fix(ci): bump jenkins-lib-common to v4.15.0 ([7571f91](https://github.com/zextras/carbonio-mails-ui/commit/7571f91))
+* fix(CO-4446): disable mbox import and default export to zip ([ec5ccd9](https://github.com/zextras/carbonio-mails-ui/commit/ec5ccd9))
+* fix(CO-4465): reuse the registered em-emoji-picker to avoid "Illegal constructor" (#1339) ([62c13d8](https://github.com/zextras/carbonio-mails-ui/commit/62c13d8)), closes [#1339](https://github.com/zextras/carbonio-mails-ui/issues/1339)
+* Merge branch 'release/v1.47.x' into fix/ci-lib-common-v4.14.3-release-v1.47.x ([f3fb249](https://github.com/zextras/carbonio-mails-ui/commit/f3fb249))
+* Merge branch 'release/v1.47.x' into fix/CO-4464-CO-4455 ([774a638](https://github.com/zextras/carbonio-mails-ui/commit/774a638))
+* Merge pull request #1342 from zextras/fix/CO-4446-import-export ([36aed74](https://github.com/zextras/carbonio-mails-ui/commit/36aed74)), closes [#1342](https://github.com/zextras/carbonio-mails-ui/issues/1342)
+* test: add unit tests for preserved attributes and HTML parsing ([5fc1021](https://github.com/zextras/carbonio-mails-ui/commit/5fc1021))
+* test: fix test ([21ff687](https://github.com/zextras/carbonio-mails-ui/commit/21ff687))
+
 ## 1.47.0 (2026-09-16)
 
 * feat(CO-4171): wrap outgoing HTML in complete HTML document (#1324) ([e097668](https://github.com/zextras/carbonio-mails-ui/commit/e097668)), closes [#1324](https://github.com/zextras/carbonio-mails-ui/issues/1324)
