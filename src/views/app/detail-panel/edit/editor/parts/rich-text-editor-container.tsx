@@ -17,7 +17,6 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -30,9 +29,12 @@ import { ImagePlugin } from '../plugins/image-plugin';
 import { InlineDataImageUploadPlugin } from '../plugins/inline-data-image-upload-plugin';
 import { InlineImageSrcSyncPlugin } from '../plugins/inline-image-src-sync-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
+import { GenericContainerNode } from '../plugins/nodes/generic-container-node';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
+import { StyledParagraphNode } from '../plugins/nodes/styled-paragraph-node';
+import { TABLE_NODES } from '../plugins/nodes/table-nodes';
 import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
@@ -81,11 +83,6 @@ export const LexicalWrapper = styled.div<{
 	.mails-lexical-content-editable p {
 		margin: 0;
 		padding: 0;
-		margin-bottom: 16px;
-	}
-
-	.mails-lexical-content-editable p:last-child {
-		margin-bottom: 0;
 	}
 
 	.mails-lexical-placeholder {
@@ -364,9 +361,9 @@ export const RichTextEditorContainer = ({
 				ImageNode,
 				QuotedSeparatorNode,
 				SignatureNode,
-				TableNode,
-				TableRowNode,
-				TableCellNode
+				GenericContainerNode,
+				StyledParagraphNode,
+				...TABLE_NODES
 			],
 			theme: {
 				text: {
