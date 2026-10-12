@@ -406,7 +406,7 @@ export const RichTextEditorContainer = ({
 						<RichTextPlugin
 							contentEditable={
 								<ContentEditable
-									className="mails-lexical-content-editable"
+									className="mails-lexical-content-editable carbonio-bypass-context-menu"
 									data-testid="edit-view-editor"
 								/>
 							}
