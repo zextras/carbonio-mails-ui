@@ -20,6 +20,7 @@ import type { Mock } from 'vitest';
 
 import { aSuccessfulSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
+import { FileNode } from '../edit-utils-hooks/use-upload-from-files';
 import { EditView } from '../edit-view';
 import { setupTest, screen, within, UserEvent } from '@test-setup';
 import {
@@ -1328,6 +1329,115 @@ describe('Edit view', () => {
 				const updatedEditor = useEditorsStore.getState().editors[editor.id];
 				expect(updatedEditor?.unsavedAttachments.length).toBeGreaterThan(0);
 			});
+		});
+	});
+
+	describe('Files nodes passed when the editor is opened', () => {
+		const MAX_MESSAGE_SIZE = 10485760;
+
+		const createFileNode = (size: number): FileNode => ({
+			id: faker.string.uuid(),
+			name: faker.system.fileName(),
+			size,
+			mime_type: 'application/pdf',
+			__typename: 'File'
+		});
+
+		const mockFilesIntegrations = (
+			uploadTo: (arg: { nodeId: string; targetModule: string }) => Promise<unknown>
+		): void => {
+			(hooks.useIntegratedFunction as Mock).mockImplementation((id: string) => {
+				if (id === 'upload-to-target-and-get-target-id') {
+					return [uploadTo, true];
+				}
+				if (id === 'get-link') {
+					return [vi.fn().mockResolvedValue({ url: 'http://example.com/link' }), true];
+				}
+				return [vi.fn(), false];
+			});
+		};
+
+		beforeEach(() => {
+			(hooks.useUserSettings as Mock).mockReturnValue(
+				generateSettings({ attrs: { zimbraMtaMaxMessageSize: `${MAX_MESSAGE_SIZE}` } })
+			);
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+			aSuccessfulSaveDraft();
+		});
+
+		it('should add the nodes as attachments if they fit the max message size', async () => {
+			const attachmentId = faker.string.uuid();
+			const uploadTo = vi.fn().mockResolvedValue({ attachmentId });
+			mockFilesIntegrations(uploadTo);
+			const fileNode = createFileNode(1000);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(
+				<EditView
+					editorId={editor.id}
+					closeController={noop}
+					consumePendingFilesNodes={vi.fn().mockReturnValueOnce([fileNode])}
+				/>
+			);
+
+			await waitFor(() =>
+				expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments).toEqual([
+					expect.objectContaining({ aid: attachmentId, filename: fileNode.name })
+				])
+			);
+			expect(uploadTo).toHaveBeenCalledTimes(1);
+			expect(uploadTo).toHaveBeenCalledWith({ nodeId: fileNode.id, targetModule: 'MAILS' });
+			expect(screen.queryByTestId('convert-to-smartlink-modal')).not.toBeInTheDocument();
+		});
+
+		it('should propose to add the nodes as smart links if they exceed the max message size', async () => {
+			const uploadTo = vi.fn();
+			mockFilesIntegrations(uploadTo);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(
+				<EditView
+					editorId={editor.id}
+					closeController={noop}
+					consumePendingFilesNodes={vi.fn().mockReturnValueOnce([createFileNode(MAX_MESSAGE_SIZE)])}
+				/>
+			);
+
+			const modal = await screen.findByTestId('convert-to-smartlink-modal');
+			await waitFor(() => expect(modal).toBeVisible());
+			expect(uploadTo).not.toHaveBeenCalled();
+		});
+
+		it('should take the nodes only when the upload from Files is available', async () => {
+			(hooks.useIntegratedFunction as Mock).mockImplementation(() => [vi.fn(), false]);
+			const attachmentId = faker.string.uuid();
+			const uploadTo = vi.fn().mockResolvedValue({ attachmentId });
+			const consumePendingFilesNodes = vi.fn().mockReturnValueOnce([createFileNode(1000)]);
+			const editor = generateNewMessageEditor();
+			setupEditorStore({ editors: [editor] });
+			const renderEditView = (): React.JSX.Element => (
+				<EditView
+					editorId={editor.id}
+					closeController={noop}
+					consumePendingFilesNodes={consumePendingFilesNodes}
+				/>
+			);
+
+			const { rerender } = setupTest(renderEditView());
+			expect(consumePendingFilesNodes).not.toHaveBeenCalled();
+
+			mockFilesIntegrations(uploadTo);
+			rerender(renderEditView());
+
+			await waitFor(() =>
+				expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments).toEqual([
+					expect.objectContaining({ aid: attachmentId })
+				])
+			);
+			expect(uploadTo).toHaveBeenCalledTimes(1);
 		});
 	});
 
