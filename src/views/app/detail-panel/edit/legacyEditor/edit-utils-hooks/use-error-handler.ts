@@ -10,7 +10,6 @@ import { TIMEOUTS } from 'constants/index';
 import { SaveDraftResponse } from 'types/soap/save-draft';
 
 const SEND_ABORTED_ADDRESS_FAILURE = 'mail.SEND_ABORTED_ADDRESS_FAILURE';
-const SEND_PARTIAL_ADDRESS_FAILURE = 'mail.SEND_PARTIAL_ADDRESS_FAILURE';
 const SEND_TO_DISTRIBUTION_LIST_DENIED = 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED';
 
 type SendError = SaveDraftResponse | ErrorSoapBodyResponse;
@@ -48,19 +47,6 @@ function getDeniedDistributionListMessage(error: SendError): string {
 			});
 }
 
-function getPartialSendMessage(error: SendError): string {
-	const unsentAddresses = getInvalidAddresses(error);
-	return unsentAddresses.length > 1
-		? t('error.partial_send_failures', {
-				defaultValue: 'Message sent, but not to {{count}} recipients.',
-				count: unsentAddresses.length
-			})
-		: t('error.partial_send_failure', {
-				defaultValue: 'Message sent, but not to {{address}}.',
-				address: unsentAddresses[0] ?? ''
-			});
-}
-
 function getInvalidRecipientMessage(error: SendError): string {
 	const invalidAddresses = getInvalidAddresses(error);
 	return invalidAddresses.length > 1
@@ -82,11 +68,6 @@ export function getErrorSnackbarProps(error: SendError): {
 		case SEND_TO_DISTRIBUTION_LIST_DENIED:
 			return {
 				message: getDeniedDistributionListMessage(error),
-				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
-			};
-		case SEND_PARTIAL_ADDRESS_FAILURE:
-			return {
-				message: getPartialSendMessage(error),
 				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
 			};
 		case SEND_ABORTED_ADDRESS_FAILURE:

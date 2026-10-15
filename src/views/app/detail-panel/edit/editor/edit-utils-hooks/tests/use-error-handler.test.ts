@@ -145,50 +145,6 @@ describe('getErrorSnackbarProps', () => {
 		});
 	});
 
-	describe('when the message was sent to only some of the recipients', () => {
-		const partialCode = 'mail.SEND_PARTIAL_ADDRESS_FAILURE';
-
-		it('names the recipient that did not receive the message', () => {
-			const error = {
-				Fault: {
-					Detail: {
-						Error: { Code: partialCode, a: [{ n: 'invalid', _content: 'dl@demo.zextras.io' }] }
-					}
-				}
-			};
-			const result = getErrorSnackbarProps(error);
-			expect(t).toHaveBeenCalledWith('error.partial_send_failure', {
-				defaultValue: 'Message sent, but not to {{address}}.',
-				address: 'dl@demo.zextras.io'
-			});
-			expect(result).toEqual({
-				message: 'error.partial_send_failure',
-				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
-			});
-		});
-
-		it('counts the recipients that did not receive the message when there is more than one', () => {
-			const error = {
-				Fault: {
-					Detail: {
-						Error: {
-							Code: partialCode,
-							a: [
-								{ n: 'invalid', _content: 'dl1@demo.zextras.io' },
-								{ n: 'invalid', _content: 'dl2@demo.zextras.io' }
-							]
-						}
-					}
-				}
-			};
-			getErrorSnackbarProps(error);
-			expect(t).toHaveBeenCalledWith('error.partial_send_failures', {
-				defaultValue: 'Message sent, but not to {{count}} recipients.',
-				count: 2
-			});
-		});
-	});
-
 	it('returns default error message if error structure is missing Code', () => {
 		const error = {
 			Fault: {
