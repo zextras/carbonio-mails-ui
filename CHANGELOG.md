@@ -1,3 +1,16 @@
+## <small>1.50.3 (2026-10-13)</small>
+
+* Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)
+* fix(CO-4446): disable mbox import and default export to zip ([44a64e4](https://github.com/zextras/carbonio-mails-ui/commit/44a64e4))
+
+## <small>1.50.2 (2026-10-12)</small>
+
+* fix(CO-3650): follow conversation id change to keep list item highlighted (#1338) ([1096894](https://github.com/zextras/carbonio-mails-ui/commit/1096894)), closes [#1338](https://github.com/zextras/carbonio-mails-ui/issues/1338)
+
+## <small>1.50.1 (2026-10-12)</small>
+
+* fix(CO-4465): reuse the registered em-emoji-picker to avoid "Illegal constructor" (#1340) ([f425fd6](https://github.com/zextras/carbonio-mails-ui/commit/f425fd6)), closes [#1340](https://github.com/zextras/carbonio-mails-ui/issues/1340)
+
 ## 1.50.0 (2026-10-05)
 
 * feat(CO-3659): place initial focus on To/Subject/body based on compose context (#1335) ([fc9f847](https://github.com/zextras/carbonio-mails-ui/commit/fc9f847)), closes [#1335](https://github.com/zextras/carbonio-mails-ui/issues/1335)

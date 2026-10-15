@@ -8,12 +8,21 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
+import { NavigateFunction } from 'react-router-dom';
 
 import { setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { updateConversationStatus } from 'store/emails/store';
 import { ConversationPreviewPanelContainer } from 'views/app/detail-panel/conversation-preview-panel-container';
+
+const mockNavigateSpy = vi.fn();
+
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: (): NavigateFunction => mockNavigateSpy
+}));
 
 describe('ConversationPreviewPanelContainer', () => {
 	const defaultTitle = 'test title';
@@ -96,5 +105,39 @@ describe('ConversationPreviewPanelContainer', () => {
 		});
 
 		expect(document.title).toEqual(mockedConversation.subject);
+	});
+
+	describe('when the conversation id is virtual (single message conversation)', () => {
+		it('should navigate to the new conversation id when the message has been moved into a new conversation', async () => {
+			await act(() =>
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [{ id: '1', cid: '2', folderId: '2' }]
+				})
+			);
+
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: ['/folder/2/conversation/-1'],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+
+			expect(mockNavigateSpy).toHaveBeenCalledWith('../2', { replace: true, relative: 'path' });
+		});
+
+		it('should not navigate when the message still belongs to the virtual conversation', async () => {
+			const { conversation } = await act(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '-1', folderId: '2' },
+					messageIds: ['1']
+				})
+			);
+			await act(() => updateConversationStatus(conversation.id, 'fulfilled'));
+
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: ['/folder/2/conversation/-1'],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+
+			expect(mockNavigateSpy).not.toHaveBeenCalled();
+		});
 	});
 });

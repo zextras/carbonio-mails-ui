@@ -37,27 +37,6 @@ describe('ImportArchiveModal', () => {
 			expect(screen.getByText(TGZ_FILE_TYPE_LABEL)).toBeInTheDocument();
 		});
 
-		it('does not show the MBOX description for a .tgz file', () => {
-			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
-			setupTest(<ImportArchiveModal folder={folder} file={makeFile(ARCHIVE_TGZ_FILENAME)} />);
-
-			expect(screen.queryByText('modal.import_archive.file_type.mbox')).not.toBeInTheDocument();
-		});
-
-		it('renders the MBOX file type description for a .mbox file', () => {
-			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
-			setupTest(<ImportArchiveModal folder={folder} file={makeFile('archive.mbox')} />);
-
-			expect(screen.getByText('modal.import_archive.file_type.mbox')).toBeInTheDocument();
-		});
-
-		it('does not show the TGZ description for a .mbox file', () => {
-			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
-			setupTest(<ImportArchiveModal folder={folder} file={makeFile('archive.mbox')} />);
-
-			expect(screen.queryByText(TGZ_FILE_TYPE_LABEL)).not.toBeInTheDocument();
-		});
-
 		it('renders the ZIP file type description for a .zip file', () => {
 			const folder = generateFolder({ id: FOLDERS.INBOX, name: 'Inbox' });
 			setupTest(<ImportArchiveModal folder={folder} file={makeFile('archive.zip')} />);
