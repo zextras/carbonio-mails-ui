@@ -11,15 +11,7 @@ import { SaveDraftResponse } from 'types/soap/save-draft';
 
 const SEND_ABORTED_ADDRESS_FAILURE = 'mail.SEND_ABORTED_ADDRESS_FAILURE';
 const SEND_PARTIAL_ADDRESS_FAILURE = 'mail.SEND_PARTIAL_ADDRESS_FAILURE';
-
-/**
- * Text the backend puts in the fault reason when the sender lacks the right to email a
- * distribution list. The fault code is shared with the invalid address failures, so the
- * reason is the only way to tell the two cases apart. The same text is present whether the
- * denial comes from the mailbox or from the MTA.
- */
-const DISTRIBUTION_LIST_SEND_DENIED_REASON =
-	'Sender is not allowed to email this distribution list';
+const SEND_TO_DISTRIBUTION_LIST_DENIED = 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED';
 
 type SendError = SaveDraftResponse | ErrorSoapBodyResponse;
 
@@ -27,20 +19,10 @@ function getErrorCode(error: SendError): string | undefined {
 	return error?.Fault?.Detail?.Error?.Code;
 }
 
-function isErrorAboutInvalidRecipient(error: SendError): boolean {
-	return getErrorCode(error) === SEND_ABORTED_ADDRESS_FAILURE;
-}
-
-function isPartialSendError(error: SendError): boolean {
-	return getErrorCode(error) === SEND_PARTIAL_ADDRESS_FAILURE;
-}
-
-function isErrorAboutDeniedDistributionList(error: SendError): boolean {
-	const reason: string = error?.Fault?.Reason?.Text ?? '';
-	return (
-		(isErrorAboutInvalidRecipient(error) || isPartialSendError(error)) &&
-		reason.includes(DISTRIBUTION_LIST_SEND_DENIED_REASON)
-	);
+function emailOf(address: string): string {
+	const trimmed = address.trim();
+	const start = trimmed.lastIndexOf('<');
+	return start !== -1 && trimmed.endsWith('>') ? trimmed.slice(start + 1, -1) : trimmed;
 }
 
 function getInvalidAddresses(error: SendError): Array<string> {
@@ -49,38 +31,33 @@ function getInvalidAddresses(error: SendError): Array<string> {
 	return errorArguments
 		.filter((argument) => argument?.n === 'invalid')
 		.map((argument) => argument?._content)
-		.filter((content): content is string => !!content);
+		.filter((content): content is string => !!content)
+		.map(emailOf);
 }
 
 function getDeniedDistributionListMessage(error: SendError): string {
 	const distributionLists = getInvalidAddresses(error);
-	const isSingle = distributionLists.length <= 1;
-	const interpolation = isSingle
-		? { distributionList: distributionLists[0] ?? '' }
-		: { distributionLists: distributionLists.join('", "') };
-
-	if (isPartialSendError(error)) {
-		return isSingle
-			? t('error.distribution_list_send_denied_partial', {
-					defaultValue:
-						'The message was sent, but not to the distribution list "{{distributionList}}" because you are not allowed to send to it',
-					...interpolation
-				})
-			: t('error.distribution_lists_send_denied_partial', {
-					defaultValue:
-						'The message was sent, but not to the distribution lists "{{distributionLists}}" because you are not allowed to send to them',
-					...interpolation
-				});
-	}
-	return isSingle
-		? t('error.distribution_list_send_denied', {
-				defaultValue: 'You are not allowed to send to the distribution list "{{distributionList}}"',
-				...interpolation
+	return distributionLists.length > 1
+		? t('error.distribution_lists_send_denied', {
+				defaultValue: "You can't send to {{count}} distribution lists. Remove them and try again.",
+				count: distributionLists.length
 			})
-		: t('error.distribution_lists_send_denied', {
-				defaultValue:
-					'You are not allowed to send to the distribution lists "{{distributionLists}}"',
-				...interpolation
+		: t('error.distribution_list_send_denied', {
+				defaultValue: "You can't send to {{address}}. Remove it and try again.",
+				address: distributionLists[0] ?? ''
+			});
+}
+
+function getPartialSendMessage(error: SendError): string {
+	const unsentAddresses = getInvalidAddresses(error);
+	return unsentAddresses.length > 1
+		? t('error.partial_send_failures', {
+				defaultValue: 'Message sent, but not to {{count}} recipients.',
+				count: unsentAddresses.length
+			})
+		: t('error.partial_send_failure', {
+				defaultValue: 'Message sent, but not to {{address}}.',
+				address: unsentAddresses[0] ?? ''
 			});
 }
 
@@ -101,20 +78,26 @@ export function getErrorSnackbarProps(error: SendError): {
 	message: string;
 	timeout: number;
 } {
-	if (isErrorAboutDeniedDistributionList(error)) {
-		return {
-			message: getDeniedDistributionListMessage(error),
-			timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
-		};
+	switch (getErrorCode(error)) {
+		case SEND_TO_DISTRIBUTION_LIST_DENIED:
+			return {
+				message: getDeniedDistributionListMessage(error),
+				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
+			};
+		case SEND_PARTIAL_ADDRESS_FAILURE:
+			return {
+				message: getPartialSendMessage(error),
+				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
+			};
+		case SEND_ABORTED_ADDRESS_FAILURE:
+			return {
+				message: getInvalidRecipientMessage(error),
+				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
+			};
+		default:
+			return {
+				message: t('label.error_try_again', 'Something went wrong, please try again'),
+				timeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+			};
 	}
-	if (isErrorAboutInvalidRecipient(error)) {
-		return {
-			message: getInvalidRecipientMessage(error),
-			timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
-		};
-	}
-	return {
-		message: t('label.error_try_again', 'Something went wrong, please try again'),
-		timeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
-	};
 }

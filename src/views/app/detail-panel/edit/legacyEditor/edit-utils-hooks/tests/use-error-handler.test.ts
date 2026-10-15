@@ -105,32 +105,25 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	describe('when the sender is not allowed to send to a distribution list', () => {
-		const abortedCode = 'mail.SEND_ABORTED_ADDRESS_FAILURE';
-		const partialCode = 'mail.SEND_PARTIAL_ADDRESS_FAILURE';
+		const deniedCode = 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED';
 		const distributionList = 'dl@demo.zextras.io';
-		const deniedReason = (lists: string): string =>
-			`Sender is not allowed to email this distribution list: ${lists}`;
 
 		const buildError = (
 			code: string,
-			reason: string,
 			a: Array<{ n: string; _content: string }>
 		): { Fault: Record<string, unknown> } => ({
-			Fault: {
-				Detail: { Error: { Code: code, a } },
-				Reason: { Text: reason }
-			}
+			Fault: { Detail: { Error: { Code: code, a } } }
 		});
 
-		it('returns the denied distribution list message instead of the invalid recipient one', () => {
-			const error = buildError(abortedCode, deniedReason(distributionList), [
-				{ n: 'invalid', _content: distributionList },
+		it('names the denied distribution list', () => {
+			const error = buildError(deniedCode, [
+				{ n: 'invalid', _content: `Devs <${distributionList}>` },
 				{ n: 'unsent', _content: 'valid@demo.zextras.io' }
 			]);
 			const result = getErrorSnackbarProps(error);
 			expect(t).toHaveBeenCalledWith('error.distribution_list_send_denied', {
-				defaultValue: 'You are not allowed to send to the distribution list "{{distributionList}}"',
-				distributionList
+				defaultValue: "You can't send to {{address}}. Remove it and try again.",
+				address: distributionList
 			});
 			expect(result).toEqual({
 				message: 'error.distribution_list_send_denied',
@@ -138,56 +131,60 @@ describe('getErrorSnackbarProps', () => {
 			});
 		});
 
-		it('reports all the denied distribution lists when there is more than one', () => {
-			const error = buildError(
-				abortedCode,
-				deniedReason('dl1@demo.zextras.io, dl2@demo.zextras.io'),
-				[
-					{ n: 'invalid', _content: 'dl1@demo.zextras.io' },
-					{ n: 'invalid', _content: 'dl2@demo.zextras.io' }
-				]
-			);
+		it('counts the denied distribution lists when there is more than one', () => {
+			const error = buildError(deniedCode, [
+				{ n: 'invalid', _content: 'dl1@demo.zextras.io' },
+				{ n: 'invalid', _content: 'dl2@demo.zextras.io' }
+			]);
 			const result = getErrorSnackbarProps(error);
 			expect(t).toHaveBeenCalledWith('error.distribution_lists_send_denied', {
-				defaultValue:
-					'You are not allowed to send to the distribution lists "{{distributionLists}}"',
-				distributionLists: 'dl1@demo.zextras.io", "dl2@demo.zextras.io'
+				defaultValue: "You can't send to {{count}} distribution lists. Remove them and try again.",
+				count: 2
 			});
 			expect(result.message).toBe('error.distribution_lists_send_denied');
 		});
+	});
 
-		it('recognizes the denial when it is reported by the MTA', () => {
-			const error = buildError(
-				abortedCode,
-				'Invalid address: dl@demo.zextras.io.  com.zimbra.cs.mailbox.MailSender$SafeSendFailedException: MESSAGE_NOT_DELIVERED; chained exception is:\n\tcom.zimbra.cs.mailclient.smtp.InvalidRecipientException: RCPT failed: Invalid recipient dl@demo.zextras.io: 571 571 Sender is not allowed to email this distribution list: dl@demo.zextras.io',
-				[{ n: 'invalid', _content: distributionList }]
-			);
-			expect(getErrorSnackbarProps(error).message).toBe('error.distribution_list_send_denied');
-		});
+	describe('when the message was sent to only some of the recipients', () => {
+		const partialCode = 'mail.SEND_PARTIAL_ADDRESS_FAILURE';
 
-		it('tells the message was sent to the other recipients on a partial send', () => {
-			const error = buildError(partialCode, deniedReason(distributionList), [
-				{ n: 'invalid', _content: distributionList }
-			]);
+		it('names the recipient that did not receive the message', () => {
+			const error = {
+				Fault: {
+					Detail: {
+						Error: { Code: partialCode, a: [{ n: 'invalid', _content: 'dl@demo.zextras.io' }] }
+					}
+				}
+			};
 			const result = getErrorSnackbarProps(error);
-			expect(t).toHaveBeenCalledWith('error.distribution_list_send_denied_partial', {
-				defaultValue:
-					'The message was sent, but not to the distribution list "{{distributionList}}" because you are not allowed to send to it',
-				distributionList
+			expect(t).toHaveBeenCalledWith('error.partial_send_failure', {
+				defaultValue: 'Message sent, but not to {{address}}.',
+				address: 'dl@demo.zextras.io'
 			});
 			expect(result).toEqual({
-				message: 'error.distribution_list_send_denied_partial',
+				message: 'error.partial_send_failure',
 				timeout: TIMEOUTS.INVALID_EMAIL_RECIPIENT_TIMEOUT
 			});
 		});
 
-		it('keeps the default message for a partial send failure with another reason', () => {
-			const error = buildError(partialCode, 'Invalid address: abc@demo.zextras.io', [
-				{ n: 'invalid', _content: 'abc@demo.zextras.io' }
-			]);
-			expect(getErrorSnackbarProps(error)).toEqual({
-				message: 'label.error_try_again',
-				timeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+		it('counts the recipients that did not receive the message when there is more than one', () => {
+			const error = {
+				Fault: {
+					Detail: {
+						Error: {
+							Code: partialCode,
+							a: [
+								{ n: 'invalid', _content: 'dl1@demo.zextras.io' },
+								{ n: 'invalid', _content: 'dl2@demo.zextras.io' }
+							]
+						}
+					}
+				}
+			};
+			getErrorSnackbarProps(error);
+			expect(t).toHaveBeenCalledWith('error.partial_send_failures', {
+				defaultValue: 'Message sent, but not to {{count}} recipients.',
+				count: 2
 			});
 		});
 	});

@@ -697,7 +697,7 @@ describe('Edit view', () => {
 				'SendMsg',
 				buildSoapErrorResponseBody({
 					code: 'soap:Sender',
-					detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+					detailCode: 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED',
 					reason: 'Sender is not allowed to email this distribution list: dl@example.com',
 					trace: 'qtp630298110-27889:1754665448505:7f9325b88e4f881d'
 				})
