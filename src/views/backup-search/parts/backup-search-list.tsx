@@ -27,14 +27,14 @@ import { BackupSearchRecoveryModal } from 'views/backup-search/parts/backup-sear
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [anchorId, setAnchorId] = useState<string | null>(null);
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
 	const navigate = useNavigate();
 
 	const { selectRange, deselectAll, selectAll, isAllSelected } = useMultipleSelection({
-		lastSelectedIndex,
-		setLastSelectedIndex,
+		anchorId,
+		setAnchorId,
 		allAvailableItems: [...Object.keys(messages ?? {})],
 		selectedItems,
 		setSelectedItems
