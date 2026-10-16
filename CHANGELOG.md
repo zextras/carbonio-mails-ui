@@ -1,3 +1,9 @@
+## <small>1.50.4 (2026-10-16)</small>
+
+* fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.0 (#1347) ([1022158](https://github.com/zextras/carbonio-mails-ui/commit/1022158)), closes [#1347](https://github.com/zextras/carbonio-mails-ui/issues/1347)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.2 (#1349) ([9347d48](https://github.com/zextras/carbonio-mails-ui/commit/9347d48)), closes [#1349](https://github.com/zextras/carbonio-mails-ui/issues/1349)
+
 ## <small>1.50.3 (2026-10-13)</small>
 
 * Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)
