@@ -30,7 +30,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 	const accordionsWithFindShare = useMemo(() => {
 		if (
 			accordions[0]?.children &&
-			!accordions[0].children.find((folder: Folder) => folder.id === 'find_shares')
+			!accordions[0].children.some((folder: Folder) => folder.id === 'find_shares')
 		) {
 			accordions[0].children.push({
 				id: 'find_shares',
