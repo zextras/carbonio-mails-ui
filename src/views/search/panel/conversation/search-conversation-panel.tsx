@@ -57,9 +57,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 			conversationId
 		);
 		navigate(
-			replacingConversationId
-				? `/${SEARCH_ROUTE}/conversation/${replacingConversationId}`
-				: `/${SEARCH_ROUTE}`,
+			replacingConversationId ? `../conversation/${replacingConversationId}` : `/${SEARCH_ROUTE}`,
 			{ replace: true }
 		);
 		return <></>;
