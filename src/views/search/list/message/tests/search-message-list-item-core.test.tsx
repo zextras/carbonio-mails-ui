@@ -58,6 +58,26 @@ describe('SearchMessageListItemCore', () => {
 		});
 	});
 	describe('Tag Icon', () => {
+		it('colors the tag icon with the custom color of the tag', async () => {
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+			});
+			(useTags as Mock).mockReturnValue([{ id: 'tag1', name: 'Tag 1', rgb: '#abcdef' }]);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					index={0}
+					onSelect={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			expect(screen.getByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+		});
+
 		it('renders tag icon when tags are present and exist in store', async () => {
 			const generatedMessages = populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]

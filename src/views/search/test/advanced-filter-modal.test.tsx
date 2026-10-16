@@ -528,4 +528,39 @@ describe('AdvancedFilterModal', () => {
 			expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
 		});
 	});
+
+	describe('tag custom color', () => {
+		beforeEach(() => {
+			(getTags as Mock).mockReturnValue({ t1: { id: 't1', name: 'custom', rgb: '#abcdef' } });
+		});
+
+		it('colors the tag option icon with the custom color of the tag', async () => {
+			const { user } = setupTest(<AdvancedFilterModal {...defaultProps} />);
+
+			await user.click(screen.getByTestId('tagInput'));
+
+			expect(
+				within(screen.getAllByTestId('dropdown-item')[0]).getByTestId('icon: Tag')
+			).toHaveStyleRule('color', '#abcdef');
+		});
+
+		it('adds the tag chip with the custom color of the tag', async () => {
+			const onSearchConfirm = vi.fn();
+			const { user } = setupTest(
+				<AdvancedFilterModal {...defaultProps} onSearchConfirm={onSearchConfirm} query={[]} />
+			);
+
+			await user.click(screen.getByTestId('tagInput'));
+			await user.click(screen.getAllByTestId('dropdown-item')[0]);
+			await user.click(screen.getByRole('button', { name: /action\.search/i }));
+
+			await waitFor(() => {
+				expect(onSearchConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						query: [expect.objectContaining({ label: 'tag:custom', avatarBackground: '#abcdef' })]
+					})
+				);
+			});
+		});
+	});
 });

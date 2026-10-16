@@ -109,4 +109,42 @@ describe('Show Tag', () => {
 		);
 		expect(screen.getByTestId(`tag-${tagName}-${COLOR_2}`)).toBeVisible();
 	});
+
+	it('should render the option with the custom color of the tag', async () => {
+		const tagName = 'custom tag';
+		const { user } = setupTest(
+			<ShowTag value={[]} tagOptions={[{ label: tagName, rgb: '#abcdef' }]} onTagChange={vi.fn()} />
+		);
+
+		await user.click(screen.getByText('Tag'));
+		const dropdown = await screen.findByTestId('dropdown-popper-list');
+
+		expect(within(dropdown).getByTestId(`tag-option-${tagName}-#abcdef`)).toBeVisible();
+	});
+
+	it('should display the tag with the custom color of corresponding option', () => {
+		const tagName = 'custom tag';
+		setupTest(
+			<ShowTag
+				tagOptions={[{ label: tagName, rgb: '#abcdef' }]}
+				value={[{ label: tagName }]}
+				onTagChange={vi.fn()}
+			/>
+		);
+
+		expect(screen.getByTestId(`tag-${tagName}-#abcdef`)).toBeVisible();
+	});
+
+	it('should display the tag with its own custom color', () => {
+		const tagName = 'custom tag';
+		setupTest(
+			<ShowTag
+				tagOptions={[{ label: tagName, color: 2 }]}
+				value={[{ label: tagName, rgb: '#abcdef' }]}
+				onTagChange={vi.fn()}
+			/>
+		);
+
+		expect(screen.getByTestId(`tag-${tagName}-#abcdef`)).toBeVisible();
+	});
 });

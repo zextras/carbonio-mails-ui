@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { resolveTagColorHex, Tag, useFolder, useTags } from '@zextras/carbonio-ui-commons';
 import { find, includes, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
@@ -96,7 +96,7 @@ export const MessageListItemCore = ({
 					if (includes(message.tags, v.id))
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
+						acc.push({ ...v, color: resolveTagColorHex(v) });
 					return acc;
 				},
 				[] as Array<Tag & { color: string }>

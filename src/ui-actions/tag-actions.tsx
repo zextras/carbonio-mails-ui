@@ -20,7 +20,8 @@ import {
 	TagsActionsType,
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
-	DeleteTagModal
+	DeleteTagModal,
+	resolveTagColorHex
 } from '@zextras/carbonio-ui-commons';
 import { filter, find, map, reduce, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +46,7 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownIt
 					closeModal?.(id);
 				},
 				focusModalContent: false,
+				size: 'medium',
 				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} />
 			},
 			true
@@ -68,6 +70,7 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): Dropdow
 					closeModal?.(id);
 				},
 				focusModalContent: false,
+				size: 'medium',
 				children: <CreateUpdateTagModal onClose={(): void => closeModal?.(id)} tag={tag} editMode />
 			},
 			true
@@ -108,10 +111,7 @@ export const TagsDropdownItem = ({
 	const toggleCheck = useCallback(() => {
 		actionDescriptor.execute();
 	}, [actionDescriptor]);
-	const tagColor = useMemo(
-		() => ZIMBRA_STANDARD_COLORS[actionDescriptor.color || 0].hex,
-		[actionDescriptor.color]
-	);
+	const tagColor = useMemo(() => resolveTagColorHex(actionDescriptor), [actionDescriptor]);
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
 	const tagIconOnHovered = useMemo(() => (checked ? 'Untag' : 'Tag'), [checked]);
 
@@ -203,7 +203,7 @@ export const useGetTagsList = (msgTags?: string[]): Tag[] => {
 					// TODO: align the use of the property with the type exposed by the shell
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					color: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
+					color: resolveTagColorHex(tag),
 					label: tag.name
 				});
 			}

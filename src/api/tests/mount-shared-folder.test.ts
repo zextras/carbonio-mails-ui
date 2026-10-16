@@ -11,6 +11,7 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
 import {
+	CreateMountPointRequest,
 	CreateMountpointResponse,
 	MountSharedFolderParams,
 	mountSharedFolderSoapApi
@@ -29,11 +30,30 @@ describe('mountShareCalendar', () => {
 			view: FOLDER_VIEW.message,
 			rid: faker.string.uuid(),
 			folderName: faker.word.noun(),
-			color: faker.number.int({ min: 0, max: 9 }),
+			rgb: faker.color.rgb(),
 			accounts: [{ name: faker.word.noun() }]
 		};
 
 		expect(mountSharedFolderSoapApi(params)).rejects.toBeInstanceOf(CreateMountpointError);
+	});
+
+	it('sends the chosen color as rgb', async () => {
+		const interceptor = createSoapAPIInterceptor<CreateMountPointRequest, never>(
+			'CreateMountpoint'
+		);
+
+		mountSharedFolderSoapApi({
+			zid: faker.string.uuid(),
+			view: FOLDER_VIEW.message,
+			rid: faker.string.uuid(),
+			folderName: faker.word.noun(),
+			rgb: '#123456',
+			accounts: [{ name: faker.word.noun() }]
+		}).catch(() => undefined);
+
+		const { link } = await interceptor;
+		expect(link.rgb).toBe('#123456');
+		expect(link.color).toBeUndefined();
 	});
 
 	it('returns the link if the response is success ', async () => {
@@ -69,7 +89,7 @@ describe('mountShareCalendar', () => {
 			view: link.view,
 			rid: faker.string.uuid(),
 			folderName: faker.word.noun(),
-			color: faker.number.int({ min: 0, max: 9 }),
+			rgb: faker.color.rgb(),
 			accounts: [{ name: faker.word.noun() }]
 		};
 

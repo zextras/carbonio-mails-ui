@@ -244,4 +244,29 @@ describe('ConversationListItemCore', () => {
 
 		expect(await screen.findByText('Test RE: FWD: Subject')).toBeInTheDocument();
 	});
+
+	it('colors the tag icon with the custom color of the tag', async () => {
+		(useTags as Mock).mockReturnValue({ t1: { id: 't1', name: 'custom', rgb: '#abcdef' } });
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', tags: ['t1'], subject: 'Test Subject' },
+				conversationMessagesNumber: 1
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(await screen.findByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+	});
 });

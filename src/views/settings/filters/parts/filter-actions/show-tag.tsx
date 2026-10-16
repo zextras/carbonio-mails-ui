@@ -14,7 +14,7 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { resolveTagColorHex } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +40,7 @@ export const ShowTag = ({
 		): DropdownItem & {
 			value?: MailFilterTag;
 		} => {
-			const color: string = ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex;
+			const color: string = resolveTagColorHex(tag);
 			return {
 				id: tag.label,
 				label: tag.label,
@@ -57,8 +57,11 @@ export const ShowTag = ({
 		}
 	);
 	const tagChipInput = value.map((tag): ChipItem<MailFilterTag> => {
-		const color = tag.color ?? find(tagOptions, (option) => option.label === tag.label)?.color ?? 0;
-		const tagColor = ZIMBRA_STANDARD_COLORS[color].hex;
+		const tagColor = resolveTagColorHex(
+			tag.color !== undefined || tag.rgb
+				? tag
+				: find(tagOptions, (option) => option.label === tag.label)
+		);
 		return {
 			label: tag.label,
 			value: tag,
@@ -74,7 +77,7 @@ export const ShowTag = ({
 		return {
 			label: tag.label,
 			value: tag,
-			avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
+			avatarBackground: resolveTagColorHex(tag),
 			hasAvatar: true,
 			avatarIcon: 'Tag'
 		};

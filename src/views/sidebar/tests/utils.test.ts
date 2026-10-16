@@ -4,10 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Folder, FOLDERS, OnDropActionProps, ROOT_NAME } from '@zextras/carbonio-ui-commons';
+import {
+	Folder,
+	FOLDERS,
+	OnDropActionProps,
+	ROOT_NAME,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import {
+	getFolderIconColor,
 	getFolderIconName,
 	getTotalUnreadCountInSubfolders,
 	handleDragEnter
@@ -160,5 +167,27 @@ describe('utils', () => {
 			]
 		});
 		expect(getTotalUnreadCountInSubfolders(folder)).toBe(8);
+	});
+});
+
+describe('getFolderIconColor', () => {
+	it('should prefer the folder rgb custom color over its color index', () => {
+		expect(getFolderIconColor({ ...generateFolder(), color: 2, rgb: '#abcdef' })).toBe('#abcdef');
+	});
+
+	it('should use the rgb custom color when the folder has no color index', () => {
+		expect(getFolderIconColor({ ...generateFolder(), color: undefined, rgb: '#abcdef' })).toBe(
+			'#abcdef'
+		);
+	});
+
+	it('should use the standard color when there is no rgb', () => {
+		expect(getFolderIconColor({ ...generateFolder(), color: 2, rgb: undefined })).toBe(
+			ZIMBRA_STANDARD_COLORS[2].hex
+		);
+	});
+
+	it('should fall back to the first standard color for an item without color', () => {
+		expect(getFolderIconColor({ id: '1', label: 'item' })).toBe(ZIMBRA_STANDARD_COLORS[0].hex);
 	});
 });

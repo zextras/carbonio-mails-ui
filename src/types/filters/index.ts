@@ -57,6 +57,7 @@ export type FilterRules = [
 export type MailFilterTag = {
 	label: string;
 	color?: number;
+	rgb?: string;
 };
 
 export type MarkAsOption = {

@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { resolveTagColorHex, Tag, useFolder, useTags } from '@zextras/carbonio-ui-commons';
 import { find, includes, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -99,7 +99,7 @@ export const SearchMessageListItemCore = ({
 						acc.push({
 							...v,
 							// casting type to avoid tsignore
-							color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex as unknown as number
+							color: resolveTagColorHex(v) as unknown as number
 						});
 					return acc;
 				},

@@ -1,3 +1,42 @@
+## <small>1.50.4 (2026-10-16)</small>
+
+* fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.0 (#1347) ([1022158](https://github.com/zextras/carbonio-mails-ui/commit/1022158)), closes [#1347](https://github.com/zextras/carbonio-mails-ui/issues/1347)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.2 (#1349) ([9347d48](https://github.com/zextras/carbonio-mails-ui/commit/9347d48)), closes [#1349](https://github.com/zextras/carbonio-mails-ui/issues/1349)
+
+## <small>1.50.3 (2026-10-13)</small>
+
+* Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)
+* fix(CO-4446): disable mbox import and default export to zip ([44a64e4](https://github.com/zextras/carbonio-mails-ui/commit/44a64e4))
+
+## <small>1.50.2 (2026-10-12)</small>
+
+* fix(CO-3650): follow conversation id change to keep list item highlighted (#1338) ([1096894](https://github.com/zextras/carbonio-mails-ui/commit/1096894)), closes [#1338](https://github.com/zextras/carbonio-mails-ui/issues/1338)
+
+## <small>1.50.1 (2026-10-12)</small>
+
+* fix(CO-4465): reuse the registered em-emoji-picker to avoid "Illegal constructor" (#1340) ([f425fd6](https://github.com/zextras/carbonio-mails-ui/commit/f425fd6)), closes [#1340](https://github.com/zextras/carbonio-mails-ui/issues/1340)
+
+## 1.50.0 (2026-10-05)
+
+* feat(CO-3659): place initial focus on To/Subject/body based on compose context (#1335) ([fc9f847](https://github.com/zextras/carbonio-mails-ui/commit/fc9f847)), closes [#1335](https://github.com/zextras/carbonio-mails-ui/issues/1335)
+
+## 1.49.0 (2026-10-02)
+
+* feat(CO-4361): support custom tag colors with the shared color picker (#1333) ([6f9e5e3](https://github.com/zextras/carbonio-mails-ui/commit/6f9e5e3)), closes [#1333](https://github.com/zextras/carbonio-mails-ui/issues/1333)
+
+## 1.48.0 (2026-09-29)
+
+* feat(CO-4314): use the shared color picker for folder colors ([e31950e](https://github.com/zextras/carbonio-mails-ui/commit/e31950e))
+* chore(deps): update dependency @types/lodash to v4.17.25 (#1326) ([a030cb0](https://github.com/zextras/carbonio-mails-ui/commit/a030cb0)), closes [#1326](https://github.com/zextras/carbonio-mails-ui/issues/1326)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.8 (#1327) ([1310bee](https://github.com/zextras/carbonio-mails-ui/commit/1310bee)), closes [#1327](https://github.com/zextras/carbonio-mails-ui/issues/1327)
+* chore(deps): update dependency @zextras/carbonio-ui-configs to v2.1.1 (#1328) ([5620803](https://github.com/zextras/carbonio-mails-ui/commit/5620803)), closes [#1328](https://github.com/zextras/carbonio-mails-ui/issues/1328)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.10.11 (#1323) ([58dbdc6](https://github.com/zextras/carbonio-mails-ui/commit/58dbdc6)), closes [#1323](https://github.com/zextras/carbonio-mails-ui/issues/1323)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.12.2 (#1325) ([32dae73](https://github.com/zextras/carbonio-mails-ui/commit/32dae73)), closes [#1325](https://github.com/zextras/carbonio-mails-ui/issues/1325)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.12.3 (#1330) ([ec73c78](https://github.com/zextras/carbonio-mails-ui/commit/ec73c78)), closes [#1330](https://github.com/zextras/carbonio-mails-ui/issues/1330)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.13.0 (#1332) ([b516f17](https://github.com/zextras/carbonio-mails-ui/commit/b516f17)), closes [#1332](https://github.com/zextras/carbonio-mails-ui/issues/1332)
+* chore(deps): update semantic-release monorepo (#1329) ([a552bbe](https://github.com/zextras/carbonio-mails-ui/commit/a552bbe)), closes [#1329](https://github.com/zextras/carbonio-mails-ui/issues/1329)
+
 ## 1.47.0 (2026-09-16)
 
 * feat(CO-4171): wrap outgoing HTML in complete HTML document (#1324) ([e097668](https://github.com/zextras/carbonio-mails-ui/commit/e097668)), closes [#1324](https://github.com/zextras/carbonio-mails-ui/issues/1324)

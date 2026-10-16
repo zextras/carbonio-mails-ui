@@ -232,4 +232,30 @@ describe('SearchConversationListItemCore', () => {
 			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
 		});
 	});
+
+	it('colors the tag icon with the custom color of the tag', async () => {
+		(useTags as Mock).mockReturnValue({ t1: { id: 't1', name: 'custom', rgb: '#abcdef' } });
+		(useTagExist as Mock).mockReturnValue(true);
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', tags: ['t1'], subject: 'Test Subject' },
+				conversationMessagesNumber: 1
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<SearchConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				open={false}
+				toggleCollapseElementCallback={vi.fn()}
+				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(await screen.findByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+	});
 });

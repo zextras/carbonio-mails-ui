@@ -11,52 +11,64 @@ import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { setupTest, screen } from '@test-setup';
 import { NameInputRow } from 'views/sidebar/parts/edit/name-input';
 
+const NAME_INPUT_LABEL = /choose a representative name/i;
+
 describe('NameInputRow', () => {
 	const inputValue = 'Test Folder';
-	const folderColor = 1;
+	const folderColorHex = ZIMBRA_STANDARD_COLORS[1].hex;
 	const showWarning = false;
 	const inpDisable = false;
 
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
+	const defaultProps = {
+		setInputValue: vi.fn(),
+		inpDisable,
+		showWarning,
+		inputValue,
+		folderColorHex,
+		setFolderColorHex: vi.fn(),
+		isColorPickerOpen: false,
+		onColorPickerOpenChange: vi.fn()
+	};
 
 	it('should render correctly', () => {
-		setupTest(
-			<NameInputRow
-				setInputValue={vi.fn()}
-				inpDisable={inpDisable}
-				showWarning={showWarning}
-				inputValue={inputValue}
-				folderColor={folderColor}
-				setFolderColor={vi.fn()}
-			/>
-		);
+		setupTest(<NameInputRow {...defaultProps} />);
 
-		expect(screen.getByText(/select color/i)).toBeVisible();
-		expect(screen.getByText(/blue/i)).toBeVisible();
+		expect(screen.getByRole('button', { name: /blue/i })).toHaveAttribute('aria-pressed', 'true');
+		expect(
+			screen.getByText(/choose a color to make this folder easier to recognize/i)
+		).toBeVisible();
 
-		expect(screen.getByText(/folder name/i)).toBeVisible();
-		const folderName = screen.getByRole('textbox', { name: /folder name/i });
+		const folderName = screen.getByRole('textbox', { name: NAME_INPUT_LABEL });
 		expect(folderName).toBeVisible();
 		expect(folderName).toHaveValue(inputValue);
+		expect(folderName).toBeEnabled();
 	});
-	it('should call colorPicker onChange with the new color', async () => {
-		const setFolderColor = vi.fn();
+
+	it('should call setFolderColorHex with the hex of the clicked color', async () => {
+		const setFolderColorHex = vi.fn();
 		const { user } = setupTest(
-			<NameInputRow
-				setInputValue={vi.fn()}
-				inpDisable={inpDisable}
-				showWarning={showWarning}
-				inputValue={inputValue}
-				folderColor={folderColor}
-				setFolderColor={setFolderColor}
-			/>
+			<NameInputRow {...defaultProps} setFolderColorHex={setFolderColorHex} />
 		);
 
-		await user.click(screen.getByTestId('icon: ChevronDownOutline'));
-		await user.click(screen.getByText(/red/i));
+		await user.click(screen.getByRole('button', { name: /red/i }));
 
-		expect(setFolderColor).toHaveBeenCalledWith(ZIMBRA_STANDARD_COLORS[5].zValue);
+		expect(setFolderColorHex).toHaveBeenCalledWith(ZIMBRA_STANDARD_COLORS[5].hex);
+	});
+
+	it('should notify when the custom color picker opens', async () => {
+		const onColorPickerOpenChange = vi.fn();
+		const { user } = setupTest(
+			<NameInputRow {...defaultProps} onColorPickerOpenChange={onColorPickerOpenChange} />
+		);
+
+		await user.click(screen.getByRoleWithIcon('button', { icon: 'icon: PlusCircleOutline' }));
+
+		expect(onColorPickerOpenChange).toHaveBeenLastCalledWith(true);
+	});
+
+	it('should disable the name input while the color picker is open', () => {
+		setupTest(<NameInputRow {...defaultProps} isColorPickerOpen />);
+
+		expect(screen.getByRole('textbox', { name: NAME_INPUT_LABEL })).toBeDisabled();
 	});
 });
