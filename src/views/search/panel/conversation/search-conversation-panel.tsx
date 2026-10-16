@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
+import { getConversationIdByMessageIds } from 'store/emails/store';
 import {
 	SearchDetailPanelConversationRouteParams,
 	SearchDetailPanelRouteParams
@@ -44,8 +45,23 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 		[convSortOrder, conversation?.messageIds]
 	);
 
+	const lastMessageIds = useRef<Array<string>>([]);
+	if (conversation) {
+		lastMessageIds.current = conversation.messageIds;
+	}
+
 	if (!conversation) {
-		navigate(`/${SEARCH_ROUTE}`, { replace: true });
+		// a single-message conversation (negative id) is replaced by a new one when it gets a reply
+		const replacingConversationId = getConversationIdByMessageIds(
+			lastMessageIds.current,
+			conversationId
+		);
+		navigate(
+			replacingConversationId
+				? `/${SEARCH_ROUTE}/conversation/${replacingConversationId}`
+				: `/${SEARCH_ROUTE}`,
+			{ replace: true }
+		);
 		return <></>;
 	}
 
