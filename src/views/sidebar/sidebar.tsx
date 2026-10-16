@@ -11,10 +11,10 @@ import { SecondaryBarComponentProps } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import { FOLDERS, SidebarAccordionMui } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes, matchPath, useLocation, useParams } from 'react-router-dom';
 
 import type { SidebarRouteParams } from '../../types/routes';
-import { LOCAL_STORAGES } from 'constants/index';
+import { LOCAL_STORAGES, MAILS_ROUTE } from 'constants/index';
 import { useFolders } from 'hooks/use-folders';
 import { useGetTagsAccordion } from 'hooks/use-get-tags-accordions';
 import { themeMuiExtension } from 'theme/theme-mui';
@@ -28,8 +28,11 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 	const tagsAccordionItems = useGetTagsAccordion();
 
 	const accordionsWithFindShare = useMemo(() => {
-		if (!accordions?.[0]?.children.find((folder: Folder) => folder.id === 'find_shares')) {
-			accordions[0]?.children?.push({
+		if (
+			accordions[0]?.children &&
+			!accordions[0].children.some((folder: Folder) => folder.id === 'find_shares')
+		) {
+			accordions[0].children.push({
 				id: 'find_shares',
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -57,6 +60,11 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 
 const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	const accordions = useFolders();
+	const { pathname } = useLocation();
+	const match =
+		matchPath(`/${MAILS_ROUTE}/folder/:folderId/*`, pathname) ??
+		matchPath(`/folder/:folderId/*`, pathname);
+	const activeFolderId = match?.params?.folderId;
 
 	return (
 		<ThemeProvider extension={themeMuiExtension}>
@@ -68,9 +76,15 @@ const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 					/>
 				</Routes>
 			) : (
-				accordions[0].children.map((folder) => (
-					<CollapsedSideBarItems key={folder.id} folder={folder} />
-				))
+				<Container width="fill" height="fit" crossAlignment="center">
+					{accordions[0]?.children?.map((folder) => (
+						<CollapsedSideBarItems
+							key={folder.id}
+							folder={folder}
+							isSelected={activeFolderId === folder.id}
+						/>
+					)) ?? null}
+				</Container>
 			)}
 		</ThemeProvider>
 	);
