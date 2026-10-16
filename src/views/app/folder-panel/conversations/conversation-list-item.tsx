@@ -9,10 +9,12 @@ import React, { memo, useCallback, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Container } from '@zextras/carbonio-design-system';
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { useFolder } from '@zextras/carbonio-ui-commons';
 import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, MAILS_ROUTE } from 'constants/index';
+import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers/conversations';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
@@ -61,6 +63,22 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const navigate = useNavigate();
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
+	const folder = useFolder(folderId ?? '');
+	// in a folder the conversation shows (and is sorted by) the date of its newest message in that folder
+	const conversationInFolder = useMemo(
+		() =>
+			folder
+				? {
+						...conversation,
+						date: getConversationDateInFolder(
+							conversation,
+							messages ?? [],
+							getMessagesParentForFolder(folder)
+						)
+					}
+				: conversation,
+		[conversation, folder, messages]
+	);
 
 	const { ref, hasBeenHovered } = useOnMouseHover();
 
@@ -159,7 +177,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					onDoubleClick={_onDoubleClick}
 				>
 					<ConversationListItemCore
-						conversation={conversation}
+						conversation={conversationInFolder}
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
@@ -175,7 +193,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					onClick={_onClick}
 				>
 					<ConversationListItemCore
-						conversation={conversation}
+						conversation={conversationInFolder}
 						selected={selected}
 						selecting={selecting}
 						folderParent={folderParent}
