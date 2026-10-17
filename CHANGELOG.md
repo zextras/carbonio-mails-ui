@@ -1,3 +1,7 @@
+## <small>1.50.5 (2026-10-17)</small>
+
+* fix: right click not working in message body compose form ([31fd24a](https://github.com/zextras/carbonio-mails-ui/commit/31fd24a))
+
 ## <small>1.50.4 (2026-10-16)</small>
 
 * fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
