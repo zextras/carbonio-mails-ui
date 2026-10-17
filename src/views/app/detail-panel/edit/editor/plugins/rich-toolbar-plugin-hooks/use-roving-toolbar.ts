@@ -108,7 +108,7 @@ export const useRovingToolbar = (onEscape?: () => void): RovingToolbar => {
 				return;
 			}
 			const items = getItems(toolbar);
-			const currentIndex = items.findIndex((item) => item === event.target);
+			const currentIndex = items.indexOf(event.target as HTMLElement);
 			// Ignore events from popovers/portals (e.g. an open dropdown menu)
 			if (currentIndex === -1) {
 				return;
