@@ -20,6 +20,8 @@ import { Modal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { $createTextNode, $getRoot, $insertNodes, type LexicalEditor } from 'lexical';
 
+import { parseHtmlForImport } from './parse-html-for-import';
+
 type SourceCodeModalProps = {
 	editor: LexicalEditor;
 	open: boolean;
@@ -120,7 +122,7 @@ export const SourceCodeModal = ({
 		if (sourceEditor) {
 			const html = sourceEditor.getEditorState().read(() => $getRoot().getTextContent());
 			editor.update(() => {
-				const dom = new DOMParser().parseFromString(html, 'text/html');
+				const dom = parseHtmlForImport(html);
 				const nodes = $generateNodesFromDOM(editor, dom);
 				const root = $getRoot();
 				root.clear();

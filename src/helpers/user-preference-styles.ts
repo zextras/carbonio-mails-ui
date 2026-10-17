@@ -90,11 +90,8 @@ export const generateUserPreferenceStyles = (style: UserPreferenceStyle): string
 	declarations.push(`font-family: ${fontFamily};`);
 
 	const styles = [
-		// Reset only the browser's default top margin on <p>. Do not zero out
-		// margin-bottom here: when combined with TINYMCE_BASE_CONTENT_STYLES
-		// (which sets an intentional margin-bottom for paragraph spacing), a
-		// blanket "margin: 0" would come later in the cascade and silently
-		// cancel that spacing, collapsing all paragraph gaps to 0.
+		// Reset only the browser's default top margin on <p>; do not zero out
+		// margin-bottom, so any spacing set by the author or base styles is kept.
 		'p { margin-top: 0; }',
 		`body > *${notSelectors} {\n\t\t\t${declarations.join('\n\t\t\t')}\n\t\t}`,
 		// Some clients (e.g. Outlook) do not inherit font-family into table cells,
