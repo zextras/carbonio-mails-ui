@@ -93,7 +93,7 @@
 		"sonarqube-scanner": "4.4.0",
 		"ts-node": "10.9.2",
 		"typescript": "5.9.3",
-		"vitest": "4.1.10",
+		"vitest": "4.1.11",
 		"vitest-browser-react": "2.1.0",
 		"vitest-mock-commonjs": "1.0.2"
 	},
