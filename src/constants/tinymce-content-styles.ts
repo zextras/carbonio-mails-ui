@@ -13,7 +13,6 @@ export const TINYMCE_BASE_CONTENT_STYLES = `
 	p {
 		margin: 0;
 		padding: 0;
-		margin-bottom: 16px;
 	}
 	p:last-child {
 		margin-bottom: 0;

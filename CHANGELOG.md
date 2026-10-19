@@ -1,3 +1,26 @@
+## <small>1.50.5 (2026-10-17)</small>
+
+* fix: right click not working in message body compose form ([31fd24a](https://github.com/zextras/carbonio-mails-ui/commit/31fd24a))
+
+## <small>1.50.4 (2026-10-16)</small>
+
+* fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.0 (#1347) ([1022158](https://github.com/zextras/carbonio-mails-ui/commit/1022158)), closes [#1347](https://github.com/zextras/carbonio-mails-ui/issues/1347)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.2 (#1349) ([9347d48](https://github.com/zextras/carbonio-mails-ui/commit/9347d48)), closes [#1349](https://github.com/zextras/carbonio-mails-ui/issues/1349)
+
+## <small>1.50.3 (2026-10-13)</small>
+
+* Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)
+* fix(CO-4446): disable mbox import and default export to zip ([44a64e4](https://github.com/zextras/carbonio-mails-ui/commit/44a64e4))
+
+## <small>1.50.2 (2026-10-12)</small>
+
+* fix(CO-3650): follow conversation id change to keep list item highlighted (#1338) ([1096894](https://github.com/zextras/carbonio-mails-ui/commit/1096894)), closes [#1338](https://github.com/zextras/carbonio-mails-ui/issues/1338)
+
+## <small>1.50.1 (2026-10-12)</small>
+
+* fix(CO-4465): reuse the registered em-emoji-picker to avoid "Illegal constructor" (#1340) ([f425fd6](https://github.com/zextras/carbonio-mails-ui/commit/f425fd6)), closes [#1340](https://github.com/zextras/carbonio-mails-ui/issues/1340)
+
 ## 1.50.0 (2026-10-05)
 
 * feat(CO-3659): place initial focus on To/Subject/body based on compose context (#1335) ([fc9f847](https://github.com/zextras/carbonio-mails-ui/commit/fc9f847)), closes [#1335](https://github.com/zextras/carbonio-mails-ui/issues/1335)
