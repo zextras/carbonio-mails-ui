@@ -7,7 +7,7 @@ import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, forEach, orderBy, toLower } from 'lodash';
+import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
