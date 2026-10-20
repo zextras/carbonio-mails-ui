@@ -14,7 +14,6 @@ import {
 	$isNodeSelection,
 	CLICK_COMMAND,
 	COMMAND_PRIORITY_LOW,
-	DRAGSTART_COMMAND,
 	KEY_BACKSPACE_COMMAND,
 	KEY_DELETE_COMMAND,
 	type NodeKey
@@ -101,17 +100,6 @@ export const ImageComponent = ({
 					},
 					COMMAND_PRIORITY_LOW
 				),
-				editor.registerCommand(
-					DRAGSTART_COMMAND,
-					(event: DragEvent) => {
-						if (event.target === imageRef.current) {
-							event.preventDefault();
-							return true;
-						}
-						return false;
-					},
-					COMMAND_PRIORITY_LOW
-				),
 				editor.registerCommand(KEY_DELETE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
 				editor.registerCommand(KEY_BACKSPACE_COMMAND, onDelete, COMMAND_PRIORITY_LOW)
 			),
@@ -128,7 +116,9 @@ export const ImageComponent = ({
 				ref={imageRef}
 				src={src}
 				alt={altText}
-				draggable={false}
+				// Moving the image within the editor is handled by the ImagePlugin
+				// (dragstart/dragover/drop commands).
+				draggable={editor.isEditable()}
 				onDoubleClick={onDoubleClick}
 				style={
 					width !== 'inherit' && height !== 'inherit'

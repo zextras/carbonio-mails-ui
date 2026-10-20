@@ -169,4 +169,46 @@ describe('Inline image editing', () => {
 		expect(richText).toContain('float: left');
 		expect(richText).toContain('data-pnsrc="cid:abc@carbonio"');
 	});
+
+	it('moves the image to the drop position when dragged into another paragraph', async () => {
+		const { editorId } = setupEditorWithHtml(
+			`${IMAGE_HTML}<p>first target text</p><p>second target text</p>`
+		);
+		const image = await findEditorImage();
+		const editorElement = screen.getByTestId('edit-view-editor');
+		const dropTarget = within(editorElement).getByText('second target text');
+		// eslint-disable-next-line testing-library/no-node-access -- the drop point must be a DOM text node
+		const secondParagraphText = dropTarget.firstChild as Text;
+
+		const store: Record<string, string> = {};
+		const dataTransfer = {
+			setData: (type: string, value: string): void => {
+				store[type] = value;
+			},
+			getData: (type: string): string => store[type] ?? '',
+			get types(): string[] {
+				return Object.keys(store);
+			},
+			effectAllowed: 'all'
+		};
+		const caretRange = document.createRange();
+		caretRange.setStart(secondParagraphText, 'second '.length);
+		document.caretRangeFromPoint = vi.fn().mockReturnValue(caretRange);
+
+		fireEvent.dragStart(image, { dataTransfer });
+		fireEvent.dragOver(dropTarget, { dataTransfer });
+		fireEvent.drop(dropTarget, {
+			dataTransfer,
+			clientX: 1,
+			clientY: 1
+		});
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toMatch(
+				/second <\/span><img[^>]*data-pnsrc="cid:abc@carbonio"[^>]*><span[^>]*>target text/
+			);
+		});
+		expect(richTextOf(editorId).match(/<img/g)).toHaveLength(1);
+		expect(within(editorElement).getAllByRole('img')).toHaveLength(1);
+	});
 });

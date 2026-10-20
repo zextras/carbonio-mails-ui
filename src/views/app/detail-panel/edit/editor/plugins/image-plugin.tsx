@@ -8,13 +8,25 @@ import { useEffect } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $dfs, mergeRegister } from '@lexical/utils';
 import {
+	$createRangeSelection,
+	$getNearestNodeFromDOMNode,
+	$getNodeByKey,
 	$getSelection,
 	$insertNodes,
+	$isElementNode,
 	$isNodeSelection,
+	$isTextNode,
+	$setSelection,
 	COMMAND_PRIORITY_EDITOR,
+	COMMAND_PRIORITY_LOW,
 	createCommand,
+	DRAGOVER_COMMAND,
+	DRAGSTART_COMMAND,
+	DROP_COMMAND,
 	type LexicalCommand,
-	type LexicalEditor
+	type LexicalEditor,
+	type NodeKey,
+	type RangeSelection
 } from 'lexical';
 
 import {
@@ -26,6 +38,8 @@ import {
 import { type ImageDimension } from './nodes/image-types';
 
 export { OPEN_IMAGE_MODAL_COMMAND } from './nodes/image-types';
+
+const IMAGE_DRAG_MIME_TYPE = 'application/x-carbonio-mails-inline-image';
 
 export type InsertInlineImagePayload = {
 	src: string;
@@ -139,6 +153,108 @@ function $applyImageAlignment(alignment: ImageAlignment | undefined): void {
 	});
 }
 
+type ImageDragPayload = { editorKey: string; nodeKey: NodeKey };
+
+function parseImageDragPayload(raw: string): ImageDragPayload | null {
+	try {
+		const parsed: unknown = JSON.parse(raw);
+		if (
+			typeof parsed === 'object' &&
+			parsed !== null &&
+			'editorKey' in parsed &&
+			'nodeKey' in parsed &&
+			typeof parsed.editorKey === 'string' &&
+			typeof parsed.nodeKey === 'string'
+		) {
+			return { editorKey: parsed.editorKey, nodeKey: parsed.nodeKey };
+		}
+	} catch {
+		// Not our payload
+	}
+	return null;
+}
+
+function getDomPointFromCoordinates(x: number, y: number): { node: Node; offset: number } | null {
+	if (typeof document.caretPositionFromPoint === 'function') {
+		const position = document.caretPositionFromPoint(x, y);
+		return position ? { node: position.offsetNode, offset: position.offset } : null;
+	}
+	if (typeof document.caretRangeFromPoint === 'function') {
+		const range = document.caretRangeFromPoint(x, y);
+		return range ? { node: range.startContainer, offset: range.startOffset } : null;
+	}
+	return null;
+}
+
+/**
+ * Builds a collapsed selection at the position under the pointer, or null when
+ * the pointer is not over any editor node.
+ */
+function $createSelectionFromDomPoint(domPoint: {
+	node: Node;
+	offset: number;
+}): RangeSelection | null {
+	const target = $getNearestNodeFromDOMNode(domPoint.node);
+	if (!target) {
+		return null;
+	}
+	const selection = $createRangeSelection();
+	if ($isTextNode(target)) {
+		selection.anchor.set(target.getKey(), domPoint.offset, 'text');
+		selection.focus.set(target.getKey(), domPoint.offset, 'text');
+	} else if ($isElementNode(target)) {
+		const offset = Math.min(domPoint.offset, target.getChildrenSize());
+		selection.anchor.set(target.getKey(), offset, 'element');
+		selection.focus.set(target.getKey(), offset, 'element');
+	} else {
+		// Decorator (e.g. another image): land right after it.
+		const parentKey = target.getParentOrThrow().getKey();
+		const offset = target.getIndexWithinParent() + 1;
+		selection.anchor.set(parentKey, offset, 'element');
+		selection.focus.set(parentKey, offset, 'element');
+	}
+	return selection;
+}
+
+/**
+ * Moves the dragged image where it has been dropped. The image is re-created
+ * (same src/cid/size/alignment) at the drop point and the original is removed,
+ * so the cid bookkeeping is untouched. Dropping on the image itself is a no-op.
+ */
+function $moveImageToDropPoint(editor: LexicalEditor, rawPayload: string, event: DragEvent): void {
+	const payload = parseImageDragPayload(rawPayload);
+	if (!payload || payload.editorKey !== editor.getKey()) {
+		return;
+	}
+	const source = $getNodeByKey(payload.nodeKey);
+	const domPoint = getDomPointFromCoordinates(event.clientX, event.clientY);
+	if (!$isImageNode(source) || !domPoint) {
+		return;
+	}
+	const selection = $createSelectionFromDomPoint(domPoint);
+	if (!selection) {
+		return;
+	}
+	const droppedOnSource = $getNearestNodeFromDOMNode(domPoint.node)?.is(source);
+	if (droppedOnSource) {
+		return;
+	}
+	$setSelection(selection);
+	// Inserted before removing the source: removing it first could shift the
+	// drop point.
+	$insertNodes([
+		$createImageNode(
+			source.getSrc(),
+			source.getCidUrl(),
+			source.getAltText(),
+			source.getWidth(),
+			source.getHeight(),
+			source.getAlignment()
+		)
+	]);
+	source.remove();
+}
+
 /**
  * Registers the command that inserts an inline image ({@link ImageNode}) at the
  * current selection. The upload of the file and the cid bookkeeping are handled
@@ -193,6 +309,54 @@ export const ImagePlugin = (): null => {
 						return true;
 					},
 					COMMAND_PRIORITY_EDITOR
+				),
+				editor.registerCommand(
+					DRAGSTART_COMMAND,
+					(event: DragEvent) => {
+						if (!(event.target instanceof HTMLImageElement)) {
+							return false;
+						}
+						const node = $getNearestNodeFromDOMNode(event.target);
+						if (!$isImageNode(node) || !event.dataTransfer) {
+							return false;
+						}
+						const payload: ImageDragPayload = {
+							editorKey: editor.getKey(),
+							nodeKey: node.getKey()
+						};
+						event.dataTransfer.setData(IMAGE_DRAG_MIME_TYPE, JSON.stringify(payload));
+						// eslint-disable-next-line no-param-reassign -- the DataTransfer is meant to be configured by the dragstart handler
+						event.dataTransfer.effectAllowed = 'move';
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				editor.registerCommand(
+					DRAGOVER_COMMAND,
+					(event: DragEvent) => {
+						if (!event.dataTransfer?.types.includes(IMAGE_DRAG_MIME_TYPE)) {
+							return false;
+						}
+						// Allows the drop and shows the caret where the image will land.
+						event.preventDefault();
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				editor.registerCommand(
+					DROP_COMMAND,
+					(event: DragEvent) => {
+						const raw = event.dataTransfer?.getData(IMAGE_DRAG_MIME_TYPE);
+						if (!raw) {
+							return false;
+						}
+						// Handled from now on: the browser default would insert a copy of the
+						// <img> natively, bypassing the editor state.
+						event.preventDefault();
+						$moveImageToDropPoint(editor, raw, event);
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
 				)
 			),
 		[editor]
