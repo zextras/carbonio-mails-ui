@@ -21,7 +21,7 @@ const EDITOR_TESTID = 'edit-view-editor';
 const MESSAGE_ID = '42';
 const PART_NAME = '2';
 const CONTENT_ID = 'inline-1@carbonio';
-const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&part=${PART_NAME}`;
+const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=${encodeURIComponent(CONTENT_ID)}&part=${PART_NAME}`;
 
 /** A 1x1 transparent PNG, as it would be embedded in a signature. */
 const PNG_DATA_URI =

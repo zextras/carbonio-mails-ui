@@ -11,6 +11,7 @@ import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import {
 	buildSavedAttachments,
+	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
 	getFlattenedAttachmentParts,
 	getReferredContentIds,
@@ -1330,6 +1331,48 @@ describe('attachments', () => {
 			['no content type and no filename', undefined, undefined, false]
 		])('should return %s for %s', (_desc, contentType, filename, expected) => {
 			expect(isCalendarAttachment(contentType, filename)).toBe(expected);
+		});
+	});
+
+	describe('composeAttachmentDownloadUrl', () => {
+		const savedAttachment = {
+			messageId: '42',
+			partName: '2',
+			filename: 'image.png',
+			contentType: 'image/png',
+			size: 10
+		};
+
+		test('two different inline images saved at the same part of the same draft get different urls', () => {
+			const first = composeAttachmentDownloadUrl({
+				...savedAttachment,
+				isInline: true,
+				contentId: 'first-upload@carbonio'
+			});
+			const second = composeAttachmentDownloadUrl({
+				...savedAttachment,
+				isInline: true,
+				contentId: 'second-upload@carbonio'
+			});
+
+			expect(first).not.toBe(second);
+		});
+
+		test('keeps the part as the last parameter of an inline image url', () => {
+			const url = composeAttachmentDownloadUrl({
+				...savedAttachment,
+				partName: '2.2',
+				isInline: true,
+				contentId: 'upload@carbonio'
+			});
+
+			expect(url).toBe('/service/home/~/?auth=co&id=42&ci=upload%40carbonio&part=2.2');
+		});
+
+		test('does not alter the url of a standard attachment', () => {
+			const url = composeAttachmentDownloadUrl({ ...savedAttachment, isInline: false });
+
+			expect(url).toBe('/service/home/~/?auth=co&id=42&part=2');
 		});
 	});
 });

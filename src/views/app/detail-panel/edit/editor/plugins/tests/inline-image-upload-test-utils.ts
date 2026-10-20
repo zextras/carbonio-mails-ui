@@ -13,7 +13,7 @@ export const CONTENT_ID = `${UPLOAD_ID}@carbonio`;
 export const CID_URL = `cid:${CONTENT_ID}`;
 export const MESSAGE_ID = '123';
 export const PART_NAME = '2';
-export const DOWNLOAD_SERVICE_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&part=${PART_NAME}`;
+export const DOWNLOAD_SERVICE_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=${encodeURIComponent(CONTENT_ID)}&part=${PART_NAME}`;
 
 type AddInlineAttachments = ReturnType<
 	typeof editorStoreIndex.useEditorAttachments

@@ -360,8 +360,25 @@ export const isDownloadServicedUrl = (url: string): boolean =>
  */
 export const isBlobUrl = (url: string): boolean => url.startsWith('blob:');
 
-export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
-	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+/**
+ * Composes the url the download service serves a saved attachment from.
+ *
+ * A draft keeps the same message id across saves and the part name of an inline
+ * image depends only on the position of the part in the message, so the bare
+ * `id`+`part` url is the same for two different images attached in turn (add
+ * one, remove it, add another): the browser would then serve the cached bytes of
+ * the first one in place of the second. The content id of an inline attachment
+ * is unique per upload, so it is added to the url (before `part`, which has to
+ * stay the last parameter) only to tell those images apart; the download
+ * service ignores it.
+ */
+export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string => {
+	const contentIdParam =
+		attachment.isInline && attachment.contentId
+			? `&ci=${encodeURIComponent(attachment.contentId)}`
+			: '';
+	return `/service/home/~/?auth=co&id=${attachment.messageId}${contentIdParam}&part=${attachment.partName}`;
+};
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getFlattenedAttachmentParts(message);

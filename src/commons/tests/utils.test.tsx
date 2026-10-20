@@ -154,8 +154,19 @@ describe('updateImageSrc', () => {
 		expect(img).toHaveAttribute('pnsrc', 'cid:cid123');
 		expect(img).toHaveAttribute(
 			'src',
-			'/service/home/~/?auth=co&id=test-message-id&part=image1.png'
+			'/service/home/~/?auth=co&id=test-message-id&ci=cid123&part=image1.png'
 		);
+	});
+
+	it('should give a different src to two different images at the same part of the same message', () => {
+		const otherImg = document.createElement('img');
+		img.setAttribute('src', 'cid:first@carbonio');
+		otherImg.setAttribute('src', 'cid:second@carbonio');
+
+		updateImageSrc(img, { 'first@carbonio': { name: '2' } }, true, msgId);
+		updateImageSrc(otherImg, { 'second@carbonio': { name: '2' } }, true, msgId);
+
+		expect(img.getAttribute('src')).not.toBe(otherImg.getAttribute('src'));
 	});
 
 	it('should not update src if extracted content ID is not in imgMap', () => {

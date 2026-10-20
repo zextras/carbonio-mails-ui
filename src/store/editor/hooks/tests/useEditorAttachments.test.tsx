@@ -151,7 +151,7 @@ describe('useEditorAttachments', () => {
 					{
 						contentId,
 						cidUrl: `cid:${contentId}`,
-						downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&part=${partName}`
+						downloadServiceUrl: `/service/home/~/?auth=co&id=${messageId}&ci=${encodeURIComponent(contentId)}&part=${partName}`
 					}
 				]);
 			});

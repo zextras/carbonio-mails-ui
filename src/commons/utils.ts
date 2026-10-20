@@ -169,7 +169,14 @@ export function updateImageSrc(
 	const ci = match[1];
 	if (imgMap[ci]) {
 		img.setAttribute('pnsrc', img.getAttribute('src') ?? '');
-		img.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${imgMap[ci].name}`);
+		// The content id keeps the url of an inline image unique even when the
+		// message (a draft keeps its id across saves) gets another image at the same
+		// part: otherwise the browser would serve the cached bytes of the old one.
+		// `part` has to stay the last parameter.
+		img.setAttribute(
+			'src',
+			`/service/home/~/?auth=co&id=${msgId}&ci=${encodeURIComponent(ci)}&part=${imgMap[ci].name}`
+		);
 	}
 }
 

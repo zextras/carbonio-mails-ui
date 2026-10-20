@@ -48,7 +48,10 @@ function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 						// @ts-ignore
 						const part = imgMap[ci];
 						p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
-						p.setAttribute('src', `/service/home/~/?auth=co&id=${msg.id}&part=${part.name}`);
+						p.setAttribute(
+							'src',
+							`/service/home/~/?auth=co&id=${msg.id}&ci=${encodeURIComponent(ci)}&part=${part.name}`
+						);
 					}
 				});
 

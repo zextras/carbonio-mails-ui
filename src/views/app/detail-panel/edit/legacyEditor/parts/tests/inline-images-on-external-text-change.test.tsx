@@ -157,7 +157,8 @@ describe('RichTextEditorContainer - inline image display', () => {
 
 			// DOMParser#innerHTML encodes '&' as '&amp;' in attribute values, so the
 			// expected URL has HTML-entity-encoded ampersands.
-			const expectedServiceUrl = '/service/home/~/?auth=co&amp;id=100&amp;part=2';
+			const expectedServiceUrl =
+				'/service/home/~/?auth=co&amp;id=100&amp;ci=abc123%40carbonio&amp;part=2';
 			const calledWithHtml: string = mockSetContent.mock.lastCall?.[0] ?? '';
 			expect(calledWithHtml).toContain(expectedServiceUrl);
 
@@ -239,8 +240,8 @@ describe('RichTextEditorContainer - inline image display', () => {
 
 			const calledWithHtml: string = mockSetContent.mock.lastCall?.[0] ?? '';
 			// DOMParser#innerHTML encodes '&' as '&amp;' in attribute values
-			expect(calledWithHtml).toContain('id=200&amp;part=2');
-			expect(calledWithHtml).toContain('id=200&amp;part=3');
+			expect(calledWithHtml).toContain('id=200&amp;ci=img1%40carbonio&amp;part=2');
+			expect(calledWithHtml).toContain('id=200&amp;ci=img2%40carbonio&amp;part=3');
 
 			// Verify neither image has a CID URL as its src attribute
 			/* eslint-disable testing-library/no-node-access */
@@ -360,7 +361,9 @@ describe('RichTextEditorContainer - inline image display', () => {
 			const passedInitialValue = capturedInitialValues[0];
 
 			// DOMParser#innerHTML encodes '&' as '&amp;' in attribute values
-			expect(passedInitialValue).toContain('/service/home/~/?auth=co&amp;id=100&amp;part=2');
+			expect(passedInitialValue).toContain(
+				'/service/home/~/?auth=co&amp;id=100&amp;ci=abc123%40carbonio&amp;part=2'
+			);
 
 			// Verify the img src is not a CID URL any more
 			/* eslint-disable testing-library/no-node-access */
