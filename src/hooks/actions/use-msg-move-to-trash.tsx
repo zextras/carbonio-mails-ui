@@ -27,12 +27,15 @@ const useRestoreMessage = (): ((
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	const navigate = useNavigate();
+	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 	return useCallback(
 		(ids, messageFolderId, closeEditor): void => {
 			msgActionEmailStoreAction({ ids, parent: messageFolderId, operation: 'move' }).then((res) => {
 				if (!('Fault' in res)) {
+					// In search the preview is not closed by the trash action, so there is nothing to reopen
 					closeEditor &&
+						!inSearchModule &&
 						navigate(`/${MAILS_ROUTE}/folder/${messageFolderId}/message/${ids[0]}`, {
 							replace: true
 						});
@@ -56,7 +59,7 @@ const useRestoreMessage = (): ((
 				}
 			});
 		},
-		[createSnackbar, navigate, t]
+		[createSnackbar, inSearchModule, navigate, t]
 	);
 };
 
