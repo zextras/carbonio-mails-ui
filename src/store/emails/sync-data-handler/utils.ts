@@ -18,12 +18,66 @@ import { IncompleteMessage, MailMessage } from 'types/messages';
 import { EmailsStoreState } from 'types/search';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
 
+/**
+ * Finds the conversation which now holds the given messages, other than the excluded one.
+ * When a single-message conversation (negative id) receives a reply, the server deletes it and
+ * creates a new conversation with an unrelated positive id containing the same message.
+ */
+function findConversationIdByMessageIds(
+	state: Pick<EmailsStoreState, 'populatedItemsSlice'>,
+	messageIds: Array<string>,
+	excludedConversationId: string
+): string | undefined {
+	const { conversations, messages } = state.populatedItemsSlice;
+	const byConversationMessages = find(
+		conversations,
+		(conversation) =>
+			conversation.id !== excludedConversationId &&
+			conversation.messageIds.some((messageId) => messageIds.includes(messageId))
+	)?.id;
+	if (byConversationMessages) {
+		return byConversationMessages;
+	}
+	return messageIds
+		.map((messageId) => messages[messageId]?.conversation)
+		.find((id) => !!id && id !== excludedConversationId && !!conversations[id]);
+}
+
+function getReplacingConversationIdInSearch(
+	state: EmailsStoreState,
+	deletedConversationId: string
+): string | undefined {
+	if (!deletedConversationId.startsWith('-')) {
+		return undefined;
+	}
+	const messageIds = state.populatedItemsSlice.conversations[deletedConversationId]?.messageIds;
+	if (!messageIds?.length) {
+		return undefined;
+	}
+	return findConversationIdByMessageIds(state, messageIds, deletedConversationId);
+}
+
 function deleteConversationsInSearch(
 	state: EmailsStoreState,
 	conversationIds: Array<string>
 ): void {
-	state.searchIndexSlice.conversationListIndex =
-		state.searchIndexSlice.conversationListIndex.filter((id) => !conversationIds.includes(id));
+	const searchIds = state.searchIndexSlice.conversationListIndex;
+	state.searchIndexSlice.conversationListIndex = searchIds.reduce<Array<string>>((acc, id) => {
+		if (!conversationIds.includes(id)) {
+			acc.push(id);
+			return acc;
+		}
+		const replacingId = getReplacingConversationIdInSearch(state, id);
+		if (
+			replacingId &&
+			!conversationIds.includes(replacingId) &&
+			!acc.includes(replacingId) &&
+			!searchIds.includes(replacingId)
+		) {
+			acc.push(replacingId);
+		}
+		return acc;
+	}, []);
 	conversationIds.forEach((id) => {
 		delete state.populatedItemsSlice.conversations[id];
 		delete state.populatedItemsSlice.conversationsStatus[id];
@@ -301,6 +355,7 @@ function handleNotifyConversationsCreated(
 }
 
 export const syncDataHandlerUtils = {
+	findConversationIdByMessageIds,
 	handleNotifyDeleted,
 	handleNotifyMessagesModified,
 	handleNotifyConversationsModified,
