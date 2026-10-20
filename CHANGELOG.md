@@ -1,3 +1,9 @@
+## <small>1.50.6 (2026-10-20)</small>
+
+* fix: implement roving toolbar for improved keyboard navigation in rich text editor and restore jumpi ([ae4ec77](https://github.com/zextras/carbonio-mails-ui/commit/ae4ec77))
+* chore(deps): update dependency @babel/runtime to ^7.29.10 (#1356) ([36a78b9](https://github.com/zextras/carbonio-mails-ui/commit/36a78b9)), closes [#1356](https://github.com/zextras/carbonio-mails-ui/issues/1356)
+* chore(deps): update dependency @types/lodash to v4.17.26 (#1357) ([5f7935a](https://github.com/zextras/carbonio-mails-ui/commit/5f7935a)), closes [#1357](https://github.com/zextras/carbonio-mails-ui/issues/1357)
+
 ## <small>1.50.5 (2026-10-17)</small>
 
 * fix: right click not working in message body compose form ([31fd24a](https://github.com/zextras/carbonio-mails-ui/commit/31fd24a))
