@@ -19,9 +19,15 @@ type ImageModalProps = {
 	onClose: () => void;
 };
 
-/** Turns a stored {@link ImageDimension} into the string shown in the input. */
-function dimensionToInput(value: ImageDimension): string {
-	return value === 'inherit' ? '' : String(value);
+/**
+ * Turns a stored {@link ImageDimension} into the string shown in the input; an
+ * 'inherit' dimension falls back to the size the image is currently rendered with.
+ */
+function dimensionToInput(value: ImageDimension, renderedSize?: number): string {
+	if (value !== 'inherit') {
+		return String(value);
+	}
+	return renderedSize ? String(renderedSize) : '';
 }
 
 /** Turns the input text back into an {@link ImageDimension} (empty/invalid -> 'inherit'). */
@@ -74,8 +80,9 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 					editImageKey.current = imageNode.getKey();
 					nextSrc = imageNode.getSrc();
 					nextAlt = imageNode.getAltText();
-					nextWidth = dimensionToInput(imageNode.getWidth());
-					nextHeight = dimensionToInput(imageNode.getHeight());
+					const rendered = editor.getElementByKey(imageNode.getKey())?.querySelector('img');
+					nextWidth = dimensionToInput(imageNode.getWidth(), rendered?.clientWidth);
+					nextHeight = dimensionToInput(imageNode.getHeight(), rendered?.clientHeight);
 				}
 			}
 

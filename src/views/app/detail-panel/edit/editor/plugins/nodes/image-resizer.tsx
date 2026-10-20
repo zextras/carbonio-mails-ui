@@ -18,6 +18,8 @@ type DragState = {
 	startY: number;
 	startWidth: number;
 	startHeight: number;
+	/** width / height the image keeps while resizing; null when it can't be determined */
+	ratio: number | null;
 };
 
 export type ImageResizerProps = {
@@ -25,6 +27,19 @@ export type ImageResizerProps = {
 	onResizeStart: () => void;
 	onResizeEnd: (width: number, height: number) => void;
 };
+
+/**
+ * Original aspect ratio of the image: the intrinsic one when the image is
+ * loaded, otherwise the currently rendered one.
+ */
+function getImageRatio(image: HTMLImageElement, rendered: DOMRect): number | null {
+	const natural = image.naturalWidth / image.naturalHeight;
+	if (Number.isFinite(natural) && natural > 0) {
+		return natural;
+	}
+	const current = rendered.width / rendered.height;
+	return Number.isFinite(current) && current > 0 ? current : null;
+}
 
 function nextSize(
 	direction: Direction,
@@ -51,10 +66,25 @@ function nextSize(
 		height = drag.startHeight - deltaY;
 	}
 
-	return {
-		width: Math.max(MIN_SIZE, Math.round(width)),
-		height: Math.max(MIN_SIZE, Math.round(height))
-	};
+	const { ratio } = drag;
+	if (ratio === null) {
+		return {
+			width: Math.max(MIN_SIZE, Math.round(width)),
+			height: Math.max(MIN_SIZE, Math.round(height))
+		};
+	}
+
+	// Keep the original aspect ratio: the side handles drive a single axis, the
+	// corner handles follow whichever axis the pointer moved the most.
+	const horizontal = direction === 'e' || direction === 'w';
+	const vertical = direction === 'n' || direction === 's';
+	const widthScale = Math.abs(width / drag.startWidth - 1);
+	const heightScale = Math.abs(height / drag.startHeight - 1);
+	const drivenByHeight = vertical || (!horizontal && heightScale > widthScale);
+	const rawWidth = drivenByHeight ? height * ratio : width;
+
+	const nextWidth = Math.max(MIN_SIZE, MIN_SIZE * ratio, Math.round(rawWidth));
+	return { width: nextWidth, height: Math.round(nextWidth / ratio) };
 }
 
 /**
@@ -77,8 +107,11 @@ export const ImageResizer = ({
 				return;
 			}
 			const { width, height } = nextSize(drag.direction, drag.state, event.clientX, event.clientY);
+			// The height is left to the aspect ratio so the image can't be distorted
+			// when its width is capped by the container.
 			image.style.width = `${width}px`;
-			image.style.height = `${height}px`;
+			image.style.height = 'auto';
+			image.style.aspectRatio = `${width} / ${height}`;
 		},
 		[imageRef]
 	);
@@ -113,7 +146,8 @@ export const ImageResizer = ({
 					startX: event.clientX,
 					startY: event.clientY,
 					startWidth: rect.width,
-					startHeight: rect.height
+					startHeight: rect.height,
+					ratio: getImageRatio(image, rect)
 				}
 			};
 			onResizeStart();

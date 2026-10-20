@@ -371,8 +371,13 @@ export const RichToolbarPlugin = ({
 			)}
 			<ToolbarIconButton
 				icon={editorIcon('edit-image')}
-				label={t('lexical-label.insert_image_url', 'Image from URL')}
+				label={
+					isImageSelected
+						? t('lexical-label.edit_image', 'Edit image')
+						: t('lexical-label.insert_image_url', 'Image from URL')
+				}
 				onClick={openImageModal}
+				active={isImageSelected}
 			/>
 			{isImageSelected && (
 				<Tooltip label={t('lexical-label.image_align', 'Align image')}>

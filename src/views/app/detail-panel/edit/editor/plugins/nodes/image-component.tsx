@@ -130,11 +130,22 @@ export const ImageComponent = ({
 				alt={altText}
 				draggable={false}
 				onDoubleClick={onDoubleClick}
-				style={{
-					width: dimensionToStyle(width),
-					height: dimensionToStyle(height),
-					maxWidth: '100%'
-				}}
+				style={
+					width !== 'inherit' && height !== 'inherit'
+						? {
+								// With both sizes set, the height follows the aspect ratio: a plain
+								// height would distort the image once maxWidth caps the width.
+								width,
+								height: 'auto',
+								aspectRatio: `${width} / ${height}`,
+								maxWidth: '100%'
+							}
+						: {
+								width: dimensionToStyle(width),
+								height: dimensionToStyle(height),
+								maxWidth: '100%'
+							}
+				}
 			/>
 			{resizable && (
 				<ImageResizer

@@ -55,6 +55,22 @@ describe('Inline image editing', () => {
 		expect(screen.getByTestId('image-resizer-e')).toBeInTheDocument();
 	});
 
+	it('highlights the edit image toolbar button only while the image is selected', async () => {
+		const { user } = setupEditorWithHtml(IMAGE_HTML);
+
+		expect(screen.getByRole('button', { name: 'lexical-label.insert_image_url' })).toHaveAttribute(
+			'aria-pressed',
+			'false'
+		);
+
+		await user.click(await findEditorImage());
+
+		expect(await screen.findByRole('button', { name: 'lexical-label.edit_image' })).toHaveAttribute(
+			'aria-pressed',
+			'true'
+		);
+	});
+
 	it('persists the new size after dragging a resize handle', async () => {
 		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
 
@@ -73,6 +89,39 @@ describe('Inline image editing', () => {
 		});
 		expect(richTextOf(editorId)).toContain('height: 80px');
 	});
+
+	it.each([
+		{ handle: 'se', drag: { clientX: 100, clientY: 10 }, width: 300, height: 150 },
+		{ handle: 'e', drag: { clientX: 100, clientY: 70 }, width: 300, height: 150 },
+		{ handle: 's', drag: { clientX: 70, clientY: 50 }, width: 300, height: 150 },
+		{ handle: 'nw', drag: { clientX: -100, clientY: -5 }, width: 300, height: 150 }
+	])(
+		'keeps the original aspect ratio when dragging the $handle handle',
+		async ({ handle, drag, width, height }) => {
+			// 200x100 image (2:1), rendered at its natural size
+			vi.spyOn(HTMLImageElement.prototype, 'naturalWidth', 'get').mockReturnValue(200);
+			vi.spyOn(HTMLImageElement.prototype, 'naturalHeight', 'get').mockReturnValue(100);
+			vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue({
+				width: 200,
+				height: 100
+			} as DOMRect);
+			const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+
+			await user.click(await findEditorImage());
+
+			const resizer = await screen.findByTestId(`image-resizer-${handle}`);
+			/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+			fireEvent.mouseDown(resizer, { clientX: 0, clientY: 0 });
+			fireEvent.mouseMove(document, drag);
+			fireEvent.mouseUp(document, drag);
+			/* eslint-enable testing-library/prefer-user-event */
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).toContain(`width: ${width}px`);
+			});
+			expect(richTextOf(editorId)).toContain(`height: ${height}px`);
+		}
+	);
 
 	it('aligns the selected image from the toolbar control', async () => {
 		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
