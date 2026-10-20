@@ -207,4 +207,40 @@ describe('TableCellResizerPlugin', () => {
 		// column must not be forced down to the resizer's MIN_COLUMN_WIDTH.
 		expect(otherCol?.getAttribute('style') ?? '').not.toContain('width: 40px');
 	});
+
+	it('pins the table width to the sum of its columns so shrinking a column shrinks the table', async () => {
+		const editor = generateNewMessageEditor();
+		editor.text = { plainText: '', richText: '<p></p>' };
+		setupEditorStore({ editors: [editor] });
+		setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		pasteHtml(
+			editorElement,
+			'<table style="width:100%;border:1px solid red"><colgroup><col style="width:80px"><col style="width:160px"></colgroup>' +
+				'<tbody><tr><td style="width:80px">A</td><td>B</td></tr></tbody></table>'
+		);
+
+		const table = await within(editorElement).findByRole('table');
+		hoverCell(within(table).getAllByRole('cell')[0]);
+		const columnHandle = await screen.findByRole('button', { name: COLUMN_RESIZE_HANDLE_NAME });
+
+		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+		fireEvent.mouseDown(columnHandle, { clientX: 0, clientY: 0 });
+		fireEvent.mouseMove(document, { clientX: 200, clientY: 0 });
+		fireEvent.mouseUp(document, { clientX: 200, clientY: 0 });
+		/* eslint-enable testing-library/prefer-user-event */
+
+		const tableStyle = await waitFor(() => {
+			const doc = new DOMParser().parseFromString(richTextOf(editor.id), 'text/html');
+			// eslint-disable-next-line testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM
+			const style = doc.querySelector('table')?.getAttribute('style') ?? '';
+			expect(style).toContain('width: 360px');
+			return style;
+		});
+		// 200px resized column + the untouched 160px one; the pasted `width:100%`
+		// is replaced while the other declarations are kept.
+		expect(tableStyle).not.toContain('100%');
+		expect(tableStyle).toContain('border');
+	});
 });

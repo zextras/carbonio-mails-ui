@@ -222,6 +222,28 @@ describe('structure preservation of imported HTML', () => {
 			expect(cell.style.border).toContain('1px solid');
 		});
 
+		it('shows an imported table without the editor table look, so its own width is respected', async () => {
+			await mountWith('<table width="480"><tbody><tr><td>A</td></tr></tbody></table>');
+
+			const table = await screen.findByRole('table');
+
+			expect(table).not.toHaveClass('mails-lexical-table');
+			expect(table).toHaveAttribute('width', '480');
+		});
+
+		it('shows a table created in the editor with the editor table look', async () => {
+			const editor = await mountWith('<p>text</p>');
+
+			editor.update(
+				() => {
+					$getRoot().append($createTableNodeWithDimensions(1, 1, false));
+				},
+				{ discrete: true }
+			);
+
+			expect(await screen.findByRole('table')).toHaveClass('mails-lexical-table');
+		});
+
 		it('is stable across repeated import/export cycles', async () => {
 			const first = exportedHtml(await mountWith(TABLE));
 			cleanup();

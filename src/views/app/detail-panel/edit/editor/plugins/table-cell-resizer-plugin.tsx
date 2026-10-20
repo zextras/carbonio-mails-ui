@@ -62,6 +62,20 @@ function computeColWidthsAfterColumnResize(
 	});
 }
 
+/**
+ * Returns `style` with its `width` and `table-layout` declarations replaced so
+ * the table is exactly `widthPx` wide (an auto-layout table would instead widen
+ * to fit its content), keeping every other declaration (e.g. ones carried by an
+ * imported table).
+ */
+function withTableWidth(style: string, widthPx: number): string {
+	const others = style
+		.split(';')
+		.map((declaration) => declaration.trim())
+		.filter((declaration) => declaration !== '' && !/^(width|table-layout)\s*:/i.test(declaration));
+	return [...others, `width: ${widthPx}px`, 'table-layout: fixed'].join('; ').concat(';');
+}
+
 type HoveredCell = {
 	cellElement: HTMLElement;
 	top: number;
@@ -188,6 +202,16 @@ export const TableCellResizerPlugin = (): React.JSX.Element | null => {
 						row[columnIndex]?.cell.setWidth(newWidth);
 					});
 					tableNode.setColWidths(newColWidths);
+					// The stylesheet forces `width: 100%` on tables, and with `table-layout:
+					// fixed` the browser then rescales the columns to fill it, so shrinking
+					// a column (or the last one) would have no effect. Pin the table to the
+					// sum of its columns so it grows and shrinks with them.
+					tableNode.setStyle(
+						withTableWidth(
+							tableNode.getStyle(),
+							newColWidths.reduce((total, width) => total + width, 0)
+						)
+					);
 				} else {
 					const newHeight = Math.max(
 						MIN_ROW_HEIGHT,

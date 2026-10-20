@@ -12,6 +12,7 @@ import {
 	type SerializedTableNode,
 	type SerializedTableRowNode
 } from '@lexical/table';
+import { removeClassNamesFromElement } from '@lexical/utils';
 import {
 	type DOMConversion,
 	type DOMConversionOutput,
@@ -305,9 +306,29 @@ export class ExtendedTableNode extends TableNode {
 		const dom = super.createDOM(config, editor);
 		const table = dom instanceof HTMLTableElement ? dom : dom.querySelector('table');
 		if (table) {
-			applyEditorViewAttributes(table, this.__attributes, TABLE_EDITOR_VIEW_ATTRIBUTES);
+			if (this.__imported) {
+				// The editor look (full width, fixed layout, bordered padded cells) is for
+				// tables created here; an imported table is shown the way its author
+				// sized and styled it, e.g. `width="480"` or `cellpadding`, which that
+				// stylesheet would otherwise override.
+				removeClassNamesFromElement(table, config.theme.table);
+			}
+			applyEditorViewAttributes(
+				table,
+				this.__attributes,
+				TABLE_EDITOR_VIEW_ATTRIBUTES,
+				this.getOwnedStyles()
+			);
 		}
 		return dom;
+	}
+
+	/**
+	 * Style properties the node declares itself (the column resizer pins the table
+	 * `width`), which win over the ones carried from the imported element.
+	 */
+	private getOwnedStyles(): string[] {
+		return /(^|;)\s*width\s*:/i.test(this.getStyle()) ? ['width'] : [];
 	}
 
 	override updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
@@ -329,7 +350,7 @@ export class ExtendedTableNode extends TableNode {
 				const result = stockAfter ? stockAfter(generatedElement) : generatedElement;
 				if (result instanceof HTMLTableElement) {
 					// The theme class is an editor concern; the original class replaces it.
-					applyExportedAttributes(result, this.__attributes);
+					applyExportedAttributes(result, this.__attributes, this.getOwnedStyles());
 				}
 				return result;
 			}
