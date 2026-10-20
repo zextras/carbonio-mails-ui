@@ -40,6 +40,7 @@ import {
 } from 'views/app/detail-panel/edit/editor/plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-cell-resizer-plugin';
+import { TableCornerResizerPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-corner-resizer-plugin';
 import { TableHoverActionsPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-hover-actions-plugin';
 
 type SignatureRichTextEditorProps = {
@@ -238,6 +239,7 @@ export const SignatureRichTextEditor = ({
 				<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
 				<TableActionMenuPlugin />
 				<TableCellResizerPlugin />
+				<TableCornerResizerPlugin />
 				<TableHoverActionsPlugin />
 				<ImagePlugin />
 				<PastePlugin onResolveInlineImages={resolveInlineImagesAsDataUris} />
