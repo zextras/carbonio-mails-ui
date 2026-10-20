@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { act, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
@@ -22,6 +23,8 @@ const MESSAGE_ID = '42';
 const PART_NAME = '2';
 const CONTENT_ID = 'inline-1@carbonio';
 const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=${encodeURIComponent(CONTENT_ID)}&part=${PART_NAME}`;
+/** The url of an image of a message other than the one being written. */
+const FOREIGN_URL = '/service/home/~/?auth=co&id=99&ci=foreign%40carbonio&part=2';
 
 /** A 1x1 transparent PNG, as it would be embedded in a signature. */
 const PNG_DATA_URI =
@@ -67,12 +70,23 @@ function mockEditorAttachments(addInlineAttachments: AddInlineAttachments): void
 	} as unknown as ReturnType<typeof editorStoreIndex.useEditorAttachments>);
 }
 
-function setupEditorWith(richText: string): string {
+function setupEditorWith(richText: string, savedAttachments: Array<SavedAttachment> = []): string {
 	const editor = generateNewMessageEditor();
 	editor.text = { plainText: '', richText };
+	editor.savedAttachments = savedAttachments;
 	setupEditorStore({ editors: [editor] });
 	setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 	return editor.id;
+}
+
+/** Stubs the download of the image the paste refers to. */
+function mockFetchImage({ ok = true }: { ok?: boolean } = {}): Mock {
+	const fetchMock = vi.fn().mockResolvedValue({
+		ok,
+		blob: async () => new Blob(['x'], { type: 'image/png' })
+	});
+	vi.stubGlobal('fetch', fetchMock);
+	return fetchMock;
 }
 
 /** Simulates the draft save persisting the uploaded inline attachment. */
@@ -85,6 +99,7 @@ function persistInlineAttachment(editorId: string, contentId: string): void {
 describe('InlineDataImageUploadPlugin', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
+		vi.unstubAllGlobals();
 	});
 
 	it('does not upload anything until the message is actually edited', async () => {
@@ -276,9 +291,11 @@ describe('InlineDataImageUploadPlugin', () => {
 	it('leaves an already uploaded inline image untouched', async () => {
 		const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
 		mockEditorAttachments(addInlineAttachments);
+		const fetchMock = mockFetchImage();
 
 		const editorId = setupEditorWith(
-			`<p><img src="${DOWNLOAD_URL}" data-pnsrc="cid:${CONTENT_ID}" alt="Inline attachment" /></p>`
+			`<p><img src="${DOWNLOAD_URL}" data-pnsrc="cid:${CONTENT_ID}" alt="Inline attachment" /></p>`,
+			[savedInlineAttachment(CONTENT_ID)]
 		);
 		const image = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
 
@@ -289,6 +306,139 @@ describe('InlineDataImageUploadPlugin', () => {
 		expect(image).toHaveAttribute('src', DOWNLOAD_URL);
 		await waitFor(() => {
 			expect(addInlineAttachments).not.toHaveBeenCalled();
+		});
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	describe('image copied from another message', () => {
+		it('downloads it and uploads it as a new inline attachment', async () => {
+			const addInlineAttachments = vi.fn(() => [
+				unsavedInlineAttachment(CONTENT_ID)
+			]) as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+
+			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+
+			await waitFor(() => {
+				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
+			});
+			expect(fetchMock).toHaveBeenCalledWith(FOREIGN_URL, expect.anything());
+			expect(addInlineAttachments).toHaveBeenCalledWith(
+				[expect.objectContaining({ type: 'image/png' })],
+				expect.objectContaining({ saveImmediately: true })
+			);
+		});
+
+		it('swaps both the url and the cid it carried with the ones of the new attachment', async () => {
+			const addInlineAttachments = vi.fn(() => [
+				unsavedInlineAttachment(CONTENT_ID)
+			]) as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			mockFetchImage();
+
+			// The cid is the one the image had in the message it was copied from.
+			const editorId = setupEditorWith(
+				`<p><img src="${FOREIGN_URL}" data-pnsrc="cid:foreign@carbonio" alt="Pasted" /></p>`
+			);
+			const image = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+			await waitFor(() => {
+				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
+			});
+			persistInlineAttachment(editorId, CONTENT_ID);
+
+			await waitFor(() => {
+				expect(image).toHaveAttribute('src', DOWNLOAD_URL);
+			});
+			await waitFor(() => {
+				const { richText } = useEditorsStore.getState().editors[editorId].text;
+				expect(richText).toContain(`data-pnsrc="cid:${CONTENT_ID}"`);
+			});
+			expect(useEditorsStore.getState().editors[editorId].text.richText).not.toContain(
+				'cid:foreign@carbonio'
+			);
+		});
+
+		it('makes the send wait for the download and the upload', async () => {
+			const addInlineAttachments = vi.fn(() => [
+				unsavedInlineAttachment(CONTENT_ID)
+			]) as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			mockFetchImage();
+
+			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
+			const image = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			let converted = false;
+			act(() => {
+				ensureInlineImagesConverted(editorId).then(() => {
+					converted = true;
+				});
+			});
+			await waitFor(() => {
+				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
+			});
+			expect(converted).toBe(false);
+
+			persistInlineAttachment(editorId, CONTENT_ID);
+
+			await waitFor(() => {
+				expect(converted).toBe(true);
+			});
+			expect(image).toHaveAttribute('src', DOWNLOAD_URL);
+		});
+
+		it('does not upload anything when the download fails', async () => {
+			const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage({ ok: false });
+
+			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+
+			await waitFor(() => {
+				expect(fetchMock).toHaveBeenCalledTimes(1);
+			});
+			expect(addInlineAttachments).not.toHaveBeenCalled();
+		});
+
+		it('downloads it only once however many times the editor changes', async () => {
+			const addInlineAttachments = vi.fn(() => [
+				unsavedInlineAttachment(CONTENT_ID)
+			]) as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+
+			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+			await waitFor(() => {
+				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
+			});
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, false);
+			});
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+
+			expect(fetchMock).toHaveBeenCalledTimes(1);
 		});
 	});
 });
