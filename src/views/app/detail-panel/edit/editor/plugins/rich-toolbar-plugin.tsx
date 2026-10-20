@@ -3,13 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { Button, Container, Dropdown, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { INDENT_CONTENT_COMMAND, OUTDENT_CONTENT_COMMAND } from 'lexical';
+import {
+	COMMAND_PRIORITY_LOW,
+	INDENT_CONTENT_COMMAND,
+	KEY_DOWN_COMMAND,
+	OUTDENT_CONTENT_COMMAND
+} from 'lexical';
 
 import { ColorPickerToolbarButton } from './color-picker-toolbar-button';
 import { ImageModal } from './image-modal';
@@ -20,6 +25,7 @@ import { useBlockType } from './rich-toolbar-plugin-hooks/use-block-type';
 import { useEmojiAndSpecialCharacters } from './rich-toolbar-plugin-hooks/use-emoji-and-special-characters';
 import { useFontAndSizeSelects } from './rich-toolbar-plugin-hooks/use-font-and-size-selects';
 import { useImageActions } from './rich-toolbar-plugin-hooks/use-image-actions';
+import { useRovingToolbar } from './rich-toolbar-plugin-hooks/use-roving-toolbar';
 import { useStylePatching } from './rich-toolbar-plugin-hooks/use-style-patching';
 import { useTableInsert } from './rich-toolbar-plugin-hooks/use-table-insert';
 import { useTextFormatting } from './rich-toolbar-plugin-hooks/use-text-formatting';
@@ -38,6 +44,15 @@ export type { ResolvedInlineImage, ResolveInlineImages } from './image-plugin';
  * driven by the button), so it can only be reached by test id.
  */
 export const INLINE_IMAGE_FILE_INPUT_TESTID = 'inline-image-file-input';
+
+const VISUALLY_HIDDEN_STYLE: React.CSSProperties = {
+	position: 'absolute',
+	width: '1px',
+	height: '1px',
+	overflow: 'hidden',
+	clip: 'rect(0 0 0 0)',
+	whiteSpace: 'nowrap'
+};
 
 type RichToolbarPluginProps = {
 	/** Whether the "Show blocks" view aid (dashed block outlines) is active. */
@@ -105,11 +120,51 @@ export const RichToolbarPlugin = ({
 		setSpecialCharMenuOpen
 	} = useEmojiAndSpecialCharacters(editor);
 
+	const {
+		toolbarRef,
+		onKeyDown: onToolbarKeyDown,
+		focusToolbar
+	} = useRovingToolbar(useCallback((): void => editor.getRootElement()?.focus(), [editor]));
+
+	// The editor body is described by a hint about the shortcut that enters the toolbar
+	const shortcutHintId = useId();
+	useEffect(
+		() =>
+			editor.registerRootListener((rootElement, previousRootElement) => {
+				previousRootElement?.removeAttribute('aria-describedby');
+				rootElement?.setAttribute('aria-describedby', shortcutHintId);
+			}),
+		[editor, shortcutHintId]
+	);
+
+	// Alt+F10 from the editor body moves the focus to the toolbar
+	useEffect(
+		() =>
+			editor.registerCommand(
+				KEY_DOWN_COMMAND,
+				(event: KeyboardEvent) => {
+					if (event.altKey && event.key === 'F10') {
+						event.preventDefault();
+						focusToolbar();
+						return true;
+					}
+					return false;
+				},
+				COMMAND_PRIORITY_LOW
+			),
+		[editor, focusToolbar]
+	);
+
 	const textColorLabel = t('lexical-label.text_color', 'Text color');
 	const backgroundColorLabel = t('lexical-label.background_color', 'Background color');
 
 	return (
 		<Row
+			ref={toolbarRef}
+			role="toolbar"
+			aria-orientation="horizontal"
+			aria-label={t('lexical-label.formatting_toolbar', 'Formatting toolbar')}
+			onKeyDown={onToolbarKeyDown}
 			mainAlignment="flex-start"
 			crossAlignment="center"
 			wrap="wrap"
@@ -404,6 +459,13 @@ export const RichToolbarPlugin = ({
 				open={imageModalOpen}
 				onClose={(): void => setImageModalOpen(false)}
 			/>
+
+			<span id={shortcutHintId} style={VISUALLY_HIDDEN_STYLE}>
+				{t(
+					'lexical-label.toolbar_shortcut_hint',
+					'Press Alt+F10 to move to the formatting toolbar'
+				)}
+			</span>
 
 			<input
 				ref={fileInputRef}

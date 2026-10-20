@@ -63,7 +63,7 @@ export const ColorPickerToolbarButton = ({
 				onClick={(): void => setOpen((isOpen) => !isOpen)}
 			/>
 			{open && (
-				<ColorPickerPopover width="fit" height="fit">
+				<ColorPickerPopover width="fit" height="fit" data-roving-toolbar-ignore>
 					<ColorSwatchPicker
 						color={color}
 						onChange={onColorChange}
