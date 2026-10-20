@@ -1,3 +1,19 @@
+## <small>1.50.6 (2026-10-20)</small>
+
+* fix: implement roving toolbar for improved keyboard navigation in rich text editor and restore jumpi ([ae4ec77](https://github.com/zextras/carbonio-mails-ui/commit/ae4ec77))
+* chore(deps): update dependency @babel/runtime to ^7.29.10 (#1356) ([36a78b9](https://github.com/zextras/carbonio-mails-ui/commit/36a78b9)), closes [#1356](https://github.com/zextras/carbonio-mails-ui/issues/1356)
+* chore(deps): update dependency @types/lodash to v4.17.26 (#1357) ([5f7935a](https://github.com/zextras/carbonio-mails-ui/commit/5f7935a)), closes [#1357](https://github.com/zextras/carbonio-mails-ui/issues/1357)
+
+## <small>1.50.5 (2026-10-17)</small>
+
+* fix: right click not working in message body compose form ([31fd24a](https://github.com/zextras/carbonio-mails-ui/commit/31fd24a))
+
+## <small>1.50.4 (2026-10-16)</small>
+
+* fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.0 (#1347) ([1022158](https://github.com/zextras/carbonio-mails-ui/commit/1022158)), closes [#1347](https://github.com/zextras/carbonio-mails-ui/issues/1347)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.2 (#1349) ([9347d48](https://github.com/zextras/carbonio-mails-ui/commit/9347d48)), closes [#1349](https://github.com/zextras/carbonio-mails-ui/issues/1349)
+
 ## <small>1.50.3 (2026-10-13)</small>
 
 * Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)
