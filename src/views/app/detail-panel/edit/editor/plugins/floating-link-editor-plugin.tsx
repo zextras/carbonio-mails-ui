@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { $isLinkNode } from '@lexical/link';
+import { $isAutoLinkNode, $isLinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $findMatchingParent } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
@@ -223,14 +223,18 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		setEditOpen(true);
 	}, [editor, linkInfo]);
 
-	// Unwraps the link by moving its children out and removing the now-empty node,
-	// preserving the text and any inline formatting it carried.
+	// Auto-detected links (AutoLinkNode) are flagged as unlinked: unwrapping them
+	// would let the auto-link transform re-create the link from the URL-like text.
+	// Manual links are unwrapped by moving their children out and removing the
+	// now-empty node, preserving the text and any inline formatting.
 	const removeLink = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
 			editor.update(() => {
 				const node = $getNodeByKey(key);
-				if ($isLinkNode(node)) {
+				if ($isAutoLinkNode(node)) {
+					node.setIsUnlinked(true);
+				} else if ($isLinkNode(node)) {
 					node.getChildren().forEach((child) => node.insertBefore(child));
 					node.remove();
 				}

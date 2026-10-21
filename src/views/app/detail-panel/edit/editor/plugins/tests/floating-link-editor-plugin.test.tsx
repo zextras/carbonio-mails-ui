@@ -116,6 +116,19 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(richTextOf(editorId)).toContain(LINK_TEXT);
 	});
 
+	it('keeps an auto-detected link removed instead of re-creating it from the URL text', async () => {
+		const { editorId, user } = setupEditor(`<p>${LINK_URL}</p>`);
+		const link = await within(screen.getByTestId(EDITOR_TESTID)).findByText(LINK_URL);
+
+		await user.click(link);
+		await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<a');
+		});
+		expect(richTextOf(editorId)).toContain(LINK_URL);
+	});
+
 	it('opens the edit modal pre-filled when the edit action is clicked', async () => {
 		const { user, link } = await setupWithLink();
 
