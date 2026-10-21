@@ -16,6 +16,7 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const LINK_URL = 'https://custom-link.com';
 const LINK_TEXT = 'lexical';
+const NEW_LINK_TEXT = 'view';
 const EDITOR_TESTID = 'edit-view-editor';
 const EDIT_LINK_LABEL = 'lexical-label.edit_link';
 const REMOVE_LINK_LABEL = 'lexical-label.remove_link';
@@ -194,6 +195,26 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(screen.getByRole('textbox', { name: 'lexical-label.url' })).toHaveValue(LINK_URL);
 		expect(screen.getByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(
 			LINK_TEXT
+		);
+	});
+
+	it('keeps the link and shows the new text when the text to display is changed', async () => {
+		const { editorId, user, link } = await setupWithLink();
+
+		await user.click(link);
+		await user.click(await screen.findByRole('button', { name: EDIT_LINK_LABEL }));
+		const textInput = await screen.findByRole('textbox', { name: 'lexical-label.text_to_display' });
+		await user.clear(textInput);
+		await user.type(textInput, NEW_LINK_TEXT);
+		await user.click(screen.getByRole('button', { name: 'label.save' }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain(NEW_LINK_TEXT);
+		});
+		expect(richTextOf(editorId)).toContain(`<a href="${LINK_URL}`);
+		expect(richTextOf(editorId)).not.toContain(`>${LINK_TEXT}<`);
+		expect(await within(screen.getByTestId(EDITOR_TESTID)).findByRole('link')).toHaveTextContent(
+			NEW_LINK_TEXT
 		);
 	});
 });

@@ -21,6 +21,7 @@ import {
 	$getNodeByKey,
 	$getSelection,
 	$isRangeSelection,
+	$isTextNode,
 	type LexicalEditor,
 	type RangeSelection
 } from 'lexical';
@@ -45,8 +46,17 @@ function $updateLinkNode(
 	node.setRel(attributes.rel ?? null);
 	node.setTitle(attributes.title ?? null);
 	if (text && text !== node.getTextContent()) {
-		node.getChildren().forEach((child) => child.remove());
-		node.append($createTextNode(text));
+		// A link cannot be empty: Lexical removes it as soon as its last child is removed,
+		// so the new text must be in place before the old children are dropped.
+		const [firstChild, ...otherChildren] = node.getChildren();
+		otherChildren.forEach((child) => child.remove());
+		if ($isTextNode(firstChild)) {
+			// Reuse the first text run to keep its formatting (bold, colour, ...).
+			firstChild.setTextContent(text);
+		} else {
+			node.append($createTextNode(text));
+			firstChild?.remove();
+		}
 	}
 }
 
