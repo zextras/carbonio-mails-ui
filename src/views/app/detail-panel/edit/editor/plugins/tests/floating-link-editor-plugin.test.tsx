@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { waitFor } from '@testing-library/react';
+import { cleanup, waitFor } from '@testing-library/react';
 
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
@@ -24,6 +24,10 @@ type TestUser = ReturnType<typeof setupTest>['user'];
 function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
 }
+
+// The mailbox HTML sanitizer only keeps a short allowlist of attributes in a saved draft:
+// every other attribute (e.g. `data-*`) is dropped.
+const ATTRIBUTES_DROPPED_BY_MAILBOX = /\s(?!(?:class|style|href)=)[\w-]+="[^"]*"/g;
 
 function setupEditor(richText: string): { editorId: string; user: TestUser } {
 	const editor = generateNewMessageEditor();
@@ -127,6 +131,29 @@ describe('FloatingLinkEditorPlugin', () => {
 			expect(richTextOf(editorId)).not.toContain('<a');
 		});
 		expect(richTextOf(editorId)).toContain(LINK_URL);
+	});
+
+	it('keeps an auto-detected link removed after the saved HTML is loaded again', async () => {
+		const { editorId, user } = setupEditor(`<p>${LINK_URL}</p>`);
+		const link = await within(screen.getByTestId(EDITOR_TESTID)).findByText(LINK_URL);
+
+		await user.click(link);
+		await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<a');
+		});
+		// The mailbox HTML sanitizer drops the attributes it does not know.
+		const savedHtml = richTextOf(editorId).replace(ATTRIBUTES_DROPPED_BY_MAILBOX, '');
+		cleanup();
+
+		setupEditor(savedHtml);
+		const reloadedEditor = screen.getByTestId(EDITOR_TESTID);
+		await within(reloadedEditor).findByText(LINK_URL);
+		// Give the auto-link transform the chance to (wrongly) re-create the link.
+		await new Promise((resolve) => {
+			setTimeout(resolve, 200);
+		});
+		expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
 	});
 
 	it('opens the edit modal pre-filled when the edit action is clicked', async () => {
