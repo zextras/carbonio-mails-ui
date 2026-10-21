@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
 	$createLinkNode,
+	$isAutoLinkNode,
 	$isLinkNode,
 	$toggleLink,
 	formatUrl,
@@ -34,13 +35,28 @@ type LinkModalProps = {
 
 type LinkTarget = 'self' | 'blank';
 
+/**
+ * The auto-link plugin owns every AutoLinkNode: whenever its text no longer is exactly
+ * the detected URL it unwraps the link (and it resets the URL when they differ). A link
+ * edited by hand must therefore be a plain LinkNode, which the plugin leaves alone.
+ */
+function $toManualLink(node: LinkNode): LinkNode {
+	if (!$isAutoLinkNode(node)) {
+		return node;
+	}
+	const manualLink = $createLinkNode(node.getURL());
+	node.replace(manualLink, true);
+	return manualLink;
+}
+
 /** Updates an existing link node in place, replacing its text only when changed. */
 function $updateLinkNode(
-	node: LinkNode,
+	autoOrManualNode: LinkNode,
 	url: string,
 	attributes: LinkAttributes,
 	text: string
 ): void {
+	const node = $toManualLink(autoOrManualNode);
 	node.setURL(url);
 	node.setTarget(attributes.target ?? null);
 	node.setRel(attributes.rel ?? null);

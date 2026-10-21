@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { waitFor } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 
 import {
 	EDITOR_TESTID,
@@ -66,6 +66,36 @@ describe('RichToolbarPlugin - links and images', () => {
 
 		await waitFor(() => {
 			expect(richTextOf(editorId)).toContain('target="_blank"');
+		});
+	});
+
+	it('keeps the link when the text of an auto-detected link is changed', async () => {
+		const { editorId, user } = setupEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await within(editorElement).findByText(SELECTED_TEXT);
+		await user.click(editorElement);
+		await user.keyboard(' https://example.com ');
+		const linkText = within(await within(editorElement).findByRole('link')).getByText(
+			'https://example.com'
+		);
+		act(() => {
+			window.getSelection()?.setBaseAndExtent(linkText, 0, linkText, 0);
+			document.dispatchEvent(new Event('selectionchange'));
+		});
+
+		await user.click(screen.getByRole('button', { name: LINK_LABEL }));
+		const textInput = await screen.findByRole('textbox', {
+			name: 'lexical-label.text_to_display'
+		});
+		expect(textInput).toHaveValue('https://example.com');
+		await user.clear(textInput);
+		await user.type(textInput, 'Example');
+		await user.click(screen.getByRole('button', { name: 'label.save' }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toMatch(
+				/<a [^>]*href="https:\/\/example\.com"[^>]*>.*Example.*<\/a>/
+			);
 		});
 	});
 
