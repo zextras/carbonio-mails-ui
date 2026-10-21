@@ -30,6 +30,20 @@ describe('RichToolbarPlugin - font and size selectors', () => {
 		});
 	});
 
+	it('renders each font option in its own typeface', async () => {
+		const { user } = await setupWithSelectedContent();
+
+		await openSelect(user, SELECT_INDEX.font);
+
+		expect(await screen.findByText('Tahoma')).toHaveStyle({
+			fontFamily: 'tahoma, arial, helvetica, sans-serif'
+		});
+		expect(screen.getByText('Georgia')).toHaveStyle({ fontFamily: 'georgia, palatino' });
+		expect(screen.getByText('Wingdings')).not.toHaveStyle({
+			fontFamily: 'wingdings, zapf dingbats'
+		});
+	});
+
 	it('applies the chosen font size to the selection', async () => {
 		const { editorId, user } = await setupWithSelectedContent();
 
