@@ -7,6 +7,7 @@ import React from 'react';
 
 import { cleanup, waitFor } from '@testing-library/react';
 
+import { installRangeRectPolyfill } from './rich-toolbar-plugin-test-utils';
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
@@ -18,8 +19,15 @@ const LINK_TEXT = 'lexical';
 const EDITOR_TESTID = 'edit-view-editor';
 const EDIT_LINK_LABEL = 'lexical-label.edit_link';
 const REMOVE_LINK_LABEL = 'lexical-label.remove_link';
+const RESTORE_LINK_LABEL = 'lexical-label.restore_link';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
+
+// jsdom's `Range` has no `getBoundingClientRect`, which Lexical calls to scroll the
+// caret into view when a collapsed selection commits while the editor has focus.
+beforeAll(() => {
+	installRangeRectPolyfill();
+});
 
 function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
@@ -154,6 +162,26 @@ describe('FloatingLinkEditorPlugin', () => {
 			setTimeout(resolve, 200);
 		});
 		expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
+	});
+
+	it('restores the link of an auto-detected URL that was removed', async () => {
+		const { editorId, user } = setupEditor(`<p>${LINK_URL}</p>`);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(await within(editorElement).findByText(LINK_URL));
+		await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<a');
+		});
+
+		// The removed link is plain text: pressing it offers to restore the link.
+		await user.click(await within(editorElement).findByText(LINK_URL));
+		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain(`<a href="${LINK_URL}`);
+		});
+		expect(richTextOf(editorId)).not.toContain('mails-unlinked-auto-link');
+		expect(await within(editorElement).findByRole('link')).toBeInTheDocument();
 	});
 
 	it('opens the edit modal pre-filled when the edit action is clicked', async () => {
