@@ -3,12 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import { type SelectItem } from '@zextras/carbonio-design-system';
+import { Container, Text, type SelectItem } from '@zextras/carbonio-design-system';
 
 import { normalizeCssValue } from '../rich-toolbar-plugin-model';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
+
+// Symbol fonts render the label as unreadable glyphs: keep the label in the default font
+const FONTS_WITHOUT_PREVIEW = ['wingdings'];
+
+const hasFontPreview = (fontValue: string): boolean =>
+	!FONTS_WITHOUT_PREVIEW.includes(fontValue.split(',')[0].trim().toLowerCase());
 
 type FontAndSizeSelects = {
 	fontSelectItems: Array<SelectItem>;
@@ -24,7 +30,18 @@ export function useFontAndSizeSelects(
 	preferredFontSize?: string
 ): FontAndSizeSelects {
 	const fontSelectItems = useMemo<Array<SelectItem>>(
-		() => getFonts().map((font) => ({ label: font.label, value: font.value })),
+		() =>
+			getFonts().map((font) => ({
+				label: font.label,
+				value: font.value,
+				customComponent: (
+					<Container mainAlignment="flex-start" crossAlignment="flex-start" height="fit">
+						<Text style={hasFontPreview(font.value) ? { fontFamily: font.value } : undefined}>
+							{font.label}
+						</Text>
+					</Container>
+				)
+			})),
 		[]
 	);
 
