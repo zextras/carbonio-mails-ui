@@ -340,6 +340,21 @@ export function getConversationById(id: string): NormalizedConversation {
 }
 
 /**
+ * Retrieves the id of the conversation, other than the excluded one, which now holds the given messages.
+ * Used to follow a single-message conversation (negative id) replaced by a new one after a reply.
+ */
+export function getConversationIdByMessageIds(
+	messageIds: Array<string>,
+	excludedConversationId: string
+): string | undefined {
+	return syncDataHandlerUtils.findConversationIdByMessageIds(
+		useEmailsStore.getState(),
+		messageIds,
+		excludedConversationId
+	);
+}
+
+/**
  * Provides access to a specific message by its ID from the populated items slice.
  * If the message is not found, it is not fetched from the server.
  * For fetching the message, use `useCompleteMessageOrFetch` instead.
