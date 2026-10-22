@@ -7,6 +7,7 @@ import { addBoard, Board, getBoardById, setCurrentBoard } from '@zextras/carboni
 
 import { MAILS_BOARD_VIEW_ID, EditViewActions } from 'constants/index';
 import { EditorPrefillData, EditViewActionsType } from 'types/editor';
+import type { FileNode } from 'views/app/detail-panel/edit/editor/edit-utils-hooks/use-upload-from-files';
 
 export type EditViewBoardContext = {
 	originAction: EditViewActionsType;
@@ -14,6 +15,8 @@ export type EditViewBoardContext = {
 	originFolderId?: string;
 	editorId?: string;
 	compositionData?: EditorPrefillData;
+	/** Files nodes to add to the editor once it is opened, removed from the context when consumed */
+	pendingFilesNodes?: Array<FileNode>;
 	onConfirm?: (param: { editor: { text: [string, string] }; onBoardClose: () => void }) => void;
 };
 
@@ -24,6 +27,7 @@ type CreateEditBoardParams = {
 	folderId?: string;
 	title?: string;
 	compositionData?: EditorPrefillData;
+	filesNodes?: Array<FileNode>;
 	onConfirm?: () => void;
 };
 
@@ -48,6 +52,7 @@ export const createEditBoard = ({
 	actionTargetId,
 	folderId,
 	compositionData,
+	filesNodes,
 	onConfirm,
 	title = ''
 }: CreateEditBoardParams): Board => {
@@ -70,7 +75,8 @@ export const createEditBoard = ({
 			originActionTargetId: actionTargetId,
 			originFolderId: folderId,
 			onConfirm,
-			compositionData
+			compositionData,
+			pendingFilesNodes: filesNodes
 		}
 	});
 };

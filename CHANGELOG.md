@@ -1,3 +1,13 @@
+## 1.51.0 (2026-10-22)
+
+* feat(CO-4028): add Files nodes to a new composer from other modules (#1337) ([542d0b7](https://github.com/zextras/carbonio-mails-ui/commit/542d0b7)), closes [#1337](https://github.com/zextras/carbonio-mails-ui/issues/1337)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.20 (#1358) ([62ba1ae](https://github.com/zextras/carbonio-mails-ui/commit/62ba1ae)), closes [#1358](https://github.com/zextras/carbonio-mails-ui/issues/1358)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.21 (#1363) ([ee4fb60](https://github.com/zextras/carbonio-mails-ui/commit/ee4fb60)), closes [#1363](https://github.com/zextras/carbonio-mails-ui/issues/1363)
+* chore(deps): update dependency playwright to v1.64.1 (#1366) ([9a92da2](https://github.com/zextras/carbonio-mails-ui/commit/9a92da2)), closes [#1366](https://github.com/zextras/carbonio-mails-ui/issues/1366)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5 ([816c4c8](https://github.com/zextras/carbonio-mails-ui/commit/816c4c8))
+* chore(deps): update testing library (#1359) ([a26b748](https://github.com/zextras/carbonio-mails-ui/commit/a26b748)), closes [#1359](https://github.com/zextras/carbonio-mails-ui/issues/1359)
+* docs: remove double hyphen from pnpm commands in README ([55e039d](https://github.com/zextras/carbonio-mails-ui/commit/55e039d))
+
 ## <small>1.50.7 (2026-10-20)</small>
 
 * fix(CO-3617): keep a replied single-message conversation in search results (#1350) ([f1c47ab](https://github.com/zextras/carbonio-mails-ui/commit/f1c47ab)), closes [#1350](https://github.com/zextras/carbonio-mails-ui/issues/1350)
