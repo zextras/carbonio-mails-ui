@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
+import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers/conversations';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
@@ -241,20 +243,51 @@ function handleNotifyMessagesCreated(
 		return Array.from(new Set([...convMessagesIds, message.id]));
 	}
 
+	/**
+	 * Returns the conversation list ordered by the date of each conversation in the given folder,
+	 * the same date used by the server to sort the folder. Messages added outside the folder (e.g.
+	 * drafts or sent replies) do not change it, so they don't move the conversation.
+	 * Returns undefined when the folder is not sorted by date.
+	 */
 	function getOrderedConversationListIndex(
-		conversations: Record<string, NormalizedConversation>,
-		folderId: string
-	): Array<string> {
+		state: EmailsStoreState,
+		folderId: string,
+		updatedConversationIds: Array<string>
+	): Array<string> | undefined {
 		const sortOrder = getUserSettings()?.prefs?.zimbraPrefSortOrder as string;
-		const { sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
-		return orderBy(conversations, 'date', toLower(sortDirection)).map((conv) => conv.id);
+		const { sortType, sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
+		if (sortType !== 'date') {
+			return undefined;
+		}
+		const folder = getFolder(folderId);
+		const messagesParent = folder ? getMessagesParentForFolder(folder) : folderId;
+		const { conversations, messages: storedMessages } = state.populatedItemsSlice;
+		const conversationIds = Array.from(
+			new Set([...state.conversationIndexSlice.conversationListIndex, ...updatedConversationIds])
+		);
+		return orderBy(
+			conversationIds,
+			(conversationId) => {
+				const conversation = conversations[conversationId];
+				if (!conversation) {
+					return 0;
+				}
+				return getConversationDateInFolder(
+					conversation,
+					conversation.messageIds.map((messageId) => storedMessages[messageId]),
+					messagesParent
+				);
+			},
+			toLower(sortDirection) as 'asc' | 'desc'
+		);
 	}
 
 	function addMessagesToConversation(state: EmailsStoreState): void {
+		const updatedConversationIds: Array<string> = [];
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
 			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
-				const newMessages = find(conversation.messageIds, msg.id)
+				const newMessages = conversation.messageIds.includes(msg.id)
 					? conversation.messageIds
 					: getOrderedMessagesForConversation(conversation.messageIds, msg);
 
@@ -271,20 +304,23 @@ function handleNotifyMessagesCreated(
 					...state.populatedItemsSlice.conversations,
 					...conv
 				};
-
-				const regex = /\/folder\/([^/]+)(?:\/|$)/;
-				const match = regex.exec(globalThis.location.pathname);
-
-				const folderId = match?.[1];
-				if (folderId) {
-					// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
-					state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
-						state.populatedItemsSlice.conversations,
-						folderId
-					);
-				}
+				updatedConversationIds.push(msg.conversation);
 			}
 		});
+
+		const regex = /\/folder\/([^/]+)(?:\/|$)/;
+		const match = regex.exec(globalThis.location.pathname);
+		const folderId = match?.[1] ? decodeURIComponent(match[1]) : undefined;
+		if (folderId && updatedConversationIds.length > 0) {
+			const orderedConversationListIndex = getOrderedConversationListIndex(
+				state,
+				folderId,
+				updatedConversationIds
+			);
+			if (orderedConversationListIndex) {
+				state.conversationIndexSlice.conversationListIndex = orderedConversationListIndex;
+			}
+		}
 	}
 
 	useEmailsStore.setState(
