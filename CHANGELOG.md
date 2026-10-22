@@ -1,3 +1,7 @@
+## <small>1.50.7 (2026-10-20)</small>
+
+* fix(CO-3617): keep a replied single-message conversation in search results (#1350) ([f1c47ab](https://github.com/zextras/carbonio-mails-ui/commit/f1c47ab)), closes [#1350](https://github.com/zextras/carbonio-mails-ui/issues/1350)
+
 ## <small>1.50.6 (2026-10-20)</small>
 
 * fix: implement roving toolbar for improved keyboard navigation in rich text editor and restore jumpi ([ae4ec77](https://github.com/zextras/carbonio-mails-ui/commit/ae4ec77))

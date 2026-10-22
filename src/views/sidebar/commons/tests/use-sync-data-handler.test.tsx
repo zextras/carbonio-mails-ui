@@ -48,11 +48,13 @@ import {
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useMessageById
+	useMessageById,
+	useSearchResults
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
+import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
@@ -219,6 +221,71 @@ describe('sync data handler', () => {
 					expectedConversationsInStore
 				)
 			);
+		});
+
+		describe('in search results', () => {
+			it('should replace a single message conversation with its new conversation in the same position when replying', async () => {
+				populateFoldersStore();
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '10', messageIds: ['11'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] }),
+						generateConversation({ id: '20', messageIds: ['21'] })
+					],
+					false
+				);
+				simulateReplyToSingleMessageConversation({
+					deletedConversationId: '-5',
+					newConversationId: '500',
+					originalMessageId: '5',
+					newMessageId: '501'
+				});
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() =>
+					expect(result.current.conversationListIndex).toEqual(['10', '500', '20'])
+				);
+			});
+
+			it('should remove a deleted single message conversation which has not been replaced', async () => {
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '10', messageIds: ['11'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] })
+					],
+					false
+				);
+				mockShellSoapNotify({ deleted: ['-5'] });
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() => expect(result.current.conversationListIndex).toEqual(['10']));
+			});
+
+			it('should not duplicate the new conversation if it is already in the search results', async () => {
+				populateFoldersStore();
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '500', messageIds: ['499'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] })
+					],
+					false
+				);
+				simulateReplyToSingleMessageConversation({
+					deletedConversationId: '-5',
+					newConversationId: '500',
+					originalMessageId: '5',
+					newMessageId: '501'
+				});
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() => expect(result.current.conversationListIndex).toEqual(['500']));
+			});
 		});
 
 		it('should mark conversation as read', async () => {
