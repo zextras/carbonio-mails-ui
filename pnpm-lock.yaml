@@ -241,8 +241,8 @@ importers:
         specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.31)
       '@types/react-redux':
-        specifier: 7.1.34
-        version: 7.1.34
+        specifier: 7.1.35
+        version: 7.1.35
       '@types/uuid':
         specifier: 10.0.0
         version: 10.0.0
@@ -2376,8 +2376,8 @@ packages:
     peerDependencies:
       '@types/react': ^18.0.0
 
-  '@types/react-redux@7.1.34':
-    resolution: {integrity: sha512-GdFaVjEbYv4Fthm2ZLvj1VSCedV7TqE5y1kNwnjSdBOTXuRSgowux6J8TAct15T3CKBr63UMk+2CO7ilRhyrAQ==}
+  '@types/react-redux@7.1.35':
+    resolution: {integrity: sha512-iA6Q3vvIh0O5lm/E41bwvXMTVmUb0FW7HYAEt2k1SljUZV4Q9jTtEC17Bg/4t2pttPzJRZ0fxP/j0YhMNGjIFQ==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -10444,7 +10444,7 @@ snapshots:
     dependencies:
       '@types/react': 18.3.31
 
-  '@types/react-redux@7.1.34':
+  '@types/react-redux@7.1.35':
     dependencies:
       '@types/hoist-non-react-statics': 3.3.7(@types/react@18.3.31)
       '@types/react': 18.3.31
