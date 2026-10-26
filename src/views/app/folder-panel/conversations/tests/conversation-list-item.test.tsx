@@ -16,11 +16,21 @@ import type { Mock } from 'vitest';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import { ASSERTIONS } from '__test__/constants';
-import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
+import { getTimeLabel } from 'commons/utils';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from 'constants/index';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
-import { setConversationsInEmailStore, updateConversationStatus } from 'store/emails/store';
+import {
+	setConversationsInEmailStore,
+	setMessagesInEmailStore,
+	updateConversationStatus
+} from 'store/emails/store';
 import { ConvActionRequest } from 'types/soap/conv-action';
 import {
 	ConversationListItem,
@@ -853,6 +863,54 @@ describe('conversation-list-item component', () => {
 			});
 
 			// No API call should be triggered when collapsing
+		});
+	});
+
+	describe('date', () => {
+		const inboxMessageDate = new Date('2025-01-10T10:00:00Z').valueOf();
+		const draftDate = new Date('2025-02-25T10:00:00Z').valueOf();
+
+		function renderConversationWithInboxMessageAndDraft(): void {
+			populateFoldersStore();
+			const inboxMessage = generateMessage({
+				id: '1',
+				cid: '100',
+				folderId: FOLDERS.INBOX,
+				receiveDate: inboxMessageDate
+			});
+			const draft = generateMessage({
+				id: '2',
+				cid: '100',
+				folderId: FOLDERS.DRAFTS,
+				receiveDate: draftDate
+			});
+			// the conversation date includes the draft, as returned by the server
+			const conversation = generateConversation({
+				id: '100',
+				messageIds: ['2', '1'],
+				receiveDate: draftDate
+			});
+			setConversationsInEmailStore([conversation], false);
+			setMessagesInEmailStore([inboxMessage, draft], false);
+
+			setupTest(
+				<ConversationListItem
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					folderId={FOLDERS.INBOX}
+					index={0}
+					onSelect={noop}
+					isConversationExpanded={false}
+				/>
+			);
+		}
+
+		test('shows the date of the newest message of the conversation in the folder', async () => {
+			renderConversationWithInboxMessageAndDraft();
+
+			expect(await screen.findByText(getTimeLabel(inboxMessageDate))).toBeVisible();
+			expect(screen.queryByText(getTimeLabel(draftDate))).not.toBeInTheDocument();
 		});
 	});
 });

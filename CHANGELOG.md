@@ -1,3 +1,33 @@
+## <small>1.51.4 (2026-10-26)</small>
+
+* fix: mailto composition on double domain (#1380) ([c41b413](https://github.com/zextras/carbonio-mails-ui/commit/c41b413)), closes [#1380](https://github.com/zextras/carbonio-mails-ui/issues/1380)
+* chore(deps): update dependency @types/lodash to v4.17.27 (#1371) ([fd40f86](https://github.com/zextras/carbonio-mails-ui/commit/fd40f86)), closes [#1371](https://github.com/zextras/carbonio-mails-ui/issues/1371)
+* chore(deps): update dependency @types/react-redux to v7.1.35 (#1372) ([a4e9dfa](https://github.com/zextras/carbonio-mails-ui/commit/a4e9dfa)), closes [#1372](https://github.com/zextras/carbonio-mails-ui/issues/1372)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.1.0 (#1370) ([c4b2f80](https://github.com/zextras/carbonio-mails-ui/commit/c4b2f80)), closes [#1370](https://github.com/zextras/carbonio-mails-ui/issues/1370)
+
+## <small>1.51.3 (2026-10-23)</small>
+
+* fix(CO-4504): support nested bullet lists via Tab and toolbar indent (#1368) ([a56efef](https://github.com/zextras/carbonio-mails-ui/commit/a56efef)), closes [#1368](https://github.com/zextras/carbonio-mails-ui/issues/1368)
+
+## <small>1.51.2 (2026-10-23)</small>
+
+* fix(CO-4534): stay in search when undoing the deletion of an opened message (#1361) ([023dccf](https://github.com/zextras/carbonio-mails-ui/commit/023dccf)), closes [#1361](https://github.com/zextras/carbonio-mails-ui/issues/1361)
+* chore(deps): update vitest to v4.1.12 (#1364) ([1a7113a](https://github.com/zextras/carbonio-mails-ui/commit/1a7113a)), closes [#1364](https://github.com/zextras/carbonio-mails-ui/issues/1364)
+
+## <small>1.51.1 (2026-10-22)</small>
+
+* fix(CO-4509): keep conversation position and date when replying in a folder (#1352) ([777f7d1](https://github.com/zextras/carbonio-mails-ui/commit/777f7d1)), closes [#1352](https://github.com/zextras/carbonio-mails-ui/issues/1352)
+
+## 1.51.0 (2026-10-22)
+
+* feat(CO-4028): add Files nodes to a new composer from other modules (#1337) ([542d0b7](https://github.com/zextras/carbonio-mails-ui/commit/542d0b7)), closes [#1337](https://github.com/zextras/carbonio-mails-ui/issues/1337)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.20 (#1358) ([62ba1ae](https://github.com/zextras/carbonio-mails-ui/commit/62ba1ae)), closes [#1358](https://github.com/zextras/carbonio-mails-ui/issues/1358)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.21 (#1363) ([ee4fb60](https://github.com/zextras/carbonio-mails-ui/commit/ee4fb60)), closes [#1363](https://github.com/zextras/carbonio-mails-ui/issues/1363)
+* chore(deps): update dependency playwright to v1.64.1 (#1366) ([9a92da2](https://github.com/zextras/carbonio-mails-ui/commit/9a92da2)), closes [#1366](https://github.com/zextras/carbonio-mails-ui/issues/1366)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5 ([816c4c8](https://github.com/zextras/carbonio-mails-ui/commit/816c4c8))
+* chore(deps): update testing library (#1359) ([a26b748](https://github.com/zextras/carbonio-mails-ui/commit/a26b748)), closes [#1359](https://github.com/zextras/carbonio-mails-ui/issues/1359)
+* docs: remove double hyphen from pnpm commands in README ([55e039d](https://github.com/zextras/carbonio-mails-ui/commit/55e039d))
+
 ## <small>1.50.7 (2026-10-20)</small>
 
 * fix(CO-3617): keep a replied single-message conversation in search results (#1350) ([f1c47ab](https://github.com/zextras/carbonio-mails-ui/commit/f1c47ab)), closes [#1350](https://github.com/zextras/carbonio-mails-ui/issues/1350)
