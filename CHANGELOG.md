@@ -1,3 +1,16 @@
+## <small>1.51.3 (2026-10-23)</small>
+
+* fix(CO-4504): support nested bullet lists via Tab and toolbar indent (#1368) ([a56efef](https://github.com/zextras/carbonio-mails-ui/commit/a56efef)), closes [#1368](https://github.com/zextras/carbonio-mails-ui/issues/1368)
+
+## <small>1.51.2 (2026-10-23)</small>
+
+* fix(CO-4534): stay in search when undoing the deletion of an opened message (#1361) ([023dccf](https://github.com/zextras/carbonio-mails-ui/commit/023dccf)), closes [#1361](https://github.com/zextras/carbonio-mails-ui/issues/1361)
+* chore(deps): update vitest to v4.1.12 (#1364) ([1a7113a](https://github.com/zextras/carbonio-mails-ui/commit/1a7113a)), closes [#1364](https://github.com/zextras/carbonio-mails-ui/issues/1364)
+
+## <small>1.51.1 (2026-10-22)</small>
+
+* fix(CO-4509): keep conversation position and date when replying in a folder (#1352) ([777f7d1](https://github.com/zextras/carbonio-mails-ui/commit/777f7d1)), closes [#1352](https://github.com/zextras/carbonio-mails-ui/issues/1352)
+
 ## 1.51.0 (2026-10-22)
 
 * feat(CO-4028): add Files nodes to a new composer from other modules (#1337) ([542d0b7](https://github.com/zextras/carbonio-mails-ui/commit/542d0b7)), closes [#1337](https://github.com/zextras/carbonio-mails-ui/issues/1337)
