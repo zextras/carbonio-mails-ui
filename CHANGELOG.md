@@ -1,3 +1,7 @@
+## <small>1.51.3 (2026-10-23)</small>
+
+* fix(CO-4504): support nested bullet lists via Tab and toolbar indent (#1368) ([a56efef](https://github.com/zextras/carbonio-mails-ui/commit/a56efef)), closes [#1368](https://github.com/zextras/carbonio-mails-ui/issues/1368)
+
 ## <small>1.51.2 (2026-10-23)</small>
 
 * fix(CO-4534): stay in search when undoing the deletion of an opened message (#1361) ([023dccf](https://github.com/zextras/carbonio-mails-ui/commit/023dccf)), closes [#1361](https://github.com/zextras/carbonio-mails-ui/issues/1361)
