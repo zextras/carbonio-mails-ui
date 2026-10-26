@@ -23,7 +23,7 @@ const withMessageId = <P extends WithMessageIdProps>(
 	const ComponentWithMessageId = (props: Omit<P, 'messageId'>): React.JSX.Element => {
 		const { messageId } = useParams<{ messageId: string }>();
 		// keyed by message: a fresh panel (scroll, quoted text) only when another message is opened
-		return <WrappedComponent {...(props as P)} key={messageId} messageId={messageId!} />;
+		return <WrappedComponent {...(props as P)} key={messageId} messageId={messageId} />;
 	};
 
 	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'})`;

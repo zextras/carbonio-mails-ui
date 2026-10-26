@@ -54,7 +54,6 @@ describe('Search Panel', () => {
 		rerender(<SearchPanel searchResults={buildSearchResults(['2', '1'])} query={[]} />);
 
 		expect(screen.getByTestId(FIRST_MESSAGE_PANEL)).toBe(messagePanel);
-		expect(messagePanel).toBeInTheDocument();
 	});
 
 	it('should show the new message when another message is opened', async () => {
@@ -77,11 +76,15 @@ describe('Search Panel', () => {
 			</>,
 			{ initialEntries: ['/message/1'] }
 		);
-		expect(await screen.findByTestId(FIRST_MESSAGE_PANEL)).toBeVisible();
+		const firstPanel = await screen.findByTestId(FIRST_MESSAGE_PANEL);
+		expect(firstPanel).toBeVisible();
 
 		await user.click(screen.getByText('open second'));
 
-		expect(await screen.findByTestId('MessagePanel-2')).toBeVisible();
+		const secondPanel = await screen.findByTestId('MessagePanel-2');
+		expect(secondPanel).toBeVisible();
+		// a fresh panel, not the first one reused with the other message's data
+		expect(secondPanel).not.toBe(firstPanel);
 		expect(screen.queryByTestId(FIRST_MESSAGE_PANEL)).not.toBeInTheDocument();
 	});
 });
