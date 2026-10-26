@@ -1,3 +1,10 @@
+## <small>1.51.4 (2026-10-26)</small>
+
+* fix: mailto composition on double domain (#1380) ([c41b413](https://github.com/zextras/carbonio-mails-ui/commit/c41b413)), closes [#1380](https://github.com/zextras/carbonio-mails-ui/issues/1380)
+* chore(deps): update dependency @types/lodash to v4.17.27 (#1371) ([fd40f86](https://github.com/zextras/carbonio-mails-ui/commit/fd40f86)), closes [#1371](https://github.com/zextras/carbonio-mails-ui/issues/1371)
+* chore(deps): update dependency @types/react-redux to v7.1.35 (#1372) ([a4e9dfa](https://github.com/zextras/carbonio-mails-ui/commit/a4e9dfa)), closes [#1372](https://github.com/zextras/carbonio-mails-ui/issues/1372)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.1.0 (#1370) ([c4b2f80](https://github.com/zextras/carbonio-mails-ui/commit/c4b2f80)), closes [#1370](https://github.com/zextras/carbonio-mails-ui/issues/1370)
+
 ## <small>1.51.3 (2026-10-23)</small>
 
 * fix(CO-4504): support nested bullet lists via Tab and toolbar indent (#1368) ([a56efef](https://github.com/zextras/carbonio-mails-ui/commit/a56efef)), closes [#1368](https://github.com/zextras/carbonio-mails-ui/issues/1368)
