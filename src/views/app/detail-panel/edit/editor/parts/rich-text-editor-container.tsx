@@ -29,6 +29,7 @@ import { ImagePlugin } from '../plugins/image-plugin';
 import { InlineDataImageUploadPlugin } from '../plugins/inline-data-image-upload-plugin';
 import { InlineImageSrcSyncPlugin } from '../plugins/inline-image-src-sync-plugin';
 import { ListMarkdownShortcutPlugin } from '../plugins/list-markdown-shortcut-plugin';
+import { ListTabIndentationPlugin } from '../plugins/list-tab-indentation-plugin';
 import { GenericContainerNode } from '../plugins/nodes/generic-container-node';
 import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
@@ -83,6 +84,12 @@ export const LexicalWrapper = styled.div<{
 	.mails-lexical-content-editable p {
 		margin: 0;
 		padding: 0;
+	}
+
+	/* Lexical wraps a nested list in an extra <li>; hide its marker so a nested
+	   item doesn't show two bullets. */
+	.mails-lexical-nested-listitem {
+		list-style-type: none;
 	}
 
 	.mails-lexical-placeholder {
@@ -373,6 +380,7 @@ export const RichTextEditorContainer = ({
 					strikethrough: 'mails-lexical-strikethrough',
 					underlineStrikethrough: 'mails-lexical-underline-strikethrough'
 				},
+				list: { nested: { listitem: 'mails-lexical-nested-listitem' } },
 				link: 'mails-lexical-link',
 				image: 'mails-lexical-image',
 				table: 'mails-lexical-table',
@@ -417,6 +425,7 @@ export const RichTextEditorContainer = ({
 					<HistoryPlugin />
 					<ListPlugin />
 					<ListMarkdownShortcutPlugin />
+					<ListTabIndentationPlugin />
 					<LinkPlugin />
 					<AutoLinkPlugin />
 					<FloatingLinkEditorPlugin />
