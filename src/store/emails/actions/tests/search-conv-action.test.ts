@@ -12,6 +12,7 @@ import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-act
 import {
 	updateMessages,
 	getConversationById,
+	getMessageById,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
@@ -111,5 +112,33 @@ describe('searchConvEmailStoreAction', () => {
 			mockConversationId,
 			API_REQUEST_STATUS.fulfilled
 		);
+	});
+
+	it('keeps the header data of a stored message that comes back without headers', async () => {
+		// SearchConv sends no headers for the messages outside its query (e.g. replies in Sent)
+		(searchConvSoapApi as Mock).mockResolvedValueOnce({
+			m: [{ id: '2', l: '5', d: 1627849923000 }]
+		});
+		(normalizeCompleteMailMessageFromSoap as Mock).mockReturnValueOnce({
+			id: '2',
+			sensitivity: undefined,
+			messageIsFromExternalDomain: undefined
+		});
+		(getMessageById as Mock).mockReturnValueOnce({
+			id: '2',
+			sensitivity: 'Private',
+			messageIsFromExternalDomain: true
+		});
+		(getConversationById as Mock).mockReturnValueOnce({ id: mockConversationId });
+
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
+
+		expect(updateMessages).toHaveBeenCalledWith([
+			expect.objectContaining({
+				id: '2',
+				sensitivity: 'Private',
+				messageIsFromExternalDomain: true
+			})
+		]);
 	});
 });
