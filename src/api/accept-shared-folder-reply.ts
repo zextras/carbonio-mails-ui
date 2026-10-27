@@ -15,7 +15,7 @@ import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
 export const acceptSharedFolderReply = async (
 	data: Pick<MailsEditor, 'attach' | 'subject' | 'participants' | 'text'>
 ): Promise<SaveDraftResponse> => {
-	const toSend = generateRequest(data);
+	const toSend = generateRequest({ ...data, recipients: data.participants });
 	const resp = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse | ErrorSoapBodyResponse>(
 		'SendMsg',
 		{
