@@ -23,12 +23,14 @@ type ReadReceiptModalProps = {
 };
 
 // The "update" operation replaces all the flags of the message: send the ones it already has, plus "notified"
+// (the flags mapped to fields come from the fields, which the UI updates first; the others from rawFlags)
 const getFlagsWithNotified = (message: MailMessage, keepUnread: boolean): string =>
 	[
 		message.flagged && 'f',
 		message.isReplied && 'r',
 		message.isForwarded && 'w',
 		message.isDeleted && 'x',
+		message.rawFlags?.replace(/[unfrwx]/g, ''),
 		'n',
 		keepUnread && 'u'
 	]

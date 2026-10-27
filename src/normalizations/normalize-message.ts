@@ -403,7 +403,9 @@ const createBaseNormalizedMessage = (
 	body: IncompleteMessage['body'] | undefined;
 	autoSendTime: IncompleteMessage['autoSendTime'];
 	isEncrypted: IncompleteMessage['isEncrypted'];
+	rawFlags: IncompleteMessage['rawFlags'];
 } => ({
+	rawFlags: m.f,
 	conversation: m.cid,
 	date: m.d,
 	size: m.s,

@@ -282,6 +282,7 @@ describe('normalize-message.ts', () => {
 			const result = normalizePartialIncompleteMessageFromSoapNotify({ id: '111', f: '' });
 			expect(result).toEqual({
 				id: '111',
+				rawFlags: '',
 				flagged: false,
 				hasAttachment: false,
 				isDeleted: false,
