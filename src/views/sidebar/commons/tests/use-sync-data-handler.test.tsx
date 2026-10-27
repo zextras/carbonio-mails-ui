@@ -403,7 +403,7 @@ describe('sync data handler', () => {
 
 			setupHook(() => useSyncDataHandler());
 
-			await waitFor(() => expect(getMessageById('100')).toBeDefined());
+			await waitFor(() => expect(getMessageById('1').conversation).toBe('2'));
 			expect(getMessageById('1').read).toBe(false);
 		});
 
