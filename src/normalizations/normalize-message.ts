@@ -468,6 +468,8 @@ export const normalizeMailMessageFromSoap = ({
 	};
 	return removeNil({
 		...createBaseNormalizedMessage(m),
+		// a full message without f has no flags: '' overwrites stale ones when the store merges it
+		rawFlags: m.f ?? '',
 		id: m.id,
 		isComplete,
 		html,

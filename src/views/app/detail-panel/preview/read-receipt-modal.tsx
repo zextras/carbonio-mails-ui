@@ -30,7 +30,7 @@ const getFlagsWithNotified = (message: MailMessage, keepUnread: boolean): string
 		message.isReplied && 'r',
 		message.isForwarded && 'w',
 		message.isDeleted && 'x',
-		message.rawFlags?.replace(/[unfrwx]/g, ''),
+		message.rawFlags?.replaceAll(/[unfrwx]/g, ''),
 		'n',
 		keepUnread && 'u'
 	]
