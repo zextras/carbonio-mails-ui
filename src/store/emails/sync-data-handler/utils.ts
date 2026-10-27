@@ -15,8 +15,24 @@ import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 import { EmailsStoreState } from 'types/search';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
+
+/**
+ * Conversations in notifications list only their senders: keep the other participants already known.
+ */
+function keepKnownRecipients(
+	knownParticipants: Array<Participant>,
+	notifiedParticipants: Array<Participant>
+): Array<Participant> {
+	const recipients = knownParticipants.filter(
+		(known) =>
+			known.type !== 'f' &&
+			!find(notifiedParticipants, { type: known.type, address: known.address })
+	);
+	return [...notifiedParticipants, ...recipients];
+}
 
 /**
  * Finds the conversation which now holds the given messages, other than the excluded one.
@@ -176,7 +192,13 @@ function handleNotifyConversationsModified(
 				if (existingConversation) {
 					populatedItemsSlice.conversations[partialData.id] = {
 						...existingConversation,
-						...partialData
+						...partialData,
+						...(partialData.participants && {
+							participants: keepKnownRecipients(
+								existingConversation.participants,
+								partialData.participants
+							)
+						})
 					};
 				}
 			});
@@ -344,7 +366,16 @@ function handleNotifyConversationsCreated(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = conversation;
+				const replacedConversations = filter(acc, (known) =>
+					known.messageIds.some((id) => conversation.messageIds.includes(id))
+				);
+				acc[conversation.id] = {
+					...conversation,
+					participants: replacedConversations.reduce(
+						(participants, replaced) => keepKnownRecipients(replaced.participants, participants),
+						conversation.participants
+					)
+				};
 				return acc;
 			}, populatedItemsSlice.conversations);
 			conversationIndexSlice.conversationListIndex = Array.from(
