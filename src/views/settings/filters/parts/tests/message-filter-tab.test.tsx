@@ -71,6 +71,31 @@ describe('Message filters tab', () => {
 		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
 	});
 
+	it('should not save the filters if retrieving them failed', async () => {
+		const saveFilters = vi.fn().mockResolvedValue(undefined);
+		const FiltersManagerStub = ({
+			onFiltersSave
+		}: {
+			onFiltersSave: (filters: Array<Filter>) => void;
+		}): React.JSX.Element => (
+			<button type="button" onClick={(): void => onFiltersSave([])}>
+				save filters
+			</button>
+		);
+		const { user } = setupTest(
+			<MessageFilterTab
+				saveFilters={saveFilters}
+				getFilters={(): Promise<FilterRulesAPIResponse> => Promise.reject(new Error('fault'))}
+				FiltersManagerComponent={FiltersManagerStub as never}
+			/>
+		);
+		await screen.findByText('fault');
+
+		await user.click(screen.getByRole('button', { name: 'save filters' }));
+
+		expect(saveFilters).not.toHaveBeenCalled();
+	});
+
 	it('should display retrieved filters', async () => {
 		const filters = [
 			mockFilter({ name: 'Filter 1' }),
