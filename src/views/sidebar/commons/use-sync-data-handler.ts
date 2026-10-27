@@ -98,7 +98,8 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
 		);
 		handleNotifyConversationsCreated(conversationsWithMessageIds);
-		const normalizedMessages = allReceivedMessages.map((message) =>
+		// modified messages are partial: processModifiedNotifications updates them without defaults
+		const normalizedMessages = newMessages.map((message) =>
 			normalizeMailMessageFromSoap({ m: message, html: true })
 		);
 		updateMessages(normalizedMessages);
