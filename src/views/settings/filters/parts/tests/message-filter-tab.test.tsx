@@ -12,7 +12,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import { setupTest } from '@test-setup';
 import { FilterRulesAPIResponse } from 'api/get-filters';
 import { Filter } from 'types/filters';
-import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
+import { FilterManagerProps, getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
@@ -71,25 +71,44 @@ describe('Message filters tab', () => {
 		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
 	});
 
-	it('should not save the filters if retrieving them failed', async () => {
+	const FiltersManagerStub = ({ onFiltersSave }: FilterManagerProps): React.JSX.Element => (
+		<button type="button" onClick={(): Promise<void> => onFiltersSave([])}>
+			save filters
+		</button>
+	);
+
+	it('should not save the filters if retrieving them failed, and retrieve them again', async () => {
 		const saveFilters = vi.fn().mockResolvedValue(undefined);
-		const FiltersManagerStub = ({
-			onFiltersSave
-		}: {
-			onFiltersSave: (filters: Array<Filter>) => void;
-		}): React.JSX.Element => (
-			<button type="button" onClick={(): void => onFiltersSave([])}>
-				save filters
-			</button>
-		);
+		const getFilters = vi.fn().mockRejectedValue(new Error('fault'));
 		const { user } = setupTest(
 			<MessageFilterTab
 				saveFilters={saveFilters}
-				getFilters={(): Promise<FilterRulesAPIResponse> => Promise.reject(new Error('fault'))}
-				FiltersManagerComponent={FiltersManagerStub as never}
+				getFilters={getFilters}
+				FiltersManagerComponent={FiltersManagerStub}
 			/>
 		);
-		await screen.findByText('fault');
+		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
+		await screen.findByText('Something went wrong, please try again');
+
+		await user.click(screen.getByRole('button', { name: 'save filters' }));
+
+		expect(saveFilters).not.toHaveBeenCalled();
+		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(2));
+	});
+
+	it('should not save the filters while they are still loading', async () => {
+		const saveFilters = vi.fn().mockResolvedValue(undefined);
+		const { user } = setupTest(
+			<MessageFilterTab
+				saveFilters={saveFilters}
+				getFilters={(): Promise<FilterRulesAPIResponse> =>
+					new Promise(() => {
+						// never resolves: the filters are still loading
+					})
+				}
+				FiltersManagerComponent={FiltersManagerStub}
+			/>
+		);
 
 		await user.click(screen.getByRole('button', { name: 'save filters' }));
 

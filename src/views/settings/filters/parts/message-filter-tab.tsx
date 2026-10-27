@@ -6,6 +6,7 @@
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, useSnackbar } from '@zextras/carbonio-design-system';
+import { getErrorMessage } from '@zextras/carbonio-ui-commons';
 import { filter, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -56,8 +57,7 @@ export const MessageFilterTab = ({
 					replace: true,
 					hideButton: true,
 					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					label: getErrorMessage(error, t),
 					autoHideTimeout: 5000
 				});
 			});
@@ -76,14 +76,15 @@ export const MessageFilterTab = ({
 
 	const modifyFilter = useCallback(
 		(newFilters: Array<Filter>) => {
-			// the rules on the server are unknown: saving would replace them
-			if (loadFailed) {
+			// the rules on the server are unknown: saving would replace them. Load them again for the next save
+			if (loading || loadFailed) {
 				showSaveError();
+				if (loadFailed) fetchFilters();
 				return Promise.resolve();
 			}
 			return saveFilters(newFilters).then(fetchFilters).catch(showSaveError);
 		},
-		[fetchFilters, loadFailed, saveFilters, showSaveError]
+		[fetchFilters, loadFailed, loading, saveFilters, showSaveError]
 	);
 
 	useEffect(() => {
