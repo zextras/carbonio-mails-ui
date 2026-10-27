@@ -189,6 +189,17 @@ describe('Normalize conversation', () => {
 
 		expect(normalizedConversation.tags).toBeUndefined();
 	});
+
+	it('omits the fragment when the server does not send it, so the stored one is kept', () => {
+		// GetConv never sends the conversation fragment
+		const { fr, ...soapConversation } = generateConversationFromAPI({ id: '1' });
+
+		const normalizedConversation = mapToNormalizedConversation({
+			conversation: soapConversation as SoapConversation
+		});
+
+		expect(normalizedConversation).not.toHaveProperty('fragment');
+	});
 });
 
 describe('Normalize partial conversation', () => {
