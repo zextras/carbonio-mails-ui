@@ -8,7 +8,10 @@ import { useCallback } from 'react';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 
-import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import {
+	hasShareNotificationFailures,
+	sendShareNotificationSoapApi
+} from 'api/send-share-notification-soap-api';
 import { shareFolderSoapApi } from 'api/share-folder-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 
@@ -68,13 +71,16 @@ export const useShareFolderConfirm = ({
 			});
 			if (sendNotification) {
 				try {
-					await sendShareNotificationSoapApi({
+					const result = await sendShareNotificationSoapApi({
 						standardMessage,
 						contacts,
 						folder,
 						accounts,
 						action: notificationAction
 					});
+					if (hasShareNotificationFailures(result)) {
+						throw new Error('share notification failed');
+					}
 				} catch (e) {
 					console.error('Failed to send share notification', e);
 					createSnackbar({

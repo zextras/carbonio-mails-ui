@@ -17,7 +17,11 @@ type SendShareNotification = {
 };
 
 const escapeXml = (text: string): string =>
-	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	text
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;');
 
 export async function sendShareNotificationSoapApi(data: SendShareNotification): Promise<unknown> {
 	return Promise.all(
@@ -56,3 +60,10 @@ export async function sendShareNotificationSoapApi(data: SendShareNotification):
 		)
 	);
 }
+
+// the request never rejects: each contact gets its response body, a Fault or a network error
+export const hasShareNotificationFailures = (result: unknown): boolean =>
+	!Array.isArray(result) ||
+	result.some(
+		(item) => typeof item === 'object' && item !== null && ('error' in item || 'Fault' in item)
+	);
