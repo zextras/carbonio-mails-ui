@@ -58,7 +58,8 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 					standardMessage,
 					contacts: [{ email: grant.d ?? '' }],
 					folder,
-					accounts
+					accounts,
+					action: 'revoke'
 				});
 			} catch (e) {
 				console.error('Failed to send share notification', e);

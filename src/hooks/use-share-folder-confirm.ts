@@ -18,6 +18,7 @@ type UseShareFolderConfirmParams = {
 	sendNotification: boolean;
 	standardMessage: string;
 	successLabel: string;
+	notificationAction?: 'edit';
 	goBack: () => void;
 	onSuccess?: () => void;
 };
@@ -28,6 +29,7 @@ export const useShareFolderConfirm = ({
 	sendNotification,
 	standardMessage,
 	successLabel,
+	notificationAction,
 	goBack,
 	onSuccess
 }: UseShareFolderConfirmParams): ((contacts: Array<{ email: string }>) => Promise<void>) => {
@@ -70,7 +72,8 @@ export const useShareFolderConfirm = ({
 						standardMessage,
 						contacts,
 						folder,
-						accounts
+						accounts,
+						action: notificationAction
 					});
 				} catch (e) {
 					console.error('Failed to send share notification', e);
@@ -93,6 +96,7 @@ export const useShareFolderConfirm = ({
 			sendNotification,
 			standardMessage,
 			successLabel,
+			notificationAction,
 			accounts,
 			createSnackbar,
 			goBack,

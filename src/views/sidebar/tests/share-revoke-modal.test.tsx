@@ -148,7 +148,7 @@ describe('ShareRevokeModal', () => {
 			await user.click(screen.getByTestId('icon: Square'));
 			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
 			expect(sendNotificationMock).toHaveBeenCalledWith(
-				expect.objectContaining({ contacts: [{ email: baseGrant.d }] })
+				expect.objectContaining({ contacts: [{ email: baseGrant.d }], action: 'revoke' })
 			);
 		});
 	});
