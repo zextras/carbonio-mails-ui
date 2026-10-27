@@ -54,7 +54,7 @@ export function extractConvMessage(
 			// the conversation hits of SearchResponse carry d and s as strings
 			m: {
 				...message,
-				d: Number(message.d),
+				...(isNil(message.d) ? {} : { d: Number(message.d) }),
 				...(isNil(message.s) ? {} : { s: Number(message.s) })
 			},
 			html: true

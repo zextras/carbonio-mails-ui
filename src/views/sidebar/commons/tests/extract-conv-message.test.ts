@@ -30,4 +30,12 @@ describe('extractConvMessage', () => {
 
 		expect(message.size).toBeUndefined();
 	});
+
+	it('leaves the date out when the hit has none, so a stored date is not replaced by NaN', () => {
+		const hit = { id: '1', l: '2' } as unknown as SoapIncompleteMessage;
+
+		const [message] = extractConvMessage([{ m: [hit] }]);
+
+		expect(message.date).toBeUndefined();
+	});
 });
