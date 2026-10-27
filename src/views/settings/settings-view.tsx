@@ -18,7 +18,7 @@ import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove, unescape } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { GetSignaturesSoapApi, signatureRequest } from 'api/get-signatures-soap-api';
+import { GetSignaturesSoapApi } from 'api/get-signatures-soap-api';
 import { TIMEOUTS } from 'constants/index';
 import { NO_SIGNATURE_ID } from 'helpers/signatures';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
@@ -42,6 +42,7 @@ import { useSignatureSettings } from 'views/settings/hooks/use-signature-setting
 import ReceivingMessagesSettings from 'views/settings/receiving-messages-settings';
 import { RecoverMessages } from 'views/settings/recover-messages';
 import { saveSettings } from 'views/settings/save-settings';
+import { saveSignatures } from 'views/settings/save-signatures';
 import { SendersList, getList } from 'views/settings/senders-list';
 import SignatureSettings from 'views/settings/signature-settings';
 import TrusteeAddresses from 'views/settings/trustee-addresses';
@@ -189,37 +190,6 @@ const SettingsView = (): React.JSX.Element => {
 		[prefsToUpdate, disabled, propsToUpdate, identitiesToUpdate, attrsToUpdate]
 	);
 
-	const setNewOrForwardSignatureId = useCallback(
-		(
-			itemsAdd: SignItemType[],
-			resp: any,
-			oldSignatureId: string,
-			isFowardSignature: boolean
-		): void => {
-			const newOrForwardSignatureToSet = itemsAdd?.find((item) => item.id === oldSignatureId);
-			if (
-				!!newOrForwardSignatureToSet &&
-				resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
-			) {
-				const createdSignature =
-					resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
-				const realSignatureId = createdSignature.find(
-					(item: SignItemType) => item.name === newOrForwardSignatureToSet.label
-				).id;
-				const signatureKey = isFowardSignature
-					? 'zimbraPrefForwardReplySignatureId'
-					: 'zimbraPrefDefaultSignatureId';
-				saveSettings({
-					prefs: { [signatureKey]: realSignatureId }
-				}).then(() => {
-					setUpdatedPrefs({});
-					setUpdatedAttrs({});
-				});
-			}
-		},
-		[]
-	);
-
 	const onSignaturesLoaded = useCallback(
 		(signs: Array<Signature>) => {
 			const signaturesItems = map(
@@ -318,14 +288,21 @@ const SettingsView = (): React.JSX.Element => {
 				setDefaultSignatureId = prefsToUpdate.zimbraPrefDefaultSignatureId;
 				delete prefsToUpdate.zimbraPrefDefaultSignatureId;
 			}
-			signatureRequest({ itemsAdd, itemsEdit, itemsDelete, account }).then((resp) => {
-				if (setForwardReplySignatureId !== '') {
-					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
+			saveSignatures({
+				itemsAdd,
+				itemsEdit,
+				itemsDelete,
+				account,
+				pendingPrefs: {
+					zimbraPrefForwardReplySignatureId: setForwardReplySignatureId,
+					zimbraPrefDefaultSignatureId: setDefaultSignatureId
 				}
-				if (setDefaultSignatureId !== '') {
-					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
-				}
-				if (!('Fault' in resp)) {
+			})
+				.then((prefsSaved) => {
+					if (prefsSaved) {
+						setUpdatedPrefs({});
+						setUpdatedAttrs({});
+					}
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -344,7 +321,9 @@ const SettingsView = (): React.JSX.Element => {
 						.catch((err) => {
 							console.error(err);
 						});
-				} else {
+				})
+				// signatureRequest throws when the batch has a fault
+				.catch(() => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -353,8 +332,7 @@ const SettingsView = (): React.JSX.Element => {
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-				}
-			});
+				});
 		}
 
 		let changes = {};
@@ -413,7 +391,6 @@ const SettingsView = (): React.JSX.Element => {
 		validateSignatures,
 		account,
 		createSnackbar,
-		setNewOrForwardSignatureId,
 		t,
 		flag,
 		onSignaturesLoaded,
