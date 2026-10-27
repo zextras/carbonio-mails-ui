@@ -33,10 +33,11 @@ const FolderPanel = (): React.JSX.Element => {
 			}}
 		>
 			<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
+				{/* The key drops the state the lists own per folder, the selection included */}
 				{isMessageView || isDraft(folderId) || isTrash(folderId) ? (
-					<MessageList />
+					<MessageList key={folderId} />
 				) : (
-					<ConversationList />
+					<ConversationList key={folderId} />
 				)}
 			</Container>
 		</Container>
