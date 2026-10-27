@@ -9,11 +9,11 @@ import { getCreatedSignatureId, signatureRequest } from 'api/get-signatures-soap
 
 describe('signatureRequest', () => {
 	beforeEach(() => {
-		global.fetch = vi.fn();
+		globalThis.fetch = vi.fn();
 	});
 
 	it('throws the reason of the fault of the batch', async () => {
-		(global.fetch as Mock).mockResolvedValueOnce({
+		(globalThis.fetch as Mock).mockResolvedValueOnce({
 			json: async () => ({
 				Body: { BatchResponse: { Fault: [{ Reason: { Text: 'signature name already exists' } }] } }
 			})

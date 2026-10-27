@@ -23,8 +23,9 @@ type SaveSignaturesParams = {
 
 /**
  * Saves the signatures, then the prefs that point to the ones just created: their real id is known only
- * after the creation. Rejects when the signatures can't be saved.
- * @returns whether some prefs were saved
+ * after the creation. Rejects only when the signatures can't be saved: once they exist, the caller must reload
+ * them even if the prefs fail.
+ * @returns what happened to the prefs
  */
 export const saveSignatures = async ({
 	itemsAdd,
@@ -32,7 +33,7 @@ export const saveSignatures = async ({
 	itemsDelete,
 	account,
 	pendingPrefs
-}: SaveSignaturesParams): Promise<boolean> => {
+}: SaveSignaturesParams): Promise<'none' | 'saved' | 'failed'> => {
 	const { response } = await signatureRequest({ itemsAdd, itemsEdit, itemsDelete, account });
 	const prefs = Object.entries(pendingPrefs).reduce<Partial<Record<SignaturePref, string>>>(
 		(acc, [pref, temporaryId]) => {
@@ -43,8 +44,10 @@ export const saveSignatures = async ({
 		{}
 	);
 	if (isEmpty(prefs)) {
-		return false;
+		return 'none';
 	}
-	await saveSettings({ prefs });
-	return true;
+	return saveSettings({ prefs }).then(
+		() => 'saved' as const,
+		() => 'failed' as const
+	);
 };

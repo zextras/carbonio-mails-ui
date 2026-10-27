@@ -298,8 +298,8 @@ const SettingsView = (): React.JSX.Element => {
 					zimbraPrefDefaultSignatureId: setDefaultSignatureId
 				}
 			})
-				.then((prefsSaved) => {
-					if (prefsSaved) {
+				.then((prefsResult) => {
+					if (prefsResult === 'saved') {
 						setUpdatedPrefs({});
 						setUpdatedAttrs({});
 					}

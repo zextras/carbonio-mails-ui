@@ -11,20 +11,18 @@ import { saveSignatures } from 'views/settings/save-signatures';
 const newSignature = { id: 'temporary-id', name: 'new', label: 'new', description: 'text' };
 
 const mockBatchResponse = (batchResponse: unknown): void => {
-	(global.fetch as Mock).mockResolvedValueOnce({
+	(globalThis.fetch as Mock).mockResolvedValueOnce({
 		json: async () => ({ Body: { BatchResponse: batchResponse } })
 	});
 };
 
 describe('saveSignatures', () => {
 	beforeEach(() => {
-		global.fetch = vi.fn();
+		globalThis.fetch = vi.fn();
 	});
 
 	it('saves the default signature pref with the id of the signature created in the same save', async () => {
-		const saveSettingsSpy = vi
-			.spyOn(saveSettingsModule, 'saveSettings')
-			.mockResolvedValue({} as never);
+		const saveSettingsSpy = vi.spyOn(saveSettingsModule, 'saveSettings').mockResolvedValue({});
 		mockBatchResponse({
 			CreateSignatureResponse: [{ signature: [{ id: 'real-id', name: 'new' }] }]
 		});
@@ -37,7 +35,7 @@ describe('saveSignatures', () => {
 			pendingPrefs: { zimbraPrefDefaultSignatureId: 'temporary-id' }
 		});
 
-		expect(prefsSaved).toBe(true);
+		expect(prefsSaved).toBe('saved');
 		expect(saveSettingsSpy).toHaveBeenCalledWith({
 			prefs: { zimbraPrefDefaultSignatureId: 'real-id' }
 		});
@@ -55,8 +53,25 @@ describe('saveSignatures', () => {
 			pendingPrefs: { zimbraPrefDefaultSignatureId: '', zimbraPrefForwardReplySignatureId: 'other' }
 		});
 
-		expect(prefsSaved).toBe(false);
+		expect(prefsSaved).toBe('none');
 		expect(saveSettingsSpy).not.toHaveBeenCalled();
+	});
+
+	it('resolves with "failed" when the prefs cannot be saved after the signatures were created', async () => {
+		vi.spyOn(saveSettingsModule, 'saveSettings').mockRejectedValue(new Error('prefs fault'));
+		mockBatchResponse({
+			CreateSignatureResponse: [{ signature: [{ id: 'real-id', name: 'new' }] }]
+		});
+
+		const prefsResult = await saveSignatures({
+			itemsAdd: [newSignature],
+			itemsEdit: [],
+			itemsDelete: [],
+			account: { name: 'user@example.com' },
+			pendingPrefs: { zimbraPrefDefaultSignatureId: 'temporary-id' }
+		});
+
+		expect(prefsResult).toBe('failed');
 	});
 
 	it('rejects when the signatures batch has a fault', async () => {
