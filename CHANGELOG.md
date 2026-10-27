@@ -1,3 +1,7 @@
+## <small>1.51.5 (2026-10-26)</small>
+
+* fix(CO-4528): update carbonio-ui-commons to 2.6.2 ([ba0796e](https://github.com/zextras/carbonio-mails-ui/commit/ba0796e))
+
 ## <small>1.51.4 (2026-10-26)</small>
 
 * fix: mailto composition on double domain (#1380) ([c41b413](https://github.com/zextras/carbonio-mails-ui/commit/c41b413)), closes [#1380](https://github.com/zextras/carbonio-mails-ui/issues/1380)
