@@ -8,7 +8,10 @@ import { map, pick } from 'lodash';
 
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import {
+	MAIL_HEADER_FIELDS,
+	normalizeCompleteMailMessageFromSoap
+} from 'normalizations/normalize-message';
 import {
 	updateMessages,
 	getConversationById,
@@ -19,14 +22,6 @@ import {
 import { NormalizedConversation } from 'types/conversations';
 import { SearchConvResponse } from 'types/soap/search-conv';
 
-const HEADER_FIELDS = [
-	'messageIsFromExternalDomain',
-	'sensitivity',
-	'messageIdFromMailHeaders',
-	'creationDateFromMailHeaders',
-	'messageIsFromDistributionList'
-] as const;
-
 function handleSearchConvResponse(
 	conversationId: string,
 	response: SearchConvResponse,
@@ -36,7 +31,7 @@ function handleSearchConvResponse(
 		const message = normalizeCompleteMailMessageFromSoap(msg, html);
 		// the messages outside the query (e.g. replies in Sent) come without headers: keep what was known
 		const stored = msg._attrs ? undefined : getMessageById(msg.id);
-		return stored ? { ...message, ...pick(stored, HEADER_FIELDS) } : message;
+		return stored ? { ...message, ...pick(stored, MAIL_HEADER_FIELDS) } : message;
 	});
 	updateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
