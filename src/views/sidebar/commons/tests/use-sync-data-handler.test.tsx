@@ -459,6 +459,27 @@ describe('sync data handler', () => {
 			expect(message.read).toBe(false);
 		});
 
+		it('should keep an unread message unread when a reply joins its single message conversation', async () => {
+			populateFoldersStore();
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockShellSoapNotify({
+				created: {
+					m: [getSoapMessage('100', { cid: '2', l: FOLDERS.INBOX })],
+					c: [getSoapConversation('2')]
+				},
+				modified: {
+					m: [{ id: '1', cid: '2' }],
+					mbx: [{ s: 0 }]
+				},
+				deleted: ['-1']
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getMessageById('1').conversation).toBe('2'));
+			expect(getMessageById('1').read).toBe(false);
+		});
+
 		it('should not change flag read to false when f is undefined', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: true })]);
 			mockSoapModifyMessage(mailboxNumber, '1', { t: '', tn: '' }, 2);
