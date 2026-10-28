@@ -1,3 +1,7 @@
+## <small>1.47.2 (2026-10-28)</small>
+
+* fix(CO-4561): show text body parts merged into an HTML body as text (#1404) ([0905002](https://github.com/zextras/carbonio-mails-ui/commit/0905002)), closes [#1404](https://github.com/zextras/carbonio-mails-ui/issues/1404) [#1401](https://github.com/zextras/carbonio-mails-ui/issues/1401)
+
 ## <small>1.47.1 (2026-10-12)</small>
 
 * fix: preserve mail's HTML styles in Lexical ([d12bac5](https://github.com/zextras/carbonio-mails-ui/commit/d12bac5))
