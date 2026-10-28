@@ -20,7 +20,7 @@ export const acceptSharedFolderReply = async (
 		e: (data.participants ?? []).map((participant) => ({
 			t: participant.type,
 			a: participant.address,
-			d: participant.fullName
+			p: participant.fullName
 		})),
 		mp: [{ ct: 'text/plain', body: true, content: { _content: data.text[0] ?? '' } }]
 	};

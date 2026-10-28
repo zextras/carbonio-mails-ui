@@ -29,8 +29,8 @@ describe('acceptSharedFolderReply', () => {
 
 		const request = await sendMsgInterceptor;
 		expect(request.m.e).toEqual([
-			expect.objectContaining({ t: 'f', a: 'grantee@example.com' }),
-			expect.objectContaining({ t: 't', a: 'owner@example.com' })
+			{ t: 'f', a: 'grantee@example.com', p: 'Grantee' },
+			{ t: 't', a: 'owner@example.com', p: 'Owner' }
 		]);
 		expect(request.m.su).toEqual({ _content: 'Share Accepted: folder shared by owner' });
 		expect(request.m.mp).toEqual([
