@@ -14,6 +14,7 @@ import {
 import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
 import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
+import { linkifyText } from 'commons/mail-message-renderer/text-message-renderer/text-linkify';
 import {
 	getCreationDateFromMailHeadersFromAPI,
 	getMessageIdFromMailHeadersFromAPI,
@@ -269,6 +270,11 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	return ret;
 };
 
+// A non-HTML part merged into an HTML body is converted to HTML, so that it is
+// shown as text, as it would be in a plain text message
+const textPartToHtml = (content: string): string =>
+	`<div style="white-space: pre-wrap; font-family: monospace">${linkifyText(content).replaceAll(/\r\n|\r|\n/g, '<br />')}</div>`;
+
 const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string): BodyPart =>
 	reduce(
 		mp,
@@ -293,9 +299,13 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 						)
 					};
 				}
+				const content =
+					found.contentType === 'text/html' && part.ct !== 'text/html' && part.content
+						? textPartToHtml(part.content)
+						: (part.content ?? '');
 				return {
 					...found,
-					content: found.content.concat(part.content ?? ''),
+					content: found.content.concat(content),
 					truncated: !!part.truncated
 				};
 			}
