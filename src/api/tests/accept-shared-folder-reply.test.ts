@@ -28,13 +28,14 @@ describe('acceptSharedFolderReply', () => {
 		});
 
 		const request = await sendMsgInterceptor;
-		expect(request.m.e).toEqual([
-			{ t: 'f', a: 'grantee@example.com', p: 'Grantee' },
-			{ t: 't', a: 'owner@example.com', p: 'Owner' }
-		]);
-		expect(request.m.su).toEqual({ _content: 'Share Accepted: folder shared by owner' });
-		expect(request.m.mp).toEqual([
-			{ ct: 'text/plain', body: true, content: { _content: 'Accepted' } }
-		]);
+		expect(request.m).toEqual({
+			attach: { mp: [] },
+			su: { _content: 'Share Accepted: folder shared by owner' },
+			e: [
+				{ t: 'f', a: 'grantee@example.com', p: 'Grantee' },
+				{ t: 't', a: 'owner@example.com', p: 'Owner' }
+			],
+			mp: [{ ct: 'text/plain', body: true, content: { _content: 'Accepted' } }]
+		});
 	});
 });
