@@ -275,46 +275,6 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 	};
 }
 
-export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
-	const extractedBody = extractBody(msg);
-	const body = isHtml(msg.parts);
-	return {
-		id: msg.id === 'new' ? undefined : msg.id,
-		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
-		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
-		su: { _content: msg.subject ?? '' },
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		e: map(msg.participants, (c) => ({
-			t: c.type,
-			a: c.address,
-			d: (c as unknown as Participant).fullName ?? (c as unknown as Participant).name ?? undefined
-		})),
-		mp: [
-			body
-				? {
-						ct: 'multipart/alternative',
-						mp: [
-							{
-								ct: 'text/html',
-								body: true,
-								content: { _content: extractedBody.richText ?? '' }
-							},
-							{
-								ct: 'text/plain',
-								content: { _content: extractedBody.plainText ?? '' }
-							}
-						]
-					}
-				: {
-						ct: 'text/plain',
-						body: true,
-						content: { _content: extractedBody.plainText ?? '' }
-					}
-		]
-	};
-};
-
 /**
  * Builds the outgoing text/html mime part body: applies the user preference styles
  * (without affecting the signature content) and wraps the result into a complete
@@ -448,7 +408,7 @@ export const generateRequest = (
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,
-			d: c.fullName ?? c.firstName ?? undefined
+			p: c.fullName ?? c.firstName ?? undefined
 		})
 	);
 	if (data.requestReadReceipt) {
@@ -457,7 +417,7 @@ export const generateRequest = (
 				(data?.sender as unknown as SharedParticipant)?.email ??
 				(from as unknown as Participant)?.address,
 			t: ParticipantRole.READ_RECEIPT_NOTIFICATION,
-			d:
+			p:
 				(from as unknown as Participant).fullName ??
 				(from as unknown as SharedParticipant).firstName ??
 				undefined
