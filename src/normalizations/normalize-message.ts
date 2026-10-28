@@ -487,6 +487,15 @@ export const normalizeCompleteMailMessageFromSoap = (
 	html: boolean
 ): MailMessage => normalizeMailMessageFromSoap({ m, isComplete: true, html });
 
+// the fields normalizeMailHeaders reads from _attrs
+export const MAIL_HEADER_FIELDS: ReadonlyArray<keyof MailHeaders> = [
+	'messageIsFromExternalDomain',
+	'sensitivity',
+	'messageIdFromMailHeaders',
+	'creationDateFromMailHeaders',
+	'messageIsFromDistributionList'
+];
+
 const normalizeMailHeaders = (m: SoapPartialIncompleteMessage): MailHeaders => {
 	const { ownerAccount } = getIdentitiesDescriptors().filter(
 		(identity) => identity.type === 'primary'
