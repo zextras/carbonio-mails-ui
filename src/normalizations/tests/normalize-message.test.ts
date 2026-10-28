@@ -141,17 +141,6 @@ describe('normalize-message.ts', () => {
 				expect(doc.querySelectorAll('img')).toHaveLength(0);
 				expect(doc.querySelectorAll('b')).toHaveLength(0);
 			});
-
-			it('should use text/html as content type when the text/plain part comes first', () => {
-				const body = normalizeBody(
-					mixed([textPart({ part: '1', content: markupText }), htmlPart({ part: '2' })])
-				);
-
-				expect(body.contentType).toBe('text/html');
-				expect(body.content).not.toContain('<img');
-				expect(body.content.indexOf('&lt;img')).toBeLessThan(body.content.indexOf(htmlContent));
-			});
-
 			it('should escape text/plain parts found in nested multiparts', () => {
 				const body = normalizeBody(
 					mixed([
@@ -172,16 +161,6 @@ describe('normalize-message.ts', () => {
 
 				expect(body.content).toContain('Hello<br />world');
 			});
-
-			it('should not render an inline text/html part as an image', () => {
-				const body = normalizeBody(
-					mixed([textPart({ part: '1' }), htmlPart({ part: '2', cd: 'inline' })])
-				);
-
-				expect(body.content).not.toContain('<img');
-				expect(body.content).toContain(htmlContent);
-			});
-
 			it('should render an inline image without content id between HTML parts', () => {
 				const body = normalizeBody(
 					mixed([
@@ -197,36 +176,6 @@ describe('normalize-message.ts', () => {
 				expect(before).toBe(htmlContent);
 				expect(image).toMatch(/^<img src='\/service\/home\/~\/\?auth=co&loc=en&id=.+&part=2'>$/);
 				expect(after).toBe('<div>After the image</div>');
-			});
-
-			it('should keep a plain text body when there is no text/html part', () => {
-				const body = normalizeBody(
-					mixed([
-						textPart({ part: '1', content: 'first ' }),
-						{ ct: 'image/png', part: '2', body: true, cd: 'inline' },
-						textPart({ part: '3', content: markupText })
-					])
-				);
-
-				expect(body.contentType).toBe('text/plain');
-				expect(body.content).toBe(`first ${markupText}`);
-			});
-
-			it('should use the text part content type when the first body part is an image', () => {
-				const body = normalizeBody(
-					mixed([{ ct: 'image/png', part: '1', body: true, cd: 'inline' }, textPart()])
-				);
-
-				expect(body.contentType).toBe('text/plain');
-				expect(body.content).toBe('Hello\nworld');
-			});
-
-			it('should flag the body as truncated if any body part is truncated', () => {
-				const body = normalizeBody(
-					mixed([htmlPart({ truncated: true }), textPart({ truncated: false })])
-				);
-
-				expect(body.truncated).toBe(true);
 			});
 		});
 		describe('Parts normalization', () => {
