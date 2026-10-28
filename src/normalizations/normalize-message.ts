@@ -5,9 +5,10 @@
  */
 
 import { getFolder, getIdentitiesDescriptors, useFolderStore } from '@zextras/carbonio-ui-commons';
-import { find, forEach, isArray, isNil, map, orderBy, reduce } from 'lodash';
+import { filter, find, forEach, isArray, isNil, map, orderBy, reduce } from 'lodash';
 
 import { extractContentIdsFromHtml, removeAngleBrackets } from 'commons/content-id-utils';
+import { linkifyText } from 'commons/mail-message-renderer/text-message-renderer/text-linkify';
 import {
 	getCreationDateFromMailHeadersFromAPI,
 	getMessageIdFromMailHeadersFromAPI,
@@ -264,43 +265,64 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	return ret;
 };
 
-const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string): BodyPart =>
+const findBodyParts = (mp: Array<SoapMailMessagePart>): Array<SoapMailMessagePart> =>
 	reduce(
 		mp,
-		(found, part) => {
-			if (part.mp) return findBodyPart(part.mp, found, id);
-			if (part?.body) {
-				if (!found.contentType.length) {
-					return { contentType: part.ct, content: part.content ?? '', truncated: !!part.truncated };
-				}
-				if (
-					part.part &&
-					!part.part.includes('.') &&
-					part.cd &&
-					part.cd === 'inline' &&
-					!part.ci &&
-					!(part.ct && part.ct === 'text/plain')
-				) {
-					return {
-						...found,
-						content: found.content.concat(
-							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>`
-						)
-					};
-				}
-				return {
-					...found,
-					content: found.content.concat(part.content ?? ''),
-					truncated: !!part.truncated
-				};
-			}
+		(found: Array<SoapMailMessagePart>, part) => {
+			if (part.mp) return [...found, ...findBodyParts(part.mp)];
+			if (part?.body) return [...found, part];
 			return found;
 		},
-		acc
+		[]
 	);
 
-const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart =>
-	findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
+const isTextPart = (part: SoapMailMessagePart): boolean => !!part.ct?.startsWith('text/');
+
+const isInlineImageWithoutContentId = (part: SoapMailMessagePart): boolean =>
+	!!part.ct?.startsWith('image/') &&
+	!!part.part &&
+	!part.part.includes('.') &&
+	part.cd === 'inline' &&
+	!part.ci;
+
+// A non-HTML text part merged into an HTML body is converted to HTML, so that it is
+// shown as text, as it would be in a plain text message
+const textPartToHtml = (content: string): string =>
+	`<div style="white-space: pre-wrap; font-family: monospace">${linkifyText(content).replaceAll(/\r\n|\r|\n/g, '<br />')}</div>`;
+
+/**
+ * Builds the message body from the parts flagged as body by the server.
+ * A multipart/mixed message can have several body parts (e.g. an HTML part followed by
+ * a mailing list text footer): they are all shown in order, each one converted
+ * according to its own content type.
+ */
+const generateBody = (mp: Array<SoapMailMessagePart>, id: string): BodyPart => {
+	const bodyParts = findBodyParts(mp);
+	const truncated = bodyParts.some((part) => !!part.truncated);
+
+	if (!bodyParts.some((part) => part.ct === 'text/html')) {
+		const textParts = filter(bodyParts, isTextPart);
+		return {
+			contentType: textParts[0]?.ct ?? bodyParts[0]?.ct ?? '',
+			content: map(textParts, (part) => part.content ?? '').join(''),
+			truncated
+		};
+	}
+
+	const content = reduce(
+		bodyParts,
+		(acc, part) => {
+			if (part.ct === 'text/html') return acc.concat(part.content ?? '');
+			if (isTextPart(part)) return part.content ? acc.concat(textPartToHtml(part.content)) : acc;
+			if (isInlineImageWithoutContentId(part)) {
+				return acc.concat(`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part.part}'>`);
+			}
+			return acc;
+		},
+		''
+	);
+	return { contentType: 'text/html', content, truncated };
+};
 
 export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
 	type: e.t,
