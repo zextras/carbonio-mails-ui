@@ -40,7 +40,8 @@ export const mapToNormalizedConversation = ({
 		messageIds: convMessagesIds,
 		participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : [],
 		subject: conversation.su,
-		fragment: conversation.fr,
+		// GetConv never sends it: an undefined fragment would erase the one already stored
+		...(isNil(conversation.fr) ? {} : { fragment: conversation.fr }),
 		read: !isNil(conversation.f) ? !/u/.test(conversation.f) : conversation.u <= 0,
 		hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : false,
 		flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : false,
