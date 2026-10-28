@@ -49,16 +49,13 @@ export async function sendMsgFromEditor({
 		},
 		identity?.ownerAccount ?? undefined
 	);
-	if ('Fault' in Body) {
-		publishQuotaChangedEvent(editor.size);
-		return Body;
+	const response = 'Fault' in Body ? Body : Body.SendMsgResponse;
+	const sentMessage = 'Fault' in Body ? undefined : Body.SendMsgResponse?.m?.[0];
+	if (sentMessage?.id) {
+		getMessageEmailStoreAction({ messageId: sentMessage.id, html: editor.isRichText });
 	}
-	const response = Body.SendMsgResponse;
-	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction({ messageId: response.m[0].id, html: editor.isRichText });
-	}
-	if (response?.m?.[0]?.cid) {
-		getConvEmailStoreAction({ id: response.m[0].cid, html: editor.isRichText });
+	if (sentMessage?.cid) {
+		getConvEmailStoreAction({ id: sentMessage.cid, html: editor.isRichText });
 	}
 	publishQuotaChangedEvent(editor.size);
 	return response;

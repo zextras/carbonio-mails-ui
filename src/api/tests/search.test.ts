@@ -78,6 +78,19 @@ describe('Search', () => {
 		expect(receivedRequest.sortBy).toBe('flagAsc');
 	});
 
+	it('should send sizeAsc if attachAsc', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+		searchSoapApi({
+			query: 'aaa',
+			limit: 10,
+			sortBy: 'attachAsc'
+		});
+
+		const receivedRequest = await interceptor;
+		expect(receivedRequest.sortBy).toBe('sizeAsc');
+	});
+
 	it('should send sizeDesc if attachDesc', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 

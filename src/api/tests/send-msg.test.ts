@@ -13,6 +13,9 @@ import {
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateNewEditor } from '__test__/generators/editors';
 import { sendMsgFromEditor } from 'api/send-msg';
+import * as publishEvent from 'event-bus/publish-event';
+import * as getConvAction from 'store/emails/actions/get-conv-action';
+import * as getMessageAction from 'store/emails/actions/get-message';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
 const recipients = {
@@ -73,9 +76,16 @@ describe('sendMsgFromEditor', () => {
 			HttpResponse.json({ Body: fault })
 		);
 
+		const quotaSpy = vi.spyOn(publishEvent, 'publishQuotaChangedEvent');
+		const getMessageSpy = vi.spyOn(getMessageAction, 'getMessageEmailStoreAction');
+		const getConvSpy = vi.spyOn(getConvAction, 'getConvEmailStoreAction');
+
 		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
 
 		expect(response).toEqual(fault);
+		expect(quotaSpy).toHaveBeenCalledTimes(1);
+		expect(getMessageSpy).not.toHaveBeenCalled();
+		expect(getConvSpy).not.toHaveBeenCalled();
 	});
 
 	it('should return the SendMsg response when the message is sent', async () => {
@@ -83,9 +93,20 @@ describe('sendMsgFromEditor', () => {
 			m: [{ id: '1' }],
 			_jsns: 'urn:zimbraMail'
 		});
+		const quotaSpy = vi.spyOn(publishEvent, 'publishQuotaChangedEvent');
+		const getMessageSpy = vi
+			.spyOn(getMessageAction, 'getMessageEmailStoreAction')
+			.mockResolvedValue(undefined as never);
+		const getConvSpy = vi
+			.spyOn(getConvAction, 'getConvEmailStoreAction')
+			.mockResolvedValue(undefined as never);
 
 		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
 
 		expect(response).toEqual(expect.objectContaining({ m: [{ id: '1' }] }));
+		expect(quotaSpy).toHaveBeenCalledTimes(1);
+		expect(getMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ messageId: '1' }));
+		// the server answers with the message id only, never its conversation
+		expect(getConvSpy).not.toHaveBeenCalled();
 	});
 });
