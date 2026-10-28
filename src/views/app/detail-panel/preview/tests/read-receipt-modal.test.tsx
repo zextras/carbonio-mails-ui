@@ -154,6 +154,65 @@ describe('ReadReceiptModal', () => {
 		expect(request.action.f).toBe('n');
 	});
 
+	it('should keep the flagged, replied and forwarded flags when "do not notify" is clicked', async () => {
+		const flaggedMessage = generateMessage({
+			id: '12345',
+			isReadReceiptRequested: true,
+			isRead: true,
+			isFlagged: true,
+			isReplied: true,
+			isForwarded: true
+		});
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal open onClose={vi.fn()} message={flaggedMessage} readReceiptSetting="ask" />
+		);
+
+		await user.click(await screen.findByText('Do not notify'));
+
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('frwn');
+	});
+
+	it('should keep the flagged flag and the unread state when "do not notify" is clicked with "Mark manually" setting', async () => {
+		(useUserSettings as Mock).mockReturnValue({
+			prefs: { zimbraPrefMarkMsgRead: '-1' }
+		});
+
+		const flaggedUnreadMessage = generateMessage({
+			id: '12345',
+			isReadReceiptRequested: true,
+			isRead: false,
+			isFlagged: true
+		});
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal
+				open
+				onClose={vi.fn()}
+				message={flaggedUnreadMessage}
+				readReceiptSetting="ask"
+			/>
+		);
+
+		await user.click(await screen.findByText('Do not notify'));
+
+		const request = await msgActionInterceptor;
+		expect(request.action.op).toBe('update');
+		expect(request.action.f).toBe('fnu');
+	});
+
 	it('should call onClose when "notify" action is triggered', async () => {
 		createSoapAPIInterceptor<{ mid: string }>('SendDeliveryReport');
 		const mockOnClose = vi.fn();
