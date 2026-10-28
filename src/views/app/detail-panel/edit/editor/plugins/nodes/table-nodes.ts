@@ -110,6 +110,13 @@ function applyExportedAttributes(
 	}
 }
 
+/** Same layout the `mails-lexical-table` theme class gives the table in the editor. */
+const EDITOR_TABLE_EXPORT_STYLES: Record<string, string> = {
+	'border-collapse': 'collapse',
+	'table-layout': 'fixed',
+	width: '100%'
+};
+
 export type SerializedExtendedTableCellNode = Spread<WithAttributes, SerializedTableCellNode>;
 export type SerializedExtendedTableRowNode = Spread<WithAttributes, SerializedTableRowNode>;
 export type SerializedExtendedTableNode = Spread<WithAttributes, SerializedTableNode>;
@@ -319,17 +326,22 @@ export class ExtendedTableNode extends TableNode {
 
 	override exportDOM(editor: LexicalEditor): DOMExportOutput {
 		const output = super.exportDOM(editor);
-		if (!this.__imported) {
-			return output;
-		}
 		const stockAfter = output.after;
 		return {
 			...output,
 			after: (generatedElement): ReturnType<NonNullable<DOMExportOutput['after']>> => {
 				const result = stockAfter ? stockAfter(generatedElement) : generatedElement;
 				if (result instanceof HTMLTableElement) {
-					// The theme class is an editor concern; the original class replaces it.
-					applyExportedAttributes(result, this.__attributes);
+					if (this.__imported) {
+						// The theme class is an editor concern; the original class replaces it.
+						applyExportedAttributes(result, this.__attributes);
+					} else {
+						// The layout of a table created in the editor comes from the theme class,
+						// which the displayer doesn't have: inline it or the table collapses.
+						Object.entries(EDITOR_TABLE_EXPORT_STYLES).forEach(([property, value]) =>
+							result.style.setProperty(property, value)
+						);
+					}
 				}
 				return result;
 			}
