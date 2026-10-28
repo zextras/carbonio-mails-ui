@@ -7,11 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { generateMessageFromAPI } from '../../__test__/generators/api';
-import { MailMessagePart, SoapMailMessagePart } from '../../types';
+import { BodyPart, MailMessagePart, SoapMailMessagePart } from '../../types';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
+
 
 describe('normalize-message.ts', () => {
 	describe('Normalize message', () => {
@@ -84,6 +85,85 @@ describe('normalize-message.ts', () => {
 				];
 
 				expect(normalizedMessage.participants).toEqual(expectedResult);
+			});
+		});
+		describe('Body with multiple body parts', () => {
+			const htmlContent = '<div>HTML part.</div>';
+			const htmlPart = (overrides: Partial<SoapMailMessagePart> = {}): SoapMailMessagePart => ({
+				ct: 'text/html',
+				part: '1',
+				body: true,
+				content: htmlContent,
+				...overrides
+			});
+			const textPart = (overrides: Partial<SoapMailMessagePart> = {}): SoapMailMessagePart => ({
+				ct: 'text/plain',
+				part: '2',
+				body: true,
+				content: 'Hello\nworld',
+				...overrides
+			});
+			const mixed = (mp: Array<SoapMailMessagePart>): Array<SoapMailMessagePart> => [
+				{ ct: 'multipart/mixed', part: 'TEXT', mp }
+			];
+			const normalizeBody = (mp: Array<SoapMailMessagePart>): BodyPart =>
+				normalizeMailMessageFromSoap(generateMessageFromAPI({ mp }), true).body as BodyPart;
+
+			const markupText = '<b>Hello</b> <img src="image.png">';
+
+			it('should escape the markup of a text/plain part merged after a text/html part', () => {
+				const body = normalizeBody(mixed([htmlPart(), textPart({ content: markupText })]));
+
+				expect(body.contentType).toBe('text/html');
+				expect(body.content).toContain(htmlContent);
+				expect(body.content).not.toContain('<img');
+				expect(body.content).toContain(
+					'&lt;b&gt;Hello&lt;/b&gt; &lt;img src=&quot;image.png&quot;&gt;'
+				);
+			});
+
+			it('should not create any element from a text/plain part merged into an HTML body', () => {
+				const body = normalizeBody(mixed([htmlPart(), textPart({ content: markupText })]));
+				const doc = new DOMParser().parseFromString(body.content, 'text/html');
+
+				expect(doc.querySelectorAll('img')).toHaveLength(0);
+				expect(doc.querySelectorAll('b')).toHaveLength(0);
+			});
+			it('should escape text/plain parts found in nested multiparts', () => {
+				const body = normalizeBody(
+					mixed([
+						{
+							ct: 'multipart/mixed',
+							part: '1',
+							mp: [htmlPart({ part: '1.1' }), textPart({ part: '1.2', content: markupText })]
+						}
+					])
+				);
+
+				expect(body.contentType).toBe('text/html');
+				expect(body.content).not.toContain('<img');
+			});
+
+			it('should keep the line breaks of a text/plain part merged into an HTML body', () => {
+				const body = normalizeBody(mixed([htmlPart(), textPart()]));
+
+				expect(body.content).toContain('Hello<br />world');
+			});
+			it('should render an inline image without content id between HTML parts', () => {
+				const body = normalizeBody(
+					mixed([
+						htmlPart({ part: '1' }),
+						{ ct: 'image/png', part: '2', body: true, cd: 'inline' },
+						htmlPart({ part: '3', content: '<div>After the image</div>' })
+					])
+				);
+
+				const [before, image, after] = body.content.split(/(<img [^>]*>)/);
+
+				expect(body.contentType).toBe('text/html');
+				expect(before).toBe(htmlContent);
+				expect(image).toMatch(/^<img src='\/service\/home\/~\/\?auth=co&loc=en&id=.+&part=2'>$/);
+				expect(after).toBe('<div>After the image</div>');
 			});
 		});
 		describe('Parts normalization', () => {
