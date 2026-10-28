@@ -5,7 +5,7 @@
  */
 
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 import { normalizeFilterRulesFromSoap } from 'normalizations/normalize-filter-rules';
 import { FilterRules } from 'types/filters';
@@ -17,17 +17,18 @@ export type FilterRulesAPIResponse = {
 const fetchFilterRules = async (
 	request: 'GetFilterRules' | 'GetOutgoingFilterRules'
 ): Promise<FilterRules> => {
-	const response = await legacySoapFetch<unknown, FilterRulesAPIResponse | ErrorSoapBodyResponse>(
-		request,
-		{
-			_jsns: 'urn:zimbraMail'
-		}
-	);
+	const responseName = `${request}Response` as const;
+	const { Body } = await soapFetchV2<
+		{ _jsns: string },
+		Record<typeof responseName, FilterRulesAPIResponse>
+	>(request, {
+		_jsns: 'urn:zimbraMail'
+	});
 	// a fault must not look like an empty list: saving it would delete every rule
-	if ('Fault' in response) {
-		throw new GenericSoapApiError(response.Fault);
+	if ('Fault' in Body) {
+		throw new GenericSoapApiError(Body.Fault);
 	}
-	return response.filterRules;
+	return Body[responseName].filterRules;
 };
 
 export const getIncomingFilters = async (): Promise<FilterRulesAPIResponse> =>

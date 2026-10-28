@@ -4,26 +4,31 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
+import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { getIncomingFilters, getOutgoingFilters } from 'api/get-filters';
 
 describe('get filters', () => {
 	it('getIncomingFilters rejects when the server returns a fault', async () => {
-		createSoapAPIInterceptor<never, ErrorSoapBodyResponse>(
-			'GetFilterRules',
-			buildSoapErrorResponseBody()
+		createAPIInterceptor(
+			'post',
+			'/service/soap/GetFilterRulesRequest',
+			HttpResponse.json({ Body: buildSoapErrorResponseBody() })
 		);
 
 		await expect(getIncomingFilters()).rejects.toBeInstanceOf(GenericSoapApiError);
 	});
 
 	it('getOutgoingFilters rejects when the server returns a fault', async () => {
-		createSoapAPIInterceptor<never, ErrorSoapBodyResponse>(
-			'GetOutgoingFilterRules',
-			buildSoapErrorResponseBody()
+		createAPIInterceptor(
+			'post',
+			'/service/soap/GetOutgoingFilterRulesRequest',
+			HttpResponse.json({ Body: buildSoapErrorResponseBody() })
 		);
 
 		await expect(getOutgoingFilters()).rejects.toBeInstanceOf(GenericSoapApiError);
