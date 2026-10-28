@@ -1,3 +1,8 @@
+## <small>1.51.6 (2026-10-28)</small>
+
+* fix(CO-2827): close the preview to the search results when an action runs in search (#1360) ([38ac0d7](https://github.com/zextras/carbonio-mails-ui/commit/38ac0d7)), closes [#1360](https://github.com/zextras/carbonio-mails-ui/issues/1360)
+* fix(CO-4575): keep the message flags when the read receipt is not sent (#1383) ([ab52032](https://github.com/zextras/carbonio-mails-ui/commit/ab52032)), closes [#1383](https://github.com/zextras/carbonio-mails-ui/issues/1383)
+
 ## <small>1.51.5 (2026-10-26)</small>
 
 * fix(CO-4528): update carbonio-ui-commons to 2.6.2 ([ba0796e](https://github.com/zextras/carbonio-mails-ui/commit/ba0796e))
