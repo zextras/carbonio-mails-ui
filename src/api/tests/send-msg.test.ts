@@ -4,11 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateNewEditor } from '__test__/generators/editors';
 import { sendMsgFromEditor } from 'api/send-msg';
-import { SoapSendMsgRequest } from 'types/soap/send-msg';
+import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
 const recipients = {
 	to: [{ type: ParticipantRole.TO, address: 'to@demo.com', fullName: 'To Name' }],
@@ -58,5 +63,29 @@ describe('sendMsgFromEditor', () => {
 		expect(request.encrypt).toBe(true);
 		expect(request).not.toHaveProperty('sign');
 		expect(request.encryptionType).toBe('smime');
+	});
+
+	it('should return the fault when the server rejects the message', async () => {
+		const fault = buildSoapErrorResponseBody();
+		createAPIInterceptor(
+			'post',
+			'/service/soap/SendMsgRequest',
+			HttpResponse.json({ Body: fault })
+		);
+
+		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
+
+		expect(response).toEqual(fault);
+	});
+
+	it('should return the SendMsg response when the message is sent', async () => {
+		createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>('SendMsg', {
+			m: [{ id: '1' }],
+			_jsns: 'urn:zimbraMail'
+		});
+
+		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
+
+		expect(response).toEqual(expect.objectContaining({ m: [{ id: '1' }] }));
 	});
 });

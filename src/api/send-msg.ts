@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { getIdentityDescriptor } from 'helpers/identities';
@@ -25,7 +25,7 @@ export async function sendMsgFromEditor({
 
 	const identity = getIdentityDescriptor(editor.identityId);
 
-	const response = await legacySoapFetch<SoapSendMsgRequest, SaveDraftResponse>(
+	const { Body } = await soapFetchV2<SoapSendMsgRequest, { SendMsgResponse: SaveDraftResponse }>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',
@@ -49,6 +49,11 @@ export async function sendMsgFromEditor({
 		},
 		identity?.ownerAccount ?? undefined
 	);
+	if ('Fault' in Body) {
+		publishQuotaChangedEvent(editor.size);
+		return Body;
+	}
+	const response = Body.SendMsgResponse;
 	if (response?.m?.[0]?.id) {
 		getMessageEmailStoreAction({ messageId: response.m[0].id, html: editor.isRichText });
 	}
