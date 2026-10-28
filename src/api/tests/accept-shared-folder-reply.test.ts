@@ -32,5 +32,9 @@ describe('acceptSharedFolderReply', () => {
 			expect.objectContaining({ t: 'f', a: 'grantee@example.com' }),
 			expect.objectContaining({ t: 't', a: 'owner@example.com' })
 		]);
+		expect(request.m.su).toEqual({ _content: 'Share Accepted: folder shared by owner' });
+		expect(request.m.mp).toEqual([
+			{ ct: 'text/plain', body: true, content: { _content: 'Accepted' } }
+		]);
 	});
 });
