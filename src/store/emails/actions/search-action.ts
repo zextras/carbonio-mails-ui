@@ -65,26 +65,20 @@ const handleSearchSoapApiResults = ({
 };
 
 export async function searchEmailStoreAction({
-	folderId,
 	limit,
-	before,
 	types,
 	sortBy,
 	query,
 	offset,
-	wantContent,
 	locale,
 	abortSignal
 }: SearchSoapApiParams): ReturnType<typeof searchSoapApi> {
 	const searchResponse = await searchSoapApi({
-		folderId,
 		limit,
-		before,
 		types,
 		sortBy,
 		query,
 		offset,
-		wantContent,
 		locale,
 		abortSignal
 	});

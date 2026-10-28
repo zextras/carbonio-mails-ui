@@ -63,8 +63,7 @@ export function useLoadMoreForConversationList({
 				limit,
 				sortBy,
 				types: 'conversation',
-				offset,
-				recip: '0'
+				offset
 			})
 				.catch(() => {
 					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);

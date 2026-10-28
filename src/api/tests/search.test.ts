@@ -8,6 +8,36 @@ import { searchSoapApi } from 'api/search-soap-api';
 import { SearchRequest } from 'types/soap/search';
 
 describe('Search', () => {
+	it('should not send the options that Search reads only with fetch', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+		searchSoapApi({
+			query: 'aaa',
+			limit: 10,
+			sortBy: 'dateDesc'
+		});
+
+		const receivedRequest = await interceptor;
+		expect(receivedRequest).not.toHaveProperty('needExp');
+		expect(receivedRequest).not.toHaveProperty('wantContent');
+		expect(receivedRequest.recip).toBe('2');
+		expect(receivedRequest.fullConversation).toBe(1);
+	});
+
+	it('should send the locale when given', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+
+		searchSoapApi({
+			query: 'aaa',
+			limit: 10,
+			sortBy: 'dateDesc',
+			locale: 'it'
+		});
+
+		const receivedRequest = await interceptor;
+		expect(receivedRequest.locale).toEqual({ _content: 'it' });
+	});
+
 	it('should send dateDesc filter if readDesc', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
@@ -34,35 +64,7 @@ describe('Search', () => {
 		expect(receivedRequest.sortBy).toBe('dateAsc');
 	});
 
-	describe('sortBy flag', () => {
-		it('should add is:flagged to query if sortBy flagAsc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'flagAsc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" is:flagged');
-		});
-
-		it('should add is:flagged to query if sortBy flagDesc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'flagDesc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" is:flagged');
-		});
-	});
-
-	it('should not alter query if folderId missing', async () => {
+	it('should send the query as given', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
 		searchSoapApi({
@@ -73,59 +75,20 @@ describe('Search', () => {
 
 		const receivedRequest = await interceptor;
 		expect(receivedRequest.query).toBe('whatever');
+		expect(receivedRequest.sortBy).toBe('flagAsc');
 	});
 
-	describe('sortBy priority', () => {
-		it('should add priority:high to query if sortBy priorityDesc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+	it('should send sizeDesc if attachDesc', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'priorityDesc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" priority:high');
+		searchSoapApi({
+			query: 'aaa',
+			limit: 10,
+			sortBy: 'attachDesc'
 		});
-		it('should add priority:high to query if sortBy priorityAsc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'priorityAsc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" priority:high');
-		});
-	});
-	describe('sortBy attachment', () => {
-		it('should add has:attachment to query if sortBy attachDesc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'attachDesc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" has:attachment');
-		});
-		it('should add has:attachment to query if sortBy attachAsc and folderId present', async () => {
-			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
-
-			searchSoapApi({
-				folderId: '1',
-				limit: 10,
-				sortBy: 'attachAsc'
-			});
-
-			const receivedRequest = await interceptor;
-			expect(receivedRequest.query).toBe('inId:"1" has:attachment');
-		});
+		const receivedRequest = await interceptor;
+		expect(receivedRequest.sortBy).toBe('sizeDesc');
 	});
 
 	describe('sortBy changeDate', () => {
@@ -133,7 +96,7 @@ describe('Search', () => {
 			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
 			searchSoapApi({
-				folderId: '1',
+				query: 'aaa',
 				limit: 10,
 				sortBy: 'changeDateAsc'
 			});
@@ -146,7 +109,7 @@ describe('Search', () => {
 			const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
 			searchSoapApi({
-				folderId: '1',
+				query: 'aaa',
 				limit: 10,
 				sortBy: 'changeDateDesc'
 			});

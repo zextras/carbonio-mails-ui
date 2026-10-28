@@ -13,7 +13,8 @@ import { createSoapSendMsgRequestFromEditor } from 'store/editor/editor-transfor
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { MailsEditorV2 } from 'types/editor';
-import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
+import { SaveDraftResponse } from 'types/soap/save-draft';
+import { SoapSendMsgRequest } from 'types/soap/send-msg';
 
 export async function sendMsgFromEditor({
 	editor
@@ -24,7 +25,7 @@ export async function sendMsgFromEditor({
 
 	const identity = getIdentityDescriptor(editor.identityId);
 
-	const response = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
+	const response = await legacySoapFetch<SoapSendMsgRequest, SaveDraftResponse>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',

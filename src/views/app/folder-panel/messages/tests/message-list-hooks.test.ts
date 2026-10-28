@@ -50,13 +50,11 @@ describe('useLoadMoreForMessagesSlice', () => {
 			_jsns: 'urn:zimbraMail',
 			fullConversation: 1,
 			limit: 20,
-			needExp: 1,
 			offset: 0,
 			query: 'inId:"inbox"',
 			recip: '2',
 			sortBy: SORT_BY.dateDesc,
-			types: 'message',
-			wantContent: 'full'
+			types: 'message'
 		});
 		expect(appendMessagesSpy).toHaveBeenCalledWith(expect.any(Array), 0, false);
 		expect(loadingMore.current).toBe(false);

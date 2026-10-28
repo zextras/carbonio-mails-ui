@@ -11,6 +11,15 @@ import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { SearchConvRequest } from 'types/soap/search-conv';
 
 describe('searchConvSoapApi', () => {
+	test('should not send recip, ignored when every message is fetched', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
+
+		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all', html: true });
+
+		const req = await interceptor;
+		expect(req).not.toHaveProperty('recip');
+	});
+
 	test('the max property is set to 250_000', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
 

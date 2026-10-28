@@ -57,8 +57,7 @@ export function useLoadMoreForMessageList({
 				limit,
 				sortBy,
 				types: 'message',
-				offset,
-				recip: '0'
+				offset
 			})
 				.finally(() => {
 					loadingMore.current = false;

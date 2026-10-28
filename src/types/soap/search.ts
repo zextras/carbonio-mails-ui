@@ -10,15 +10,13 @@ import { SortBy } from 'types/sorting';
 
 export type SearchRequest = ZimbraRequest & {
 	sortBy: SortBy;
-	types: string;
+	types: 'conversation' | 'message';
 	fullConversation: 0 | 1;
-	needExp: 0 | 1;
 	recip: '0' | '1' | '2';
 	offset?: number;
 	limit: number;
 	query: string;
-	fetch?: string;
-	wantContent?: string;
+	locale?: { _content: string };
 };
 
 export type SearchResponse = {
