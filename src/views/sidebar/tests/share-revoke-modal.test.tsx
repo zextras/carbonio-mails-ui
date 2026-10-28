@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import type { Grant } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -148,7 +148,7 @@ describe('ShareRevokeModal', () => {
 			await user.click(screen.getByTestId('icon: Square'));
 			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
 			expect(sendNotificationMock).toHaveBeenCalledWith(
-				expect.objectContaining({ contacts: [{ email: baseGrant.d }] })
+				expect.objectContaining({ contacts: [{ email: baseGrant.d }], action: 'revoke' })
 			);
 		});
 	});
@@ -198,6 +198,27 @@ describe('ShareRevokeModal', () => {
 			const { user } = defaultSetup(undefined, grantWithoutZid);
 			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
 			expect(await screen.findByTestId('snackbar')).toBeInTheDocument();
+		});
+	});
+
+	describe('when the server rejects the notification during revoke', () => {
+		beforeEach(() => {
+			vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi').mockResolvedValue([
+				{ Fault: { Reason: { Text: 'no matching grant' } } }
+			]);
+			vi.spyOn(folderActionModule, 'folderActionSoapApi').mockResolvedValue({} as never);
+		});
+
+		it('handles it as a failed notification', async () => {
+			const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+			const { user, goBack } = defaultSetup();
+			await user.click(screen.getByTestId('icon: Square'));
+			await user.click(screen.getByRole('button', { name: /label\.revoke/i }));
+			await waitFor(() => expect(goBack).toHaveBeenCalled());
+			expect(consoleErrorSpy).toHaveBeenCalledWith(
+				'Failed to send share notification',
+				expect.any(Error)
+			);
 		});
 	});
 

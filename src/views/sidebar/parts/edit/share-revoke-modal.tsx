@@ -11,7 +11,10 @@ import type { Folder, Grant } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
-import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import {
+	hasShareNotificationFailures,
+	sendShareNotificationSoapApi
+} from 'api/send-share-notification-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
@@ -54,12 +57,16 @@ export const ShareRevokeModal: FC<ShareRevokeModalProps> = ({
 		}
 		if (sendNotification) {
 			try {
-				await sendShareNotificationSoapApi({
+				const result = await sendShareNotificationSoapApi({
 					standardMessage,
 					contacts: [{ email: grant.d ?? '' }],
 					folder,
-					accounts
+					accounts,
+					action: 'revoke'
 				});
+				if (hasShareNotificationFailures(result)) {
+					throw new Error('share notification failed');
+				}
 			} catch (e) {
 				console.error('Failed to send share notification', e);
 				createSnackbar({
