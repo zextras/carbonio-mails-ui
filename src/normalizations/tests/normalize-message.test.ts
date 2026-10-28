@@ -20,6 +20,17 @@ describe('normalize-message.ts', () => {
 				body: true
 			} as SoapMailMessagePart;
 
+			it('should set rawFlags to an empty string when a full message has no flags', () => {
+				const soapIncompleteMessage = generateMessageFromAPI({ mp: [defaultBodyPart] });
+
+				const normalizedMessage = normalizeMailMessageFromSoap({
+					m: { ...soapIncompleteMessage, f: undefined },
+					html: true
+				});
+
+				expect(normalizedMessage.rawFlags).toBe('');
+			});
+
 			it('should return a message with truncated false if not defined in soap response', () => {
 				const soapIncompleteMessage = generateMessageFromAPI({
 					mp: [defaultBodyPart]
@@ -278,10 +289,16 @@ describe('normalize-message.ts', () => {
 			expect(result).toEqual({ id: '111' }); // read flag, since it has a default fallback
 		});
 
+		it('should keep rawFlags out of a partial message without f, so the stored flags are kept', () => {
+			const result = normalizePartialIncompleteMessageFromSoapNotify({ id: '111', cid: '2' });
+			expect(result).not.toHaveProperty('rawFlags');
+		});
+
 		it('should return flag read: true when the flag is empty', () => {
 			const result = normalizePartialIncompleteMessageFromSoapNotify({ id: '111', f: '' });
 			expect(result).toEqual({
 				id: '111',
+				rawFlags: '',
 				flagged: false,
 				hasAttachment: false,
 				isDeleted: false,

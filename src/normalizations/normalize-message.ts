@@ -403,7 +403,9 @@ const createBaseNormalizedMessage = (
 	body: IncompleteMessage['body'] | undefined;
 	autoSendTime: IncompleteMessage['autoSendTime'];
 	isEncrypted: IncompleteMessage['isEncrypted'];
+	rawFlags: IncompleteMessage['rawFlags'];
 } => ({
+	rawFlags: m.f,
 	conversation: m.cid,
 	date: m.d,
 	size: m.s,
@@ -466,6 +468,8 @@ export const normalizeMailMessageFromSoap = ({
 	};
 	return removeNil({
 		...createBaseNormalizedMessage(m),
+		// a full message without f has no flags: '' overwrites stale ones when the store merges it
+		rawFlags: m.f ?? '',
 		id: m.id,
 		isComplete,
 		html,

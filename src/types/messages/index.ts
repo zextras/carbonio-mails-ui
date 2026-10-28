@@ -28,6 +28,8 @@ export type MailHeaders = {
 
 export type IncompleteMessage = MailHeaders & {
 	id: string;
+	// the flags as the server sends them (f), including the ones not mapped to a field
+	rawFlags?: string;
 	did?: string;
 	parent: string;
 	conversation: string;
