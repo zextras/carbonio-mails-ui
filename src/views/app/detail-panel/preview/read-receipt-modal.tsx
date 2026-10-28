@@ -22,6 +22,19 @@ type ReadReceiptModalProps = {
 	readReceiptSetting: string | undefined | number | Array<string | number>;
 };
 
+// The "update" operation replaces all the flags of the message: send the ones it already has, plus "notified"
+const getFlagsWithNotified = (message: MailMessage, keepUnread: boolean): string =>
+	[
+		message.flagged && 'f',
+		message.isReplied && 'r',
+		message.isForwarded && 'w',
+		message.isDeleted && 'x',
+		'n',
+		keepUnread && 'u'
+	]
+		.filter(Boolean)
+		.join('');
+
 export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	open,
 	onClose,
@@ -33,7 +46,7 @@ export const ReadReceiptModal: FC<ReadReceiptModalProps> = ({
 	const isMarkManually = prefs?.zimbraPrefMarkMsgRead === '-1';
 
 	const onDoNotConfirm = useCallback(() => {
-		const flag = isMarkManually && !message?.read ? 'nu' : 'n';
+		const flag = getFlagsWithNotified(message, isMarkManually && !message?.read);
 		msgActionEmailStoreAction({
 			operation: 'update',
 			ids: [message?.id],
