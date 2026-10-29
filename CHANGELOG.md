@@ -1,3 +1,7 @@
+## <small>1.31.8 (2026-10-29)</small>
+
+* fix(CO-4620): show text body parts merged into an HTML body as text (#1406) ([e856107](https://github.com/zextras/carbonio-mails-ui/commit/e856107)), closes [#1406](https://github.com/zextras/carbonio-mails-ui/issues/1406)
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
