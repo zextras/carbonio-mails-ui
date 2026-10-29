@@ -12,12 +12,16 @@ import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-act
 import {
 	updateMessages,
 	getConversationById,
+	getMessageById,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
 
 vi.mock('../../../../api/search-conv-soap-api');
-vi.mock('../../../../normalizations/normalize-message');
+vi.mock('../../../../normalizations/normalize-message', async (importOriginal) => ({
+	...(await importOriginal<object>()),
+	normalizeCompleteMailMessageFromSoap: vi.fn()
+}));
 vi.mock('../../store');
 
 describe('searchConvEmailStoreAction', () => {
@@ -111,5 +115,52 @@ describe('searchConvEmailStoreAction', () => {
 			mockConversationId,
 			API_REQUEST_STATUS.fulfilled
 		);
+	});
+
+	it('keeps the header data of a stored message that comes back without headers', async () => {
+		// SearchConv sends no headers for the messages outside its query (e.g. replies in Sent)
+		(searchConvSoapApi as Mock).mockResolvedValueOnce({
+			m: [{ id: '2', l: '5', d: 1627849923000 }]
+		});
+		// what the real normalizer gives without _attrs
+		(normalizeCompleteMailMessageFromSoap as Mock).mockReturnValueOnce({
+			id: '2',
+			sensitivity: undefined,
+			messageIsFromExternalDomain: false
+		});
+		(getMessageById as Mock).mockReturnValueOnce({
+			id: '2',
+			sensitivity: 'Private',
+			messageIsFromExternalDomain: true
+		});
+		(getConversationById as Mock).mockReturnValueOnce({ id: mockConversationId });
+
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
+
+		expect(updateMessages).toHaveBeenCalledWith([
+			expect.objectContaining({
+				id: '2',
+				sensitivity: 'Private',
+				messageIsFromExternalDomain: true
+			})
+		]);
+	});
+
+	it('uses the fresh header data of a message that comes back with headers', async () => {
+		(searchConvSoapApi as Mock).mockResolvedValueOnce({
+			m: [{ id: '3', l: '2', d: 1627849923000, _attrs: { Sensitivity: 'Personal' } }]
+		});
+		(normalizeCompleteMailMessageFromSoap as Mock).mockReturnValueOnce({
+			id: '3',
+			sensitivity: 'Personal'
+		});
+		(getConversationById as Mock).mockReturnValueOnce({ id: mockConversationId });
+
+		await searchConvEmailStoreAction({ conversationId: mockConversationId, html: true });
+
+		expect(getMessageById).not.toHaveBeenCalled();
+		expect(updateMessages).toHaveBeenCalledWith([
+			expect.objectContaining({ id: '3', sensitivity: 'Personal' })
+		]);
 	});
 });

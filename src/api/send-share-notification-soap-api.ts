@@ -12,7 +12,16 @@ type SendShareNotification = {
 	accounts: { name: string }[];
 	folder: { id: string };
 	standardMessage?: string;
+	// without it the server sends the "share created" notification
+	action?: 'edit' | 'revoke';
 };
+
+const escapeXml = (text: string): string =>
+	text
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;');
 
 export async function sendShareNotificationSoapApi(data: SendShareNotification): Promise<unknown> {
 	return Promise.all(
@@ -26,17 +35,17 @@ export async function sendShareNotificationSoapApi(data: SendShareNotification):
                 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
                     <soap:Header>
                         <context xmlns="urn:zimbra">
-                            <account by="name">${data.accounts[0].name}</account>
+                            <account by="name">${escapeXml(data.accounts[0].name)}</account>
                             <format type="js"/>
                         </context>
                     </soap:Header>
                     <soap:Body>
-                    <SendShareNotificationRequest xmlns="urn:zimbraMail">
-                           <item id="${data.folder.id}"/>
-                           <e a="${contact.email}"/>
+                    <SendShareNotificationRequest xmlns="urn:zimbraMail"${data.action ? ` action="${data.action}"` : ''}>
+                           <item id="${escapeXml(data.folder.id)}"/>
+                           <e a="${escapeXml(contact.email)}"/>
                            ${
 															data.standardMessage && data?.standardMessage?.length > 0
-																? `<notes>${data.standardMessage}</notes>`
+																? `<notes>${escapeXml(data.standardMessage)}</notes>`
 																: ''
 														}
                            
@@ -46,7 +55,15 @@ export async function sendShareNotificationSoapApi(data: SendShareNotification):
             `
 			})
 				.then((resData) => resData.json())
+				.then((json) => json?.Body ?? json)
 				.catch((err) => ({ error: err }))
 		)
 	);
 }
+
+// the request never rejects: each contact gets its response body, a Fault or a network error
+export const hasShareNotificationFailures = (result: unknown): boolean =>
+	!Array.isArray(result) ||
+	result.some(
+		(item) => typeof item === 'object' && item !== null && ('error' in item || 'Fault' in item)
+	);
