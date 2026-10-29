@@ -46,19 +46,26 @@ interface BorderWithResizeProps {
 	$translateTransform?: { x?: string; y?: string };
 }
 
-const HoverableContainer = styled(Container)<{ $border: Border }>`
-	& > * {
-		border-right: ${({ theme, $border }): string =>
-			$border === BORDERS.EAST ? `1px solid ${theme.palette.gray2.regular}` : '0'};
-		border-bottom: ${({ theme, $border }): string =>
-			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.gray2.regular}` : '0'};
-		transition: 0.2s ease-out;
-	}
-	&:hover > * {
-		border-right: ${({ theme, $border }): string =>
-			$border === BORDERS.EAST ? `1px solid ${theme.palette.primary.regular}` : '0'};
-		border-bottom: ${({ theme, $border }): string =>
-			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.primary.regular}` : '0'};
+const DividerLine = styled.div<{ $border: Border }>`
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: ${({ $border }): string => ($border === BORDERS.EAST ? '0.0625rem' : '100%')};
+	height: ${({ $border }): string => ($border === BORDERS.EAST ? '100%' : '0.0625rem')};
+	background-color: ${({ theme }): string => theme.palette.gray2.regular};
+
+	/* highlight */
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: ${({ $border }): string => ($border === BORDERS.EAST ? '0.125rem' : '100%')};
+		height: ${({ $border }): string => ($border === BORDERS.EAST ? '100%' : '0.125rem')};
+		background-color: ${({ theme }): string => theme.palette.primary.regular};
+		opacity: 0;
+		transition: opacity 0.2s ease-out;
+		pointer-events: none;
 	}
 `;
 
@@ -79,6 +86,11 @@ const BorderWithResize = styled.div<
 		css`
 			transform: translate(${$translateTransform?.x ?? 0}, ${$translateTransform?.y ?? 0});
 		`}
+
+	&:hover ${DividerLine}::after,
+	&:active ${DividerLine}::after {
+		opacity: 1;
+	}
 `;
 
 const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): React.JSX.Element => {
@@ -109,20 +121,7 @@ const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): Rea
 			$cursor={border === BORDERS.EAST ? 'ew-resize' : 'ns-resize'}
 			onMouseDown={resizeHandler}
 		>
-			<HoverableContainer
-				width={'100%'}
-				height={'100%'}
-				$border={border}
-				mainAlignment="flex-start"
-				crossAlignment="flex-start"
-			>
-				<Container
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					width={border === BORDERS.EAST ? '1px' : '100%'}
-					height={border === BORDERS.EAST ? '100%' : '1px'}
-				/>
-			</HoverableContainer>
+			<DividerLine $border={border} />
 		</BorderWithResize>
 	);
 };
