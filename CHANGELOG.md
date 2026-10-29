@@ -1,3 +1,7 @@
+## <small>1.34.24 (2026-10-29)</small>
+
+* fix(CO-4619): show text body parts merged into an HTML body as text ([49859dd](https://github.com/zextras/carbonio-mails-ui/commit/49859dd))
+
 ## <small>1.34.23 (2026-07-01)</small>
 
 * fix(deps): update dependency immer to v9.0.21 (#1263) ([4d5a666](https://github.com/zextras/carbonio-mails-ui/commit/4d5a666)), closes [#1263](https://github.com/zextras/carbonio-mails-ui/issues/1263)
