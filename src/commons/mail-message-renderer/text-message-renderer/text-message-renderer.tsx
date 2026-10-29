@@ -9,11 +9,7 @@ import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { linkifyText } from './text-linkify';
-import {
-	getOriginalTextContent,
-	getQuotedTextFromOriginalContent,
-	htmlEncode
-} from '../../get-quoted-text-util';
+import { getOriginalTextContent, getQuotedTextFromOriginalContent } from '../../get-quoted-text-util';
 
 type TextMessageRendererType = {
 	body: { content: string };
@@ -26,9 +22,8 @@ export const TextMessageRenderer = ({ body }: TextMessageRendererType): React.JS
 
 	const convertedHTML = useMemo(() => {
 		const content = showQuotedText ? body.content : originalText;
-		// html encode the content to prevent XSS, then linkify it, and finally convert new lines to <br /> for proper display in HTML.
-		const encodedContent = htmlEncode(content);
-		const html = linkifyText(encodedContent);
+		// linkifyText escapes the raw text before adding anchors, so no extra encoding is needed here.
+		const html = linkifyText(content);
 		return html.replace(/\r\n|\r|\n/g, '<br />');
 	}, [showQuotedText, body.content, originalText]);
 
