@@ -73,10 +73,10 @@ importers:
         version: 12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-shell-ui':
         specifier: 14.2.2
-        version: 14.2.2(d3174f7a891d07b8c1e21c42f532b2c7)
+        version: 14.2.2(409e5864e40eb86c1241ff3a322d1c72)
       '@zextras/carbonio-ui-commons':
         specifier: 2.6.2
-        version: 2.6.2(3176fde17b8ef89ad1704879ad13cf6a)
+        version: 2.6.2(8366cfb3c4110175168400b52a81504b)
       '@zextras/carbonio-ui-preview':
         specifier: 5.0.1
         version: 5.0.1(@types/react@18.3.31)(@zextras/carbonio-design-system@12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -96,8 +96,8 @@ importers:
         specifier: 1.15.2
         version: 1.15.2
       core-js:
-        specifier: 3.49.0
-        version: 3.49.0
+        specifier: 3.51.0
+        version: 3.51.0
       darkreader:
         specifier: 4.9.117
         version: 4.9.117
@@ -3658,6 +3658,9 @@ packages:
 
   core-js@3.50.0:
     resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
+
+  core-js@3.51.0:
+    resolution: {integrity: sha512-7bDKx/5jm5MxzsXxc93g6Z2+4ZsuT/MddrfRmTDJNAkWsYWHU8EVNEsBiIEWnMAMCHMmRfUEjkuo3jeNBOIHRw==}
 
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -11092,11 +11095,11 @@ snapshots:
       - supports-color
       - use-sync-external-store
 
-  '@zextras/carbonio-shell-ui@14.2.2(d3174f7a891d07b8c1e21c42f532b2c7)':
+  '@zextras/carbonio-shell-ui@14.2.2(409e5864e40eb86c1241ff3a322d1c72)':
     dependencies:
       '@fontsource/roboto': 5.2.10
       '@zextras/carbonio-ui-soap-lib': 1.1.0
-      core-js: 3.49.0
+      core-js: 3.51.0
       darkreader: 4.9.120
       date-fns: 4.1.0
       i18next: 22.5.1
@@ -11149,14 +11152,14 @@ snapshots:
       - preact-render-to-string
       - use-sync-external-store
 
-  '@zextras/carbonio-ui-commons@2.6.2(3176fde17b8ef89ad1704879ad13cf6a)':
+  '@zextras/carbonio-ui-commons@2.6.2(8366cfb3c4110175168400b52a81504b)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.3.31)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
       '@mui/icons-material': 5.18.0(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
       '@mui/material': 5.18.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zextras/carbonio-design-system': 12.0.4(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(date-fns@4.1.0)(lodash@4.18.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@zextras/carbonio-shell-ui': 14.2.2(d3174f7a891d07b8c1e21c42f532b2c7)
+      '@zextras/carbonio-shell-ui': 14.2.2(409e5864e40eb86c1241ff3a322d1c72)
       '@zextras/carbonio-ui-soap-lib': 1.1.0
       core-js: 3.47.0
       i18next: 22.5.1
@@ -12000,6 +12003,8 @@ snapshots:
   core-js@3.49.0: {}
 
   core-js@3.50.0: {}
+
+  core-js@3.51.0: {}
 
   core-util-is@1.0.3: {}
 
@@ -14732,7 +14737,7 @@ snapshots:
       '@opentelemetry/sdk-logs': 0.208.0(@opentelemetry/api@1.9.1)
       '@posthog/core': 1.25.2
       '@posthog/types': 1.369.2
-      core-js: 3.49.0
+      core-js: 3.51.0
       dompurify: 3.4.7
       fflate: 0.4.8
       preact: 10.29.2
@@ -14744,7 +14749,7 @@ snapshots:
       '@posthog/browser-common': 0.8.3
       '@posthog/core': 1.55.2
       '@posthog/types': 1.412.4
-      core-js: 3.49.0
+      core-js: 3.51.0
       dompurify: 3.4.16
       fflate: 0.4.8
       preact: 10.29.8
