@@ -5,10 +5,14 @@
  */
 
 import { SoapDraftMessageObj } from 'types/soap/save-draft';
+import { ZimbraRequest } from 'types/soap/zimbra-request';
 
-export type SoapSendMsgRequest = {
-	_jsns: string;
+export type SoapSendMsgRequest = ZimbraRequest & {
 	m: SoapDraftMessageObj;
+	sign?: boolean;
+	encrypt?: boolean;
+	encryptionPassword?: string;
+	encryptionType?: 'smime';
 };
 
 export type SoapSendMsgResponse = {

@@ -57,13 +57,11 @@ describe('useMessageListByFolder', () => {
 				locale: {
 					_content: 'en'
 				},
-				needExp: 1,
 				offset: 0,
 				query: 'inId:"2"',
 				recip: '2',
 				sortBy: 'dateDesc',
-				types: 'message',
-				wantContent: 'full'
+				types: 'message'
 			});
 		});
 	});

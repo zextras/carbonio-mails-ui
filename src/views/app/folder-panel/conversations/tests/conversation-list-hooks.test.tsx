@@ -54,13 +54,11 @@ describe('ConversationListHooks', () => {
 			_jsns: 'urn:zimbraMail',
 			fullConversation: 1,
 			limit: 20,
-			needExp: 1,
 			offset: 0,
 			query: `inId:"${folder.id}"`,
 			recip: '2',
 			sortBy: SORT_BY.dateDesc,
-			types: 'conversation',
-			wantContent: 'full'
+			types: 'conversation'
 		});
 		expect(appendConversationsSpy).toHaveBeenCalledWith(expect.any(Array), 0, hasMore);
 		expect(loadingMore.current).toBe(false);

@@ -199,8 +199,7 @@ export function useLoadMoreForSearchSlice({
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 				sortBy: 'dateDesc',
 				types,
-				offset,
-				recip: '0'
+				offset
 			}).finally(() => {
 				loadingMore.current = false;
 			});
