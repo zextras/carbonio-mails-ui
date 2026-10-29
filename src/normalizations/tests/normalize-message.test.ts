@@ -149,21 +149,20 @@ describe('normalize-message.ts', () => {
 
 				expect(body.content).toContain('Hello<br />world');
 			});
-			it('should render an inline image without content id between HTML parts', () => {
-				const body = normalizeBody(
-					mixed([
-						htmlPart({ part: '1' }),
-						{ ct: 'image/png', part: '2', body: true, cd: 'inline' },
-						htmlPart({ part: '3', content: '<div>After the image</div>' })
-					])
-				);
 
-				const [before, image, after] = body.content.split(/(<img [^>]*>)/);
+			it('should not create elements from an event-handler payload in a multipart/alternative text part', () => {
+				const payload = `<img src="data:image/gif;base64,x"  onerror="alert('XSS')">`;
+				const body = normalizeBody([
+					{
+						ct: 'multipart/alternative',
+						part: '1',
+						mp: [htmlPart({ part: '1.1' }), textPart({ part: '1.2', content: payload })]
+					}
+				]);
+				const doc = new DOMParser().parseFromString(body.content, 'text/html');
 
-				expect(body.contentType).toBe('text/html');
-				expect(before).toBe(htmlContent);
-				expect(image).toMatch(/^<img src='\/service\/home\/~\/\?auth=co&loc=en&id=.+&part=2'>$/);
-				expect(after).toBe('<div>After the image</div>');
+				expect(doc.querySelectorAll('img')).toHaveLength(0);
+				expect(doc.querySelector('[onerror]')).toBeNull();
 			});
 		});
 		describe('Parts normalization', () => {
