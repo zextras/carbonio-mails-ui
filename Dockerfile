@@ -1,4 +1,7 @@
-FROM --platform=$BUILDPLATFORM backplane/jq:latest AS builder
+FROM --platform=$BUILDPLATFORM docker.io/backplane/jq:latest AS builder
+
+# The base image defaults to the unprivileged "nobody" user, which cannot write under /opt
+USER root
 
 # Define path variables
 ENV IRIS_BASE_PATH="/opt/zextras/web/iris" \
@@ -13,7 +16,10 @@ RUN COMMIT_ID=$(jq -r .commit /tmp/dist/component.json) \
     && mv /tmp/dist/* "${WEB_PATH}/${COMMIT_ID}/"
 
 # Final stage - built for all target platforms
-FROM backplane/jq:latest
+FROM docker.io/backplane/jq:latest
+
+# The entrypoint writes components.json inside ${IRIS_BASE_PATH}, which is root-owned
+USER root
 
 # Re-define path variable for final stage
 ENV IRIS_BASE_PATH="/opt/zextras/web/iris"

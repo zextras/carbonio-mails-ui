@@ -3,23 +3,25 @@
 	"version": "1.31.7",
 	"description": "Mails module",
 	"main": "src/app.tsx",
+	"packageManager": "pnpm@10.32.1",
 	"engines": {
 		"node": "v22",
-		"npm": "v10"
+		"pnpm": ">=10"
 	},
 	"scripts": {
+		"bump-version": "semantic-release",
 		"browser-test": "vitest --project=browser --watch --open --ui",
 		"build": "sdk build",
 		"deploy": "sdk deploy",
 		"sdkInstall": "sdk install",
 		"start": "sdk watch",
 		"type-check": "tsc --noEmit",
-		"type-check:watch": "npm run type-check -- --watch",
+		"type-check:watch": "pnpm run type-check -- --watch",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx --quiet --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-errors": "eslint --ext .js,.jsx,.ts,.tsx --quiet --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
-		"lint-check": "npm run lint-errors; npm run type-check",
+		"lint-check": "pnpm run lint-errors; pnpm run type-check",
 		"test": "TZ=Europe/Rome vitest run --project=unit",
 		"test:watch": "TZ=Europe/Rome vitest",
 		"coverage": "TZ=Europe/Rome vitest run --coverage",
@@ -48,6 +50,12 @@
 		"@emotion/babel-plugin": "^11.13.5",
 		"@faker-js/faker": "^8.4.1",
 		"@reduxjs/toolkit": "^1.9.3",
+		"@semantic-release/changelog": "6.0.3",
+		"@semantic-release/commit-analyzer": "13.0.1",
+		"@semantic-release/git": "10.0.1",
+		"@semantic-release/github": "12.0.8",
+		"@semantic-release/npm": "13.1.5",
+		"@semantic-release/release-notes-generator": "14.1.1",
 		"@testing-library/dom": "^10.4.0",
 		"@testing-library/jest-dom": "^6.4.5",
 		"@testing-library/react": "^16.0.1",
@@ -65,7 +73,7 @@
 		"@vitest/browser-preview": "4.0.14",
 		"@vitest/coverage-v8": "^4.0.14",
 		"@vitest/ui": "^4.0.14",
-		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
+		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#c37aeabe0ab00320929bf15ade6a8cb148fbd71f",
 		"@zextras/carbonio-ui-configs": "2.1.0",
 		"@zextras/carbonio-ui-sdk": "2.2.1",
 		"babel-plugin-transform-import-meta": "^2.3.3",
@@ -78,7 +86,8 @@
 		"npm": "^10.5.0",
 		"playwright": "^1.57.0",
 		"react-redux": "^8.0.5",
-		"sonarqube-scanner": "^4.3.2",
+		"semantic-release": "25.0.3",
+		"sonarqube-scanner": "4.4.0",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.7.2",
 		"vite-tsconfig-paths": "^5.1.4",
@@ -110,6 +119,7 @@
 		"juice": "^11.0.3",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.4",
+		"node-forge": "1.3.3",
 		"pkijs": "^3.2.4",
 		"react": "^18.3.1",
 		"react-colorful": "^5.6.1",
@@ -133,5 +143,15 @@
 		"attrKey": "zimbraFeatureMailEnabled",
 		"display": "Mails",
 		"icon": "MailModOutline"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@zextras/carbonio-search-ui",
+			"core-js",
+			"esbuild",
+			"msw",
+			"protobufjs",
+			"unrs-resolver"
+		]
 	}
 }
