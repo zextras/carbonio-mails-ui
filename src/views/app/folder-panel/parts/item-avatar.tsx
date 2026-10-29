@@ -59,6 +59,15 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 		[onSelect, item, index]
 	);
 
+	// A shift+click natively extends the browser text selection across the list rows.
+	// Mousedown is the only moment early enough to suppress it: the preventDefault of
+	// handleClick runs after the selection has already been painted.
+	const handleMouseDown = useCallback((e: React.MouseEvent) => {
+		if (e.shiftKey) {
+			e.preventDefault();
+		}
+	}, []);
+
 	return (
 		<Container
 			mainAlignment="center"
@@ -73,6 +82,7 @@ export const ItemAvatar: FC<ItemAvatarTypeProps> = ({
 					label={avatarLabel}
 					colorLabel={avatarEmail}
 					onClick={handleClick}
+					onMouseDown={handleMouseDown}
 					size="large"
 				/>
 			</TooltipWrapper>

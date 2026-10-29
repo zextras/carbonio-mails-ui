@@ -31,7 +31,7 @@ export const ConversationList = (): React.JSX.Element => {
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [anchorId, setAnchorId] = useState<string | null>(null);
 	const [expandedConversations, setExpandedConversations] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
 
@@ -61,6 +61,15 @@ export const ConversationList = (): React.JSX.Element => {
 		setExpandedConversations({});
 	}, [folderId]);
 
+	const { prefs } = useUserSettings();
+	const sortBy = useMemo<SortBy>(() => {
+		const { sortType, sortDirection } = parseMessageSortingOptions(
+			folderId,
+			prefs.zimbraPrefSortOrder as string
+		);
+		return `${sortType}${sortDirection}`;
+	}, [folderId, prefs.zimbraPrefSortOrder]);
+
 	const {
 		deselectAll,
 		isSelectModeOn,
@@ -70,8 +79,9 @@ export const ConversationList = (): React.JSX.Element => {
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
-		lastSelectedIndex,
-		setLastSelectedIndex,
+		anchorId,
+		setAnchorId,
+		resetAnchorKey: `${folderId}|${sortBy}`,
 		allAvailableItems: conversationsIds,
 		setSelectedItems,
 		selectedItems
@@ -179,14 +189,6 @@ export const ConversationList = (): React.JSX.Element => {
 		[status]
 	);
 	const loadingMore = useRef<boolean>(false);
-	const { prefs } = useUserSettings();
-	const sortBy = useMemo<SortBy>(() => {
-		const { sortType, sortDirection } = parseMessageSortingOptions(
-			folderId,
-			prefs.zimbraPrefSortOrder as string
-		);
-		return `${sortType}${sortDirection}`;
-	}, [folderId, prefs.zimbraPrefSortOrder]);
 
 	const loadMoreCallback = useLoadMoreForConversationList({
 		sortBy,
