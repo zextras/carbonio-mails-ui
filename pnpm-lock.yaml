@@ -15,8 +15,8 @@ importers:
         specifier: 1.2.1
         version: 1.2.1
       '@emotion/jest':
-        specifier: 11.13.0
-        version: 11.13.0
+        specifier: 11.14.2
+        version: 11.14.2
       '@emotion/react':
         specifier: 11.14.0
         version: 11.14.0(@types/react@18.3.31)(react@18.3.1)
@@ -1049,10 +1049,10 @@ packages:
   '@emotion/is-prop-valid@1.4.0':
     resolution: {integrity: sha512-QgD4fyscGcbbKwJmqNvUMSE02OsHUa+lAWKdEUIJKgqe5IwRSKd7+KhibEWdaKwgjLj0DRSHA9biAIqGBk05lw==}
 
-  '@emotion/jest@11.13.0':
-    resolution: {integrity: sha512-XyoUbJ9fthKdlXjTvjzd6aQ8yVWe68InZawFdGTFkJQRW44rsLHK1qjKB/+L7RiGgdm0BYFv7+tz8znQzRQOBw==}
+  '@emotion/jest@11.14.2':
+    resolution: {integrity: sha512-FC7R0XeIX929coPJuLUOHMui8zM6c4VubmWRupdsTcAyGKe3wAdL5Yr2JVJYzUlFzBs5PYfhHGcuinR306mWgw==}
     peerDependencies:
-      '@types/jest': ^26.0.14 || ^27.0.0 || ^28.0.0 || ^29.0.0
+      '@types/jest': ^26.0.14 || ^27.0.0 || ^28.0.0 || ^29.0.0 || ^30.0.0
       enzyme-to-json: ^3.2.1
     peerDependenciesMeta:
       '@types/jest':
@@ -8938,7 +8938,7 @@ snapshots:
     dependencies:
       '@emotion/memoize': 0.9.0
 
-  '@emotion/jest@11.13.0':
+  '@emotion/jest@11.14.2':
     dependencies:
       '@babel/runtime': 7.29.10
       '@emotion/css-prettifier': 1.2.0
