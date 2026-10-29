@@ -72,6 +72,8 @@ export const LexicalWrapper = styled.div<{
 		flex: 1 0 auto;
 		min-height: 12.5rem;
 		padding: 0.5rem;
+		/* leaves room for the hover "add column" button (20px + 3px offset) of a 100% wide table */
+		padding-right: 1.5rem;
 		outline: none;
 		font-family: ${({ $fontFamily }): string => $fontFamily};
 		${({ $fontSize }): string => ($fontSize ? `font-size: ${$fontSize};` : '')}
