@@ -98,4 +98,37 @@ describe('sendShareNotificationSoapApi', () => {
 		expect(global.fetch).not.toHaveBeenCalled();
 		expect(result).toEqual([]);
 	});
+
+	it('sends the action and escapes the notes', async () => {
+		(global.fetch as Mock).mockResolvedValueOnce({
+			json: async () => ({ Body: { SendShareNotificationResponse: {} } })
+		});
+
+		await sendShareNotificationSoapApi({
+			contacts: [{ email: 'test@example.com' }],
+			accounts: [{ name: 'testAccount' }],
+			folder: { id: '123' },
+			standardMessage: 'Tom & Jerry <3',
+			action: 'revoke'
+		});
+
+		const { body } = (global.fetch as Mock).mock.calls[0][1];
+		expect(body).toContain('<SendShareNotificationRequest xmlns="urn:zimbraMail" action="revoke">');
+		expect(body).toContain('<notes>Tom &amp; Jerry &lt;3</notes>');
+	});
+
+	it('returns the body of the response, so a fault can be detected', async () => {
+		const fault = { Code: { Value: 'soap:Sender' }, Reason: { Text: 'no matching grant' } };
+		(global.fetch as Mock).mockResolvedValueOnce({
+			json: async () => ({ Header: {}, Body: { Fault: fault } })
+		});
+
+		const result = await sendShareNotificationSoapApi({
+			contacts: [{ email: 'test@example.com' }],
+			accounts: [{ name: 'testAccount' }],
+			folder: { id: '123' }
+		});
+
+		expect(result).toEqual([{ Fault: fault }]);
+	});
 });

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 
 import {
 	generateCompleteMessageFromAPI,
@@ -188,6 +189,17 @@ describe('Normalize conversation', () => {
 		const normalizedConversation = mapToNormalizedConversation({ conversation: soapConversation });
 
 		expect(normalizedConversation.tags).toBeUndefined();
+	});
+
+	it('omits the fragment when the server does not send it, so the stored one is kept', () => {
+		// GetConv never sends the conversation fragment
+		const soapConversation = omit(generateConversationFromAPI({ id: '1' }), 'fr');
+
+		const normalizedConversation = mapToNormalizedConversation({
+			conversation: soapConversation as SoapConversation
+		});
+
+		expect(normalizedConversation).not.toHaveProperty('fragment');
 	});
 });
 

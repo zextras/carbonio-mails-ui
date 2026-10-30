@@ -15,7 +15,7 @@ import {
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
-import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
+import { flatten, forEach, isEmpty, isNil, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { publishQuotaChangedEvent } from 'event-bus/publish-event';
@@ -50,7 +50,15 @@ export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
 ): Array<IncompleteMessage> {
 	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
-		normalizeMailMessageFromSoap({ m: message, html: true })
+		normalizeMailMessageFromSoap({
+			// the conversation hits of SearchResponse carry d and s as strings
+			m: {
+				...message,
+				...(isNil(message.d) ? {} : { d: Number(message.d) }),
+				...(isNil(message.s) ? {} : { s: Number(message.s) })
+			},
+			html: true
+		})
 	);
 }
 
@@ -98,7 +106,8 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
 		);
 		handleNotifyConversationsCreated(conversationsWithMessageIds);
-		const normalizedMessages = allReceivedMessages.map((message) =>
+		// modified messages are partial: processModifiedNotifications updates them without defaults
+		const normalizedMessages = newMessages.map((message) =>
 			normalizeMailMessageFromSoap({ m: message, html: true })
 		);
 		updateMessages(normalizedMessages);

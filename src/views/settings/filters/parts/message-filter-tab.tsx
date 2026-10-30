@@ -6,6 +6,7 @@
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, useSnackbar } from '@zextras/carbonio-design-system';
+import { getErrorMessage } from '@zextras/carbonio-ui-commons';
 import { filter, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +30,7 @@ export const MessageFilterTab = ({
 }: MessageFilterProps): ReactElement => {
 	const [filters, setFilters] = useState<Array<Filter>>([]);
 	const [loading, setLoading] = useState(true);
+	const [loadFailed, setLoadFailed] = useState(false);
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -44,37 +46,45 @@ export const MessageFilterTab = ({
 		getFilters()
 			.then(({ filterRules }) => {
 				setFilters(filterRules?.[0]?.filterRule ?? []);
+				setLoadFailed(false);
 				setLoading(false);
 			})
 			.catch((error) => {
+				setLoadFailed(true);
 				setLoading(false);
 				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
 					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					label: getErrorMessage(error, t),
 					autoHideTimeout: 5000
 				});
 			});
 	}, [createSnackbar, getFilters, t]);
 
+	const showSaveError = useCallback(() => {
+		createSnackbar({
+			key: `share`,
+			replace: true,
+			hideButton: true,
+			severity: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 5000
+		});
+	}, [createSnackbar, t]);
+
 	const modifyFilter = useCallback(
-		(newFilters: Array<Filter>) =>
-			saveFilters(newFilters)
-				.then(fetchFilters)
-				.catch(() => {
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
-				}),
-		[createSnackbar, fetchFilters, saveFilters, t]
+		(newFilters: Array<Filter>) => {
+			// the rules on the server are unknown: saving would replace them. Load them again for the next save
+			if (loading || loadFailed) {
+				showSaveError();
+				if (loadFailed) fetchFilters();
+				return Promise.resolve();
+			}
+			return saveFilters(newFilters).then(fetchFilters).catch(showSaveError);
+		},
+		[fetchFilters, loadFailed, loading, saveFilters, showSaveError]
 	);
 
 	useEffect(() => {

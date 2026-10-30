@@ -1,3 +1,22 @@
+## <small>1.51.7 (2026-10-28)</small>
+
+* fix(CO-3644): keep the open message in search when a notification arrives (#1381) ([601bbd3](https://github.com/zextras/carbonio-mails-ui/commit/601bbd3)), closes [#1381](https://github.com/zextras/carbonio-mails-ui/issues/1381)
+* fix(CO-4561): show text body parts merged into an HTML body as text (#1401) ([abd83cf](https://github.com/zextras/carbonio-mails-ui/commit/abd83cf)), closes [#1401](https://github.com/zextras/carbonio-mails-ui/issues/1401)
+* fix(CO-4576): keep unread messages unread when a reply joins their conversation (#1385) ([fbfc1eb](https://github.com/zextras/carbonio-mails-ui/commit/fbfc1eb)), closes [#1385](https://github.com/zextras/carbonio-mails-ui/issues/1385)
+* fix(CO-4578): report signature save errors and read the created signature ids from the right respons ([727d2cb](https://github.com/zextras/carbonio-mails-ui/commit/727d2cb)), closes [#1390](https://github.com/zextras/carbonio-mails-ui/issues/1390)
+* fix(CO-4579): don't show or save an empty filter list when loading the filters fails (#1389) ([261908f](https://github.com/zextras/carbonio-mails-ui/commit/261908f)), closes [#1389](https://github.com/zextras/carbonio-mails-ui/issues/1389)
+* fix(CO-4581): send the revoke and edit share notifications with their action (#1387) ([ba527e9](https://github.com/zextras/carbonio-mails-ui/commit/ba527e9)), closes [#1387](https://github.com/zextras/carbonio-mails-ui/issues/1387)
+* fix(CO-4582): keep the conversation fragment when GetConv doesn't send it (#1391) ([4aad97e](https://github.com/zextras/carbonio-mails-ui/commit/4aad97e)), closes [#1391](https://github.com/zextras/carbonio-mails-ui/issues/1391)
+* fix(CO-4583): store the date and size of conversation hits as numbers (#1392) ([586d3bd](https://github.com/zextras/carbonio-mails-ui/commit/586d3bd)), closes [#1392](https://github.com/zextras/carbonio-mails-ui/issues/1392)
+* fix(CO-4584): keep the header data of messages that SearchConv returns without headers (#1393) ([cf71a78](https://github.com/zextras/carbonio-mails-ui/commit/cf71a78)), closes [#1393](https://github.com/zextras/carbonio-mails-ui/issues/1393)
+* fix(CO-4585): keep the recipients of a conversation when a notification lists only its senders (#138 ([32b46b9](https://github.com/zextras/carbonio-mails-ui/commit/32b46b9)), closes [#1386](https://github.com/zextras/carbonio-mails-ui/issues/1386)
+* fix(CO-4586): keep the flags not mapped to fields when the read receipt is not sent (#1394) ([9956f9b](https://github.com/zextras/carbonio-mails-ui/commit/9956f9b)), closes [#1394](https://github.com/zextras/carbonio-mails-ui/issues/1394)
+
+## <small>1.51.6 (2026-10-28)</small>
+
+* fix(CO-2827): close the preview to the search results when an action runs in search (#1360) ([38ac0d7](https://github.com/zextras/carbonio-mails-ui/commit/38ac0d7)), closes [#1360](https://github.com/zextras/carbonio-mails-ui/issues/1360)
+* fix(CO-4575): keep the message flags when the read receipt is not sent (#1383) ([ab52032](https://github.com/zextras/carbonio-mails-ui/commit/ab52032)), closes [#1383](https://github.com/zextras/carbonio-mails-ui/issues/1383)
+
 ## <small>1.51.5 (2026-10-26)</small>
 
 * fix(CO-4528): update carbonio-ui-commons to 2.6.2 ([ba0796e](https://github.com/zextras/carbonio-mails-ui/commit/ba0796e))

@@ -142,7 +142,9 @@ describe('EditShareModal', () => {
 			const sendNotificationMock = vi.spyOn(sendShareModule, 'sendShareNotificationSoapApi');
 			// notification is checked by default
 			await changeRoleAndSubmit(user);
-			expect(sendNotificationMock).toHaveBeenCalled();
+			expect(sendNotificationMock).toHaveBeenCalledWith(
+				expect.objectContaining({ action: 'edit' })
+			);
 		});
 
 		it('does not call sendShareNotificationSoapApi when notification is unchecked', async () => {
