@@ -6,16 +6,24 @@
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
 import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-import { generateRequest } from 'store/editor-slice-utils';
 import { MailsEditor } from 'types/editor';
-import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
+import { SaveDraftRequest, SaveDraftResponse, SoapDraftMessageObj } from 'types/soap/save-draft';
 
 // TODO create a generic function to call sendMsg and remove this one
 // TODO probably the owner account should be set also here
 export const acceptSharedFolderReply = async (
 	data: Pick<MailsEditor, 'attach' | 'subject' | 'participants' | 'text'>
 ): Promise<SaveDraftResponse> => {
-	const toSend = generateRequest(data);
+	const toSend: SoapDraftMessageObj = {
+		attach: data.attach,
+		su: { _content: data.subject ?? '' },
+		e: (data.participants ?? []).map((participant) => ({
+			t: participant.type,
+			a: participant.address,
+			p: participant.fullName
+		})),
+		mp: [{ ct: 'text/plain', body: true, content: { _content: data.text[0] ?? '' } }]
+	};
 	const resp = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse | ErrorSoapBodyResponse>(
 		'SendMsg',
 		{
