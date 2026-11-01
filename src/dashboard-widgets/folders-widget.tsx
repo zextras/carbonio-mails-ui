@@ -140,7 +140,7 @@ export const foldersWidget: DashboardWidgetAction<FoldersWidgetConfig> = {
 	id: FOLDERS_WIDGET_ID,
 	// evaluated lazily: the translations are not available when the module is loaded
 	get label() {
-		return t('dashboard.folders.label', 'Folders');
+		return t('dashboard.folders.label', 'Selected folders');
 	},
 	get description() {
 		return t('dashboard.folders.description', 'Unread messages of the selected folders');

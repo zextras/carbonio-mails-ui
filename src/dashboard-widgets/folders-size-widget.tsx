@@ -31,6 +31,11 @@ export const formatBytes = (bytes: number): string => {
 	return `${index === 0 ? value : value.toFixed(1)} ${BYTE_UNITS[index]}`;
 };
 
+// fixed columns, so that name, bar and value line up across every account section
+const NAME_COLUMN_STYLE: React.CSSProperties = { flex: '0 0 40%', minWidth: 0 };
+const BAR_COLUMN_STYLE: React.CSSProperties = { flex: '1 1 0', minWidth: 0 };
+const VALUE_COLUMN_STYLE: React.CSSProperties = { flex: '0 0 5rem', minWidth: 0 };
+
 type SizeEntry = { id: string; path: string; value: number };
 type AccountSizes = { id: string; entries: SizeEntry[] };
 
@@ -75,12 +80,17 @@ const AccountSection = ({
 					gap="0.5rem"
 					height="fit"
 				>
-					<Container width="40%" crossAlignment="flex-start" height="fit">
+					<Container
+						width="auto"
+						crossAlignment="flex-start"
+						height="fit"
+						style={NAME_COLUMN_STYLE}
+					>
 						<Text size="small" overflow="ellipsis">
 							{e.path}
 						</Text>
 					</Container>
-					<Container width="fill" crossAlignment="flex-start" height="fit">
+					<Container width="auto" crossAlignment="flex-start" height="fit" style={BAR_COLUMN_STYLE}>
 						<div
 							style={{
 								width: `${(e.value / max) * 100}%`,
@@ -91,7 +101,7 @@ const AccountSection = ({
 							}}
 						/>
 					</Container>
-					<Container width="5rem" crossAlignment="flex-end" height="fit">
+					<Container width="auto" crossAlignment="flex-end" height="fit" style={VALUE_COLUMN_STYLE}>
 						<Text size="small">{unit === 'bytes' ? formatBytes(e.value) : e.value}</Text>
 					</Container>
 				</Container>
