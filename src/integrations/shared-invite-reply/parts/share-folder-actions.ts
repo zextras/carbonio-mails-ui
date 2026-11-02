@@ -5,9 +5,12 @@
  */
 import { useCallback } from 'react';
 
-import { getErrorMessage, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import {
+	getErrorMessage,
+	getIdentitiesDescriptors,
+	ParticipantRole
+} from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
-import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { acceptSharedFolderReply } from 'api/accept-shared-folder-reply';
@@ -65,6 +68,25 @@ type DeclineType = {
 	notifyOrganizer: boolean;
 };
 
+// the reply goes to the organizer (the From of the invitation) only, from the user's primary identity
+const getReplyParticipants = (participants: Participant[]): Participant[] => {
+	const primary = getIdentitiesDescriptors().find((identity) => identity.type === 'primary');
+	return [
+		...(primary
+			? [
+					{
+						type: ParticipantRole.FROM,
+						address: primary.fromAddress,
+						fullName: primary.fromDisplay
+					}
+				]
+			: []),
+		...participants
+			.filter((p) => p.type === ParticipantRole.FROM)
+			.map((p) => ({ ...p, type: ParticipantRole.TO }))
+	];
+};
+
 const sharedFolderReplyFunc = ({
 	sharedFolderName,
 	owner,
@@ -84,12 +106,7 @@ const sharedFolderReplyFunc = ({
 		subject: isAccepted
 			? `Share Accepted: ${sharedFolderName} shared by ${owner}`
 			: `Share Declined: ${sharedFolderName} shared by ${owner}`,
-		participants: map(participants, (p) => {
-			if (p.type === ParticipantRole.FROM) {
-				return { ...p, type: ParticipantRole.TO };
-			}
-			return { ...p, type: ParticipantRole.FROM };
-		}),
+		participants: getReplyParticipants(participants),
 		text: [
 			isAccepted
 				? `Accepted: ${grantee} has accepted the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
