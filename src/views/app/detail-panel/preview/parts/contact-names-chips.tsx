@@ -11,6 +11,7 @@ import {
 	Row,
 	Text,
 	Chip,
+	ChipAction,
 	Container,
 	Padding,
 	Button,
@@ -74,33 +75,53 @@ export const ContactChip: FC<{
 		[contact, createSnackbar]
 	);
 
+	// a recipient without address (e.g. `"Name" <>`) shows its name, and nothing can be sent or copied to it
+	const actions = useMemo(
+		(): Array<ChipAction> =>
+			contact.address
+				? [
+						{
+							id: 'action1',
+							label: t('message.send_email', 'Send e-mail'),
+							type: 'button',
+							icon: 'EmailOutline',
+							background: 'gray3',
+							onClick: handleSendMsg
+						},
+						{
+							id: 'action2',
+							label: t('message.copy', 'Copy'),
+							type: 'button',
+							icon: 'Copy',
+							background: 'gray3',
+							onClick: handleCopyEmailToClipboard
+						}
+					]
+				: [],
+		[contact.address, handleCopyEmailToClipboard, handleSendMsg, t]
+	);
+
 	return (
 		<Chip
-			label={contact.address}
+			label={contact.address ?? generateChipName(contact)}
 			hasAvatar={isExpanded}
 			background="gray2"
 			color="text"
-			actions={[
-				{
-					id: 'action1',
-					label: t('message.send_email', 'Send e-mail'),
-					type: 'button',
-					icon: 'EmailOutline',
-					background: 'gray3',
-					onClick: handleSendMsg
-				},
-				{
-					id: 'action2',
-					label: t('message.copy', 'Copy'),
-					type: 'button',
-					icon: 'Copy',
-					background: 'gray3',
-					onClick: handleCopyEmailToClipboard
-				}
-			]}
+			actions={actions}
 		/>
 	);
 };
+
+// the name in front of the chip: without address the chip itself shows the name
+const ChipName = ({ contact }: Readonly<{ contact: Participant }>): ReactElement | null =>
+	contact.address ? (
+		<>
+			<Text color="secondary" size="small">
+				{generateChipName(contact)}
+			</Text>
+			<Padding right="extrasmall" />
+		</>
+	) : null;
 
 const PlainView = ({ contacts }: { contacts: Participant[] }): ReactElement => (
 	<Container
@@ -111,10 +132,7 @@ const PlainView = ({ contacts }: { contacts: Participant[] }): ReactElement => (
 	>
 		{map(contacts, (contact, index) => (
 			<Row data-testid={`chip-${contact.address}`} key={index}>
-				<Text color="secondary" size="small">
-					{generateChipName(contact)}
-				</Text>
-				<Padding right="extrasmall" />
+				<ChipName contact={contact} />
 				<ContactChip contact={contact} isExpanded />
 				{index !== contacts.length - 1 && <Separator />}
 			</Row>
@@ -147,13 +165,10 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 				id: `contact-${index}`,
 				label: contact.name,
 				onClick: (ev: React.SyntheticEvent<HTMLElement> | KeyboardEvent) =>
-					handleCopyEmailToClipboard(ev, contact),
+					contact.address ? handleCopyEmailToClipboard(ev, contact) : ev.stopPropagation(),
 				customComponent: (
 					<Container orientation="horizontal" mainAlignment="flex-start" key={index}>
-						<Text color="secondary" size="small">
-							{generateChipName(contact)}
-						</Text>
-						<Padding right="extrasmall" />
+						<ChipName contact={contact} />
 						<ContactChip contact={contact} isExpanded />
 					</Container>
 				)

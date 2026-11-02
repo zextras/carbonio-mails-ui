@@ -84,17 +84,6 @@ describe('Attachments visualization', () => {
 		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
 	});
 
-	it('copies an empty string for a participant without address', async () => {
-		const copyIcon = /icon: Copy/i;
-		const withoutAddress: Participant = {
-			type: 't' as ParticipantRoleType,
-			fullName: 'Mail Delivery System'
-		};
-		const { user } = setupTest(<ContactNameChip {...props} contacts={[withoutAddress]} isWide />);
-		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
-		expect(copyEmailToClipboard).toHaveBeenCalledWith('', expect.anything());
-	});
-
 	it('calls copyEmailToClipboard when Copy icon is clicked', async () => {
 		const copyIcon = /icon: Copy/i;
 		const { user } = setupTest(<ContactNameChip {...props} isWide />);
@@ -292,5 +281,50 @@ describe('CompactView handleCopyEmailToClipboard', () => {
 		await user.click(copyButtons[1]);
 
 		expect(copyEmailToClipboard).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('a recipient without address', () => {
+	// e.g. `To: "Ghost Recipient" <>`: the server sends the participant without `a`
+	const ghostName = 'Ghost Recipient';
+	const withoutAddress: Participant = {
+		...omit(partcipant1, ['address', 'email']),
+		name: 'Ghost',
+		fullName: ghostName
+	};
+	const sendIcon = /icon: EmailOutline/i;
+	const copyIcon = /icon: Copy/i;
+
+	it('shows its name once and no action in the wide view', () => {
+		setupTest(<ContactNameChip contacts={[withoutAddress]} label={label} isWide />);
+		expect(screen.getAllByText(ghostName)).toHaveLength(1);
+		expect(screen.queryByRoleWithIcon('button', { icon: sendIcon })).not.toBeInTheDocument();
+		expect(screen.queryByRoleWithIcon('button', { icon: copyIcon })).not.toBeInTheDocument();
+	});
+
+	it('keeps the actions of the recipients with an address in the wide view', () => {
+		setupTest(<ContactNameChip contacts={[withoutAddress, contacts[0]]} label={label} isWide />);
+		expect(screen.getByText(ghostName)).toBeVisible();
+		expect(screen.getByText(contacts[0].address as string)).toBeVisible();
+		expect(screen.getAllByRoleWithIcon('button', { icon: sendIcon })).toHaveLength(1);
+		expect(screen.getAllByRoleWithIcon('button', { icon: copyIcon })).toHaveLength(1);
+	});
+
+	it('shows its name and no action as the first chip of the compact view', () => {
+		setupTest(<ContactNameChip contacts={[withoutAddress]} label={label} isWide={false} />);
+		expect(screen.getByText(ghostName)).toBeVisible();
+		expect(screen.queryByRoleWithIcon('button', { icon: sendIcon })).not.toBeInTheDocument();
+		expect(screen.queryByRoleWithIcon('button', { icon: copyIcon })).not.toBeInTheDocument();
+	});
+
+	it('shows its name once and copies nothing in the dropdown of the compact view', async () => {
+		const { user } = setupTest(
+			<ContactNameChip contacts={[contacts[0], withoutAddress]} label={label} isWide={false} />
+		);
+		await user.click(screen.getByText('+1'));
+		const items = await screen.findAllByText(ghostName);
+		expect(items).toHaveLength(1);
+		await user.click(items[0]);
+		expect(copyEmailToClipboard).not.toHaveBeenCalled();
 	});
 });
