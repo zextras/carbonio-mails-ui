@@ -94,8 +94,10 @@ const SendToYourselfWarningBanner = ({
 		const recipientsAddresses = map(toValue, (recipient) => recipient.address);
 
 		return (
-			filter(recipientsAddresses, (recipientAddress): boolean =>
-				availableAddresses.includes(recipientAddress)
+			filter(
+				recipientsAddresses,
+				(recipientAddress): boolean =>
+					recipientAddress !== undefined && availableAddresses.includes(recipientAddress)
 			).length > 0
 		);
 	}, [toValue]);

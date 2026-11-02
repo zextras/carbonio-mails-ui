@@ -52,8 +52,8 @@ export type MessageSignature = {
 
 export type SoapMailMessage = SoapIncompleteMessage & {
 	/** Contacts */ e: Array<SoapMailParticipant>;
-	/** Subject */ su: string;
-	/** Fragment */ fr: string;
+	/** Subject */ su?: string;
+	/** Fragment */ fr?: string;
 	/** Parts */ mp: Array<SoapMailMessagePart>;
 };
 

@@ -54,7 +54,7 @@ export const ConversationListItemCore = ({
 								// @ts-ignore
 								color: resolveTagColorHex(v)
 							});
-						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
+						} else if ((conversation.tags?.length ?? 0) > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
 								filter(conversation.tags, (tn) => tn.includes('nil:')),
 								(tagNotInList) => {

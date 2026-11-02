@@ -5,13 +5,55 @@
  */
 import { generateMessageFromAPI } from '../../__test__/generators/api';
 import {
+	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
+import { getMsgNoSubjectEmptyBodyResponse } from 'normalizations/tests/fixtures/get-msg-no-subject-empty-body';
+import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
 import { MailMessage, MailMessagePart } from 'types/messages';
 import { SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 describe('normalize-message.ts', () => {
+	describe('Fields the server leaves out', () => {
+		it('has no subject and fragment for a message without Subject header and with an empty body', () => {
+			const message = normalizeCompleteMailMessageFromSoap(
+				getMsgNoSubjectEmptyBodyResponse.m[0],
+				true
+			);
+
+			expect(message.subject).toBeUndefined();
+			expect(message.fragment).toBeUndefined();
+		});
+
+		it('has no fullName for a participant without display name', () => {
+			const message = normalizeCompleteMailMessageFromSoap(
+				getMsgNoSubjectEmptyBodyResponse.m[0],
+				true
+			);
+
+			expect(message.participants).toContainEqual(
+				expect.objectContaining({ address: 'user1@example.com', fullName: undefined })
+			);
+		});
+
+		it('has no address for a sender with an empty address, and keeps its name', () => {
+			const message = normalizeCompleteMailMessageFromSoap(
+				getMsgSenderWithoutAddressResponse.m[0],
+				true
+			);
+
+			expect(message.participants).toContainEqual(
+				expect.objectContaining({
+					type: 'f',
+					address: undefined,
+					name: 'Mail',
+					fullName: 'Mail Delivery System'
+				})
+			);
+		});
+	});
+
 	describe('Normalize message', () => {
 		describe('Truncated mail body part', () => {
 			const defaultBodyPart = {

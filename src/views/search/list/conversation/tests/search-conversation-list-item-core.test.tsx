@@ -33,6 +33,29 @@ describe('SearchConversationListItemCore', () => {
 		vi.clearAllMocks();
 	});
 
+	it('renders a conversation without tags (GetConv leaves tn out)', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({ conversationParams: { id: '123', subject: 'No tags' } })
+		);
+		const { tags: _tags, ...withoutTags } = conversation;
+		populateFoldersStore();
+		setupTest(
+			<SearchConversationListItemCore
+				conversation={withoutTags}
+				selected={false}
+				selecting={false}
+				open={false}
+				toggleCollapseElementCallback={vi.fn()}
+				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(await screen.findByText('No tags')).toBeInTheDocument();
+		expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+	});
+
 	it('renders conversation details correctly', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({
