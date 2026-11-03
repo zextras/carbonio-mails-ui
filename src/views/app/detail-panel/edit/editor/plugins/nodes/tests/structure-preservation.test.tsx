@@ -222,6 +222,22 @@ describe('structure preservation of imported HTML', () => {
 			expect(cell.style.border).toContain('1px solid');
 		});
 
+		it('inlines the layout of tables created in the editor, as the displayer lacks the theme class', async () => {
+			const editor = await mountWith('<p>text</p>');
+
+			editor.update(
+				() => {
+					$getRoot().append($createTableNodeWithDimensions(1, 1, false));
+				},
+				{ discrete: true }
+			);
+			const table = parse(exportedHtml(editor)).body.querySelector('table') as HTMLTableElement;
+
+			expect(table.style.width).toBe('100%');
+			expect(table.style.tableLayout).toBe('fixed');
+			expect(table.style.borderCollapse).toBe('collapse');
+		});
+
 		it('is stable across repeated import/export cycles', async () => {
 			const first = exportedHtml(await mountWith(TABLE));
 			cleanup();

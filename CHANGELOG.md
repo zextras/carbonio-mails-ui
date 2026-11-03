@@ -1,3 +1,23 @@
+## <small>1.51.11 (2026-11-03)</small>
+
+* fix(CO-4589): type as optional the SOAP fields the server leaves out (#1408) ([dbd73ab](https://github.com/zextras/carbonio-mails-ui/commit/dbd73ab)), closes [#1408](https://github.com/zextras/carbonio-mails-ui/issues/1408)
+* fix(deps): update dependency @zextras/carbonio-ui-soap-lib to v1.3.3 (#1415) ([aff2f7e](https://github.com/zextras/carbonio-mails-ui/commit/aff2f7e)), closes [#1415](https://github.com/zextras/carbonio-mails-ui/issues/1415)
+
+## <small>1.51.10 (2026-11-03)</small>
+
+* fix(composer): inline the layout of editor tables so they keep their width in the displayer ([f8febe7](https://github.com/zextras/carbonio-mails-ui/commit/f8febe7))
+
+## <small>1.51.9 (2026-11-03)</small>
+
+* fix(composer): keep the table "add column" hover button inside the composer ([35efbcc](https://github.com/zextras/carbonio-mails-ui/commit/35efbcc))
+
+## <small>1.51.8 (2026-11-03)</small>
+
+* refactor(CO-4593): send only the SOAP request options the server reads and declare them (#1403) ([3d817c8](https://github.com/zextras/carbonio-mails-ui/commit/3d817c8)), closes [#1403](https://github.com/zextras/carbonio-mails-ui/issues/1403)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.22 (#1395) ([fb566c0](https://github.com/zextras/carbonio-mails-ui/commit/fb566c0)), closes [#1395](https://github.com/zextras/carbonio-mails-ui/issues/1395)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.3.1 (#1409) ([9e66275](https://github.com/zextras/carbonio-mails-ui/commit/9e66275)), closes [#1409](https://github.com/zextras/carbonio-mails-ui/issues/1409)
+* fix(CO-4580): send the reply to a shared folder invitation when notify organizer is checked (#1388) ([4963362](https://github.com/zextras/carbonio-mails-ui/commit/4963362)), closes [#1388](https://github.com/zextras/carbonio-mails-ui/issues/1388)
+
 ## <small>1.51.7 (2026-10-28)</small>
 
 * fix(CO-3644): keep the open message in search when a notification arrives (#1381) ([601bbd3](https://github.com/zextras/carbonio-mails-ui/commit/601bbd3)), closes [#1381](https://github.com/zextras/carbonio-mails-ui/issues/1381)
