@@ -35,11 +35,12 @@ export type ISoapFolderObj = {
 	activesyncdisabled: boolean;
 	deletable: boolean;
 	folder?: Array<ISoapFolderObj>;
-	i4ms: number;
-	i4next: number;
+	i4ms?: number;
+	i4next?: number;
 	id: string;
-	color: string;
-	rgb: string;
+	/** Index of a standard color; the server sends either color or rgb, never both */
+	color?: number;
+	rgb?: string;
 	/** Parent ID */ l: string;
 	luuid: string;
 	ms: number;
@@ -50,8 +51,8 @@ export type ISoapFolderObj = {
 	/** Count of unread messages */ u?: number;
 	uuid: string;
 	absParent?: string;
-	view: IFolderView;
-	cn: Array<mapContactIds>;
+	view?: IFolderView;
+	cn?: Array<mapContactIds>;
 	webOfflineSyncDays: number;
 };
 
@@ -87,10 +88,28 @@ export type FolderActionRequest = {
 	action: FolderActionRename | FolderActionMove | FolderActionDelete | FolderActionGrant;
 };
 
+type FolderActionResult = {
+	action: {
+		id: string;
+		op: string;
+		/** Grantee of a grant: zid is its account id, d its address */
+		zid?: string;
+		d?: string;
+	};
+	_jsns: 'urn:zimbraMail';
+};
+
+/** Response of the Batch sent when a folder action needs a separate color or retention action */
+type BatchFolderActionResult = {
+	FolderActionResponse?: Array<FolderActionResult>;
+	/** Faults of the sub-requests that failed */
+	Fault?: Array<ErrorSoapBodyResponse['Fault']>;
+	_jsns: 'urn:zimbra';
+};
+
 export type FolderActionResponse =
-	| {
-			folder: Array<ISoapFolderObj>;
-	  }
+	| FolderActionResult
+	| BatchFolderActionResult
 	| ErrorSoapBodyResponse;
 
 export type CreateFolderRequest = unknown;

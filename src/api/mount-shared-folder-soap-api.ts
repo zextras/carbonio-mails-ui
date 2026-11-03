@@ -31,8 +31,21 @@ export type CreateMountPointRequest = {
 	link: MountpointSpecType;
 };
 
+export type SoapMountpoint = ISoapFolderObj & {
+	f?: string;
+	zid: string;
+	rid: number;
+	ruuid: string;
+	owner: string;
+	oname: string;
+	reminder: boolean;
+	rest?: string;
+	perm?: string;
+};
+
 export type CreateMountpointResponse = {
-	link: ISoapFolderObj;
+	link: Array<SoapMountpoint>;
+	_jsns: 'urn:zimbraMail';
 };
 
 export type MountSharedFolderParams = {
@@ -46,7 +59,7 @@ export type MountSharedFolderParams = {
 
 export const mountSharedFolderSoapApi = async (
 	params: MountSharedFolderParams
-): Promise<ISoapFolderObj> => {
+): Promise<SoapMountpoint> => {
 	const request: CreateMountPointRequest = {
 		_jsns: 'urn:zimbraMail' as const,
 		link: {
@@ -69,5 +82,5 @@ export const mountSharedFolderSoapApi = async (
 		throw new CreateMountpointError(response.Fault);
 	}
 
-	return response.link;
+	return response.link[0];
 };

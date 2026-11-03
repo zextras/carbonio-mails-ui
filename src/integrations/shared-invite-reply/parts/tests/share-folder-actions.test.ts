@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
 
@@ -12,8 +11,8 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
 import { CreateMountpointResponse } from 'api/mount-shared-folder-soap-api';
+import { createMountpointResponse } from 'api/tests/fixtures/create-mountpoint-response';
 import { useAccept } from 'integrations/shared-invite-reply/parts/share-folder-actions';
-import { ISoapFolderObj } from 'types/soap/soap';
 
 describe('share folder actions', () => {
 	it('should mount shared folder on accept', async () => {
@@ -23,32 +22,10 @@ describe('share folder actions', () => {
 		const folderName = 'folderName';
 		const rgb = '#2b73d2';
 		const accounts = [{ name: 'account name' }];
-		const link: ISoapFolderObj = {
-			activesyncdisabled: false,
-			cn: [],
-			color: '',
-			deletable: false,
-			i4ms: 0,
-			i4next: 0,
-			l: '1',
-			luuid: '',
-			ms: 0,
-			n: 0,
-			rev: 0,
-			rgb: '',
-			s: 0,
-			webOfflineSyncDays: 0,
-			id: faker.string.numeric(),
-			uuid: faker.string.uuid(),
-			name: faker.word.noun(),
-			absFolderPath: `/${faker.word.noun()}`,
-			view
-		};
-
-		const response: CreateMountpointResponse = {
-			link
-		};
-		createSoapAPIInterceptor<never, CreateMountpointResponse>('CreateMountpoint', response);
+		createSoapAPIInterceptor<never, CreateMountpointResponse>(
+			'CreateMountpoint',
+			createMountpointResponse
+		);
 		const msgActionResponse = {
 			action: {
 				id: '10',

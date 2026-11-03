@@ -13,13 +13,19 @@ export type GetSignaturesRequest = {
 	_jsns: typeof JSNS.account;
 };
 
+/** The server leaves signature out when the account has none */
+export type GetSignaturesSoapResponse = {
+	signature?: Array<Signature>;
+	_jsns: typeof JSNS.account;
+};
+
 export type GetSignaturesResponse = {
 	signature: Array<Signature>;
 	_jsns: typeof JSNS.account;
 };
 
 export async function GetSignaturesSoapApi(): Promise<GetSignaturesResponse> {
-	return legacySoapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
+	return legacySoapFetch<GetSignaturesRequest, GetSignaturesSoapResponse | ErrorSoapBodyResponse>(
 		'GetSignatures',
 		{
 			_jsns: 'urn:zimbraAccount'
@@ -28,7 +34,7 @@ export async function GetSignaturesSoapApi(): Promise<GetSignaturesResponse> {
 		if ('Fault' in resp) {
 			return Promise.reject(resp.Fault);
 		}
-		return resp;
+		return { ...resp, signature: resp.signature ?? [] };
 	});
 }
 
