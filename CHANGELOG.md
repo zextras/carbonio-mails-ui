@@ -1,3 +1,8 @@
+## <small>1.51.11 (2026-11-03)</small>
+
+* fix(CO-4589): type as optional the SOAP fields the server leaves out (#1408) ([dbd73ab](https://github.com/zextras/carbonio-mails-ui/commit/dbd73ab)), closes [#1408](https://github.com/zextras/carbonio-mails-ui/issues/1408)
+* fix(deps): update dependency @zextras/carbonio-ui-soap-lib to v1.3.3 (#1415) ([aff2f7e](https://github.com/zextras/carbonio-mails-ui/commit/aff2f7e)), closes [#1415](https://github.com/zextras/carbonio-mails-ui/issues/1415)
+
 ## <small>1.51.10 (2026-11-03)</small>
 
 * fix(composer): inline the layout of editor tables so they keep their width in the displayer ([f8febe7](https://github.com/zextras/carbonio-mails-ui/commit/f8febe7))
