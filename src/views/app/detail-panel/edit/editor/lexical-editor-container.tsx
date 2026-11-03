@@ -162,7 +162,9 @@ export const LexicalEditorContainer = ({
 					<ToolbarPlugin />
 					<div className="editor-inner">
 						<RichTextPlugin
-							contentEditable={<ContentEditable className="mails-lexical-content-editable" />}
+							contentEditable={
+								<ContentEditable className="mails-lexical-content-editable carbonio-bypass-context-menu" />
+							}
 							placeholder={
 								<div className="mails-lexical-placeholder">
 									{t('lexical-messages.write_your_message', 'Write your message')}

@@ -22,13 +22,18 @@ const withMessageId = <P extends WithMessageIdProps>(
 ): React.ComponentType<Omit<P, 'messageId'>> => {
 	const ComponentWithMessageId = (props: Omit<P, 'messageId'>): React.JSX.Element => {
 		const { messageId } = useParams<{ messageId: string }>();
-		return <WrappedComponent {...(props as P)} messageId={messageId!} />;
+		// keyed by message: a fresh panel (scroll, quoted text) only when another message is opened
+		return <WrappedComponent {...(props as P)} key={messageId} messageId={messageId} />;
 	};
 
 	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'})`;
 
 	return ComponentWithMessageId;
 };
+
+// Created once: a component type created during render would remount the message panel on every re-render
+const SearchMessagePanelWithMessageId = withMessageId(SearchMessagePanel);
+
 const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
 	const displayerMessage = useMemo(() => {
 		if (searchResults.conversationListIndex.length > 0 || searchResults.messageListIndex.length > 0)
@@ -56,7 +61,7 @@ const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => 
 	return (
 		<Routes>
 			<Route path={`conversation/:conversationId`} element={<SearchConversationPanel />} />
-			<Route path={`message/:messageId`} Component={withMessageId(SearchMessagePanel)}></Route>
+			<Route path={`message/:messageId`} Component={SearchMessagePanelWithMessageId}></Route>
 			<Route
 				path={'/'}
 				element={

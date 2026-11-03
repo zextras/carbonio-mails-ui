@@ -29,10 +29,6 @@ export const mapToNormalizedConversation = ({
 	const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
 	const convMessagesIds = map(messagesWithCid, (msg) => msg.id);
 	const tags = getTagIds(conversation.t, conversation.tn);
-	// disabling type check on this line because the tags are optional
-	// the workaround will be removed once proper type is in place
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	return {
 		...(tags ? { tags } : {}),
 		id: conversation.id,
@@ -40,7 +36,8 @@ export const mapToNormalizedConversation = ({
 		messageIds: convMessagesIds,
 		participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : [],
 		subject: conversation.su,
-		fragment: conversation.fr,
+		// GetConv never sends it: an undefined fragment would erase the one already stored
+		...(isNil(conversation.fr) ? {} : { fragment: conversation.fr }),
 		read: !isNil(conversation.f) ? !/u/.test(conversation.f) : conversation.u <= 0,
 		hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : false,
 		flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : false,

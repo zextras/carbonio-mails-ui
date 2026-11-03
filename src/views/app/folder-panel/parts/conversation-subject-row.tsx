@@ -18,7 +18,7 @@ export const ConversationSubjectRow = ({
 	read
 }: {
 	subject: string;
-	fragment: string;
+	fragment?: string;
 	read: boolean;
 }): React.JSX.Element => (
 	<SubjectTooltip fragment={fragment} subject={subject}>

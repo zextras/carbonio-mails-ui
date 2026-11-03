@@ -25,6 +25,7 @@ import {
 	type UpdateTag
 } from 'lexical';
 
+import { parseHtmlForImport } from './parse-html-for-import';
 import { editorUtils } from '../parts/editor-utils';
 import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
 import { applyUserPreferenceStyles, UserPreferenceStyle } from 'helpers/user-preference-styles';
@@ -236,7 +237,7 @@ export const ControlledContentPlugin = ({
 				// onto the newly inserted (different-keyed) nodes.
 				const previousOffset = $getCaretAbsoluteOffset();
 
-				const dom = new DOMParser().parseFromString(html, 'text/html');
+				const dom = parseHtmlForImport(html);
 				const nodes = $generateNodesFromDOM(editor, dom);
 				const root = $getRoot();
 				root.clear();

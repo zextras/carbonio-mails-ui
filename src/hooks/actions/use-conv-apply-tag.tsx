@@ -86,7 +86,7 @@ export const useConvApplyTagSubDescriptors = ({
 	folderId
 }: {
 	ids: Array<string>;
-	conversationTags: Array<string>;
+	conversationTags: Array<string> | undefined;
 	folderId: string;
 }): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
@@ -138,7 +138,7 @@ export const useConvApplyTagDescriptor = ({
 	folderId
 }: {
 	ids: Array<string>;
-	conversationTags: Array<string>;
+	conversationTags: Array<string> | undefined;
 	folderId: string;
 }): UIActionAggregator => {
 	const [t] = useTranslation();

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
 import { publishQuotaChangedEvent } from 'event-bus/publish-event';
 import { getIdentityDescriptor } from 'helpers/identities';
@@ -13,7 +13,8 @@ import { createSoapSendMsgRequestFromEditor } from 'store/editor/editor-transfor
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import { MailsEditorV2 } from 'types/editor';
-import { SaveDraftRequest, SaveDraftResponse } from 'types/soap/save-draft';
+import { SaveDraftResponse } from 'types/soap/save-draft';
+import { SoapSendMsgRequest } from 'types/soap/send-msg';
 
 export async function sendMsgFromEditor({
 	editor
@@ -24,7 +25,7 @@ export async function sendMsgFromEditor({
 
 	const identity = getIdentityDescriptor(editor.identityId);
 
-	const response = await legacySoapFetch<SaveDraftRequest, SaveDraftResponse>(
+	const { Body } = await soapFetchV2<SoapSendMsgRequest, { SendMsgResponse: SaveDraftResponse }>(
 		'SendMsg',
 		{
 			_jsns: 'urn:zimbraMail',
@@ -48,11 +49,13 @@ export async function sendMsgFromEditor({
 		},
 		identity?.ownerAccount ?? undefined
 	);
-	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction({ messageId: response.m[0].id, html: editor.isRichText });
+	const response = 'Fault' in Body ? Body : Body.SendMsgResponse;
+	const sentMessage = 'Fault' in Body ? undefined : Body.SendMsgResponse?.m?.[0];
+	if (sentMessage?.id) {
+		getMessageEmailStoreAction({ messageId: sentMessage.id, html: editor.isRichText });
 	}
-	if (response?.m?.[0]?.cid) {
-		getConvEmailStoreAction({ id: response.m[0].cid, html: editor.isRichText });
+	if (sentMessage?.cid) {
+		getConvEmailStoreAction({ id: sentMessage.cid, html: editor.isRichText });
 	}
 	publishQuotaChangedEvent(editor.size);
 	return response;

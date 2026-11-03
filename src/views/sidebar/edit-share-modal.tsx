@@ -46,6 +46,7 @@ export const EditShareModal: FC<EditShareModalProps> = ({
 		sendNotification: sendNotification && !!grant.d,
 		standardMessage,
 		successLabel: t('snackbar.share_updated', 'Access rights updated'),
+		notificationAction: 'edit',
 		goBack,
 		onSuccess
 	});

@@ -1,3 +1,96 @@
+## <small>1.51.11 (2026-11-03)</small>
+
+* fix(CO-4589): type as optional the SOAP fields the server leaves out (#1408) ([dbd73ab](https://github.com/zextras/carbonio-mails-ui/commit/dbd73ab)), closes [#1408](https://github.com/zextras/carbonio-mails-ui/issues/1408)
+* fix(deps): update dependency @zextras/carbonio-ui-soap-lib to v1.3.3 (#1415) ([aff2f7e](https://github.com/zextras/carbonio-mails-ui/commit/aff2f7e)), closes [#1415](https://github.com/zextras/carbonio-mails-ui/issues/1415)
+
+## <small>1.51.10 (2026-11-03)</small>
+
+* fix(composer): inline the layout of editor tables so they keep their width in the displayer ([f8febe7](https://github.com/zextras/carbonio-mails-ui/commit/f8febe7))
+
+## <small>1.51.9 (2026-11-03)</small>
+
+* fix(composer): keep the table "add column" hover button inside the composer ([35efbcc](https://github.com/zextras/carbonio-mails-ui/commit/35efbcc))
+
+## <small>1.51.8 (2026-11-03)</small>
+
+* refactor(CO-4593): send only the SOAP request options the server reads and declare them (#1403) ([3d817c8](https://github.com/zextras/carbonio-mails-ui/commit/3d817c8)), closes [#1403](https://github.com/zextras/carbonio-mails-ui/issues/1403)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.22 (#1395) ([fb566c0](https://github.com/zextras/carbonio-mails-ui/commit/fb566c0)), closes [#1395](https://github.com/zextras/carbonio-mails-ui/issues/1395)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.3.1 (#1409) ([9e66275](https://github.com/zextras/carbonio-mails-ui/commit/9e66275)), closes [#1409](https://github.com/zextras/carbonio-mails-ui/issues/1409)
+* fix(CO-4580): send the reply to a shared folder invitation when notify organizer is checked (#1388) ([4963362](https://github.com/zextras/carbonio-mails-ui/commit/4963362)), closes [#1388](https://github.com/zextras/carbonio-mails-ui/issues/1388)
+
+## <small>1.51.7 (2026-10-28)</small>
+
+* fix(CO-3644): keep the open message in search when a notification arrives (#1381) ([601bbd3](https://github.com/zextras/carbonio-mails-ui/commit/601bbd3)), closes [#1381](https://github.com/zextras/carbonio-mails-ui/issues/1381)
+* fix(CO-4561): show text body parts merged into an HTML body as text (#1401) ([abd83cf](https://github.com/zextras/carbonio-mails-ui/commit/abd83cf)), closes [#1401](https://github.com/zextras/carbonio-mails-ui/issues/1401)
+* fix(CO-4576): keep unread messages unread when a reply joins their conversation (#1385) ([fbfc1eb](https://github.com/zextras/carbonio-mails-ui/commit/fbfc1eb)), closes [#1385](https://github.com/zextras/carbonio-mails-ui/issues/1385)
+* fix(CO-4578): report signature save errors and read the created signature ids from the right respons ([727d2cb](https://github.com/zextras/carbonio-mails-ui/commit/727d2cb)), closes [#1390](https://github.com/zextras/carbonio-mails-ui/issues/1390)
+* fix(CO-4579): don't show or save an empty filter list when loading the filters fails (#1389) ([261908f](https://github.com/zextras/carbonio-mails-ui/commit/261908f)), closes [#1389](https://github.com/zextras/carbonio-mails-ui/issues/1389)
+* fix(CO-4581): send the revoke and edit share notifications with their action (#1387) ([ba527e9](https://github.com/zextras/carbonio-mails-ui/commit/ba527e9)), closes [#1387](https://github.com/zextras/carbonio-mails-ui/issues/1387)
+* fix(CO-4582): keep the conversation fragment when GetConv doesn't send it (#1391) ([4aad97e](https://github.com/zextras/carbonio-mails-ui/commit/4aad97e)), closes [#1391](https://github.com/zextras/carbonio-mails-ui/issues/1391)
+* fix(CO-4583): store the date and size of conversation hits as numbers (#1392) ([586d3bd](https://github.com/zextras/carbonio-mails-ui/commit/586d3bd)), closes [#1392](https://github.com/zextras/carbonio-mails-ui/issues/1392)
+* fix(CO-4584): keep the header data of messages that SearchConv returns without headers (#1393) ([cf71a78](https://github.com/zextras/carbonio-mails-ui/commit/cf71a78)), closes [#1393](https://github.com/zextras/carbonio-mails-ui/issues/1393)
+* fix(CO-4585): keep the recipients of a conversation when a notification lists only its senders (#138 ([32b46b9](https://github.com/zextras/carbonio-mails-ui/commit/32b46b9)), closes [#1386](https://github.com/zextras/carbonio-mails-ui/issues/1386)
+* fix(CO-4586): keep the flags not mapped to fields when the read receipt is not sent (#1394) ([9956f9b](https://github.com/zextras/carbonio-mails-ui/commit/9956f9b)), closes [#1394](https://github.com/zextras/carbonio-mails-ui/issues/1394)
+
+## <small>1.51.6 (2026-10-28)</small>
+
+* fix(CO-2827): close the preview to the search results when an action runs in search (#1360) ([38ac0d7](https://github.com/zextras/carbonio-mails-ui/commit/38ac0d7)), closes [#1360](https://github.com/zextras/carbonio-mails-ui/issues/1360)
+* fix(CO-4575): keep the message flags when the read receipt is not sent (#1383) ([ab52032](https://github.com/zextras/carbonio-mails-ui/commit/ab52032)), closes [#1383](https://github.com/zextras/carbonio-mails-ui/issues/1383)
+
+## <small>1.51.5 (2026-10-26)</small>
+
+* fix(CO-4528): update carbonio-ui-commons to 2.6.2 ([ba0796e](https://github.com/zextras/carbonio-mails-ui/commit/ba0796e))
+
+## <small>1.51.4 (2026-10-26)</small>
+
+* fix: mailto composition on double domain (#1380) ([c41b413](https://github.com/zextras/carbonio-mails-ui/commit/c41b413)), closes [#1380](https://github.com/zextras/carbonio-mails-ui/issues/1380)
+* chore(deps): update dependency @types/lodash to v4.17.27 (#1371) ([fd40f86](https://github.com/zextras/carbonio-mails-ui/commit/fd40f86)), closes [#1371](https://github.com/zextras/carbonio-mails-ui/issues/1371)
+* chore(deps): update dependency @types/react-redux to v7.1.35 (#1372) ([a4e9dfa](https://github.com/zextras/carbonio-mails-ui/commit/a4e9dfa)), closes [#1372](https://github.com/zextras/carbonio-mails-ui/issues/1372)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.1.0 (#1370) ([c4b2f80](https://github.com/zextras/carbonio-mails-ui/commit/c4b2f80)), closes [#1370](https://github.com/zextras/carbonio-mails-ui/issues/1370)
+
+## <small>1.51.3 (2026-10-23)</small>
+
+* fix(CO-4504): support nested bullet lists via Tab and toolbar indent (#1368) ([a56efef](https://github.com/zextras/carbonio-mails-ui/commit/a56efef)), closes [#1368](https://github.com/zextras/carbonio-mails-ui/issues/1368)
+
+## <small>1.51.2 (2026-10-23)</small>
+
+* fix(CO-4534): stay in search when undoing the deletion of an opened message (#1361) ([023dccf](https://github.com/zextras/carbonio-mails-ui/commit/023dccf)), closes [#1361](https://github.com/zextras/carbonio-mails-ui/issues/1361)
+* chore(deps): update vitest to v4.1.12 (#1364) ([1a7113a](https://github.com/zextras/carbonio-mails-ui/commit/1a7113a)), closes [#1364](https://github.com/zextras/carbonio-mails-ui/issues/1364)
+
+## <small>1.51.1 (2026-10-22)</small>
+
+* fix(CO-4509): keep conversation position and date when replying in a folder (#1352) ([777f7d1](https://github.com/zextras/carbonio-mails-ui/commit/777f7d1)), closes [#1352](https://github.com/zextras/carbonio-mails-ui/issues/1352)
+
+## 1.51.0 (2026-10-22)
+
+* feat(CO-4028): add Files nodes to a new composer from other modules (#1337) ([542d0b7](https://github.com/zextras/carbonio-mails-ui/commit/542d0b7)), closes [#1337](https://github.com/zextras/carbonio-mails-ui/issues/1337)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.20 (#1358) ([62ba1ae](https://github.com/zextras/carbonio-mails-ui/commit/62ba1ae)), closes [#1358](https://github.com/zextras/carbonio-mails-ui/issues/1358)
+* chore(deps): update dependency @zextras/carbonio-search-ui to v0.1.21 (#1363) ([ee4fb60](https://github.com/zextras/carbonio-mails-ui/commit/ee4fb60)), closes [#1363](https://github.com/zextras/carbonio-mails-ui/issues/1363)
+* chore(deps): update dependency playwright to v1.64.1 (#1366) ([9a92da2](https://github.com/zextras/carbonio-mails-ui/commit/9a92da2)), closes [#1366](https://github.com/zextras/carbonio-mails-ui/issues/1366)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5 ([816c4c8](https://github.com/zextras/carbonio-mails-ui/commit/816c4c8))
+* chore(deps): update testing library (#1359) ([a26b748](https://github.com/zextras/carbonio-mails-ui/commit/a26b748)), closes [#1359](https://github.com/zextras/carbonio-mails-ui/issues/1359)
+* docs: remove double hyphen from pnpm commands in README ([55e039d](https://github.com/zextras/carbonio-mails-ui/commit/55e039d))
+
+## <small>1.50.7 (2026-10-20)</small>
+
+* fix(CO-3617): keep a replied single-message conversation in search results (#1350) ([f1c47ab](https://github.com/zextras/carbonio-mails-ui/commit/f1c47ab)), closes [#1350](https://github.com/zextras/carbonio-mails-ui/issues/1350)
+
+## <small>1.50.6 (2026-10-20)</small>
+
+* fix: implement roving toolbar for improved keyboard navigation in rich text editor and restore jumpi ([ae4ec77](https://github.com/zextras/carbonio-mails-ui/commit/ae4ec77))
+* chore(deps): update dependency @babel/runtime to ^7.29.10 (#1356) ([36a78b9](https://github.com/zextras/carbonio-mails-ui/commit/36a78b9)), closes [#1356](https://github.com/zextras/carbonio-mails-ui/issues/1356)
+* chore(deps): update dependency @types/lodash to v4.17.26 (#1357) ([5f7935a](https://github.com/zextras/carbonio-mails-ui/commit/5f7935a)), closes [#1357](https://github.com/zextras/carbonio-mails-ui/issues/1357)
+
+## <small>1.50.5 (2026-10-17)</small>
+
+* fix: right click not working in message body compose form ([31fd24a](https://github.com/zextras/carbonio-mails-ui/commit/31fd24a))
+
+## <small>1.50.4 (2026-10-16)</small>
+
+* fix(CO-4425): show the right error when a distribution list denies the send (#1334) ([21993af](https://github.com/zextras/carbonio-mails-ui/commit/21993af)), closes [#1334](https://github.com/zextras/carbonio-mails-ui/issues/1334)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.0 (#1347) ([1022158](https://github.com/zextras/carbonio-mails-ui/commit/1022158)), closes [#1347](https://github.com/zextras/carbonio-mails-ui/issues/1347)
+* chore(deps): update dependency zextras/jenkins-lib-common to v4.15.2 (#1349) ([9347d48](https://github.com/zextras/carbonio-mails-ui/commit/9347d48)), closes [#1349](https://github.com/zextras/carbonio-mails-ui/issues/1349)
+
 ## <small>1.50.3 (2026-10-13)</small>
 
 * Merge pull request #1345 from zextras/fix/CO-4446-main ([3b16e90](https://github.com/zextras/carbonio-mails-ui/commit/3b16e90)), closes [#1345](https://github.com/zextras/carbonio-mails-ui/issues/1345)

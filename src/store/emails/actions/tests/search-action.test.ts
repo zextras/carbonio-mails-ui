@@ -20,6 +20,7 @@ import {
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
 } from 'store/emails/store';
+import { SearchSoapApiParams } from 'types/conversations';
 import { SORT_BY } from 'types/sorting';
 
 vi.mock('../../../../api/search-soap-api');
@@ -36,10 +37,8 @@ describe('searchEmailStoreAction', () => {
 		more: false
 	};
 
-	const searchParams = {
-		folderId: 'inbox',
+	const searchParams: SearchSoapApiParams = {
 		limit: 50,
-		before: null,
 		types: 'message',
 		sortBy: SORT_BY.dateDesc,
 		query: 'test',

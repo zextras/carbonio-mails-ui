@@ -22,11 +22,10 @@ export async function searchConvSoapApi({
 	html
 }: SearchConvParameters): Promise<SearchConvResponse> {
 	const userSettings: AccountSettings = getUserSettings();
-	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as 'dateDesc' | 'dateAsc';
+	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as SearchConvRequest['sortBy'];
 	const request: SearchConvRequest = {
 		_jsns: 'urn:zimbraMail',
 		cid: conversationId,
-		recip: '2',
 		sortBy,
 		offset: 0,
 		fetch,

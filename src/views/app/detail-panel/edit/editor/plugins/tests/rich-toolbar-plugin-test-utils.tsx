@@ -77,7 +77,7 @@ export async function setupWithSelectedContent(richText = DEFAULT_HTML): Promise
  */
 export async function openSelect(user: TestUser, index: number): Promise<void> {
 	const chevron = screen.getAllByTestId('icon: ArrowDown')[index];
-	const trigger = chevron.closest('[tabindex="0"]');
+	const trigger = chevron.closest('[tabindex]');
 	if (trigger === null) {
 		throw new Error('select trigger not found');
 	}

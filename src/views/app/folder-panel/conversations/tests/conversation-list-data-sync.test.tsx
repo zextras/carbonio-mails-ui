@@ -19,6 +19,7 @@ import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
+import { mockSoapSync } from 'views/sidebar/tests/test-helpers';
 
 vi.mock('react-router-dom', async () => ({
 	...(await vi.importActual('react-router-dom')),
@@ -88,5 +89,53 @@ describe('conversation-list-data-sync', () => {
 			`conversation-list-item-${newConversationId}`
 		);
 		expect(conversationListItemAfter).toBeVisible();
+	});
+
+	it('single message conversation should keep its position in the list when replying', async () => {
+		// the previous test leaves its notify (same seq) as the mocked sync result
+		mockSoapSync([]);
+		window.history.pushState({}, '', `/folder/${FOLDERS.INBOX}`);
+		(useParams as Mock).mockReturnValue({
+			folderId: FOLDERS.INBOX
+		});
+		populateFoldersStore();
+		// the reply notify creates the draft on 2025-02-25, after both these messages
+		const newerMessage = generateConvMessageFromAPI({
+			id: '50',
+			cid: '51',
+			l: FOLDERS.INBOX,
+			d: new Date('2025-02-20T10:00:00Z').valueOf()
+		});
+		const originalMessage = generateConvMessageFromAPI({
+			id: '1',
+			cid: '-3',
+			l: FOLDERS.INBOX,
+			d: new Date('2025-01-10T10:00:00Z').valueOf()
+		});
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [
+				generateConversationFromAPI({ id: '51', d: newerMessage.d, m: [newerMessage] }),
+				generateConversationFromAPI({ id: '-3', d: originalMessage.d, m: [originalMessage] })
+			],
+			more: false
+		});
+
+		const { rerender } = setupTest(<ConversationListDataSyncTest />);
+		await screen.findByTestId('conversation-list-item--3');
+
+		simulateReplyToSingleMessageConversation({
+			deletedConversationId: '-3',
+			newConversationId: '2000',
+			newMessageId: '101',
+			originalMessageId: originalMessage.id
+		});
+		// eslint-disable-next-line testing-library/no-unnecessary-act
+		await act(async () => rerender(<ConversationListDataSyncTest />));
+
+		await screen.findByTestId('conversation-list-item-2000');
+		const listItemIds = screen
+			.getAllByTestId(/^conversation-list-item-[-\d]+$/)
+			.map((item) => item.getAttribute('data-testid'));
+		expect(listItemIds).toEqual(['conversation-list-item-51', 'conversation-list-item-2000']);
 	});
 });

@@ -10,6 +10,8 @@ import { $generateNodesFromDOM } from '@lexical/html';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $getRoot, $insertNodes } from 'lexical';
 
+import { parseHtmlForImport } from './parse-html-for-import';
+
 type InitialContentPluginProps = {
 	html: string;
 };
@@ -33,7 +35,7 @@ export const InitialContentPlugin = ({ html }: InitialContentPluginProps): null 
 
 		editor.update(
 			() => {
-				const dom = new DOMParser().parseFromString(html, 'text/html');
+				const dom = parseHtmlForImport(html);
 				const nodes = $generateNodesFromDOM(editor, dom);
 				const root = $getRoot();
 				root.clear();

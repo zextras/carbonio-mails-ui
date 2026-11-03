@@ -65,15 +65,24 @@ describe('AutoLinkPlugin', () => {
 		});
 	});
 
-	it('turns a typed email address into a mailto link', async () => {
+	it.each([
+		['a single-label domain', 'someone@zextras.com'],
+		['a hyphenated domain', 'someone@my-domain.com'],
+		['a multi-label domain', 'someone@domain.domain.fr'],
+		['a deeply nested multi-label domain', 'someone@mail.sub.domain.co.uk']
+	])('turns a typed email address with %s into a mailto link', async (_case, email) => {
 		const { editorId, user } = setupEditor();
 		const editorElement = screen.getByTestId(EDITOR_TESTID);
 
 		await user.click(editorElement);
-		await user.type(editorElement, 'someone@zextras.com ');
+		await user.type(editorElement, `${email} `);
 
 		await waitFor(() => {
-			expect(richTextOf(editorId)).toContain('href="mailto:someone@zextras.com"');
+			expect(richTextOf(editorId)).toContain(`href="mailto:${email}"`);
 		});
+		// The whole address, including the last domain label, is inside the link.
+		const doc = new DOMParser().parseFromString(richTextOf(editorId), 'text/html');
+		// eslint-disable-next-line testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM
+		expect(doc.querySelector('a')?.textContent).toBe(email);
 	});
 });

@@ -8,6 +8,7 @@ import { registerFunctions } from '@zextras/carbonio-shell-ui';
 
 import {
 	openComposerSharedFunction,
+	openComposerWithFilesNodesSharedFunction,
 	openPrefilledComposerSharedFunction
 } from 'integrations/shared-functions';
 
@@ -20,6 +21,10 @@ export const registerShellIntegrations = (): void => {
 		{
 			id: 'composePrefillMessage',
 			fn: openPrefilledComposerSharedFunction
+		},
+		{
+			id: 'composeWithFilesNodes',
+			fn: openComposerWithFilesNodesSharedFunction
 		}
 	);
 };

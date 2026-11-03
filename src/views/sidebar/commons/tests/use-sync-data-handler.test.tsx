@@ -40,6 +40,7 @@ import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/ge
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
 import {
+	getConversationById,
 	getMessageById,
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
@@ -48,11 +49,13 @@ import {
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useMessageById
+	useMessageById,
+	useSearchResults
 } from 'store/emails/store';
 import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
+import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
@@ -221,6 +224,143 @@ describe('sync data handler', () => {
 			);
 		});
 
+		it('should keep the recipients of a conversation replaced by a new one, which lists only its senders', async () => {
+			populateFoldersStore();
+			const recipient = { type: 't' as const, address: 'recipient@example.com' };
+			await waitFor(() => {
+				setConversationsInEmailStore(
+					[
+						generateConversation({
+							id: '-1',
+							folderId: FOLDERS.SENT,
+							to: [recipient],
+							messageIds: ['1']
+						})
+					],
+					false
+				);
+			});
+			mockShellSoapNotify({
+				created: {
+					m: [getSoapMessage('100', { cid: '2', l: FOLDERS.INBOX })],
+					c: [
+						{
+							...getSoapConversation('2'),
+							m: undefined,
+							e: [{ t: 'f', a: 'recipient@example.com', p: 'Recipient' }]
+						} as unknown as SoapConversation
+					]
+				},
+				modified: {
+					m: [{ id: '1', cid: '2' }],
+					mbx: [{ s: 0 }]
+				},
+				deleted: ['-1']
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getConversationById('2')).toBeDefined());
+			expect(getConversationById('2').participants).toEqual(
+				expect.arrayContaining([expect.objectContaining(recipient)])
+			);
+		});
+
+		it('should keep the recipients of a conversation when a modify notification lists only its senders', async () => {
+			populateFoldersStore();
+			const recipient = { type: 't' as const, address: 'recipient@example.com' };
+			await waitFor(() => {
+				setConversationsInEmailStore(
+					[generateConversation({ id: '2', folderId: FOLDERS.SENT, to: [recipient] })],
+					false
+				);
+			});
+			mockShellSoapNotify({
+				modified: {
+					c: [{ id: '2', u: 0, n: 2, e: [{ t: 'f', a: 'me@example.com', p: 'Me' }] }],
+					mbx: [{ s: 0 }]
+				}
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() =>
+				expect(getConversationById('2').participants).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ type: 'f', address: 'me@example.com' })
+					])
+				)
+			);
+			expect(getConversationById('2').participants).toEqual(
+				expect.arrayContaining([expect.objectContaining(recipient)])
+			);
+		});
+
+		describe('in search results', () => {
+			it('should replace a single message conversation with its new conversation in the same position when replying', async () => {
+				populateFoldersStore();
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '10', messageIds: ['11'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] }),
+						generateConversation({ id: '20', messageIds: ['21'] })
+					],
+					false
+				);
+				simulateReplyToSingleMessageConversation({
+					deletedConversationId: '-5',
+					newConversationId: '500',
+					originalMessageId: '5',
+					newMessageId: '501'
+				});
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() =>
+					expect(result.current.conversationListIndex).toEqual(['10', '500', '20'])
+				);
+			});
+
+			it('should remove a deleted single message conversation which has not been replaced', async () => {
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '10', messageIds: ['11'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] })
+					],
+					false
+				);
+				mockShellSoapNotify({ deleted: ['-5'] });
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() => expect(result.current.conversationListIndex).toEqual(['10']));
+			});
+
+			it('should not duplicate the new conversation if it is already in the search results', async () => {
+				populateFoldersStore();
+				setSearchResultsByConversation(
+					[
+						generateConversation({ id: '500', messageIds: ['499'] }),
+						generateConversation({ id: '-5', messageIds: ['5'] })
+					],
+					false
+				);
+				simulateReplyToSingleMessageConversation({
+					deletedConversationId: '-5',
+					newConversationId: '500',
+					originalMessageId: '5',
+					newMessageId: '501'
+				});
+
+				setupHook(() => useSyncDataHandler());
+
+				const { result } = renderHook(() => useSearchResults());
+				await waitFor(() => expect(result.current.conversationListIndex).toEqual(['500']));
+			});
+		});
+
 		it('should mark conversation as read', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: false })],
@@ -317,6 +457,27 @@ describe('sync data handler', () => {
 
 			const message = getMessageById('1');
 			expect(message.read).toBe(false);
+		});
+
+		it('should keep an unread message unread when a reply joins its single message conversation', async () => {
+			populateFoldersStore();
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockShellSoapNotify({
+				created: {
+					m: [getSoapMessage('100', { cid: '2', l: FOLDERS.INBOX })],
+					c: [getSoapConversation('2')]
+				},
+				modified: {
+					m: [{ id: '1', cid: '2' }],
+					mbx: [{ s: 0 }]
+				},
+				deleted: ['-1']
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getMessageById('1').conversation).toBe('2'));
+			expect(getMessageById('1').read).toBe(false);
 		});
 
 		it('should not change flag read to false when f is undefined', async () => {

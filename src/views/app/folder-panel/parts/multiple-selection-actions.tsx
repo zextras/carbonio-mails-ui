@@ -81,7 +81,7 @@ export const MultipleSelectionActions = ({
 			? filter(messages, (item): item is MailMessage => ids.includes(item.id))
 			: conversations;
 
-	const tags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
+	const tags: Array<Array<string>> = map(selectedItems, (item) => item.tags ?? []);
 	const atLeastOneIsUnread = some(selectedItems, (item) => !item.read);
 	const atLeastOneIsUnflagged = some(selectedItems, (item) => !item.flagged);
 	const tagsInCommon = intersection(...tags);

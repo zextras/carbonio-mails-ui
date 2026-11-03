@@ -4,24 +4,98 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
+import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers/conversations';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 import { EmailsStoreState } from 'types/search';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
+
+/**
+ * Conversations in notifications list only their senders: keep the other participants already known.
+ * Notifications carry no recipients, so a recipient of a message that left the conversation stays until a
+ * search or GetConv reloads it.
+ */
+function keepKnownRecipients(
+	knownParticipants: Array<Participant>,
+	notifiedParticipants: Array<Participant>
+): Array<Participant> {
+	const recipients = knownParticipants.filter(
+		(known) =>
+			known.type !== 'f' &&
+			!find(notifiedParticipants, { type: known.type, address: known.address })
+	);
+	return [...notifiedParticipants, ...recipients];
+}
+
+/**
+ * Finds the conversation which now holds the given messages, other than the excluded one.
+ * When a single-message conversation (negative id) receives a reply, the server deletes it and
+ * creates a new conversation with an unrelated positive id containing the same message.
+ */
+function findConversationIdByMessageIds(
+	state: Pick<EmailsStoreState, 'populatedItemsSlice'>,
+	messageIds: Array<string>,
+	excludedConversationId: string
+): string | undefined {
+	const { conversations, messages } = state.populatedItemsSlice;
+	const byConversationMessages = find(
+		conversations,
+		(conversation) =>
+			conversation.id !== excludedConversationId &&
+			conversation.messageIds.some((messageId) => messageIds.includes(messageId))
+	)?.id;
+	if (byConversationMessages) {
+		return byConversationMessages;
+	}
+	return messageIds
+		.map((messageId) => messages[messageId]?.conversation)
+		.find((id) => !!id && id !== excludedConversationId && !!conversations[id]);
+}
+
+function getReplacingConversationIdInSearch(
+	state: EmailsStoreState,
+	deletedConversationId: string
+): string | undefined {
+	if (!deletedConversationId.startsWith('-')) {
+		return undefined;
+	}
+	const messageIds = state.populatedItemsSlice.conversations[deletedConversationId]?.messageIds;
+	if (!messageIds?.length) {
+		return undefined;
+	}
+	return findConversationIdByMessageIds(state, messageIds, deletedConversationId);
+}
 
 function deleteConversationsInSearch(
 	state: EmailsStoreState,
 	conversationIds: Array<string>
 ): void {
-	state.searchIndexSlice.conversationListIndex =
-		state.searchIndexSlice.conversationListIndex.filter((id) => !conversationIds.includes(id));
+	const searchIds = state.searchIndexSlice.conversationListIndex;
+	state.searchIndexSlice.conversationListIndex = searchIds.reduce<Array<string>>((acc, id) => {
+		if (!conversationIds.includes(id)) {
+			acc.push(id);
+			return acc;
+		}
+		const replacingId = getReplacingConversationIdInSearch(state, id);
+		if (
+			replacingId &&
+			!conversationIds.includes(replacingId) &&
+			!acc.includes(replacingId) &&
+			!searchIds.includes(replacingId)
+		) {
+			acc.push(replacingId);
+		}
+		return acc;
+	}, []);
 	conversationIds.forEach((id) => {
 		delete state.populatedItemsSlice.conversations[id];
 		delete state.populatedItemsSlice.conversationsStatus[id];
@@ -120,7 +194,13 @@ function handleNotifyConversationsModified(
 				if (existingConversation) {
 					populatedItemsSlice.conversations[partialData.id] = {
 						...existingConversation,
-						...partialData
+						...partialData,
+						...(partialData.participants && {
+							participants: keepKnownRecipients(
+								existingConversation.participants,
+								partialData.participants
+							)
+						})
 					};
 				}
 			});
@@ -187,20 +267,51 @@ function handleNotifyMessagesCreated(
 		return Array.from(new Set([...convMessagesIds, message.id]));
 	}
 
+	/**
+	 * Returns the conversation list ordered by the date of each conversation in the given folder,
+	 * the same date used by the server to sort the folder. Messages added outside the folder (e.g.
+	 * drafts or sent replies) do not change it, so they don't move the conversation.
+	 * Returns undefined when the folder is not sorted by date.
+	 */
 	function getOrderedConversationListIndex(
-		conversations: Record<string, NormalizedConversation>,
-		folderId: string
-	): Array<string> {
+		state: EmailsStoreState,
+		folderId: string,
+		updatedConversationIds: Array<string>
+	): Array<string> | undefined {
 		const sortOrder = getUserSettings()?.prefs?.zimbraPrefSortOrder as string;
-		const { sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
-		return orderBy(conversations, 'date', toLower(sortDirection)).map((conv) => conv.id);
+		const { sortType, sortDirection } = parseMessageSortingOptions(folderId, sortOrder);
+		if (sortType !== 'date') {
+			return undefined;
+		}
+		const folder = getFolder(folderId);
+		const messagesParent = folder ? getMessagesParentForFolder(folder) : folderId;
+		const { conversations, messages: storedMessages } = state.populatedItemsSlice;
+		const conversationIds = Array.from(
+			new Set([...state.conversationIndexSlice.conversationListIndex, ...updatedConversationIds])
+		);
+		return orderBy(
+			conversationIds,
+			(conversationId) => {
+				const conversation = conversations[conversationId];
+				if (!conversation) {
+					return 0;
+				}
+				return getConversationDateInFolder(
+					conversation,
+					conversation.messageIds.map((messageId) => storedMessages[messageId]),
+					messagesParent
+				);
+			},
+			toLower(sortDirection) as 'asc' | 'desc'
+		);
 	}
 
 	function addMessagesToConversation(state: EmailsStoreState): void {
+		const updatedConversationIds: Array<string> = [];
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
 			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
-				const newMessages = find(conversation.messageIds, msg.id)
+				const newMessages = conversation.messageIds.includes(msg.id)
 					? conversation.messageIds
 					: getOrderedMessagesForConversation(conversation.messageIds, msg);
 
@@ -217,20 +328,23 @@ function handleNotifyMessagesCreated(
 					...state.populatedItemsSlice.conversations,
 					...conv
 				};
-
-				const regex = /\/folder\/([^/]+)(?:\/|$)/;
-				const match = regex.exec(globalThis.location.pathname);
-
-				const folderId = match?.[1];
-				if (folderId) {
-					// Recalculate conversationListIndex when a message updates a conversation date, ordering the array according to the user's sort preference
-					state.conversationIndexSlice.conversationListIndex = getOrderedConversationListIndex(
-						state.populatedItemsSlice.conversations,
-						folderId
-					);
-				}
+				updatedConversationIds.push(msg.conversation);
 			}
 		});
+
+		const regex = /\/folder\/([^/]+)(?:\/|$)/;
+		const match = regex.exec(globalThis.location.pathname);
+		const folderId = match?.[1] ? decodeURIComponent(match[1]) : undefined;
+		if (folderId && updatedConversationIds.length > 0) {
+			const orderedConversationListIndex = getOrderedConversationListIndex(
+				state,
+				folderId,
+				updatedConversationIds
+			);
+			if (orderedConversationListIndex) {
+				state.conversationIndexSlice.conversationListIndex = orderedConversationListIndex;
+			}
+		}
 	}
 
 	useEmailsStore.setState(
@@ -251,10 +365,26 @@ function handleNotifyConversationsCreated(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newConversationIds = conversations.map((conv) => conv.id);
+	// looked up on the plain state: scanning the draft would make immer proxy every stored conversation
+	const storedConversations = Object.values(
+		useEmailsStore.getState().populatedItemsSlice.conversations
+	);
+	const participantsById = conversations.reduce<
+		Record<string, NormalizedConversation['participants']>
+	>((acc, conversation) => {
+		const messageIds = new Set(conversation.messageIds);
+		acc[conversation.id] = storedConversations
+			.filter((known) => known.messageIds.some((id) => messageIds.has(id)))
+			.reduce(
+				(participants, replaced) => keepKnownRecipients(replaced.participants, participants),
+				conversation.participants
+			);
+		return acc;
+	}, {});
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = conversation;
+				acc[conversation.id] = { ...conversation, participants: participantsById[conversation.id] };
 				return acc;
 			}, populatedItemsSlice.conversations);
 			conversationIndexSlice.conversationListIndex = Array.from(
@@ -265,6 +395,7 @@ function handleNotifyConversationsCreated(
 }
 
 export const syncDataHandlerUtils = {
+	findConversationIdByMessageIds,
 	handleNotifyDeleted,
 	handleNotifyMessagesModified,
 	handleNotifyConversationsModified,

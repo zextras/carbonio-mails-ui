@@ -378,6 +378,60 @@ describe('RecipientsRow', () => {
 	beforeEach(() => {
 		(useContactInput as Mock).mockReturnValue(ContactInputWithError);
 	});
+	describe('a recipient without address (e.g. the sender of a bounce, `"Mail Delivery System" <>`)', () => {
+		const bounceSenderName = 'Mail Delivery System';
+		const withoutAddress: Participant = {
+			type: ParticipantRole.TO,
+			name: 'Mail',
+			fullName: bounceSenderName
+		};
+
+		test('is an invalid chip with its name', () => {
+			const contactInput = vi.fn(() => null);
+			(useContactInput as Mock).mockReturnValue(contactInput);
+			setupTest(
+				<RecipientsRow
+					type={ParticipantRole.TO}
+					label={'to'}
+					recipients={[withoutAddress]}
+					onRecipientsChange={vi.fn()}
+				/>
+			);
+			expect(contactInput).toHaveBeenLastCalledWith(
+				expect.objectContaining({
+					defaultValue: [
+						// the id is not '': the ContactInput of contacts drops the chips whose id is ''
+						expect.objectContaining({ id: bounceSenderName, label: bounceSenderName, error: true })
+					]
+				}),
+				expect.anything()
+			);
+		});
+
+		test('stays the same participant when the chips change', async () => {
+			const ContactInputChanging = ({
+				defaultValue,
+				onChange
+			}: ContactInputProps): React.JSX.Element => (
+				<button type="button" onClick={(): void => onChange?.(defaultValue)}>
+					change
+				</button>
+			);
+			(useContactInput as Mock).mockReturnValue(ContactInputChanging);
+			const onRecipientsChange = vi.fn();
+			const { user } = setupTest(
+				<RecipientsRow
+					type={ParticipantRole.TO}
+					label={'to'}
+					recipients={[withoutAddress]}
+					onRecipientsChange={onRecipientsChange}
+				/>
+			);
+			await user.click(screen.getByRole('button', { name: 'change' }));
+			expect(onRecipientsChange).toHaveBeenCalledWith([withoutAddress]);
+		});
+	});
+
 	test('should display error when email is invalid and error true', async () => {
 		setupTest(
 			<RecipientsRow

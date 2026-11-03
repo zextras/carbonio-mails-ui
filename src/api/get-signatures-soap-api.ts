@@ -94,9 +94,27 @@ export async function signatureRequest(data: any): Promise<{ response: any }> {
 		`
 	});
 	const response = await res.json();
-	if (response.Body.BatchResponse.Fault) {
-		throw new Error(response.Body.BatchResponse.Fault.Reason.Text);
+	// in a BatchResponse, Fault is an array: one fault for each failed request
+	const fault = response.Body.BatchResponse.Fault?.[0];
+	if (fault) {
+		throw new Error(fault.Reason?.Text);
 	}
 
 	return { response };
 }
+
+type CreatedSignatures = {
+	Body?: {
+		BatchResponse?: {
+			CreateSignatureResponse?: Array<{ signature: Array<{ id: string; name: string }> }>;
+		};
+	};
+};
+
+export const getCreatedSignatureId = (
+	response: CreatedSignatures,
+	name: string
+): string | undefined =>
+	(response.Body?.BatchResponse?.CreateSignatureResponse ?? [])
+		.flatMap(({ signature }) => signature)
+		.find((signature) => signature.name === name)?.id;

@@ -74,14 +74,7 @@ function handleLoadMoreResults({
 		const conversations = map(searchResponse.c, (conv) =>
 			mapToNormalizedConversation({ conversation: conv })
 		);
-		const messages: (IncompleteMessage | MailMessage)[] = [];
-		searchResponse.c?.forEach((soapConversation) =>
-			soapConversation.m.forEach((soapMessage) =>
-				messages.push(
-					normalizeMailMessageFromSoap({ m: soapMessage, isComplete: false, html: true })
-				)
-			)
-		);
+		const messages = extractConvMessage(searchResponse.c);
 		appendConversations(conversations, offset, searchResponse.more);
 		appendMessagesToSearch(messages, offset);
 	}
@@ -206,8 +199,7 @@ export function useLoadMoreForSearchSlice({
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 				sortBy: 'dateDesc',
 				types,
-				offset,
-				recip: '0'
+				offset
 			}).finally(() => {
 				loadingMore.current = false;
 			});

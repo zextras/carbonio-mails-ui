@@ -6,10 +6,10 @@
 import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors } from 'constants/index';
+import { MessageActionsDescriptors } from 'constants/index';
 import { isDraft } from 'helpers/folders';
+import { useClosePreviewPanel } from 'hooks/use-close-preview-panel';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 
@@ -30,17 +30,17 @@ export const useMsgSetReadFn = ({
 		(): boolean => !isDraft(folderId) && !isMessageRead,
 		[folderId, isMessageRead]
 	);
-	const navigate = useNavigate();
+	const closePreviewPanel = useClosePreviewPanel(folderId);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			msgActionEmailStoreAction({ operation: 'read', ids }).then((res) => {
 				if (!('Fault' in res) && shouldReplaceHistory) {
-					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+					closePreviewPanel();
 				}
 			});
 		}
-	}, [canExecute, folderId, ids, navigate, shouldReplaceHistory]);
+	}, [canExecute, closePreviewPanel, ids, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

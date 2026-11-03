@@ -12,7 +12,7 @@ import { ZimbraRequest } from 'types/soap/zimbra-request';
 
 export type SearchConvRequest = ZimbraRequest & {
 	offset: number;
-	sortBy: string;
+	sortBy?: 'dateDesc' | 'dateAsc';
 	limit: number;
 	query?: string;
 	cid: string;
@@ -20,7 +20,6 @@ export type SearchConvRequest = ZimbraRequest & {
 	html: boolean;
 	needExp: 1 | 0;
 	max?: number;
-	recip: '0' | '1' | '2' | 'false' | 'true';
 	header: Array<{ n: MailVerificationHeader }>;
 	read?: 0 | 1;
 };

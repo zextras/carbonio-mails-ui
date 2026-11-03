@@ -4,14 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { map } from 'lodash';
+import { map, pick } from 'lodash';
 
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import {
+	MAIL_HEADER_FIELDS,
+	normalizeCompleteMailMessageFromSoap
+} from 'normalizations/normalize-message';
 import {
 	updateMessages,
 	getConversationById,
+	getMessageById,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
@@ -23,7 +27,12 @@ function handleSearchConvResponse(
 	response: SearchConvResponse,
 	html: boolean
 ): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg, html));
+	const messages = map(response?.m ?? [], (msg) => {
+		const message = normalizeCompleteMailMessageFromSoap(msg, html);
+		// the messages outside the query (e.g. replies in Sent) come without headers: keep what was known
+		const stored = msg._attrs ? undefined : getMessageById(msg.id);
+		return stored ? { ...message, ...pick(stored, MAIL_HEADER_FIELDS) } : message;
+	});
 	updateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
 	const conversation = getConversationById(conversationId);

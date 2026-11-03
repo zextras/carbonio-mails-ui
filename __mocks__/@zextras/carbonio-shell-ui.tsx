@@ -58,6 +58,7 @@ export const removeRoute: typeof shell.removeRoute = vi.fn();
 export const addSettingsView: typeof shell.addSettingsView = vi.fn();
 export const addBoardView: typeof shell.addBoardView = vi.fn();
 export const getBoardById: typeof shell.getBoardById = vi.fn();
+export const getBoardContextById: typeof shell.getBoardContextById = vi.fn();
 export const setCurrentBoard: typeof shell.setCurrentBoard = vi.fn();
 export const reopenBoards: typeof shell.reopenBoards = vi.fn();
 export const registerFunctions: typeof shell.registerFunctions = vi.fn();

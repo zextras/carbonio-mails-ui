@@ -24,6 +24,7 @@ import {
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
 	useConversationById,
+	useConversationIndexSlice,
 	useMessageById,
 	useMessageIndexSlice
 } from 'store/emails/store';
@@ -111,6 +112,90 @@ describe('handleNotifyMessagesCreated', () => {
 				secondConv.id,
 				firstConv.id
 			]);
+		});
+	});
+
+	describe('conversationListIndex order in a folder', () => {
+		const now = Date.now();
+		const tenMinutesAgo = now - 10 * 60 * 1000;
+		const twentyMinutesAgo = now - 20 * 60 * 1000;
+
+		async function setupInboxWithTwoConversations(sortOrder = '2:date-Desc'): Promise<void> {
+			getUserSettings.mockReturnValue({
+				attrs: {},
+				props: [],
+				prefs: { zimbraPrefLocale: 'en', zimbraPrefSortOrder: sortOrder }
+			});
+			useFolderStore.setState({ folders: generateFolders() });
+			await act(async () => {
+				setConversationsInEmailStore(
+					[
+						generateConversation({ id: '10', messageIds: ['11'], receiveDate: tenMinutesAgo }),
+						generateConversation({ id: '20', messageIds: ['21'], receiveDate: twentyMinutesAgo })
+					],
+					false
+				);
+				setMessagesInEmailStore(
+					[
+						generateMessage({ id: '11', cid: '10', receiveDate: tenMinutesAgo }),
+						generateMessage({ id: '21', cid: '20', receiveDate: twentyMinutesAgo })
+					],
+					false
+				);
+			});
+		}
+
+		it('should not move a conversation when a message is added to it in another folder', async () => {
+			await setupInboxWithTwoConversations();
+			const draft = generateMessage({
+				id: '22',
+				cid: '20',
+				folderId: FOLDERS.DRAFTS,
+				receiveDate: now
+			});
+
+			await act(async () => {
+				handleNotifyMessagesCreated([draft]);
+			});
+
+			const { result } = renderHook(() => useConversationIndexSlice());
+			expect(result.current.conversationListIndex).toEqual(['10', '20']);
+		});
+
+		it('should move a conversation to the top when it receives a newer message in the folder', async () => {
+			await setupInboxWithTwoConversations();
+			const incoming = generateMessage({ id: '22', cid: '20', receiveDate: now });
+
+			await act(async () => {
+				handleNotifyMessagesCreated([incoming]);
+			});
+
+			const { result } = renderHook(() => useConversationIndexSlice());
+			expect(result.current.conversationListIndex).toEqual(['20', '10']);
+		});
+
+		it('should follow the ascending sort direction of the folder', async () => {
+			await setupInboxWithTwoConversations('2:date-Asc');
+			const incoming = generateMessage({ id: '12', cid: '10', receiveDate: now });
+
+			await act(async () => {
+				handleNotifyMessagesCreated([incoming]);
+			});
+
+			const { result } = renderHook(() => useConversationIndexSlice());
+			expect(result.current.conversationListIndex).toEqual(['20', '10']);
+		});
+
+		it('should not reorder by date a folder sorted by another field', async () => {
+			await setupInboxWithTwoConversations('2:subject-Asc');
+			const incoming = generateMessage({ id: '12', cid: '10', receiveDate: now });
+
+			await act(async () => {
+				handleNotifyMessagesCreated([incoming]);
+			});
+
+			const { result } = renderHook(() => useConversationIndexSlice());
+			expect(result.current.conversationListIndex).toEqual(['10', '20']);
 		});
 	});
 
