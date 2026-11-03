@@ -1,3 +1,7 @@
+## <small>1.51.9 (2026-11-03)</small>
+
+* fix(composer): keep the table "add column" hover button inside the composer ([35efbcc](https://github.com/zextras/carbonio-mails-ui/commit/35efbcc))
+
 ## <small>1.51.8 (2026-11-03)</small>
 
 * refactor(CO-4593): send only the SOAP request options the server reads and declare them (#1403) ([3d817c8](https://github.com/zextras/carbonio-mails-ui/commit/3d817c8)), closes [#1403](https://github.com/zextras/carbonio-mails-ui/issues/1403)
