@@ -10,41 +10,43 @@ import {
 	modifyFilterRulesSoapApi,
 	modifyOutgoingFilterRulesSoapApi
 } from 'api/modify-filter-rules-soap-api';
+import type { Filter } from 'types/filters';
 
 vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
 	legacySoapFetch: vi.fn()
 }));
 
 const mockResponse = { success: true };
+const rule: Filter = { name: 'rule1', active: true, filterTests: [], filterActions: [] };
 
 describe('modifyFilterRulesSoapApi', () => {
 	it('should call soapFetch with correct params', async () => {
 		(legacySoapFetch as Mock).mockResolvedValueOnce({ json: async () => mockResponse });
-		await modifyFilterRulesSoapApi([{ name: 'rule1' }]);
+		await modifyFilterRulesSoapApi([rule]);
 		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyFilterRules', {
-			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
+			filterRules: [{ filterRule: [rule] }],
 			_jsns: 'urn:zimbraMail'
 		});
 	});
 
 	it('handles error during filter rule modification', async () => {
 		(legacySoapFetch as Mock).mockRejectedValueOnce(new Error('Error'));
-		await expect(modifyFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
+		await expect(modifyFilterRulesSoapApi([rule])).rejects.toThrow('Error');
 	});
 });
 
 describe('modifyOutgoingFilterRulesSoapApi', () => {
 	it('should call soapFetch with correct params', async () => {
 		(legacySoapFetch as Mock).mockResolvedValueOnce({ json: async () => mockResponse });
-		await modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }]);
+		await modifyOutgoingFilterRulesSoapApi([rule]);
 		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyOutgoingFilterRules', {
-			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
+			filterRules: [{ filterRule: [rule] }],
 			_jsns: 'urn:zimbraMail'
 		});
 	});
 
 	it('handles error during outgoing filter rule modification', async () => {
 		(legacySoapFetch as Mock).mockRejectedValueOnce(new Error('Error'));
-		await expect(modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
+		await expect(modifyOutgoingFilterRulesSoapApi([rule])).rejects.toThrow('Error');
 	});
 });

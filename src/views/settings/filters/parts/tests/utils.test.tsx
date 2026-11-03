@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { findDefaultValue } from 'views/settings/filters/parts/utils';
+import {
+	findDefaultValue,
+	firstRowTest,
+	mergeRowsByKind
+} from 'views/settings/filters/parts/utils';
 
 type OptionalFlag = {
 	flagName?: string;
@@ -62,6 +66,43 @@ describe('Utils', () => {
 				{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 			];
 			expect(findDefaultValue(options, { actionFlag: [{}] })).toBe(options[0]);
+		});
+	});
+
+	describe('mergeRowsByKind', () => {
+		it('joins the rows of the same kind and keeps the others apart', () => {
+			const rows = [
+				{ headerTest: [{ header: 'subject', value: 'a' }] },
+				{ bodyTest: [{ value: 'b' }] },
+				{ headerTest: [{ header: 'subject', value: 'c' }], condition: 'anyof' }
+			];
+			expect(mergeRowsByKind(rows, 'condition')).toEqual({
+				headerTest: [
+					{ header: 'subject', value: 'a' },
+					{ header: 'subject', value: 'c' }
+				],
+				bodyTest: [{ value: 'b' }]
+			});
+		});
+
+		it('drops the row id when a kind is joined', () => {
+			const rows = [
+				{ actionTag: [{ tagName: 't1' }], id: '1' },
+				{ actionTag: [{ tagName: 't2' }], id: '2' }
+			];
+			expect(mergeRowsByKind(rows, 'id')).toEqual({
+				actionTag: [{ tagName: 't1' }, { tagName: 't2' }]
+			});
+		});
+	});
+
+	describe('firstRowTest', () => {
+		it('returns the first test of the row, or undefined without tests', () => {
+			expect(firstRowTest({ meTest: [{ header: 'to', negative: true }] })).toEqual({
+				header: 'to',
+				negative: true
+			});
+			expect(firstRowTest(undefined)).toBeUndefined();
 		});
 	});
 });

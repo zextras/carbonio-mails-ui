@@ -4,16 +4,33 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 
-export const modifyFilterRulesSoapApi = async (newRules: Array<any>): Promise<any> =>
-	legacySoapFetch('ModifyFilterRules', {
+import type { Filter } from 'types/filters';
+
+type ModifyFilterRulesRequest = {
+	filterRules: [{ filterRule: Array<Filter> }];
+	_jsns: 'urn:zimbraMail';
+};
+
+/** The server answers with an empty body */
+type ModifyFilterRulesResponse = { _jsns: 'urn:zimbraMail' } | ErrorSoapBodyResponse;
+
+export const modifyFilterRulesSoapApi = async (
+	newRules: Array<Filter>
+): Promise<ModifyFilterRulesResponse> =>
+	legacySoapFetch<ModifyFilterRulesRequest, ModifyFilterRulesResponse>('ModifyFilterRules', {
 		filterRules: [{ filterRule: newRules }],
 		_jsns: 'urn:zimbraMail'
 	});
 
-export const modifyOutgoingFilterRulesSoapApi = async (newRules: Array<any>): Promise<any> =>
-	legacySoapFetch('ModifyOutgoingFilterRules', {
-		filterRules: [{ filterRule: newRules }],
-		_jsns: 'urn:zimbraMail'
-	});
+export const modifyOutgoingFilterRulesSoapApi = async (
+	newRules: Array<Filter>
+): Promise<ModifyFilterRulesResponse> =>
+	legacySoapFetch<ModifyFilterRulesRequest, ModifyFilterRulesResponse>(
+		'ModifyOutgoingFilterRules',
+		{
+			filterRules: [{ filterRule: newRules }],
+			_jsns: 'urn:zimbraMail'
+		}
+	);

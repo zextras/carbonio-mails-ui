@@ -86,7 +86,6 @@ describe('incoming filters actions', () => {
 							{
 								header: 'subject',
 								stringComparison: 'contains',
-								testName: 'headerTest',
 								value: 'testddsareafreafdastewa'
 							}
 						]

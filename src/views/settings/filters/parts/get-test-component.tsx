@@ -7,6 +7,7 @@ import React, { ReactElement } from 'react';
 
 import type { TFunction } from 'i18next';
 
+import type { FilterTest, FilterTestLists } from 'types/filters';
 import AddressInCondition from 'views/settings/filters/parts/create-filters-conditions/address-in';
 import AttachmentCondition from 'views/settings/filters/parts/create-filters-conditions/attachment';
 import BodyCondition from 'views/settings/filters/parts/create-filters-conditions/body';
@@ -19,7 +20,7 @@ import ReadReceiptCondition from 'views/settings/filters/parts/create-filters-co
 import SizeCondition from 'views/settings/filters/parts/create-filters-conditions/size';
 import SocialCondition from 'views/settings/filters/parts/create-filters-conditions/social';
 
-type GetTestComponent = { name: string; index: number; test: any; t: TFunction };
+type GetTestComponent = { name: string; index: number; test: FilterTestLists; t: TFunction };
 
 export const getTestComponent = ({ name, index, test, t }: GetTestComponent): ReactElement => {
 	switch (name) {
@@ -147,14 +148,14 @@ export const getTestComponent = ({ name, index, test, t }: GetTestComponent): Re
 	}
 };
 
-export const findRowKey = ({ name, test }: { name: string; test: any }): string => {
+export const findRowKey = ({ name, test }: { name: string; test: FilterTest }): string => {
 	switch (name) {
 		case 'bodyTest':
 			return 'body';
 
 		case 'addressTest':
 		case 'headerTest':
-			return test.header;
+			return ('header' in test ? test.header : undefined) ?? 'subject';
 
 		case 'sizeTest':
 			return 'size';

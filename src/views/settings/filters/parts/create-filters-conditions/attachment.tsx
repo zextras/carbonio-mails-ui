@@ -16,6 +16,7 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getExistOptions } from 'views/settings/filters/parts/utils';
@@ -23,7 +24,7 @@ import { getExistOptions } from 'views/settings/filters/parts/utils';
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const AttachmentCondition: FC<ComponentProps> = ({
@@ -37,7 +38,7 @@ const AttachmentCondition: FC<ComponentProps> = ({
 	const { newFilters, setNewFilters } = useContext(CreateFilterContext);
 
 	const defaultOption = useMemo(() => {
-		if (defaultValue && defaultValue.attachmentTest[0].negative) {
+		if (defaultValue?.attachmentTest?.[0]?.negative) {
 			return existsOptions[1];
 		}
 		return existsOptions[0];

@@ -16,6 +16,7 @@ import React, {
 import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import {
@@ -27,7 +28,7 @@ import {
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -41,7 +42,7 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 	const { newFilters, setNewFilters } = useContext(CreateFilterContext);
 	useEffect(() => {
 		if (defaultValue && defaultValue?.addressTest) {
-			setValue(defaultValue?.addressTest?.[0]?.value);
+			setValue(defaultValue?.addressTest?.[0]?.value ?? '');
 		}
 	}, [defaultValue]);
 	useEffect(() => {
@@ -95,7 +96,7 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 	const defaultDomain = useMemo(
 		() =>
 			defaultValue
-				? findDefaultValue(domainOptions, defaultValue.addressTest[0].part)
+				? findDefaultValue(domainOptions, defaultValue.addressTest?.[0]?.part)
 				: domainOptions[0],
 		[domainOptions, defaultValue]
 	);

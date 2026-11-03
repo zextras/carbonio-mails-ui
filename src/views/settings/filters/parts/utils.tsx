@@ -7,9 +7,9 @@
 import React from 'react';
 
 import { TFunction } from 'i18next';
-import { find, forEach } from 'lodash';
+import { concat, find, forEach, isMatch, omit, reduce } from 'lodash';
 
-import { FilterAction, FilterActions } from 'types/filters';
+import { FilterAction, FilterActions, FilterTest, FilterTestLists } from 'types/filters';
 import { ACTION_OPTIONS } from 'views/settings/filters/constants';
 import type { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
 import { ActionMarkAsComponent } from 'views/settings/filters/parts/filter-actions/action-mark-as-component';
@@ -449,13 +449,35 @@ type ObjectWithLabelValue<T> = {
 	label: string;
 	value: T;
 };
+/**
+ * Merges the editor's rows, one kind of test or action each, into the tests or actions of a rule: a row of a kind
+ * already there adds its items to that kind. ignoredKey (condition, id) is not a kind
+ */
+export const mergeRowsByKind = (
+	rows: Array<Record<string, unknown>>,
+	ignoredKey: string
+): Record<string, unknown> =>
+	reduce(
+		rows,
+		(merged: Record<string, unknown>, row) => {
+			const kind = Object.keys(omit(row, ignoredKey))[0];
+			if (Object.keys(merged).includes(kind)) {
+				return { ...omit(merged, 'id'), [kind]: concat(merged[kind], row[kind]) };
+			}
+			return { ...merged, ...row };
+		},
+		{}
+	);
+
+/** The first test of a condition row, which holds tests of one kind only */
+export const firstRowTest = (tests: FilterTestLists | undefined): FilterTest | undefined =>
+	Object.values(tests ?? {})[0]?.[0];
+
 export function findDefaultValue<T>(
 	list: Array<ObjectWithLabelValue<T>>,
-	key: T
+	key: unknown
 ): ObjectWithLabelValue<T> | undefined {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	return find(list, { value: key });
+	return find(list, (item) => isMatch(item, { value: key }));
 }
 type Filters = {
 	filterActions: FilterActions;

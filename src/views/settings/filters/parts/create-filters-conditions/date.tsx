@@ -17,6 +17,7 @@ import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import moment from 'moment';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getDateOptions, findDefaultValue } from 'views/settings/filters/parts/utils';
@@ -24,7 +25,7 @@ import { getDateOptions, findDefaultValue } from 'views/settings/filters/parts/u
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const DateCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {

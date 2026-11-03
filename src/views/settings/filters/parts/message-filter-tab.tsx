@@ -20,7 +20,7 @@ import { useFilterSelection } from 'views/settings/filters/parts/use-filter-sele
 
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;
-	saveFilters: (filters: Array<Filter>) => Promise<void>;
+	saveFilters: (filters: Array<Filter>) => Promise<unknown>;
 	FiltersManagerComponent: (props: FilterManagerProps) => React.JSX.Element;
 };
 export const MessageFilterTab = ({

@@ -189,7 +189,7 @@ const FilterManager: FC<
 		const onModifyConfirm = (requiredFilter: Filter): void => {
 			const selectedFilterIndex = findIndex(
 				filtersCopy,
-				(filterCopy: any) => filterCopy.name === selectedFilter?.name
+				(filterCopy) => filterCopy.name === selectedFilter?.name
 			);
 			const toSend = filtersCopy.slice();
 			toSend[selectedFilterIndex] = requiredFilter;
