@@ -18,7 +18,10 @@ import {
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import {
+	hasShareNotificationFailures,
+	sendShareNotificationSoapApi
+} from 'api/send-share-notification-soap-api';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { findLabel, ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
 import { ActionProps } from 'types/actions';
@@ -72,12 +75,7 @@ const Actions = ({
 				folder,
 				accounts
 			}).then((res) => {
-				const hasFailures =
-					!Array.isArray(res) ||
-					res.some(
-						(item) =>
-							typeof item === 'object' && item !== null && ('error' in item || 'Fault' in item)
-					);
+				const hasFailures = hasShareNotificationFailures(res);
 
 				if (!hasFailures) {
 					createSnackbar({

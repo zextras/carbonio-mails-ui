@@ -7,12 +7,20 @@ import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { FOLDERS_DESCRIPTORS, TIMEOUTS } from 'constants/index';
+import { FOLDERS_DESCRIPTORS, MAILS_ROUTE, SEARCH_ROUTE, TIMEOUTS } from 'constants/index';
 import { useMsgSetNotSpamDescriptor, useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
 import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: (): Mock => mockNavigate
+}));
 
 describe('useMsgSetNotSpam', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
@@ -143,5 +151,36 @@ describe('useMsgSetNotSpam', () => {
 				expect(onActionComplete).toHaveBeenCalledWith(ids);
 			});
 		});
+	});
+
+	describe('Navigation in the search module', () => {
+		beforeEach(() => {
+			mockNavigate.mockClear();
+		});
+
+		it.each`
+			route                                                 | expectedRoute
+			${`/${MAILS_ROUTE}/folder/${FOLDERS.SPAM}/message/1`} | ${`/${MAILS_ROUTE}/folder/${FOLDERS.SPAM}`}
+			${`/${SEARCH_ROUTE}/message/1`}                       | ${`/${SEARCH_ROUTE}`}
+		`(
+			'should navigate from $route to $expectedRoute when shouldReplaceHistory is true',
+			async ({ route, expectedRoute }) => {
+				createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+					action: { id: '1', op: '!spam' }
+				});
+
+				const { result } = setupHook(useMsgSetNotSpamFn, {
+					initialEntries: [route],
+					initialProps: [{ ids: ['1'], folderId: FOLDERS.SPAM, shouldReplaceHistory: true }]
+				});
+
+				await act(async () => {
+					result.current.execute();
+					vi.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+				});
+
+				expect(mockNavigate).toHaveBeenCalledWith(expectedRoute, { replace: true });
+			}
+		);
 	});
 });

@@ -213,6 +213,32 @@ describe('ReadReceiptModal', () => {
 		expect(request.action.f).toBe('fnu');
 	});
 
+	it('should keep the flags the UI does not model, like popped, priority and muted', async () => {
+		const message = {
+			...generateMessage({
+				id: '12345',
+				isReadReceiptRequested: true,
+				isRead: true,
+				isFlagged: true
+			}),
+			rawFlags: 'fp+(s'
+		};
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			{ action: { id: '12345', op: 'update' } }
+		);
+
+		const { user } = setupTest(
+			<ReadReceiptModal open onClose={vi.fn()} message={message} readReceiptSetting="ask" />
+		);
+
+		await user.click(await screen.findByText('Do not notify'));
+
+		const request = await msgActionInterceptor;
+		expect(request.action.f).toBe('fp+(sn');
+	});
+
 	it('should call onClose when "notify" action is triggered', async () => {
 		createSoapAPIInterceptor<{ mid: string }>('SendDeliveryReport');
 		const mockOnClose = vi.fn();

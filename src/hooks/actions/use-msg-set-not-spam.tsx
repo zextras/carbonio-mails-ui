@@ -7,10 +7,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from 'constants/index';
+import { MessageActionsDescriptors, TIMEOUTS } from 'constants/index';
 import { isSpam } from 'helpers/folders';
+import { useClosePreviewPanel } from 'hooks/use-close-preview-panel';
 import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 
@@ -30,7 +30,7 @@ export const useMsgSetNotSpamFn = ({
 	const [t] = useTranslation();
 
 	const canExecute = useCallback((): boolean => (folderId ? isSpam(folderId) : false), [folderId]);
-	const navigate = useNavigate();
+	const closePreviewPanel = useClosePreviewPanel(folderId);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
@@ -69,17 +69,16 @@ export const useMsgSetNotSpamFn = ({
 					onActionComplete && onActionComplete(ids);
 
 					if (shouldReplaceHistory) {
-						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+						closePreviewPanel();
 					}
 				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
 	}, [
 		canExecute,
+		closePreviewPanel,
 		createSnackbar,
-		folderId,
 		ids,
-		navigate,
 		onActionComplete,
 		shouldReplaceHistory,
 		t
