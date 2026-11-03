@@ -55,6 +55,29 @@ describe('ConversationListItemCore', () => {
 		expect(await screen.findByTestId('FolderBadge')).toHaveTextContent('3');
 	});
 
+	it('renders a conversation without tags (GetConv leaves tn out)', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({ conversationParams: { id: '123', subject: 'No tags' } })
+		);
+		const { tags: _tags, ...withoutTags } = conversation;
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={withoutTags}
+				selected={false}
+				selecting={false}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(await screen.findByText('No tags')).toBeInTheDocument();
+		expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+	});
+
 	it('displays unread status correctly', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({

@@ -22,12 +22,12 @@ export type NormalizedConversation = {
 	messageIds: Array<string>;
 	participants: Participant[];
 	subject: string;
-	fragment: string;
+	fragment?: string;
 	read: boolean;
 	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
-	tags: string[];
+	tags?: string[];
 	messagesInConversation: number;
 };
 
@@ -39,15 +39,11 @@ export type ConvActionParameters = {
 };
 
 export type SearchSoapApiParams = {
-	folderId?: string;
 	limit: number;
-	before?: Date | null;
-	types?: string;
+	types?: 'conversation' | 'message';
 	sortBy: SortBy;
 	query?: string;
 	offset?: number;
-	recip?: '0' | '1' | '2';
-	wantContent?: 'full' | 'original' | 'both';
 	locale?: string;
 	abortSignal?: AbortSignal;
 };

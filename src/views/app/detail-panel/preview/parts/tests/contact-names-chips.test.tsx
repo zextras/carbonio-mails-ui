@@ -36,7 +36,7 @@ const partcipant1 = {
 	address: email1,
 	type: 't' as ParticipantRoleType
 };
-const contacts: Array<Participant> = [
+const contacts: Array<Participant & { address: string }> = [
 	partcipant1,
 	{
 		...partcipant1,
@@ -82,6 +82,17 @@ describe('Attachments visualization', () => {
 		const { user } = setupTest(<ContactNameChip {...props} isWide />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: sendIcon })[0]);
 		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
+	});
+
+	it('copies an empty string for a participant without address', async () => {
+		const copyIcon = /icon: Copy/i;
+		const withoutAddress: Participant = {
+			type: 't' as ParticipantRoleType,
+			fullName: 'Mail Delivery System'
+		};
+		const { user } = setupTest(<ContactNameChip {...props} contacts={[withoutAddress]} isWide />);
+		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
+		expect(copyEmailToClipboard).toHaveBeenCalledWith('', expect.anything());
 	});
 
 	it('calls copyEmailToClipboard when Copy icon is clicked', async () => {

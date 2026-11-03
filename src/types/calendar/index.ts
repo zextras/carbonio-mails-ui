@@ -22,7 +22,7 @@ export type CalendarType = {
 };
 
 export type Attendee = {
-	email: string;
+	email?: string;
 };
 
 export type SenderType = {

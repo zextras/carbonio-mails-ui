@@ -90,7 +90,7 @@ type MatchingReplyIdentity = {
  * and the weight to sort it within the list of other recipients
  */
 type RecipientWeight = {
-	recipientAddress: string;
+	recipientAddress?: string;
 	recipientFullName: string | undefined;
 	role:
 		| typeof ParticipantRole.TO
@@ -137,7 +137,7 @@ const getNoIdentityPlaceholder = (): string =>
  *
  * @param address
  */
-const getAddressOwnerAccount = (address: string): string | null => {
+const getAddressOwnerAccount = (address: string | undefined): string | null => {
 	if (!address) {
 		return null;
 	}
@@ -567,7 +567,7 @@ const getMessageSenderAddress = (message: MailMessage): string | null => {
 		return null;
 	}
 
-	return senders[0].address;
+	return senders[0].address ?? null;
 };
 
 /**

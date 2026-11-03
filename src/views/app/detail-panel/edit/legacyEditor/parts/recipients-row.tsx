@@ -82,7 +82,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			setContacts(newContactsState);
 			const updatedRecipients = map<ContactInputItem, Participant>(contactChips, (contact) => {
 				const alreadyExists = recipients.find(
-					(recipient) => recipient.address === contact.value.email
+					(recipient) => (recipient.address ?? '') === contact.value.email
 				);
 				const isGroup = contact.value.type === CONTACT_TYPES.DISTRIBUTION_LIST;
 				return (
@@ -104,15 +104,19 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		() =>
 			map<Participant, ContactInputItem>(recipients, (recipient) => {
 				const email = recipient.address;
-				const exists = contacts[email];
+				const exists = email === undefined ? undefined : contacts[email];
 				const name = recipient.fullName ?? recipient.name;
+				// a participant without address (e.g. the sender of a bounce, `"Name" <>`) stays an invalid chip:
+				// its id must not be empty, the ContactInput of contacts drops the chips whose id is ''
+				const address = email ?? '';
+				const id = email ?? name ?? 'recipient-without-address';
 				return (
 					exists ?? {
-						id: recipient.address,
-						label: name ?? recipient.address,
+						id,
+						label: name ?? address,
 						value: {
-							id: recipient.address,
-							email: recipient.address,
+							id,
+							email: address,
 							fullName: name,
 							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 						},

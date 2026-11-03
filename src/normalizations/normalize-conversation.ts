@@ -29,10 +29,6 @@ export const mapToNormalizedConversation = ({
 	const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
 	const convMessagesIds = map(messagesWithCid, (msg) => msg.id);
 	const tags = getTagIds(conversation.t, conversation.tn);
-	// disabling type check on this line because the tags are optional
-	// the workaround will be removed once proper type is in place
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	return {
 		...(tags ? { tags } : {}),
 		id: conversation.id,

@@ -233,21 +233,33 @@ type ReplyText = {
 	plainText: string;
 };
 
+// a part the server left out (no display name, or the empty address of a bounce) is not written at all
+const formatQuotedParticipant = ({ fullName, address }: Participant): string => {
+	if (!fullName) return address ?? '';
+	return address ? `"${fullName}" <${address}>` : `"${fullName}"`;
+};
+
 export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const headingTo = map(
 		filter(mail.participants, ['type', ParticipantRole.TO]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const headingCc = map(
 		filter(mail.participants, ['type', ParticipantRole.CARBON_COPY]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const date = moment(mail.date).format('LLLL');
 
@@ -274,46 +286,6 @@ export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText 
 		plainText
 	};
 }
-
-export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
-	const extractedBody = extractBody(msg);
-	const body = isHtml(msg.parts);
-	return {
-		id: msg.id === 'new' ? undefined : msg.id,
-		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
-		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
-		su: { _content: msg.subject ?? '' },
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		e: map(msg.participants, (c) => ({
-			t: c.type,
-			a: c.address,
-			d: (c as unknown as Participant).fullName ?? (c as unknown as Participant).name ?? undefined
-		})),
-		mp: [
-			body
-				? {
-						ct: 'multipart/alternative',
-						mp: [
-							{
-								ct: 'text/html',
-								body: true,
-								content: { _content: extractedBody.richText ?? '' }
-							},
-							{
-								ct: 'text/plain',
-								content: { _content: extractedBody.plainText ?? '' }
-							}
-						]
-					}
-				: {
-						ct: 'text/plain',
-						body: true,
-						content: { _content: extractedBody.plainText ?? '' }
-					}
-		]
-	};
-};
 
 /**
  * Builds the outgoing text/html mime part body: applies the user preference styles
@@ -448,7 +420,7 @@ export const generateRequest = (
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,
-			d: c.fullName ?? c.firstName ?? undefined
+			p: c.fullName ?? c.firstName ?? undefined
 		})
 	);
 	if (data.requestReadReceipt) {
@@ -457,7 +429,7 @@ export const generateRequest = (
 				(data?.sender as unknown as SharedParticipant)?.email ??
 				(from as unknown as Participant)?.address,
 			t: ParticipantRole.READ_RECEIPT_NOTIFICATION,
-			d:
+			p:
 				(from as unknown as Participant).fullName ??
 				(from as unknown as SharedParticipant).firstName ??
 				undefined

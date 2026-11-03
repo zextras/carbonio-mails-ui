@@ -8,7 +8,7 @@ import type { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 
 export type Participant = {
 	type: ParticipantRoleType;
-	address: string;
+	address?: string;
 	name?: string;
 	fullName?: string;
 	email?: string;
