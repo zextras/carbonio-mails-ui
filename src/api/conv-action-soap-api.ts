@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { isNil } from 'lodash';
 
 import { omitBy } from 'commons/utils';
@@ -15,17 +15,20 @@ export async function convActionSoapApi({
 	operation,
 	parent,
 	tagName
-}: ConvActionParameters): Promise<ConvActionResponse> {
-	return legacySoapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {
-		_jsns: 'urn:zimbraMail',
-		action: omitBy(
-			{
-				id: ids.join(','),
-				op: operation,
-				l: parent,
-				tn: tagName
-			},
-			isNil
-		)
-	});
+}: ConvActionParameters): Promise<ConvActionResponse | ErrorSoapBodyResponse> {
+	return legacySoapFetch<ConvActionRequest, ConvActionResponse | ErrorSoapBodyResponse>(
+		'ConvAction',
+		{
+			_jsns: 'urn:zimbraMail',
+			action: omitBy(
+				{
+					id: ids.join(','),
+					op: operation,
+					l: parent,
+					tn: tagName
+				},
+				isNil
+			)
+		}
+	);
 }

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccountSettings, getUserSettings } from '@zextras/carbonio-shell-ui';
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
@@ -20,7 +20,7 @@ export async function searchConvSoapApi({
 	folderId,
 	shouldMarkAsRead,
 	html
-}: SearchConvParameters): Promise<SearchConvResponse> {
+}: SearchConvParameters): Promise<SearchConvResponse | ErrorSoapBodyResponse> {
 	const userSettings: AccountSettings = getUserSettings();
 	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as SearchConvRequest['sortBy'];
 	const request: SearchConvRequest = {
@@ -41,5 +41,8 @@ export async function searchConvSoapApi({
 	if (shouldMarkAsRead) {
 		request.read = 1;
 	}
-	return legacySoapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
+	return legacySoapFetch<SearchConvRequest, SearchConvResponse | ErrorSoapBodyResponse>(
+		'SearchConv',
+		request
+	);
 }

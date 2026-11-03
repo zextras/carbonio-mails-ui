@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { HttpResponse } from 'msw';
+
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateCompleteMessageFromAPI } from '__test__/generators/api';
 import { getMsgsForPrintSoapApi } from 'api/get-msg-for-print-soap-api';
 import { SoapMailMessage } from 'types/soap';
@@ -75,5 +82,52 @@ describe('getMsgsForPrintSoapApi', () => {
 		expect(result).toHaveLength(2);
 		expect(result[0]).toMatchObject({ id: '1' });
 		expect(result[1]).toMatchObject({ id: '2' });
+	});
+
+	it('should reject with the SOAP fault when no message can be read', async () => {
+		const { Fault } = buildSoapErrorResponseBody({
+			detailCode: 'mail.NO_SUCH_MSG',
+			reason: 'no such message: 7'
+		});
+		const response: GetMsgForPrintResponse = { Fault: [Fault] };
+		createSoapAPIInterceptor('Batch', response);
+
+		await expect(getMsgsForPrintSoapApi({ ids: ['7'] })).rejects.toBeInstanceOf(
+			GenericSoapApiError
+		);
+	});
+
+	it('should reject with the SOAP fault when the whole Batch fails', async () => {
+		createAPIInterceptor(
+			'post',
+			'/service/soap/BatchRequest',
+			HttpResponse.json({
+				Body: buildSoapErrorResponseBody({
+					detailCode: 'service.AUTH_EXPIRED',
+					reason: 'auth credentials have expired'
+				})
+			})
+		);
+
+		await expect(getMsgsForPrintSoapApi({ ids: ['7'] })).rejects.toBeInstanceOf(
+			GenericSoapApiError
+		);
+	});
+
+	it('should return the messages that can be read when others fail', async () => {
+		const { Fault } = buildSoapErrorResponseBody({
+			detailCode: 'mail.NO_SUCH_MSG',
+			reason: 'no such message: 8'
+		});
+		const response: GetMsgForPrintResponse = {
+			GetMsgResponse: [{ m: [generateCompleteMessageFromAPI({ id: '7', cid: '7', l: '2' })] }],
+			Fault: [Fault]
+		};
+		createSoapAPIInterceptor('Batch', response);
+
+		const result = await getMsgsForPrintSoapApi({ ids: ['7', '8'] });
+
+		expect(result).toHaveLength(1);
+		expect(result[0]).toMatchObject({ id: '7' });
 	});
 });

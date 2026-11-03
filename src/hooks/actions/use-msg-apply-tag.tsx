@@ -6,6 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -54,7 +55,10 @@ export const useMsgApplyTagSubDescriptors = ({
 	const canExecute = (id: string): boolean => !isSpam(id);
 
 	const handleApiResponse = useCallback(
-		async (response: MsgActionResponse, snackbarSuccessLabel: string): Promise<void> => {
+		async (
+			response: MsgActionResponse | ErrorSoapBodyResponse,
+			snackbarSuccessLabel: string
+		): Promise<void> => {
 			if (!('Fault' in response)) {
 				createSnackbar({
 					key: 'tag',

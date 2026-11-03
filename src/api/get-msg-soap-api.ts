@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { JSNS } from '@zextras/carbonio-shell-ui';
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
@@ -16,7 +16,7 @@ export async function getMsgSoapApi({
 	part,
 	shouldMarkAsRead,
 	html
-}: GetMsgParameters): Promise<GetMsgResponse> {
+}: GetMsgParameters): Promise<GetMsgResponse | ErrorSoapBodyResponse> {
 	const message: GetMsgRequest['m'] = {
 		html,
 		id: msgId,
@@ -29,7 +29,7 @@ export async function getMsgSoapApi({
 		message.read = 1;
 	}
 
-	return legacySoapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
+	return legacySoapFetch<GetMsgRequest, GetMsgResponse | ErrorSoapBodyResponse>('GetMsg', {
 		_jsns: JSNS.mail,
 		m: message
 	});

@@ -262,6 +262,7 @@ describe('attachments', () => {
 		});
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const getMsgResponse = await getMsgSoapApi({ msgId: '13', html: true });
+			if ('Fault' in getMsgResponse) throw new Error(getMsgResponse.Fault.Reason.Text);
 			const messageFromSoap = normalizeMailMessageFromSoap({
 				m: getMsgResponse.m[0],
 				isComplete: true,

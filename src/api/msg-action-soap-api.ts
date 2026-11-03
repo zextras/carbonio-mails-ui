@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
 import { omitBy, isNil } from 'lodash';
 
 import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
@@ -15,8 +15,8 @@ export const msgActionSoapApi = async ({
 	parent,
 	tagName,
 	flag
-}: MsgActionParameters): Promise<MsgActionResponse> =>
-	legacySoapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
+}: MsgActionParameters): Promise<MsgActionResponse | ErrorSoapBodyResponse> =>
+	legacySoapFetch<MsgActionRequest, MsgActionResponse | ErrorSoapBodyResponse>('MsgAction', {
 		_jsns: 'urn:zimbraMail',
 
 		action: omitBy(

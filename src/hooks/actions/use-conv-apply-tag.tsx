@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import { CreateSnackbarFn, CreateSnackbarFnArgs } from '@zextras/carbonio-design-system';
 import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,7 @@ const executeTagAction = ({
 	t
 }: {
 	canExecute: () => boolean;
-	action: (params: ConvActionParameters) => Promise<ConvActionResponse>;
+	action: (params: ConvActionParameters) => Promise<ConvActionResponse | ErrorSoapBodyResponse>;
 	operation: ConvActionParameters['operation'];
 	ids: Array<string>;
 	tag: Tag;
@@ -67,7 +68,7 @@ const executeTagAction = ({
 			operation,
 			ids,
 			tagName: tag.name
-		}).then((res: ConvActionResponse) => {
+		}).then((res) => {
 			if (!('Fault' in res)) {
 				createSnackbarMessage(createSnackbar, snackbarSuccessLabel, 'info');
 			} else {

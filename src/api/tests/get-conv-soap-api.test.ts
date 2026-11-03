@@ -5,8 +5,14 @@
  */
 
 import { waitFor } from '@testing-library/react';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
 import { getConvSoapApi } from 'api/get-conv-soap-api';
 import { GetConvResponse } from 'types/soap/get-conv';
@@ -86,5 +92,22 @@ describe('getConvSoapApi', () => {
 		await waitFor(async () => {
 			expect(mockOnConversationIdChange).not.toHaveBeenCalledWith('123');
 		});
+	});
+
+	it('should reject with the SOAP fault when the server returns a Fault', async () => {
+		createAPIInterceptor(
+			'post',
+			'/service/soap/GetConvRequest',
+			HttpResponse.json({
+				Body: buildSoapErrorResponseBody({
+					detailCode: 'mail.NO_SUCH_CONV',
+					reason: 'no such conversation: 123'
+				})
+			})
+		);
+
+		await expect(getConvSoapApi({ conversationId: '123', html: true })).rejects.toBeInstanceOf(
+			GenericSoapApiError
+		);
 	});
 });
