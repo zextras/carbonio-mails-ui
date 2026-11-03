@@ -26,6 +26,8 @@ import {
 	getMessageSenderAddress,
 	type IdentityDescriptor
 } from 'helpers/identities';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
 
 describe('Message sender address', () => {
 	test('returns the address if sender is a participant of type FROM', () => {
@@ -43,6 +45,11 @@ describe('Message sender address', () => {
 			// @ts-ignore
 			from
 		});
+		expect(getMessageSenderAddress(msg)).toBeNull();
+	});
+
+	test('returns null if the sender has no address', () => {
+		const msg = normalizeCompleteMailMessageFromSoap(getMsgSenderWithoutAddressResponse.m[0], true);
 		expect(getMessageSenderAddress(msg)).toBeNull();
 	});
 

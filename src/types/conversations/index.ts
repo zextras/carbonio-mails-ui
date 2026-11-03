@@ -22,12 +22,12 @@ export type NormalizedConversation = {
 	messageIds: Array<string>;
 	participants: Participant[];
 	subject: string;
-	fragment: string;
+	fragment?: string;
 	read: boolean;
 	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
-	tags: string[];
+	tags?: string[];
 	messagesInConversation: number;
 };
 

@@ -219,6 +219,22 @@ describe('MultipleSelectionActions - conversations', () => {
 			).toBeVisible();
 		});
 
+		it('should contain "tag" submenu item when a selected conversation has no tags', async () => {
+			const { tags: _tags, ...withoutTags } = generateConversation({ id: '1' });
+			updateConversations([
+				withoutTags,
+				generateConversation({ id: '2', tags: [tags['2291'].name] })
+			]);
+			useTagStore.setState({ tags });
+			const { user } = setupTest(
+				<MultipleSelectionActions type="conversation" ids={['1', '2']} folderId={FOLDERS.INBOX} />
+			);
+			await user.click(screen.getByTestId('icon: MoreVertical'));
+			expect(
+				within(screen.getByTestId('dropdown-popper-list')).getByTestId('icon: TagsMoreOutline')
+			).toBeVisible();
+		});
+
 		it('should contain "tag" submenu item', async () => {
 			const tagItems = map(tags, (tag) => tag.name);
 			updateConversations([

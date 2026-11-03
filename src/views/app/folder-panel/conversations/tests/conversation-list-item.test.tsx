@@ -57,6 +57,32 @@ describe('conversation-list-item component', () => {
 		${'search conversation list'} | ${true}
 	`('$type list item component', ({ isSearchModule }) => {
 		describe('in any folders', () => {
+			test('a conversation without tags (GetConv leaves tn out) is shown without tag icon', async () => {
+				const folderId = FOLDERS.INBOX;
+				const { conversation } = await waitFor(() =>
+					populateConversationInEmailStore({ conversationParams: { folderId, subject: 'No tags' } })
+				);
+				const { tags: _tags, ...withoutTags } = conversation;
+				setConversationsInEmailStore([withoutTags], false);
+
+				setupTest(
+					<ConversationListItem
+						conversation={withoutTags}
+						selected={false}
+						selecting={false}
+						activeItemId=""
+						isSearchModule={isSearchModule}
+						folderId={folderId}
+						index={0}
+						onSelect={noop}
+						onToggleExpanded={noop}
+						isConversationExpanded={false}
+					/>
+				);
+				expect(await screen.findByText('No tags')).toBeVisible();
+				expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+			});
+
 			test('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {
 				const folderId = FOLDERS.INBOX;
 				const { conversation } = await waitFor(() =>

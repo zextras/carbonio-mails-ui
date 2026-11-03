@@ -13,7 +13,7 @@ import { TagsDropdownItem } from 'ui-actions/tag-actions';
 
 export const useTagDropdownItem = (
 	applyTagDescriptor: UIActionAggregator,
-	tags: Array<string>
+	tags: Array<string> | undefined
 ): DropdownItem =>
 	useMemo(() => {
 		const items = reduce(
