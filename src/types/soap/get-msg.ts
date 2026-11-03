@@ -36,7 +36,6 @@ export type GetMsgParameters = {
 
 export type GetMsgForPrintParameter = {
 	ids: Array<string>;
-	part?: string;
 };
 
 export type GetMsgForPrintResponse = {
