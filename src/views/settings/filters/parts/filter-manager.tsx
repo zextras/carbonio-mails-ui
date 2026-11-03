@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { find, findIndex } from 'lodash';
+import { find, findIndex, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { Filter } from 'types/filters';
@@ -89,17 +89,8 @@ const FilterManager: FC<
 
 		const onCreateConfirm = (newFilter: Filter): void => {
 			const toSend = [...filtersCopy, newFilter];
-			onFiltersSave(toSend).catch((error) => {
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 5000
-				});
-			});
+			// onFiltersSave shows the error
+			onFiltersSave(toSend).catch(noop);
 			modalClose();
 		};
 		createModal(
@@ -118,7 +109,7 @@ const FilterManager: FC<
 			},
 			true
 		);
-	}, [createModal, isIncoming, closeModal, filtersCopy, onFiltersSave, createSnackbar, t]);
+	}, [createModal, isIncoming, closeModal, filtersCopy, onFiltersSave]);
 
 	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
@@ -205,18 +196,8 @@ const FilterManager: FC<
 						autoHideTimeout: 5000
 					});
 				})
-				.catch((error) => {
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label:
-							error?.message ||
-							t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
-				});
+				// onFiltersSave shows the error
+				.catch(noop);
 			modalClose();
 		};
 

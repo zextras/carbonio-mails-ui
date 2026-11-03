@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 
-import { cloneDeep, concat, isEmpty, map, omit } from 'lodash';
+import { cloneDeep, concat, isEmpty, map, noop, omit } from 'lodash';
 
 import { Filter } from 'types/filters';
 import { FiltersListType } from 'views/settings/filters/types';
@@ -49,7 +49,8 @@ export const useFilterSelection = (
 				map(tmp, (t) => omit(t, 'id')),
 				secondList
 			);
-			modifyFunc(toSend);
+			// modifyFunc shows the error
+			modifyFunc(toSend).catch(noop);
 		},
 		[list, secondList, modifyFunc]
 	);
@@ -68,7 +69,8 @@ export const useFilterSelection = (
 				secondList
 			);
 
-			modifyFunc(toSend);
+			// modifyFunc shows the error
+			modifyFunc(toSend).catch(noop);
 		},
 		[list, secondList, modifyFunc]
 	);

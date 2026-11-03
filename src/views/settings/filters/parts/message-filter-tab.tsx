@@ -80,9 +80,15 @@ export const MessageFilterTab = ({
 			if (loading || loadFailed) {
 				showSaveError();
 				if (loadFailed) fetchFilters();
-				return Promise.resolve();
+				return Promise.reject(new Error('The filters are not loaded'));
 			}
-			return saveFilters(newFilters).then(fetchFilters).catch(showSaveError);
+			// the only place that shows a failed save: it rejects, so the callers skip their success message
+			return saveFilters(newFilters)
+				.then(fetchFilters)
+				.catch((error: unknown) => {
+					showSaveError();
+					throw error;
+				});
 		},
 		[fetchFilters, loadFailed, loading, saveFilters, showSaveError]
 	);

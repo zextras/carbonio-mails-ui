@@ -300,7 +300,7 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 					label: capitalise(findRowKey({ name: testName, test })),
 					filterTests: [
 						{
-							...{ [testName]: [test] },
+							[testName]: [test],
 							condition: selectedFilter?.filterTests?.[0]?.condition
 						}
 					],
