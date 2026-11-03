@@ -8,12 +8,15 @@
 import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
+import { map, mapValues, omit } from 'lodash';
 
 import { setupTest } from '@test-setup';
 import { getFilterRulesResponse } from 'api/tests/fixtures/get-filter-rules-response';
 import { normalizeFilterRulesFromSoap } from 'normalizations/normalize-filter-rules';
 import { Filter } from 'types/filters';
 import { ModifyFilterModal } from 'views/settings/filters/parts/modify-filter/modify-filter-modal';
+
+const FILTER_NAME_LABEL = 'Filter Name*';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {
@@ -53,7 +56,7 @@ describe('modify filter modal', () => {
 				selectedFilter={mockFilter({ name: 'Test Filter' })}
 			/>
 		);
-		expect(screen.getByRole('textbox', { name: 'Filter Name*' })).toHaveValue('Test Filter');
+		expect(screen.getByRole('textbox', { name: FILTER_NAME_LABEL })).toHaveValue('Test Filter');
 	});
 	it('should call onConfirm with old data if there are no changes', async () => {
 		const onConfirm = vi.fn();
@@ -115,7 +118,7 @@ describe('modify filter modal', () => {
 			/>
 		);
 
-		const filterInputElement = screen.getByRole('textbox', { name: 'Filter Name*' });
+		const filterInputElement = screen.getByRole('textbox', { name: FILTER_NAME_LABEL });
 		await user.clear(filterInputElement);
 		await user.type(filterInputElement, 'renamed');
 		await act(async () => {
@@ -134,7 +137,7 @@ describe('modify filter modal', () => {
 		expect(saved.filterTests[0]).toEqual(selectedFilter.filterTests[0]);
 	});
 
-	it.each([0, 2])('saves an unchanged rule %s as the server sent it', async (rule) => {
+	it.each([0, 2])('saves rule %s as the server sent it after a rename', async (rule) => {
 		const onConfirm = vi.fn();
 		const selectedFilter = savedRule(rule);
 		const { user } = setupTest(
@@ -146,7 +149,7 @@ describe('modify filter modal', () => {
 			/>
 		);
 
-		const filterInputElement = screen.getByRole('textbox', { name: 'Filter Name*' });
+		const filterInputElement = screen.getByRole('textbox', { name: FILTER_NAME_LABEL });
 		await user.clear(filterInputElement);
 		await user.type(filterInputElement, 'renamed');
 		await act(async () => {
@@ -155,6 +158,11 @@ describe('modify filter modal', () => {
 
 		const saved: Filter = onConfirm.mock.calls[0][0];
 		expect(saved.filterTests[0]).toEqual(selectedFilter.filterTests[0]);
+		expect(saved.filterActions[0]).toEqual(
+			mapValues(selectedFilter.filterActions[0], (actions) =>
+				map(actions, (action) => omit(action, 'index'))
+			)
+		);
 	});
 
 	it('opens a rule whose tests leave out their optional fields', async () => {
@@ -184,7 +192,7 @@ describe('modify filter modal', () => {
 		);
 
 		expect(await screen.findByText('Edit sparse')).toBeVisible();
-		expect(screen.getByRole('textbox', { name: 'Filter Name*' })).toHaveValue('sparse');
+		expect(screen.getByRole('textbox', { name: FILTER_NAME_LABEL })).toHaveValue('sparse');
 	});
 });
 

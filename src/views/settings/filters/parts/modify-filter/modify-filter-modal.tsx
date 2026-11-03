@@ -169,9 +169,9 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 		() => ({
 			filterActions: dontProcessAddFilters
 				? ([
-						{ ...actionsNotInEditor, ...omit(finalActions, 'id'), actionStop: [{}] }
+						{ ...omit(finalActions, 'id'), ...actionsNotInEditor, actionStop: [{}] }
 					] as FilterActions)
-				: ([{ ...actionsNotInEditor, ...omit(finalActions, 'id') }] as FilterActions),
+				: ([{ ...omit(finalActions, 'id'), ...actionsNotInEditor }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [

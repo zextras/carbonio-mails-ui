@@ -5,15 +5,14 @@
  */
 import { map, mapValues, omit } from 'lodash';
 
-import { AllFiltersTest, FilterRules } from 'types/filters';
+import { AllFiltersTest, FilterRules, FilterTestLists } from 'types/filters';
 
 const normalizeFilterTests = ({ condition, ...tests }: AllFiltersTest): AllFiltersTest => ({
 	condition,
 	// mapValues keeps each kind with its own tests, which TypeScript can't follow key by key
-	...(mapValues(tests, (kindTests) => map(kindTests, (test) => omit(test, 'index'))) as Omit<
-		AllFiltersTest,
-		'condition'
-	>)
+	...(mapValues(tests, (kindTests) =>
+		map(kindTests, (test) => omit(test, 'index'))
+	) as FilterTestLists)
 });
 
 export const normalizeFilterRulesFromSoap = (
