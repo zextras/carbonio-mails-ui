@@ -69,7 +69,7 @@ export const ContactChip: FC<{
 	const handleCopyEmailToClipboard = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
 			e.stopPropagation();
-			copyEmailToClipboard(contact.address, createSnackbar);
+			copyEmailToClipboard(contact.address ?? '', createSnackbar);
 		},
 		[contact, createSnackbar]
 	);
@@ -136,7 +136,7 @@ const CompactView = ({ contacts }: { contacts: Participant[] }): ReactElement =>
 	const handleCopyEmailToClipboard = useCallback(
 		(e: React.SyntheticEvent<HTMLElement> | KeyboardEvent, contact: Participant) => {
 			e.stopPropagation();
-			copyEmailToClipboard(contact.address, createSnackbar);
+			copyEmailToClipboard(contact.address ?? '', createSnackbar);
 		},
 		[createSnackbar]
 	);

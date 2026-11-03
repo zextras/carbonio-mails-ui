@@ -11,7 +11,7 @@ export type SoapMailParticipant = {
 	 * The email address of the participant.
 	 * This is a required field.
 	 */
-	a: string;
+	a?: string;
 
 	/**
 	 * The display name of the participant.
@@ -23,7 +23,7 @@ export type SoapMailParticipant = {
 	 * The personal name of the participant.
 	 * This is a required field.
 	 */
-	p: string;
+	p?: string;
 
 	/**
 	 * The role of the participant in the email.

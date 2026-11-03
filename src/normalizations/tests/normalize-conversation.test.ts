@@ -16,10 +16,26 @@ import {
 	normalizeConversations,
 	normalizePartialConversations
 } from 'normalizations/normalize-conversation';
+import { getConvReadUntaggedResponse } from 'normalizations/tests/fixtures/get-conv-read-untagged';
 import { Participant } from 'types/participant';
 import { SoapConversation } from 'types/soap/soap-conversation';
 
 describe('Normalize conversation', () => {
+	it('normalizes a read, untagged conversation from GetConv, which has no f, tn and fr', () => {
+		const { m: _messages, ...conversation } = getConvReadUntaggedResponse.c[0];
+		const recipientWithoutDisplayName = conversation.e[1];
+
+		const normalizedConversation = mapToNormalizedConversation({ conversation });
+
+		expect(normalizedConversation).not.toHaveProperty('fragment');
+		expect(normalizedConversation).not.toHaveProperty('tags');
+		expect(normalizedConversation.read).toBe(true);
+		expect(normalizedConversation.flagged).toBe(false);
+		expect(normalizedConversation.participants[1]).toEqual(
+			expect.objectContaining({ address: recipientWithoutDisplayName.a, fullName: undefined })
+		);
+	});
+
 	it('returns normalized conversation with all fields', () => {
 		const soapConversation = generateConversationFromAPI({
 			id: '1',
@@ -153,7 +169,6 @@ describe('Normalize conversation', () => {
 	});
 
 	it('handles conversation without t or tn', () => {
-		// @ts-expect-error - intentionally omitting t and tn
 		const soapConversation: SoapConversation = {
 			id: '1',
 			n: 0,

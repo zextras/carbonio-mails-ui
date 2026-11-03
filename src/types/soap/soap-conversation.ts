@@ -13,19 +13,19 @@ export type SoapConversation = {
 	/** Number of the unread messages */
 	u: number;
 	/** Flags */
-	f: string;
+	f?: string;
 	/** Tag names (comma separated) */
-	tn: string;
+	tn?: string;
 	/** Tag ids (comma separated) */
 	t?: string;
 	/** Date (of the most recent message) */
 	d: number;
 	/** Messages */
-	m: SoapMailMessage[];
+	m?: SoapMailMessage[];
 	/** Email information for conversation participants */
-	e: SoapMailParticipant[];
+	e?: SoapMailParticipant[];
 	/** Subject */
 	su: string;
 	/** Fragment */
-	fr: string;
+	fr?: string;
 };

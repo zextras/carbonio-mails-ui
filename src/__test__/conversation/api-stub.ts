@@ -26,7 +26,7 @@ export const stubSearchConversation = ({
 	conversation: SoapConversation;
 }): Promise<SearchConvRequest> =>
 	createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
-		m: conversation.m,
+		m: conversation.m ?? [],
 		more: false,
 		offset: '',
 		orderBy: ''

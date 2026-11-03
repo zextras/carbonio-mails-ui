@@ -37,7 +37,7 @@ export type SoapEmailMessagePartObj = {
 
 export type SoapEmailInfoObj = {
 	/** Address */
-	a: string;
+	a?: string;
 	t: ParticipantRoleType;
 	/** Display name */
 	p?: string;

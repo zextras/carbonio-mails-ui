@@ -233,21 +233,33 @@ type ReplyText = {
 	plainText: string;
 };
 
+// a part the server left out (no display name, or the empty address of a bounce) is not written at all
+const formatQuotedParticipant = ({ fullName, address }: Participant): string => {
+	if (!fullName) return address ?? '';
+	return address ? `"${fullName}" <${address}>` : `"${fullName}"`;
+};
+
 export function generateReplyText(mail: MailMessage, labels: Labels): ReplyText {
 	const headingFrom = map(
 		filter(mail.participants, ['type', ParticipantRole.FROM]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const headingTo = map(
 		filter(mail.participants, ['type', ParticipantRole.TO]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const headingCc = map(
 		filter(mail.participants, ['type', ParticipantRole.CARBON_COPY]),
-		(c) => `"${c.fullName}" <${c.address}>`
-	).join(', ');
+		formatQuotedParticipant
+	)
+		.filter(Boolean)
+		.join(', ');
 
 	const date = moment(mail.date).format('LLLL');
 

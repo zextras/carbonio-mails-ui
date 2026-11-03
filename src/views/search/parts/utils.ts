@@ -5,4 +5,5 @@
  */
 const re = /\S+@\S+\.\S+/;
 
-export const isValidEmail = (email: string): boolean => re.test(email);
+export const isValidEmail = (email: string | undefined): boolean =>
+	email !== undefined && re.test(email);

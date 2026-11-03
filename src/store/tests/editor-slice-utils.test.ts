@@ -13,6 +13,8 @@ import { LineType } from '../../commons/utils';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
 import {
 	extractBody,
 	generateReplyText,
@@ -462,9 +464,9 @@ describe('retrieveReplyTo', () => {
 				expect(richText).toContain(`<b>${labels.subject}</b> ${mailMessage.subject}`);
 			});
 
-			it('should return FROM label in bold and original message sender full name and address', () => {
+			it('should return FROM label in bold and original message sender address when it has no display name', () => {
 				const { richText } = generateReplyText(mailMessage, labels);
-				expect(richText).toContain(`<b>${labels.from}</b> "undefined" &lt;sender@test.com&gt;`);
+				expect(richText).toContain(`<b>${labels.from}</b> sender@test.com`);
 			});
 
 			it('should return SENT label in bold and original message date', () => {
@@ -475,7 +477,7 @@ describe('retrieveReplyTo', () => {
 			it('should return TO label in bold and original message to addresses', () => {
 				const { richText } = generateReplyText(mailMessage, labels);
 				expect(richText).toContain(
-					`<b>${labels.to}</b> "undefined" &lt;toAddress1@test.com&gt;, "To Address 2" &lt;toAddress2@test.com&gt;`
+					`<b>${labels.to}</b> toAddress1@test.com, "To Address 2" &lt;toAddress2@test.com&gt;`
 				);
 			});
 
@@ -490,15 +492,52 @@ describe('retrieveReplyTo', () => {
 			});
 		});
 
+		describe('participants the server sent without a display name or without an address', () => {
+			// a bounce: the sender is `"Mail Delivery System" <>`, the recipient has no display name
+			const bounce = normalizeCompleteMailMessageFromSoap(
+				getMsgSenderWithoutAddressResponse.m[0],
+				true
+			);
+
+			it('writes only the name of a sender without address', () => {
+				const { richText, plainText } = generateReplyText(bounce, labels);
+				expect(richText).toContain(`<b>${labels.from}</b> "Mail Delivery System" <br />`);
+				expect(plainText).toContain(`${labels.from} "Mail Delivery System"\n`);
+			});
+
+			it('writes only the address of a recipient without display name', () => {
+				const { richText, plainText } = generateReplyText(bounce, labels);
+				expect(richText).toContain(`<b>${labels.to}</b> user1@example.com <br />`);
+				expect(plainText).toContain(`${labels.to} user1@example.com\n`);
+			});
+
+			it('leaves out a participant with neither display name nor address', () => {
+				const { plainText } = generateReplyText(
+					{
+						...bounce,
+						participants: [...(bounce.participants ?? []), { type: ParticipantRole.TO }]
+					},
+					labels
+				);
+				expect(plainText).toContain(`${labels.to} user1@example.com\n`);
+			});
+
+			it('never writes undefined', () => {
+				const { richText, plainText } = generateReplyText(bounce, labels);
+				expect(richText).not.toContain('undefined');
+				expect(plainText).not.toContain('undefined');
+			});
+		});
+
 		describe('plainText handling', () => {
 			it('should return SUBJECT and original message subject', () => {
 				const { plainText } = generateReplyText(mailMessage, labels);
 				expect(plainText).toContain(`${labels.subject} ${mailMessage.subject}`);
 			});
 
-			it('should return FROM label and original message sender full name and address', () => {
+			it('should return FROM label and original message sender address when it has no display name', () => {
 				const { plainText } = generateReplyText(mailMessage, labels);
-				expect(plainText).toContain(`${labels.from} "undefined" <sender@test.com>`);
+				expect(plainText).toContain(`${labels.from} sender@test.com`);
 			});
 
 			it('should return SENT label and original message date', () => {
@@ -509,7 +548,7 @@ describe('retrieveReplyTo', () => {
 			it('should return TO label and original message to addresses', () => {
 				const { plainText } = generateReplyText(mailMessage, labels);
 				expect(plainText).toContain(
-					`${labels.to} "undefined" <toAddress1@test.com>, "To Address 2" <toAddress2@test.com>`
+					`${labels.to} toAddress1@test.com, "To Address 2" <toAddress2@test.com>`
 				);
 			});
 
