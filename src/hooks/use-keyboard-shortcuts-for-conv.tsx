@@ -5,10 +5,8 @@
  */
 import { useCallback, useRef } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import { useInSearchModule } from '../ui-actions/utils';
-import { MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
 import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
@@ -16,6 +14,7 @@ import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useConvSetSpamFn } from 'hooks/actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
+import { useClosePreviewPanel } from 'hooks/use-close-preview-panel';
 
 const CONV_KEYBOARD_SHORTCUTS = {
 	MARK_READ: ['mr', 'z'],
@@ -42,18 +41,10 @@ export const useKeyboardShortcutsForConv = ({
 	conversationIds,
 	folderId
 }: UseKeyboardShortcutsForConvProps): ((event: KeyboardEvent) => void) => {
-	const isSearchContext = useInSearchModule();
 	const isConversationMessage = useLocation().pathname.includes('message');
 	const keySequence = useRef<string>('');
-	const navigate = useNavigate();
 
-	const closePreviewPanel = useCallback(
-		() =>
-			isSearchContext
-				? navigate(`/${SEARCH_ROUTE}`, { replace: true })
-				: navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
-		[folderId, isSearchContext, navigate]
-	);
+	const closePreviewPanel = useClosePreviewPanel(folderId);
 	const markConvAsSpam = useConvSetSpamFn({
 		ids: conversationIds,
 		folderId

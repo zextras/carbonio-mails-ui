@@ -15,8 +15,26 @@ import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
+import { Participant } from 'types/participant';
 import { EmailsStoreState } from 'types/search';
 import { PartialIncompleteMessage } from 'views/sidebar/commons/types';
+
+/**
+ * Conversations in notifications list only their senders: keep the other participants already known.
+ * Notifications carry no recipients, so a recipient of a message that left the conversation stays until a
+ * search or GetConv reloads it.
+ */
+function keepKnownRecipients(
+	knownParticipants: Array<Participant>,
+	notifiedParticipants: Array<Participant>
+): Array<Participant> {
+	const recipients = knownParticipants.filter(
+		(known) =>
+			known.type !== 'f' &&
+			!find(notifiedParticipants, { type: known.type, address: known.address })
+	);
+	return [...notifiedParticipants, ...recipients];
+}
 
 /**
  * Finds the conversation which now holds the given messages, other than the excluded one.
@@ -176,7 +194,13 @@ function handleNotifyConversationsModified(
 				if (existingConversation) {
 					populatedItemsSlice.conversations[partialData.id] = {
 						...existingConversation,
-						...partialData
+						...partialData,
+						...(partialData.participants && {
+							participants: keepKnownRecipients(
+								existingConversation.participants,
+								partialData.participants
+							)
+						})
 					};
 				}
 			});
@@ -341,10 +365,26 @@ function handleNotifyConversationsCreated(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newConversationIds = conversations.map((conv) => conv.id);
+	// looked up on the plain state: scanning the draft would make immer proxy every stored conversation
+	const storedConversations = Object.values(
+		useEmailsStore.getState().populatedItemsSlice.conversations
+	);
+	const participantsById = conversations.reduce<
+		Record<string, NormalizedConversation['participants']>
+	>((acc, conversation) => {
+		const messageIds = new Set(conversation.messageIds);
+		acc[conversation.id] = storedConversations
+			.filter((known) => known.messageIds.some((id) => messageIds.has(id)))
+			.reduce(
+				(participants, replaced) => keepKnownRecipients(replaced.participants, participants),
+				conversation.participants
+			);
+		return acc;
+	}, {});
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = conversation;
+				acc[conversation.id] = { ...conversation, participants: participantsById[conversation.id] };
 				return acc;
 			}, populatedItemsSlice.conversations);
 			conversationIndexSlice.conversationListIndex = Array.from(

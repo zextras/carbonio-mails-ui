@@ -8,12 +8,20 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
+import type { Mock } from 'vitest';
 
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { FOLDERS_DESCRIPTORS, MAILS_ROUTE, SEARCH_ROUTE } from 'constants/index';
 import { useMsgSetReadDescriptor, useMsgSetReadFn } from 'hooks/actions/use-msg-set-read';
 import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => ({
+	...(await vi.importActual('react-router-dom')),
+	useNavigate: (): Mock => mockNavigate
+}));
 
 describe('useMsgSetRead', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
@@ -183,5 +191,42 @@ describe('useMsgSetRead', () => {
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
 		});
+	});
+
+	describe('Navigation in the search module', () => {
+		beforeEach(() => {
+			mockNavigate.mockClear();
+		});
+
+		it.each`
+			route                                                  | expectedRoute
+			${`/${MAILS_ROUTE}/folder/${FOLDERS.INBOX}/message/1`} | ${`/${MAILS_ROUTE}/folder/${FOLDERS.INBOX}`}
+			${`/${SEARCH_ROUTE}/message/1`}                        | ${`/${SEARCH_ROUTE}`}
+		`(
+			'should navigate from $route to $expectedRoute when shouldReplaceHistory is true',
+			async ({ route, expectedRoute }) => {
+				createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+					action: { id: '1', op: 'read' }
+				});
+
+				const { result } = setupHook(useMsgSetReadFn, {
+					initialEntries: [route],
+					initialProps: [
+						{
+							ids: ['1'],
+							folderId: FOLDERS.INBOX,
+							isMessageRead: false,
+							shouldReplaceHistory: true
+						}
+					]
+				});
+
+				await act(async () => {
+					result.current.execute();
+				});
+
+				expect(mockNavigate).toHaveBeenCalledWith(expectedRoute, { replace: true });
+			}
+		);
 	});
 });
