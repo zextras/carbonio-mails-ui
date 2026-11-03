@@ -1,3 +1,7 @@
+## <small>1.51.10 (2026-11-03)</small>
+
+* fix(composer): inline the layout of editor tables so they keep their width in the displayer ([f8febe7](https://github.com/zextras/carbonio-mails-ui/commit/f8febe7))
+
 ## <small>1.51.9 (2026-11-03)</small>
 
 * fix(composer): keep the table "add column" hover button inside the composer ([35efbcc](https://github.com/zextras/carbonio-mails-ui/commit/35efbcc))
