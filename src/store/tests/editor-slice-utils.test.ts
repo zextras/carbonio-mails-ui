@@ -18,6 +18,7 @@ import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixture
 import {
 	extractBody,
 	generateReplyText,
+	generateRequest,
 	retrieveALL,
 	retrieveCC,
 	retrieveReplyTo
@@ -766,5 +767,16 @@ describe('retrieveReplyTo', () => {
 				expect(html).toEqual('');
 			});
 		});
+	});
+});
+
+describe('generateRequest', () => {
+	it('should send the recipient name in p, the attribute the server reads', () => {
+		const request = generateRequest({
+			recipients: [{ type: ParticipantRole.TO, address: 'to@demo.com', fullName: 'To Name' }],
+			text: ['', '']
+		});
+
+		expect(request.e).toEqual([{ t: ParticipantRole.TO, a: 'to@demo.com', p: 'To Name' }]);
 	});
 });
