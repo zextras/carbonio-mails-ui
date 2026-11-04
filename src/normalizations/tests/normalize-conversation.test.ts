@@ -212,7 +212,7 @@ describe('Normalize conversation', () => {
 		const soapConversation = omit(generateConversationFromAPI({ id: '1' }), 'fr');
 
 		const normalizedConversation = mapToNormalizedConversation({
-			conversation: soapConversation as SoapConversation
+			conversation: soapConversation
 		});
 
 		expect(normalizedConversation).not.toHaveProperty('fragment');

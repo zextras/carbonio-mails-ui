@@ -12,6 +12,7 @@ import {
 	useFolderStore,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 import { http } from 'msw';
 import { vi } from 'vitest';
 
@@ -57,6 +58,7 @@ import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { notifyReplySent } from 'views/sidebar/commons/tests/fixtures/notify-reply-sent';
+import { SoapNotifyConversation } from 'views/sidebar/commons/types';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
@@ -246,10 +248,9 @@ describe('sync data handler', () => {
 					m: [getSoapMessage('100', { cid: '2', l: FOLDERS.INBOX })],
 					c: [
 						{
-							...getSoapConversation('2'),
-							m: undefined,
+							...omit(getSoapConversation('2'), ['m', 'fr']),
 							e: [{ t: 'f', a: 'recipient@example.com', p: 'Recipient' }]
-						} as unknown as SoapConversation
+						} satisfies SoapNotifyConversation
 					]
 				},
 				modified: {
