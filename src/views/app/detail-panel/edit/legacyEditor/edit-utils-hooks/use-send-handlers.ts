@@ -73,7 +73,7 @@ export const useSendHandlers = (
 	);
 
 	const onSendError = useCallback(
-		(error: SoapSendMsgFault): void => {
+		(error?: SoapSendMsgFault): void => {
 			const { message, timeout } = getErrorSnackbarProps(error);
 			createSnackbar({
 				key: `mail-${editorId}`,

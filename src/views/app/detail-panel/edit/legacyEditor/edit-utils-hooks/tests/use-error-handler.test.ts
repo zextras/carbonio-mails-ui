@@ -25,6 +25,14 @@ describe('getErrorSnackbarProps', () => {
 		});
 	});
 
+	it('returns default error message and default timeout when the send fails without a Fault', () => {
+		const result = getErrorSnackbarProps();
+		expect(result).toEqual({
+			message: 'label.error_try_again',
+			timeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+		});
+	});
+
 	it('returns invalid recipient message and specific timeout for invalid recipient error', () => {
 		const error = buildSendMsgFaultBody({ detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE' });
 		const result = getErrorSnackbarProps(error);

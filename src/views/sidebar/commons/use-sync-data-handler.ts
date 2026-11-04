@@ -153,10 +153,6 @@ type ProcessNotificationsProps = {
 	navigate: NavigateFunction;
 };
 
-// the shell types the conversations and messages of a notification as unknown: the server sends the
-// summaries of ToXML.encodeItem, which MailsSoapNotify describes
-const toMailsSoapNotify = (notify: SoapNotify): MailsSoapNotify => notify as MailsSoapNotify;
-
 function processNotifications({
 	notifyList,
 	seq,
@@ -186,7 +182,9 @@ function processNotifications({
 		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
 		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
 
-		const mailsNotify = toMailsSoapNotify(notify);
+		// the shell types the conversations and messages of a notification as unknown: the server sends
+		// the summaries of ToXML.encodeItem, which MailsSoapNotify describes
+		const mailsNotify = notify as MailsSoapNotify;
 		if (mailsNotify.created) {
 			processCreatedNotifications(mailsNotify, navigate);
 		}

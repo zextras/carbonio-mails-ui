@@ -47,7 +47,7 @@ describe('ConversationList Component', () => {
 	});
 	it('renders without crashing when there are no conversations', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [].map(toSearchConversationHit),
+			c: [],
 			more: false
 		});
 		updateConversationsResultsLoadingStatus('fulfilled');

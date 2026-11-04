@@ -12,9 +12,8 @@ import { SoapSendMsgFault } from 'types/soap/send-msg';
 const SEND_ABORTED_ADDRESS_FAILURE = 'mail.SEND_ABORTED_ADDRESS_FAILURE';
 const SEND_TO_DISTRIBUTION_LIST_DENIED = 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED';
 
-type SendError = SoapSendMsgFault;
-
-function getErrorCode(error: SendError): string | undefined {
+// no error when the send failed without a Fault (a network error)
+function getErrorCode(error?: SoapSendMsgFault): string | undefined {
 	return error?.Fault?.Detail?.Error?.Code;
 }
 
@@ -24,7 +23,7 @@ function emailOf(address: string): string {
 	return start !== -1 && trimmed.endsWith('>') ? trimmed.slice(start + 1, -1) : trimmed;
 }
 
-function getInvalidAddresses(error: SendError): Array<string> {
+function getInvalidAddresses(error?: SoapSendMsgFault): Array<string> {
 	const errorArguments: Array<{ n?: string; _content?: string }> =
 		error?.Fault?.Detail?.Error?.a ?? [];
 	return errorArguments
@@ -34,7 +33,7 @@ function getInvalidAddresses(error: SendError): Array<string> {
 		.map(emailOf);
 }
 
-function getDeniedDistributionListMessage(error: SendError): string {
+function getDeniedDistributionListMessage(error?: SoapSendMsgFault): string {
 	const distributionLists = getInvalidAddresses(error);
 	return distributionLists.length > 1
 		? t('error.distribution_lists_send_denied', {
@@ -47,7 +46,7 @@ function getDeniedDistributionListMessage(error: SendError): string {
 			});
 }
 
-function getInvalidRecipientMessage(error: SendError): string {
+function getInvalidRecipientMessage(error?: SoapSendMsgFault): string {
 	const invalidAddresses = getInvalidAddresses(error);
 	return invalidAddresses.length > 1
 		? t('error.invalid_recipients', {
@@ -60,7 +59,7 @@ function getInvalidRecipientMessage(error: SendError): string {
 			});
 }
 
-export function getErrorSnackbarProps(error: SendError): {
+export function getErrorSnackbarProps(error?: SoapSendMsgFault): {
 	message: string;
 	timeout: number;
 } {

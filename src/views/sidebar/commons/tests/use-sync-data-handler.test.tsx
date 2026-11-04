@@ -298,7 +298,7 @@ describe('sync data handler', () => {
 			);
 		});
 
-		it('should add a sent reply to its conversation without reloading it', async () => {
+		it('should add a sent reply to its conversation from the notification of the copy in Sent', async () => {
 			// SendMsg returns no conversation id: the notification of the copy in Sent carries it
 			populateFoldersStore();
 			setConversationsInEmailStore(

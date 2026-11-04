@@ -44,7 +44,7 @@ describe('search view hooks', () => {
 		});
 		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [].map(toSearchConversationHit),
+			c: [],
 			more: false
 		});
 
@@ -243,7 +243,7 @@ describe('search view hooks', () => {
 		expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 
 		const newInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [].map(toSearchConversationHit),
+			c: [],
 			more: false
 		});
 

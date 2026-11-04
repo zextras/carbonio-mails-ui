@@ -21,7 +21,8 @@ export type SendMessageOptions = {
 	onCountdownTick?: (countdown: number, cancel: () => void) => void;
 	onSendStart?: () => void;
 	onComplete?: () => void;
-	onError?: (error: SoapSendMsgFault) => void;
+	// no error when the request failed without a Fault (a network error)
+	onError?: (error?: SoapSendMsgFault) => void;
 	onCancel?: () => void;
 };
 
@@ -71,7 +72,7 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 					status: 'aborted',
 					abortReason: errorDescription
 				});
-				options?.onError && options.onError(res);
+				options?.onError?.(res);
 			} else {
 				useEditorsStore.getState().setSendProcessStatus(editorId, {
 					status: 'completed'
@@ -84,7 +85,7 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 				status: 'aborted',
 				abortReason: err
 			});
-			options?.onError && options.onError(err);
+			options?.onError?.();
 		});
 };
 
@@ -150,7 +151,7 @@ const sendFromEditor = (
 				status: 'aborted',
 				abortReason: err
 			});
-			options?.onError && options.onError(err);
+			options?.onError?.();
 		})
 		.finally(() => {
 			window.removeEventListener('beforeunload', onBeforeUnload);

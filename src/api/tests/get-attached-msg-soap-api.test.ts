@@ -18,13 +18,14 @@ describe('getAttachedMsgSoapApi', () => {
 	it('asks for the part of the message that holds the attached one', async () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
 
-		getAttachedMsgSoapApi({ msgId: '262', part: '2', html: true });
+		const response = getAttachedMsgSoapApi({ msgId: '262', part: '2', html: true });
 
 		const request = await interceptor;
 		expect(request.m).toEqual(
 			expect.objectContaining({ id: '262', part: '2', html: true, needExp: 1 })
 		);
 		expect(request.m.header).toContainEqual({ n: 'Sensitivity' });
+		await response;
 	});
 
 	it('returns the attached message', async () => {
