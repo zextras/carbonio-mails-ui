@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccountSettings, getUserSettings } from '@zextras/carbonio-shell-ui';
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
@@ -41,8 +41,9 @@ export async function searchConvSoapApi({
 	if (shouldMarkAsRead) {
 		request.read = 1;
 	}
-	return legacySoapFetch<SearchConvRequest, SearchConvResponse | ErrorSoapBodyResponse>(
+	const { Body } = await soapFetchV2<SearchConvRequest, { SearchConvResponse: SearchConvResponse }>(
 		'SearchConv',
 		request
 	);
+	return 'Fault' in Body ? Body : Body.SearchConvResponse;
 }

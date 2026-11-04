@@ -5,7 +5,7 @@
  */
 
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
@@ -15,21 +15,19 @@ import { GetMsgForPrintParameter, GetMsgForPrintResponse } from 'types/soap/get-
 export const getMsgsForPrintSoapApi = async ({
 	ids
 }: GetMsgForPrintParameter): Promise<Array<MailMessage>> => {
-	const response = await legacySoapFetch<unknown, GetMsgForPrintResponse | ErrorSoapBodyResponse>(
-		'Batch',
-		{
-			GetMsgRequest: map(ids, (id) => ({
-				m: {
-					html: 1,
-					id,
-					needExp: 1,
-					read: 1
-				},
-				_jsns: 'urn:zimbraMail'
-			})),
-			_jsns: 'urn:zimbra'
-		}
-	);
+	const { Body } = await soapFetchV2<unknown, { BatchResponse: GetMsgForPrintResponse }>('Batch', {
+		GetMsgRequest: map(ids, (id) => ({
+			m: {
+				html: 1,
+				id,
+				needExp: 1,
+				read: 1
+			},
+			_jsns: 'urn:zimbraMail'
+		})),
+		_jsns: 'urn:zimbra'
+	});
+	const response = 'Fault' in Body ? Body : Body.BatchResponse;
 	const GetMsgResponse = 'GetMsgResponse' in response ? response.GetMsgResponse : undefined;
 	// A failed Batch has a single Fault, a BatchResponse one Fault per message that failed
 	const fault = Array.isArray(response.Fault) ? response.Fault[0] : response.Fault;
