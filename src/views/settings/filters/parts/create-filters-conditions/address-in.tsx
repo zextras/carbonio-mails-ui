@@ -16,19 +16,21 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import {
 	getFromOptions,
 	getInOptions,
 	getFolderOptions,
-	findDefaultValue
+	findDefaultValue,
+	firstRowTest
 } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const AddressInCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -79,19 +81,20 @@ const AddressInCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }
 	}, []);
 
 	const defaultFromOption = useMemo(() => {
-		if (defaultValue) {
-			return findDefaultValue(fromOptions, defaultValue[Object.keys(defaultValue)[0]][0].header);
+		const test = firstRowTest(defaultValue);
+		if (test) {
+			return findDefaultValue(fromOptions, 'header' in test ? test.header : undefined);
 		}
 		return fromOptions[0];
 	}, [fromOptions, defaultValue]);
 
 	const defaultInOption = useMemo(() => {
-		if (defaultValue) {
-			const test = Object.keys(defaultValue)[0];
-			if (test === 'meTest') {
-				return defaultValue[Object.keys(defaultValue)[0]][0].negative ? inOptions[3] : inOptions[2];
+		const test = firstRowTest(defaultValue);
+		if (test) {
+			if (defaultValue?.meTest) {
+				return test.negative ? inOptions[3] : inOptions[2];
 			}
-			return defaultValue[Object.keys(defaultValue)[0]][0].negative ? inOptions[1] : inOptions[0];
+			return test.negative ? inOptions[1] : inOptions[0];
 		}
 		return inOptions[0];
 	}, [inOptions, defaultValue]);

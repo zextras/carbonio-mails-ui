@@ -20,7 +20,7 @@ import { useFilterSelection } from 'views/settings/filters/parts/use-filter-sele
 
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;
-	saveFilters: (filters: Array<Filter>) => Promise<void>;
+	saveFilters: (filters: Array<Filter>) => Promise<unknown>;
 	FiltersManagerComponent: (props: FilterManagerProps) => React.JSX.Element;
 };
 export const MessageFilterTab = ({
@@ -80,9 +80,15 @@ export const MessageFilterTab = ({
 			if (loading || loadFailed) {
 				showSaveError();
 				if (loadFailed) fetchFilters();
-				return Promise.resolve();
+				return Promise.reject(new Error('The filters are not loaded'));
 			}
-			return saveFilters(newFilters).then(fetchFilters).catch(showSaveError);
+			// the only place that shows a failed save: it rejects, so the callers skip their success message
+			return saveFilters(newFilters)
+				.then(fetchFilters)
+				.catch((error: unknown) => {
+					showSaveError();
+					throw error;
+				});
 		},
 		[fetchFilters, loadFailed, loading, saveFilters, showSaveError]
 	);

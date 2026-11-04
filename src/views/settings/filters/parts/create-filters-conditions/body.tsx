@@ -16,6 +16,7 @@ import React, {
 import { Container, Input } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getBodyOptions } from 'views/settings/filters/parts/utils';
@@ -23,7 +24,7 @@ import { getBodyOptions } from 'views/settings/filters/parts/utils';
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -50,8 +51,8 @@ const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 	}, [activeIndex, newFilters, setNewFilters, loadData, query, value]);
 
 	useEffect(() => {
-		if (defaultValue && defaultValue.bodyTest) {
-			setValue(defaultValue.bodyTest[0].value);
+		if (defaultValue?.bodyTest) {
+			setValue(defaultValue.bodyTest[0]?.value ?? '');
 		}
 	}, [defaultValue]);
 	const handleQueryChange = useCallback((arg: { value: string }) => {
@@ -65,7 +66,7 @@ const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 	}, []);
 
 	const defaultBodyOption = useMemo(() => {
-		if (defaultValue && defaultValue.bodyTest[0].negative) {
+		if (defaultValue?.bodyTest?.[0]?.negative) {
 			return bodyOptions[1];
 		}
 		return bodyOptions[0];

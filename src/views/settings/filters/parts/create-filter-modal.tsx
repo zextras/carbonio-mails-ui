@@ -8,17 +8,17 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
 import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { ModalHeader } from '@zextras/carbonio-ui-commons';
-import { map, omit, reduce } from 'lodash';
+import { map, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Filter, FilterActions } from 'types/filters';
+import { AllFiltersTest, Filter, FilterActions } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
 import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
 import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-panel';
 import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-conditions-panel';
-import { getButtonInfo } from 'views/settings/filters/parts/utils';
+import { getButtonInfo, mergeRowsByKind } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	onClose: () => void;
@@ -34,31 +34,14 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
-	const [condition, setCondition] = useState('anyof');
+	const [condition, setCondition] = useState<AllFiltersTest['condition']>('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState<FilterActions>([
 		{ actionKeep: [{}], id: uuidv4() }
 	]);
 	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
 		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
-	const finalActions = useMemo(
-		() =>
-			reduce(
-				tempActions,
-				(acc, i) => {
-					const firstKey = Object.keys(omit(i, 'id'))[0];
-					if (Object.keys(acc).includes(firstKey)) {
-						const accWithoutId = omit(acc, 'id');
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						return { ...accWithoutId, [firstKey]: [...accWithoutId[firstKey], ...i[firstKey]] };
-					}
-					return { ...acc, ...i };
-				},
-				{}
-			),
-		[tempActions]
-	);
+	const finalActions = useMemo(() => mergeRowsByKind(tempActions, 'id'), [tempActions]);
 
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -82,19 +65,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const requiredFilterTest = useMemo(() => {
 		const allTest = map(newFilters, (f) => f.filterTests[0]);
 
-		return reduce(
-			allTest,
-			(a, i) => {
-				const firstKey = Object.keys(omit(i, ['condition']))[0];
-				if (Object.keys(a).includes(firstKey)) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					return { ...a, [firstKey]: [...a[firstKey], ...i[firstKey]] };
-				}
-				return { ...a, ...i };
-			},
-			{}
-		);
+		return mergeRowsByKind(allTest, 'condition');
 	}, [newFilters]);
 	const requiredFilters = useMemo(
 		() => ({

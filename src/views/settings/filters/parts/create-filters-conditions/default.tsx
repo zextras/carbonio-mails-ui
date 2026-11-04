@@ -17,6 +17,7 @@ import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find } from 'lodash';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getConditionStatements } from 'views/settings/filters/parts/utils';
@@ -24,7 +25,7 @@ import { getConditionStatements } from 'views/settings/filters/parts/utils';
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -53,7 +54,7 @@ const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 	}, [selectValue, activeIndex, newFilters, setNewFilters, value, loadData]);
 	useEffect(() => {
 		if (defaultValue && defaultValue?.headerTest) {
-			setValue(defaultValue?.headerTest?.[0]?.value);
+			setValue(defaultValue?.headerTest?.[0]?.value ?? '');
 		}
 	}, [defaultValue]);
 	const handleStatementChange = useCallback((arg: { stringComparison: string }) => {

@@ -6,10 +6,9 @@
 import { useCallback } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { concat, filter, findIndex } from 'lodash';
+import { concat, filter, findIndex, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { Filter } from 'types/filters';
 
 export type ListType = {
@@ -34,66 +33,36 @@ export type DeleteFilterCompProps = CompProps & {
 	filters: Filter[];
 };
 
-export const useRemoveFilter = (): ((arg: CompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
-	const [t] = useTranslation();
+export const useRemoveFilter = (): ((arg: CompProps) => void) =>
+	useCallback(({ activeList, availableList, modifierFunc }: CompProps): void => {
+		const activeFiltersCopy = activeList?.list?.slice();
+		const availableFiltersCopy = availableList?.list?.slice();
+		const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
+		const activeIndex = findIndex(activeFiltersCopy, activeFilter[0]);
+		activeFiltersCopy.splice(activeIndex, 1);
+		availableFiltersCopy.push({ ...activeFilter[0], active: false });
+		const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
+		activeList.unSelect();
 
-	return useCallback(
-		({ activeList, availableList, modifierFunc }: CompProps): void => {
-			const activeFiltersCopy = activeList?.list?.slice();
-			const availableFiltersCopy = availableList?.list?.slice();
-			const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
-			const activeIndex = findIndex(activeFiltersCopy, activeFilter[0]);
-			activeFiltersCopy.splice(activeIndex, 1);
-			availableFiltersCopy.push({ ...activeFilter[0], active: false });
-			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			activeList.unSelect();
+		// modifierFunc shows the error
+		modifierFunc(newFilters).catch(noop);
+	}, []);
 
-			modifierFunc(newFilters).catch((error) => {
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 5000
-				});
-			});
-		},
-		[createSnackbar, t]
-	);
-};
-
-export const useAddFilter = (): ((arg: CompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
-	const [t] = useTranslation();
-
-	return useCallback(
-		({ activeList, availableList, modifierFunc }: CompProps): void => {
-			const activeFiltersCopy = activeList?.list?.slice();
-			const availableFiltersCopy = availableList?.list?.slice();
-			const activeFilter = filter(availableFiltersCopy, {
-				name: Object.keys(availableList.selected)[0]
-			});
-			const activeIndex = findIndex(availableFiltersCopy, activeFilter[0]);
-			availableFiltersCopy.splice(activeIndex, 1);
-			activeFiltersCopy.push({ ...activeFilter[0], active: true });
-			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			availableList.unSelect();
-			modifierFunc(newFilters).catch((error: { message: string }) => {
-				createSnackbar({
-					key: 'filter-delete-error',
-					severity: 'error',
-					label:
-						error.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					hideButton: true
-				});
-			});
-		},
-		[createSnackbar, t]
-	);
-};
+export const useAddFilter = (): ((arg: CompProps) => void) =>
+	useCallback(({ activeList, availableList, modifierFunc }: CompProps): void => {
+		const activeFiltersCopy = activeList?.list?.slice();
+		const availableFiltersCopy = availableList?.list?.slice();
+		const activeFilter = filter(availableFiltersCopy, {
+			name: Object.keys(availableList.selected)[0]
+		});
+		const activeIndex = findIndex(availableFiltersCopy, activeFilter[0]);
+		availableFiltersCopy.splice(activeIndex, 1);
+		activeFiltersCopy.push({ ...activeFilter[0], active: true });
+		const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
+		availableList.unSelect();
+		// modifierFunc shows the error
+		modifierFunc(newFilters).catch(noop);
+	}, []);
 
 export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 	const createSnackbar = useSnackbar();
@@ -110,15 +79,8 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 						hideButton: true
 					});
 				})
-				.catch((error: { message: string }) => {
-					createSnackbar({
-						key: 'filter-delete-error',
-						severity: 'error',
-						label:
-							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
-						hideButton: true
-					});
-				});
+				// modifierFunc shows the error
+				.catch(noop);
 			onClose();
 		},
 		[createSnackbar, t]

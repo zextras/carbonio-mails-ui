@@ -16,7 +16,7 @@ import React, {
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
 import { ModalHeader } from '@zextras/carbonio-ui-commons';
-import { forEach, isEqual, map, omit, reduce } from 'lodash';
+import { forEach, isEqual, map, mapValues, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,8 +24,10 @@ import type {
 	AllFiltersTest,
 	ApiFilterAction,
 	Filter,
+	FilterActionKind,
 	FilterActions,
-	FilterTest
+	FilterTest,
+	FilterTestKind
 } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
@@ -33,8 +35,19 @@ import DefaultCondition from 'views/settings/filters/parts/create-filters-condit
 import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-panel';
 import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-conditions-panel';
 import { findRowKey, getTestComponent } from 'views/settings/filters/parts/get-test-component';
-import { getButtonInfo } from 'views/settings/filters/parts/utils';
+import { getButtonInfo, mergeRowsByKind } from 'views/settings/filters/parts/utils';
 import { capitalise } from 'views/sidebar/utils';
+
+/** The actions the editor shows (stop is the "do not process additional filters" checkbox) */
+const EDITOR_ACTIONS: Array<FilterActionKind> = [
+	'actionTag',
+	'actionFlag',
+	'actionRedirect',
+	'actionFileInto',
+	'actionKeep',
+	'actionDiscard',
+	'actionStop'
+];
 
 type ModifyFilterModalProps = {
 	onClose: () => void;
@@ -52,7 +65,7 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
-	const [condition, setCondition] = useState('anyof');
+	const [condition, setCondition] = useState<AllFiltersTest['condition']>('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 
 	const initialActions = useMemo((): FilterActions => {
@@ -106,6 +119,15 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 		return [{ actionKeep: [{}], id: uuidv4() }];
 	}, [selectedFilter]);
 
+	// the actions the editor can't show are saved back as they are, or editing the filter would delete them
+	const actionsNotInEditor = useMemo(
+		(): ApiFilterAction =>
+			mapValues(omit(selectedFilter?.filterActions?.[0], EDITOR_ACTIONS), (actions) =>
+				map(actions, (action) => omit(action, 'index'))
+			),
+		[selectedFilter]
+	);
+
 	const [tempActions, setTempActions] = useState(initialActions);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
@@ -139,47 +161,17 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	const requiredFilterTest = useMemo(() => {
 		const allTest = map(newFilters, (f) => f.filterTests[0]);
 
-		return reduce(
-			allTest,
-			(a, i) => {
-				const firstKey = Object.keys(omit(i, ['condition']))[0];
-				if (Object.keys(a).includes(firstKey)) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					return { ...a, [firstKey]: [...a[firstKey], ...i[firstKey]] };
-				}
-				return { ...a, ...i };
-			},
-			{}
-		);
+		return mergeRowsByKind(allTest, 'condition');
 	}, [newFilters]);
 
-	const finalActions = useMemo(
-		() =>
-			reduce(
-				tempActions,
-				(acc, action) => {
-					const firstActionKey = Object.keys(omit(action, 'id'))[0];
-					if (Object.keys(acc).includes(firstActionKey)) {
-						const accWithoutId = omit(acc, 'id');
-						return {
-							...accWithoutId,
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							[firstActionKey]: [...accWithoutId[firstActionKey], ...action[firstActionKey]]
-						};
-					}
-					return { ...acc, ...action };
-				},
-				{}
-			),
-		[tempActions]
-	);
+	const finalActions = useMemo(() => mergeRowsByKind(tempActions, 'id'), [tempActions]);
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions)
-				: ([{ ...omit(finalActions, 'id') }] as FilterActions),
+				? ([
+						{ ...omit(finalActions, 'id'), ...actionsNotInEditor, actionStop: [{}] }
+					] as FilterActions)
+				: ([{ ...omit(finalActions, 'id'), ...actionsNotInEditor }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -189,7 +181,15 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 				} as AllFiltersTest
 			]
 		}),
-		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
+		[
+			activeFilter,
+			filterName,
+			condition,
+			requiredFilterTest,
+			dontProcessAddFilters,
+			finalActions,
+			actionsNotInEditor
+		]
 	);
 	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
 		if (isEqual(copyRequiredFilters, requiredFilters)) {
@@ -272,15 +272,16 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	}, [selectedFilter, setCopyOfFilter, updateRequiredFilters]);
 
 	const previousFilterTests = useMemo(() => {
-		const tempTests: Array<FilterTest> = [];
+		// the kind stays next to the test, not inside it: whatever is inside is saved back to the server
+		const tempTests: Array<{ testName: FilterTestKind; test: FilterTest }> = [];
 		const filterTest = selectedFilter?.filterTests?.[0];
 		if (!filterTest) return tempTests;
-		const keys = Object.keys(filterTest) as Array<keyof AllFiltersTest>;
+		const keys = Object.keys(filterTest) as Array<FilterTestKind | 'condition'>;
 		forEach(keys, (key) => {
 			if (key !== 'condition') {
 				const value = filterTest[key];
 				map(value, (test) => {
-					tempTests.push({ ...test, testName: key });
+					tempTests.push({ test, testName: key });
 				});
 			}
 		});
@@ -289,24 +290,24 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 
 	const modifiedNewFilters = useMemo(
 		() =>
-			map(previousFilterTests, (test, index) => {
+			map(previousFilterTests, ({ testName, test }, index) => {
 				if (index === previousFilterTests.length - 1) setReFetch(true);
 				return {
 					filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
 					active: false,
 					name: '',
-					key: findRowKey({ name: test.testName, test }),
-					label: capitalise(findRowKey({ name: test.testName, test })),
+					key: findRowKey({ name: testName, test }),
+					label: capitalise(findRowKey({ name: testName, test })),
 					filterTests: [
 						{
-							...{ [test.testName]: [test] },
+							[testName]: [test],
 							condition: selectedFilter?.filterTests?.[0]?.condition
 						}
 					],
 					index: 0,
 					comp: getTestComponent({
-						name: test.testName,
-						test: { [test.testName]: [test] },
+						name: testName,
+						test: { [testName]: [test] },
 						index,
 						t
 					})

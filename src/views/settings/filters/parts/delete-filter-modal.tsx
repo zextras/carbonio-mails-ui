@@ -9,10 +9,12 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
+import type { Filter } from 'types/filters';
+
 type DeleteFilterModalProps = {
 	onClose: () => void;
 	onConfirmDelete: () => void;
-	selectedFilter: any;
+	selectedFilter: Filter;
 };
 
 const DeleteFilterModal: FC<DeleteFilterModalProps> = ({
