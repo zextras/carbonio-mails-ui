@@ -1,3 +1,10 @@
+## <small>1.51.12 (2026-11-04)</small>
+
+* fix(CO-4591): declare the SOAP Fault in the response types of the API wrappers (#1418) ([0b77e1a](https://github.com/zextras/carbonio-mails-ui/commit/0b77e1a)), closes [#1418](https://github.com/zextras/carbonio-mails-ui/issues/1418)
+* fix(CO-4592): align folder action, mountpoint and signature types with what the server sends (#1416) ([0636982](https://github.com/zextras/carbonio-mails-ui/commit/0636982)), closes [#1416](https://github.com/zextras/carbonio-mails-ui/issues/1416)
+* fix(CO-4592): keep the filter actions the editor does not show, and type filters as the server sends ([626a2fa](https://github.com/zextras/carbonio-mails-ui/commit/626a2fa)), closes [#1417](https://github.com/zextras/carbonio-mails-ui/issues/1417)
+* fix(CO-4648): show the name of a recipient without address in the expanded recipients (#1410) ([b313333](https://github.com/zextras/carbonio-mails-ui/commit/b313333)), closes [#1410](https://github.com/zextras/carbonio-mails-ui/issues/1410)
+
 ## <small>1.51.11 (2026-11-03)</small>
 
 * fix(CO-4589): type as optional the SOAP fields the server leaves out (#1408) ([dbd73ab](https://github.com/zextras/carbonio-mails-ui/commit/dbd73ab)), closes [#1408](https://github.com/zextras/carbonio-mails-ui/issues/1408)
