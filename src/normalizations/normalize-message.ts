@@ -413,7 +413,8 @@ const createBaseNormalizedMessage = (
 } => ({
 	rawFlags: m.f,
 	conversation: m.cid,
-	date: m.d,
+	// a message attached to another one has only the sent date
+	date: m.d ?? m.sd,
 	size: m.s,
 	parent: m.l,
 	replyType: m.rt,
