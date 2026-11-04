@@ -4,12 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { JSNS } from '@zextras/carbonio-shell-ui';
-import { ErrorSoapBodyResponse, legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { map, escape } from 'lodash';
 
 import { Signature } from 'types/settings';
 
 export type GetSignaturesRequest = {
+	_jsns: typeof JSNS.account;
+};
+
+/** The server leaves signature out when the account has none */
+export type GetSignaturesSoapResponse = {
+	signature?: Array<Signature>;
 	_jsns: typeof JSNS.account;
 };
 
@@ -19,17 +26,17 @@ export type GetSignaturesResponse = {
 };
 
 export async function GetSignaturesSoapApi(): Promise<GetSignaturesResponse> {
-	return legacySoapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
-		'GetSignatures',
-		{
-			_jsns: 'urn:zimbraAccount'
-		}
-	).then((resp) => {
-		if ('Fault' in resp) {
-			return Promise.reject(resp.Fault);
-		}
-		return resp;
+	const { Body } = await soapFetchV2<
+		GetSignaturesRequest,
+		{ GetSignaturesResponse: GetSignaturesSoapResponse }
+	>('GetSignatures', {
+		_jsns: 'urn:zimbraAccount'
 	});
+	if ('Fault' in Body) {
+		throw new GenericSoapApiError(Body.Fault);
+	}
+	const response = Body.GetSignaturesResponse;
+	return { ...response, signature: response.signature ?? [] };
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
