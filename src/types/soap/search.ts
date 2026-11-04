@@ -36,9 +36,17 @@ export type SearchConversationHit = Omit<SoapConversation, 'm'> & {
 	sf?: string;
 };
 
+// A message hit is a summary: never its parts, headers, message id or send date (ToXML.encodeMessageSummary)
+export type SearchMessageHit = Omit<SoapIncompleteMessage, 'mp' | '_attrs' | 'mid' | 'sd'> & {
+	/** Matched the query (fullConversation) */
+	cm?: boolean;
+	/** Sort field */
+	sf?: string;
+};
+
 export type SearchResponse = {
 	c?: SearchConversationHit[];
-	m?: SoapIncompleteMessage[];
+	m?: SearchMessageHit[];
 	more: boolean;
 	offset?: number;
 	sortBy?: SortBy;
