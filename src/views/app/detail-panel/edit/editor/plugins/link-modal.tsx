@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
 	$createLinkNode,
+	$isAutoLinkNode,
 	$isLinkNode,
 	$toggleLink,
 	formatUrl,
@@ -33,20 +34,19 @@ type LinkModalProps = {
 
 type LinkTarget = 'self' | 'blank';
 
-/** Updates an existing link node in place, replacing its text only when changed. */
 function $updateLinkNode(
 	node: LinkNode,
 	url: string,
 	attributes: LinkAttributes,
 	text: string
 ): void {
-	node.setURL(url);
-	node.setTarget(attributes.target ?? null);
-	node.setRel(attributes.rel ?? null);
-	node.setTitle(attributes.title ?? null);
-	if (text && text !== node.getTextContent()) {
-		node.getChildren().forEach((child) => child.remove());
-		node.append($createTextNode(text));
+	const linkNode = $isAutoLinkNode(node) ? node.replace($createLinkNode(url), true) : node;
+	linkNode.setURL(url);
+	linkNode.setTarget(attributes.target ?? null);
+	linkNode.setRel(attributes.rel ?? null);
+	linkNode.setTitle(attributes.title ?? null);
+	if (text && text !== linkNode.getTextContent()) {
+		linkNode.splice(0, linkNode.getChildrenSize(), [$createTextNode(text)]);
 	}
 }
 
@@ -99,7 +99,7 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 	const [url, setUrl] = useState('');
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
-	const [target, setTarget] = useState<LinkTarget>('self');
+	const [target, setTarget] = useState<LinkTarget>('blank');
 	// Key of the link node being edited (caret inside an existing link), if any.
 	const editLinkKey = useRef<string | null>(null);
 
@@ -116,7 +116,7 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 			let nextUrl = '';
 			let nextText = '';
 			let nextTitle = '';
-			let nextTarget: LinkTarget = 'self';
+			let nextTarget: LinkTarget = 'blank';
 
 			if ($isRangeSelection(selection)) {
 				const linkNode = $findMatchingParent(selection.anchor.getNode(), $isLinkNode);
@@ -140,8 +140,8 @@ export const LinkModal = ({ editor, open, onClose }: LinkModalProps): React.JSX.
 
 	const targetItems = useMemo<Array<SelectItem>>(
 		() => [
-			{ label: t('lexical-label.current_window', 'Current window'), value: 'self' },
-			{ label: t('lexical-label.new_window', 'New window'), value: 'blank' }
+			{ label: t('lexical-label.new_window', 'New window'), value: 'blank' },
+			{ label: t('lexical-label.current_window', 'Current window'), value: 'self' }
 		],
 		[]
 	);
