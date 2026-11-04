@@ -9,6 +9,7 @@ import { FolderState, TagState } from '@zextras/carbonio-ui-commons';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { IncompleteMessage } from 'types/messages';
+import { SearchMessageHit } from 'types/soap/search';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 
@@ -31,7 +32,25 @@ export type HandleTagsNotifyProps = {
 	store: UseBoundStore<StoreApi<TagState>>;
 };
 
-export type SoapPartialConversation = OptionalExcept<SoapConversation, 'id'>;
+// The items of a notification are summaries (ToXML.encodeItem with NOTIFY_FIELDS): a conversation never
+// carries its messages nor its fragment, a message is encoded as a Search message hit
+export type SoapNotifyConversation = Omit<SoapConversation, 'm' | 'fr'>;
+export type SoapNotifyMessage = SearchMessageHit;
+// a modified item carries only its id and what changed
+export type SoapPartialConversation = OptionalExcept<SoapNotifyConversation, 'id'>;
+export type SoapPartialNotifyMessage = OptionalExcept<SoapNotifyMessage, 'id'>;
+
+// SoapNotify with the conversations and messages the shell types as unknown
+export type MailsSoapNotify = Omit<SoapNotify, 'created' | 'modified'> & {
+	created?: Omit<NonNullable<SoapNotify['created']>, 'c' | 'm'> & {
+		c?: Array<SoapNotifyConversation>;
+		m?: Array<SoapNotifyMessage>;
+	};
+	modified?: Omit<NonNullable<SoapNotify['modified']>, 'c' | 'm'> & {
+		c?: Array<SoapPartialConversation>;
+		m?: Array<SoapPartialNotifyMessage>;
+	};
+};
 export type SoapPartialIncompleteMessage = OptionalExcept<SoapIncompleteMessage, 'id'>;
 export type PartialIncompleteMessage = OptionalExcept<IncompleteMessage, 'id'>;
 
