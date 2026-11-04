@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SoapFault } from '@zextras/carbonio-ui-soap-lib';
+
 import { MailVerificationHeader } from 'types/soap/soap';
 import { SoapMailMessage } from 'types/soap/soap-mail-message';
 import { ZimbraRequest } from 'types/soap/zimbra-request';
@@ -38,6 +40,8 @@ export type GetMsgForPrintParameter = {
 	ids: Array<string>;
 };
 
+// A BatchResponse: one GetMsgResponse per message read, one Fault per message that failed
 export type GetMsgForPrintResponse = {
-	GetMsgResponse: Array<GetMsgResponse>;
+	GetMsgResponse?: Array<GetMsgResponse>;
+	Fault?: Array<SoapFault>;
 };

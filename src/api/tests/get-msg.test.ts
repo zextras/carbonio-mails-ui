@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { HttpResponse } from 'msw';
+
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { GetMsgRequest } from 'types/soap/get-msg';
 
@@ -51,5 +57,17 @@ describe('GetMsg', () => {
 			expect(request.m.max).toBe(250000);
 			expect(request.m.read).toBe(1);
 		});
+	});
+
+	it('should resolve with the Fault when the server returns one', async () => {
+		const fault = buildSoapErrorResponseBody({
+			detailCode: 'mail.NO_SUCH_MSG',
+			reason: 'no such item: 123'
+		});
+		createAPIInterceptor('post', '/service/soap/GetMsgRequest', HttpResponse.json({ Body: fault }));
+
+		const result = await getMsgSoapApi({ msgId: '123', html: true });
+
+		expect(result).toEqual(fault);
 	});
 });

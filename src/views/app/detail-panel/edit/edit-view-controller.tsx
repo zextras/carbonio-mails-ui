@@ -199,7 +199,7 @@ const EditViewController = (): React.JSX.Element => {
 				getFullMessageEmailStoreAction(id, editAsHtml);
 			} else {
 				getMsgSoapApi({ msgId: id, html: editAsHtml }).then((response) => {
-					if (response?.m?.[0]) {
+					if (!('Fault' in response) && response.m?.[0]) {
 						setMessage(
 							normalizeMailMessageFromSoap({ m: response.m[0], html: editAsHtml, isComplete: true })
 						);
