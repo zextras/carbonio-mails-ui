@@ -6,13 +6,18 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
 
 import { ReadReceiptModal } from '../read-receipt-modal';
 import { setupTest } from '@test-setup';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
 
@@ -298,5 +303,40 @@ describe('ReadReceiptModal', () => {
 		expect(screen.getByText('A read receipt has been sent for this message')).toBeInTheDocument();
 
 		expect(onCloseMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not say the read receipt was sent when the server returns a Fault', async () => {
+		const api = createAPIInterceptor(
+			'post',
+			'/service/soap/SendDeliveryReportRequest',
+			HttpResponse.json({
+				Body: buildSoapErrorResponseBody({
+					detailCode: 'mail.NO_SUCH_MSG',
+					reason: 'no such message: 12345'
+				})
+			})
+		);
+		const { user } = setupTest(
+			<ReadReceiptModal
+				open
+				onClose={vi.fn()}
+				message={baseMessageWithReadReadReceiptRequested}
+				readReceiptSetting="ask"
+			/>
+		);
+
+		await user.click(await screen.findByText('Notify'));
+		await waitFor(() => expect(api.getCalledTimes()).toBe(1));
+		// let the response reach the component before checking that nothing was shown
+		await act(
+			() =>
+				new Promise((resolve) => {
+					setTimeout(resolve, 0);
+				})
+		);
+
+		expect(
+			screen.queryByText('A read receipt has been sent for this message')
+		).not.toBeInTheDocument();
 	});
 });

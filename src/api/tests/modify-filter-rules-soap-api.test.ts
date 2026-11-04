@@ -1,50 +1,51 @@
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
-import type { Mock } from 'vitest';
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { HttpResponse } from 'msw';
 
 import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import {
+	ModifyFilterRulesRequest,
 	modifyFilterRulesSoapApi,
 	modifyOutgoingFilterRulesSoapApi
 } from 'api/modify-filter-rules-soap-api';
+import type { Filter } from 'types/filters';
 
-vi.mock('@zextras/carbonio-ui-soap-lib', () => ({
-	legacySoapFetch: vi.fn()
-}));
+const rule: Filter = { name: 'rule1', active: true, filterTests: [], filterActions: [] };
 
-const mockResponse = { success: true };
+describe.each([
+	['ModifyFilterRules', modifyFilterRulesSoapApi],
+	['ModifyOutgoingFilterRules', modifyOutgoingFilterRulesSoapApi]
+] as const)('%s', (request, api) => {
+	it('sends the rules', async () => {
+		const interceptor = createSoapAPIInterceptor<ModifyFilterRulesRequest, { _jsns: string }>(
+			request,
+			{
+				_jsns: 'urn:zimbraMail'
+			}
+		);
 
-describe('modifyFilterRulesSoapApi', () => {
-	it('should call soapFetch with correct params', async () => {
-		(legacySoapFetch as Mock).mockResolvedValueOnce({ json: async () => mockResponse });
-		await modifyFilterRulesSoapApi([{ name: 'rule1' }]);
-		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyFilterRules', {
-			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
+		await expect(api([rule])).resolves.toBeUndefined();
+		await expect(interceptor).resolves.toEqual({
+			filterRules: [{ filterRule: [rule] }],
 			_jsns: 'urn:zimbraMail'
 		});
 	});
 
-	it('handles error during filter rule modification', async () => {
-		(legacySoapFetch as Mock).mockRejectedValueOnce(new Error('Error'));
-		await expect(modifyFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
-	});
-});
+	it('rejects when the server returns a fault', async () => {
+		createAPIInterceptor(
+			'post',
+			`/service/soap/${request}Request`,
+			HttpResponse.json({ Body: buildSoapErrorResponseBody() })
+		);
 
-describe('modifyOutgoingFilterRulesSoapApi', () => {
-	it('should call soapFetch with correct params', async () => {
-		(legacySoapFetch as Mock).mockResolvedValueOnce({ json: async () => mockResponse });
-		await modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }]);
-		expect(legacySoapFetch).toHaveBeenCalledWith('ModifyOutgoingFilterRules', {
-			filterRules: [{ filterRule: [{ name: 'rule1' }] }],
-			_jsns: 'urn:zimbraMail'
-		});
-	});
-
-	it('handles error during outgoing filter rule modification', async () => {
-		(legacySoapFetch as Mock).mockRejectedValueOnce(new Error('Error'));
-		await expect(modifyOutgoingFilterRulesSoapApi([{ name: 'rule1' }])).rejects.toThrow('Error');
+		await expect(api([rule])).rejects.toBeInstanceOf(GenericSoapApiError);
 	});
 });

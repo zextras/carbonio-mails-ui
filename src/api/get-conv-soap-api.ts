@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
@@ -23,16 +24,23 @@ export const getConvSoapApi = async ({
 	conversation: Array<NormalizedConversation>;
 	messages: Array<IncompleteMessage>;
 }> => {
-	const result = await legacySoapFetch<GetConvRequest, GetConvResponse>('GetConv', {
-		_jsns: 'urn:zimbraMail',
-		c: {
-			id: conversationId,
-			html,
-			needExp: 1,
-			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
-			fetch
+	const { Body } = await soapFetchV2<GetConvRequest, { GetConvResponse: GetConvResponse }>(
+		'GetConv',
+		{
+			_jsns: 'urn:zimbraMail',
+			c: {
+				id: conversationId,
+				html,
+				needExp: 1,
+				header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
+				fetch
+			}
 		}
-	});
+	);
+	if ('Fault' in Body) {
+		throw new GenericSoapApiError(Body.Fault);
+	}
+	const result = Body.GetConvResponse;
 
 	/*
 	 * A conversation has a negative id if contains only one message.

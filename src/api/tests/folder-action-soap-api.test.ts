@@ -8,6 +8,10 @@ import { SoapFolderAction } from '@zextras/carbonio-ui-commons';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import {
+	folderActionGrantResponse,
+	folderActionRenameResponse
+} from 'api/tests/fixtures/folder-action-responses';
 import { BatchRequest } from 'types/soap/soap';
 
 const RETENTION_POLICY = { purge: { policy: { lifetime: '7d', type: 'user' } } };
@@ -54,5 +58,38 @@ describe('folderActionSoapApi', () => {
 			{ id: folder.id, op: 'color', rgb: '#123456' },
 			{ id: folder.id, op: 'retentionpolicy', retentionPolicy: RETENTION_POLICY }
 		]);
+	});
+
+	it('returns the action the server applied', async () => {
+		createSoapAPIInterceptor('FolderAction', folderActionGrantResponse);
+
+		const result = await folderActionSoapApi({ folder: generateFolder(), op: 'grant' });
+
+		expect('action' in result && result.action).toEqual(folderActionGrantResponse.action);
+	});
+
+	it('returns one response per action when the actions are batched', async () => {
+		createSoapAPIInterceptor('Batch', {
+			FolderActionResponse: [
+				folderActionRenameResponse,
+				{
+					action: { id: folderActionRenameResponse.action.id, op: 'color' },
+					_jsns: 'urn:zimbraMail'
+				}
+			],
+			_jsns: 'urn:zimbra'
+		});
+
+		const result = await folderActionSoapApi({
+			folder: generateFolder(),
+			op: 'rename',
+			name: 'renamed',
+			rgb: '#123456'
+		});
+
+		expect(
+			'FolderActionResponse' in result &&
+				result.FolderActionResponse?.map(({ action }) => action.op)
+		).toEqual(['rename', 'color']);
 	});
 });

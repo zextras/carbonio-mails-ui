@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { map } from 'lodash';
 
 import { getMsgSoapApi } from 'api/get-msg-soap-api';
@@ -24,7 +25,7 @@ function handleGetMsgResponse(response: GetMsgResponse, html: boolean): void {
 
 async function handleRetrieveMessage(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>,
+	apiCall: (id: string) => Promise<GetMsgResponse | ErrorSoapBodyResponse>,
 	html: boolean
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);

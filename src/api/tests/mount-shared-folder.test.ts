@@ -16,7 +16,7 @@ import {
 	MountSharedFolderParams,
 	mountSharedFolderSoapApi
 } from 'api/mount-shared-folder-soap-api';
-import { ISoapFolderObj } from 'types/soap/soap';
+import { createMountpointResponse } from 'api/tests/fixtures/create-mountpoint-response';
 
 describe('mountShareCalendar', () => {
 	it('raise an error if the response is an error', async () => {
@@ -56,44 +56,21 @@ describe('mountShareCalendar', () => {
 		expect(link.color).toBeUndefined();
 	});
 
-	it('returns the link if the response is success ', async () => {
-		const link: ISoapFolderObj = {
-			activesyncdisabled: false,
-			cn: [],
-			color: '',
-			deletable: false,
-			i4ms: 0,
-			i4next: 0,
-			l: '',
-			luuid: '',
-			ms: 0,
-			n: 0,
-			rev: 0,
-			rgb: '',
-			s: 0,
-			webOfflineSyncDays: 0,
-			id: faker.string.numeric(),
-			uuid: faker.string.uuid(),
-			name: faker.word.noun(),
-			absFolderPath: `/${faker.word.noun()}`,
-			view: FOLDER_VIEW.message
-		};
+	it('returns the mounted link from the array the server sends', async () => {
+		createSoapAPIInterceptor<never, CreateMountpointResponse>(
+			'CreateMountpoint',
+			createMountpointResponse
+		);
 
-		const response: CreateMountpointResponse = {
-			link
-		};
-		createSoapAPIInterceptor<never, CreateMountpointResponse>('CreateMountpoint', response);
-
-		const params: MountSharedFolderParams = {
+		const result = await mountSharedFolderSoapApi({
 			zid: faker.string.uuid(),
-			view: link.view,
-			rid: faker.string.uuid(),
-			folderName: faker.word.noun(),
-			rgb: faker.color.rgb(),
+			view: FOLDER_VIEW.message,
+			rid: '257',
+			folderName: 'Mounted F',
+			rgb: '#FF0000',
 			accounts: [{ name: faker.word.noun() }]
-		};
+		});
 
-		const result = await mountSharedFolderSoapApi(params);
-		expect(result).toEqual(link);
+		expect(result).toEqual(createMountpointResponse.link[0]);
 	});
 });

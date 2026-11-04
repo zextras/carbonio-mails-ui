@@ -6,8 +6,9 @@
  */
 import React from 'react';
 
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
+import { noop } from 'lodash';
 
 import { setupTest } from '@test-setup';
 import { FilterRulesAPIResponse } from 'api/get-filters';
@@ -15,6 +16,9 @@ import { Filter } from 'types/filters';
 import { FilterManagerProps, getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 import { MessageFilterTab } from 'views/settings/filters/parts/message-filter-tab';
 import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
+
+const SAVE_ERROR = 'Something went wrong, please try again';
+const FILTER_NAME_LABEL = 'Filter Name*';
 
 describe('Message filters tab', () => {
 	it('should call getFilters only once', async () => {
@@ -68,11 +72,11 @@ describe('Message filters tab', () => {
 				FiltersManagerComponent={getFiltermanager(true)}
 			/>
 		);
-		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
+		expect(await screen.findByText(SAVE_ERROR)).toBeInTheDocument();
 	});
 
 	const FiltersManagerStub = ({ onFiltersSave }: FilterManagerProps): React.JSX.Element => (
-		<button type="button" onClick={(): Promise<void> => onFiltersSave([])}>
+		<button type="button" onClick={(): Promise<void> => onFiltersSave([]).catch(noop)}>
 			save filters
 		</button>
 	);
@@ -88,7 +92,7 @@ describe('Message filters tab', () => {
 			/>
 		);
 		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
-		await screen.findByText('Something went wrong, please try again');
+		await screen.findByText(SAVE_ERROR);
 
 		await user.click(screen.getByRole('button', { name: 'save filters' }));
 
@@ -145,7 +149,7 @@ describe('Message filters tab', () => {
 		makeAllItemsVisible();
 		expect(screen.getByTestId('modal')).toBeVisible();
 		const filterNameInput = screen.getByRole('textbox', {
-			name: 'Filter Name*'
+			name: FILTER_NAME_LABEL
 		});
 		await user.clear(filterNameInput);
 		await user.paste('Edited filter 1');
@@ -156,6 +160,43 @@ describe('Message filters tab', () => {
 		await user.click(saveButton);
 
 		expect(onSave).toHaveBeenCalledWith([{ ...filter1, name: 'Edited filter 1' }, ...otherFilters]);
+	});
+
+	describe('when the server rejects the save', () => {
+		it('shows the error and not the success of a modified filter', async () => {
+			const onSave = vi.fn().mockRejectedValue(new Error('fault'));
+			const user = setupTestWithFilters({ filters: [mockFilter({ name: 'Filter 1' })], onSave });
+
+			await user.click(await screen.findByText('Filter 1'));
+			await user.click(await screen.findByRole('button', { name: 'Edit' }));
+			makeAllItemsVisible();
+			const filterNameInput = screen.getByRole('textbox', { name: FILTER_NAME_LABEL });
+			await user.clear(filterNameInput);
+			await user.paste('Renamed filter');
+			await user.click(screen.getByRole('button', { name: 'Save' }));
+
+			expect(await screen.findByText(SAVE_ERROR)).toBeVisible();
+			expect(screen.queryByText('Filter modified succesfully')).not.toBeInTheDocument();
+		});
+
+		it('shows the error once and not the success of a deleted filter', async () => {
+			const onSave = vi.fn().mockRejectedValue(new Error('fault'));
+			const user = setupTestWithFilters({ filters: [mockFilter({ name: 'Filter 1' })], onSave });
+
+			await user.click(await screen.findByText('Filter 1'));
+			await user.click(await screen.findByRole('button', { name: 'Delete' }));
+			makeAllItemsVisible();
+			await user.click(within(screen.getByTestId('modal')).getByRole('button', { name: 'Delete' }));
+
+			expect(await screen.findByText(SAVE_ERROR)).toBeVisible();
+			// a second snackbar waits for the first one to hide: let the error time out
+			await act(async () => {
+				await vi.advanceTimersByTimeAsync(10000);
+			});
+			expect(screen.queryByText(SAVE_ERROR)).not.toBeInTheDocument();
+			expect(screen.queryByText('fault')).not.toBeInTheDocument();
+			expect(screen.queryByText('Filter successfully deleted')).not.toBeInTheDocument();
+		});
 	});
 
 	it('should call on save with existing filters and new created filter after creating a new filter', async () => {
@@ -172,7 +213,7 @@ describe('Message filters tab', () => {
 		const createModal = screen.getByTestId('modal');
 		expect(createModal).toBeVisible();
 		const filterNameInput = screen.getByRole('textbox', {
-			name: 'Filter Name*'
+			name: FILTER_NAME_LABEL
 		});
 		await user.clear(filterNameInput);
 		await user.paste('My new filter');
@@ -200,7 +241,7 @@ describe('Message filters tab', () => {
 		const createModal = screen.getByTestId('modal');
 		expect(createModal).toBeVisible();
 		const filterNameInput = screen.getByRole('textbox', {
-			name: 'Filter Name*'
+			name: FILTER_NAME_LABEL
 		});
 		await user.clear(filterNameInput);
 		await user.paste('My new filter');

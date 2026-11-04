@@ -5,8 +5,13 @@
  */
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { SearchConvRequest } from 'types/soap/search-conv';
 
@@ -66,5 +71,21 @@ describe('searchConvSoapApi', () => {
 
 		const req = await interceptor;
 		expect(req.read).toBeUndefined();
+	});
+
+	it('should resolve with the Fault when the server returns one', async () => {
+		const fault = buildSoapErrorResponseBody({
+			detailCode: 'mail.NO_SUCH_CONV',
+			reason: 'no such item: 123'
+		});
+		createAPIInterceptor(
+			'post',
+			'/service/soap/SearchConvRequest',
+			HttpResponse.json({ Body: fault })
+		);
+
+		const result = await searchConvSoapApi({ conversationId: '123', fetch: 'all', html: true });
+
+		expect(result).toEqual(fault);
 	});
 });

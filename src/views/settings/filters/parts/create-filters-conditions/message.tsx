@@ -16,14 +16,15 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
-import { getIsOptions, getMessageOptions } from 'views/settings/filters/parts/utils';
+import { firstRowTest, getIsOptions, getMessageOptions } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const MessageCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -92,9 +93,9 @@ const MessageCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 	);
 
 	const defaultIsOption = useMemo(() => {
-		if (defaultValue) {
-			const test = Object.keys(defaultValue)[0];
-			return defaultValue[test][0]?.negative ? isOptions[1] : isOptions[0];
+		const test = firstRowTest(defaultValue);
+		if (test) {
+			return test.negative ? isOptions[1] : isOptions[0];
 		}
 		return isOptions[0];
 	}, [defaultValue, isOptions]);
@@ -103,7 +104,9 @@ const MessageCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 			const test = Object.keys(defaultValue)[0];
 			switch (test) {
 				case 'conversationTest': {
-					return defaultValue[test][0]?.where === 'started' ? msgOptions[0] : msgOptions[1];
+					return defaultValue.conversationTest?.[0]?.where === 'started'
+						? msgOptions[0]
+						: msgOptions[1];
 				}
 				case 'bulkTest': {
 					return msgOptions[2];

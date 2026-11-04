@@ -24,8 +24,9 @@ describe('Mail preview', () => {
 
 	it('msg 10 - 3 inline images', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '10', html: true });
+		if ('Fault' in getMsgResponse) throw new Error(getMsgResponse.Fault.Reason.Text);
 		const message = normalizeMailMessageFromSoap({
-			m: getMsgResponse?.m[0],
+			m: getMsgResponse.m[0],
 			isComplete: true,
 			html: true
 		});
@@ -51,8 +52,9 @@ describe('Mail preview', () => {
 
 	it('msg 11 - table with a link', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '11', html: true });
+		if ('Fault' in getMsgResponse) throw new Error(getMsgResponse.Fault.Reason.Text);
 		const message = normalizeMailMessageFromSoap({
-			m: getMsgResponse?.m[0],
+			m: getMsgResponse.m[0],
 			isComplete: true,
 			html: true
 		});
@@ -73,8 +75,9 @@ describe('Mail preview', () => {
 
 	it('msg 12 - table with width greater than the previewer width', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '12', html: true });
+		if ('Fault' in getMsgResponse) throw new Error(getMsgResponse.Fault.Reason.Text);
 		const message = normalizeMailMessageFromSoap({
-			m: getMsgResponse?.m[0],
+			m: getMsgResponse.m[0],
 			isComplete: true,
 			html: true
 		});

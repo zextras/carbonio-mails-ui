@@ -3,20 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, omit } from 'lodash';
+import { map, mapValues, omit } from 'lodash';
 
-import { AllFiltersTest, FilterRules } from 'types/filters';
+import { AllFiltersTest, FilterRules, FilterTestLists } from 'types/filters';
 
-const normalizeFilterTests = (filterTests: AllFiltersTest): AllFiltersTest => {
-	const result: AllFiltersTest = { condition: filterTests.condition };
-	const keys = Object.keys(filterTests) as Array<keyof AllFiltersTest>;
-	keys.forEach((testKey) => {
-		if (testKey !== 'condition') {
-			result[testKey] = map(filterTests[testKey], (filterTest) => omit(filterTest, 'index'));
-		}
-	});
-	return result;
-};
+const normalizeFilterTests = ({ condition, ...tests }: AllFiltersTest): AllFiltersTest => ({
+	condition,
+	// mapValues keeps each kind with its own tests, which TypeScript can't follow key by key
+	...(mapValues(tests, (kindTests) =>
+		map(kindTests, (test) => omit(test, 'index'))
+	) as FilterTestLists)
+});
 
 export const normalizeFilterRulesFromSoap = (
 	filterRules: FilterRules

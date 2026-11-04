@@ -4,10 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { legacySoapFetch } from '@zextras/carbonio-ui-soap-lib';
+import { ErrorSoapBodyResponse, soapFetchV2 } from '@zextras/carbonio-ui-soap-lib';
 
-export const sendDeliveryReportSoapApi = async (messageId: string): Promise<any> =>
-	legacySoapFetch('SendDeliveryReport', {
+import {
+	SendDeliveryReportRequest,
+	SendDeliveryReportResponse
+} from 'types/soap/send-delivery-report';
+
+export const sendDeliveryReportSoapApi = async (
+	messageId: string
+): Promise<SendDeliveryReportResponse | ErrorSoapBodyResponse> => {
+	const { Body } = await soapFetchV2<
+		SendDeliveryReportRequest,
+		{ SendDeliveryReportResponse: SendDeliveryReportResponse }
+	>('SendDeliveryReport', {
 		mid: messageId,
 		_jsns: 'urn:zimbraMail'
 	});
+	return 'Fault' in Body ? Body : Body.SendDeliveryReportResponse;
+};

@@ -16,6 +16,7 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getInviteRspOptions } from 'views/settings/filters/parts/utils';
@@ -23,7 +24,7 @@ import { getInviteRspOptions } from 'views/settings/filters/parts/utils';
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const CalendarCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -62,11 +63,12 @@ const CalendarCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue })
 	);
 
 	const defaultOption = useMemo(() => {
-		if (defaultValue) {
-			if (defaultValue.inviteTest[0].method[0]._content === 'anyrequest') {
-				return defaultValue.inviteTest[0].negative ? inviteRspOptions[1] : inviteRspOptions[0];
+		const inviteTest = defaultValue?.inviteTest?.[0];
+		if (inviteTest) {
+			if (inviteTest.method?.[0]?._content === 'anyrequest') {
+				return inviteTest.negative ? inviteRspOptions[1] : inviteRspOptions[0];
 			}
-			return defaultValue.inviteTest[0].negative ? inviteRspOptions[3] : inviteRspOptions[2];
+			return inviteTest.negative ? inviteRspOptions[3] : inviteRspOptions[2];
 		}
 		return inviteRspOptions[2];
 	}, [defaultValue, inviteRspOptions]);

@@ -17,6 +17,7 @@ import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { includes } from 'lodash';
 
+import type { FilterTestLists } from 'types/filters';
 import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
 import CustomSelect from 'views/settings/filters/parts/custom-select';
 import { getSizeOptions, getSizeUnit, findDefaultValue } from 'views/settings/filters/parts/utils';
@@ -24,7 +25,7 @@ import { getSizeOptions, getSizeUnit, findDefaultValue } from 'views/settings/fi
 type ComponentProps = {
 	t: TFunction;
 	activeIndex: number;
-	defaultValue?: any;
+	defaultValue?: FilterTestLists;
 };
 
 const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): ReactElement => {
@@ -82,7 +83,7 @@ const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 	);
 	const defaultSizeUnitOption = useMemo(() => {
 		if (defaultValue) {
-			const sizeArray = defaultValue?.sizeTest?.[0]?.s?.split('');
+			const sizeArray = (defaultValue?.sizeTest?.[0]?.s ?? '').split('');
 			const unit = sizeArray.pop();
 			if (includes(['M', 'G', 'K'], unit)) {
 				return findDefaultValue(sizeUnitsOptions, unit);
@@ -94,11 +95,11 @@ const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 
 	useEffect(() => {
 		if (defaultValue && defaultValue?.sizeTest) {
-			const sizeArray = defaultValue?.sizeTest?.[0]?.s?.split('');
+			const sizeArray = (defaultValue?.sizeTest?.[0]?.s ?? '').split('');
 			const unit = sizeArray.pop();
 			if (includes(['M', 'G', 'K'], unit)) {
 				setSize(sizeArray.join(''));
-			} else setSize(defaultValue?.sizeTest?.[0]?.s);
+			} else setSize(defaultValue?.sizeTest?.[0]?.s ?? '');
 		}
 	}, [defaultValue]);
 	return (
