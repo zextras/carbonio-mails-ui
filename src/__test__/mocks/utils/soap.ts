@@ -6,6 +6,8 @@
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse, SuccessSoapResponse } from '@zextras/carbonio-shell-ui';
 
+import { SoapSendMsgFault } from 'types/soap/send-msg';
+
 export const buildSoapResponse = <T>(responseData: Record<string, T>): SuccessSoapResponse<T> => ({
 	Header: {
 		context: {}
@@ -32,3 +34,20 @@ export const buildSoapErrorResponseBody = ({
 		}
 	}
 });
+
+// a SendMsg Fault with its arguments, e.g. the addresses the server refused
+export const buildSendMsgFaultBody = ({
+	detailCode,
+	args = []
+}: {
+	detailCode?: string;
+	args?: Array<{ n: string; _content: string }>;
+} = {}): SoapSendMsgFault => {
+	const { Fault } = buildSoapErrorResponseBody({ detailCode });
+	return {
+		Fault: {
+			...Fault,
+			Detail: { Error: { ...Fault.Detail.Error, a: args.map((arg) => ({ ...arg, t: 'STR' })) } }
+		}
+	};
+};

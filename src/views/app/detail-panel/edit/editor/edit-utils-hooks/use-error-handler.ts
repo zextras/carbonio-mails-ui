@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { TIMEOUTS } from 'constants/index';
-import { SaveDraftResponse } from 'types/soap/save-draft';
+import { SoapSendMsgFault } from 'types/soap/send-msg';
 
 const SEND_ABORTED_ADDRESS_FAILURE = 'mail.SEND_ABORTED_ADDRESS_FAILURE';
 const SEND_TO_DISTRIBUTION_LIST_DENIED = 'mail.SEND_TO_DISTRIBUTION_LIST_DENIED';
 
-type SendError = SaveDraftResponse | ErrorSoapBodyResponse;
+type SendError = SoapSendMsgFault;
 
 function getErrorCode(error: SendError): string | undefined {
 	return error?.Fault?.Detail?.Error?.Code;
