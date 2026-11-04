@@ -6,7 +6,7 @@
 import type { GetMsgResponse } from 'types/soap/get-msg';
 
 // GetMsg of a message without Subject header and with an empty body: no su nor fr; recipients
-// without display name have no p (captured with carbonio-mcp-dev capture_fixture)
+// without display name have no p (a real response from the test server)
 export const getMsgNoSubjectEmptyBodyResponse = {
 	m: [
 		{

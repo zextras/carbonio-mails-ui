@@ -5,8 +5,8 @@
  */
 import type { GetSignaturesSoapResponse } from 'api/get-signatures-soap-api';
 
-// GetSignatures of an account without signatures: the server leaves signature out (captured with
-// carbonio-mcp-dev)
+// GetSignatures of an account without signatures: the server leaves signature out (a real response
+// from the test server)
 export const getSignaturesEmptyResponse = {
 	_jsns: 'urn:zimbraAccount'
 } satisfies GetSignaturesSoapResponse;

@@ -6,7 +6,7 @@
 import type { GetMsgResponse } from 'types/soap/get-msg';
 
 // GetMsg of a message whose sender has an empty address (From: "Mail Delivery System" <>, as in some
-// bounces): its participant has no a (captured with carbonio-mcp-dev capture_fixture)
+// bounces): its participant has no a (a real response from the test server)
 export const getMsgSenderWithoutAddressResponse = {
 	m: [
 		{
