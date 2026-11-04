@@ -14,7 +14,11 @@ import type { Mock } from 'vitest';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI,
+	toSearchConversationHit
+} from '__test__/generators/api';
 import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
@@ -57,7 +61,7 @@ describe('conversation-list-data-sync', () => {
 			m: [originalMessage]
 		});
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [singleMessageConversation],
+			c: [singleMessageConversation].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -114,8 +118,12 @@ describe('conversation-list-data-sync', () => {
 		});
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [
-				generateConversationFromAPI({ id: '51', d: newerMessage.d, m: [newerMessage] }),
-				generateConversationFromAPI({ id: '-3', d: originalMessage.d, m: [originalMessage] })
+				toSearchConversationHit(
+					generateConversationFromAPI({ id: '51', d: newerMessage.d, m: [newerMessage] })
+				),
+				toSearchConversationHit(
+					generateConversationFromAPI({ id: '-3', d: originalMessage.d, m: [originalMessage] })
+				)
 			],
 			more: false
 		});

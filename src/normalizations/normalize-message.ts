@@ -26,11 +26,7 @@ import {
 	MailMessagePart
 } from 'types/messages';
 import { Participant } from 'types/participant';
-import {
-	SoapIncompleteMessage,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from 'types/soap/soap-mail-message';
+import { SoapMailMessage, SoapMailMessagePart } from 'types/soap/soap-mail-message';
 import { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 import {
 	PartialIncompleteMessage,
@@ -459,7 +455,8 @@ export const normalizeMailMessageFromSoap = ({
 	html,
 	isComplete
 }: {
-	m: SoapIncompleteMessage;
+	// the fields the server leaves out are left out of the result too
+	m: SoapPartialIncompleteMessage;
 	html: boolean;
 	isComplete?: boolean;
 }): IncompleteMessage => {
@@ -486,7 +483,7 @@ export const normalizeMailMessageFromSoap = ({
 		isScheduled: !!m.autoSendTime,
 		...getFlags(m),
 		isReadReceiptRequested: m.e
-			? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+			? haveReadReceipt(m.e, m.f, m.l ?? '') && !isNil(isComplete) && isComplete
 			: undefined,
 		...normalizedMailHeaders
 	});

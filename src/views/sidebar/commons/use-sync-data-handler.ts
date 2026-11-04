@@ -37,6 +37,7 @@ import {
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
 import { IncompleteMessage } from 'types/messages';
+import { SearchConversationHit } from 'types/soap/search';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import {
@@ -47,18 +48,26 @@ import {
 } from 'views/sidebar/commons/types';
 
 export function extractConvMessage(
-	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
+	conversations: Array<SearchConversationHit>
 ): Array<IncompleteMessage> {
-	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
-		normalizeMailMessageFromSoap({
-			// the conversation hits of SearchResponse carry d and s as strings
-			m: {
-				...message,
-				...(isNil(message.d) ? {} : { d: Number(message.d) }),
-				...(isNil(message.s) ? {} : { s: Number(message.s) })
-			},
-			html: true
-		})
+	return flatten(
+		conversations.map((conversation) =>
+			(conversation.m ?? []).map((hit) =>
+				normalizeMailMessageFromSoap({
+					m: {
+						id: hit.id,
+						l: hit.l,
+						f: hit.f,
+						// the hit does not repeat the id of its conversation
+						cid: conversation.id,
+						d: Number(hit.d),
+						...(isNil(hit.s) ? {} : { s: Number(hit.s) }),
+						...(isNil(hit.autoSendTime) ? {} : { autoSendTime: Number(hit.autoSendTime) })
+					},
+					html: true
+				})
+			)
+		)
 	);
 }
 
@@ -128,10 +137,8 @@ function processModifiedNotifications(notify: SoapNotify): void {
 	const modifiedConversations = notify.modified?.c as Array<SoapPartialConversation>;
 	if (modifiedConversations) {
 		const updatedConversations = normalizePartialConversations(modifiedConversations);
+		// a conversation of a notification never carries its messages (ToXML.encodeItem passes no msgs)
 		handleNotifyConversationsModified(updatedConversations);
-
-		const convMessages = extractConvMessage(modifiedConversations);
-		updateMessages(convMessages);
 	}
 
 	const modifiedMessages = notify.modified?.m as Array<SoapPartialIncompleteMessage>;

@@ -13,7 +13,8 @@ import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import { OptionalExcept, SoapPartialConversation } from 'views/sidebar/commons/types';
 
 export type NormalizeConversationProps = {
-	conversation: SoapConversation;
+	// only the ids of its messages are read: GetConv sends them whole, Search as hits
+	conversation: Omit<SoapConversation, 'm'> & { m?: Array<{ readonly id: string }> };
 	messages?: Array<SoapIncompleteMessage>;
 };
 
@@ -48,7 +49,7 @@ export const mapToNormalizedConversation = ({
 };
 
 export const normalizeConversations = (
-	soapConversations: Array<SoapConversation>
+	soapConversations: Array<NormalizeConversationProps['conversation']>
 ): Array<NormalizedConversation> =>
 	map(soapConversations, (conv) => mapToNormalizedConversation({ conversation: conv }));
 
