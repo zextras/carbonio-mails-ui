@@ -407,9 +407,10 @@ const createSoapMessageRequestFromEditor = (
 		participants.push({ address: replyToAddress, type: ParticipantRole.REPLY_TO });
 	}
 
-	// The server requires an address on every participant. A recipient without address (e.g. the
+	// The server requires an address on every participant. A participant without address (e.g. the
 	// sender of a bounce, `"Name" <>`) is saved in the draft with an empty one, so the draft is not
-	// rejected and the invalid chip comes back when it is reopened. Sending it stays refused.
+	// rejected and the invalid chip comes back when it is reopened. SendMsg keeps it undefined, so
+	// the server still refuses to send it.
 	const soapParticipants = map(participants, (participant) => ({
 		t: participant.type,
 		a: command === 'savedraft' ? (participant.address ?? '') : participant.address,

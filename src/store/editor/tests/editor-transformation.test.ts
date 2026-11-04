@@ -366,13 +366,13 @@ describe('editor-transformations', () => {
 			};
 		};
 
-		it('saves the draft with an empty address, so the server accepts it and keeps the recipient', () => {
+		it('should save the draft with an empty address, so the server accepts it and keeps the recipient', () => {
 			const { e } = createSoapDraftRequestFromEditor(replyToTheBounce());
 
 			expect(e).toContainEqual({ t: ParticipantRole.TO, a: '', p: 'Mail Delivery System' });
 		});
 
-		it('keeps the address of the other recipients when saving the draft', () => {
+		it('should keep the address of the other recipients when saving the draft', () => {
 			const { e } = createSoapDraftRequestFromEditor(replyToTheBounce());
 
 			expect(e).toContainEqual({
@@ -382,7 +382,7 @@ describe('editor-transformations', () => {
 			});
 		});
 
-		it('does not invent an address when sending', () => {
+		it('should not invent an address when sending', () => {
 			const { e } = createSoapSendMsgRequestFromEditor(replyToTheBounce());
 
 			expect(e).toContainEqual({ t: ParticipantRole.TO, a: undefined, p: 'Mail Delivery System' });
