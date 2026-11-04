@@ -63,7 +63,7 @@ describe('Searches store hooks', () => {
 				m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
 				more: false,
 				offset: '',
-				orderBy: ''
+				sortBy: 'dateDesc'
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
@@ -90,7 +90,7 @@ describe('Searches store hooks', () => {
 				m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
 				more: false,
 				offset: '',
-				orderBy: ''
+				sortBy: 'dateDesc'
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
@@ -116,7 +116,7 @@ describe('Searches store hooks', () => {
 				m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
 				more: false,
 				offset: '',
-				orderBy: ''
+				sortBy: 'dateDesc'
 			};
 
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);

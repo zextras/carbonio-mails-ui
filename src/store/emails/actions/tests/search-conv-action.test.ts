@@ -6,6 +6,7 @@ import type { Mock } from 'vitest';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
+import { searchConvResponse } from 'api/tests/fixtures/search-conv-response';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
@@ -161,6 +162,23 @@ describe('searchConvEmailStoreAction', () => {
 		expect(getMessageById).not.toHaveBeenCalled();
 		expect(updateMessages).toHaveBeenCalledWith([
 			expect.objectContaining({ id: '3', sensitivity: 'Personal' })
+		]);
+	});
+
+	it('looks up the stored headers only for the messages the server sends without them', async () => {
+		// a real SearchConv: the reply in Sent (263) is outside the query and has no _attrs
+		(searchConvSoapApi as Mock).mockResolvedValueOnce(searchConvResponse);
+		(normalizeCompleteMailMessageFromSoap as Mock).mockImplementation((msg: { id: string }) => ({
+			id: msg.id
+		}));
+		(getConversationById as Mock).mockReturnValueOnce({ id: '259' });
+
+		await searchConvEmailStoreAction({ conversationId: '259', html: true });
+
+		expect(getMessageById).toHaveBeenCalledTimes(1);
+		expect(getMessageById).toHaveBeenCalledWith('263');
+		expect(updateConversations).toHaveBeenCalledWith([
+			expect.objectContaining({ id: '259', messageIds: ['263', '260'] })
 		]);
 	});
 });

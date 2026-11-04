@@ -347,7 +347,7 @@ describe.skip('SearchView', () => {
 				m: [message1, message2],
 				more: false,
 				offset: '0',
-				orderBy: 'dateDesc'
+				sortBy: 'dateDesc'
 			});
 			const mockUseQuery = vi.fn();
 			mockUseQuery.mockReturnValue([[queryChip], noop]);

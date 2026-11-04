@@ -29,8 +29,8 @@ export const stubSearchConversation = ({
 	createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
 		m: conversation.m ?? [],
 		more: false,
-		offset: '',
-		orderBy: ''
+		offset: '0',
+		sortBy: 'dateDesc'
 	});
 
 export const stubGetConversation = ({
