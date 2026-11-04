@@ -7,7 +7,7 @@ import type { MailsSoapNotify } from 'views/sidebar/commons/types';
 
 // The notification of a reply sent from conversation 259: the copy in Sent (263) is created with its
 // cid, the conversation is modified without its messages, and the replied message gets the r flag
-// (captured with carbonio-mcp-dev get_notifications, the folders left out)
+// (a real notification from the test server, the folders left out)
 export const notifyReplySent = {
 	seq: 6,
 	created: {

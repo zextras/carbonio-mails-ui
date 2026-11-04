@@ -7,7 +7,7 @@ import type { GetAttachedMsgResponse } from 'types/soap/get-msg';
 
 // GetMsg of the .eml attached as part 2 of message 262: the message is not an item of the mailbox,
 // so it has no cid, l, d nor f, and its date is only the sent date sd; id is the one of the message
-// that contains it (ToXML.encodeMessageAsMP with a part, captured with carbonio-mcp-dev)
+// that contains it (ToXML.encodeMessageAsMP with a part, a real response from the test server)
 export const getMsgAttachedEmlResponse = {
 	m: [
 		{

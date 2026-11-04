@@ -7,7 +7,8 @@ import type { SearchResponse } from 'types/soap/search';
 
 // Search of the Inbox by conversation, as the conversation list sends it (recip 2, fullConversation 1).
 // The messages of a hit carry only id, folder, flags and date, with d and s as strings, s only in a
-// conversation of one message and f only when set (SearchResponse.doConvMsgHit, captured with carbonio-mcp-dev)
+// conversation of one message and f only when set (SearchResponse.doConvMsgHit, a real response
+// from the test server)
 export const searchConversationsResponse = {
 	sortBy: 'dateDesc',
 	offset: 0,

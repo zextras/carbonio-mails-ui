@@ -6,7 +6,8 @@
 import type { SearchMessageHit, SearchResponse } from 'types/soap/search';
 
 // Search of the Inbox by message, as the message list sends it (recip 2, fullConversation 1): summaries
-// without parts, headers, message id or send date (ToXML.encodeMessageSummary, captured with carbonio-mcp-dev)
+// without parts, headers, message id or send date (ToXML.encodeMessageSummary, a real response
+// from the test server)
 export const searchMessagesResponse = {
 	sortBy: 'dateDesc',
 	offset: 0,

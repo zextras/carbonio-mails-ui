@@ -6,8 +6,8 @@
 import type { SearchConvResponse } from 'types/soap/search-conv';
 
 // SearchConv of a conversation (two of its four messages), as the conversation preview sends it: the server
-// answers with sortBy (never orderBy) and offset as a string (captured with carbonio-mcp-dev; the
-// fields no type declares are left out)
+// answers with sortBy (never orderBy) and offset as a string (a real response from the test
+// server; the fields no type declares are left out)
 export const searchConvResponse = {
 	offset: '0',
 	sortBy: 'dateDesc',
@@ -41,11 +41,11 @@ export const searchConvResponse = {
 			id: '260',
 			fr: 'third',
 			su: 'Re: Thread CO-4590',
-			mid: '<4cdecc68-9add-4d1b-972c-7126ef985c5b@carbonio-mcp-dev>',
+			mid: '<4cdecc68-9add-4d1b-972c-7126ef985c5b@example.com>',
 			sd: 1793780400000,
 			_attrs: {
 				From: 'user2@example.com',
-				'Message-Id': '<4cdecc68-9add-4d1b-972c-7126ef985c5b@carbonio-mcp-dev>',
+				'Message-Id': '<4cdecc68-9add-4d1b-972c-7126ef985c5b@example.com>',
 				Date: 'Wed, 04 Nov 2026 08:20:00 GMT'
 			},
 			e: [
