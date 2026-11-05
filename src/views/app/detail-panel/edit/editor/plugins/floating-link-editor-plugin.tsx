@@ -6,12 +6,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { $isLinkNode } from '@lexical/link';
+import { $isAutoLinkNode, $isLinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $findMatchingParent } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNearestNodeFromDOMNode, $getNodeByKey } from 'lexical';
+import { $getNearestNodeFromDOMNode, $getNodeByKey, type LexicalEditor } from 'lexical';
 import { createPortal } from 'react-dom';
 
 import { LinkModal } from './link-modal';
@@ -19,6 +19,8 @@ import { LinkModal } from './link-modal';
 type LinkInfo = {
 	url: string;
 	key: string;
+	// The link was removed from an auto-detected URL: only "Restore link" is offered.
+	unlinked: boolean;
 	top: number;
 	left: number;
 };
@@ -53,8 +55,26 @@ const UrlLink = styled(Link)`
 	white-space: nowrap;
 `;
 
-const findLinkElement = (target: EventTarget | null): HTMLElement | null =>
-	target instanceof HTMLElement ? target.closest('a') : null;
+/**
+ * Returns the element of the link under `target`: the enclosing `<a>`, or the
+ * `<span>` an auto-link is rendered as once its link was removed, resolved through
+ * the Lexical node behind the target since it carries no distinctive markup.
+ */
+const findLinkElement = (editor: LexicalEditor, target: EventTarget | null): HTMLElement | null => {
+	if (!(target instanceof HTMLElement)) {
+		return null;
+	}
+	return (
+		target.closest('a') ??
+		editor.read(() => {
+			const node = $getNearestNodeFromDOMNode(target);
+			const autoLinkNode = node && $findMatchingParent(node, $isAutoLinkNode);
+			return $isAutoLinkNode(autoLinkNode) && autoLinkNode.getIsUnlinked()
+				? editor.getElementByKey(autoLinkNode.getKey())
+				: null;
+		})
+	);
+};
 
 /**
  * Floating editor for links, mirroring the Lexical playground affordance. The
@@ -77,6 +97,8 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 	const pinnedRef = useRef(false);
 	const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const cardRef = useRef<HTMLDivElement | null>(null);
+	// Element the card is shown for: a removed auto-link is a `<span>`, not matched by `a:hover`.
+	const anchorRef = useRef<HTMLElement | null>(null);
 
 	const clearHide = useCallback((): void => {
 		if (hideTimer.current !== null) {
@@ -92,6 +114,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		try {
 			return (
 				cardRef.current?.matches(':hover') === true ||
+				anchorRef.current?.matches(':hover') === true ||
 				editor.getRootElement()?.querySelector('a:hover') != null
 			);
 		} catch {
@@ -139,11 +162,13 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				if (!$isLinkNode(linkNode)) {
 					return;
 				}
+				anchorRef.current = anchor;
 				const rect = anchor.getBoundingClientRect();
 				const innerRect = innerElement.getBoundingClientRect();
 				setLinkInfo({
 					url: linkNode.getURL(),
 					key: linkNode.getKey(),
+					unlinked: $isAutoLinkNode(linkNode) && linkNode.getIsUnlinked(),
 					top: rect.bottom - innerRect.top + 4,
 					left: rect.left - innerRect.left
 				});
@@ -154,7 +179,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 
 	const onMouseOver = useCallback(
 		(event: MouseEvent): void => {
-			const anchor = findLinkElement(event.target);
+			const anchor = findLinkElement(editor, event.target);
 			if (anchor) {
 				clearHide();
 				showForElement(anchor);
@@ -162,12 +187,12 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				scheduleHide();
 			}
 		},
-		[clearHide, scheduleHide, showForElement]
+		[clearHide, editor, scheduleHide, showForElement]
 	);
 
 	const onMouseDown = useCallback(
 		(event: MouseEvent): void => {
-			const anchor = findLinkElement(event.target);
+			const anchor = findLinkElement(editor, event.target);
 			if (anchor) {
 				pinnedRef.current = true;
 				clearHide();
@@ -179,7 +204,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				setLinkInfo(null);
 			}
 		},
-		[clearHide, showForElement]
+		[clearHide, editor, showForElement]
 	);
 
 	const onMouseLeave = useCallback((): void => {
@@ -209,6 +234,8 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		setLinkInfo(null);
 	}, [clearHide]);
 
+	// Selects the link so the modal opens in edit mode (pre-filled from the node).
+	// The update is discrete so the selection is committed before the modal reads it.
 	const openEdit = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
@@ -226,15 +253,35 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 	}, [editor, linkInfo]);
 
 	// Unwraps the link by moving its children out and removing the now-empty node,
-	// preserving the text and any inline formatting it carried.
+	// preserving the text and any inline formatting it carried. An auto-detected
+	// link is flagged as unlinked instead: once unwrapped, the auto-link plugin
+	// would immediately turn its URL-like text into a link again.
 	const removeLink = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
 			editor.update(() => {
 				const node = $getNodeByKey(key);
-				if ($isLinkNode(node)) {
+				if ($isAutoLinkNode(node)) {
+					node.setIsUnlinked(true);
+				} else if ($isLinkNode(node)) {
 					node.getChildren().forEach((child) => node.insertBefore(child));
 					node.remove();
+				}
+			});
+		}
+		dismiss();
+	}, [dismiss, editor, linkInfo]);
+
+	// Turns a removed auto-link back into a link. Its text is marked dirty so the
+	// auto-link plugin validates the node again and derives the URL from the text.
+	const restoreLink = useCallback((): void => {
+		const key = linkInfo?.key;
+		if (key !== undefined) {
+			editor.update(() => {
+				const node = $getNodeByKey(key);
+				if ($isAutoLinkNode(node)) {
+					node.setIsUnlinked(false);
+					node.getFirstChild()?.markDirty();
 				}
 			});
 		}
@@ -262,25 +309,38 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 						// Keep the editor selection while interacting with the card.
 						onMouseDown={(event: React.MouseEvent): void => event.preventDefault()}
 					>
-						<UrlLink href={linkInfo.url} target="_blank" rel="noopener noreferrer" size="small">
-							{linkInfo.url}
-						</UrlLink>
-						<Button
-							icon="Edit2Outline"
-							type="ghost"
-							size="small"
-							color="text"
-							aria-label={t('lexical-label.edit_link', 'Edit link')}
-							onClick={openEdit}
-						/>
-						<Button
-							icon="Trash2Outline"
-							type="ghost"
-							size="small"
-							color="text"
-							aria-label={t('lexical-label.remove_link', 'Remove link')}
-							onClick={removeLink}
-						/>
+						{linkInfo.unlinked ? (
+							<Button
+								icon="Link2Outline"
+								type="ghost"
+								size="small"
+								color="text"
+								aria-label={t('lexical-label.restore_link', 'Restore link')}
+								onClick={restoreLink}
+							/>
+						) : (
+							<>
+								<UrlLink href={linkInfo.url} target="_blank" rel="noopener noreferrer" size="small">
+									{linkInfo.url}
+								</UrlLink>
+								<Button
+									icon="Edit2Outline"
+									type="ghost"
+									size="small"
+									color="text"
+									aria-label={t('lexical-label.edit_link', 'Edit link')}
+									onClick={openEdit}
+								/>
+								<Button
+									icon="Trash2Outline"
+									type="ghost"
+									size="small"
+									color="text"
+									aria-label={t('lexical-label.remove_link', 'Remove link')}
+									onClick={removeLink}
+								/>
+							</>
+						)}
 					</FloatingLinkCard>,
 					innerElement
 				)}
