@@ -209,16 +209,18 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		setLinkInfo(null);
 	}, [clearHide]);
 
-	// Selects the link so the modal opens in edit mode (pre-filled from the node).
 	const openEdit = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
-			editor.update(() => {
-				const node = $getNodeByKey(key);
-				if ($isLinkNode(node)) {
-					node.selectStart();
-				}
-			});
+			editor.update(
+				() => {
+					const node = $getNodeByKey(key);
+					if ($isLinkNode(node)) {
+						node.selectStart();
+					}
+				},
+				{ discrete: true }
+			);
 		}
 		setEditOpen(true);
 	}, [editor, linkInfo]);

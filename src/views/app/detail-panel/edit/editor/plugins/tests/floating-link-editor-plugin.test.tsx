@@ -18,6 +18,29 @@ const LINK_TEXT = 'lexical';
 const EDITOR_TESTID = 'edit-view-editor';
 const EDIT_LINK_LABEL = 'lexical-label.edit_link';
 const REMOVE_LINK_LABEL = 'lexical-label.remove_link';
+const TEXT_TO_DISPLAY_LABEL = 'lexical-label.text_to_display';
+const NEW_LINK_TEXT = 'test';
+
+// jsdom's `Range` doesn't implement `getBoundingClientRect`, which Lexical's
+// reconciler calls (to scroll the caret into view) whenever a collapsed
+// selection commits while the editor root has focus — a path only exercised
+// by tests that actually type into the editor while it's focused.
+beforeAll(() => {
+	if (typeof Range.prototype.getBoundingClientRect !== 'function') {
+		Range.prototype.getBoundingClientRect = (): DOMRect =>
+			({
+				bottom: 0,
+				height: 0,
+				left: 0,
+				right: 0,
+				top: 0,
+				width: 0,
+				x: 0,
+				y: 0,
+				toJSON: () => ({})
+			}) as DOMRect;
+	}
+});
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -25,9 +48,12 @@ function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
 }
 
-function setupEditor(richText: string): { editorId: string; user: TestUser } {
+/** Renders the editor on the given content, or on the default new message body when omitted. */
+function setupEditor(richText?: string): { editorId: string; user: TestUser } {
 	const editor = generateNewMessageEditor();
-	editor.text = { plainText: LINK_TEXT, richText };
+	if (richText !== undefined) {
+		editor.text = { plainText: LINK_TEXT, richText };
+	}
 	setupEditorStore({ editors: [editor] });
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 	return { editorId: editor.id, user };
@@ -43,6 +69,25 @@ async function setupWithLink(): Promise<{
 	const editorElement = screen.getByTestId(EDITOR_TESTID);
 	const link = await within(editorElement).findByText(LINK_TEXT);
 	return { editorId, user, link };
+}
+
+/** Opens the edit modal from the floating card, replaces the text to display and saves. */
+async function editLinkText(user: TestUser, link: HTMLElement, text: string): Promise<void> {
+	await user.click(link);
+	await user.click(await screen.findByRole('button', { name: EDIT_LINK_LABEL }));
+	const textInput = await screen.findByRole('textbox', { name: TEXT_TO_DISPLAY_LABEL });
+	await user.clear(textInput);
+	await user.type(textInput, text);
+	await user.click(screen.getByRole('button', { name: 'label.save' }));
+}
+
+/** Parses the exported rich text and returns its links as href/text pairs. */
+function linksOf(editorId: string): Array<{ href: string | null; text: string | null }> {
+	const doc = new DOMParser().parseFromString(richTextOf(editorId), 'text/html');
+	return Array.from(doc.querySelectorAll('a')).map((anchor) => ({
+		href: anchor.getAttribute('href'),
+		text: anchor.textContent
+	}));
 }
 
 describe('FloatingLinkEditorPlugin', () => {
@@ -127,5 +172,43 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(screen.getByRole('textbox', { name: 'lexical-label.text_to_display' })).toHaveValue(
 			LINK_TEXT
 		);
+	});
+
+	it('keeps the link with its URL when the text to display is changed', async () => {
+		const { editorId, user, link } = await setupWithLink();
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+	});
+
+	it('keeps an auto-created link with its URL when the text to display is changed', async () => {
+		const { editorId, user } = setupEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(editorElement);
+		await user.type(editorElement, `${LINK_URL} `);
+		const link = await within(editorElement).findByRole('link', { name: LINK_URL });
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+	});
+
+	it('opens the edit modal of an auto-created link with the new window option selected', async () => {
+		const { user } = setupEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(editorElement);
+		await user.type(editorElement, `${LINK_URL} `);
+		const link = await within(editorElement).findByRole('link', { name: LINK_URL });
+
+		await user.click(link);
+		await user.click(await screen.findByRole('button', { name: EDIT_LINK_LABEL }));
+
+		expect(await screen.findByText('lexical-label.new_window')).toBeInTheDocument();
+		expect(screen.queryByText('lexical-label.current_window')).not.toBeInTheDocument();
 	});
 });
