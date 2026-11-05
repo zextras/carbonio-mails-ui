@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
 	$createLinkNode,
+	$isAutoLinkNode,
 	$isLinkNode,
 	$toggleLink,
 	formatUrl,
@@ -33,20 +34,28 @@ type LinkModalProps = {
 
 type LinkTarget = 'self' | 'blank';
 
-/** Updates an existing link node in place, replacing its text only when changed. */
+/**
+ * Updates an existing link node, replacing its text only when changed. An auto-link
+ * is first turned into a regular link: the auto-link plugin keeps an auto-link in
+ * sync with its text, so it would reset the URL or unwrap the link once the text no
+ * longer looks like one, and an auto-link whose link was removed is shown as plain
+ * text. Saving it from the modal makes it a link again.
+ */
 function $updateLinkNode(
 	node: LinkNode,
 	url: string,
 	attributes: LinkAttributes,
 	text: string
 ): void {
-	node.setURL(url);
-	node.setTarget(attributes.target ?? null);
-	node.setRel(attributes.rel ?? null);
-	node.setTitle(attributes.title ?? null);
-	if (text && text !== node.getTextContent()) {
-		node.getChildren().forEach((child) => child.remove());
-		node.append($createTextNode(text));
+	const linkNode = $isAutoLinkNode(node) ? node.replace($createLinkNode(url), true) : node;
+	linkNode.setURL(url);
+	linkNode.setTarget(attributes.target ?? null);
+	linkNode.setRel(attributes.rel ?? null);
+	linkNode.setTitle(attributes.title ?? null);
+	if (text && text !== linkNode.getTextContent()) {
+		// Swap the children in a single splice: removing them one by one would also
+		// remove the link itself, since a link cannot be left empty.
+		linkNode.splice(0, linkNode.getChildrenSize(), [$createTextNode(text)]);
 	}
 }
 
