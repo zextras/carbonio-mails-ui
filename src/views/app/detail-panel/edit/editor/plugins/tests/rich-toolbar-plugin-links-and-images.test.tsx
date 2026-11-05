@@ -20,6 +20,10 @@ beforeAll(() => {
 	installRangeRectPolyfill();
 });
 
+const URL_LABEL = 'lexical-label.url';
+const EXAMPLE_URL = 'https://example.com';
+const SAVE_LABEL = 'label.save';
+
 describe('RichToolbarPlugin - links and images', () => {
 	it('inserts a link from the modal for the typed URL', async () => {
 		const { editorId, editorElement, user } = await setupWithSelectedContent();
@@ -27,15 +31,12 @@ describe('RichToolbarPlugin - links and images', () => {
 		await user.click(screen.getByRole('button', { name: LINK_LABEL }));
 
 		expect(await screen.findByText('lexical-label.insert_edit_link')).toBeInTheDocument();
-		await user.pasteInto(
-			screen.getByRole('textbox', { name: 'lexical-label.url' }),
-			'https://example.com'
-		);
-		await user.click(screen.getByRole('button', { name: 'label.save' }));
+		await user.pasteInto(screen.getByRole('textbox', { name: URL_LABEL }), EXAMPLE_URL);
+		await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
 		expect(await within(editorElement).findByRole('link')).toBeInTheDocument();
 		await waitFor(() => {
-			expect(richTextOf(editorId)).toContain('href="https://example.com"');
+			expect(richTextOf(editorId)).toContain(`href="${EXAMPLE_URL}"`);
 		});
 	});
 
@@ -49,24 +50,36 @@ describe('RichToolbarPlugin - links and images', () => {
 		).toHaveValue(SELECTED_TEXT);
 	});
 
-	it('opens the link in a new window when selected', async () => {
+	it('opens a new link in a new window by default', async () => {
 		const { editorId, user } = await setupWithSelectedContent();
 
 		await user.click(screen.getByRole('button', { name: LINK_LABEL }));
-		await user.pasteInto(
-			screen.getByRole('textbox', { name: 'lexical-label.url' }),
-			'https://example.com'
-		);
+		await user.pasteInto(screen.getByRole('textbox', { name: URL_LABEL }), EXAMPLE_URL);
 
-		await user.click(screen.getByText('lexical-label.current_window'));
-		await user.click(
-			within(screen.getByTestId('dropdown-popper-list')).getByText('lexical-label.new_window')
-		);
-		await user.click(screen.getByRole('button', { name: 'label.save' }));
+		expect(screen.getByText('lexical-label.new_window')).toBeInTheDocument();
+		await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
 		await waitFor(() => {
 			expect(richTextOf(editorId)).toContain('target="_blank"');
 		});
+	});
+
+	it('opens the link in the current window when selected', async () => {
+		const { editorId, user } = await setupWithSelectedContent();
+
+		await user.click(screen.getByRole('button', { name: LINK_LABEL }));
+		await user.pasteInto(screen.getByRole('textbox', { name: URL_LABEL }), EXAMPLE_URL);
+
+		await user.click(screen.getByText('lexical-label.new_window'));
+		await user.click(
+			within(screen.getByTestId('dropdown-popper-list')).getByText('lexical-label.current_window')
+		);
+		await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain(`href="${EXAMPLE_URL}"`);
+		});
+		expect(richTextOf(editorId)).not.toContain('target="_blank"');
 	});
 
 	it('inserts an image from the URL entered in the modal', async () => {
@@ -83,7 +96,7 @@ describe('RichToolbarPlugin - links and images', () => {
 			screen.getByRole('textbox', { name: 'lexical-label.image_alt' }),
 			'a picture'
 		);
-		await user.click(screen.getByRole('button', { name: 'label.save' }));
+		await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
 		const image = await within(editorElement).findByRole('img');
 		expect(image).toHaveAttribute('src', 'https://example.com/picture.png');

@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { type LinkMatcher } from '@lexical/link';
 import {
 	AutoLinkPlugin as LexicalAutoLinkPlugin,
 	createLinkMatcherWithRegExp
@@ -16,11 +17,25 @@ const URL_REGEX =
 
 const EMAIL_REGEX = /[^<>()[\]\\,;:\s@"]{1,64}@(?:[a-zA-Z\d-]{1,63}\.)+[a-zA-Z]{2,24}/;
 
+// Auto-links open in a new window, the same default the "Insert/Edit Link" modal uses.
+const NEW_WINDOW_ATTRIBUTES = { target: '_blank', rel: 'noopener noreferrer' };
+
+const createNewWindowLinkMatcher = (
+	regExp: RegExp,
+	urlTransformer: (text: string) => string
+): LinkMatcher => {
+	const matcher = createLinkMatcherWithRegExp(regExp, urlTransformer);
+	return (text) => {
+		const match = matcher(text);
+		return match && { ...match, attributes: NEW_WINDOW_ATTRIBUTES };
+	};
+};
+
 const MATCHERS = [
-	createLinkMatcherWithRegExp(URL_REGEX, (text) =>
+	createNewWindowLinkMatcher(URL_REGEX, (text) =>
 		text.startsWith('http') ? text : `https://${text}`
 	),
-	createLinkMatcherWithRegExp(EMAIL_REGEX, (text) => `mailto:${text}`)
+	createNewWindowLinkMatcher(EMAIL_REGEX, (text) => `mailto:${text}`)
 ];
 
 export const AutoLinkPlugin = (): React.JSX.Element => (

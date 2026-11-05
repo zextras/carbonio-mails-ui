@@ -41,9 +41,12 @@ function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
 }
 
-function setupEditor(richText: string): { editorId: string; user: TestUser } {
+/** Renders the editor on the given content, or on the default new message body when omitted. */
+function setupEditor(richText?: string): { editorId: string; user: TestUser } {
 	const editor = generateNewMessageEditor();
-	editor.text = { plainText: LINK_TEXT, richText };
+	if (richText !== undefined) {
+		editor.text = { plainText: LINK_TEXT, richText };
+	}
 	setupEditorStore({ editors: [editor] });
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 	return { editorId: editor.id, user };
@@ -299,5 +302,33 @@ describe('FloatingLinkEditorPlugin', () => {
 
 		expect(await screen.findByRole('textbox', { name: URL_LABEL })).toHaveValue(LINK_URL);
 		expect(screen.getByRole('textbox', { name: TEXT_TO_DISPLAY_LABEL })).toHaveValue(NEW_LINK_TEXT);
+	});
+
+	it('keeps a link typed in the body with its URL when the text to display is changed', async () => {
+		const { editorId, user } = setupEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(editorElement);
+		await user.type(editorElement, `${LINK_URL} `);
+		const link = await within(editorElement).findByRole('link', { name: LINK_URL });
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+	});
+
+	it('opens the edit modal of an auto-created link with the new window option selected', async () => {
+		const { user } = setupEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(editorElement);
+		await user.type(editorElement, `${LINK_URL} `);
+		const link = await within(editorElement).findByRole('link', { name: LINK_URL });
+
+		await user.click(link);
+		await user.click(await screen.findByRole('button', { name: EDIT_LINK_LABEL }));
+
+		expect(await screen.findByText('lexical-label.new_window')).toBeInTheDocument();
+		expect(screen.queryByText('lexical-label.current_window')).not.toBeInTheDocument();
 	});
 });
