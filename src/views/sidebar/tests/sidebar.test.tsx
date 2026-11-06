@@ -255,4 +255,46 @@ describe('Sidebar', () => {
 			expect(action.l).toBe(FOLDERS.TRASH);
 		});
 	});
+
+	describe('collapsed view', () => {
+		it('renders without crashing when folders are not loaded yet', () => {
+			const options = {
+				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
+				path: '/mails/*'
+			};
+
+			expect(() => {
+				setupTest(<Sidebar expanded={false} />, options);
+			}).not.toThrow();
+		});
+
+		it('renders collapsed sidebar items when folders are available', async () => {
+			populateFoldersStore();
+			const options = {
+				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
+				path: '/mails/*'
+			};
+
+			setupTest(<Sidebar expanded={false} />, options);
+
+			const calendarItem = await screen.findByLabelText('Calendar');
+			expect(calendarItem).toBeInTheDocument();
+		});
+
+		it('highlights the selected folder item with highlight background', async () => {
+			populateFoldersStore();
+			const options = {
+				initialEntries: ['/mails/folder/10'],
+				path: '/mails/*'
+			};
+
+			setupTest(<Sidebar expanded={false} />, options);
+
+			const calendarItem = await screen.findByLabelText('Calendar');
+			expect(calendarItem).toBeInTheDocument();
+
+			const briefcaseItem = await screen.findByLabelText('Briefcase');
+			expect(briefcaseItem).toBeInTheDocument();
+		});
+	});
 });
