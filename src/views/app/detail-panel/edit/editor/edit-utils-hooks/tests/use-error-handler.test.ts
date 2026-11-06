@@ -7,7 +7,9 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { getErrorSnackbarProps } from '../use-error-handler';
+import { buildSendMsgFaultBody } from '@test-utils/utils/soap';
 import { TIMEOUTS } from 'constants/index';
+import { SoapSendMsgFault } from 'types/soap/send-msg';
 
 describe('getErrorSnackbarProps', () => {
 	beforeEach(() => {
@@ -15,7 +17,7 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	it('returns default error message and default timeout for generic errors', () => {
-		const error = {};
+		const error = buildSendMsgFaultBody({ detailCode: 'service.FAILURE' });
 		const result = getErrorSnackbarProps(error);
 		expect(result).toEqual({
 			message: 'label.error_try_again',
@@ -23,16 +25,16 @@ describe('getErrorSnackbarProps', () => {
 		});
 	});
 
+	it('returns default error message and default timeout when the send fails without a Fault', () => {
+		const result = getErrorSnackbarProps();
+		expect(result).toEqual({
+			message: 'label.error_try_again',
+			timeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+		});
+	});
+
 	it('returns invalid recipient message and specific timeout for invalid recipient error', () => {
-		const error = {
-			Fault: {
-				Detail: {
-					Error: {
-						Code: 'mail.SEND_ABORTED_ADDRESS_FAILURE'
-					}
-				}
-			}
-		};
+		const error = buildSendMsgFaultBody({ detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE' });
 		const result = getErrorSnackbarProps(error);
 		expect(result).toEqual({
 			message: 'error.invalid_recipient',
@@ -41,16 +43,10 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	it('passes the invalid address to the translation as an interpolation variable', () => {
-		const error = {
-			Fault: {
-				Detail: {
-					Error: {
-						Code: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
-						a: [{ n: 'invalid', _content: 'abc@demo.zextras.io' }]
-					}
-				}
-			}
-		};
+		const error = buildSendMsgFaultBody({
+			detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+			args: [{ n: 'invalid', _content: 'abc@demo.zextras.io' }]
+		});
 		getErrorSnackbarProps(error);
 		expect(t).toHaveBeenCalledWith('error.invalid_recipient', {
 			defaultValue: 'The recipient address "{{invalidAddress}}" does not exist or is invalid',
@@ -59,19 +55,13 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	it('reports all invalid addresses when the error contains more than one', () => {
-		const error = {
-			Fault: {
-				Detail: {
-					Error: {
-						Code: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
-						a: [
-							{ n: 'invalid', _content: 'abc@demo.zextras.io' },
-							{ n: 'invalid', _content: 'def@demo.zextras.io' }
-						]
-					}
-				}
-			}
-		};
+		const error = buildSendMsgFaultBody({
+			detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+			args: [
+				{ n: 'invalid', _content: 'abc@demo.zextras.io' },
+				{ n: 'invalid', _content: 'def@demo.zextras.io' }
+			]
+		});
 		const result = getErrorSnackbarProps(error);
 		expect(t).toHaveBeenCalledWith('error.invalid_recipients', {
 			defaultValue: 'The recipient addresses "{{invalidAddresses}}" do not exist or are invalid',
@@ -84,19 +74,13 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	it('does not report the unsent addresses as invalid', () => {
-		const error = {
-			Fault: {
-				Detail: {
-					Error: {
-						Code: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
-						a: [
-							{ n: 'invalid', _content: 'abc@demo.zextras.io' },
-							{ n: 'unsent', _content: 'valid@demo.zextras.io' }
-						]
-					}
-				}
-			}
-		};
+		const error = buildSendMsgFaultBody({
+			detailCode: 'mail.SEND_ABORTED_ADDRESS_FAILURE',
+			args: [
+				{ n: 'invalid', _content: 'abc@demo.zextras.io' },
+				{ n: 'unsent', _content: 'valid@demo.zextras.io' }
+			]
+		});
 		getErrorSnackbarProps(error);
 		expect(t).toHaveBeenCalledWith('error.invalid_recipient', {
 			defaultValue: 'The recipient address "{{invalidAddress}}" does not exist or is invalid',
@@ -109,11 +93,9 @@ describe('getErrorSnackbarProps', () => {
 		const distributionList = 'dl@demo.zextras.io';
 
 		const buildError = (
-			code: string,
-			a: Array<{ n: string; _content: string }>
-		): { Fault: Record<string, unknown> } => ({
-			Fault: { Detail: { Error: { Code: code, a } } }
-		});
+			detailCode: string,
+			args: Array<{ n: string; _content: string }>
+		): SoapSendMsgFault => buildSendMsgFaultBody({ detailCode, args });
 
 		it('names the denied distribution list', () => {
 			const error = buildError(deniedCode, [
@@ -146,15 +128,7 @@ describe('getErrorSnackbarProps', () => {
 	});
 
 	it('returns default error message if error structure is missing Code', () => {
-		const error = {
-			Fault: {
-				Detail: {
-					Error: {
-						Code: 'some.other.error'
-					}
-				}
-			}
-		};
+		const error = buildSendMsgFaultBody({ detailCode: 'some.other.error' });
 		const result = getErrorSnackbarProps(error);
 		expect(result).toEqual({
 			message: 'label.error_try_again',

@@ -12,7 +12,11 @@ import { noop } from 'lodash';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI,
+	toSearchConversationHit
+} from '__test__/generators/api';
 import { generateConversation } from '__test__/generators/generateConversation';
 import * as searchSoapApi from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -158,7 +162,9 @@ describe('search view hooks', () => {
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
-			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })].map(
+				toSearchConversationHit
+			),
 			more: false
 		};
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
@@ -201,7 +207,9 @@ describe('search view hooks', () => {
 		vi.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
-			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })].map(
+				toSearchConversationHit
+			),
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
@@ -258,7 +266,7 @@ describe('useLoadMore', () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversation],
+			c: [conversation].map(toSearchConversationHit),
 			m: [message],
 			more: false
 		};
@@ -293,7 +301,7 @@ describe('useLoadMore', () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversation],
+			c: [conversation].map(toSearchConversationHit),
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(

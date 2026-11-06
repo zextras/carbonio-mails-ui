@@ -17,7 +17,11 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from '__test__/constants';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '__test__/generators/api';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI,
+	toSearchConversationHit
+} from '__test__/generators/api';
 import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
 import { ConvActionRequest } from 'types/soap/conv-action';
 import { SearchRequest, SearchResponse } from 'types/soap/search';
@@ -61,7 +65,7 @@ describe('ConversationList Component', () => {
 		const conversation2 = generateConversationFromAPI({ id: '-2', m: [message] });
 		const conversation3 = generateConversationFromAPI({ id: '-3', m: [message] });
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1, conversation2, conversation3],
+			c: [conversation1, conversation2, conversation3].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -79,7 +83,7 @@ describe('ConversationList Component', () => {
 		});
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1],
+			c: [conversation1].map(toSearchConversationHit),
 			more: true
 		});
 
@@ -98,7 +102,7 @@ describe('ConversationList Component', () => {
 		});
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation2],
+			c: [conversation2].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -122,7 +126,7 @@ describe('ConversationList Component', () => {
 		});
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1],
+			c: [conversation1].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -144,7 +148,7 @@ describe('ConversationList Component', () => {
 		});
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversation1],
+			c: [conversation1].map(toSearchConversationHit),
 			more: true
 		});
 
@@ -173,7 +177,7 @@ describe('ConversationList Component', () => {
 				});
 
 				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation1],
+					c: [conversation1].map(toSearchConversationHit),
 					more: true
 				});
 
@@ -206,7 +210,7 @@ describe('ConversationList Component', () => {
 				});
 
 				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation1],
+					c: [conversation1].map(toSearchConversationHit),
 					more: true
 				});
 				(useParams as Mock).mockReturnValue({
@@ -250,7 +254,7 @@ describe('ConversationList Component', () => {
 				});
 
 				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation1],
+					c: [conversation1].map(toSearchConversationHit),
 					more: true
 				});
 				(useParams as Mock).mockReturnValue({
@@ -297,7 +301,7 @@ describe('ConversationList Component', () => {
 				});
 
 				createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-					c: [conversation1, conversation2],
+					c: [conversation1, conversation2].map(toSearchConversationHit),
 					more: true
 				});
 				(useParams as Mock).mockReturnValue({
@@ -349,7 +353,7 @@ describe('ConversationList Component', () => {
 		it('items should still be selected after a multiple selection action', async () => {
 			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1, conversation2],
+				c: [conversation1, conversation2].map(toSearchConversationHit),
 				more: true
 			});
 			populateFoldersStore();
@@ -412,7 +416,7 @@ describe('ConversationList Component', () => {
 		it('items should still be selected after a single conversation action on a unselected item', async () => {
 			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1, conversation2],
+				c: [conversation1, conversation2].map(toSearchConversationHit),
 				more: true
 			});
 
@@ -471,7 +475,7 @@ describe('ConversationList Component', () => {
 		it('items should still be selected after a single conversation action on a selected item', async () => {
 			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1, conversation2],
+				c: [conversation1, conversation2].map(toSearchConversationHit),
 				more: true
 			});
 
@@ -530,7 +534,7 @@ describe('ConversationList Component', () => {
 		it('enables select mode on first click and supports range selection with shift-click', async () => {
 			(useParams as Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation1, conversation2, conversation3],
+				c: [conversation1, conversation2, conversation3].map(toSearchConversationHit),
 				more: true
 			});
 

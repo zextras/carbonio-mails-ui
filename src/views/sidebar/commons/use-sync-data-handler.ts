@@ -37,28 +37,34 @@ import {
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
 import { IncompleteMessage } from 'types/messages';
-import { SoapConversation } from 'types/soap/soap-conversation';
-import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
+import { SearchConversationHit } from 'types/soap/search';
 import {
 	HandleFoldersNotifyProps,
 	HandleTagsNotifyProps,
-	SoapPartialConversation,
-	SoapPartialIncompleteMessage
+	MailsSoapNotify
 } from 'views/sidebar/commons/types';
 
 export function extractConvMessage(
-	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
+	conversations: Array<SearchConversationHit>
 ): Array<IncompleteMessage> {
-	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
-		normalizeMailMessageFromSoap({
-			// the conversation hits of SearchResponse carry d and s as strings
-			m: {
-				...message,
-				...(isNil(message.d) ? {} : { d: Number(message.d) }),
-				...(isNil(message.s) ? {} : { s: Number(message.s) })
-			},
-			html: true
-		})
+	return flatten(
+		conversations.map((conversation) =>
+			(conversation.m ?? []).map((hit) =>
+				normalizeMailMessageFromSoap({
+					m: {
+						id: hit.id,
+						l: hit.l,
+						f: hit.f,
+						// the hit does not repeat the id of its conversation
+						cid: conversation.id,
+						d: Number(hit.d),
+						...(isNil(hit.s) ? {} : { s: Number(hit.s) }),
+						...(isNil(hit.autoSendTime) ? {} : { autoSendTime: Number(hit.autoSendTime) })
+					},
+					html: true
+				})
+			)
+		)
 	);
 }
 
@@ -93,13 +99,11 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 	});
 }
 
-function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunction): void {
+function processCreatedNotifications(notify: MailsSoapNotify, navigate: NavigateFunction): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
-	const { m: modifiedMessages } = notify.modified || {};
-	const newConversations = (createdConversations ?? []) as Array<SoapConversation>;
-	const newMessages = (createdMessages ?? []) as Array<SoapIncompleteMessage>;
-	const changedMessages = (modifiedMessages ?? []) as Array<SoapIncompleteMessage>;
-	const allReceivedMessages = [...changedMessages, ...newMessages];
+	const newConversations = createdConversations ?? [];
+	const newMessages = createdMessages ?? [];
+	const allReceivedMessages = [...(notify.modified?.m ?? []), ...newMessages];
 	// in case of created, we have SoapConversation
 	if (createdConversations && createdMessages) {
 		const conversationsWithMessageIds = map(newConversations, (conversation) =>
@@ -124,17 +128,15 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 	}
 }
 
-function processModifiedNotifications(notify: SoapNotify): void {
-	const modifiedConversations = notify.modified?.c as Array<SoapPartialConversation>;
+function processModifiedNotifications(notify: MailsSoapNotify): void {
+	const modifiedConversations = notify.modified?.c;
 	if (modifiedConversations) {
 		const updatedConversations = normalizePartialConversations(modifiedConversations);
+		// a conversation of a notification never carries its messages (ToXML.encodeItem passes no msgs)
 		handleNotifyConversationsModified(updatedConversations);
-
-		const convMessages = extractConvMessage(modifiedConversations);
-		updateMessages(convMessages);
 	}
 
-	const modifiedMessages = notify.modified?.m as Array<SoapPartialIncompleteMessage>;
+	const modifiedMessages = notify.modified?.m;
 	if (modifiedMessages) {
 		const messages = map(modifiedMessages, (message) =>
 			normalizePartialIncompleteMessageFromSoapNotify(message)
@@ -180,12 +182,15 @@ function processNotifications({
 		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
 		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
 
-		if (notify.created) {
-			processCreatedNotifications(notify, navigate);
+		// the shell types the conversations and messages of a notification as unknown: the server sends
+		// the summaries of ToXML.encodeItem, which MailsSoapNotify describes
+		const mailsNotify = notify as MailsSoapNotify;
+		if (mailsNotify.created) {
+			processCreatedNotifications(mailsNotify, navigate);
 		}
 
-		if (notify.modified) {
-			processModifiedNotifications(notify);
+		if (mailsNotify.modified) {
+			processModifiedNotifications(mailsNotify);
 		}
 
 		const deletedIds = notify.deleted;

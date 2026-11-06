@@ -9,12 +9,13 @@ import { normalizeParticipantsFromSoap } from 'normalizations/normalize-message'
 import { getTagIds } from 'normalizations/utils';
 import { NormalizedConversation } from 'types/conversations';
 import { SoapConversation } from 'types/soap/soap-conversation';
-import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 import { OptionalExcept, SoapPartialConversation } from 'views/sidebar/commons/types';
 
 export type NormalizeConversationProps = {
-	conversation: SoapConversation;
-	messages?: Array<SoapIncompleteMessage>;
+	// only the ids of its messages are read: GetConv sends them whole, Search as hits
+	conversation: Omit<SoapConversation, 'm'> & { m?: Array<{ readonly id: string }> };
+	// only id and cid are read, to find the messages of the conversation
+	messages?: Array<{ readonly id: string; cid?: string }>;
 };
 
 export type NormalizePartialConversationProps = {
@@ -48,7 +49,7 @@ export const mapToNormalizedConversation = ({
 };
 
 export const normalizeConversations = (
-	soapConversations: Array<SoapConversation>
+	soapConversations: Array<NormalizeConversationProps['conversation']>
 ): Array<NormalizedConversation> =>
 	map(soapConversations, (conv) => mapToNormalizedConversation({ conversation: conv }));
 
@@ -61,16 +62,13 @@ function calculateReadFlag(conversation: SoapPartialConversation): boolean | und
 const mapToNormalizedPartialConversation = ({
 	conversation
 }: NormalizePartialConversationProps): NormalizedPartialConversation => {
-	// const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
-	const convMessagesIds = conversation.m ? map(conversation.m, (msg) => msg.id) : undefined;
+	// a conversation of a notification never carries its messages nor its fragment (ToXML.encodeItem)
 	const result = omitBy(
 		{
 			tags: getTagIds(conversation.t, conversation.tn),
 			date: conversation.d,
-			messageIds: convMessagesIds,
 			participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : undefined,
 			subject: conversation.su,
-			fragment: conversation.fr,
 			read: calculateReadFlag(conversation),
 			hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : undefined,
 			flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : undefined,

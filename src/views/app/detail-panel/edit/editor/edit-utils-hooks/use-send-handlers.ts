@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 
 import { useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { ErrorSoapBodyResponse, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { checkSubjectAndAttachment } from '../check-subject-attachment';
 import { getErrorSnackbarProps } from './use-error-handler';
@@ -22,7 +22,7 @@ import {
 	useEditorSend
 } from 'store/editor';
 import { EditViewClosingReasons } from 'types/editor';
-import { SaveDraftResponse } from 'types/soap/save-draft';
+import { SoapSendMsgFault } from 'types/soap/send-msg';
 
 export const useSendHandlers = (
 	editorId: string,
@@ -85,7 +85,7 @@ export const useSendHandlers = (
 	}, [createSnackbar, editorId]);
 
 	const onSendError = useCallback(
-		(error: SaveDraftResponse | ErrorSoapBodyResponse): void => {
+		(error?: SoapSendMsgFault): void => {
 			const { message, timeout } = getErrorSnackbarProps(error);
 			createSnackbar({
 				key: `mail-${editorId}`,

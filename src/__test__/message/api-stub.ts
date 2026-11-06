@@ -14,5 +14,6 @@ export const stubSearchMessages = ({
 }): Promise<SearchRequest> =>
 	createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 		more: false,
-		m: messages
+		// a message hit is a summary (ToXML.encodeMessageSummary)
+		m: messages.map(({ mp: _mp, _attrs: _headers, mid: _mid, sd: _sd, ...summary }) => summary)
 	});

@@ -20,17 +20,16 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { tags } from '@test-utils/tags/tags';
 import { TESTID_SELECTORS } from '__test__/constants';
-import { generateSoapConversationMessage } from '__test__/generators/api';
+import { generateSoapConversationMessage, toSearchConversationHit } from '__test__/generators/api';
 import * as searchSoapApi from 'api/search-soap-api';
-
-import SearchView from 'views/search/search-view';
-import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
-import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
-import { SoapConversation } from 'types/soap/soap-conversation';
-import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
-import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
 import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
+import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
+import { SearchRequest, SearchResponse } from 'types/soap/search';
+import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
+import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
+import SearchView from 'views/search/search-view';
 
 vi.mock('react-router-dom', async () => ({
 	...(await vi.importActual('react-router-dom')),
@@ -143,7 +142,7 @@ describe.skip('SearchView', () => {
 			};
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123')],
+				c: [getSoapConversation('123')].map(toSearchConversationHit),
 				more: false
 			});
 
@@ -165,7 +164,7 @@ describe.skip('SearchView', () => {
 			};
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123')],
+				c: [getSoapConversation('123')].map(toSearchConversationHit),
 				more: false
 			});
 			setupTest(<SearchView {...searchViewProps} />);
@@ -185,7 +184,7 @@ describe.skip('SearchView', () => {
 			const message2 = generateSoapConversationMessage('200', '123');
 			const conversation = { ...getSoapConversation('123'), n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation],
+				c: [conversation].map(toSearchConversationHit),
 				more: false
 			});
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
@@ -218,7 +217,7 @@ describe.skip('SearchView', () => {
 
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation],
+				c: [conversation].map(toSearchConversationHit),
 				more: false
 			});
 
@@ -253,7 +252,7 @@ describe.skip('SearchView', () => {
 
 			const conversation = { ...defaultConversation, n: 2, m: [message1] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation],
+				c: [conversation].map(toSearchConversationHit),
 				more: false
 			});
 
@@ -306,7 +305,7 @@ describe.skip('SearchView', () => {
 			vi.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123', { l: FOLDERS.TRASH })],
+				c: [getSoapConversation('123', { l: FOLDERS.TRASH })].map(toSearchConversationHit),
 				more: false
 			});
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
@@ -341,14 +340,14 @@ describe.skip('SearchView', () => {
 			const message2 = generateSoapConversationMessage('200', '123');
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation],
+				c: [conversation].map(toSearchConversationHit),
 				more: false
 			});
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
 				m: [message1, message2],
 				more: false,
 				offset: '0',
-				orderBy: 'dateDesc'
+				sortBy: 'dateDesc'
 			});
 			const mockUseQuery = vi.fn();
 			mockUseQuery.mockReturnValue([[queryChip], noop]);
@@ -370,7 +369,7 @@ describe.skip('SearchView', () => {
 			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123')],
+				c: [getSoapConversation('123')].map(toSearchConversationHit),
 				more: false
 			});
 			const mockUseQuery = vi.fn();
@@ -431,7 +430,7 @@ describe.skip('SearchView', () => {
 				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
 					'Search',
 					{
-						c: [conversation1, conversation2, conversation3],
+						c: [conversation1, conversation2, conversation3].map(toSearchConversationHit),
 						more: false
 					}
 				);
@@ -508,7 +507,7 @@ describe.skip('SearchView', () => {
 				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
 					'Search',
 					{
-						c: [conversation1, conversation2, conversation3],
+						c: [conversation1, conversation2, conversation3].map(toSearchConversationHit),
 						more: false
 					}
 				);
@@ -586,7 +585,7 @@ describe.skip('SearchView', () => {
 				const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
 					'Search',
 					{
-						c: [conversation1, conversation2, conversation3],
+						c: [conversation1, conversation2, conversation3].map(toSearchConversationHit),
 						more: false
 					}
 				);
@@ -1198,7 +1197,7 @@ describe.skip('SearchView', () => {
 		mockUseQuery.mockReturnValue([[queryChip], mockUpdateQuery]);
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [getSoapConversation('123')],
+			c: [getSoapConversation('123')].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -1243,7 +1242,7 @@ describe.skip('SearchView', () => {
 		mockUseQuery.mockReturnValue([[queryChipWithAdvancedFilters], mockUpdateQuery]);
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [getSoapConversation('123')],
+			c: [getSoapConversation('123')].map(toSearchConversationHit),
 			more: false
 		});
 
@@ -1273,7 +1272,7 @@ describe.skip('SearchView', () => {
 		mockUseQuery.mockReturnValue([[queryChipWithSpecialChars], mockUpdateQuery]);
 
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [getSoapConversation('123')],
+			c: [getSoapConversation('123')].map(toSearchConversationHit),
 			more: false
 		});
 

@@ -9,6 +9,7 @@ import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from '../normalize-message';
+import { getMsgAttachedEmlResponse } from 'api/tests/fixtures/get-msg-attached-eml-response';
 import { getMsgNoSubjectEmptyBodyResponse } from 'normalizations/tests/fixtures/get-msg-no-subject-empty-body';
 import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
 import { MailMessage, MailMessagePart } from 'types/messages';
@@ -16,6 +17,16 @@ import { SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 describe('normalize-message.ts', () => {
 	describe('Fields the server leaves out', () => {
+		it('dates an attached message, which has only the sent date, with that date', () => {
+			const message = normalizeMailMessageFromSoap({
+				m: getMsgAttachedEmlResponse.m[0],
+				isComplete: true,
+				html: true
+			});
+
+			expect(message.date).toBe(1793604600000);
+		});
+
 		it('has no subject and fragment for a message without Subject header and with an empty body', () => {
 			const message = normalizeCompleteMailMessageFromSoap(
 				getMsgNoSubjectEmptyBodyResponse.m[0],

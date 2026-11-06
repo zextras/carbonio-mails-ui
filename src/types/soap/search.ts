@@ -19,9 +19,34 @@ export type SearchRequest = ZimbraRequest & {
 	locale?: { _content: string };
 };
 
+// A message of a conversation hit: the server sends only these fields, numbers as strings, s only in a
+// conversation of one message, f only when set (ConversationMsgHitInfo, SearchResponse.doConvMsgHit)
+export type SearchConvMsgHit = {
+	readonly id: string;
+	l: string;
+	f?: string;
+	d: string;
+	s?: string;
+	autoSendTime?: string;
+};
+
+export type SearchConversationHit = Omit<SoapConversation, 'm'> & {
+	m?: Array<SearchConvMsgHit>;
+	/** Sort field */
+	sf?: string;
+};
+
+// A message hit is a summary: never its parts, headers, message id or send date (ToXML.encodeMessageSummary)
+export type SearchMessageHit = Omit<SoapIncompleteMessage, 'mp' | '_attrs' | 'mid' | 'sd'> & {
+	/** Matched the query (fullConversation) */
+	cm?: boolean;
+	/** Sort field */
+	sf?: string;
+};
+
 export type SearchResponse = {
-	c?: SoapConversation[];
-	m?: SoapIncompleteMessage[];
+	c?: SearchConversationHit[];
+	m?: SearchMessageHit[];
 	more: boolean;
 	offset?: number;
 	sortBy?: SortBy;

@@ -5,6 +5,7 @@
  */
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { toSearchConversationHit } from '__test__/generators/api';
 import { GetConvRequest, GetConvResponse } from 'types/soap/get-conv';
 import { SearchRequest, SearchResponse } from 'types/soap/search';
 import { SearchConvRequest, SearchConvResponse } from 'types/soap/search-conv';
@@ -17,7 +18,7 @@ export const stubSearchConversations = ({
 }): Promise<SearchRequest> =>
 	createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 		more: false,
-		c: conversations
+		c: conversations.map(toSearchConversationHit)
 	});
 
 export const stubSearchConversation = ({
@@ -28,8 +29,8 @@ export const stubSearchConversation = ({
 	createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
 		m: conversation.m ?? [],
 		more: false,
-		offset: '',
-		orderBy: ''
+		offset: '0',
+		sortBy: 'dateDesc'
 	});
 
 export const stubGetConversation = ({
