@@ -1,3 +1,9 @@
+## <small>1.51.14 (2026-11-06)</small>
+
+* fix: support collapsed secondary bar and highlight active folder item ([f549087](https://github.com/zextras/carbonio-mails-ui/commit/f549087)), closes [#1351](https://github.com/zextras/carbonio-mails-ui/issues/1351)
+* fix(CO-4590): one SOAP type per response variant (#1420) ([5c8ccbf](https://github.com/zextras/carbonio-mails-ui/commit/5c8ccbf)), closes [#1420](https://github.com/zextras/carbonio-mails-ui/issues/1420)
+* fix(CO-4649): save the reply to a sender without address as a draft (#1422) ([e92ba4d](https://github.com/zextras/carbonio-mails-ui/commit/e92ba4d)), closes [#1422](https://github.com/zextras/carbonio-mails-ui/issues/1422)
+
 ## <small>1.51.13 (2026-11-05)</small>
 
 * fix: paste link disappear after edit (#1421) ([197e1d6](https://github.com/zextras/carbonio-mails-ui/commit/197e1d6)), closes [#1421](https://github.com/zextras/carbonio-mails-ui/issues/1421)
