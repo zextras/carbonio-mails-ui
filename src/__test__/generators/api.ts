@@ -7,6 +7,7 @@
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
 import { getSetupServer } from '../vitest-setup';
+import { SearchConversationHit, SearchConvMsgHit } from 'types/soap/search';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import {
 	SoapIncompleteMessage,
@@ -133,5 +134,29 @@ export function generateSoapConversationMessage(
 		fr: 'fragment',
 		mp: [],
 		d: 1717752296000
+	};
+}
+
+// a conversation as Search returns it: its messages are hits, with numbers as strings and the size only
+// in a conversation of one message (SearchResponse.doConvMsgHit)
+export function toSearchConversationHit({
+	m,
+	...conversation
+}: SoapConversation): SearchConversationHit {
+	return {
+		...conversation,
+		...(m
+			? {
+					m: m.map(
+						(message): SearchConvMsgHit => ({
+							id: message.id,
+							l: message.l,
+							...(message.f ? { f: message.f } : {}),
+							d: String(message.d),
+							...(m.length === 1 ? { s: String(message.s) } : {})
+						})
+					)
+				}
+			: {})
 	};
 }

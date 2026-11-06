@@ -4,14 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
+
 import {
 	composeAttachMpField,
 	composeCidUrlFromContentId,
 	convertCidUrlToServiceUrl,
+	createSoapDraftRequestFromEditor,
+	createSoapSendMsgRequestFromEditor,
 	replaceCidUrlWithServiceUrl,
 	replaceServiceUrlWithCidUrl
 } from '../editor-transformations';
+import { normalizeParticipantsFromSoap } from 'normalizations/normalize-message';
+import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { SavedAttachment } from 'types/attachments';
+import { MailsEditorV2 } from 'types/editor';
 
 describe('editor-transformations', () => {
 	describe('composeAttachMpField', () => {
@@ -338,6 +346,46 @@ describe('editor-transformations', () => {
 
 				expect(srcOf(replaceCidUrlWithServiceUrl(content, []))).toBe(PREVIEW_SRC);
 			});
+		});
+	});
+	describe('participants without address (CO-4649)', () => {
+		// the sender of a bounce, From: "Mail Delivery System" <>, as the server sends it (no a)
+		const bounceSender = normalizeParticipantsFromSoap(
+			getMsgSenderWithoutAddressResponse.m[0].e[0]
+		);
+
+		const replyToTheBounce = (): MailsEditorV2 => {
+			const editor = generateNewMessageEditor();
+			return {
+				...editor,
+				recipients: {
+					...editor.recipients,
+					to: [{ ...bounceSender, type: ParticipantRole.TO }],
+					cc: [{ address: 'cc@example.com', type: ParticipantRole.CARBON_COPY }]
+				}
+			};
+		};
+
+		it('should save the draft with an empty address, so the server accepts it and keeps the recipient', () => {
+			const { e } = createSoapDraftRequestFromEditor(replyToTheBounce());
+
+			expect(e).toContainEqual({ t: ParticipantRole.TO, a: '', p: 'Mail Delivery System' });
+		});
+
+		it('should keep the address of the other recipients when saving the draft', () => {
+			const { e } = createSoapDraftRequestFromEditor(replyToTheBounce());
+
+			expect(e).toContainEqual({
+				t: ParticipantRole.CARBON_COPY,
+				a: 'cc@example.com',
+				p: undefined
+			});
+		});
+
+		it('should not invent an address when sending', () => {
+			const { e } = createSoapSendMsgRequestFromEditor(replyToTheBounce());
+
+			expect(e).toContainEqual({ t: ParticipantRole.TO, a: undefined, p: 'Mail Delivery System' });
 		});
 	});
 });

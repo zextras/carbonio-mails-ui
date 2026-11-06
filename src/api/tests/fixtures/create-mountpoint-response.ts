@@ -6,7 +6,7 @@
 import type { CreateMountpointResponse } from 'api/mount-shared-folder-soap-api';
 
 // CreateMountpoint of a shared folder with a custom color: link is an array, rid a number, and the
-// folder has rgb and no color (captured with carbonio-mcp-dev)
+// folder has rgb and no color (a real response from the test server)
 export const createMountpointResponse = {
 	link: [
 		{

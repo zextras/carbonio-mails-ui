@@ -13,7 +13,6 @@ import { GetMsgParameters, GetMsgRequest, GetMsgResponse } from 'types/soap/get-
 export async function getMsgSoapApi({
 	msgId,
 	max,
-	part,
 	shouldMarkAsRead,
 	html
 }: GetMsgParameters): Promise<GetMsgResponse | ErrorSoapBodyResponse> {
@@ -22,7 +21,6 @@ export async function getMsgSoapApi({
 		id: msgId,
 		needExp: 1,
 		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
-		part,
 		...{ max }
 	};
 	if (shouldMarkAsRead) {

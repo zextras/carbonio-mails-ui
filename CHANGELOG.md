@@ -1,3 +1,7 @@
+## <small>1.51.13 (2026-11-05)</small>
+
+* fix: paste link disappear after edit (#1421) ([197e1d6](https://github.com/zextras/carbonio-mails-ui/commit/197e1d6)), closes [#1421](https://github.com/zextras/carbonio-mails-ui/issues/1421)
+
 ## <small>1.51.12 (2026-11-04)</small>
 
 * fix(CO-4591): declare the SOAP Fault in the response types of the API wrappers (#1418) ([0b77e1a](https://github.com/zextras/carbonio-mails-ui/commit/0b77e1a)), closes [#1418](https://github.com/zextras/carbonio-mails-ui/issues/1418)

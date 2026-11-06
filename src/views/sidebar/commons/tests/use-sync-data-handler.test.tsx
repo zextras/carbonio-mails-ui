@@ -12,6 +12,7 @@ import {
 	useFolderStore,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 import { http } from 'msw';
 import { vi } from 'vitest';
 
@@ -56,6 +57,8 @@ import * as triggerNotification from 'store/emails/sync-data-handler/trigger-not
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-message';
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
+import { notifyReplySent } from 'views/sidebar/commons/tests/fixtures/notify-reply-sent';
+import { SoapNotifyConversation } from 'views/sidebar/commons/types';
 import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
@@ -245,10 +248,9 @@ describe('sync data handler', () => {
 					m: [getSoapMessage('100', { cid: '2', l: FOLDERS.INBOX })],
 					c: [
 						{
-							...getSoapConversation('2'),
-							m: undefined,
+							...omit(getSoapConversation('2'), ['m', 'fr']),
 							e: [{ t: 'f', a: 'recipient@example.com', p: 'Recipient' }]
-						} as unknown as SoapConversation
+						} satisfies SoapNotifyConversation
 					]
 				},
 				modified: {
@@ -294,6 +296,29 @@ describe('sync data handler', () => {
 			expect(getConversationById('2').participants).toEqual(
 				expect.arrayContaining([expect.objectContaining(recipient)])
 			);
+		});
+
+		it('should add a sent reply to its conversation from the notification of the copy in Sent', async () => {
+			// SendMsg returns no conversation id: the notification of the copy in Sent carries it
+			populateFoldersStore();
+			setConversationsInEmailStore(
+				normalizeConversations([
+					generateConversationFromAPI({
+						id: '259',
+						n: 3,
+						m: ['260', '258', '257'].map((id) => getSoapMessage(id, { cid: '259' }))
+					})
+				]),
+				false
+			);
+			mockSoapRefresh(mailboxNumber);
+			mockSoapSync([notifyReplySent]);
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getConversationById('259').messageIds).toContain('263'));
+			expect(getMessageById('263').conversation).toBe('259');
+			expect(getConversationById('259').messagesInConversation).toBe(4);
 		});
 
 		describe('in search results', () => {

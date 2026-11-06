@@ -8,7 +8,7 @@ import type { SoapMailParticipant } from 'types/soap/soap-mail-participant';
 
 const mario: SoapMailParticipant = { a: 'mario@example.com', d: 'Mario', p: 'Mario Rossi', t: 'f' };
 
-// GetConv of a read, untagged conversation: no f, tn nor fr (captured with carbonio-mcp-dev capture_fixture)
+// GetConv of a read, untagged conversation: no f, tn nor fr (a real response from the test server)
 // Checked without m: the messages of GetConv are not SoapMailMessage (no cid, no mp), see CO-4590
 export const getConvReadUntaggedResponse = {
 	c: [

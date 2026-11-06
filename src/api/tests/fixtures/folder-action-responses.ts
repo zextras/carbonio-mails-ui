@@ -5,8 +5,8 @@
  */
 import type { FolderActionResponse } from 'types/soap/soap';
 
-// FolderAction responses carry only the action that was applied, never the folder (captured with
-// carbonio-mcp-dev on a rename and on a grant, which adds the grantee's zid and address)
+// FolderAction responses carry only the action that was applied, never the folder (real responses from
+// the test server to a rename and to a grant, which adds the grantee's zid and address)
 export const folderActionRenameResponse = {
 	action: {
 		id: '258',

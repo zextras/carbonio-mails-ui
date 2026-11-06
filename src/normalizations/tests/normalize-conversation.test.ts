@@ -19,6 +19,7 @@ import {
 import { getConvReadUntaggedResponse } from 'normalizations/tests/fixtures/get-conv-read-untagged';
 import { Participant } from 'types/participant';
 import { SoapConversation } from 'types/soap/soap-conversation';
+import { SoapPartialConversation } from 'views/sidebar/commons/types';
 
 describe('Normalize conversation', () => {
 	it('normalizes a read, untagged conversation from GetConv, which has no f, tn and fr', () => {
@@ -211,7 +212,7 @@ describe('Normalize conversation', () => {
 		const soapConversation = omit(generateConversationFromAPI({ id: '1' }), 'fr');
 
 		const normalizedConversation = mapToNormalizedConversation({
-			conversation: soapConversation as SoapConversation
+			conversation: soapConversation
 		});
 
 		expect(normalizedConversation).not.toHaveProperty('fragment');
@@ -220,8 +221,7 @@ describe('Normalize conversation', () => {
 
 describe('Normalize partial conversation', () => {
 	it('returns normalized partial conversation with all fields', () => {
-		const msg1 = generateSoapConversationMessage('msg1', '123');
-		const msg2 = generateSoapConversationMessage('msg2', '123');
+		// a conversation of a notification never carries its messages nor its fragment (ToXML.encodeItem)
 		const isFlagged = 'f';
 		const isUrgent = '!';
 		const hasAttachment = 'a';
@@ -233,27 +233,23 @@ describe('Normalize partial conversation', () => {
 			t: '1,2,3',
 			tn: 'tag1,tag2,tag3',
 			d: 123,
-			m: [msg1, msg2],
 			e: [
 				{ a: 'user1@example.com', t: ParticipantRole.FROM, p: '' },
 				{ a: 'user2@example.com', t: ParticipantRole.TO, p: '' }
 			],
-			su: 'Subject',
-			fr: 'fragment'
-		};
+			su: 'Subject'
+		} satisfies SoapPartialConversation;
 
 		const result = normalizePartialConversations([partialConversation])[0];
 		expect(result).toEqual({
 			id: '123',
 			tags: ['1', '2', '3'],
 			date: 123,
-			messageIds: ['msg1', 'msg2'],
 			participants: [
 				expect.objectContaining({ email: 'user1@example.com', type: 'f' }),
 				expect.objectContaining({ email: 'user2@example.com', type: 't' })
 			],
 			subject: 'Subject',
-			fragment: 'fragment',
 			read: true,
 			hasAttachment: true,
 			flagged: true,

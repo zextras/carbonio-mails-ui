@@ -26,9 +26,10 @@ export type SearchConvRequest = ZimbraRequest & {
 
 export type SearchConvResponse = {
 	more: boolean;
+	// a string, unlike the offset of Search (SearchConv.java:72)
 	offset: string;
 	m: Array<SoapMailMessage>;
-	orderBy: string;
+	sortBy: string;
 };
 
 export type SearchConvParameters = {

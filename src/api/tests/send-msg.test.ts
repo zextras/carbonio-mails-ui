@@ -13,8 +13,11 @@ import {
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { generateNewEditor } from '__test__/generators/editors';
 import { sendMsgFromEditor } from 'api/send-msg';
+import {
+	sendMsgNotSavedResponse,
+	sendMsgSavedToSentResponse
+} from 'api/tests/fixtures/send-msg-responses';
 import * as publishEvent from 'event-bus/publish-event';
-import * as getConvAction from 'store/emails/actions/get-conv-action';
 import * as getMessageAction from 'store/emails/actions/get-message';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
@@ -78,35 +81,41 @@ describe('sendMsgFromEditor', () => {
 
 		const quotaSpy = vi.spyOn(publishEvent, 'publishQuotaChangedEvent');
 		const getMessageSpy = vi.spyOn(getMessageAction, 'getMessageEmailStoreAction');
-		const getConvSpy = vi.spyOn(getConvAction, 'getConvEmailStoreAction');
 
 		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
 
 		expect(response).toEqual(fault);
 		expect(quotaSpy).toHaveBeenCalledTimes(1);
 		expect(getMessageSpy).not.toHaveBeenCalled();
-		expect(getConvSpy).not.toHaveBeenCalled();
 	});
 
-	it('should return the SendMsg response when the message is sent', async () => {
-		createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>('SendMsg', {
-			m: [{ id: '1' }],
-			_jsns: 'urn:zimbraMail'
-		});
+	it('should load the copy saved to Sent when the message is sent', async () => {
+		createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>(
+			'SendMsg',
+			sendMsgSavedToSentResponse
+		);
 		const quotaSpy = vi.spyOn(publishEvent, 'publishQuotaChangedEvent');
 		const getMessageSpy = vi
 			.spyOn(getMessageAction, 'getMessageEmailStoreAction')
 			.mockResolvedValue(undefined as never);
-		const getConvSpy = vi
-			.spyOn(getConvAction, 'getConvEmailStoreAction')
-			.mockResolvedValue(undefined as never);
 
 		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
 
-		expect(response).toEqual(expect.objectContaining({ m: [{ id: '1' }] }));
+		expect(response).toEqual(sendMsgSavedToSentResponse);
 		expect(quotaSpy).toHaveBeenCalledTimes(1);
-		expect(getMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ messageId: '1' }));
-		// the server answers with the message id only, never its conversation
-		expect(getConvSpy).not.toHaveBeenCalled();
+		expect(getMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ messageId: '263' }));
+	});
+
+	it('should not load any message when nothing is saved to Sent', async () => {
+		createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>(
+			'SendMsg',
+			sendMsgNotSavedResponse
+		);
+		const getMessageSpy = vi.spyOn(getMessageAction, 'getMessageEmailStoreAction');
+
+		const response = await sendMsgFromEditor({ editor: generateNewEditor({ recipients }) });
+
+		expect(response).toEqual(sendMsgNotSavedResponse);
+		expect(getMessageSpy).not.toHaveBeenCalled();
 	});
 });

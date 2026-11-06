@@ -5,7 +5,7 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { ErrorSoapBodyResponse, getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { sendMsgFromEditor } from 'api/send-msg';
@@ -14,14 +14,15 @@ import { getEditor } from 'store/editor/hooks/editors';
 import { computeSendAllowedStatus, useEditorSendAllowedStatus } from 'store/editor/hooks/statuses';
 import { useEditorsStore } from 'store/editor/store';
 import { EditorOperationAllowedStatus, MailsEditorV2 } from 'types/editor';
-import { SaveDraftResponse } from 'types/soap/save-draft';
+import { SoapSendMsgFault } from 'types/soap/send-msg';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
 	onCountdownTick?: (countdown: number, cancel: () => void) => void;
 	onSendStart?: () => void;
 	onComplete?: () => void;
-	onError?: (error: SaveDraftResponse | ErrorSoapBodyResponse) => void;
+	// no error when the request failed without a Fault (a network error)
+	onError?: (error?: SoapSendMsgFault) => void;
 	onCancel?: () => void;
 };
 
@@ -71,7 +72,7 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 					status: 'aborted',
 					abortReason: errorDescription
 				});
-				options?.onError && options.onError(res);
+				options?.onError?.(res);
 			} else {
 				useEditorsStore.getState().setSendProcessStatus(editorId, {
 					status: 'completed'
@@ -84,7 +85,7 @@ const issueSendRequest = (editorId: MailsEditorV2['id'], options?: SendMessageOp
 				status: 'aborted',
 				abortReason: err
 			});
-			options?.onError && options.onError(err);
+			options?.onError?.();
 		});
 };
 
@@ -150,7 +151,7 @@ const sendFromEditor = (
 				status: 'aborted',
 				abortReason: err
 			});
-			options?.onError && options.onError(err);
+			options?.onError?.();
 		})
 		.finally(() => {
 			window.removeEventListener('beforeunload', onBeforeUnload);
