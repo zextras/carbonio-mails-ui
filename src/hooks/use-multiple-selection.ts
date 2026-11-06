@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 
@@ -13,8 +13,9 @@ type UseMultipleSelectionProps = {
 	allAvailableItems?: Array<string>;
 	selectedItems?: Set<string>;
 	setSelectedItems?: React.Dispatch<React.SetStateAction<Set<string>>>;
-	lastSelectedIndex?: number | null;
-	setLastSelectedIndex?: React.Dispatch<React.SetStateAction<number | null>>;
+	anchorId?: string | null;
+	setAnchorId?: React.Dispatch<React.SetStateAction<string | null>>;
+	resetAnchorKey?: string;
 	isSearchModule?: boolean;
 };
 
@@ -32,8 +33,9 @@ export const useMultipleSelection = ({
 	allAvailableItems = [],
 	selectedItems = new Set<string>(),
 	setSelectedItems,
-	lastSelectedIndex = null,
-	setLastSelectedIndex
+	anchorId = null,
+	setAnchorId,
+	resetAnchorKey
 }: UseMultipleSelectionProps): UseMultypleSelectionReturnType => {
 	const { setMultipleSelectionCount } = useAppContext<AppContext>();
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
@@ -47,8 +49,21 @@ export const useMultipleSelection = ({
 		setIsAllSelected(selectedItems.size === allAvailableItems.length);
 	}, [selectedItems, allAvailableItems]);
 
+	// The anchor only means something inside the list it was set in: dropping it on a
+	// folder or sorting change keeps the next shift+click from extending a range the
+	// user can no longer see. Only a change of key resets, never the first render, so a
+	// remounting list does not lose an anchor it was given.
+	const previousResetAnchorKey = useRef(resetAnchorKey);
+	useEffect(() => {
+		if (previousResetAnchorKey.current === resetAnchorKey) {
+			return;
+		}
+		previousResetAnchorKey.current = resetAnchorKey;
+		setAnchorId?.(null);
+	}, [resetAnchorKey, setAnchorId]);
+
 	const toggleItemSelection = useCallback(
-		(id: string, index: number) => {
+		(id: string) => {
 			setSelectedItems?.((prev) => {
 				const newSet = new Set(prev);
 				const itemWasAlreadySelected = newSet.has(id);
@@ -58,52 +73,63 @@ export const useMultipleSelection = ({
 				} else {
 					newSet.add(id);
 				}
-				// Update lastSelectedIndex when provided
-				setLastSelectedIndex?.(index);
 				const newSize = newSet.size;
+				// The clicked item becomes the anchor of the next range. Emptying the
+				// selection exits selection mode, and the anchor goes with it.
+				setAnchorId?.(newSize > 0 ? id : null);
 				setIsSelectModeOn(!itemWasAlreadySelected || newSize > 0);
 
 				return newSet;
 			});
 		},
-		[setLastSelectedIndex, setSelectedItems]
+		[setAnchorId, setSelectedItems]
 	);
 
 	const deselectAll = useCallback(() => {
 		setSelectedItems?.(new Set());
+		setAnchorId?.(null);
 		setIsSelectModeOn(false);
-	}, [setSelectedItems]);
+	}, [setAnchorId, setSelectedItems]);
 
 	const selectAll = useCallback(() => {
 		setIsSelectModeOn(true);
 		setSelectedItems?.(new Set(allAvailableItems));
-	}, [allAvailableItems, setSelectedItems]);
+		setAnchorId?.(null);
+	}, [allAvailableItems, setAnchorId, setSelectedItems]);
 
 	const selectAllModeOff = useCallback(() => {
 		setIsSelectModeOn(false);
 		setSelectedItems?.(new Set());
-	}, [setSelectedItems]);
+		setAnchorId?.(null);
+	}, [setAnchorId, setSelectedItems]);
 
 	const selectRange = (index: number, id: string, event: React.MouseEvent): void => {
-		if (!isSelectModeOn) {
-			toggleItemSelection(id, index);
+		// An anchor that is no longer in the list (deleted, moved, filtered out by a new
+		// query) resolves to -1 and degrades to a plain single toggle.
+		const anchorIndex = anchorId === null ? -1 : allAvailableItems.indexOf(anchorId);
+		const canExtendRange = isSelectModeOn && event.shiftKey && anchorIndex !== -1;
+
+		if (!canExtendRange) {
+			// Plain click, ctrl/cmd+click, and any click with no usable anchor all behave
+			// the same here: this is a checkbox list, so a single click already toggles
+			// one item without clearing the rest.
+			toggleItemSelection(id);
 			return;
 		}
 
-		if (event.shiftKey && lastSelectedIndex !== null) {
-			const start = Math.min(lastSelectedIndex, index);
-			const end = Math.max(lastSelectedIndex, index);
-			const idsToSelect = allAvailableItems.slice(start, end + 1);
-			setSelectedItems?.((prev) => {
-				const newSet = new Set(prev);
-				idsToSelect.forEach((itemId) => newSet.add(itemId));
-				return newSet;
-			});
-			setIsSelectModeOn(true);
-		} else {
-			toggleItemSelection(id, index);
-			setLastSelectedIndex?.(index);
-		}
+		// The range only ever adds: newSelection = union(currentSelection, [min..max]).
+		// It fills the gaps and never toggles an already selected item off, so the result
+		// is the same whether the shift+click goes forward or backward from the anchor.
+		const start = Math.min(anchorIndex, index);
+		const end = Math.max(anchorIndex, index);
+		const idsToSelect = allAvailableItems.slice(start, end + 1);
+		setSelectedItems?.((prev) => {
+			const newSet = new Set(prev);
+			idsToSelect.forEach((itemId) => newSet.add(itemId));
+			return newSet;
+		});
+		// The anchor stays put, so repeated shift+clicks keep growing the same range.
+		setIsSelectModeOn(true);
 	};
 
 	return {
