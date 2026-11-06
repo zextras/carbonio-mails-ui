@@ -6,7 +6,7 @@
 import type { GetFilterRulesResponse } from 'types/filters';
 
 // GetFilterRules of three rules: two with the tests and actions the editor offers, one with kinds the server
-// accepts and the editor doesn't (captured with carbonio-mcp-dev). negative and caseSensitive are sent only when
+// accepts and the editor doesn't (a real response from the test server). negative and caseSensitive are sent only when
 // true, index and d are numbers, fileInto always carries copy, inviteTest's method is a list of _content
 export const getFilterRulesResponse = {
 	filterRules: [

@@ -41,6 +41,8 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewEditor, readyToBeSentEditorTestCase } from '__test__/generators/editors';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
+import { getMsgSenderWithoutAddressResponse } from 'normalizations/tests/fixtures/get-msg-sender-without-address';
 import { addEditor, useEditorsStore } from 'store/editor';
 import {
 	generateEditAsNewEditor,
@@ -740,6 +742,23 @@ describe('Edit view', () => {
 				const { m: msg } = await draftSavingInterceptor;
 				const sentRecipient = msg.e[0];
 				expect(sentRecipient.a).toBe(recipient);
+			});
+
+			it('clicks on the save button in a reply to a sender without address (CO-4649)', async () => {
+				// a bounce, From: "Mail Delivery System" <>, as the server sends it: its participant has no address
+				const bounce = normalizeCompleteMailMessageFromSoap(
+					getMsgSenderWithoutAddressResponse.m[0],
+					true
+				);
+				const editor = generateReplyMsgEditor(bounce);
+				setupEditorStore({ editors: [editor] });
+				const saveDraftInterceptor = aSuccessfullSaveDraft();
+
+				const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+				await user.click(getSaveButton());
+
+				const { m: msg } = await saveDraftInterceptor;
+				expect(msg.e).toContainEqual({ t: ParticipantRole.TO, a: '', p: 'Mail Delivery System' });
 			});
 
 			// FIXME
