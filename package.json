@@ -117,7 +117,7 @@
 		"@mui/material": "5.18.0",
 		"@types/webpack": "5.28.5",
 		"@types/webpack-env": "1.18.8",
-		"@zextras/carbonio-design-system": "12.0.4",
+		"@zextras/carbonio-design-system": "12.2.4",
 		"@zextras/carbonio-shell-ui": "14.2.2",
 		"@zextras/carbonio-ui-commons": "2.6.2",
 		"@zextras/carbonio-ui-preview": "5.0.1",
