@@ -3,10 +3,10 @@
 	"version": "1.51.14",
 	"description": "Mails module",
 	"main": "src/app.tsx",
-	"packageManager": "pnpm@10.32.1",
+	"packageManager": "pnpm@12.18.0",
 	"engines": {
 		"node": "v22",
-		"pnpm": ">=10"
+		"pnpm": ">=12.18.0"
 	},
 	"scripts": {
 		"bump-version": "semantic-release",
