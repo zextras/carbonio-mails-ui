@@ -20,12 +20,19 @@ export type ConvActionOperation =
 	| '!spam'
 	| 'update';
 
+/**
+ * Limits a conversation action to the messages in a group of folders:
+ * t = Trash and the folders inside it, j = Junk, s = Sent, d = Drafts, o = every other folder
+ */
+export type ConvActionTargetConstraint = 't' | 'j' | 's' | 'd' | 'o';
+
 export type ConvActionRequest = ZimbraRequest & {
 	action: {
 		id?: string;
 		op?: ConvActionOperation;
 		tn?: string;
 		l?: string;
+		tcon?: ConvActionTargetConstraint;
 	};
 };
 

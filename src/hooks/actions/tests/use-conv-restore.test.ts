@@ -75,7 +75,7 @@ describe('useConvRestore', () => {
 		});
 
 		describe('execute', () => {
-			it('should call the ConvAction API when in conversation view', async () => {
+			it('should call the ConvAction API, limited to the messages in Trash, when in conversation view', async () => {
 				populateFoldersStore({ noSharedAccounts: true });
 
 				const interceptor = createSoapAPIInterceptor('ConvAction');
@@ -84,7 +84,9 @@ describe('useConvRestore', () => {
 					result: { current: functions },
 					user
 				} = setupHook(useConvRestoreFn, {
-					initialProps: [{ conversationId, folderId: FOLDERS.TRASH }]
+					initialProps: [{ conversationId, folderId: FOLDERS.TRASH }],
+					initialEntries: [`/folder/${FOLDERS.TRASH}`],
+					path: '/folder/:folderId/*'
 				});
 
 				await act(async () => {
@@ -111,8 +113,9 @@ describe('useConvRestore', () => {
 				const request = await interceptor;
 
 				await waitFor(async () => {
+					// Only the messages in Trash are restored, not the ones of the conversation in other folders
 					expect(request).toEqual(
-						expect.objectContaining({ action: expect.objectContaining({ op: 'move' }) })
+						expect.objectContaining({ action: expect.objectContaining({ op: 'move', tcon: 't' }) })
 					);
 				});
 			});

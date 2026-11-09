@@ -10,7 +10,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
 import { publishQuotaChangedEvent } from 'event-bus/publish-event';
-import { isSpam, isTrash } from 'helpers/folders';
+import { getConvActionTargetConstraint, isSpam, isTrash } from 'helpers/folders';
+import {
+	useConvActionTargetConstraint,
+	useSentMailFolder
+} from 'hooks/use-conv-action-target-constraint';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { getConversationMessages } from 'store/emails/store';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
@@ -33,19 +37,24 @@ export const useConvDeletePermanentlyFn = ({
 
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
+	const tcon = useConvActionTargetConstraint();
+	const sentMailFolder = useSentMailFolder();
 
 	const deleteConversation = useCallback(
 		async (onClose: () => void) => {
 			const totalSize = ids.reduce((sum, id) => {
-				const convMsgSize = getConversationMessages(id).reduce(
-					(msgSum, msg) => msgSum + (msg.size ?? 0),
-					0
-				);
+				// Only the messages in the group of the open folder are deleted
+				const convMsgSize = getConversationMessages(id)
+					.filter(
+						(msg) => !tcon || getConvActionTargetConstraint(msg.parent, sentMailFolder) === tcon
+					)
+					.reduce((msgSum, msg) => msgSum + (msg.size ?? 0), 0);
 				return sum + convMsgSize;
 			}, 0);
 			const response = await convActionEmailStoreAction({
 				operation: 'delete',
-				ids
+				ids,
+				tcon
 			});
 			if (!('Fault' in response)) {
 				publishQuotaChangedEvent(totalSize);
@@ -69,7 +78,7 @@ export const useConvDeletePermanentlyFn = ({
 			}
 			onClose();
 		},
-		[ids, onActionComplete, createSnackbar, t]
+		[ids, tcon, sentMailFolder, onActionComplete, createSnackbar, t]
 	);
 
 	const execute = useCallback((): void => {

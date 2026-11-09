@@ -15,12 +15,18 @@ import { times } from 'lodash';
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { TIMERS } from '__test__/constants';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import * as publishEvent from 'event-bus/publish-event';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
 } from 'hooks/actions/use-conv-delete-permanently';
-import { ConvActionRequest } from 'types/soap/conv-action';
+import { getConversationMessages, updateConversations, updateMessages } from 'store/emails/store';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
+
+const DELETE_PERMANENTLY_BUTTON = 'Delete permanently';
 
 describe('useConvDeletePermanently', () => {
 	describe('Descriptor', () => {
@@ -140,7 +146,7 @@ describe('useConvDeletePermanently', () => {
 					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
-				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
+				const confirmButton = screen.getByRole('button', { name: DELETE_PERMANENTLY_BUTTON });
 				expect(confirmButton).toBeVisible();
 
 				fireEvent.click(confirmButton);
@@ -148,6 +154,67 @@ describe('useConvDeletePermanently', () => {
 				const request = await act(async () => interceptor);
 
 				expect(request.action.op).toEqual('delete');
+			});
+
+			it.each`
+				openFolder | openFolderId     | tcon
+				${'Junk'}  | ${FOLDERS.SPAM}  | ${'j'}
+				${'Trash'} | ${FOLDERS.TRASH} | ${'t'}
+			`(
+				'should delete only the messages in the group of the folder open in the route ($openFolder, tcon $tcon)',
+				async ({ openFolderId, tcon }) => {
+					const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+					const {
+						result: { current: functions }
+					} = setupHook(useConvDeletePermanentlyFn, {
+						initialProps: [{ ids, folderId: openFolderId }],
+						initialEntries: [`/folder/${openFolderId}`],
+						path: '/folder/:folderId/*'
+					});
+
+					act(() => {
+						functions.execute();
+					});
+					act(() => {
+						vi.advanceTimersByTime(TIMERS.modal_open_delay);
+					});
+					fireEvent.click(screen.getByRole('button', { name: DELETE_PERMANENTLY_BUTTON }));
+
+					const request = await act(async () => interceptor);
+					expect(request.action.op).toEqual('delete');
+					expect(request.action.tcon).toEqual(tcon);
+				}
+			);
+
+			it('should report to the quota only the size of the messages it deletes', async () => {
+				const quotaSpy = vi.spyOn(publishEvent, 'publishQuotaChangedEvent');
+				updateMessages([
+					{ ...generateMessage({ id: '268', cid: '270', folderId: FOLDERS.SPAM }), size: 1000 },
+					{ ...generateMessage({ id: '269', cid: '270', folderId: FOLDERS.SENT }), size: 500 }
+				]);
+				updateConversations([generateConversation({ id: '270', messageIds: ['269', '268'] })]);
+				// The store is updated through a task queue
+				await vi.waitFor(() => expect(getConversationMessages('270')).toHaveLength(2));
+				createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+					action: { id: '270', op: 'delete' }
+				});
+				const {
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					initialProps: [{ ids: ['270'], folderId: FOLDERS.SPAM }],
+					initialEntries: [`/folder/${FOLDERS.SPAM}`],
+					path: '/folder/:folderId/*'
+				});
+
+				act(() => {
+					functions.execute();
+				});
+				act(() => {
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+				fireEvent.click(screen.getByRole('button', { name: DELETE_PERMANENTLY_BUTTON }));
+
+				await vi.waitFor(() => expect(quotaSpy).toHaveBeenCalledWith(1000));
 			});
 
 			it('should call the onActionComplete callback when the deletion is successful', async () => {
@@ -168,7 +235,7 @@ describe('useConvDeletePermanently', () => {
 					vi.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
-				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
+				const confirmButton = screen.getByRole('button', { name: DELETE_PERMANENTLY_BUTTON });
 				expect(confirmButton).toBeVisible();
 
 				await act(async () => user.click(confirmButton));

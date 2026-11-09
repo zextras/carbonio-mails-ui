@@ -168,6 +168,52 @@ describe('MoveConversation', () => {
 		expect(request.action.tn).toBeUndefined();
 	});
 
+	it('should limit the move to the given target constraint', async () => {
+		populateFoldersStore();
+		const destinationFolder = FOLDERS.INBOX;
+		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+			'ConvAction',
+			{ action: { id: convIds.join(','), op: 'move' } }
+		);
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={vi.fn()}
+				isRestore={false}
+				tcon="o"
+			/>
+		);
+		makeListItemsVisible();
+		await user.click(await screen.findByTestId(`folder-accordion-item-${destinationFolder}`));
+		await user.click(await screen.findByRole('button', { name: /Move/ }));
+
+		const request = await interceptor;
+		expect(request.action.tcon).toBe('o');
+	});
+
+	it('should not send a target constraint when none is given', async () => {
+		populateFoldersStore();
+		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+			'ConvAction',
+			{ action: { id: convIds.join(','), op: 'move' } }
+		);
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={vi.fn()}
+				isRestore={false}
+			/>
+		);
+		makeListItemsVisible();
+		await user.click(await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`));
+		await user.click(await screen.findByRole('button', { name: /Move/ }));
+
+		const request = await interceptor;
+		expect(request.action).not.toHaveProperty('tcon');
+	});
+
 	it('should show an error message if API call returns a Fault case', async () => {
 		populateFoldersStore();
 

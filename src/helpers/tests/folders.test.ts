@@ -13,6 +13,7 @@ import {
 	getRootsMap
 } from '@zextras/carbonio-ui-commons';
 
+import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { generateMessage } from '__test__/generators/generateMessage';
@@ -23,6 +24,7 @@ import {
 	getFoldersArray,
 	getParentFolderId,
 	getArchiveFolderId,
+	getConvActionTargetConstraint,
 	isDraft,
 	isInbox,
 	isInboxSubfolder,
@@ -334,6 +336,11 @@ describe('isTrashed', () => {
 		populateFoldersStore();
 		expect(isTrashed({ folderId: FOLDERS.INBOX })).toBe(false);
 	});
+
+	test('A root folder whose name starts with "Trash" is not recognized as trashed', () => {
+		const folder = generateFolder({ id: '5004', name: 'Trashcan', absFolderPath: '/Trashcan' });
+		expect(isTrashed({ folder })).toBe(false);
+	});
 });
 
 describe('getParentFolderId', () => {
@@ -393,5 +400,74 @@ describe('getArchiveFolderId', () => {
 		const sharedAccountTrashId = `${sharedAccountIdentity.id}:${FOLDERS.TRASH}`;
 		const archiveId = getArchiveFolderId(sharedAccountTrashId);
 		expect(archiveId).toBe(`${sharedAccountIdentity.id}:${FOLDERS.ARCHIVE}`);
+	});
+});
+
+describe('getConvActionTargetConstraint', () => {
+	const trashedFolderId = '5001';
+	const draftsSubfolderId = '5002';
+	const sentSubfolderId = '5003';
+	const trashLikeFolderId = '5004';
+
+	beforeEach(() => {
+		populateFoldersStore({
+			additionalFolders: {
+				[trashedFolderId]: generateFolder({
+					id: trashedFolderId,
+					name: 'Old projects',
+					absFolderPath: '/Trash/Old projects',
+					parent: FOLDERS.TRASH
+				}),
+				[draftsSubfolderId]: generateFolder({
+					id: draftsSubfolderId,
+					name: 'Templates',
+					absFolderPath: '/Drafts/Templates',
+					parent: FOLDERS.DRAFTS
+				}),
+				[trashLikeFolderId]: generateFolder({
+					id: trashLikeFolderId,
+					name: 'Trashcan',
+					absFolderPath: '/Trashcan',
+					parent: FOLDERS.USER_ROOT
+				}),
+				[sentSubfolderId]: generateFolder({
+					id: sentSubfolderId,
+					name: '2025',
+					absFolderPath: '/Sent/2025',
+					parent: FOLDERS.SENT
+				})
+			}
+		});
+	});
+
+	test.each`
+		desc                                  | folderId             | tcon
+		${'the trash'}                        | ${FOLDERS.TRASH}     | ${'t'}
+		${'a folder inside the trash'}        | ${trashedFolderId}   | ${'t'}
+		${'the junk folder'}                  | ${FOLDERS.SPAM}      | ${'j'}
+		${'the sent folder'}                  | ${FOLDERS.SENT}      | ${'s'}
+		${'the drafts folder'}                | ${FOLDERS.DRAFTS}    | ${'d'}
+		${'the inbox'}                        | ${FOLDERS.INBOX}     | ${'o'}
+		${'the archive'}                      | ${FOLDERS.ARCHIVE}   | ${'o'}
+		${'a subfolder of the drafts folder'} | ${draftsSubfolderId} | ${'o'}
+		${'a subfolder of the sent folder'}   | ${sentSubfolderId}   | ${'o'}
+		${'a user folder named Trashcan'}     | ${trashLikeFolderId} | ${'o'}
+	`('returns $tcon for $desc', ({ folderId, tcon }) => {
+		expect(getConvActionTargetConstraint(folderId, 'sent')).toBe(tcon);
+	});
+
+	test('returns undefined when there is no folder, so the action applies to the whole conversation', () => {
+		expect(getConvActionTargetConstraint(undefined, 'sent')).toBeUndefined();
+	});
+
+	test.each(['sent', 'Sent', '/Sent', undefined])(
+		'returns s for the sent folder when the sent mail folder preference is %s',
+		(sentMailFolder) => {
+			expect(getConvActionTargetConstraint(FOLDERS.SENT, sentMailFolder)).toBe('s');
+		}
+	);
+
+	test('returns o for the sent folder when sent mail is saved in another folder, as the server does', () => {
+		expect(getConvActionTargetConstraint(FOLDERS.SENT, 'Inbox/Sent by me')).toBe('o');
 	});
 });
