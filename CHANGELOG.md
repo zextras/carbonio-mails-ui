@@ -1,3 +1,7 @@
+## <small>1.51.15 (2026-11-10)</small>
+
+* fix(deps): update carbonio-shell-ui to v15.5.2 and carbonio-search-ui to v0.1.26 (#1426) ([3e2b07a](https://github.com/zextras/carbonio-mails-ui/commit/3e2b07a)), closes [#1426](https://github.com/zextras/carbonio-mails-ui/issues/1426)
+
 ## <small>1.51.14 (2026-11-06)</small>
 
 * fix: support collapsed secondary bar and highlight active folder item ([f549087](https://github.com/zextras/carbonio-mails-ui/commit/f549087)), closes [#1351](https://github.com/zextras/carbonio-mails-ui/issues/1351)
