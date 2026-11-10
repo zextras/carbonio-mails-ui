@@ -46,7 +46,6 @@ beforeAll(() => {
 	testingUtility.setAccounts({
 		account: generateAccount(),
 		authenticated: true,
-		settings: generateSettings(),
-		usedQuota: 0
+		settings: generateSettings()
 	});
 });
