@@ -232,7 +232,7 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
 	});
 
-	it('imports a marked span whose text is not a link as plain content, not as a removed link', async () => {
+	it('imports a marked span whose text is not a link without the removed-link wrapper', async () => {
 		const { editorId, user } = setupEditor(
 			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}"><a href="${LINK_URL}">${SCRIPT_URL}</a></span></p>`
 		);
