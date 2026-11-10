@@ -39,13 +39,17 @@ const MATCHERS = [
 ];
 
 /**
- * Matches `text` against the auto-link matchers only when the whole text is one link,
- * the same condition the auto-link plugin requires to keep an existing auto-link.
+ * Returns the auto-link match of `text` only when the whole text is that link: the
+ * first matcher that matches decides, as in the auto-link plugin, which keeps an
+ * existing auto-link only under the same condition.
  */
-export const matchWholeAutoLink = (text: string): ReturnType<LinkMatcher> =>
-	MATCHERS.map((matcher) => matcher(text)).find(
-		(match) => match?.index === 0 && match.length === text.length
-	) ?? null;
+export const matchWholeAutoLink = (text: string): ReturnType<LinkMatcher> => {
+	const match = MATCHERS.reduce<ReturnType<LinkMatcher>>(
+		(found, matcher) => found ?? matcher(text),
+		null
+	);
+	return match?.text === text ? match : null;
+};
 
 export const AutoLinkPlugin = (): React.JSX.Element => (
 	<LexicalAutoLinkPlugin matchers={MATCHERS} />

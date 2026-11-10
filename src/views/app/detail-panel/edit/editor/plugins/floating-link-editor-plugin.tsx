@@ -8,10 +8,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { $isAutoLinkNode, $isLinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $findMatchingParent } from '@lexical/utils';
+import { $findMatchingParent, $unwrapNode } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNearestNodeFromDOMNode, $getNodeByKey } from 'lexical';
+import { $getNearestNodeFromDOMNode, $getNodeByKey, $isTextNode } from 'lexical';
 import { createPortal } from 'react-dom';
 
 import { matchWholeAutoLink } from './auto-link-plugin';
@@ -120,6 +120,7 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 					arm();
 					return;
 				}
+				anchorRef.current = null;
 				setLinkInfo(null);
 			}, HIDE_DELAY_MS);
 		};
@@ -247,18 +248,18 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				if ($isAutoLinkNode(node)) {
 					node.setIsUnlinked(true);
 				} else if ($isLinkNode(node)) {
-					node.getChildren().forEach((child) => node.insertBefore(child));
-					node.remove();
+					$unwrapNode(node);
 				}
 			});
 		}
 		dismiss();
 	}, [dismiss, editor, linkInfo]);
 
-	// Turns a removed auto-link back into a link, with the URL derived again from its
-	// text: the auto-link plugin only re-checks a link whose text is a direct child,
-	// and the node may have been loaded from someone else's HTML. A text that is no
-	// longer a link is unwrapped instead.
+	// Turns a removed auto-link back into a link when it holds plain text alone and
+	// that text is one whole link, the checks the auto-link plugin makes on its text
+	// edits (keeping the URL in sync with the text). The plugin never runs them on a
+	// node without direct text, such as one wrapping another link loaded from
+	// someone else's HTML: that one is unwrapped instead.
 	const restoreLink = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
@@ -267,13 +268,13 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 				if (!$isAutoLinkNode(node)) {
 					return;
 				}
-				const match = matchWholeAutoLink(node.getTextContent());
-				if (match) {
-					node.setURL(match.url);
+				const plainText = node
+					.getChildren()
+					.every((child) => $isTextNode(child) && child.isSimpleText());
+				if (plainText && matchWholeAutoLink(node.getTextContent())) {
 					node.setIsUnlinked(false);
 				} else {
-					node.getChildren().forEach((child) => node.insertBefore(child));
-					node.remove();
+					$unwrapNode(node);
 				}
 			});
 		}

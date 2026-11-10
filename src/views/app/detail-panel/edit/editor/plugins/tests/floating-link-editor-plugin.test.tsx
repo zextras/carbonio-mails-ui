@@ -253,7 +253,25 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
 	});
 
-	it('restores a removed link loaded from HTML with the URL derived from its text', async () => {
+	it('restores a removed link loaded from HTML as a link opening in a new window, with the URL of its text', async () => {
+		// The auto-link plugin sets URL and attributes while the HTML is imported: this
+		// fails if it is mounted after the plugin that loads the content.
+		const linkText = 'www.custom-link.com';
+		const { user } = setupEditor(
+			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}">${linkText}</span></p>`
+		);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		await user.hover(await within(editorElement).findByText(linkText));
+		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
+
+		const link = await within(editorElement).findByRole('link', { name: linkText });
+		expect(link).toHaveAttribute('href', `https://${linkText}`);
+		expect(link).toHaveAttribute('target', '_blank');
+		expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
+	it('unwraps a removed link holding another link when it is restored, keeping the inner link', async () => {
 		const linkText = 'www.custom-link.com';
 		const { editorId, user } = setupEditor(
 			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}"><a href="${LINK_URL}">${linkText}</a></span></p>`
@@ -266,13 +284,10 @@ describe('FloatingLinkEditorPlugin', () => {
 		await user.hover(innerLink.parentElement ?? innerLink);
 		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
 
-		// The restored link wraps the inner one: HTML cannot nest links, so it is exported empty.
 		await waitFor(() => {
-			expect(linksOf(editorId)).toContainEqual(
-				expect.objectContaining({ href: `https://${linkText}` })
-			);
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: linkText }]);
 		});
-		expect(richTextOf(editorId)).not.toContain(UNSAFE_URL_REPLACEMENT);
+		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
 	});
 
 	it('does not put an unsafe URL in the link of the floating card', async () => {

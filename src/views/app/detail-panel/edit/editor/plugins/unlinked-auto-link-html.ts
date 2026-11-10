@@ -48,8 +48,7 @@ export const withUnlinkedAutoLinkImport = (base: DOMConversionMap): DOMConversio
 						const match = matchWholeAutoLink(domElement.textContent ?? '');
 						// Not a link: the children are imported as plain content.
 						return {
-							node:
-								match && $createAutoLinkNode(match.url, { ...match.attributes, isUnlinked: true })
+							node: match && $createAutoLinkNode(match.url, { isUnlinked: true })
 						};
 					},
 					priority: 2
