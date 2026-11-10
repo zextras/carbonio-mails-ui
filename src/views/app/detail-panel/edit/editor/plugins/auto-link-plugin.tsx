@@ -38,6 +38,15 @@ const MATCHERS = [
 	createNewWindowLinkMatcher(EMAIL_REGEX, (text) => `mailto:${text}`)
 ];
 
+/**
+ * Matches `text` against the auto-link matchers only when the whole text is one link,
+ * the same condition the auto-link plugin requires to keep an existing auto-link.
+ */
+export const matchWholeAutoLink = (text: string): ReturnType<LinkMatcher> =>
+	MATCHERS.map((matcher) => matcher(text)).find(
+		(match) => match?.index === 0 && match.length === text.length
+	) ?? null;
+
 export const AutoLinkPlugin = (): React.JSX.Element => (
 	<LexicalAutoLinkPlugin matchers={MATCHERS} />
 );
