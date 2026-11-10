@@ -66,11 +66,44 @@ export const dataUriToFile = (dataUri: string, fileName: string): File | undefin
 };
 
 /**
- * Returns a plausible file name for an image extracted from a `data:` URI,
- * which carries no name of its own.
+ * Returns a plausible file name for an inline image, which carries no name of
+ * its own (extracted from a `data:` URI, or downloaded from another message).
  */
-export const getDataUriFileName = (dataUri: string, index: number): string => {
-	const mimeType = DATA_IMAGE_URI_REGEXP.exec(dataUri)?.[1] ?? 'image/png';
+export const getInlineImageFileName = (mimeType: string, index: number): string => {
 	const extension = mimeType.replace('image/', '').replace('+xml', '');
 	return `inline-image-${index}.${extension}`;
+};
+
+/**
+ * Returns a plausible file name for an image extracted from a `data:` URI.
+ */
+export const getDataUriFileName = (dataUri: string, index: number): string =>
+	getInlineImageFileName(DATA_IMAGE_URI_REGEXP.exec(dataUri)?.[1] ?? 'image/png', index);
+
+/**
+ * Downloads an image (with the credentials of the current session) and wraps it
+ * into a {@link File}, so it can be uploaded as a regular inline attachment.
+ *
+ * @param getFileName - builds the file name out of the mime type the server
+ * answered with.
+ * @returns the file, or `undefined` if the download fails or the response is
+ * not an image.
+ */
+export const fetchImageAsFile = async (
+	url: string,
+	getFileName: (mimeType: string) => string
+): Promise<File | undefined> => {
+	try {
+		const response = await fetch(url, { credentials: 'same-origin' });
+		if (!response.ok) {
+			return undefined;
+		}
+		const blob = await response.blob();
+		if (!blob.type.startsWith('image/')) {
+			return undefined;
+		}
+		return new File([blob], getFileName(blob.type), { type: blob.type });
+	} catch {
+		return undefined;
+	}
 };

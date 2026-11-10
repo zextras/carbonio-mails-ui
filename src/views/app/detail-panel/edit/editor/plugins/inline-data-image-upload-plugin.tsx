@@ -13,8 +13,18 @@ import { registerInlineImageConverter } from './inline-image-conversion-registry
 import { $isImageNode } from './nodes/image-node';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import { TIMEOUTS } from 'constants/index';
-import { composeAttachmentDownloadUrl } from 'helpers/attachments';
-import { dataUriToFile, getDataUriFileName, isDataImageUri } from 'helpers/inline-images';
+import {
+	composeAttachmentDownloadUrl,
+	getCidFromCidUrl,
+	isDownloadServicedUrl
+} from 'helpers/attachments';
+import {
+	dataUriToFile,
+	fetchImageAsFile,
+	getDataUriFileName,
+	getInlineImageFileName,
+	isDataImageUri
+} from 'helpers/inline-images';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
 import { useEditorIsDirty } from 'store/editor/hooks/statuses';
 import { useEditorAttachments } from 'store/editor/index';
@@ -25,19 +35,35 @@ type InlineDataImageUploadPluginProps = {
 	editorId: MailsEditorV2['id'];
 };
 
-type PendingDataUriImage = {
+type PendingImage = {
 	key: NodeKey;
 	src: string;
+	/**
+	 * `data-uri`: the image is embedded in the markup.
+	 * `foreign-service-url`: the image is served by the download service from a
+	 * part which does not belong to this message, e.g. copied from another email.
+	 */
+	origin: 'data-uri' | 'foreign-service-url';
 };
 
 /**
- * Collects the images still carrying a `data:` URI which have not been attempted
- * yet. Must run inside an editor state read, since it walks the current tree.
+ * Collects the images which are not backed by an attachment of this message and
+ * have not been attempted yet. Must run inside an editor state read, since it
+ * walks the current tree.
  */
-function $collectPendingDataUriImages(attemptedKeys: Set<NodeKey>): Array<PendingDataUriImage> {
-	return $dfs().reduce<Array<PendingDataUriImage>>((pending, { node }) => {
-		if ($isImageNode(node) && !attemptedKeys.has(node.getKey()) && isDataImageUri(node.getSrc())) {
-			pending.push({ key: node.getKey(), src: node.getSrc() });
+function $collectPendingImages(
+	attemptedKeys: Set<NodeKey>,
+	isTrackedCidUrl: (cidUrl: string | undefined) => boolean
+): Array<PendingImage> {
+	return $dfs().reduce<Array<PendingImage>>((pending, { node }) => {
+		if (!$isImageNode(node) || attemptedKeys.has(node.getKey())) {
+			return pending;
+		}
+		const src = node.getSrc();
+		if (isDataImageUri(src)) {
+			pending.push({ key: node.getKey(), src, origin: 'data-uri' });
+		} else if (isDownloadServicedUrl(src) && !isTrackedCidUrl(node.getCidUrl())) {
+			pending.push({ key: node.getKey(), src, origin: 'foreign-service-url' });
 		}
 		return pending;
 	}, []);
@@ -73,6 +99,13 @@ function repointImageNode(
  * `cid:` src back on save draft / send) so the recipient gets a
  * `multipart/related` part instead of base64 markup.
  *
+ * The same goes for the images copied from another message (alone or together
+ * with text): they keep the download url of the part of that message, and the
+ * cid it carries, neither of which exists in the message being written, so the
+ * recipient would get a broken image. Any image served by the download service
+ * whose cid is not an inline attachment of this message is downloaded and
+ * uploaded as a new inline attachment.
+ *
  * The conversion is deliberately **not** run on mount: uploading requires saving
  * the draft, and doing that just because a compose window was opened would leave
  * a draft and an orphan attachment behind for a message the user never wrote.
@@ -107,6 +140,8 @@ export const InlineDataImageUploadPlugin = ({
 	/** Resolvers of the promises handed to the send handlers. */
 	const waitersRef = useRef<Array<() => void>>([]);
 	const uploadCountRef = useRef(0);
+	/** Downloads of images copied from other messages, still in progress. */
+	const fetchesRef = useRef<Set<Promise<void>>>(new Set());
 	/**
 	 * Whether the user did something which justifies creating a draft. Latched:
 	 * `isDirty` goes back to false after every successful save.
@@ -118,18 +153,95 @@ export const InlineDataImageUploadPlugin = ({
 		waitersRef.current = [];
 	}, []);
 
+	const upload = useCallback(
+		(files: Array<File>, keys: Array<NodeKey>): void => {
+			// The returned unsaved attachments are positional with `files`, and each
+			// already carries the content id the draft save will persist.
+			const unsavedAttachments = addInlineAttachments(files, { saveImmediately: true });
+			unsavedAttachments.forEach((unsavedAttachment, index) => {
+				const key = keys[index];
+				if (unsavedAttachment.contentId && key !== undefined) {
+					pendingRef.current.set(unsavedAttachment.contentId, key);
+				}
+			});
+		},
+		[addInlineAttachments]
+	);
+
+	/** Whether the cid refers to an inline attachment of this very message. */
+	const isTrackedCidUrl = useCallback(
+		(cidUrl: string | undefined): boolean => {
+			const cid = cidUrl ? getCidFromCidUrl(cidUrl) : null;
+			if (!cid) {
+				return false;
+			}
+			const { savedAttachments: saved = [], unsavedAttachments: unsaved = [] } =
+				useEditorsStore.getState().editors[editorId] ?? {};
+			return [...saved, ...unsaved].some(
+				(attachment) =>
+					attachment.isInline &&
+					attachment.contentId !== undefined &&
+					areContentIdsEqual(attachment.contentId, cid)
+			);
+		},
+		[editorId]
+	);
+
+	/**
+	 * Downloads the images copied from another message and uploads them as
+	 * inline attachments of this one. Their download url belongs to the other
+	 * message, so it cannot be resolved by the recipient: they need a part of
+	 * their own. The images whose download fails (or whose node is gone in the
+	 * meantime) are left untouched.
+	 */
+	const fetchAndUpload = useCallback(
+		(images: Array<PendingImage>): void => {
+			const task: Promise<void> = Promise.all(
+				images.map(({ src }) => {
+					uploadCountRef.current += 1;
+					const index = uploadCountRef.current;
+					return fetchImageAsFile(src, (mimeType) => getInlineImageFileName(mimeType, index));
+				})
+			)
+				.then((fetchedFiles) => {
+					const stillInEditor = editor
+						.getEditorState()
+						.read(() => images.map(({ key }) => $getNodeByKey(key) !== null));
+					const files: Array<File> = [];
+					const keys: Array<NodeKey> = [];
+					fetchedFiles.forEach((file, index) => {
+						if (file && stillInEditor[index]) {
+							files.push(file);
+							keys.push(images[index].key);
+						}
+					});
+					if (files.length > 0) {
+						upload(files, keys);
+					}
+				})
+				.finally(() => {
+					fetchesRef.current.delete(task);
+				});
+			fetchesRef.current.add(task);
+		},
+		[editor, upload]
+	);
+
 	const convert = useCallback((): void => {
 		const pending = editor
 			.getEditorState()
-			.read(() => $collectPendingDataUriImages(attemptedKeysRef.current));
+			.read(() => $collectPendingImages(attemptedKeysRef.current, isTrackedCidUrl));
 		if (pending.length === 0) {
 			return;
 		}
+		pending.forEach(({ key }) => attemptedKeysRef.current.add(key));
 
 		const files: Array<File> = [];
 		const keys: Array<NodeKey> = [];
-		pending.forEach(({ key, src }) => {
-			attemptedKeysRef.current.add(key);
+		pending.forEach(({ key, src, origin }) => {
+			if (origin !== 'data-uri') {
+				return;
+			}
 			uploadCountRef.current += 1;
 			const file = dataUriToFile(src, getDataUriFileName(src, uploadCountRef.current));
 			if (file) {
@@ -137,20 +249,15 @@ export const InlineDataImageUploadPlugin = ({
 				keys.push(key);
 			}
 		});
-		if (files.length === 0) {
-			return;
+		if (files.length > 0) {
+			upload(files, keys);
 		}
 
-		// The returned unsaved attachments are positional with `files`, and each
-		// already carries the content id the draft save will persist.
-		const unsavedAttachments = addInlineAttachments(files, { saveImmediately: true });
-		unsavedAttachments.forEach((unsavedAttachment, index) => {
-			const key = keys[index];
-			if (unsavedAttachment.contentId && key !== undefined) {
-				pendingRef.current.set(unsavedAttachment.contentId, key);
-			}
-		});
-	}, [addInlineAttachments, editor]);
+		const copiedImages = pending.filter(({ origin }) => origin === 'foreign-service-url');
+		if (copiedImages.length > 0) {
+			fetchAndUpload(copiedImages);
+		}
+	}, [editor, fetchAndUpload, isTrackedCidUrl, upload]);
 
 	// Trigger: the first real change to the message.
 	useEffect(() => {
@@ -210,12 +317,21 @@ export const InlineDataImageUploadPlugin = ({
 	const ensureConverted = useCallback((): Promise<void> => {
 		startedRef.current = true;
 		convert();
-		if (pendingRef.current.size === 0) {
+		const fetching = Array.from(fetchesRef.current);
+		if (fetching.length === 0 && pendingRef.current.size === 0) {
 			return Promise.resolve();
 		}
 		return new Promise<void>((resolve) => {
-			waitersRef.current.push(resolve);
 			setTimeout(resolve, TIMEOUTS.INLINE_IMAGES_CONVERSION);
+			// The uploads of the images being fetched start only once the fetch is
+			// over: until then there is nothing pending to wait for.
+			Promise.allSettled(fetching).then(() => {
+				if (pendingRef.current.size === 0) {
+					resolve();
+					return;
+				}
+				waitersRef.current.push(resolve);
+			});
 		});
 	}, [convert]);
 
