@@ -157,9 +157,6 @@
 		"not dead"
 	],
 	"pnpm": {
-		"overrides": {
-			"@zextras/carbonio-ui-soap-lib": "1.3.3"
-		},
 		"onlyBuiltDependencies": [
 			"@zextras/carbonio-search-ui",
 			"core-js",
