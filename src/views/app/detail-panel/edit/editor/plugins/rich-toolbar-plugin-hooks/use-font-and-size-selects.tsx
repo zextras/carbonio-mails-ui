@@ -11,10 +11,10 @@ import { normalizeCssValue } from '../rich-toolbar-plugin-model';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
 // Symbol fonts render the label as unreadable glyphs: keep the label in the default font
-const FONTS_WITHOUT_PREVIEW = ['wingdings'];
+const FONTS_WITHOUT_PREVIEW = new Set(['wingdings']);
 
 const hasFontPreview = (fontValue: string): boolean =>
-	!FONTS_WITHOUT_PREVIEW.includes(fontValue.split(',')[0].trim().toLowerCase());
+	!FONTS_WITHOUT_PREVIEW.has(fontValue.split(',')[0].trim().toLowerCase());
 
 type FontAndSizeSelects = {
 	fontSelectItems: Array<SelectItem>;
