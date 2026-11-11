@@ -130,7 +130,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						<Text overflow="break-word">
 							{t(
 								'folder_panel.modal.delete.body.message3',
-								'If you delete it, all the related content will be moved to Trash and the folder will no longer be visible.'
+								'Deleting it will move it and all the related content to Trash.'
 							)}
 						</Text>
 					</>
