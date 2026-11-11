@@ -41,6 +41,10 @@ import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
+import {
+	UNLINKED_AUTO_LINK_HTML_EXPORT,
+	withUnlinkedAutoLinkImport
+} from '../plugins/unlinked-auto-link-html';
 import { useInlineImageResolver } from '../plugins/use-inline-image-upload';
 import { DEFAULT_FONT_FAMILY } from 'helpers/user-preference-styles';
 
@@ -388,7 +392,10 @@ export const RichTextEditorContainer = ({
 				table: 'mails-lexical-table',
 				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
-			html: { import: STYLE_PRESERVING_HTML_IMPORT },
+			html: {
+				import: withUnlinkedAutoLinkImport(STYLE_PRESERVING_HTML_IMPORT),
+				export: UNLINKED_AUTO_LINK_HTML_EXPORT
+			},
 			onError: (error: Error): void => {
 				throw error;
 			}

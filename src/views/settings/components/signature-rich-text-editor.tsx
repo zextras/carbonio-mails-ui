@@ -41,6 +41,10 @@ import {
 import { TableActionMenuPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-cell-resizer-plugin';
 import { TableHoverActionsPlugin } from 'views/app/detail-panel/edit/editor/plugins/table-hover-actions-plugin';
+import {
+	UNLINKED_AUTO_LINK_HTML_EXPORT,
+	withUnlinkedAutoLinkImport
+} from 'views/app/detail-panel/edit/editor/plugins/unlinked-auto-link-html';
 
 type SignatureRichTextEditorProps = {
 	value: string;
@@ -195,7 +199,10 @@ export const SignatureRichTextEditor = ({
 				table: 'mails-lexical-table',
 				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
-			html: { import: STYLE_PRESERVING_HTML_IMPORT },
+			html: {
+				import: withUnlinkedAutoLinkImport(STYLE_PRESERVING_HTML_IMPORT),
+				export: UNLINKED_AUTO_LINK_HTML_EXPORT
+			},
 			onError: (error: Error): void => {
 				throw error;
 			}
