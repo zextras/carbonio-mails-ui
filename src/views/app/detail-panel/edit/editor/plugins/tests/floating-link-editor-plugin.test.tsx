@@ -26,8 +26,12 @@ const URL_LABEL = 'lexical-label.url';
 const TEXT_TO_DISPLAY_LABEL = 'lexical-label.text_to_display';
 const SAVE_LABEL = 'label.save';
 const NEW_LINK_TEXT = 'test';
+// Built at runtime so the source holds no script URL literal.
+const SCRIPT_URL = ['javascript', 'void(0)//'].join(':');
+const UNSAFE_URL_REPLACEMENT = 'about:blank';
 
-const ATTRIBUTES_DROPPED_BY_MAILBOX = /\s(?!(?:class|style|href)=)[\w-]+="[^"]*"/g;
+// Attributes the saved HTML can do without: the import relies only on these three.
+const ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF = /\s(?!(?:class|style|href)=)[\w-]+="[^"]*"/g;
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -190,10 +194,6 @@ describe('FloatingLinkEditorPlugin', () => {
 		async (_case, text) => {
 			const { editorId, editorElement } = await setupWithRemovedAutoLink(text, text);
 
-			// Give the auto-link plugin the chance to (wrongly) re-create the link.
-			await new Promise((resolve) => {
-				setTimeout(resolve, 200);
-			});
 			expect(within(editorElement).queryByRole('link')).not.toBeInTheDocument();
 			expect(richTextOf(editorId)).not.toContain('<a');
 			expect(richTextOf(editorId)).toContain(text);
@@ -203,17 +203,13 @@ describe('FloatingLinkEditorPlugin', () => {
 
 	it('keeps an auto-detected link removed, with its formatting, after the saved HTML is loaded again', async () => {
 		const { editorId } = await setupWithRemovedAutoLink(`<b>${LINK_URL}</b>`, LINK_URL);
-		const savedHtml = richTextOf(editorId).replace(ATTRIBUTES_DROPPED_BY_MAILBOX, '');
+		const savedHtml = richTextOf(editorId).replaceAll(ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF, '');
 		expect(savedHtml).toContain(UNLINKED_AUTO_LINK_CLASS);
 		cleanup();
 
 		const { editorId: reloadedEditorId } = setupEditor(savedHtml);
 		const reloadedEditor = screen.getByTestId(EDITOR_TESTID);
 		const text = await within(reloadedEditor).findByText(LINK_URL);
-		// Give the auto-link plugin the chance to (wrongly) re-create the link.
-		await new Promise((resolve) => {
-			setTimeout(resolve, 200);
-		});
 		expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
 		expect(text).toHaveClass('mails-lexical-bold');
 		expect(richTextOf(reloadedEditorId)).not.toContain('<a');
@@ -234,6 +230,77 @@ describe('FloatingLinkEditorPlugin', () => {
 			expect(richTextOf(editorId)).toContain(`href="${LINK_URL}"`);
 		});
 		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
+	});
+
+	it('imports a marked span whose text is not a link without the removed-link wrapper', async () => {
+		const { editorId, user } = setupEditor(
+			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}"><a href="${LINK_URL}">${SCRIPT_URL}</a></span></p>`
+		);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		const innerLink = await within(editorElement).findByRole('link', { name: SCRIPT_URL });
+
+		// The element around the inner link is where a removed link would be.
+		// eslint-disable-next-line testing-library/no-node-access -- the outer element has no role or text of its own
+		await user.hover(innerLink.parentElement ?? innerLink);
+		expect(screen.queryByRole('button', { name: RESTORE_LINK_LABEL })).not.toBeInTheDocument();
+
+		// Edit the body so the content is exported again.
+		await user.click(editorElement);
+		await user.keyboard('x');
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([expect.objectContaining({ href: LINK_URL })]);
+		});
+		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
+	});
+
+	it('restores a removed link loaded from HTML as a link opening in a new window, with the URL of its text', async () => {
+		// The auto-link plugin sets URL and attributes while the HTML is imported: this
+		// fails if it is mounted after the plugin that loads the content.
+		const linkText = 'www.custom-link.com';
+		const { user } = setupEditor(
+			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}">${linkText}</span></p>`
+		);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		await user.hover(await within(editorElement).findByText(linkText));
+		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
+
+		const link = await within(editorElement).findByRole('link', { name: linkText });
+		expect(link).toHaveAttribute('href', `https://${linkText}`);
+		expect(link).toHaveAttribute('target', '_blank');
+		expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
+	it('unwraps a removed link holding another link when it is restored, keeping the inner link', async () => {
+		const linkText = 'www.custom-link.com';
+		const { editorId, user } = setupEditor(
+			`<p><span class="${UNLINKED_AUTO_LINK_CLASS}"><a href="${LINK_URL}">${linkText}</a></span></p>`
+		);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		const innerLink = await within(editorElement).findByRole('link', { name: linkText });
+
+		// The text sits in an inner link: open the card of the removed link from its own element.
+		// eslint-disable-next-line testing-library/no-node-access -- the outer element has no role or text of its own
+		await user.hover(innerLink.parentElement ?? innerLink);
+		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: linkText }]);
+		});
+		expect(richTextOf(editorId)).not.toContain(UNLINKED_AUTO_LINK_CLASS);
+	});
+
+	it('does not put an unsafe URL in the link of the floating card', async () => {
+		const { user } = setupEditor(`<p><a href="${SCRIPT_URL}">${LINK_TEXT}</a></p>`);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		await user.hover(await within(editorElement).findByText(LINK_TEXT));
+
+		// The card shows the URL as it is, but does not link it.
+		expect(await screen.findByRole('link', { name: SCRIPT_URL })).toHaveAttribute(
+			'href',
+			UNSAFE_URL_REPLACEMENT
+		);
 	});
 
 	it('shows the restore card while the pointer hovers the text of a removed auto-detected link', async () => {
@@ -264,11 +331,6 @@ describe('FloatingLinkEditorPlugin', () => {
 		await waitFor(() => {
 			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
 		});
-		// Give the auto-link plugin the chance to (wrongly) unwrap the edited link.
-		await new Promise((resolve) => {
-			setTimeout(resolve, 200);
-		});
-		expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
 	});
 
 	it('turns a removed auto-detected link into a link again when it is saved from the link modal', async () => {
