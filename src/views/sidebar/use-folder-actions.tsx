@@ -13,6 +13,7 @@ import {
 	FolderActionsType,
 	allowedActionOnSharedAccount
 } from '@zextras/carbonio-ui-commons';
+import { noOp } from '@zextras/carbonio-ui-soap-lib';
 import { noop, startsWith } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
@@ -50,6 +51,19 @@ function getFileImportParams(file: File): { fmt: string; contentType: string } {
 		return { fmt: 'zip', contentType: 'application/zip' };
 	}
 	return { fmt: 'tgz', contentType: 'application/x-compressed-tar' };
+}
+
+async function postArchiveImport(url: string, file: File, contentType: string): Promise<Response> {
+	const response = await fetch(url, {
+		method: 'POST',
+		body: file,
+		headers: { 'Content-Type': contentType }
+	});
+	if (response.ok) {
+		// the import is a REST call, so its notifications are only delivered with the next SOAP response
+		noOp();
+	}
+	return response;
 }
 
 async function performFolderMove(
@@ -183,13 +197,10 @@ export function buildImportArchiveOnClick({
 					hideButton: true
 				});
 				try {
-					const response = await fetch(
+					const response = await postArchiveImport(
 						`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?fmt=${fmt}&auth=co`,
-						{
-							method: 'POST',
-							body: file,
-							headers: { 'Content-Type': contentType }
-						}
+						file,
+						contentType
 					);
 					createSnackbar({
 						key: IMPORT_ARCHIVE_SNACKBAR_KEY,
