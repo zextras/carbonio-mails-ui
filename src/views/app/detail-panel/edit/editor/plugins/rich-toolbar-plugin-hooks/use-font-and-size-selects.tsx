@@ -5,16 +5,25 @@
  */
 import React, { useMemo } from 'react';
 
-import { Container, Text, type SelectItem } from '@zextras/carbonio-design-system';
+import { Text, type SelectItem } from '@zextras/carbonio-design-system';
 
 import { normalizeCssValue } from '../rich-toolbar-plugin-model';
 import { getFonts, getFontSizesOptions } from 'views/settings/components/utils';
 
-// Symbol fonts render the label as unreadable glyphs: keep the label in the default font
-const FONTS_WITHOUT_PREVIEW = ['wingdings'];
+// Symbol fonts (Wingdings, Webdings) render the label as unreadable glyphs: keep the label in the
+// default font. Same rule as TinyMCE, which skips the preview for every font containing "dings".
+const hasFontPreview = (fontValue: string): boolean => !fontValue.toLowerCase().includes('dings');
 
-const hasFontPreview = (fontValue: string): boolean =>
-	!FONTS_WITHOUT_PREVIEW.includes(fontValue.split(',')[0].trim().toLowerCase());
+// The custom component replaces the design-system `ListItemContent`, which is the only thing
+// marking the current option: replicate its bold weight.
+const renderFontLabel = (font: SelectItem, selected: boolean): React.JSX.Element => (
+	<Text
+		weight={selected ? 'bold' : 'regular'}
+		style={hasFontPreview(font.value) ? { fontFamily: font.value } : undefined}
+	>
+		{font.label}
+	</Text>
+);
 
 type FontAndSizeSelects = {
 	fontSelectItems: Array<SelectItem>;
@@ -29,19 +38,8 @@ export function useFontAndSizeSelects(
 	preferredFontFamily?: string,
 	preferredFontSize?: string
 ): FontAndSizeSelects {
-	const fontSelectItems = useMemo<Array<SelectItem>>(
-		() =>
-			getFonts().map((font) => ({
-				label: font.label,
-				value: font.value,
-				customComponent: (
-					<Container mainAlignment="flex-start" crossAlignment="flex-start" height="fit">
-						<Text style={hasFontPreview(font.value) ? { fontFamily: font.value } : undefined}>
-							{font.label}
-						</Text>
-					</Container>
-				)
-			})),
+	const fonts = useMemo<Array<SelectItem>>(
+		() => getFonts().map((font) => ({ label: font.label, value: font.value })),
 		[]
 	);
 
@@ -52,10 +50,10 @@ export function useFontAndSizeSelects(
 
 	const defaultFont = useMemo<SelectItem>(
 		() =>
-			fontSelectItems.find(
+			fonts.find(
 				(item) => normalizeCssValue(item.value) === normalizeCssValue(preferredFontFamily ?? '')
-			) ?? fontSelectItems[0],
-		[fontSelectItems, preferredFontFamily]
+			) ?? fonts[0],
+		[fonts, preferredFontFamily]
 	);
 
 	const defaultFontSize = useMemo<SelectItem>(
@@ -68,10 +66,18 @@ export function useFontAndSizeSelects(
 
 	const selectedFont = useMemo<SelectItem>(
 		() =>
-			fontSelectItems.find(
-				(item) => normalizeCssValue(item.value) === normalizeCssValue(currentFont)
-			) ?? defaultFont,
-		[currentFont, defaultFont, fontSelectItems]
+			fonts.find((item) => normalizeCssValue(item.value) === normalizeCssValue(currentFont)) ??
+			defaultFont,
+		[currentFont, defaultFont, fonts]
+	);
+
+	const fontSelectItems = useMemo<Array<SelectItem>>(
+		() =>
+			fonts.map((font) => ({
+				...font,
+				customComponent: renderFontLabel(font, font.value === selectedFont.value)
+			})),
+		[fonts, selectedFont]
 	);
 
 	const selectedFontSize = useMemo<SelectItem>(
