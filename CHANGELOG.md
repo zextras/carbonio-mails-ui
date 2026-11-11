@@ -1,3 +1,7 @@
+## <small>1.51.16 (2026-11-11)</small>
+
+* fix(CO-4684): html composer the remove link trash button does nothing on a link created by typing a  ([964928e](https://github.com/zextras/carbonio-mails-ui/commit/964928e)), closes [#1423](https://github.com/zextras/carbonio-mails-ui/issues/1423) [#1427](https://github.com/zextras/carbonio-mails-ui/issues/1427)
+
 ## <small>1.51.15 (2026-11-10)</small>
 
 * fix(deps): update carbonio-shell-ui to v15.5.2 and carbonio-search-ui to v0.1.26 (#1426) ([3e2b07a](https://github.com/zextras/carbonio-mails-ui/commit/3e2b07a)), closes [#1426](https://github.com/zextras/carbonio-mails-ui/issues/1426)
