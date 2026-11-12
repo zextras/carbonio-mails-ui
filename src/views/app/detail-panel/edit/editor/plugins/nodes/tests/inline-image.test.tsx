@@ -12,6 +12,9 @@ import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
+import { DROP_CARET_TEST_ID } from 'views/app/detail-panel/edit/editor/plugins/image-drag-drop';
+
+const EDITOR_TEST_ID = 'edit-view-editor';
 
 const IMAGE_HTML =
 	'<p><img src="https://example.com/inline.png" alt="pic" data-pnsrc="cid:abc@carbonio" /></p>';
@@ -32,11 +35,80 @@ function setupEditorWithHtml(richText: string): {
 }
 
 async function findEditorImage(): Promise<HTMLImageElement> {
-	const editorElement = screen.getByTestId('edit-view-editor');
+	const editorElement = screen.getByTestId(EDITOR_TEST_ID);
 	return (await within(editorElement).findByRole('img')) as HTMLImageElement;
 }
 
+/**
+ * Minimal DataTransfer (not implemented by jsdom), shared by the events of a
+ * single drag operation. As in the browsers, its data can be read only on drop:
+ * during the dragover (protected mode) only the types are exposed.
+ */
+function createDataTransfer(): {
+	dataTransfer: DataTransfer;
+	setProtected: (value: boolean) => void;
+} {
+	const data = new Map<string, string>();
+	let isProtected = false;
+	const dataTransfer = {
+		get types(): string[] {
+			return Array.from(data.keys());
+		},
+		setData: (type: string, value: string): void => {
+			data.set(type, value);
+		},
+		getData: (type: string): string => (isProtected ? '' : (data.get(type) ?? '')),
+		effectAllowed: 'uninitialized',
+		dropEffect: 'none',
+		files: [] as unknown as FileList
+	} as unknown as DataTransfer;
+	return {
+		dataTransfer,
+		setProtected: (value: boolean): void => {
+			isProtected = value;
+		}
+	};
+}
+
+/**
+ * jsdom has no layout, so the DOM position under the pointer at drop time is
+ * provided through a mocked `document.caretRangeFromPoint`.
+ */
+function mockDropPosition(node: Node, offset: number): void {
+	const range = document.createRange();
+	range.setStart(node, offset);
+	range.collapse(true);
+	document.caretRangeFromPoint = vi.fn((): Range => range);
+}
+
+/* eslint-disable testing-library/prefer-user-event -- user-event does not support native drag and drop */
+/**
+ * Drags `source` and drops it on `target`. Returns whether the editor allowed
+ * the drop (by cancelling the dragover) and whether it drew the drop caret
+ * while dragging.
+ */
+function dragAndDrop(
+	source: Element,
+	target: Element
+): { dropAllowed: boolean; dropCaretShown: boolean } {
+	const { dataTransfer, setProtected } = createDataTransfer();
+	fireEvent.dragStart(source, { dataTransfer });
+	setProtected(true);
+	const dropAllowed = !fireEvent.dragOver(target, { dataTransfer });
+	const dropCaretShown = screen.queryByTestId(DROP_CARET_TEST_ID) !== null;
+	setProtected(false);
+	fireEvent.drop(target, { dataTransfer });
+	fireEvent.dragEnd(source, { dataTransfer });
+	return { dropAllowed, dropCaretShown };
+}
+/* eslint-enable testing-library/prefer-user-event */
+
 describe('Inline image editing', () => {
+	afterEach(() => {
+		// @ts-expect-error -- removing the mock installed by mockDropPosition
+		delete document.caretRangeFromPoint;
+	});
+
 	it('renders an inline image from existing draft HTML', async () => {
 		setupEditorWithHtml(IMAGE_HTML);
 
@@ -97,7 +169,7 @@ describe('Inline image editing', () => {
 
 		await user.keyboard('{Delete}');
 
-		const editorElement = screen.getByTestId('edit-view-editor');
+		const editorElement = screen.getByTestId(EDITOR_TEST_ID);
 		await waitFor(() => {
 			expect(within(editorElement).queryByRole('img')).not.toBeInTheDocument();
 		});
@@ -119,5 +191,61 @@ describe('Inline image editing', () => {
 		const richText = richTextOf(editorId);
 		expect(richText).toContain('float: left');
 		expect(richText).toContain('data-pnsrc="cid:abc@carbonio"');
+	});
+
+	it('moves the image to the drop position when dragged into another paragraph', async () => {
+		const { editorId } = setupEditorWithHtml(
+			'<p>first<img src="https://example.com/inline.png" alt="pic" data-pnsrc="cid:abc@carbonio" ' +
+				'style="width: 200px; float: left;" /></p><p>second paragraph</p>'
+		);
+
+		const image = await findEditorImage();
+		const editorElement = screen.getByTestId(EDITOR_TEST_ID);
+		const targetText = within(editorElement).getByText('second paragraph');
+		const targetTextNode = document.createTreeWalker(targetText, NodeFilter.SHOW_TEXT).nextNode();
+		if (targetTextNode === null) {
+			throw new Error('missing drop target text node');
+		}
+		mockDropPosition(targetTextNode, 'second'.length);
+
+		const { dropAllowed, dropCaretShown } = dragAndDrop(image, targetText);
+
+		expect(dropAllowed).toBe(true);
+		expect(dropCaretShown).toBe(true);
+		expect(screen.queryByTestId(DROP_CARET_TEST_ID)).not.toBeInTheDocument();
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toMatch(/second<\/span><img [^>]*><span[^>]*> paragraph/);
+		});
+		const richText = richTextOf(editorId);
+		expect(richText.match(/<img /g)).toHaveLength(1);
+		expect(richText).toMatch(/<p[^>]*><span[^>]*>first<\/span><\/p>/);
+		expect(richText).toContain('src="https://example.com/inline.png"');
+		expect(richText).toContain('alt="pic"');
+		expect(richText).toContain('data-pnsrc="cid:abc@carbonio"');
+		expect(richText).toContain('data-mce-src="cid:abc@carbonio"');
+		expect(richText).toContain('width: 200px');
+		expect(richText).toContain('float: left');
+		expect(within(editorElement).getAllByRole('img')).toHaveLength(1);
+	});
+
+	it('leaves the content unchanged when the image is dropped on itself', async () => {
+		const { editorId } = setupEditorWithHtml(
+			'<p>first<img src="https://example.com/inline.png" alt="pic" data-pnsrc="cid:abc@carbonio" />' +
+				'</p><p>second paragraph</p>'
+		);
+
+		const image = await findEditorImage();
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain('second paragraph');
+		});
+		const initialRichText = richTextOf(editorId);
+		mockDropPosition(image, 0);
+
+		const { dropCaretShown } = dragAndDrop(image, image);
+
+		expect(dropCaretShown).toBe(false);
+		expect(richTextOf(editorId)).toBe(initialRichText);
+		expect(screen.getByRole('img')).toBe(image);
 	});
 });
