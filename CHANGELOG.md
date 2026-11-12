@@ -1,3 +1,7 @@
+## <small>1.51.17 (2026-11-12)</small>
+
+* fix(CO-4715): show font preview in the font selector of the lexical editor (#1430) ([0ad6385](https://github.com/zextras/carbonio-mails-ui/commit/0ad6385)), closes [#1430](https://github.com/zextras/carbonio-mails-ui/issues/1430)
+
 ## <small>1.51.16 (2026-11-11)</small>
 
 * fix(CO-4684): html composer the remove link trash button does nothing on a link created by typing a  ([964928e](https://github.com/zextras/carbonio-mails-ui/commit/964928e)), closes [#1423](https://github.com/zextras/carbonio-mails-ui/issues/1423) [#1427](https://github.com/zextras/carbonio-mails-ui/issues/1427)
