@@ -10,6 +10,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { parseMessageSortingOptions } from '../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { getFilterQuery } from 'helpers/sorting';
 import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
@@ -74,6 +75,21 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 			previousFolderId.current = null;
 		};
 	}, [fetchMessages, folderId]);
+
+	useEffect(() => {
+		let controller: AbortController | undefined;
+		const handler = (): void => {
+			controller?.abort();
+			controller = new AbortController();
+			fetchMessages(controller.signal);
+		};
+
+		window.addEventListener(MailboxRefreshedEvent.EventName, handler);
+		return () => {
+			window.removeEventListener(MailboxRefreshedEvent.EventName, handler);
+			controller?.abort();
+		};
+	}, [fetchMessages]);
 
 	return useMemo(
 		() => ({

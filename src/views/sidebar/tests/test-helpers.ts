@@ -10,10 +10,13 @@ import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 import { SoapConversation } from 'types/soap/soap-conversation';
 import { SoapIncompleteMessage } from 'types/soap/soap-mail-message';
 
+const soapRefreshes = new Map<number, { mbx: [{ s: number }] }>();
+
+// the server sends a new refresh only for a new session, so the same mailbox keeps the same refresh:
+// a different one would be handled as a reload of the whole mailbox state
 export function mockSoapRefresh(mailbox: number): void {
-	const result = {
-		mbx: [{ s: mailbox }] satisfies [{ s: number }]
-	};
+	const result = soapRefreshes.get(mailbox) ?? { mbx: [{ s: mailbox }] };
+	soapRefreshes.set(mailbox, result);
 	vi.mocked(useInfoRefresh).mockReturnValue(result);
 }
 

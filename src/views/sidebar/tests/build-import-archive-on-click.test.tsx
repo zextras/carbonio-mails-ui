@@ -8,6 +8,7 @@ import type { SyntheticEvent } from 'react';
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import type { Folder } from '@zextras/carbonio-ui-commons';
+import { noOp } from '@zextras/carbonio-ui-soap-lib';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { buildImportArchiveOnClick } from 'views/sidebar/use-folder-actions';
@@ -230,6 +231,33 @@ describe('buildImportArchiveOnClick', () => {
 					})
 				);
 			});
+		});
+
+		it('requests a NoOp after a successful import to fetch the pending notifications', async () => {
+			(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true });
+
+			const params = makeParams();
+			const { onConfirm } = triggerImport(params, new File(['data'], 'archive.tgz'));
+			onConfirm();
+
+			await vi.waitFor(() => {
+				expect(noOp).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		it('does not request a NoOp when the import fails', async () => {
+			(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: false });
+
+			const params = makeParams();
+			const { onConfirm } = triggerImport(params, new File(['data'], 'archive.tgz'));
+			onConfirm();
+
+			await vi.waitFor(() => {
+				expect(params.createSnackbar).toHaveBeenCalledWith(
+					expect.objectContaining({ label: 'messages.snackbar.import_archive_error' })
+				);
+			});
+			expect(noOp).not.toHaveBeenCalled();
 		});
 
 		it('shows error snackbar when the server returns a non-ok response', async () => {

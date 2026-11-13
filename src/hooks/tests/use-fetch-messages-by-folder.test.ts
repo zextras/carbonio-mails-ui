@@ -15,6 +15,7 @@ import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOpt
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
 import {
 	resetMessagesAndPopulatedItems,
@@ -95,6 +96,29 @@ describe('useMessageListByFolder', () => {
 		});
 		await waitFor(() => {
 			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
+		});
+	});
+
+	it('should search the messages again when the mailbox is refreshed', async () => {
+		(parseMessageSortingOptions as Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
+		});
+		const firstSearchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		renderHook(() => useFetchMessagesByFolder(folder.id));
+		await act(async () => {
+			await firstSearchInterceptor;
+		});
+
+		const refreshSearchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		await act(async () => {
+			expect(await refreshSearchInterceptor).toEqual(
+				expect.objectContaining({ offset: 0, query: 'inId:"2"', types: 'message' })
+			);
 		});
 	});
 
