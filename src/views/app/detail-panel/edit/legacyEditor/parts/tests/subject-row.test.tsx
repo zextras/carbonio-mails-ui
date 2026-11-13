@@ -33,6 +33,19 @@ describe('SubjectRow', () => {
 		expect(element).toBeInTheDocument();
 	});
 
+	it('Should opt the subject input out of the shell context menu blocker', async () => {
+		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
+		setupEditorStore({ editors: [] });
+		const editor = await readyToBeSentEditorTestCase({
+			subject: ''
+		});
+		addEditor({ id: editor.id, editor });
+		setupTest(<SubjectRow editorId={editor.id} />);
+		const input = screen.getByRole('textbox', { name: /subject/i });
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(input.closest('.carbonio-bypass-context-menu')).toBeInTheDocument();
+	});
+
 	it('Should display the request read receipt icon when requestReadReceipt is true', async () => {
 		getIntegratedFunction.mockImplementation(() => [vi.fn(), true]);
 		setupEditorStore({ editors: [] });

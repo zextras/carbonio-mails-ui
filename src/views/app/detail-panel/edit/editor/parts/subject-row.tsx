@@ -50,7 +50,12 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId, autoFocusSubject }) 
 			style={{ overflow: 'hidden' }}
 			padding={{ all: 0 }}
 		>
-			<Container background={'gray5'} style={{ overflow: 'hidden' }} padding="0">
+			<Container
+				background={'gray5'}
+				style={{ overflow: 'hidden' }}
+				padding="0"
+				className="carbonio-bypass-context-menu"
+			>
 				<Input
 					data-testid={'subject'}
 					label={t('label.subject', 'Subject')}
