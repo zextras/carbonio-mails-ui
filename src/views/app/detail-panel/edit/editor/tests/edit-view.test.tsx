@@ -20,6 +20,7 @@ import type { Mock } from 'vitest';
 
 import { aSuccessfulSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
+import { attachmentWords } from '../check-subject-attachment';
 import { FileNode } from '../edit-utils-hooks/use-upload-from-files';
 import { EditView } from '../edit-view';
 import { INLINE_IMAGE_DRAG_TYPE } from '../plugins/nodes/image-types';
@@ -50,7 +51,7 @@ import {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj
 } from 'types/soap/save-draft';
-import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 import { SoapMailMessage, SoapMailMessagePart } from 'types/soap/soap-mail-message';
 
 const CT_HTML = 'text/html' as const;
@@ -640,6 +641,58 @@ describe('Edit view', () => {
 			const sendMsgRequest = await sendMsgInterceptor;
 
 			expect(sendMsgRequest?.m?.mp?.[0]?.content?._content).toEqual(text);
+		});
+
+		it('should not show the missing attachment warning when a file is uploaded but the draft is not saved yet', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			createSoapAPIInterceptor('NoOp');
+			createCheckSmimeEnabledAPIInterceptor();
+			setupEditorStore({ editors: [] });
+			const editor = await readyToBeSentEditorTestCase({
+				id: '123-testId',
+				did: '123-testId',
+				isRichText: false,
+				text: { plainText: `Please find the report ${attachmentWords[0]}.`, richText: '' },
+				savedAttachments: [],
+				unsavedAttachments: []
+			});
+			addEditor({ id: editor.id, editor });
+			createSoapAPIInterceptor('SaveDraft');
+			createAPIInterceptor(
+				'post',
+				'/service/upload',
+				new HttpResponse(
+					`200,'null',[{"aid":"upload-id","ct":"text/plain","filename":"report.txt","s":11}]\n`,
+					{ status: 200 }
+				)
+			);
+			const { user } = setupTest(<TestingEditViewUnmount editor={editor} />);
+
+			await user.upload(
+				screen.getByTestId('file-input'),
+				new File(['test string'], 'report.txt', { type: 'text/plain' })
+			);
+			await waitFor(() =>
+				expect(useEditorsStore.getState().editors[editor.id].unsavedAttachments[0]?.aid).toBe(
+					'upload-id'
+				)
+			);
+			await waitFor(() => expect(getSendButton()).toBeEnabled());
+			expect(useEditorsStore.getState().editors[editor.id].savedAttachments).toHaveLength(0);
+
+			const sendMsgInterceptor = createSoapAPIInterceptor<SoapSendMsgRequest>('SendMsg');
+			await user.click(getSendButton());
+
+			expect(
+				screen.queryByText('messages.modal.send_anyway.no_attachments')
+			).not.toBeInTheDocument();
+			vi.runOnlyPendingTimers();
+			const sendMsgRequest = await sendMsgInterceptor;
+			expect(sendMsgRequest.m.attach?.aid).toBe('upload-id');
 		});
 
 		it('shows invalid recipient message when server returns invalid recipient SOAP error', async () => {
