@@ -12,11 +12,13 @@ import {
 	useFolderStore,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
+import { useInfoRefresh } from '@zextras/carbonio-ui-soap-lib';
 import { omit } from 'lodash';
 import { http } from 'msw';
 import { vi } from 'vitest';
 
 import { getSetupServer } from '../../../../__test__/vitest-setup';
+import { MailboxRefreshedEvent } from '../../../../event-bus/events/mailbox-refreshed';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	mockShellSoapNotify,
@@ -819,6 +821,37 @@ describe('sync data handler', () => {
 			} = setupHook(useMessageById, { initialProps: ['1'] });
 
 			expect(message?.read).toBe(false);
+		});
+	});
+
+	describe('mailbox refresh', () => {
+		it('should not announce a mailbox refresh for the refresh which initializes the session', () => {
+			const listener = vi.fn();
+			window.addEventListener(MailboxRefreshedEvent.EventName, listener);
+			mockSoapRefresh(mailboxNumber);
+			mockSoapSync([]);
+
+			setupHook(useSyncDataHandler);
+
+			expect(listener).not.toHaveBeenCalled();
+			expect(tagsWorker.postMessage).not.toHaveBeenCalled();
+			window.removeEventListener(MailboxRefreshedEvent.EventName, listener);
+		});
+
+		it('should announce a mailbox refresh and reload the tags when a following refresh is received', () => {
+			const listener = vi.fn();
+			window.addEventListener(MailboxRefreshedEvent.EventName, listener);
+			mockSoapRefresh(mailboxNumber);
+			mockSoapSync([]);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			const tags = { tag: [{ id: '1', name: 'tag' }] };
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+			rerender();
+
+			expect(listener).toHaveBeenCalledTimes(1);
+			expect(tagsWorker.postMessage).toHaveBeenCalledWith({ op: 'refresh', tags });
+			window.removeEventListener(MailboxRefreshedEvent.EventName, listener);
 		});
 	});
 });

@@ -18,7 +18,8 @@ import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 import { flatten, forEach, isEmpty, isNil, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { publishQuotaChangedEvent } from 'event-bus/publish-event';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { publishEvent, publishQuotaChangedEvent } from 'event-bus/publish-event';
 import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
@@ -209,11 +210,26 @@ export const useSyncDataHandler = (): void => {
 	const [initialized, setInitialized] = useState(false);
 	const processedNotify = useRef<number>(-1);
 	const refresh = useInfoRefresh();
+	const previousRefresh = useRef(refresh);
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
 		}
 	}, [initialized, refresh]);
+
+	useEffect(() => {
+		// the first refresh initializes the session, while the following ones replace the notifications
+		// the server dropped (e.g. after a bulk import), so the whole mailbox state must be reloaded
+		if (
+			!isEmpty(previousRefresh.current) &&
+			!isEmpty(refresh) &&
+			refresh !== previousRefresh.current
+		) {
+			tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags });
+			publishEvent(new MailboxRefreshedEvent());
+		}
+		previousRefresh.current = refresh;
+	}, [refresh]);
 
 	useEffect(() => {
 		if (initialized && notifyList.length > 0) {

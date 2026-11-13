@@ -1,4 +1,5 @@
 import { DraftTrashedEvent } from './events/draft-trashed';
+import { MailboxRefreshedEvent } from './events/mailbox-refreshed';
 import { QuotaChangedEvent } from './events/quota-changed';
 
 /*
@@ -12,6 +13,7 @@ export type DraftTrashedEventPayload = {
 
 export interface EventsBusEventsMap {
 	[DraftTrashedEvent.EventName]: DraftTrashedEvent;
+	[MailboxRefreshedEvent.EventName]: MailboxRefreshedEvent;
 	[QuotaChangedEvent.EventName]: QuotaChangedEvent;
 }
 
