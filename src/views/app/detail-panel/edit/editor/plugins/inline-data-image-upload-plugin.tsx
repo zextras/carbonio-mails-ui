@@ -6,23 +6,28 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $dfs } from '@lexical/utils';
-import { $getNodeByKey, type LexicalEditor, type NodeKey } from 'lexical';
+import { $dfs, mergeRegister } from '@lexical/utils';
+import {
+	$addUpdateTag,
+	$getNodeByKey,
+	COMMAND_PRIORITY_CRITICAL,
+	CONTROLLED_TEXT_INSERTION_COMMAND,
+	type LexicalEditor,
+	type NodeKey,
+	PASTE_TAG
+} from 'lexical';
 
 import { registerInlineImageConverter } from './inline-image-conversion-registry';
-import { $isImageNode } from './nodes/image-node';
+import { $isImageNode, ImageNode } from './nodes/image-node';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import { TIMEOUTS } from 'constants/index';
-import {
-	composeAttachmentDownloadUrl,
-	getCidFromCidUrl,
-	isDownloadServicedUrl
-} from 'helpers/attachments';
+import { composeAttachmentDownloadUrl, getCidFromCidUrl } from 'helpers/attachments';
 import {
 	dataUriToFile,
 	fetchImageAsFile,
 	getDataUriFileName,
 	getInlineImageFileName,
+	getOwnMessagePartUrl,
 	isDataImageUri
 } from 'helpers/inline-images';
 import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
@@ -37,6 +42,7 @@ type InlineDataImageUploadPluginProps = {
 
 type PendingImage = {
 	key: NodeKey;
+	/** The `data:` URI, or the url to download the copied image from. */
 	src: string;
 	/**
 	 * `data-uri`: the image is embedded in the markup.
@@ -47,13 +53,22 @@ type PendingImage = {
 };
 
 /**
+ * Tags the update which inserts the content dropped from outside the editor, as
+ * Lexical does with {@link PASTE_TAG} for a paste.
+ */
+const DROP_TAG = 'mails-drop';
+
+/**
  * Collects the images which are not backed by an attachment of this message and
  * have not been attempted yet. Must run inside an editor state read, since it
  * walks the current tree.
+ *
+ * @param getCopiedImageUrl - the url to download an image copied from another
+ * message from, or `undefined` when the image is not one to download.
  */
 function $collectPendingImages(
 	attemptedKeys: Set<NodeKey>,
-	isTrackedCidUrl: (cidUrl: string | undefined) => boolean
+	getCopiedImageUrl: (src: string, cidUrl: string | undefined) => string | undefined
 ): Array<PendingImage> {
 	return $dfs().reduce<Array<PendingImage>>((pending, { node }) => {
 		if (!$isImageNode(node) || attemptedKeys.has(node.getKey())) {
@@ -62,8 +77,11 @@ function $collectPendingImages(
 		const src = node.getSrc();
 		if (isDataImageUri(src)) {
 			pending.push({ key: node.getKey(), src, origin: 'data-uri' });
-		} else if (isDownloadServicedUrl(src) && !isTrackedCidUrl(node.getCidUrl())) {
-			pending.push({ key: node.getKey(), src, origin: 'foreign-service-url' });
+			return pending;
+		}
+		const copiedImageUrl = getCopiedImageUrl(src, node.getCidUrl());
+		if (copiedImageUrl) {
+			pending.push({ key: node.getKey(), src: copiedImageUrl, origin: 'foreign-service-url' });
 		}
 		return pending;
 	}, []);
@@ -102,9 +120,14 @@ function repointImageNode(
  * The same goes for the images copied from another message (alone or together
  * with text): they keep the download url of the part of that message, and the
  * cid it carries, neither of which exists in the message being written, so the
- * recipient would get a broken image. Any image served by the download service
- * whose cid is not an inline attachment of this message is downloaded and
- * uploaded as a new inline attachment.
+ * recipient would get a broken image. Such an image is downloaded and uploaded
+ * as a new inline attachment, but only when the user pasted or dropped it into
+ * the editor, its url is a part of the user's own messages on this origin
+ * ({@link getOwnMessagePartUrl}), and its cid is not a part of this message. The
+ * images of the content loaded in the editor (the quoted message of a reply or
+ * a forward, a draft) are never downloaded: that content is written by someone
+ * else, who could point its images at any part of the user's mailbox and have
+ * them sent back attached to the reply.
  *
  * The conversion is deliberately **not** run on mount: uploading requires saving
  * the draft, and doing that just because a compose window was opened would leave
@@ -143,6 +166,12 @@ export const InlineDataImageUploadPlugin = ({
 	/** Downloads of images copied from other messages, still in progress. */
 	const fetchesRef = useRef<Set<Promise<void>>>(new Set());
 	/**
+	 * Urls ({@link getOwnMessagePartUrl}) of the images the user pasted or dropped.
+	 * Kept by url rather than by node key, so that the image is still recognised
+	 * after it is moved, or after the content is imported again from the store.
+	 */
+	const insertedPartUrlsRef = useRef<Set<string>>(new Set());
+	/**
 	 * Whether the user did something which justifies creating a draft. Latched:
 	 * `isDirty` goes back to false after every successful save.
 	 */
@@ -168,7 +197,12 @@ export const InlineDataImageUploadPlugin = ({
 		[addInlineAttachments]
 	);
 
-	/** Whether the cid refers to an inline attachment of this very message. */
+	/**
+	 * Whether the cid refers to a part of this very message. Not only the inline
+	 * ones: an image of a forwarded message can be a part with a content id but
+	 * without an inline disposition, and it is resolved through its cid all the
+	 * same (`convertCidUrlToServiceUrl`).
+	 */
 	const isTrackedCidUrl = useCallback(
 		(cidUrl: string | undefined): boolean => {
 			const cid = cidUrl ? getCidFromCidUrl(cidUrl) : null;
@@ -179,12 +213,21 @@ export const InlineDataImageUploadPlugin = ({
 				useEditorsStore.getState().editors[editorId] ?? {};
 			return [...saved, ...unsaved].some(
 				(attachment) =>
-					attachment.isInline &&
-					attachment.contentId !== undefined &&
-					areContentIdsEqual(attachment.contentId, cid)
+					attachment.contentId !== undefined && areContentIdsEqual(attachment.contentId, cid)
 			);
 		},
 		[editorId]
+	);
+
+	const getCopiedImageUrl = useCallback(
+		(src: string, cidUrl: string | undefined): string | undefined => {
+			const partUrl = getOwnMessagePartUrl(src);
+			if (!partUrl || !insertedPartUrlsRef.current.has(partUrl) || isTrackedCidUrl(cidUrl)) {
+				return undefined;
+			}
+			return partUrl;
+		},
+		[isTrackedCidUrl]
 	);
 
 	/**
@@ -230,7 +273,7 @@ export const InlineDataImageUploadPlugin = ({
 	const convert = useCallback((): void => {
 		const pending = editor
 			.getEditorState()
-			.read(() => $collectPendingImages(attemptedKeysRef.current, isTrackedCidUrl));
+			.read(() => $collectPendingImages(attemptedKeysRef.current, getCopiedImageUrl));
 		if (pending.length === 0) {
 			return;
 		}
@@ -257,7 +300,50 @@ export const InlineDataImageUploadPlugin = ({
 		if (copiedImages.length > 0) {
 			fetchAndUpload(copiedImages);
 		}
-	}, [editor, fetchAndUpload, isTrackedCidUrl, upload]);
+	}, [editor, fetchAndUpload, getCopiedImageUrl, upload]);
+
+	// Records the images the user brings in: the pasted ones (Lexical tags the
+	// update) and the ones dropped from outside the editor, which Lexical inserts
+	// through the controlled text insertion of the `insertFromDrop` input.
+	// Mutation listeners run before the update listeners, so an image is recorded
+	// before the conversion below looks for it.
+	useEffect(
+		() =>
+			mergeRegister(
+				editor.registerCommand(
+					CONTROLLED_TEXT_INSERTION_COMMAND,
+					(payload) => {
+						if (typeof payload !== 'string' && payload.inputType === 'insertFromDrop') {
+							$addUpdateTag(DROP_TAG);
+						}
+						return false;
+					},
+					COMMAND_PRIORITY_CRITICAL
+				),
+				editor.registerMutationListener(
+					ImageNode,
+					(mutations, { updateTags }) => {
+						if (!updateTags.has(PASTE_TAG) && !updateTags.has(DROP_TAG)) {
+							return;
+						}
+						editor.getEditorState().read(() => {
+							mutations.forEach((mutation, key) => {
+								const node = $getNodeByKey(key);
+								const partUrl =
+									mutation === 'created' && $isImageNode(node)
+										? getOwnMessagePartUrl(node.getSrc())
+										: undefined;
+								if (partUrl) {
+									insertedPartUrlsRef.current.add(partUrl);
+								}
+							});
+						});
+					},
+					{ skipInitialization: true }
+				)
+			),
+		[editor]
+	);
 
 	// Trigger: the first real change to the message.
 	useEffect(() => {
@@ -325,13 +411,15 @@ export const InlineDataImageUploadPlugin = ({
 			setTimeout(resolve, TIMEOUTS.INLINE_IMAGES_CONVERSION);
 			// The uploads of the images being fetched start only once the fetch is
 			// over: until then there is nothing pending to wait for.
-			Promise.allSettled(fetching).then(() => {
-				if (pendingRef.current.size === 0) {
-					resolve();
-					return;
-				}
-				waitersRef.current.push(resolve);
-			});
+			Promise.allSettled(fetching)
+				.then(() => {
+					if (pendingRef.current.size === 0) {
+						resolve();
+						return;
+					}
+					waitersRef.current.push(resolve);
+				})
+				.catch(() => resolve());
 		});
 	}, [convert]);
 

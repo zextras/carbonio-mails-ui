@@ -6,6 +6,7 @@
 import {
 	dataUriToFile,
 	getDataUriFileName,
+	getOwnMessagePartUrl,
 	isDataImageUri,
 	isImageFile,
 	readFileAsDataUri
@@ -80,6 +81,34 @@ describe('inline-images', () => {
 
 		it('should fall back to png when the mime type cannot be read', () => {
 			expect(getDataUriFileName('not a data uri', 3)).toBe('inline-image-3.png');
+		});
+	});
+
+	describe('getOwnMessagePartUrl', () => {
+		const PART_URL = '/service/home/~/?auth=co&id=99&part=2';
+
+		it('should keep nothing but the message id and the part name', () => {
+			expect(
+				getOwnMessagePartUrl('/service/home/~/?auth=co&id=99&ci=x%40carbonio&part=2&disp=a')
+			).toBe(PART_URL);
+		});
+
+		it('should accept an absolute url of this origin', () => {
+			expect(getOwnMessagePartUrl(`${window.location.origin}/service/home/~/?id=99&part=2`)).toBe(
+				PART_URL
+			);
+		});
+
+		it.each([
+			['another host', 'https://attacker.example/service/home/~/?auth=co&id=99&part=2'],
+			['another account', '/service/home/someone@example.com/?id=99&part=2&x=/service/home/~/?'],
+			['another path', '/service/zimlet/?id=99&part=2'],
+			['no message id', '/service/home/~/?auth=co&part=2'],
+			['no part name', '/service/home/~/?auth=co&id=99'],
+			['a cid url', 'cid:image@carbonio'],
+			['a data uri', PNG_DATA_URI]
+		])('should reject %s', (_, src) => {
+			expect(getOwnMessagePartUrl(src)).toBeUndefined();
 		});
 	});
 

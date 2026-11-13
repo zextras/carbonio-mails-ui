@@ -5,11 +5,11 @@
  */
 
 /**
- * Helpers shared by the two places where an inline image can enter an editor
+ * Helpers shared by the places where an inline image can enter an editor
  * without going through an upload: the signature editor (which embeds the
  * picked file as a `data:` URI, since a signature has no draft to attach to)
- * and the mail composer (which turns those `data:` URIs back into real files to
- * upload as inline attachments).
+ * and the mail composer (which turns those `data:` URIs, and the images pasted
+ * from other messages, back into real files to upload as inline attachments).
  */
 
 /** Matches `data:<mime>;base64,<payload>` restricted to image mime types. */
@@ -79,6 +79,35 @@ export const getInlineImageFileName = (mimeType: string, index: number): string 
  */
 export const getDataUriFileName = (dataUri: string, index: number): string =>
 	getInlineImageFileName(DATA_IMAGE_URI_REGEXP.exec(dataUri)?.[1] ?? 'image/png', index);
+
+const DOWNLOAD_SERVICE_PATH = '/service/home/~/';
+
+/**
+ * Returns the url the download service serves a message part of the current
+ * account at, when `src` is one on this very origin, rebuilt out of nothing but
+ * the message id and the part name. Any other url (another host, another
+ * account's path, no id or part) gives `undefined`: the session credentials
+ * must only ever be sent along to download a part of the user's own messages.
+ */
+export const getOwnMessagePartUrl = (src: string): string | undefined => {
+	let url: URL;
+	try {
+		url = new URL(src, window.location.origin);
+	} catch {
+		return undefined;
+	}
+	const id = url.searchParams.get('id');
+	const part = url.searchParams.get('part');
+	if (
+		url.origin !== window.location.origin ||
+		url.pathname !== DOWNLOAD_SERVICE_PATH ||
+		!id ||
+		!part
+	) {
+		return undefined;
+	}
+	return `${DOWNLOAD_SERVICE_PATH}?${new URLSearchParams({ auth: 'co', id, part }).toString()}`;
+};
 
 /**
  * Downloads an image (with the credentials of the current session) and wraps it

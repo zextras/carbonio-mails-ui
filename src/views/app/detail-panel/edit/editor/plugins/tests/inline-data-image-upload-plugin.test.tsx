@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+/* eslint-disable max-classes-per-file -- two minimal Event stubs cover a jsdom gap (see below) */
 import React from 'react';
 
-import { act, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
+import { CONTROLLED_TEXT_INSERTION_COMMAND, type LexicalEditor } from 'lexical';
 import type { Mock } from 'vitest';
 
 import { setupTest, screen, within } from '@test-setup';
@@ -25,6 +27,15 @@ const CONTENT_ID = 'inline-1@carbonio';
 const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&part=${PART_NAME}`;
 /** The url of an image of a message other than the one being written. */
 const FOREIGN_URL = '/service/home/~/?auth=co&id=99&ci=foreign%40carbonio&part=2';
+/** The bare url of the same part, the one it is downloaded from. */
+const FOREIGN_PART_URL = '/service/home/~/?auth=co&id=99&part=2';
+const HTML = 'text/html';
+
+// jsdom implements neither DragEvent nor ClipboardEvent, yet Lexical's default
+// paste handler checks the event against both: two no-op Event subclasses stand
+// in so that the synthetic paste event is handled as a clipboard paste.
+class StubDragEvent extends Event {}
+class StubClipboardEvent extends Event {}
 
 /** A 1x1 transparent PNG, as it would be embedded in a signature. */
 const PNG_DATA_URI =
@@ -79,14 +90,70 @@ function setupEditorWith(richText: string, savedAttachments: Array<SavedAttachme
 	return editor.id;
 }
 
+/** Renders an editor with some text and no image, ready to paste into. */
+async function setupEmptyEditor(savedAttachments: Array<SavedAttachment> = []): Promise<string> {
+	const editorId = setupEditorWith('<p>Hello</p>', savedAttachments);
+	await within(screen.getByTestId(EDITOR_TESTID)).findByText('Hello');
+	return editorId;
+}
+
+function htmlDataTransfer(html: string): Pick<DataTransfer, 'getData' | 'types'> {
+	return { getData: (type: string): string => (type === HTML ? html : ''), types: [HTML] };
+}
+
+/**
+ * Dispatches a synthetic paste event carrying HTML, as when an image is copied
+ * from a message being read.
+ */
+function pasteHtml(html: string): void {
+	// eslint-disable-next-line testing-library/prefer-user-event
+	fireEvent.paste(screen.getByTestId(EDITOR_TESTID), {
+		clipboardData: { items: [], files: [], ...htmlDataTransfer(html) }
+	});
+}
+
+/**
+ * Inserts HTML the way Lexical does for a drop coming from outside the editor:
+ * the browser's `insertFromDrop` input turns into a controlled text insertion.
+ * jsdom lacks the input events Lexical listens to, so the command is
+ * dispatched directly, within a single update as Lexical's `beforeinput`
+ * handler does.
+ */
+function dropHtml(html: string): void {
+	const editor = (
+		screen.getByTestId(EDITOR_TESTID) as unknown as { __lexicalEditor: LexicalEditor }
+	).__lexicalEditor;
+	const event = new InputEvent('beforeinput', { inputType: 'insertFromDrop' });
+	Object.defineProperty(event, 'dataTransfer', { value: htmlDataTransfer(html) });
+	act(() => {
+		editor.update(() => {
+			editor.dispatchCommand(CONTROLLED_TEXT_INSERTION_COMMAND, event);
+		});
+	});
+}
+
+function imageResponse(ok: boolean): Pick<Response, 'ok' | 'blob'> {
+	return { ok, blob: async () => new Blob(['x'], { type: 'image/png' }) };
+}
+
 /** Stubs the download of the image the paste refers to. */
 function mockFetchImage({ ok = true }: { ok?: boolean } = {}): Mock {
-	const fetchMock = vi.fn().mockResolvedValue({
-		ok,
-		blob: async () => new Blob(['x'], { type: 'image/png' })
-	});
+	const fetchMock = vi.fn().mockResolvedValue(imageResponse(ok));
 	vi.stubGlobal('fetch', fetchMock);
 	return fetchMock;
+}
+
+/** Stubs a download of the image which completes only on demand. */
+function mockPendingFetchImage(): { fetchMock: Mock; completeDownload: () => void } {
+	let complete = (): void => undefined;
+	const fetchMock = vi.fn(
+		() =>
+			new Promise((resolve) => {
+				complete = (): void => resolve(imageResponse(true));
+			})
+	);
+	vi.stubGlobal('fetch', fetchMock);
+	return { fetchMock, completeDownload: (): void => complete() };
 }
 
 /** Simulates the draft save persisting the uploaded inline attachment. */
@@ -311,28 +378,53 @@ describe('InlineDataImageUploadPlugin', () => {
 	});
 
 	describe('image copied from another message', () => {
-		it('downloads it and uploads it as a new inline attachment', async () => {
+		const globalScope = globalThis as Record<string, unknown>;
+		const originalDragEvent = globalScope.DragEvent;
+		const originalClipboardEvent = globalScope.ClipboardEvent;
+		beforeAll(() => {
+			globalScope.DragEvent = originalDragEvent ?? StubDragEvent;
+			globalScope.ClipboardEvent = originalClipboardEvent ?? StubClipboardEvent;
+		});
+		afterAll(() => {
+			globalScope.DragEvent = originalDragEvent;
+			globalScope.ClipboardEvent = originalClipboardEvent;
+		});
+
+		it('downloads a pasted image and uploads it as a new inline attachment', async () => {
 			const addInlineAttachments = vi.fn(() => [
 				unsavedInlineAttachment(CONTENT_ID)
 			]) as unknown as AddInlineAttachments;
 			mockEditorAttachments(addInlineAttachments);
 			const fetchMock = mockFetchImage();
+			await setupEmptyEditor();
 
-			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
-			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
-
-			act(() => {
-				useEditorsStore.getState().setIsDirty(editorId, true);
-			});
+			pasteHtml(`<img src="${FOREIGN_URL}" alt="Pasted" />`);
 
 			await waitFor(() => {
 				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
 			});
-			expect(fetchMock).toHaveBeenCalledWith(FOREIGN_URL, expect.anything());
+			// Downloaded through the bare url of the part, whatever else the src carried.
+			expect(fetchMock).toHaveBeenCalledWith(FOREIGN_PART_URL, expect.anything());
 			expect(addInlineAttachments).toHaveBeenCalledWith(
 				[expect.objectContaining({ type: 'image/png' })],
 				expect.objectContaining({ saveImmediately: true })
 			);
+		});
+
+		it('downloads an image dropped from another message', async () => {
+			const addInlineAttachments = vi.fn(() => [
+				unsavedInlineAttachment(CONTENT_ID)
+			]) as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+			await setupEmptyEditor();
+
+			dropHtml(`<img src="${FOREIGN_URL}" alt="Dropped" />`);
+
+			await waitFor(() => {
+				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
+			});
+			expect(fetchMock).toHaveBeenCalledWith(FOREIGN_PART_URL, expect.anything());
 		});
 
 		it('swaps both the url and the cid it carried with the ones of the new attachment', async () => {
@@ -341,16 +433,11 @@ describe('InlineDataImageUploadPlugin', () => {
 			]) as unknown as AddInlineAttachments;
 			mockEditorAttachments(addInlineAttachments);
 			mockFetchImage();
+			const editorId = await setupEmptyEditor();
 
 			// The cid is the one the image had in the message it was copied from.
-			const editorId = setupEditorWith(
-				`<p><img src="${FOREIGN_URL}" data-pnsrc="cid:foreign@carbonio" alt="Pasted" /></p>`
-			);
+			pasteHtml(`<img src="${FOREIGN_URL}" data-pnsrc="cid:foreign@carbonio" alt="Pasted" />`);
 			const image = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
-
-			act(() => {
-				useEditorsStore.getState().setIsDirty(editorId, true);
-			});
 			await waitFor(() => {
 				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
 			});
@@ -373,10 +460,14 @@ describe('InlineDataImageUploadPlugin', () => {
 				unsavedInlineAttachment(CONTENT_ID)
 			]) as unknown as AddInlineAttachments;
 			mockEditorAttachments(addInlineAttachments);
-			mockFetchImage();
+			const { fetchMock, completeDownload } = mockPendingFetchImage();
+			const editorId = await setupEmptyEditor();
 
-			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
+			pasteHtml(`<img src="${FOREIGN_URL}" alt="Pasted" />`);
 			const image = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+			await waitFor(() => {
+				expect(fetchMock).toHaveBeenCalledTimes(1);
+			});
 
 			let converted = false;
 			act(() => {
@@ -384,6 +475,7 @@ describe('InlineDataImageUploadPlugin', () => {
 					converted = true;
 				});
 			});
+			completeDownload();
 			await waitFor(() => {
 				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
 			});
@@ -401,13 +493,9 @@ describe('InlineDataImageUploadPlugin', () => {
 			const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
 			mockEditorAttachments(addInlineAttachments);
 			const fetchMock = mockFetchImage({ ok: false });
+			await setupEmptyEditor();
 
-			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
-			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
-
-			act(() => {
-				useEditorsStore.getState().setIsDirty(editorId, true);
-			});
+			pasteHtml(`<img src="${FOREIGN_URL}" alt="Pasted" />`);
 
 			await waitFor(() => {
 				expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -421,13 +509,9 @@ describe('InlineDataImageUploadPlugin', () => {
 			]) as unknown as AddInlineAttachments;
 			mockEditorAttachments(addInlineAttachments);
 			const fetchMock = mockFetchImage();
+			const editorId = await setupEmptyEditor();
 
-			const editorId = setupEditorWith(`<p><img src="${FOREIGN_URL}" alt="Pasted" /></p>`);
-			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
-
-			act(() => {
-				useEditorsStore.getState().setIsDirty(editorId, true);
-			});
+			pasteHtml(`<img src="${FOREIGN_URL}" alt="Pasted" />`);
 			await waitFor(() => {
 				expect(addInlineAttachments).toHaveBeenCalledTimes(1);
 			});
@@ -439,6 +523,66 @@ describe('InlineDataImageUploadPlugin', () => {
 			});
 
 			expect(fetchMock).toHaveBeenCalledTimes(1);
+		});
+
+		it('never downloads the images of the content loaded in the editor, such as the quoted message of a reply', async () => {
+			const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+
+			// Written by the sender of the message being replied to, who could
+			// point it at any part of the user's mailbox.
+			const editorId = setupEditorWith(
+				`<p>quoted</p><p><img src="${FOREIGN_URL}" width="1" height="1" alt="tracker" /></p>`
+			);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+
+			act(() => {
+				useEditorsStore.getState().setIsDirty(editorId, true);
+			});
+			await act(() => ensureInlineImagesConverted(editorId));
+
+			expect(fetchMock).not.toHaveBeenCalled();
+			expect(addInlineAttachments).not.toHaveBeenCalled();
+		});
+
+		it.each([
+			['served by another host', 'https://attacker.example/service/home/~/?auth=co&id=99&part=2'],
+			[
+				'of another account',
+				'/service/home/someone@example.com/?auth=co&id=99&part=2&x=/service/home/~/?'
+			],
+			['without a part', '/service/home/~/?auth=co&id=99']
+		])('does not download a pasted image %s', async (_, src) => {
+			const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+			const editorId = await setupEmptyEditor();
+
+			pasteHtml(`<img src="${src}" alt="Pasted" />`);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+			await act(() => ensureInlineImagesConverted(editorId));
+
+			expect(fetchMock).not.toHaveBeenCalled();
+			expect(addInlineAttachments).not.toHaveBeenCalled();
+		});
+
+		it('does not upload again a pasted image of this message attached without an inline disposition', async () => {
+			const addInlineAttachments = vi.fn() as unknown as AddInlineAttachments;
+			mockEditorAttachments(addInlineAttachments);
+			const fetchMock = mockFetchImage();
+			// e.g. the image of a forwarded message, referred by its content id
+			// although its part is not marked as inline.
+			const editorId = await setupEmptyEditor([
+				{ ...savedInlineAttachment(CONTENT_ID), isInline: false }
+			]);
+
+			pasteHtml(`<img src="${DOWNLOAD_URL}" data-pnsrc="cid:${CONTENT_ID}" alt="Pasted" />`);
+			await within(screen.getByTestId(EDITOR_TESTID)).findByRole('img');
+			await act(() => ensureInlineImagesConverted(editorId));
+
+			expect(fetchMock).not.toHaveBeenCalled();
+			expect(addInlineAttachments).not.toHaveBeenCalled();
 		});
 	});
 });
