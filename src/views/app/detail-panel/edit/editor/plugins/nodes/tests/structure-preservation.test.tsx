@@ -11,7 +11,7 @@
 import React from 'react';
 
 import { $generateHtmlFromNodes } from '@lexical/html';
-import { $createTableNodeWithDimensions } from '@lexical/table';
+import { $createTableNodeWithDimensions, $isTableNode } from '@lexical/table';
 import { cleanup, waitFor } from '@testing-library/react';
 import { $getRoot, type LexicalEditor } from 'lexical';
 
@@ -21,6 +21,7 @@ import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
 
 const EDITOR_TESTID = 'edit-view-editor';
+const EDITOR_TABLE_CLASS = 'mails-lexical-table';
 
 function getEditor(element: HTMLElement): LexicalEditor {
 	return (element as unknown as { __lexicalEditor: LexicalEditor }).__lexicalEditor;
@@ -172,6 +173,7 @@ describe('structure preservation of imported HTML', () => {
 	});
 
 	describe('tables', () => {
+		const TEXT_ONLY = '<p>text</p>';
 		const TABLE =
 			'<table align="center" width="600" cellpadding="8" cellspacing="0" border="0" style="border-collapse: collapse; width: 600px"><tbody><tr bgcolor="#eeeeee"><td align="center" valign="middle" style="text-align: center; padding: 10px">A</td><td style="text-align: right; vertical-align: bottom">B</td><td>C</td></tr></tbody></table>';
 
@@ -209,7 +211,7 @@ describe('structure preservation of imported HTML', () => {
 		});
 
 		it('keeps the stock look for tables created in the editor', async () => {
-			const editor = await mountWith('<p>text</p>');
+			const editor = await mountWith(TEXT_ONLY);
 
 			editor.update(
 				() => {
@@ -223,7 +225,7 @@ describe('structure preservation of imported HTML', () => {
 		});
 
 		it('inlines the layout of tables created in the editor, as the displayer lacks the theme class', async () => {
-			const editor = await mountWith('<p>text</p>');
+			const editor = await mountWith(TEXT_ONLY);
 
 			editor.update(
 				() => {
@@ -234,6 +236,86 @@ describe('structure preservation of imported HTML', () => {
 			const table = parse(exportedHtml(editor)).body.querySelector('table') as HTMLTableElement;
 
 			expect(table.style.width).toBe('100%');
+			expect(table.style.tableLayout).toBe('fixed');
+			expect(table.style.borderCollapse).toBe('collapse');
+		});
+
+		it('shows an imported table without the editor table look, so its own size is respected', async () => {
+			const editor = await mountWith(
+				'<table width="480" cellpadding="4" border="0"><tbody><tr><td>A</td></tr></tbody></table>'
+			);
+
+			const live = screen.getByTestId(EDITOR_TESTID).querySelector('table') as HTMLTableElement;
+			const exported = parse(exportedHtml(editor)).body.querySelector('table') as HTMLTableElement;
+
+			expect(live).not.toHaveClass(EDITOR_TABLE_CLASS);
+			expect(live.getAttribute('width')).toBe('480');
+			expect(live.getAttribute('cellpadding')).toBe('4');
+			expect(exported.hasAttribute('class')).toBe(false);
+			expect(exported.getAttribute('width')).toBe('480');
+			expect(exported.style.width).toBe('');
+		});
+
+		it('shows a table created in the editor with the editor table look', async () => {
+			const editor = await mountWith(TEXT_ONLY);
+
+			editor.update(
+				() => {
+					$getRoot().append($createTableNodeWithDimensions(1, 1, false));
+				},
+				{ discrete: true }
+			);
+			const live = screen.getByTestId(EDITOR_TESTID).querySelector('table') as HTMLTableElement;
+
+			expect(live).toHaveClass(EDITOR_TABLE_CLASS);
+		});
+
+		it('gives the width set on an imported table precedence over the original one', async () => {
+			const editor = await mountWith(
+				'<table width="480" style="width: 100%; table-layout: auto; color: red"><tbody><tr><td>A</td></tr></tbody></table>'
+			);
+			const setTableStyle = (style: string): void =>
+				editor.update(
+					() => {
+						$getRoot().getChildren().find($isTableNode)?.setStyle(style);
+					},
+					{ discrete: true }
+				);
+			const live = (): HTMLTableElement =>
+				screen.getByTestId(EDITOR_TESTID).querySelector('table') as HTMLTableElement;
+
+			setTableStyle('width: 300px; table-layout: fixed');
+			const exported = parse(exportedHtml(editor)).body.querySelector('table') as HTMLTableElement;
+
+			expect(live().style.width).toBe('300px');
+			expect(live().style.tableLayout).toBe('fixed');
+			expect(exported.style.width).toBe('300px');
+			expect(exported.style.tableLayout).toBe('fixed');
+			expect(exported.style.color).toBe('red');
+			expect(exported.hasAttribute('width')).toBe(false);
+
+			// e.g. undo: the original declarations are back
+			setTableStyle('');
+
+			expect(live().style.width).toBe('100%');
+			expect(live().style.tableLayout).toBe('auto');
+			expect(live().style.color).toBe('red');
+		});
+
+		it('keeps the width set on a table created in the editor instead of the full width', async () => {
+			const editor = await mountWith(TEXT_ONLY);
+
+			editor.update(
+				() => {
+					const table = $createTableNodeWithDimensions(1, 1, false);
+					table.setStyle('width: 300px; table-layout: fixed');
+					$getRoot().append(table);
+				},
+				{ discrete: true }
+			);
+			const table = parse(exportedHtml(editor)).body.querySelector('table') as HTMLTableElement;
+
+			expect(table.style.width).toBe('300px');
 			expect(table.style.tableLayout).toBe('fixed');
 			expect(table.style.borderCollapse).toBe('collapse');
 		});

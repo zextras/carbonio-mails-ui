@@ -12,6 +12,7 @@ import {
 	type SerializedTableNode,
 	type SerializedTableRowNode
 } from '@lexical/table';
+import { removeClassNamesFromElement } from '@lexical/utils';
 import {
 	type DOMConversion,
 	type DOMConversionOutput,
@@ -30,6 +31,7 @@ import {
 	applyEditorViewAttributes,
 	areAttributesEqual,
 	extractPreservedAttributes,
+	getDeclaredStyleProperties,
 	mergeStyleDeclarations,
 	TABLE_EDITOR_VIEW_ATTRIBUTES,
 	type PreservedAttributes
@@ -109,6 +111,10 @@ function applyExportedAttributes(
 		mergeStyleDeclarations(element, style, skippedStyles);
 	}
 }
+
+/** The `<table>` of a table node's DOM, which can be wrapped in a scrollable `<div>`. */
+const findTableElement = (dom: HTMLElement): HTMLTableElement | null =>
+	dom instanceof HTMLTableElement ? dom : dom.querySelector('table');
 
 /** Same layout the `mails-lexical-table` theme class gives the table in the editor. */
 const EDITOR_TABLE_EXPORT_STYLES: Record<string, string> = {
@@ -310,23 +316,61 @@ export class ExtendedTableNode extends TableNode {
 
 	override createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
 		const dom = super.createDOM(config, editor);
-		const table = dom instanceof HTMLTableElement ? dom : dom.querySelector('table');
+		const table = findTableElement(dom);
 		if (table) {
-			applyEditorViewAttributes(table, this.__attributes, TABLE_EDITOR_VIEW_ATTRIBUTES);
+			if (this.__imported) {
+				// The theme class gives tables created here the editor look (full width,
+				// fixed layout, bordered and padded cells). Its rules would override the
+				// size and look an imported table declares (`width="480"`, `cellpadding`,
+				// `border="0"`, ...), so the table is shown the way its author made it.
+				removeClassNamesFromElement(table, config.theme.table);
+				if (table.classList.length === 0) {
+					table.removeAttribute('class');
+				}
+			}
+			this.applyImportedViewAttributes(table);
 		}
 		return dom;
 	}
 
 	override updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
-		return (
+		if (
 			super.updateDOM(prevNode, dom, config) ||
 			!areAttributesEqual(prevNode.__attributes, this.__attributes)
+		) {
+			return true;
+		}
+		const table = prevNode.__style === this.__style ? null : findTableElement(dom);
+		if (table) {
+			// The stock update removes the declarations the node no longer has (e.g. the
+			// width pinned by the resizer, after an undo), which the imported element
+			// may declare as well: restore them.
+			this.applyImportedViewAttributes(table);
+		}
+		return false;
+	}
+
+	/**
+	 * Style properties the node declares itself (the column resizer pins `width`
+	 * and `table-layout`), which win over the ones carried from the imported element.
+	 */
+	private getOwnedStyles(): string[] {
+		return getDeclaredStyleProperties(this.__style);
+	}
+
+	private applyImportedViewAttributes(table: HTMLTableElement): void {
+		applyEditorViewAttributes(
+			table,
+			this.__attributes,
+			TABLE_EDITOR_VIEW_ATTRIBUTES,
+			this.getOwnedStyles()
 		);
 	}
 
 	override exportDOM(editor: LexicalEditor): DOMExportOutput {
 		const output = super.exportDOM(editor);
 		const stockAfter = output.after;
+		const ownedStyles = this.getOwnedStyles();
 		return {
 			...output,
 			after: (generatedElement): ReturnType<NonNullable<DOMExportOutput['after']>> => {
@@ -334,13 +378,18 @@ export class ExtendedTableNode extends TableNode {
 				if (result instanceof HTMLTableElement) {
 					if (this.__imported) {
 						// The theme class is an editor concern; the original class replaces it.
-						applyExportedAttributes(result, this.__attributes);
+						applyExportedAttributes(result, this.__attributes, ownedStyles);
+						if (ownedStyles.includes('width')) {
+							// The width the user gave the table replaces the original one, so the
+							// message does not carry two conflicting widths.
+							result.removeAttribute('width');
+						}
 					} else {
 						// The layout of a table created in the editor comes from the theme class,
 						// which the displayer doesn't have: inline it or the table collapses.
-						Object.entries(EDITOR_TABLE_EXPORT_STYLES).forEach(([property, value]) =>
-							result.style.setProperty(property, value)
-						);
+						Object.entries(EDITOR_TABLE_EXPORT_STYLES)
+							.filter(([property]) => !ownedStyles.includes(property))
+							.forEach(([property, value]) => result.style.setProperty(property, value));
 					}
 				}
 				return result;
