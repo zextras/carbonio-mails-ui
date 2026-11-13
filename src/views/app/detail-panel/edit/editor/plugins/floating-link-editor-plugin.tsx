@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { $isAutoLinkNode, $isLinkNode } from '@lexical/link';
+import { $createAutoLinkNode, $isAutoLinkNode, $isLinkNode, type LinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $findMatchingParent, $unwrapNode } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
@@ -57,6 +57,28 @@ const UrlLink = styled(Link)`
 	text-overflow: ellipsis;
 	white-space: nowrap;
 `;
+
+/**
+ * Removes the link, keeping its text and inline formatting. A link whose whole text
+ * is a URL or an email address is turned into a removed auto-link instead of being
+ * unwrapped: the auto-link plugin would immediately turn that text into a link
+ * again. That covers both an auto-detected link and a regular one with the same
+ * text, as every link of a draft that is loaded again (or of a quoted message) is.
+ * The removed auto-link is saved with its marker, so it stays removed when the
+ * draft is reopened, and it can be restored from the card.
+ */
+function $removeLink(node: LinkNode): void {
+	if ($isAutoLinkNode(node)) {
+		node.setIsUnlinked(true);
+		return;
+	}
+	const match = matchWholeAutoLink(node.getTextContent());
+	if (match) {
+		node.replace($createAutoLinkNode(match.url, { isUnlinked: true }), true);
+	} else {
+		$unwrapNode(node);
+	}
+}
 
 /**
  * Floating editor for links, mirroring the Lexical playground affordance. The
@@ -236,19 +258,13 @@ export const FloatingLinkEditorPlugin = (): React.JSX.Element | null => {
 		setEditOpen(true);
 	}, [editor, linkInfo]);
 
-	// Unwraps the link by moving its children out and removing the now-empty node,
-	// preserving the text and any inline formatting it carried. An auto-detected
-	// link is flagged as unlinked instead: once unwrapped, the auto-link plugin
-	// would immediately turn its URL-like text into a link again.
 	const removeLink = useCallback((): void => {
 		const key = linkInfo?.key;
 		if (key !== undefined) {
 			editor.update(() => {
 				const node = $getNodeByKey(key);
-				if ($isAutoLinkNode(node)) {
-					node.setIsUnlinked(true);
-				} else if ($isLinkNode(node)) {
-					$unwrapNode(node);
+				if ($isLinkNode(node)) {
+					$removeLink(node);
 				}
 			});
 		}

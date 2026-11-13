@@ -29,6 +29,8 @@ const NEW_LINK_TEXT = 'test';
 // Built at runtime so the source holds no script URL literal.
 const SCRIPT_URL = ['javascript', 'void(0)//'].join(':');
 const UNSAFE_URL_REPLACEMENT = 'about:blank';
+const BOLD_CLASS = 'mails-lexical-bold';
+const RED = 'rgb(255, 0, 0)';
 
 // Attributes the saved HTML can do without: the import relies only on these three.
 const ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF = /\s(?!(?:class|style|href)=)[\w-]+="[^"]*"/g;
@@ -75,6 +77,24 @@ function linksOf(editorId: string): Array<{ href: string | null; text: string | 
 		href: anchor.getAttribute('href'),
 		text: anchor.textContent
 	}));
+}
+
+/** Renders the editor on a paragraph with a link whose content is the given formatted HTML. */
+async function setupWithFormattedLink(innerHtml: string): Promise<{
+	editorId: string;
+	user: TestUser;
+	editorElement: HTMLElement;
+	link: HTMLElement;
+}> {
+	const { editorId, user } = setupEditor(`<p><a href="${LINK_URL}">${innerHtml}</a></p>`);
+	const editorElement = screen.getByTestId(EDITOR_TESTID);
+	const link = await within(editorElement).findByRole('link');
+	return { editorId, user, editorElement, link };
+}
+
+/** Parses the exported rich text and returns its first link. */
+function savedLinkOf(editorId: string): HTMLAnchorElement | null {
+	return new DOMParser().parseFromString(richTextOf(editorId), 'text/html').querySelector('a');
 }
 
 /** Opens the edit modal from the floating card, replaces the text to display and saves. */
@@ -201,6 +221,46 @@ describe('FloatingLinkEditorPlugin', () => {
 		}
 	);
 
+	it.each([
+		['URL', LINK_URL, LINK_URL],
+		['email address', `mailto:${LINK_EMAIL}`, LINK_EMAIL]
+	])(
+		'keeps a link loaded from HTML removed when its text is a whole %s',
+		async (_case, href, text) => {
+			const { editorId, user } = setupEditor(`<p>visit <a href="${href}">${text}</a> now</p>`);
+			const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+			await user.click(await within(editorElement).findByRole('link', { name: text }));
+			await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+
+			await waitFor(() => {
+				expect(richTextOf(editorId)).not.toContain('<a');
+			});
+			expect(within(editorElement).queryByRole('link')).not.toBeInTheDocument();
+			expect(richTextOf(editorId)).toContain(UNLINKED_AUTO_LINK_CLASS);
+			expect(within(editorElement).getByText(text)).toBeInTheDocument();
+		}
+	);
+
+	it('keeps a link of a reloaded draft removed, with its formatting, when the draft is loaded again', async () => {
+		const { editorId, user } = setupEditor(`<p><a href="${LINK_URL}"><b>${LINK_URL}</b></a></p>`);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await user.click(await within(editorElement).findByRole('link', { name: LINK_URL }));
+		await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+		await waitFor(() => {
+			expect(richTextOf(editorId)).toContain(UNLINKED_AUTO_LINK_CLASS);
+		});
+		const savedHtml = richTextOf(editorId).replaceAll(ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF, '');
+		cleanup();
+
+		const { editorId: reloadedEditorId } = setupEditor(savedHtml);
+		const reloadedEditor = screen.getByTestId(EDITOR_TESTID);
+		const text = await within(reloadedEditor).findByText(LINK_URL);
+		expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
+		expect(text).toHaveClass(BOLD_CLASS);
+		expect(richTextOf(reloadedEditorId)).not.toContain('<a');
+	});
+
 	it('keeps an auto-detected link removed, with its formatting, after the saved HTML is loaded again', async () => {
 		const { editorId } = await setupWithRemovedAutoLink(`<b>${LINK_URL}</b>`, LINK_URL);
 		const savedHtml = richTextOf(editorId).replaceAll(ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF, '');
@@ -319,6 +379,51 @@ describe('FloatingLinkEditorPlugin', () => {
 		await waitFor(() => {
 			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
 		});
+	});
+
+	it('keeps the bold of the link when the text to display is changed', async () => {
+		const { editorId, user, editorElement, link } = await setupWithFormattedLink(
+			`<strong>${LINK_TEXT}</strong>`
+		);
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+		expect(within(editorElement).getByText(NEW_LINK_TEXT)).toHaveClass(BOLD_CLASS);
+		expect(savedLinkOf(editorId)?.innerHTML).toMatch(
+			new RegExp(`<strong[^>]*>${NEW_LINK_TEXT}</strong>`)
+		);
+	});
+
+	it('keeps the colour of the link when the text to display is changed', async () => {
+		const { editorId, user, editorElement, link } = await setupWithFormattedLink(
+			`<span style="color: ${RED};">${LINK_TEXT}</span>`
+		);
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+		expect(within(editorElement).getByText(NEW_LINK_TEXT)).toHaveStyle({ color: RED });
+		expect(savedLinkOf(editorId)?.innerHTML).toContain(`color: ${RED}`);
+	});
+
+	it('turns a link made of several runs into a single run with the formatting of the first one', async () => {
+		const { editorId, user, editorElement, link } = await setupWithFormattedLink(
+			'<strong>lex</strong>ical'
+		);
+
+		await editLinkText(user, link, NEW_LINK_TEXT);
+
+		await waitFor(() => {
+			expect(linksOf(editorId)).toEqual([{ href: LINK_URL, text: NEW_LINK_TEXT }]);
+		});
+		const editedLink = within(editorElement).getByRole('link', { name: NEW_LINK_TEXT });
+		expect(within(editedLink).getByText(NEW_LINK_TEXT)).toHaveClass(BOLD_CLASS);
+		expect(editedLink).toHaveTextContent(new RegExp(`^${NEW_LINK_TEXT}$`));
 	});
 
 	it('keeps an auto-detected link with its URL when the text to display is changed', async () => {
