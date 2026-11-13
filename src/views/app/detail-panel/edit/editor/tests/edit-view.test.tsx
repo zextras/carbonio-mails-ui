@@ -22,6 +22,7 @@ import { aSuccessfulSaveDraft } from './utils/utils';
 import { TESTID_SELECTORS } from '../../../../../../__test__/constants';
 import { FileNode } from '../edit-utils-hooks/use-upload-from-files';
 import { EditView } from '../edit-view';
+import { INLINE_IMAGE_DRAG_TYPE } from '../plugins/nodes/image-types';
 import { setupTest, screen, within, UserEvent } from '@test-setup';
 import {
 	createSoapAPIInterceptor,
@@ -965,6 +966,30 @@ describe('Edit view', () => {
 			});
 
 			// Verify drop zone is not enabled/visible for text content
+			const dropZone = screen.queryByTestId('drop-zone-attachment');
+			expect(dropZone).not.toBeInTheDocument();
+		});
+
+		it('should disable drop zone when moving an inline image inside the text editor', async () => {
+			setupEditorStore({ editors: [] });
+			const editor = generateNewMessageEditor();
+			addEditor({ id: editor.id, editor });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			const textEditor = await screen.findByTestId('MailPlainTextEditor');
+			expect(textEditor).toBeVisible();
+
+			// Browsers can list a dragged image as a file too
+			await act(async () => {
+				fireEvent.dragOver(textEditor, {
+					dataTransfer: {
+						types: ['Files', INLINE_IMAGE_DRAG_TYPE],
+						files: []
+					}
+				});
+			});
+
 			const dropZone = screen.queryByTestId('drop-zone-attachment');
 			expect(dropZone).not.toBeInTheDocument();
 		});

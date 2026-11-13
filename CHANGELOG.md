@@ -1,3 +1,16 @@
+## <small>1.51.18 (2026-11-13)</small>
+
+* fix(CO-4725): allow moving inline images by drag and drop in composer (#1432) ([cdd6d78](https://github.com/zextras/carbonio-mails-ui/commit/cdd6d78)), closes [#1432](https://github.com/zextras/carbonio-mails-ui/issues/1432)
+* chore: simplify delete modal warning message for clarity ([3befad3](https://github.com/zextras/carbonio-mails-ui/commit/3befad3))
+
+## <small>1.51.17 (2026-11-12)</small>
+
+* fix(CO-4715): show font preview in the font selector of the lexical editor (#1430) ([0ad6385](https://github.com/zextras/carbonio-mails-ui/commit/0ad6385)), closes [#1430](https://github.com/zextras/carbonio-mails-ui/issues/1430)
+
+## <small>1.51.16 (2026-11-11)</small>
+
+* fix(CO-4684): html composer the remove link trash button does nothing on a link created by typing a  ([964928e](https://github.com/zextras/carbonio-mails-ui/commit/964928e)), closes [#1423](https://github.com/zextras/carbonio-mails-ui/issues/1423) [#1427](https://github.com/zextras/carbonio-mails-ui/issues/1427)
+
 ## <small>1.51.15 (2026-11-10)</small>
 
 * fix(deps): update carbonio-shell-ui to v15.5.2 and carbonio-search-ui to v0.1.26 (#1426) ([3e2b07a](https://github.com/zextras/carbonio-mails-ui/commit/3e2b07a)), closes [#1426](https://github.com/zextras/carbonio-mails-ui/issues/1426)

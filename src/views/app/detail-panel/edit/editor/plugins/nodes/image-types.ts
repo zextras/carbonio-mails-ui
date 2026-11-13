@@ -18,3 +18,10 @@ export type ImageDimension = number | 'inherit';
 export const OPEN_IMAGE_MODAL_COMMAND: LexicalCommand<void> = createCommand(
 	'OPEN_IMAGE_MODAL_COMMAND'
 );
+
+/**
+ * `DataTransfer` type carrying the inline image being dragged inside the
+ * editor (see the `ImagePlugin`). Lowercase, as browsers normalize the
+ * `DataTransfer.types` entries.
+ */
+export const INLINE_IMAGE_DRAG_TYPE = 'application/x-carbonio-inline-image';
