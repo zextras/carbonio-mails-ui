@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable max-classes-per-file -- two minimal Event stubs cover a jsdom gap (see below) */
+/* eslint-disable jest-dom/prefer-to-have-style -- the width assertions are on the exported HTML, a detached document parsed from a string that toHaveStyle cannot compute styles of */
 import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -19,6 +20,7 @@ type TestUser = ReturnType<typeof setupTest>['user'];
 const COLUMN_RESIZE_HANDLE_NAME = 'lexical-label.table_resize_column';
 const EDITOR_TESTID = 'edit-view-editor';
 const RESIZED_WIDTH_STYLE = 'width: 200px';
+const COLUMNS_SELECTOR = 'colgroup col';
 
 function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
@@ -78,6 +80,57 @@ async function setupEditorWithTable(): Promise<{
 	const cells = within(table).getAllByRole('cell');
 	return { editorId: editor.id, user, cells };
 }
+
+/** Renders an editor with an empty body and returns its id. */
+function setupEmptyEditor(): string {
+	const editor = generateNewMessageEditor();
+	editor.text = { plainText: '', richText: '<p></p>' };
+	setupEditorStore({ editors: [editor] });
+	setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+	return editor.id;
+}
+
+/** Pastes `html` in the editor and returns the rendered table. */
+async function pasteTable(html: string): Promise<HTMLElement> {
+	const editorElement = screen.getByTestId(EDITOR_TESTID);
+	pasteHtml(editorElement, html);
+	return within(editorElement).findByRole('table');
+}
+
+/**
+ * Drags the right border of `cell` from x=0 to `clientX`: jsdom lays nothing
+ * out, so the cell measures 0px and `clientX` is its new width.
+ */
+async function dragColumnBorder(cell: HTMLElement, clientX: number): Promise<void> {
+	hoverCell(cell);
+	const columnHandle = await screen.findByRole('button', { name: COLUMN_RESIZE_HANDLE_NAME });
+	/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+	fireEvent.mouseDown(columnHandle, { clientX: 0, clientY: 0 });
+	fireEvent.mouseMove(document, { clientX, clientY: 0 });
+	fireEvent.mouseUp(document, { clientX, clientY: 0 });
+	/* eslint-enable testing-library/prefer-user-event */
+}
+
+const parse = (html: string): Document => new DOMParser().parseFromString(html, 'text/html');
+
+/* eslint-disable testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM */
+function exportedTableOf(editorId: string): HTMLTableElement {
+	return parse(richTextOf(editorId)).querySelector('table') as HTMLTableElement;
+}
+
+function exportedColWidths(editorId: string): Array<string> {
+	return Array.from(
+		parse(richTextOf(editorId)).querySelectorAll<HTMLElement>(COLUMNS_SELECTOR),
+		(col) => col.style.width
+	);
+}
+
+function exportedCellOf(editorId: string, text: string): HTMLTableCellElement | undefined {
+	return Array.from(parse(richTextOf(editorId)).querySelectorAll('td')).find(
+		(cell) => cell.textContent === text
+	);
+}
+/* eslint-enable testing-library/no-node-access */
 
 describe('TableCellResizerPlugin', () => {
 	const globalScope = globalThis as Record<string, unknown>;
@@ -170,9 +223,9 @@ describe('TableCellResizerPlugin', () => {
 
 		await waitFor(() => {
 			const html = richTextOf(editor.id);
-			const doc = new DOMParser().parseFromString(html, 'text/html');
+			const doc = parse(html);
 			// eslint-disable-next-line testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM
-			const resizedCol = doc.querySelectorAll('colgroup col')[0];
+			const resizedCol = doc.querySelectorAll(COLUMNS_SELECTOR)[0];
 			// Before the fix this stayed at the original "80px" from the pasted
 			// <colgroup>, since only the <td> width (not the column's) was updated.
 			expect(resizedCol?.getAttribute('style')).toContain(RESIZED_WIDTH_STYLE);
@@ -200,11 +253,77 @@ describe('TableCellResizerPlugin', () => {
 			expect(richTextOf(editorId)).toContain(RESIZED_WIDTH_STYLE);
 		});
 
-		const doc = new DOMParser().parseFromString(richTextOf(editorId), 'text/html');
+		const doc = parse(richTextOf(editorId));
 		// eslint-disable-next-line testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM
-		const otherCol = doc.querySelectorAll('colgroup col')[1];
+		const otherCol = doc.querySelectorAll(COLUMNS_SELECTOR)[1];
 		// This table never had any explicit column width, so the second
 		// column must not be forced down to the resizer's MIN_COLUMN_WIDTH.
 		expect(otherCol?.getAttribute('style') ?? '').not.toContain('width: 40px');
+	});
+
+	it('makes a pasted table as wide as its columns, replacing its original width', async () => {
+		const editorId = setupEmptyEditor();
+		const table = await pasteTable(
+			'<table width="480" style="width:100%;border:1px solid red"><colgroup><col style="width:80px"><col style="width:160px"></colgroup>' +
+				'<tbody><tr><td style="width:80px">A</td><td>B</td></tr></tbody></table>'
+		);
+
+		await dragColumnBorder(within(table).getAllByRole('cell')[0], 200);
+
+		const exported = await waitFor(() => {
+			const exportedTable = exportedTableOf(editorId);
+			// 200px resized column + the untouched 160px one
+			expect(exportedTable.style.width).toBe('360px');
+			return exportedTable;
+		});
+		expect(exported.style.tableLayout).toBe('fixed');
+		expect(exported.style.border).toBe('1px solid red');
+		expect(exported.getAttribute('width')).not.toBe('480');
+	});
+
+	it('makes a table inserted from the toolbar as wide as its columns instead of the full width', async () => {
+		const { editorId, cells } = await setupEditorWithTable();
+
+		await dragColumnBorder(cells[0], 200);
+
+		await waitFor(() => {
+			// jsdom lays nothing out, so the untouched column measures 0px
+			expect(exportedTableOf(editorId).style.width).toBe('200px');
+		});
+		expect(exportedTableOf(editorId).style.tableLayout).toBe('fixed');
+	});
+
+	it('resizes the column at the right border of the cell when a rowspan shifts the cells of the row', async () => {
+		const editorId = setupEmptyEditor();
+		const table = await pasteTable(
+			'<table><tbody><tr><td rowspan="2" style="width:100px">X</td><td style="width:200px">Y</td></tr>' +
+				'<tr><td>Z</td></tr></tbody></table>'
+		);
+		const cellZ = within(table).getByRole('cell', { name: 'Z' });
+
+		await dragColumnBorder(cellZ, 120);
+
+		await waitFor(() => {
+			expect(exportedTableOf(editorId).style.width).toBe('220px');
+		});
+		expect(exportedColWidths(editorId)).toEqual(['100px', '120px']);
+	});
+
+	it('measures the columns from cells that span only one column', async () => {
+		const editorId = setupEmptyEditor();
+		const table = await pasteTable(
+			'<table><tbody><tr><td colspan="2" style="width:300px">H</td></tr>' +
+				'<tr><td style="width:100px">A</td><td style="width:200px">B</td></tr></tbody></table>'
+		);
+
+		await dragColumnBorder(within(table).getByRole('cell', { name: 'A' }), 150);
+
+		await waitFor(() => {
+			// not 150 + 300: the header spans both columns, it is not the width of the second one
+			expect(exportedTableOf(editorId).style.width).toBe('350px');
+		});
+		expect(exportedColWidths(editorId)).toEqual(['150px', '200px']);
+		// the header spanning the resized column keeps spanning both of them
+		expect(exportedCellOf(editorId, 'H')?.style.width).toBe('350px');
 	});
 });
