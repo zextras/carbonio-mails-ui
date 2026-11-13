@@ -6,14 +6,18 @@
 
 import React from 'react';
 
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import assert from 'node:assert';
 
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
+import { DragItemWrapper } from 'views/app/folder-panel/parts/drag-item-wrapper';
 import { AccordionCustomComponent } from 'views/sidebar/accordion-custom-component';
 
 describe('accordion-custom-component', () => {
@@ -137,5 +141,78 @@ describe('accordion-custom-component', () => {
 		setupTest(<AccordionCustomComponent item={sharedDraft} />);
 
 		expect(screen.getByText(87)).toBeInTheDocument();
+	});
+
+	describe('dropping a conversation on the folder', () => {
+		const destinationFolder = generateFolder({
+			id: '7001',
+			name: 'Projects',
+			absFolderPath: '/Projects',
+			parent: FOLDERS.USER_ROOT,
+			isLink: false
+		});
+
+		const setupDraggedConversationAndFolder = (openFolderId: string): string => {
+			const conversation = {
+				...generateConversation({ folderId: openFolderId, messageGenerationCount: 2 }),
+				parent: openFolderId
+			};
+			setupTest(
+				<>
+					<DragItemWrapper
+						item={conversation}
+						selectedIds={[]}
+						selectedItems={{}}
+						deselectAll={vi.fn()}
+						setDraggedIds={vi.fn()}
+						dragImageRef={undefined}
+						dragAndDropIsDisabled={false}
+					>
+						<div data-testid="dragged-conversation">{conversation.subject}</div>
+					</DragItemWrapper>
+					<AccordionCustomComponent item={destinationFolder} />
+				</>,
+				{ initialEntries: [`/folder/${openFolderId}`], path: '/folder/:folderId/*' }
+			);
+			return conversation.id;
+		};
+
+		// The design system Drag and Drop listen to the native drag events, which user-event cannot fire
+		const dragConversationOntoFolder = (): void => {
+			const dataTransfer = { dropEffect: 'move', setDragImage: vi.fn() };
+			const dropZone = screen.getByTestId('drop');
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.dragStart(screen.getByTestId('dragged-conversation'), { dataTransfer });
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.dragEnter(dropZone, { dataTransfer });
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.drop(dropZone, { dataTransfer });
+		};
+
+		it.each`
+			openFolder | openFolderId     | tcon
+			${'Inbox'} | ${FOLDERS.INBOX} | ${'o'}
+			${'Sent'}  | ${FOLDERS.SENT}  | ${'s'}
+			${'Junk'}  | ${FOLDERS.SPAM}  | ${'j'}
+		`(
+			'should move only the messages in the group of the open folder ($openFolder, tcon $tcon)',
+			async ({ openFolderId, tcon }) => {
+				const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+					'ConvAction',
+					{ action: { id: '1', op: 'move' } }
+				);
+				const conversationId = setupDraggedConversationAndFolder(openFolderId);
+
+				dragConversationOntoFolder();
+
+				const request = await interceptor;
+				expect(request.action).toEqual({
+					id: conversationId,
+					op: 'move',
+					l: destinationFolder.id,
+					tcon
+				});
+			}
+		);
 	});
 });

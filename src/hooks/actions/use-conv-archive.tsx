@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
 import { getArchiveFolderId, isArchive, isSystemArchiveAvailable } from 'helpers/folders';
+import { useConvActionTargetConstraint } from 'hooks/use-conv-action-target-constraint';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -33,6 +34,7 @@ export const useConvArchiveFn = ({
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
+	const tcon = useConvActionTargetConstraint();
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const execute = useCallback((): void => {
@@ -42,7 +44,8 @@ export const useConvArchiveFn = ({
 		convActionEmailStoreAction({
 			operation: `move`,
 			ids: conversationIds,
-			parent: getArchiveFolderId(folderId)
+			parent: getArchiveFolderId(folderId),
+			tcon
 		}).then((res) => {
 			if ('Fault' in res) {
 				createSnackbar({
@@ -85,7 +88,8 @@ export const useConvArchiveFn = ({
 		folderId,
 		inSearchModule,
 		onActionComplete,
-		t
+		t,
+		tcon
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);

@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isSpam } from 'helpers/folders';
+import { useConvActionTargetConstraint } from 'hooks/use-conv-action-target-constraint';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 
@@ -27,6 +28,7 @@ export const useConvSetNotSpamFn = ({
 }: ConvSetNotSpamFunctionsParameter): ActionFn => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
+	const tcon = useConvActionTargetConstraint();
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const canExecute = useCallback((): boolean => isSpam(folderId), [folderId]);
@@ -37,7 +39,8 @@ export const useConvSetNotSpamFn = ({
 		}
 		convActionEmailStoreAction({
 			operation: '!spam',
-			ids
+			ids,
+			tcon
 		}).then((res) => {
 			if ('Fault' in res) {
 				createSnackbar({
@@ -75,7 +78,8 @@ export const useConvSetNotSpamFn = ({
 		currentConversation,
 		ids,
 		onActionComplete,
-		t
+		t,
+		tcon
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);

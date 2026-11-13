@@ -12,10 +12,11 @@ export async function convActionEmailStoreAction({
 	ids,
 	operation,
 	parent,
-	tagName
+	tagName,
+	tcon
 }: ConvActionParameters): ReturnType<typeof convActionSoapApi> {
 	optimisticallyHandleConvActions({ ids, operation });
-	const response = await convActionSoapApi({ ids, operation, parent, tagName });
+	const response = await convActionSoapApi({ ids, operation, parent, tagName, tcon });
 	handleConvActionResponse(response, { ids, operation });
 	return response;
 }

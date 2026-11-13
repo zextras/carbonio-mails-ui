@@ -6,7 +6,7 @@
 
 import { IncompleteMessage } from 'types/messages';
 import { Participant } from 'types/participant';
-import { ConvActionOperation } from 'types/soap';
+import { ConvActionOperation, ConvActionTargetConstraint } from 'types/soap';
 import { SortBy } from 'types/sorting';
 
 export type ConvMessage = {
@@ -36,6 +36,7 @@ export type ConvActionParameters = {
 	operation: ConvActionOperation;
 	parent?: string;
 	tagName?: string;
+	tcon?: ConvActionTargetConstraint;
 };
 
 export type SearchSoapApiParams = {

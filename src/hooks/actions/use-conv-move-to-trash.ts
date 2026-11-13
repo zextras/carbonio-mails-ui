@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useConversationDetailPanelControls } from '../../views/app/detail-panel/detail-panel-controls-hooks';
 import { ConversationActionsDescriptors } from 'constants/index';
+import { useConvActionTargetConstraint } from 'hooks/use-conv-action-target-constraint';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { useInSearchModule } from 'ui-actions/utils';
@@ -30,6 +31,7 @@ export const useConvMoveToTrashFn = ({
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
+	const tcon = useConvActionTargetConstraint();
 	const { closeConversationPanel, currentConversation } = useConversationDetailPanelControls();
 
 	const execute = useCallback((): void => {
@@ -38,7 +40,8 @@ export const useConvMoveToTrashFn = ({
 		}
 		convActionEmailStoreAction({
 			operation: `trash`,
-			ids
+			ids,
+			tcon
 		}).then((res) => {
 			if (!('Fault' in res)) {
 				onActionComplete && onActionComplete(ids);
@@ -74,7 +77,8 @@ export const useConvMoveToTrashFn = ({
 		inSearchModule,
 		createSnackbar,
 		t,
-		closeConversationPanel
+		closeConversationPanel,
+		tcon
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);

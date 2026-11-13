@@ -14,7 +14,8 @@ export async function convActionSoapApi({
 	ids,
 	operation,
 	parent,
-	tagName
+	tagName,
+	tcon
 }: ConvActionParameters): Promise<ConvActionResponse | ErrorSoapBodyResponse> {
 	const { Body } = await soapFetchV2<ConvActionRequest, { ConvActionResponse: ConvActionResponse }>(
 		'ConvAction',
@@ -25,7 +26,8 @@ export async function convActionSoapApi({
 					id: ids.join(','),
 					op: operation,
 					l: parent,
-					tn: tagName
+					tn: tagName,
+					tcon
 				},
 				isNil
 			)

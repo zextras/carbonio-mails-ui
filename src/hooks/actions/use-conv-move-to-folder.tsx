@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from 'constants/index';
 import { isTrash } from 'helpers/folders';
+import { useConvActionTargetConstraint } from 'hooks/use-conv-action-target-constraint';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
 import { MoveConversation } from 'ui-actions/move-conv';
@@ -23,6 +24,7 @@ export const useConvMoveToFolderFn = ({
 	onActionComplete?: (conversationsIds: Array<string>) => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
+	const tcon = useConvActionTargetConstraint();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
@@ -46,12 +48,13 @@ export const useConvMoveToFolderFn = ({
 						onClose={(): void => closeModal(id)}
 						isRestore={false}
 						onMoveComplete={onActionComplete}
+						tcon={tcon}
 					/>
 				)
 			},
 			true
 		);
-	}, [canExecute, createModal, folderId, ids, onActionComplete, closeModal]);
+	}, [canExecute, createModal, folderId, ids, onActionComplete, closeModal, tcon]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
