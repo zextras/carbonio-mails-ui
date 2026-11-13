@@ -6,15 +6,22 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { $createAutoLinkNode, $isAutoLinkNode, $isLinkNode, type LinkNode } from '@lexical/link';
+import {
+	$createAutoLinkNode,
+	$isAutoLinkNode,
+	$isLinkNode,
+	type AutoLinkNode,
+	type LinkMatcher,
+	type LinkNode
+} from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $findMatchingParent, $unwrapNode } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNearestNodeFromDOMNode, $getNodeByKey, $isTextNode } from 'lexical';
+import { $getNearestNodeFromDOMNode, $getNodeByKey, $isTextNode, type TextNode } from 'lexical';
 import { createPortal } from 'react-dom';
 
-import { matchWholeAutoLink } from './auto-link-plugin';
+import { matchFirstAutoLink, matchWholeAutoLink } from './auto-link-plugin';
 import { LinkModal } from './link-modal';
 
 type LinkInfo = {
@@ -58,14 +65,41 @@ const UrlLink = styled(Link)`
 	white-space: nowrap;
 `;
 
+/** A removed auto-link for the match: restored, it opens like any auto-link. */
+function $createRemovedAutoLinkNode(match: NonNullable<ReturnType<LinkMatcher>>): AutoLinkNode {
+	return $createAutoLinkNode(match.url, { ...match.attributes, isUnlinked: true });
+}
+
 /**
- * Removes the link, keeping its text and inline formatting. A link whose whole text
- * is a URL or an email address is turned into a removed auto-link instead of being
- * unwrapped: the auto-link plugin would immediately turn that text into a link
- * again. That covers both an auto-detected link and a regular one with the same
- * text, as every link of a draft that is loaded again (or of a quoted message) is.
- * The removed auto-link is saved with its marker, so it stays removed when the
- * draft is reopened, and it can be restored from the card.
+ * Wraps each URL or email address in the text node into a removed auto-link, so
+ * that the auto-link plugin does not turn it into a link.
+ */
+function $keepAutoLinksRemoved(textNode: TextNode): void {
+	const match = textNode.isSimpleText() ? matchFirstAutoLink(textNode.getTextContent()) : null;
+	if (!match) {
+		return;
+	}
+	// No empty part is returned: the match comes first when it starts the text.
+	const parts = textNode.splitText(match.index, match.index + match.length);
+	const matchIndex = match.index === 0 ? 0 : 1;
+	const linkText = parts[matchIndex];
+	const autoLink = $createRemovedAutoLinkNode(match);
+	linkText.replace(autoLink);
+	autoLink.append(linkText);
+	// The first matcher that matches decides, not the first link in the text: the
+	// text before the match can hold one as well as the text after it.
+	parts.filter((_part, index) => index !== matchIndex).forEach($keepAutoLinksRemoved);
+}
+
+/**
+ * Removes the link, keeping its text and inline formatting. Once unwrapped, the
+ * auto-link plugin would immediately turn a URL or an email address in that text
+ * into a link again, so it is kept as a removed auto-link instead: an auto-detected
+ * link is flagged as removed, a regular link whose whole text is one becomes a
+ * removed auto-link (as every link of a draft that is loaded again, or of a quoted
+ * message, is), and in any other link the ones within its text are wrapped. A
+ * removed auto-link is saved with its marker, so it stays removed when the draft
+ * is reopened, and it can be restored from the card.
  */
 function $removeLink(node: LinkNode): void {
 	if ($isAutoLinkNode(node)) {
@@ -74,10 +108,12 @@ function $removeLink(node: LinkNode): void {
 	}
 	const match = matchWholeAutoLink(node.getTextContent());
 	if (match) {
-		node.replace($createAutoLinkNode(match.url, { isUnlinked: true }), true);
-	} else {
-		$unwrapNode(node);
+		node.replace($createRemovedAutoLinkNode(match), true);
+		return;
 	}
+	const textNodes = node.getChildren().filter($isTextNode);
+	$unwrapNode(node);
+	textNodes.forEach($keepAutoLinksRemoved);
 }
 
 /**
