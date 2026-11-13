@@ -7,6 +7,7 @@ import { mergeRegister } from '@lexical/utils';
 import {
 	$getNearestNodeFromDOMNode,
 	$getNodeByKey,
+	$getRoot,
 	$insertNodes,
 	$isElementNode,
 	$isRootOrShadowRoot,
@@ -16,8 +17,10 @@ import {
 	DRAGOVER_COMMAND,
 	DRAGSTART_COMMAND,
 	DROP_COMMAND,
+	type ElementNode,
 	type LexicalEditor,
-	type NodeKey
+	type NodeKey,
+	type TextNode
 } from 'lexical';
 
 import { $createImageNode, $isImageNode } from './nodes/image-node';
@@ -71,6 +74,14 @@ function isInlineImageDrag(event: DragEvent): boolean {
 }
 
 /**
+ * The non standard `caretRangeFromPoint`, still the only way to hit test a caret
+ * position on the browsers lacking `caretPositionFromPoint` (older Safari).
+ */
+type LegacyCaretDocument = {
+	caretRangeFromPoint?: (x: number, y: number) => Range | null;
+};
+
+/**
  * DOM position (node + offset) under the given viewport coordinates, the same
  * way `@lexical/clipboard` resolves the drop point of a text drag.
  */
@@ -79,49 +90,64 @@ function caretFromPoint(x: number, y: number): { node: Node; offset: number } | 
 		const position = document.caretPositionFromPoint(x, y);
 		return position ? { node: position.offsetNode, offset: position.offset } : null;
 	}
-	// Fallback for the browsers lacking the standard API (older Safari/Chromium)
-	if (typeof document.caretRangeFromPoint === 'function') {
-		const range = document.caretRangeFromPoint(x, y);
-		return range ? { node: range.startContainer, offset: range.startOffset } : null;
+	const legacyDocument: LegacyCaretDocument = document;
+	const range = legacyDocument.caretRangeFromPoint?.(x, y) ?? null;
+	return range ? { node: range.startContainer, offset: range.startOffset } : null;
+}
+
+/**
+ * Offset in the text node of a hit, which can be on the text span instead of
+ * on its DOM text node.
+ */
+function textDropOffset(node: TextNode, hit: { node: Node; offset: number }): number {
+	const size = node.getTextContentSize();
+	if (hit.node.nodeType === Node.TEXT_NODE) {
+		return Math.min(hit.offset, size);
 	}
-	return null;
+	return hit.offset > 0 ? size : 0;
+}
+
+function $elementDropPoint(node: ElementNode, offset: number): DropPoint | null {
+	if (!$isRootOrShadowRoot(node)) {
+		return {
+			key: node.getKey(),
+			offset: Math.min(offset, node.getChildrenSize()),
+			type: 'element'
+		};
+	}
+	// Outside of any block (e.g. below the last paragraph): at the end of the
+	// nearest block
+	const block = node.getChildAtIndex(Math.min(offset, node.getChildrenSize() - 1));
+	return $isElementNode(block)
+		? { key: block.getKey(), offset: block.getChildrenSize(), type: 'element' }
+		: null;
 }
 
 /**
  * The editor position under the pointer of the drag event, or `null` when it
  * cannot be resolved or when it falls on the dragged image itself.
  */
-function $resolveDropPoint(event: DragEvent, draggedKey: NodeKey): DropPoint | null {
+function $resolveDropPoint(
+	editor: LexicalEditor,
+	event: DragEvent,
+	draggedKey: NodeKey
+): DropPoint | null {
 	const hit = caretFromPoint(event.clientX, event.clientY);
 	if (hit === null) {
 		return null;
 	}
-	const node = $getNearestNodeFromDOMNode(hit.node);
+	// The root element is not mapped to the root node (e.g. a hit on the padding
+	// below the last paragraph)
+	const node =
+		hit.node === editor.getRootElement() ? $getRoot() : $getNearestNodeFromDOMNode(hit.node);
 	if (node === null || node.getKey() === draggedKey) {
 		return null;
 	}
 	if ($isTextNode(node)) {
-		// The hit can be on the text span instead of on its text node
-		const offset =
-			hit.node.nodeType === Node.TEXT_NODE
-				? Math.min(hit.offset, node.getTextContentSize())
-				: (hit.offset > 0 && node.getTextContentSize()) || 0;
-		return { key: node.getKey(), offset, type: 'text' };
+		return { key: node.getKey(), offset: textDropOffset(node, hit), type: 'text' };
 	}
 	if ($isElementNode(node)) {
-		if ($isRootOrShadowRoot(node)) {
-			// Outside of any block (e.g. below the last paragraph): at the end of
-			// the nearest block
-			const block = node.getChildAtIndex(Math.min(hit.offset, node.getChildrenSize() - 1));
-			return $isElementNode(block)
-				? { key: block.getKey(), offset: block.getChildrenSize(), type: 'element' }
-				: null;
-		}
-		return {
-			key: node.getKey(),
-			offset: Math.min(hit.offset, node.getChildrenSize()),
-			type: 'element'
-		};
+		return $elementDropPoint(node, hit.offset);
 	}
 	// A decorator (e.g. another image) or a line break: right after it
 	const parent = node.getParent();
@@ -224,7 +250,7 @@ function createDropCaret(): {
 		show: (rect, color): void => {
 			if (caret === null) {
 				caret = document.createElement('div');
-				caret.setAttribute('data-testid', DROP_CARET_TEST_ID);
+				caret.dataset.testid = DROP_CARET_TEST_ID;
 				caret.setAttribute('aria-hidden', 'true');
 				Object.assign(caret.style, {
 					position: 'fixed',
@@ -273,18 +299,18 @@ function $onImageDragStart(editor: LexicalEditor, event: DragEvent): NodeKey | n
  * removed. Drops coming from another editor are ignored, as the image belongs
  * to (and its cid is tracked by) the source editor.
  */
-function $onImageDrop(editor: LexicalEditor, event: DragEvent): boolean {
+function $moveImageToDropPoint(editor: LexicalEditor, event: DragEvent): void {
 	const data = readInlineImageDragData(event.dataTransfer);
 	if (data?.editorKey !== editor.getKey()) {
-		return true;
+		return;
 	}
 	const image = $getNodeByKey(data.nodeKey);
 	if (!$isImageNode(image)) {
-		return true;
+		return;
 	}
-	const point = $resolveDropPoint(event, image.getKey());
+	const point = $resolveDropPoint(editor, event, image.getKey());
 	if (point === null || !$selectDropPoint(point)) {
-		return true;
+		return;
 	}
 	$insertNodes([
 		$createImageNode(
@@ -297,7 +323,6 @@ function $onImageDrop(editor: LexicalEditor, event: DragEvent): boolean {
 		)
 	]);
 	image.remove();
-	return true;
 }
 
 /**
@@ -346,7 +371,7 @@ export function registerImageDragAndDrop(editor: LexicalEditor): () => void {
 				// edit and the page does not receive the drop event
 				event.preventDefault();
 				// No caret for an image dragged from another editor: its drop is ignored
-				const point = draggedKey && $resolveDropPoint(event, draggedKey);
+				const point = draggedKey && $resolveDropPoint(editor, event, draggedKey);
 				const rect = point && $getDropPointRect(editor, point);
 				const root = editor.getRootElement();
 				if (rect && root) {
@@ -367,7 +392,8 @@ export function registerImageDragAndDrop(editor: LexicalEditor): () => void {
 				// Whatever happens next, the browser must not insert the dragged content
 				event.preventDefault();
 				endDrag();
-				return $onImageDrop(editor, event);
+				$moveImageToDropPoint(editor, event);
+				return true;
 			},
 			COMMAND_PRIORITY_HIGH
 		),
