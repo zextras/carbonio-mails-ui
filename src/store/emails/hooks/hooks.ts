@@ -33,15 +33,17 @@ import { SearchRequestStatus } from 'types/search';
 const conversationsToRefresh = new Map<string, Set<string | undefined>>();
 
 function refreshConversations(): void {
+	const conversations = [...conversationsToRefresh];
+	// cleared first, so a failure cannot keep the next refreshes from being scheduled
+	conversationsToRefresh.clear();
 	const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
-	conversationsToRefresh.forEach((folderIds, conversationId) => {
+	conversations.forEach(([conversationId, folderIds]) => {
 		// the search of a folder leaves the headers out of the messages of the other folders: a conversation
 		// shown with different folders, or with all of them, is searched in all its folders
 		const folderId = folderIds.size === 1 ? [...folderIds][0] : undefined;
 		// a failed refresh leaves the conversation as it is
 		refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
 	});
-	conversationsToRefresh.clear();
 }
 
 /**

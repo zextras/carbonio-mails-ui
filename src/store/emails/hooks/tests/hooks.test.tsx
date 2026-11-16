@@ -256,7 +256,7 @@ describe('Searches store hooks', () => {
 			);
 
 			await act(async () => {
-				window.dispatchEvent(new MailboxRefreshedEvent());
+				globalThis.dispatchEvent(new MailboxRefreshedEvent());
 			});
 
 			expect(searchConvSpy).toHaveBeenCalledTimes(1);
@@ -275,7 +275,7 @@ describe('Searches store hooks', () => {
 			);
 
 			await act(async () => {
-				window.dispatchEvent(new MailboxRefreshedEvent());
+				globalThis.dispatchEvent(new MailboxRefreshedEvent());
 			});
 
 			expect(searchConvSpy).toHaveBeenCalledTimes(1);
