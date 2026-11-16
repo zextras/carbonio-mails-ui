@@ -5,6 +5,7 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
+import type { SoapFolder } from '@zextras/carbonio-shell-ui';
 import {
 	FOLDERS,
 	folderWorker,
@@ -743,6 +744,26 @@ describe('sync data handler', () => {
 			expect(workerSpy).toHaveBeenCalledWith(
 				expect.objectContaining({ op: 'notify', notify, state: expect.any(Object) })
 			);
+		});
+
+		test('it will create a folder once when its notify is delivered by two responses', async () => {
+			// e.g. the polling NoOp and the NoOp requested after an archive import, both pending at once
+			const workerSpy = vi.spyOn(folderWorker, 'postMessage');
+			const notify = {
+				deleted: [],
+				seq: 7,
+				created: {
+					folder: [{ id: '300', l: FOLDERS.INBOX, name: 'Imported', view: 'message' } as SoapFolder]
+				}
+			};
+			mockSoapRefresh(mailboxNumber);
+			mockSoapSync([notify]);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			mockSoapSync([{ ...notify }]);
+			rerender();
+
+			expect(workerSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 

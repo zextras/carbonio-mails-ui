@@ -118,7 +118,7 @@ export async function refreshSearchEmailStoreAction({
 	}
 
 	if (types === 'message') {
-		const messages = map(searchResponse.m ?? [], (msg) =>
+		const messages = (searchResponse.m ?? []).map((msg) =>
 			normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true })
 		);
 		refreshMessagesInEmailStore(messages, !!searchResponse.more);

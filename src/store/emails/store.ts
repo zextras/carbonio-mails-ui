@@ -477,8 +477,9 @@ export function refreshMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	addTask(async () => {
+	addTask(() => {
 		messageIndexSliceUtils.refreshMessagesInEmailStore(messages, more, useEmailsStore);
+		return Promise.resolve();
 	});
 }
 
@@ -625,13 +626,14 @@ export function refreshConversationsInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	addTask(async () => {
+	addTask(() => {
 		conversationIndexSliceUtils.refreshConversationsInEmailStore(
 			conversations,
 			messages,
 			more,
 			useEmailsStore
 		);
+		return Promise.resolve();
 	});
 }
 
