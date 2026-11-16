@@ -38,6 +38,40 @@ function setMessagesInEmailStore(
 	);
 }
 
+// the messages of a list leave out what is loaded only when a message is opened (e.g. the body), so they
+// are merged into the stored ones, which stay complete and keep what the open message shows
+export function mergeListMessages(
+	populatedMessages: Record<string, MailMessage | IncompleteMessage>,
+	messages: Array<MailMessage | IncompleteMessage>
+): void {
+	messages.forEach((message) => {
+		const existingMessage = populatedMessages[message.id];
+		populatedMessages[message.id] = existingMessage
+			? {
+					...existingMessage,
+					...message,
+					isComplete: existingMessage.isComplete || message.isComplete
+				}
+			: message;
+	});
+}
+
+function refreshMessagesInEmailStore(
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce((store: EmailsStoreState) => {
+			store.messageIndexSlice.messageListIndex = messages.map((message) => message.id);
+			store.messageIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			store.messageIndexSlice.offset = 0;
+			store.messageIndexSlice.more = more;
+			mergeListMessages(store.populatedItemsSlice.messages, messages);
+		})
+	);
+}
+
 function useMessagesIdsByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -103,6 +137,7 @@ function appendMessagesToMessagesSlice(
 
 export const messageIndexSliceUtils = {
 	setMessagesInEmailStore,
+	refreshMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,

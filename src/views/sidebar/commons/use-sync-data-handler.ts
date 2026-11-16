@@ -203,6 +203,8 @@ function processNotifications({
 	});
 }
 
+export const MAILBOX_REFRESH_DELAY = 1500;
+
 export const useSyncDataHandler = (): void => {
 	const notifyList = useSync();
 	const navigate = useNavigate();
@@ -218,17 +220,25 @@ export const useSyncDataHandler = (): void => {
 	}, [initialized, refresh]);
 
 	useEffect(() => {
-		// the first refresh initializes the session, while the following ones replace the notifications
-		// the server dropped (e.g. after a bulk import), so the whole mailbox state must be reloaded
-		if (
-			!isEmpty(previousRefresh.current) &&
-			!isEmpty(refresh) &&
-			refresh !== previousRefresh.current
-		) {
-			tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags });
-			publishEvent(new MailboxRefreshedEvent());
-		}
+		// the first refresh initializes the session, while the following ones come with a new session or
+		// replace the notifications the server dropped (e.g. after a bulk import), so the whole mailbox
+		// state must be reloaded
+		const isMailboxRefresh =
+			!isEmpty(previousRefresh.current) && !isEmpty(refresh) && refresh !== previousRefresh.current;
 		previousRefresh.current = refresh;
+		if (!isMailboxRefresh) {
+			return undefined;
+		}
+
+		// refreshes received in a row (e.g. during a long import) reload the mailbox only once
+		const timeout = setTimeout(() => {
+			// the server leaves out the tags of an account without tags
+			tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags ?? { tag: [] } });
+			publishEvent(new MailboxRefreshedEvent());
+		}, MAILBOX_REFRESH_DELAY);
+		return () => {
+			clearTimeout(timeout);
+		};
 	}, [refresh]);
 
 	useEffect(() => {

@@ -61,7 +61,10 @@ import { SoapIncompleteMessage, SoapMailMessage } from 'types/soap/soap-mail-mes
 import { simulateReplyToSingleMessageConversation } from 'views/app/folder-panel/tests/utils';
 import { notifyReplySent } from 'views/sidebar/commons/tests/fixtures/notify-reply-sent';
 import { SoapNotifyConversation } from 'views/sidebar/commons/types';
-import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
+import {
+	MAILBOX_REFRESH_DELAY,
+	useSyncDataHandler
+} from 'views/sidebar/commons/use-sync-data-handler';
 
 const UNREAD = 'u';
 const READ = '';
@@ -825,33 +828,79 @@ describe('sync data handler', () => {
 	});
 
 	describe('mailbox refresh', () => {
-		it('should not announce a mailbox refresh for the refresh which initializes the session', () => {
-			const listener = vi.fn();
-			window.addEventListener(MailboxRefreshedEvent.EventName, listener);
-			mockSoapRefresh(mailboxNumber);
-			mockSoapSync([]);
+		const listener = vi.fn();
+		const tags = { tag: [{ id: '1', name: 'tag' }] };
 
-			setupHook(useSyncDataHandler);
+		beforeEach(() => {
+			vi.useFakeTimers();
+			window.addEventListener(MailboxRefreshedEvent.EventName, listener);
+			mockSoapSync([]);
+		});
+
+		afterEach(() => {
+			window.removeEventListener(MailboxRefreshedEvent.EventName, listener);
+			vi.useRealTimers();
+		});
+
+		it('should not announce a mailbox refresh for the refresh which initializes the session', () => {
+			vi.mocked(useInfoRefresh).mockReturnValue({});
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+			rerender();
+			act(() => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
+			});
 
 			expect(listener).not.toHaveBeenCalled();
 			expect(tagsWorker.postMessage).not.toHaveBeenCalled();
-			window.removeEventListener(MailboxRefreshedEvent.EventName, listener);
 		});
 
 		it('should announce a mailbox refresh and reload the tags when a following refresh is received', () => {
-			const listener = vi.fn();
-			window.addEventListener(MailboxRefreshedEvent.EventName, listener);
 			mockSoapRefresh(mailboxNumber);
-			mockSoapSync([]);
 			const { rerender } = setupHook(useSyncDataHandler);
 
-			const tags = { tag: [{ id: '1', name: 'tag' }] };
 			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
 			rerender();
+			expect(listener).not.toHaveBeenCalled();
+			act(() => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
+			});
 
 			expect(listener).toHaveBeenCalledTimes(1);
 			expect(tagsWorker.postMessage).toHaveBeenCalledWith({ op: 'refresh', tags });
-			window.removeEventListener(MailboxRefreshedEvent.EventName, listener);
+		});
+
+		it('should announce the refreshes received in a row only once', () => {
+			mockSoapRefresh(mailboxNumber);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+			rerender();
+			act(() => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY - 1);
+			});
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+			rerender();
+			act(() => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
+			});
+
+			expect(listener).toHaveBeenCalledTimes(1);
+			expect(tagsWorker.postMessage).toHaveBeenCalledTimes(1);
+		});
+
+		it('should clear the tags when the refresh of an account without tags is received', () => {
+			mockSoapRefresh(mailboxNumber);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }] });
+			rerender();
+			act(() => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
+			});
+
+			expect(tagsWorker.postMessage).toHaveBeenCalledWith({ op: 'refresh', tags: { tag: [] } });
 		});
 	});
 });

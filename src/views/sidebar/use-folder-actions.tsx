@@ -53,7 +53,11 @@ function getFileImportParams(file: File): { fmt: string; contentType: string } {
 	return { fmt: 'tgz', contentType: 'application/x-compressed-tar' };
 }
 
-async function postArchiveImport(url: string, file: File, contentType: string): Promise<Response> {
+async function importArchiveAndFetchNotifications(
+	url: string,
+	file: File,
+	contentType: string
+): Promise<Response> {
 	const response = await fetch(url, {
 		method: 'POST',
 		body: file,
@@ -197,7 +201,7 @@ export function buildImportArchiveOnClick({
 					hideButton: true
 				});
 				try {
-					const response = await postArchiveImport(
+					const response = await importArchiveAndFetchNotifications(
 						`${getLocationOrigin()}/service/home/${user}${folder.absFolderPath}?fmt=${fmt}&auth=co`,
 						file,
 						contentType

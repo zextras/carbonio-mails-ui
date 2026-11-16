@@ -469,6 +469,20 @@ export function setMessagesInEmailStore(
 }
 
 /**
+ * Replaces the list of messages in the `messageIndexSlice` with the results of a repeated search,
+ * merging the messages into the `populatedItemsSlice` instead of replacing them,
+ * so that the open message keeps what is loaded only when it is opened.
+ */
+export function refreshMessagesInEmailStore(
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean
+): void {
+	addTask(async () => {
+		messageIndexSliceUtils.refreshMessagesInEmailStore(messages, more, useEmailsStore);
+	});
+}
+
+/**
  * Updates the loading status of the messages results in the `messageIndexSlice`.
  * This function modifies the `status` in the `messageIndexSlice` based on the provided loading status.
  */
@@ -598,6 +612,26 @@ export function setConversationsInEmailStore(
 ): void {
 	addTask(async () => {
 		conversationIndexSliceUtils.setConversationsInEmailStore(conversations, more, useEmailsStore);
+	});
+}
+
+/**
+ * Replaces the list of conversations in the `conversationIndexSlice` with the results of a repeated search,
+ * merging the conversations and their messages into the `populatedItemsSlice` instead of replacing them,
+ * so that the open conversation keeps its messages.
+ */
+export function refreshConversationsInEmailStore(
+	conversations: Array<NormalizedConversation>,
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean
+): void {
+	addTask(async () => {
+		conversationIndexSliceUtils.refreshConversationsInEmailStore(
+			conversations,
+			messages,
+			more,
+			useEmailsStore
+		);
 	});
 }
 

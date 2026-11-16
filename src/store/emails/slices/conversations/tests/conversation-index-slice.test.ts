@@ -5,6 +5,7 @@
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateConversation } from '__test__/generators/generateConversation';
@@ -14,6 +15,7 @@ import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populat
 import {
 	appendConversationsToConversationIndexSlice,
 	getUseEmailStoreAndHooksForTesting,
+	refreshConversationsInEmailStore,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
 	updateConversations,
@@ -21,8 +23,10 @@ import {
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useConversationsIdsByFolder
+	useConversationsIdsByFolder,
+	useMessageById
 } from 'store/emails/store';
+import { IncompleteMessage } from 'types/messages';
 
 describe('conversation-index-slice', () => {
 	describe('useConversationIndexSlice', () => {
@@ -314,6 +318,54 @@ describe('conversation-index-slice', () => {
 				);
 				expect(result.current.conversations).toEqual({ '1': updatedConversation1 });
 			});
+		});
+	});
+
+	describe('refreshConversationsInEmailStore', () => {
+		it('should replace the list and keep the messages of an open conversation the search leaves out', async () => {
+			const openConversation = generateConversation({ id: '1', messageIds: ['10', '11'] });
+			setConversationsInEmailStore([openConversation], false);
+			const refreshedConversation = generateConversation({
+				id: '1',
+				messageIds: ['11', '12'],
+				subject: 'refreshed'
+			});
+			const newConversation = generateConversation({ id: '2', messageIds: ['20'] });
+
+			await act(async () =>
+				refreshConversationsInEmailStore([newConversation, refreshedConversation], [], true)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['2', '1']);
+			expect(index.current.more).toBe(true);
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'refreshed', messageIds: ['10', '11', '12'] })
+			);
+		});
+
+		it('should keep the open messages of a conversation complete', async () => {
+			const openMessage = generateMessage({ id: '10', isComplete: true, isRead: false });
+			setMessagesInEmailStore([openMessage]);
+			// a message of a list has no body
+			const listFields = omit(
+				generateMessage({ id: '10', isComplete: false, isRead: true }),
+				'body'
+			) as IncompleteMessage;
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '1', messageIds: ['10'] })],
+					[listFields],
+					false
+				)
+			);
+
+			const { result } = renderHook(() => useMessageById('10'));
+			expect(result.current).toEqual(
+				expect.objectContaining({ isComplete: true, read: true, body: openMessage.body })
+			);
 		});
 	});
 });

@@ -5,14 +5,17 @@
  */
 import { act, renderHook } from '@testing-library/react';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendMessagesToMessagesSlice,
 	getUseEmailStoreAndHooksForTesting,
 	resetMessagesAndPopulatedItems,
+	refreshMessagesInEmailStore,
 	setMessagesInEmailStore,
 	updateMessages,
 	updateMessagesResultsLoadingStatus,
@@ -21,7 +24,7 @@ import {
 	useMessagesByIds,
 	useMessagesIdsByFolder
 } from 'store/emails/store';
-import { generateMessage } from '__test__/generators/generateMessage';
+import { IncompleteMessage } from 'types/messages';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
 
@@ -283,6 +286,41 @@ describe('message-slice-utils', () => {
 				const { result } = renderHook(() => usePopulatedItemsSlice());
 				expect(result.current.messages).toEqual({ '1': updatedMessage1 });
 			});
+		});
+	});
+
+	describe('refreshMessagesInEmailStore', () => {
+		it('should replace the list and keep the messages that are no longer in it', async () => {
+			setMessagesInEmailStore([message1, message2], true);
+
+			await act(async () => refreshMessagesInEmailStore([message3], false));
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current).toEqual({
+				messageListIndex: ['3'],
+				more: false,
+				offset: 0,
+				status: 'fulfilled'
+			});
+			const { result: populated } = renderHook(() => usePopulatedItemsSlice());
+			expect(Object.keys(populated.current.messages)).toEqual(['1', '2', '3']);
+		});
+
+		it('should keep an open message complete while updating what the list carries', async () => {
+			const openMessage = generateMessage({ id: '1', isComplete: true, isRead: false });
+			setMessagesInEmailStore([openMessage], false);
+			// a message of a list has no body
+			const listFields = omit(
+				generateMessage({ id: '1', isComplete: false, isRead: true }),
+				'body'
+			) as IncompleteMessage;
+
+			await act(async () => refreshMessagesInEmailStore([listFields], false));
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(
+				expect.objectContaining({ isComplete: true, read: true, body: openMessage.body })
+			);
 		});
 	});
 });

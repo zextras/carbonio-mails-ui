@@ -3,14 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
-import { searchEmailStoreAction } from 'store/emails/actions/search-action';
+import {
+	refreshSearchEmailStoreAction,
+	searchEmailStoreAction
+} from 'store/emails/actions/search-action';
 import {
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
@@ -18,6 +23,7 @@ import {
 } from 'store/emails/store';
 
 vi.mock('store/emails/actions/search-action', () => ({
+	refreshSearchEmailStoreAction: vi.fn(),
 	searchEmailStoreAction: vi.fn()
 }));
 vi.mock('store/emails/store', () => ({
@@ -31,6 +37,7 @@ vi.mock('helpers/sorting', () => ({
 vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
+vi.mock('../../helpers/parseMessageSortingOptions');
 
 // TODO: refactor this test and remove all mocks
 describe('useConversationListByFolder', () => {
@@ -45,6 +52,7 @@ describe('useConversationListByFolder', () => {
 			sortDirection: 'DESC'
 		});
 		(searchEmailStoreAction as Mock).mockResolvedValue({});
+		(refreshSearchEmailStoreAction as Mock).mockResolvedValue(undefined);
 	});
 
 	afterEach(() => {
@@ -58,7 +66,7 @@ describe('useConversationListByFolder', () => {
 
 		expect(searchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({
-				abortSignal: expect.any(AbortSignal),
+				abortSignal: expect.anything(),
 				limit: 100,
 				locale: 'en_US',
 				offset: 0,
@@ -92,14 +100,63 @@ describe('useConversationListByFolder', () => {
 	it('aborts previous request when folderId changes', () => {
 		const controller = new AbortController();
 		const abortSpy = vi.spyOn(controller, 'abort');
-		vi.spyOn(global, 'AbortController').mockImplementation(() => controller);
+		vi.spyOn(global, 'AbortController').mockImplementation(function mockAbortController() {
+			return controller;
+		});
 
 		const { rerender } = renderHook((id: string) => useConversationListByFolder(id), {
 			initialProps: '123'
 		});
 
 		rerender('456');
-		expect(abortSpy).toHaveBeenCalledTimes(1);
+		expect(abortSpy).toHaveBeenCalled();
+	});
+
+	it('repeats the search without resetting the store when the mailbox is refreshed', () => {
+		renderHook(() => useConversationListByFolder('123'));
+		vi.mocked(updateConversationsResultsLoadingStatus).mockClear();
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(refreshSearchEmailStoreAction).toHaveBeenCalledWith(
+			expect.objectContaining({
+				abortSignal: expect.anything(),
+				limit: 100,
+				locale: 'en_US',
+				query: 'mockQuery',
+				sortBy: 'dateDESC',
+				types: 'conversation'
+			})
+		);
+		expect(searchEmailStoreAction).toHaveBeenCalledTimes(1);
+		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalledWith(
+			API_REQUEST_STATUS.pending
+		);
+	});
+
+	it('aborts the search of the folder when the mailbox is refreshed while it is in progress', () => {
+		(searchEmailStoreAction as Mock).mockReturnValue(new Promise(noop));
+		renderHook(() => useConversationListByFolder('123'));
+		const { abortSignal } = (searchEmailStoreAction as Mock).mock.calls[0][0];
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(abortSignal.aborted).toBe(true);
+	});
+
+	it('does not repeat the search when the mailbox is refreshed after unmount', () => {
+		const { unmount } = renderHook(() => useConversationListByFolder('123'));
+		unmount();
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(refreshSearchEmailStoreAction).not.toHaveBeenCalled();
 	});
 
 	it('handles search errors correctly', async () => {

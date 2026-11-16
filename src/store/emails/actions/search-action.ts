@@ -21,7 +21,9 @@ import {
 	setMessagesInEmailStore,
 	setConversationsInEmailStore,
 	resetMessagesAndPopulatedItems,
-	updateConversationsResultsLoadingStatus
+	updateConversationsResultsLoadingStatus,
+	refreshMessagesInEmailStore,
+	refreshConversationsInEmailStore
 } from 'store/emails/store';
 import { SearchSoapApiParams } from 'types/conversations';
 import { SearchResponse } from 'types/soap/search';
@@ -87,4 +89,46 @@ export async function searchEmailStoreAction({
 
 	handleSearchSoapApiResults({ searchResponse, types });
 	return searchResponse;
+}
+
+/**
+ * Repeats the search of the open list without resetting the store: the list is replaced while
+ * the populated items are merged, so the open message or conversation is not reloaded.
+ * A failed search leaves the list as it is.
+ */
+export async function refreshSearchEmailStoreAction({
+	limit,
+	types,
+	sortBy,
+	query,
+	locale,
+	abortSignal
+}: Omit<SearchSoapApiParams, 'offset'>): Promise<void> {
+	const searchResponse = await searchSoapApi({
+		limit,
+		types,
+		sortBy,
+		query,
+		offset: 0,
+		locale,
+		abortSignal
+	});
+	if ('Fault' in searchResponse) {
+		return;
+	}
+
+	if (types === 'message') {
+		const messages = map(searchResponse.m ?? [], (msg) =>
+			normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true })
+		);
+		refreshMessagesInEmailStore(messages, !!searchResponse.more);
+		return;
+	}
+
+	const conversationHits = searchResponse.c ?? [];
+	refreshConversationsInEmailStore(
+		normalizeConversations(conversationHits),
+		extractConvMessage(conversationHits),
+		!!searchResponse.more
+	);
 }

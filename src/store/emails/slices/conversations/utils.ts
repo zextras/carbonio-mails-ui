@@ -7,13 +7,15 @@
 /* eslint-disable no-param-reassign */
 import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
-import { filter } from 'lodash';
+import { filter, union } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
+import { mergeListMessages } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 import { EmailsStoreState, SearchRequestStatus } from 'types/search';
 
 function setConversationsInEmailStore(
@@ -34,6 +36,34 @@ function setConversationsInEmailStore(
 				},
 				{} as Record<string, NormalizedConversation>
 			);
+		})
+	);
+}
+
+function refreshConversationsInEmailStore(
+	conversations: Array<NormalizedConversation>,
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce((store: EmailsStoreState) => {
+			store.conversationIndexSlice.conversationListIndex = conversations.map((conv) => conv.id);
+			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			store.conversationIndexSlice.offset = 0;
+			store.conversationIndexSlice.more = more;
+			conversations.forEach((conversation) => {
+				const existingConversation = store.populatedItemsSlice.conversations[conversation.id];
+				// the open conversation can list messages the search hit leaves out, so its ids are kept
+				store.populatedItemsSlice.conversations[conversation.id] = existingConversation
+					? {
+							...existingConversation,
+							...conversation,
+							messageIds: union(existingConversation.messageIds, conversation.messageIds)
+						}
+					: conversation;
+			});
+			mergeListMessages(store.populatedItemsSlice.messages, messages);
 		})
 	);
 }
@@ -107,6 +137,7 @@ function appendConversationsToConversationIndexSlice(
 
 export const conversationIndexSliceUtils = {
 	setConversationsInEmailStore,
+	refreshConversationsInEmailStore,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
