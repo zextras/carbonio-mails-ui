@@ -11,6 +11,7 @@ import { noop } from 'lodash';
 import { parseMessageSortingOptions } from '../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { useEventSubscribe } from 'event-bus/use-event-subscribe';
 import { getFilterQuery } from 'helpers/sorting';
 import {
 	refreshSearchEmailStoreAction,
@@ -114,14 +115,13 @@ export const useFolderListSearch = ({
 		};
 	}, [search]);
 
-	useEffect(() => {
-		const handler = (): void => {
-			search(true);
-		};
+	const subscribeBusEvent = useEventSubscribe();
 
-		window.addEventListener(MailboxRefreshedEvent.EventName, handler);
-		return () => {
-			window.removeEventListener(MailboxRefreshedEvent.EventName, handler);
-		};
-	}, [search]);
+	useEffect(
+		() =>
+			subscribeBusEvent(MailboxRefreshedEvent.EventName, () => {
+				search(true);
+			}),
+		[search, subscribeBusEvent]
+	);
 };
