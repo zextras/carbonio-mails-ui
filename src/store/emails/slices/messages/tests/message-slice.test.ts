@@ -421,6 +421,37 @@ describe('message-slice-utils', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 			expect(result.current).toEqual(expect.objectContaining({ isComplete: false, read: true }));
 		});
+
+		it('should keep what was notified for a stored message while the list was searched again', async () => {
+			setMessagesInEmailStore([generateMessage({ id: '1', isRead: true })], false);
+			const notifiedItems: NotifiedItems = { deletedIds: new Set(), changedIds: new Set(['1']) };
+
+			await act(async () =>
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '1', isRead: false })],
+					false,
+					['1'],
+					notifiedItems
+				)
+			);
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(expect.objectContaining({ read: true }));
+		});
+
+		it('should store a searched message whose change was notified before it was stored', async () => {
+			setMessagesInEmailStore([], false);
+			const notifiedItems: NotifiedItems = { deletedIds: new Set(), changedIds: new Set(['1']) };
+
+			await act(async () =>
+				refreshMessagesInEmailStore([generateMessage({ id: '1' })], false, [], notifiedItems)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current.messageListIndex).toEqual(['1']);
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(expect.objectContaining({ id: '1' }));
+		});
 	});
 
 	describe('getRefreshedListIndex', () => {

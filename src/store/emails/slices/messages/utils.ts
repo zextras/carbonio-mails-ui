@@ -92,10 +92,14 @@ export function mergeListMessages(
 	notifiedItems: NotifiedItems
 ): void {
 	messages.forEach((message) => {
-		if (notifiedItems.deletedIds.has(message.id) || notifiedItems.changedIds.has(message.id)) {
+		if (notifiedItems.deletedIds.has(message.id)) {
 			return;
 		}
 		const existingMessage = populatedMessages[message.id];
+		// a change notified for a message not stored yet is not kept anywhere: the searched one is the newest
+		if (existingMessage && notifiedItems.changedIds.has(message.id)) {
+			return;
+		}
 		if (!existingMessage) {
 			populatedMessages[message.id] = message;
 			return;
