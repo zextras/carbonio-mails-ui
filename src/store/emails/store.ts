@@ -660,12 +660,6 @@ export function clearHiddenConversationsStatus(): void {
 }
 
 /**
- * Replaces the list of conversations in the `conversationIndexSlice` with the results of a repeated search,
- * merging the conversations and their messages into the `populatedItemsSlice` instead of replacing them,
- * so that a shown conversation keeps its messages. The items of the pages loaded by scrolling while
- * the search was in progress are kept, and the items notified meanwhile keep what was notified.
- */
-/**
  * Updates a shown conversation with its search repeated after a mailbox refresh, keeping what was notified
  * while the search was in progress.
  */
@@ -685,6 +679,12 @@ export function refreshConversationInEmailStore(
 	});
 }
 
+/**
+ * Replaces the list of conversations in the `conversationIndexSlice` with the results of a repeated search,
+ * merging the conversations and their messages into the `populatedItemsSlice` instead of replacing them,
+ * so that a shown conversation keeps its messages. The items of the pages loaded by scrolling while
+ * the search was in progress are kept, and the items notified meanwhile keep what was notified.
+ */
 export function refreshConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	messages: Array<MailMessage | IncompleteMessage>,

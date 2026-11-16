@@ -7,6 +7,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 
+import { getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
@@ -429,6 +430,26 @@ describe('conversation-index-slice', () => {
 
 			const { result: conversation } = renderHook(() => useConversationById('1'));
 			expect(conversation.current.messageIds).toEqual(['13', '10', '11']);
+		});
+
+		it('should keep the messages created meanwhile last when the oldest messages come first', async () => {
+			getUserSettings.mockReturnValueOnce({
+				attrs: {},
+				props: [],
+				prefs: { zimbraPrefConversationOrder: 'dateAsc' }
+			});
+			updateConversations([generateConversation({ id: '1', messageIds: ['10', '11', '13'] })]);
+
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10' }), generateMessage({ id: '11' })],
+					notified([], ['13'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['10', '11', '13']);
 		});
 
 		it('should leave out a conversation deleted while the search was in progress', async () => {

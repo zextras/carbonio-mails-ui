@@ -5,6 +5,7 @@
  */
 
 /* eslint-disable no-param-reassign */
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
 import { filter } from 'lodash';
@@ -113,7 +114,8 @@ function refreshConversationsInEmailStore(
 }
 
 // the search of a shown conversation, repeated after a mailbox refresh: what was notified meanwhile is newer.
-// The messages created meanwhile stay in the conversation even if the search came back before them.
+// The messages created meanwhile stay in the conversation even if the search came back before them, on the side
+// of the newest messages (see getOrderedMessagesForConversation).
 function refreshConversationInEmailStore(
 	conversationId: string,
 	messages: Array<MailMessage>,
@@ -139,10 +141,14 @@ function refreshConversationInEmailStore(
 			const notifiedIds = (storedConversation?.messageIds ?? []).filter(
 				(id) => changedIds.has(id) && !deletedIds.has(id) && !searchedIds.includes(id)
 			);
+			const newestFirst =
+				(getUserSettings()?.prefs?.zimbraPrefConversationOrder ?? 'dateDesc') === 'dateDesc';
 			populatedItemsSlice.conversations[conversationId] = {
 				...storedConversation,
 				id: conversationId,
-				messageIds: [...notifiedIds, ...searchedIds]
+				messageIds: newestFirst
+					? [...notifiedIds, ...searchedIds]
+					: [...searchedIds, ...notifiedIds]
 			};
 		})
 	);
