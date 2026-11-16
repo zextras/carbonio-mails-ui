@@ -12,50 +12,43 @@ import {
 	MAIL_HEADER_FIELDS,
 	normalizeCompleteMailMessageFromSoap
 } from 'normalizations/normalize-message';
-import { NotifiedItems, trackNotifiedItems } from 'store/emails/notified-items';
+import { trackNotifiedItems } from 'store/emails/notified-items';
 import {
 	updateMessages,
 	getConversationById,
 	getMessageById,
+	refreshConversationInEmailStore,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
 import { NormalizedConversation } from 'types/conversations';
+import { MailMessage } from 'types/messages';
 import { SearchConvResponse } from 'types/soap/search-conv';
 
-const NO_NOTIFIED_ITEMS: NotifiedItems = { deletedIds: new Set(), changedIds: new Set() };
+function normalizeSearchConvMessages(
+	response: SearchConvResponse,
+	html: boolean
+): Array<MailMessage> {
+	return map(response?.m ?? [], (msg) => {
+		const message = normalizeCompleteMailMessageFromSoap(msg, html);
+		// the messages outside the query (e.g. replies in Sent) come without headers: keep what was known
+		const stored = msg._attrs ? undefined : getMessageById(msg.id);
+		return stored ? { ...message, ...pick(stored, MAIL_HEADER_FIELDS) } : message;
+	});
+}
 
-/**
- * The items notified while the search was in progress are newer than its results: the deleted ones are not
- * brought back and the changed ones that are stored keep what was notified.
- */
 function handleSearchConvResponse(
 	conversationId: string,
 	response: SearchConvResponse,
-	html: boolean,
-	{ deletedIds, changedIds }: NotifiedItems = NO_NOTIFIED_ITEMS
+	html: boolean
 ): void {
-	if (deletedIds.has(conversationId)) {
-		return;
-	}
-	const searchedMessages = (response?.m ?? []).filter((msg) => !deletedIds.has(msg.id));
-	const messages = searchedMessages
-		.filter((msg) => !changedIds.has(msg.id) || !getMessageById(msg.id))
-		.map((msg) => {
-			const message = normalizeCompleteMailMessageFromSoap(msg, html);
-			// the messages outside the query (e.g. replies in Sent) come without headers: keep what was known
-			const stored = msg._attrs ? undefined : getMessageById(msg.id);
-			return stored ? { ...message, ...pick(stored, MAIL_HEADER_FIELDS) } : message;
-		});
+	const messages = normalizeSearchConvMessages(response, html);
 	updateMessages(messages);
 	const conversation = getConversationById(conversationId);
-	if (conversation && changedIds.has(conversationId)) {
-		return;
-	}
 	const updatedConversation: NormalizedConversation = {
 		...conversation,
 		id: conversationId,
-		messageIds: map(searchedMessages, (msg) => msg.id)
+		messageIds: map(messages, (message) => message.id)
 	};
 	updateConversations([updatedConversation]);
 }
@@ -114,7 +107,11 @@ export async function refreshConvEmailStoreAction({
 		if (!response || 'Fault' in response) {
 			return;
 		}
-		handleSearchConvResponse(conversationId, response, html, notifiedItems);
+		refreshConversationInEmailStore(
+			conversationId,
+			normalizeSearchConvMessages(response, html),
+			notifiedItems
+		);
 	} finally {
 		stop();
 	}

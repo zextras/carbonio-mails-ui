@@ -18,6 +18,7 @@ import {
 	updateMessages,
 	getConversationById,
 	getMessageById,
+	refreshConversationInEmailStore,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
@@ -189,26 +190,15 @@ describe('searchConvEmailStoreAction', () => {
 
 describe('refreshConvEmailStoreAction', () => {
 	beforeEach(() => {
-		vi.clearAllMocks();
+		vi.resetAllMocks();
 		(normalizeCompleteMailMessageFromSoap as Mock).mockImplementation((msg: { id: string }) => ({
 			id: msg.id
 		}));
 	});
 
-	it('updates the conversation in place without changing its status', async () => {
-		(searchConvSoapApi as Mock).mockResolvedValueOnce({ m: [{ id: '1', _attrs: {} }] });
-		(getConversationById as Mock).mockReturnValueOnce({ id: 'conv' });
-
-		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
-
-		expect(updateConversationStatus).not.toHaveBeenCalled();
-		expect(updateMessages).toHaveBeenCalledWith([{ id: '1' }]);
-		expect(updateConversations).toHaveBeenCalledWith([{ id: 'conv', messageIds: ['1'] }]);
-	});
-
-	it('does not bring back the messages deleted while the search is in progress', async () => {
+	it('queues the searched messages with the items notified while the search is in progress', async () => {
 		(searchConvSoapApi as Mock).mockImplementationOnce(async () => {
-			recordNotifiedItems({ deletedIds: ['1'], changedIds: [] });
+			recordNotifiedItems({ deletedIds: ['1'], changedIds: ['2'] });
 			return {
 				m: [
 					{ id: '1', _attrs: {} },
@@ -216,70 +206,26 @@ describe('refreshConvEmailStoreAction', () => {
 				]
 			};
 		});
-		(getConversationById as Mock).mockReturnValueOnce({ id: 'conv' });
 
 		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
+		recordNotifiedItems({ deletedIds: ['3'], changedIds: ['4'] });
 
-		expect(updateMessages).toHaveBeenCalledWith([{ id: '2' }]);
-		expect(updateConversations).toHaveBeenCalledWith([{ id: 'conv', messageIds: ['2'] }]);
+		expect(updateConversationStatus).not.toHaveBeenCalled();
+		expect(refreshConversationInEmailStore).toHaveBeenCalledWith(
+			'conv',
+			[{ id: '1' }, { id: '2' }],
+			{
+				deletedIds: new Set(['1']),
+				changedIds: new Set(['2'])
+			}
+		);
 	});
 
-	it('keeps what was notified for the stored messages changed while the search is in progress', async () => {
-		(searchConvSoapApi as Mock).mockImplementationOnce(async () => {
-			recordNotifiedItems({ deletedIds: [], changedIds: ['1', '3'] });
-			return {
-				m: [
-					{ id: '1', _attrs: {} },
-					{ id: '2', _attrs: {} },
-					{ id: '3', _attrs: {} }
-				]
-			};
-		});
-		// 1 is stored, 3 is not stored yet
-		(getMessageById as Mock).mockImplementation((id: string) => (id === '1' ? { id } : undefined));
-		(getConversationById as Mock).mockReturnValueOnce({ id: 'conv' });
-
-		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
-
-		expect(updateMessages).toHaveBeenCalledWith([{ id: '2' }, { id: '3' }]);
-		expect(updateConversations).toHaveBeenCalledWith([{ id: 'conv', messageIds: ['1', '2', '3'] }]);
-	});
-
-	it('keeps what was notified for the conversation changed while the search is in progress', async () => {
-		(searchConvSoapApi as Mock).mockImplementationOnce(async () => {
-			recordNotifiedItems({ deletedIds: [], changedIds: ['conv'] });
-			return { m: [{ id: '1', _attrs: {} }] };
-		});
-		(getConversationById as Mock).mockReturnValueOnce({ id: 'conv', messageIds: ['1', '4'] });
-
-		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
-
-		expect(updateConversations).not.toHaveBeenCalled();
-	});
-
-	it('leaves the conversation deleted while the search is in progress', async () => {
-		(searchConvSoapApi as Mock).mockImplementationOnce(async () => {
-			recordNotifiedItems({ deletedIds: ['conv'], changedIds: [] });
-			return { m: [{ id: '1', _attrs: {} }] };
-		});
-
-		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
-
-		expect(updateMessages).not.toHaveBeenCalled();
-		expect(updateConversations).not.toHaveBeenCalled();
-	});
-
-	it('stops recording the notifications once the search is over', async () => {
+	it('leaves the conversation as it is when the search fails', async () => {
 		(searchConvSoapApi as Mock).mockResolvedValueOnce({ Fault: {} });
-		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
-		(searchConvSoapApi as Mock).mockImplementationOnce(async () => ({
-			m: [{ id: '1', _attrs: {} }]
-		}));
-		recordNotifiedItems({ deletedIds: ['1'], changedIds: [] });
-		(getConversationById as Mock).mockReturnValueOnce({ id: 'conv' });
 
 		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
 
-		expect(updateMessages).toHaveBeenCalledWith([{ id: '1' }]);
+		expect(refreshConversationInEmailStore).not.toHaveBeenCalled();
 	});
 });

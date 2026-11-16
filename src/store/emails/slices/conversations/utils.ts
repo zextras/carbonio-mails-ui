@@ -112,6 +112,42 @@ function refreshConversationsInEmailStore(
 	);
 }
 
+// the search of a shown conversation, repeated after a mailbox refresh: what was notified meanwhile is newer.
+// The messages created meanwhile stay in the conversation even if the search came back before them.
+function refreshConversationInEmailStore(
+	conversationId: string,
+	messages: Array<MailMessage>,
+	notifiedItems: NotifiedItems,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			const { deletedIds, changedIds } = notifiedItems;
+			if (deletedIds.has(conversationId)) {
+				return;
+			}
+			const searchedMessages = messages.filter(({ id }) => !deletedIds.has(id));
+			searchedMessages.forEach((message) => {
+				if (changedIds.has(message.id) && populatedItemsSlice.messages[message.id]) {
+					return;
+				}
+				populatedItemsSlice.messages[message.id] = message;
+				populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
+			});
+			const searchedIds = searchedMessages.map(({ id }) => id);
+			const storedConversation = populatedItemsSlice.conversations[conversationId];
+			const notifiedIds = (storedConversation?.messageIds ?? []).filter(
+				(id) => changedIds.has(id) && !deletedIds.has(id) && !searchedIds.includes(id)
+			);
+			populatedItemsSlice.conversations[conversationId] = {
+				...storedConversation,
+				id: conversationId,
+				messageIds: [...notifiedIds, ...searchedIds]
+			};
+		})
+	);
+}
+
 function useConversationsIdsByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -182,6 +218,7 @@ function appendConversationsToConversationIndexSlice(
 export const conversationIndexSliceUtils = {
 	setConversationsInEmailStore,
 	refreshConversationsInEmailStore,
+	refreshConversationInEmailStore,
 	clearHiddenConversationsStatus,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,

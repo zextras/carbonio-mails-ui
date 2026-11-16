@@ -665,6 +665,26 @@ export function clearHiddenConversationsStatus(): void {
  * so that a shown conversation keeps its messages. The items of the pages loaded by scrolling while
  * the search was in progress are kept, and the items notified meanwhile keep what was notified.
  */
+/**
+ * Updates a shown conversation with its search repeated after a mailbox refresh, keeping what was notified
+ * while the search was in progress.
+ */
+export function refreshConversationInEmailStore(
+	conversationId: string,
+	messages: Array<MailMessage>,
+	notifiedItems: NotifiedItems
+): void {
+	addTask(() => {
+		conversationIndexSliceUtils.refreshConversationInEmailStore(
+			conversationId,
+			messages,
+			notifiedItems,
+			useEmailsStore
+		);
+		return Promise.resolve();
+	});
+}
+
 export function refreshConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	messages: Array<MailMessage | IncompleteMessage>,

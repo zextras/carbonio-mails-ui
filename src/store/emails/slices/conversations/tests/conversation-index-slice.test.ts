@@ -19,6 +19,7 @@ import {
 	appendConversationsToConversationIndexSlice,
 	clearHiddenConversationsStatus,
 	getUseEmailStoreAndHooksForTesting,
+	refreshConversationInEmailStore,
 	refreshConversationsInEmailStore,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
@@ -326,6 +327,119 @@ describe('conversation-index-slice', () => {
 				);
 				expect(result.current.conversations).toEqual({ '1': updatedConversation1 });
 			});
+		});
+	});
+
+	describe('refreshConversationInEmailStore', () => {
+		const notified = (deletedIds: Array<string>, changedIds: Array<string>): NotifiedItems => ({
+			deletedIds: new Set(deletedIds),
+			changedIds: new Set(changedIds)
+		});
+
+		beforeEach(() => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'], subject: 'stored' })],
+				false
+			);
+			setMessagesInEmailStore([generateMessage({ id: '10', isRead: true })], false);
+		});
+
+		it('should take the messages of the conversation as the search returns them', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[
+						generateMessage({ id: '12', isComplete: true }),
+						generateMessage({ id: '10', isRead: false })
+					],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'stored', messageIds: ['12', '10'] })
+			);
+			const { result: message } = renderHook(() => useMessageById('10'));
+			expect(message.current).toEqual(expect.objectContaining({ read: false }));
+		});
+
+		it('should not bring back the messages deleted while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '12' }), generateMessage({ id: '11' })],
+					notified(['11'], [])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12']);
+			const { result: message } = renderHook(() => useMessageById('11'));
+			expect(message.current).toBeUndefined();
+		});
+
+		it('should keep what was notified for a stored message while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10', isRead: false })],
+					notified([], ['10'])
+				)
+			);
+
+			const { result: message } = renderHook(() => useMessageById('10'));
+			expect(message.current).toEqual(expect.objectContaining({ read: true }));
+		});
+
+		it('should store a searched message notified before it was stored', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore('1', [generateMessage({ id: '12' })], notified([], ['12']))
+			);
+
+			const { result: message } = renderHook(() => useMessageById('12'));
+			expect(message.current).toEqual(expect.objectContaining({ id: '12' }));
+		});
+
+		it('should update the messages of a conversation changed while the search was in progress', async () => {
+			// e.g. marked as read: a notified conversation never carries its messages
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '12' }), generateMessage({ id: '10' })],
+					notified([], ['1'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12', '10']);
+		});
+
+		it('should keep the messages created while the search was in progress', async () => {
+			// 13 was notified as created after the server answered the search
+			updateConversations([generateConversation({ id: '1', messageIds: ['13', '10', '11'] })]);
+
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10' }), generateMessage({ id: '11' })],
+					notified([], ['13'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['13', '10', '11']);
+		});
+
+		it('should leave out a conversation deleted while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore('1', [generateMessage({ id: '12' })], notified(['1'], []))
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['10', '11']);
+			const { result: message } = renderHook(() => useMessageById('12'));
+			expect(message.current).toBeUndefined();
 		});
 	});
 
