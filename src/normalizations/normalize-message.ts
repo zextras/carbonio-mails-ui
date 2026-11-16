@@ -363,6 +363,13 @@ const parseFlagsString = (flags: string): Flags => ({
 });
 
 /**
+ * Returns all the flags of an item of a search result: the server leaves its flags string out when it has
+ * no flags, so the ones it has not are set explicitly, to overwrite the stored ones when it is merged.
+ */
+export const getSearchItemFlags = (flags: string | undefined): Flags =>
+	parseFlagsString(flags ?? '');
+
+/**
  * Extracts and maps flags from a partial SOAP message from Notify to a Flags object, returning undefined if no flags are present.
  * */
 const getNotifyFlags = (m: SoapPartialIncompleteMessage | undefined): Flags | undefined => {

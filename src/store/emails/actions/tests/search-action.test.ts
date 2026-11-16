@@ -139,6 +139,7 @@ describe('searchEmailStoreAction', () => {
 describe('refreshSearchEmailStoreAction', () => {
 	const refreshParams = {
 		searchedListIndex: ['1'],
+		limit: 100,
 		sortBy: SORT_BY.dateDesc,
 		query: 'inId:"2"',
 		locale: 'en',
@@ -164,21 +165,52 @@ describe('refreshSearchEmailStoreAction', () => {
 		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
 	});
 
-	it('searches again the pages loaded by scrolling', async () => {
+	it('searches from the first item as many items as requested', async () => {
 		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
-		const searchedListIndex = Array.from({ length: 150 }, (_, index) => `${index}`);
 
-		await refreshSearchEmailStoreAction({ ...refreshParams, searchedListIndex, types: 'message' });
+		await refreshSearchEmailStoreAction({ ...refreshParams, limit: 150, types: 'message' });
 
 		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ limit: 150, offset: 0 }));
 	});
 
-	it('searches at least the first page', async () => {
-		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
+	it('sets the flags and the tags a message has not, to overwrite the stored ones', async () => {
+		// the server leaves out the flags and the tags of a message which has none
+		(searchSoapApi as Mock).mockResolvedValueOnce({ m: [{ id: '1', l: '2' }], more: false });
 
 		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
 
-		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ limit: 100 }));
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith(
+			[
+				expect.objectContaining({
+					id: '1',
+					read: true,
+					flagged: false,
+					urgent: false,
+					isReplied: false,
+					isForwarded: false,
+					hasAttachment: false,
+					tags: []
+				})
+			],
+			false,
+			['1']
+		);
+	});
+
+	it('sets the flags the messages of a conversation have not, to overwrite the stored ones', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({
+			c: [{ id: '1', m: [{ id: '10' }] }],
+			more: false
+		});
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'conversation' });
+
+		expect(refreshConversationsInEmailStore).toHaveBeenCalledWith(
+			expect.any(Array),
+			[expect.objectContaining({ id: '10', read: true, flagged: false })],
+			false,
+			['1']
+		);
 	});
 
 	it('empties the list of messages when the folder has no more messages', async () => {

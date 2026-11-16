@@ -23,7 +23,6 @@ import { useFolderListSearch } from 'hooks/use-folder-list-search';
 import {
 	getConversationListIndex,
 	getMessageListIndex,
-	setMessagesInEmailStore,
 	updateConversationsResultsLoadingStatus,
 	updateMessages,
 	updateMessagesResultsLoadingStatus,
@@ -38,14 +37,17 @@ const FOLDER_ID = FOLDERS.INBOX;
 
 function renderMessageListSearch(
 	updateLoadingStatus = updateMessagesResultsLoadingStatus
-): ReturnType<typeof renderHook> {
-	return renderHook(() =>
-		useFolderListSearch({
-			folderId: FOLDER_ID,
-			types: 'message',
-			updateLoadingStatus,
-			getListIndex: getMessageListIndex
-		})
+): ReturnType<typeof renderHook<void, { shownListLength: number }>> {
+	return renderHook(
+		({ shownListLength }) =>
+			useFolderListSearch({
+				folderId: FOLDER_ID,
+				types: 'message',
+				updateLoadingStatus,
+				getListIndex: getMessageListIndex,
+				shownListLength
+			}),
+		{ initialProps: { shownListLength: 0 } }
 	);
 }
 
@@ -114,7 +116,8 @@ describe('useFolderListSearch', () => {
 					folderId: FOLDER_ID,
 					types: 'conversation',
 					updateLoadingStatus: updateConversationsResultsLoadingStatus,
-					getListIndex: getConversationListIndex
+					getListIndex: getConversationListIndex,
+					shownListLength: 1
 				})
 			);
 			await act(async () => {
@@ -146,16 +149,12 @@ describe('useFolderListSearch', () => {
 			const firstSearch = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				more: true
 			});
-			renderMessageListSearch();
+			const { rerender } = renderMessageListSearch();
 			await act(async () => {
 				await firstSearch;
 			});
-			const loadedMessages = Array.from({ length: 150 }, (_, index) =>
-				generateMessage({ id: `${index}`, folderId: FOLDER_ID })
-			);
-			await act(async () => {
-				setMessagesInEmailStore(loadedMessages, true);
-			});
+			// the list shows 150 messages after loading a page by scrolling
+			rerender({ shownListLength: 150 });
 
 			const refreshSearch = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				more: false
@@ -163,6 +162,35 @@ describe('useFolderListSearch', () => {
 			refreshMailbox();
 
 			expect(await refreshSearch).toEqual(expect.objectContaining({ limit: 150, offset: 0 }));
+		});
+
+		it('should remove the flags and the tags removed from a message meanwhile', async () => {
+			const firstSearch = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [generateMessageFromAPI({ id: '1', l: FOLDER_ID, f: 'f', t: '5', tn: 'work' })],
+				more: false
+			});
+			renderMessageListSearch();
+			await act(async () => {
+				await firstSearch;
+			});
+			const { result: message } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(message.current).toEqual(expect.objectContaining({ flagged: true, tags: ['5'] }));
+			});
+
+			// the server leaves out the flags and the tags of a message which has none
+			const refreshSearch = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [generateMessageFromAPI({ id: '1', l: FOLDER_ID })],
+				more: false
+			});
+			refreshMailbox();
+			await act(async () => {
+				await refreshSearch;
+			});
+
+			await waitFor(() => {
+				expect(message.current).toEqual(expect.objectContaining({ flagged: false, tags: [] }));
+			});
 		});
 
 		it('should load the folder again when the refresh is received while the folder is loading', async () => {

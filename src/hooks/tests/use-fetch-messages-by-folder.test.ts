@@ -29,7 +29,7 @@ vi.mock('../../store/emails/store', async () => ({
 	setMessagesInEmailStore: vi.fn(),
 	resetMessagesAndPopulatedItems: vi.fn(),
 	updateMessagesResultsLoadingStatus: vi.fn(),
-	useMessagesIdsByFolder: vi.fn(),
+	useMessagesIdsByFolder: vi.fn(() => []),
 	useMessagesSlice: vi.fn()
 }));
 vi.mock('../../helpers/sorting', async () => ({

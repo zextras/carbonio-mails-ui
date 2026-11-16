@@ -26,7 +26,8 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 		folderId,
 		types: 'conversation',
 		updateLoadingStatus: updateConversationsResultsLoadingStatus,
-		getListIndex: getConversationListIndex
+		getListIndex: getConversationListIndex,
+		shownListLength: conversationListIndexByFolder.length
 	});
 
 	return useMemo(

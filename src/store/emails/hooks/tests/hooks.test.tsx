@@ -215,6 +215,33 @@ describe('Searches store hooks', () => {
 			expect(isConversationShown('123')).toBe(false);
 		});
 
+		it('should search a conversation shown by more views once', async () => {
+			await setupLoadedConversation();
+			const searchConvSpy = vi.spyOn(searchConvApi, 'searchConvSoapApi');
+			// e.g. open in the reading panel and expanded in the list
+			renderHook(() =>
+				useRefreshConversationOnMailboxRefresh({ conversationId: '123', enabled: true })
+			);
+			renderHook(() =>
+				useRefreshConversationOnMailboxRefresh({
+					conversationId: '123',
+					folderId: '2',
+					enabled: true
+				})
+			);
+
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+			expect(searchConvSpy).toHaveBeenCalledTimes(1);
+
+			// and once again on the next refresh
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+			expect(searchConvSpy).toHaveBeenCalledTimes(2);
+		});
+
 		it('should not search a conversation which is not shown', async () => {
 			await setupLoadedConversation();
 			const searchConvSpy = vi.spyOn(searchConvApi, 'searchConvSoapApi');

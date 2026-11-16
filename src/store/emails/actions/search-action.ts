@@ -13,9 +13,9 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { searchSoapApi } from 'api/search-soap-api';
-import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { getSearchItemFlags, normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
@@ -98,21 +98,22 @@ export async function searchEmailStoreAction({
 /**
  * Repeats the search of the open list without resetting the store: the list is replaced while
  * the populated items are merged, so the open message or conversation is not reloaded.
- * The pages loaded by scrolling (`searchedListIndex` is the list when the search starts) are searched
- * again too. A failed search leaves the list as it is.
+ * `limit` covers the pages loaded by scrolling too, and `searchedListIndex` is the list when the search
+ * starts. A failed search leaves the list as it is.
  */
 export async function refreshSearchEmailStoreAction({
 	searchedListIndex,
+	limit,
 	types,
 	sortBy,
 	query,
 	locale,
 	abortSignal
-}: Omit<SearchSoapApiParams, 'offset' | 'limit'> & {
+}: Omit<SearchSoapApiParams, 'offset'> & {
 	searchedListIndex: Array<string>;
 }): Promise<void> {
 	const searchResponse = await searchSoapApi({
-		limit: Math.max(LIST_LIMIT.INITIAL_LIMIT, searchedListIndex.length),
+		limit,
 		types,
 		sortBy,
 		query,
@@ -126,17 +127,24 @@ export async function refreshSearchEmailStoreAction({
 	}
 
 	if (types === 'message') {
-		const messages = (searchResponse.m ?? []).map((msg) =>
-			normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true })
-		);
+		// the flags and the tags an item has not are set, to overwrite the stored ones
+		const messages = (searchResponse.m ?? []).map((msg) => {
+			const message = normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true });
+			return { ...message, ...getSearchItemFlags(msg.f), tags: message.tags ?? [] };
+		});
 		refreshMessagesInEmailStore(messages, !!searchResponse.more, searchedListIndex);
 		return;
 	}
 
 	const conversationHits = searchResponse.c ?? [];
+	// the messages of a conversation item carry their flags, but not their tags
+	const conversationMessages = extractConvMessage(conversationHits).map((message) => ({
+		...message,
+		...getSearchItemFlags(message.rawFlags)
+	}));
 	refreshConversationsInEmailStore(
 		normalizeConversations(conversationHits),
-		extractConvMessage(conversationHits),
+		conversationMessages,
 		!!searchResponse.more,
 		searchedListIndex
 	);

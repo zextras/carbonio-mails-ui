@@ -23,7 +23,8 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 		folderId,
 		types: 'message',
 		updateLoadingStatus: updateMessagesResultsLoadingStatus,
-		getListIndex: getMessageListIndex
+		getListIndex: getMessageListIndex,
+		shownListLength: messageListIndex.length
 	});
 
 	return useMemo(

@@ -24,6 +24,8 @@ type UseFolderListSearchParams = {
 	types: 'message' | 'conversation';
 	updateLoadingStatus: (status: SearchRequestStatus) => void;
 	getListIndex: () => Array<string>;
+	// the items the list shows, including the pages loaded by scrolling
+	shownListLength: number;
 };
 
 /**
@@ -34,7 +36,8 @@ export const useFolderListSearch = ({
 	folderId,
 	types,
 	updateLoadingStatus,
-	getListIndex
+	getListIndex,
+	shownListLength
 }: UseFolderListSearchParams): void => {
 	const { prefs } = useUserSettings();
 	const prefLocale = useMemo(() => prefs.zimbraPrefLocale, [prefs.zimbraPrefLocale]);
@@ -50,6 +53,9 @@ export const useFolderListSearch = ({
 
 	const controllerRef = useRef<AbortController>();
 	const isLoadingRef = useRef(false);
+	// read when the mailbox is refreshed, without searching again when it changes
+	const shownListLengthRef = useRef(shownListLength);
+	shownListLengthRef.current = shownListLength;
 
 	const search = useCallback(
 		(isRefresh: boolean): void => {
@@ -63,6 +69,7 @@ export const useFolderListSearch = ({
 				// the pages loaded by scrolling are searched again too, and a failed refresh leaves the list as it is
 				refreshSearchEmailStoreAction({
 					searchedListIndex: getListIndex(),
+					limit: Math.max(LIST_LIMIT.INITIAL_LIMIT, shownListLengthRef.current),
 					sortBy,
 					query,
 					types,

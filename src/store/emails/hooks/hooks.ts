@@ -27,11 +27,14 @@ import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { SearchRequestStatus } from 'types/search';
 
+// the conversations searched again for each mailbox refresh, which more views can show at once
+const refreshedConversations = new WeakMap<Event, Set<string>>();
+
 /**
  * Updates a shown conversation in place when the mailbox is refreshed, repeating its search with the
  * same folder it was loaded with. Its messages could have changed while their notifications were
  * dropped (e.g. new, moved or deleted messages). The loaded conversations which are not shown are
- * loaded again when they are shown next (see refreshConversationsInEmailStore).
+ * loaded again when they are shown next (see clearHiddenConversationsStatus).
  */
 export function useRefreshConversationOnMailboxRefresh({
 	conversationId,
@@ -47,7 +50,14 @@ export function useRefreshConversationOnMailboxRefresh({
 			return undefined;
 		}
 		const hideConversation = showConversation(conversationId);
-		const handler = (): void => {
+		const handler = (event: Event): void => {
+			const refreshed = refreshedConversations.get(event) ?? new Set<string>();
+			refreshedConversations.set(event, refreshed);
+			// a conversation shown by more views is searched again once
+			if (refreshed.has(conversationId)) {
+				return;
+			}
+			refreshed.add(conversationId);
 			const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
 			// a failed refresh leaves the conversation as it is
 			refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
