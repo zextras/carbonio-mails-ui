@@ -7,7 +7,7 @@
 import { useEffect, useMemo } from 'react';
 
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce } from 'lodash';
+import { debounce, noop } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
@@ -49,7 +49,8 @@ export function useRefreshConversationOnMailboxRefresh({
 		const hideConversation = showConversation(conversationId);
 		const handler = (): void => {
 			const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
-			refreshConvEmailStoreAction({ conversationId, folderId, html });
+			// a failed refresh leaves the conversation as it is
+			refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
 		};
 
 		window.addEventListener(MailboxRefreshedEvent.EventName, handler);
