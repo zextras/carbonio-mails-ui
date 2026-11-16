@@ -13,7 +13,7 @@ export const CONTENT_ID = `${UPLOAD_ID}@carbonio`;
 export const CID_URL = `cid:${CONTENT_ID}`;
 export const MESSAGE_ID = '123';
 export const PART_NAME = '2';
-export const DOWNLOAD_SERVICE_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&part=${PART_NAME}`;
+export const DOWNLOAD_SERVICE_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=${encodeURIComponent(CONTENT_ID)}&part=${PART_NAME}`;
 
 type AddInlineAttachments = ReturnType<
 	typeof editorStoreIndex.useEditorAttachments
@@ -50,19 +50,26 @@ export function stubObjectUrls(): () => void {
 export function mockInlineImageUpload(): InlineImageUploadMock {
 	let uploadedFiles: Array<File> = [];
 	let options: AddInlineAttachmentsOptions | undefined;
+	let calls = 0;
 
 	const addInlineAttachments = vi.fn((files: Array<File>, uploadOptions) => {
 		uploadedFiles = files;
 		options = uploadOptions;
-		return files.map<UnsavedAttachment>((file, index) => ({
-			filename: file.name,
-			contentType: file.type,
-			size: file.size,
-			uploadId: index === 0 ? UPLOAD_ID : `${UPLOAD_ID}-${index}`,
-			contentId: index === 0 ? CONTENT_ID : `${UPLOAD_ID}-${index}@carbonio`,
-			isInline: true,
-			uploadStatus: { status: 'running', progress: 0 }
-		}));
+		calls += 1;
+		// Every upload gets its own id, hence its own content id, as in the store.
+		const batchUploadId = calls === 1 ? UPLOAD_ID : `upload-${calls}`;
+		return files.map<UnsavedAttachment>((file, index) => {
+			const uploadId = index === 0 ? batchUploadId : `${batchUploadId}-${index}`;
+			return {
+				filename: file.name,
+				contentType: file.type,
+				size: file.size,
+				uploadId,
+				contentId: `${uploadId}@carbonio`,
+				isInline: true,
+				uploadStatus: { status: 'running', progress: 0 }
+			};
+		});
 	}) as unknown as AddInlineAttachments;
 
 	vi.spyOn(editorStoreIndex, 'useEditorAttachments').mockReturnValue({
@@ -83,11 +90,13 @@ export function mockInlineImageUpload(): InlineImageUploadMock {
 /**
  * Simulates the outcome of the draft save which persists the pending inline
  * image: the saved attachments of the editor are what the editor watches to
- * replace a preview with the real download url.
+ * replace a preview with the real download url. The image is always saved at
+ * the same part of the same draft, as the server does when an image replaces
+ * another one.
  */
-export function saveInlineAttachment(editorId: string): void {
+export function saveInlineAttachment(editorId: string, contentId = CONTENT_ID): void {
 	const savedInlineAttachment: SavedAttachment = {
-		contentId: CONTENT_ID,
+		contentId,
 		messageId: MESSAGE_ID,
 		partName: PART_NAME,
 		contentType: 'image/png',

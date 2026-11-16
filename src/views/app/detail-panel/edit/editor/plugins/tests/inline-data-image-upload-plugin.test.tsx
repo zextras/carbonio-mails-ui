@@ -24,7 +24,7 @@ const EDITOR_TESTID = 'edit-view-editor';
 const MESSAGE_ID = '42';
 const PART_NAME = '2';
 const CONTENT_ID = 'inline-1@carbonio';
-const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&part=${PART_NAME}`;
+const DOWNLOAD_URL = `/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=${encodeURIComponent(CONTENT_ID)}&part=${PART_NAME}`;
 /** The url of an image of a message other than the one being written. */
 const FOREIGN_URL = '/service/home/~/?auth=co&id=99&ci=foreign%40carbonio&part=2';
 /** The bare url of the same part, the one it is downloaded from. */
