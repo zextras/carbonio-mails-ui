@@ -11,10 +11,12 @@ import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import {
 	buildSavedAttachments,
+	composeEmlFilename,
 	getAttachmentExtension,
 	getFlattenedAttachmentParts,
 	getReferredContentIds,
-	isCalendarAttachment
+	isCalendarAttachment,
+	sanitizeFilenameBase
 } from 'helpers/attachments';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import { MailMessagePart } from 'types/messages';
@@ -1331,6 +1333,49 @@ describe('attachments', () => {
 			['no content type and no filename', undefined, undefined, false]
 		])('should return %s for %s', (_desc, contentType, filename, expected) => {
 			expect(isCalendarAttachment(contentType, filename)).toBe(expected);
+		});
+	});
+
+	describe('sanitizeFilenameBase', () => {
+		test.each([
+			['keeps a plain text unchanged', 'Quarterly report', 'Quarterly report'],
+			['keeps unicode letters and emoji', 'Résumé 😀 報告', 'Résumé 😀 報告'],
+			['replaces the reserved characters', 'Re: Q1/Q2 <a>|"b"*?\\c', 'Re_ Q1_Q2 _a___b____c'],
+			['replaces line breaks and tabs with a space', 'Quarterly\r\n\treport', 'Quarterly report'],
+			['replaces the other control characters', 'a\u0000b\u007Fc\u0085d', 'a b c d'],
+			['removes the bidi override characters', 'invoice‮fdp.exe', 'invoicefdp.exe'],
+			['removes the bidi isolate and mark characters', '⁦a⁩‎b‏؜c', 'abc'],
+			['collapses consecutive whitespaces', 'a    b  c', 'a b c'],
+			['removes leading and trailing dots and spaces', '  ..hidden name. . ', 'hidden name'],
+			['returns an empty string when no usable character remains', ' .‮. \n', '']
+		])('%s', (_desc, text, expected) => {
+			expect(sanitizeFilenameBase(text)).toBe(expected);
+		});
+
+		it('truncates long texts to 200 characters', () => {
+			expect(sanitizeFilenameBase('a'.repeat(300))).toBe('a'.repeat(200));
+		});
+
+		it('does not split the surrogate pairs when truncating', () => {
+			const result = sanitizeFilenameBase('😀'.repeat(300));
+
+			expect(result).toBe('😀'.repeat(200));
+		});
+
+		it('removes the trailing spaces left by the truncation', () => {
+			expect(sanitizeFilenameBase(`${'a'.repeat(199)} b`)).toBe('a'.repeat(199));
+		});
+	});
+
+	describe('composeEmlFilename', () => {
+		test.each([
+			['uses the subject', 'Quarterly report', 'Quarterly report.eml'],
+			['uses the sanitized subject', 'Fwd: Q1/Q2', 'Fwd_ Q1_Q2.eml'],
+			['falls back to the message id when the subject is undefined', undefined, '1234.eml'],
+			['falls back to the message id when the subject is empty', '', '1234.eml'],
+			['falls back to the message id when the subject has no usable characters', ' . ', '1234.eml']
+		])('%s', (_desc, subject, expected) => {
+			expect(composeEmlFilename(subject, '1234')).toBe(expected);
 		});
 	});
 });

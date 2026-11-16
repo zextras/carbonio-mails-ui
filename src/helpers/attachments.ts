@@ -286,6 +286,61 @@ export function getFlattenedAttachmentParts(
 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
 }
 
+/**
+ * Maximum number of characters (Unicode code points) kept from a file name base built from
+ * untrusted text, so that the full name, extension included, stays below the 255 limit
+ * of common file systems.
+ */
+const MAX_FILENAME_BASE_LENGTH = 200;
+/** Control characters (C0, DEL and C1), e.g. the tabs and line breaks of folded headers */
+const CONTROL_CHARS_REGEX = /\p{Cc}/gu;
+/**
+ * Unicode bidirectional formatting characters (e.g. U+202E RIGHT-TO-LEFT OVERRIDE),
+ * which can be used to spoof the displayed name and extension of a file
+ */
+const BIDI_CONTROL_CHARS_REGEX = /\p{Bidi_Control}/gu;
+/** Characters reserved in file names by Windows, macOS or Linux */
+const RESERVED_FILENAME_CHARS_REGEX = /[/\\:*?"<>|]/g;
+/** Leading and trailing whitespace and dots (hidden files, names rejected by Windows) */
+const EDGE_DOTS_AND_SPACES_REGEX = /^[\s.]+|[\s.]+$/g;
+
+/**
+ * Turns untrusted text (e.g. a message subject) into a safe file name base, without extension:
+ * - removes the bidirectional formatting characters
+ * - replaces the control characters with a space
+ * - replaces the characters reserved by the file systems with an underscore
+ * - collapses consecutive whitespaces
+ * - truncates the result to {@link MAX_FILENAME_BASE_LENGTH} characters
+ * - removes leading and trailing whitespaces and dots
+ *
+ * @param text - The untrusted text
+ * @returns The sanitized file name base, or an empty string if no usable character remains
+ */
+export const sanitizeFilenameBase = (text: string): string => {
+	const normalized = text
+		.replace(BIDI_CONTROL_CHARS_REGEX, '')
+		.replace(CONTROL_CHARS_REGEX, ' ')
+		.replace(RESERVED_FILENAME_CHARS_REGEX, '_')
+		.replace(/\s+/g, ' ');
+	// Array.from splits by code point, so surrogate pairs (e.g. emoji) are never cut in half
+	return Array.from(normalized)
+		.slice(0, MAX_FILENAME_BASE_LENGTH)
+		.join('')
+		.replace(EDGE_DOTS_AND_SPACES_REGEX, '');
+};
+
+/**
+ * Composes the file name of a message attached as .eml, based on its subject.
+ *
+ * @param subject - The subject of the message
+ * @param messageId - The id of the message, used when the subject is missing or has no usable characters
+ * @returns The file name, e.g. "Quarterly report.eml"
+ */
+export const composeEmlFilename = (subject: string | undefined, messageId: string): string => {
+	const base = subject ? sanitizeFilenameBase(subject) : '';
+	return `${base || messageId}.eml`;
+};
+
 export const getAttachmentExtension = (
 	contentType: string | undefined,
 	fileName: string | undefined = undefined
