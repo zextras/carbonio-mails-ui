@@ -1343,11 +1343,12 @@ describe('attachments', () => {
 			['replaces the reserved characters', 'Re: Q1/Q2 <a>|"b"*?\\c', 'Re_ Q1_Q2 _a___b____c'],
 			['replaces line breaks and tabs with a space', 'Quarterly\r\n\treport', 'Quarterly report'],
 			['replaces the other control characters', 'a\u0000b\u007Fc\u0085d', 'a b c d'],
-			['removes the bidi override characters', 'invoice‮fdp.exe', 'invoicefdp.exe'],
-			['removes the bidi isolate and mark characters', '⁦a⁩‎b‏؜c', 'abc'],
-			['collapses consecutive whitespaces', 'a    b  c', 'a b c'],
+			['removes the bidi override characters', 'invoice\u202Efdp.exe', 'invoicefdp.exe'],
+			['removes the bidi isolate and mark characters', '\u2066a\u2069\u200Eb\u200F\u061Cc', 'abc'],
+			['collapses consecutive whitespaces', 'a    b\u00A0\u00A0c', 'a b c'],
 			['removes leading and trailing dots and spaces', '  ..hidden name. . ', 'hidden name'],
-			['returns an empty string when no usable character remains', ' .‮. \n', '']
+			['keeps the dots and spaces inside the text', '..v1.2 . notes..', 'v1.2 . notes'],
+			['returns an empty string when no usable character remains', ' .\u202E. \n', '']
 		])('%s', (_desc, text, expected) => {
 			expect(sanitizeFilenameBase(text)).toBe(expected);
 		});

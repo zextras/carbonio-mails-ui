@@ -7,7 +7,7 @@
 import { useMemo } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
-import { reduce } from 'lodash';
+import { reduce, trim } from 'lodash';
 
 import {
 	areContentIdsEqual,
@@ -301,8 +301,12 @@ const CONTROL_CHARS_REGEX = /\p{Cc}/gu;
 const BIDI_CONTROL_CHARS_REGEX = /\p{Bidi_Control}/gu;
 /** Characters reserved in file names by Windows, macOS or Linux */
 const RESERVED_FILENAME_CHARS_REGEX = /[/\\:*?"<>|]/g;
-/** Leading and trailing whitespace and dots (hidden files, names rejected by Windows) */
-const EDGE_DOTS_AND_SPACES_REGEX = /^[\s.]+|[\s.]+$/g;
+/**
+ * Characters removed from the start and the end of a file name base (leading dots make hidden
+ * files, trailing dots and spaces are rejected by Windows). Whitespaces are already collapsed
+ * into plain spaces when they are removed, so the space is the only whitespace to handle.
+ */
+const FILENAME_BASE_EDGE_CHARS = ' .';
 
 /**
  * Turns untrusted text (e.g. a message subject) into a safe file name base, without extension:
@@ -323,10 +327,9 @@ export const sanitizeFilenameBase = (text: string): string => {
 		.replace(RESERVED_FILENAME_CHARS_REGEX, '_')
 		.replace(/\s+/g, ' ');
 	// Array.from splits by code point, so surrogate pairs (e.g. emoji) are never cut in half
-	return Array.from(normalized)
-		.slice(0, MAX_FILENAME_BASE_LENGTH)
-		.join('')
-		.replace(EDGE_DOTS_AND_SPACES_REGEX, '');
+	const truncated = Array.from(normalized).slice(0, MAX_FILENAME_BASE_LENGTH).join('');
+	// lodash trim runs in linear time, unlike a /[\s.]+$/ regex that backtracks on long runs
+	return trim(truncated, FILENAME_BASE_EDGE_CHARS);
 };
 
 /**
