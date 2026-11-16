@@ -1,3 +1,8 @@
+## <small>1.51.20 (2026-11-16)</small>
+
+* fix(CO-4577): limit conversation actions to the messages of the open folder (#1425) ([a43c4cd](https://github.com/zextras/carbonio-mails-ui/commit/a43c4cd)), closes [#1425](https://github.com/zextras/carbonio-mails-ui/issues/1425)
+* fix(CO-4673): count uploaded attachments not saved yet in the missing attachment check (#1431) ([0677723](https://github.com/zextras/carbonio-mails-ui/commit/0677723)), closes [#1431](https://github.com/zextras/carbonio-mails-ui/issues/1431)
+
 ## <small>1.51.19 (2026-11-16)</small>
 
 * fix(CO-4713): paste inline image in body not working (#1428) ([04ae43a](https://github.com/zextras/carbonio-mails-ui/commit/04ae43a)), closes [#1428](https://github.com/zextras/carbonio-mails-ui/issues/1428)
