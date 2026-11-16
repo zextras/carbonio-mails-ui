@@ -23,6 +23,19 @@ describe('convActionSoapApi', () => {
 		expect(request).toEqual({ _jsns: 'urn:zimbraMail', action: { id: '1,2', op: 'flag' } });
 	});
 
+	it('should send the target constraint when given', async () => {
+		const interceptor = createSoapAPIInterceptor('ConvAction', {
+			action: { id: '1', op: 'move' }
+		});
+		convActionSoapApi({ ids: ['1'], operation: 'move', parent: '257', tcon: 'o' });
+		const request = await interceptor;
+
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			action: { id: '1', op: 'move', l: '257', tcon: 'o' }
+		});
+	});
+
 	it('should resolve with the Fault when the server returns one', async () => {
 		const fault = buildSoapErrorResponseBody({
 			detailCode: 'mail.NO_SUCH_CONV',

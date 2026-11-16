@@ -10,6 +10,7 @@ import { find } from 'lodash';
 
 import { NO_ACCOUNT_NAME } from 'constants/index';
 import { MailMessage } from 'types/messages';
+import { ConvActionTargetConstraint } from 'types/soap';
 
 /*
  * Describe the folder id syntax
@@ -219,7 +220,46 @@ export const isTrashed = ({
 		return false;
 	}
 
-	return path.toLowerCase().startsWith('/trash');
+	const lowerCasePath = path.toLowerCase();
+	return lowerCasePath === '/trash' || lowerCasePath.startsWith('/trash/');
+};
+
+/**
+ * Tells if the sent mail folder preference points to the system Sent folder
+ * @param sentMailFolder the value of zimbraPrefSentMailFolder
+ */
+const isSystemSentMailFolder = (sentMailFolder?: string): boolean =>
+	!sentMailFolder || sentMailFolder.replace(/^\//, '').toLowerCase() === 'sent';
+
+/**
+ * Returns the target constraint that limits a conversation action to the messages in the same
+ * group of folders as the given one. The server cannot tell apart two folders of the same group:
+ * Trash and the folders inside it, Junk, Sent, Drafts, every other folder.
+ * The server counts the Sent folder as Sent only when sent mail is saved there.
+ * Without a folder (e.g. in search) it returns undefined: the action applies to the whole conversation.
+ * @param folderId the folder the action is started from
+ * @param sentMailFolder the value of zimbraPrefSentMailFolder
+ */
+export const getConvActionTargetConstraint = (
+	folderId: string | undefined,
+	sentMailFolder: string | undefined
+): ConvActionTargetConstraint | undefined => {
+	if (!folderId) {
+		return undefined;
+	}
+	if (isTrash(folderId) || isTrashed({ folderId })) {
+		return 't';
+	}
+	if (isSpam(folderId)) {
+		return 'j';
+	}
+	if (isSent(folderId) && isSystemSentMailFolder(sentMailFolder)) {
+		return 's';
+	}
+	if (isDraft(folderId)) {
+		return 'd';
+	}
+	return 'o';
 };
 
 /**

@@ -12,13 +12,14 @@ import { times } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../__test__/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../__test__/mocks/store/folders';
-import { setupHook, screen } from '@test-setup';
+import { makeListItemsVisible, setupHook, screen } from '@test-setup';
 import { TIMERS } from '__test__/constants';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvMoveToFolderDescriptor,
 	useConvMoveToFolderFn
 } from 'hooks/actions/use-conv-move-to-folder';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 
 describe('useConvMoveToFolder', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>
@@ -94,6 +95,35 @@ describe('useConvMoveToFolder', () => {
 				});
 
 				expect(screen.getByText(`Move`)).toBeVisible();
+			});
+
+			it('should limit the move to the messages of the folder group open in the route', async () => {
+				populateFoldersStore();
+				const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+					'ConvAction',
+					{ action: { id: conversationsId.join(','), op: 'move' } }
+				);
+				const {
+					result: { current: functions },
+					user
+				} = setupHook(useConvMoveToFolderFn, {
+					initialProps: [{ ids: conversationsId, folderId: FOLDERS.SENT }],
+					initialEntries: [`/folder/${FOLDERS.SENT}`],
+					path: '/folder/:folderId/*'
+				});
+
+				act(() => {
+					functions.execute();
+				});
+				act(() => {
+					vi.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+				makeListItemsVisible();
+				await user.click(await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`));
+				await user.click(await screen.findByRole('button', { name: /Move/ }));
+
+				const request = await interceptor;
+				expect(request.action.tcon).toBe('s');
 			});
 
 			it('should not open the move modal with if the action cannot be executed', async () => {
