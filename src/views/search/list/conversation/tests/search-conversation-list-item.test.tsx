@@ -18,7 +18,11 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { updateConversationStatus } from 'store/emails/store';
 import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
+import { SearchConvRequest } from 'types/soap/search-conv';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
 
 const conversationId = '-123';
@@ -519,5 +523,38 @@ describe('SearchConversationListItem', () => {
 
 			// No API call should be triggered when collapsing
 		});
+	});
+
+	it('should search an expanded conversation again when the mailbox is refreshed', async () => {
+		await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: conversationId, folderId: FOLDERS.INBOX }
+			})
+		);
+		updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+		setupTest(
+			<SearchConversationListItem
+				conversationId={conversationId}
+				selecting={false}
+				active={false}
+				activeItemId={''}
+				selected={false}
+				index={0}
+				onSelect={vi.fn()}
+				onToggleExpanded={vi.fn()}
+				isConversationExpanded
+			/>
+		);
+		await screen.findByTestId(`ConversationListItem-${conversationId}`);
+
+		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		const request = await interceptor;
+		expect(request).toEqual(expect.objectContaining({ cid: conversationId }));
+		// the search view loads a conversation in all its folders
+		expect(request.query).toBeUndefined();
 	});
 });

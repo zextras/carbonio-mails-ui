@@ -66,6 +66,19 @@ describe('searchEmailStoreAction', () => {
 		}
 	);
 
+	it('does not apply the results of an aborted search', async () => {
+		const controller = new AbortController();
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			controller.abort();
+			return mockSearchResponseTypeMessage;
+		});
+
+		await searchEmailStoreAction({ ...searchParams, abortSignal: controller.signal });
+
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
+	});
+
 	it('handles successful message search response', async () => {
 		(searchSoapApi as Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
 		await searchEmailStoreAction(searchParams);
@@ -125,7 +138,7 @@ describe('searchEmailStoreAction', () => {
 
 describe('refreshSearchEmailStoreAction', () => {
 	const refreshParams = {
-		limit: 100,
+		searchedListIndex: ['1'],
 		sortBy: SORT_BY.dateDesc,
 		query: 'inId:"2"',
 		locale: 'en',
@@ -144,10 +157,28 @@ describe('refreshSearchEmailStoreAction', () => {
 		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ offset: 0 }));
 		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith(
 			[expect.objectContaining({ id: '1' })],
-			true
+			true,
+			['1']
 		);
 		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
 		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('searches again the pages loaded by scrolling', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
+		const searchedListIndex = Array.from({ length: 150 }, (_, index) => `${index}`);
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, searchedListIndex, types: 'message' });
+
+		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ limit: 150, offset: 0 }));
+	});
+
+	it('searches at least the first page', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+
+		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ limit: 100 }));
 	});
 
 	it('empties the list of messages when the folder has no more messages', async () => {
@@ -155,7 +186,7 @@ describe('refreshSearchEmailStoreAction', () => {
 
 		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
 
-		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith([], false);
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith([], false, ['1']);
 	});
 
 	it('merges the conversations of the list and their messages without resetting the store', async () => {
@@ -169,10 +200,27 @@ describe('refreshSearchEmailStoreAction', () => {
 		expect(refreshConversationsInEmailStore).toHaveBeenCalledWith(
 			[expect.objectContaining({ id: '1' })],
 			[expect.objectContaining({ id: '10' })],
-			false
+			false,
+			['1']
 		);
 		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
 		expect(setConversationsInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('does not apply the results of an aborted refresh', async () => {
+		const controller = new AbortController();
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			controller.abort();
+			return { m: [{ id: '1' }], more: false };
+		});
+
+		await refreshSearchEmailStoreAction({
+			...refreshParams,
+			types: 'message',
+			abortSignal: controller.signal
+		});
+
+		expect(refreshMessagesInEmailStore).not.toHaveBeenCalled();
 	});
 
 	it('leaves the list as it is when the search fails', async () => {

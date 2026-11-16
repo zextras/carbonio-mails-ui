@@ -99,27 +99,34 @@ describe('useMessageListByFolder', () => {
 		});
 	});
 
-	it('should search the messages again when the mailbox is refreshed', async () => {
+	it('should search the messages again without resetting the store when the mailbox is refreshed', async () => {
 		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'Desc'
 		});
-		const firstSearchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', { more: false });
 		renderHook(() => useFetchMessagesByFolder(folder.id));
-		await act(async () => {
-			await firstSearchInterceptor;
+		await waitFor(() => {
+			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
 		});
+		vi.mocked(resetMessagesAndPopulatedItems).mockClear();
+		vi.mocked(updateMessagesResultsLoadingStatus).mockClear();
 
-		const refreshSearchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		const refreshSearchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+			'Search',
+			{ more: false }
+		);
 		act(() => {
 			window.dispatchEvent(new MailboxRefreshedEvent());
 		});
 
 		await act(async () => {
 			expect(await refreshSearchInterceptor).toEqual(
-				expect.objectContaining({ offset: 0, query: 'inId:"2"', types: 'message' })
+				expect.objectContaining({ limit: 100, offset: 0, query: 'inId:"2"', types: 'message' })
 			);
 		});
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(updateMessagesResultsLoadingStatus).not.toHaveBeenCalledWith(API_REQUEST_STATUS.pending);
 	});
 
 	// FIXME: failing test

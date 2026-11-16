@@ -11,6 +11,7 @@ import { devtools } from 'zustand/middleware';
 
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
+import { getShownConversationIds } from 'store/emails/shown-conversations';
 import { createConversationIndexSlice } from 'store/emails/slices/conversations/conversations-index-slice';
 import { conversationIndexSliceUtils } from 'store/emails/slices/conversations/utils';
 import { createMessageIndexSlice } from 'store/emails/slices/messages/messages-slice';
@@ -447,6 +448,13 @@ export function useMessageIndexSlice(): EmailsStoreState['messageIndexSlice'] {
 }
 
 /**
+ * Returns the ids of the list in the `messageIndexSlice`, including the loaded pages.
+ */
+export function getMessageListIndex(): Array<string> {
+	return useEmailsStore.getState().messageIndexSlice.messageListIndex;
+}
+
+/**
  * Retrieves the list of message IDs for a specific folder from the `messageIndexSlice` and `populatedItemsSlice`.
  * This function filters the message IDs based on the folder ID and checks if the messages belong to the specified folder.
  */
@@ -472,13 +480,20 @@ export function setMessagesInEmailStore(
  * Replaces the list of messages in the `messageIndexSlice` with the results of a repeated search,
  * merging the messages into the `populatedItemsSlice` instead of replacing them,
  * so that the open message keeps what is loaded only when it is opened.
+ * The items of the pages loaded by scrolling while the search was in progress are kept.
  */
 export function refreshMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
-	more: boolean
+	more: boolean,
+	searchedListIndex: Array<string>
 ): void {
 	addTask(() => {
-		messageIndexSliceUtils.refreshMessagesInEmailStore(messages, more, useEmailsStore);
+		messageIndexSliceUtils.refreshMessagesInEmailStore(
+			messages,
+			more,
+			searchedListIndex,
+			useEmailsStore
+		);
 		return Promise.resolve();
 	});
 }
@@ -545,6 +560,13 @@ export function useMessageLoadingStatus(): SearchRequestStatus {
  */
 export function useConversationIndexSlice(): EmailsStoreState['conversationIndexSlice'] {
 	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice);
+}
+
+/**
+ * Returns the ids of the list in the `conversationIndexSlice`, including the loaded pages.
+ */
+export function getConversationListIndex(): Array<string> {
+	return useEmailsStore.getState().conversationIndexSlice.conversationListIndex;
 }
 
 /**
@@ -617,20 +639,40 @@ export function setConversationsInEmailStore(
 }
 
 /**
+ * Clears the loaded status of the loaded conversations which are not shown right now, so they are loaded
+ * again when they are shown next. Called when the mailbox is refreshed, while the shown ones repeat their
+ * own search.
+ */
+export function clearHiddenConversationsStatus(): void {
+	// the conversations shown when the mailbox is refreshed, not when the task runs
+	const shownConversationIds = getShownConversationIds();
+	addTask(() => {
+		conversationIndexSliceUtils.clearHiddenConversationsStatus(
+			shownConversationIds,
+			useEmailsStore
+		);
+		return Promise.resolve();
+	});
+}
+
+/**
  * Replaces the list of conversations in the `conversationIndexSlice` with the results of a repeated search,
  * merging the conversations and their messages into the `populatedItemsSlice` instead of replacing them,
- * so that the open conversation keeps its messages.
+ * so that a shown conversation keeps its messages. The items of the pages loaded by scrolling while
+ * the search was in progress are kept.
  */
 export function refreshConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	messages: Array<MailMessage | IncompleteMessage>,
-	more: boolean
+	more: boolean,
+	searchedListIndex: Array<string>
 ): void {
 	addTask(() => {
 		conversationIndexSliceUtils.refreshConversationsInEmailStore(
 			conversations,
 			messages,
 			more,
+			searchedListIndex,
 			useEmailsStore
 		);
 		return Promise.resolve();

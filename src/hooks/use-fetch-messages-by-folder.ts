@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 
 import { useFolderListSearch } from 'hooks/use-folder-list-search';
 import {
+	getMessageListIndex,
 	updateMessagesResultsLoadingStatus,
 	useMessageIndexSlice,
 	useMessagesIdsByFolder
@@ -21,7 +22,8 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 	useFolderListSearch({
 		folderId,
 		types: 'message',
-		updateLoadingStatus: updateMessagesResultsLoadingStatus
+		updateLoadingStatus: updateMessagesResultsLoadingStatus,
+		getListIndex: getMessageListIndex
 	});
 
 	return useMemo(

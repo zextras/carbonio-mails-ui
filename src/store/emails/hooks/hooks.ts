@@ -10,8 +10,13 @@ import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
-import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import {
+	refreshConvEmailStoreAction,
+	searchConvEmailStoreAction
+} from 'store/emails/actions/search-conv-action';
+import { showConversation } from 'store/emails/shown-conversations';
 import {
 	useConversationById,
 	useConversationStatus,
@@ -21,6 +26,39 @@ import {
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { SearchRequestStatus } from 'types/search';
+
+/**
+ * Updates a shown conversation in place when the mailbox is refreshed, repeating its search with the
+ * same folder it was loaded with. Its messages could have changed while their notifications were
+ * dropped (e.g. new, moved or deleted messages). The loaded conversations which are not shown are
+ * loaded again when they are shown next (see refreshConversationsInEmailStore).
+ */
+export function useRefreshConversationOnMailboxRefresh({
+	conversationId,
+	folderId,
+	enabled
+}: {
+	conversationId: string;
+	folderId?: string;
+	enabled: boolean;
+}): void {
+	useEffect(() => {
+		if (!enabled) {
+			return undefined;
+		}
+		const hideConversation = showConversation(conversationId);
+		const handler = (): void => {
+			const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+			refreshConvEmailStoreAction({ conversationId, folderId, html });
+		};
+
+		window.addEventListener(MailboxRefreshedEvent.EventName, handler);
+		return () => {
+			window.removeEventListener(MailboxRefreshedEvent.EventName, handler);
+			hideConversation();
+		};
+	}, [conversationId, enabled, folderId]);
+}
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;
@@ -71,6 +109,12 @@ export function useCompleteConversationOrFetch({
 			requestDebouncedConversation.cancel();
 		};
 	}, [requestDebouncedConversation]);
+
+	useRefreshConversationOnMailboxRefresh({
+		conversationId,
+		folderId,
+		enabled: conversationStatus === API_REQUEST_STATUS.fulfilled
+	});
 
 	return {
 		conversation,

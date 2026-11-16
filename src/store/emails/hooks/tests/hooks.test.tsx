@@ -12,17 +12,22 @@ import { cloneDeep, map } from 'lodash';
 
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import {
+	createSoapAPIInterceptorWithError,
 	generateCompleteMessageFromAPI,
 	generateConvMessageFromAPI
 } from '__test__/generators/api';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
 import * as getMsg from 'api/get-msg-soap-api';
+import * as searchConvApi from 'api/search-conv-soap-api';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import {
 	useCompleteConversationOrFetch,
-	useCompleteMessageOrFetch
+	useCompleteMessageOrFetch,
+	useRefreshConversationOnMailboxRefresh
 } from 'store/emails/hooks/hooks';
+import { isConversationShown } from 'store/emails/shown-conversations';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { deleteMessagesFromConversation } from 'store/emails/slices/populated-items/utils';
@@ -33,6 +38,7 @@ import {
 	setSearchResultsByMessage,
 	updateConversationStatus,
 	updateMessageStatus,
+	useConversationById,
 	useConversationStatus,
 	useMessageStatus
 } from 'store/emails/store';
@@ -126,6 +132,101 @@ describe('Searches store hooks', () => {
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});
+		});
+	});
+
+	describe('useRefreshConversationOnMailboxRefresh', () => {
+		async function setupLoadedConversation(): Promise<void> {
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messageIds: ['10', '11'] })],
+				false
+			);
+			await act(async () => {
+				updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
+			});
+		}
+
+		it('should search the shown conversation again, in its folder, when the mailbox is refreshed', async () => {
+			await setupLoadedConversation();
+			const response: SearchConvResponse = {
+				m: [generateConvMessageFromAPI({ id: '12' }), generateConvMessageFromAPI({ id: '11' })],
+				more: false,
+				offset: '',
+				sortBy: 'dateDesc'
+			};
+			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
+				'SearchConv',
+				response
+			);
+			renderHook(() =>
+				useRefreshConversationOnMailboxRefresh({
+					conversationId: '123',
+					folderId: '2',
+					enabled: true
+				})
+			);
+			const { result: status } = renderHook(() => useConversationStatus('123'));
+
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+
+			expect(await interceptor).toEqual(
+				expect.objectContaining({ cid: '123', fetch: 'all', query: 'inId: "2"' })
+			);
+			const { result: conversation } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(conversation.current.messageIds).toEqual(['12', '11']);
+			});
+			// updated in place: the conversation is never reloaded
+			expect(status.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+
+		it('should leave the conversation as it is when its search fails', async () => {
+			await setupLoadedConversation();
+			const interceptor = createSoapAPIInterceptorWithError<SearchConvRequest>('SearchConv');
+			renderHook(() =>
+				useRefreshConversationOnMailboxRefresh({ conversationId: '123', enabled: true })
+			);
+
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+			await interceptor;
+
+			const { result: conversation } = renderHook(() => useConversationById('123'));
+			const { result: status } = renderHook(() => useConversationStatus('123'));
+			expect(conversation.current.messageIds).toEqual(['10', '11']);
+			expect(status.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+
+		it('should record the conversation as shown while it is enabled', () => {
+			const { rerender, unmount } = renderHook(
+				({ enabled }) => useRefreshConversationOnMailboxRefresh({ conversationId: '123', enabled }),
+				{ initialProps: { enabled: true } }
+			);
+			expect(isConversationShown('123')).toBe(true);
+
+			rerender({ enabled: false });
+			expect(isConversationShown('123')).toBe(false);
+
+			rerender({ enabled: true });
+			unmount();
+			expect(isConversationShown('123')).toBe(false);
+		});
+
+		it('should not search a conversation which is not shown', async () => {
+			await setupLoadedConversation();
+			const searchConvSpy = vi.spyOn(searchConvApi, 'searchConvSoapApi');
+			renderHook(() =>
+				useRefreshConversationOnMailboxRefresh({ conversationId: '123', enabled: false })
+			);
+
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+
+			expect(searchConvSpy).not.toHaveBeenCalled();
 		});
 	});
 

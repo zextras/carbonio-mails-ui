@@ -10,19 +10,24 @@ import { omit } from 'lodash';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { showConversation } from 'store/emails/shown-conversations';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendConversationsToConversationIndexSlice,
+	clearHiddenConversationsStatus,
 	getUseEmailStoreAndHooksForTesting,
 	refreshConversationsInEmailStore,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
 	updateConversations,
+	updateConversationStatus,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
+	useConversationStatus,
 	useConversationsIdsByFolder,
 	useMessageById
 } from 'store/emails/store';
@@ -322,18 +327,20 @@ describe('conversation-index-slice', () => {
 	});
 
 	describe('refreshConversationsInEmailStore', () => {
-		it('should replace the list and keep the messages of an open conversation the search leaves out', async () => {
-			const openConversation = generateConversation({ id: '1', messageIds: ['10', '11'] });
-			setConversationsInEmailStore([openConversation], false);
+		it('should replace the list and take the messages of a conversation as the search returns them', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
 			const refreshedConversation = generateConversation({
 				id: '1',
-				messageIds: ['11', '12'],
+				messageIds: ['12', '11'],
 				subject: 'refreshed'
 			});
 			const newConversation = generateConversation({ id: '2', messageIds: ['20'] });
 
 			await act(async () =>
-				refreshConversationsInEmailStore([newConversation, refreshedConversation], [], true)
+				refreshConversationsInEmailStore([newConversation, refreshedConversation], [], true, ['1'])
 			);
 
 			const { result: index } = renderHook(() => useConversationIndexSlice());
@@ -341,8 +348,111 @@ describe('conversation-index-slice', () => {
 			expect(index.current.more).toBe(true);
 			const { result: conversation } = renderHook(() => useConversationById('1'));
 			expect(conversation.current).toEqual(
-				expect.objectContaining({ subject: 'refreshed', messageIds: ['10', '11', '12'] })
+				expect.objectContaining({ subject: 'refreshed', messageIds: ['12', '11'] })
 			);
+		});
+
+		it('should keep the messages of a shown conversation, which its own search updates', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			const hideConversation = showConversation('1');
+			const refreshedConversation = generateConversation({
+				id: '1',
+				messageIds: ['11'],
+				subject: 'refreshed'
+			});
+
+			await act(async () => clearHiddenConversationsStatus());
+			await act(async () =>
+				refreshConversationsInEmailStore([refreshedConversation], [], false, ['1'])
+			);
+			hideConversation();
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'refreshed', messageIds: ['10', '11'] })
+			);
+			const { result: status } = renderHook(() => useConversationStatus('1'));
+			expect(status.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+
+		it('should load a loaded conversation which is not shown again when it is shown next', async () => {
+			setConversationsInEmailStore(
+				[
+					generateConversation({ id: '1', messageIds: ['10', '11'] }),
+					generateConversation({ id: '2', messageIds: ['20'] })
+				],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			// a loaded conversation which is no more in the list is loaded again too
+			updateConversationStatus('2', API_REQUEST_STATUS.fulfilled);
+			const refreshedConversation = generateConversation({ id: '1', messageIds: ['11'] });
+
+			await act(async () => clearHiddenConversationsStatus());
+			await act(async () =>
+				refreshConversationsInEmailStore([refreshedConversation], [], false, ['1'])
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['11']);
+			const { result: firstStatus } = renderHook(() => useConversationStatus('1'));
+			expect(firstStatus.current).toBeUndefined();
+			const { result: secondStatus } = renderHook(() => useConversationStatus('2'));
+			expect(secondStatus.current).toBeUndefined();
+		});
+
+		it('should keep the messages of a conversation loaded again after the mailbox refresh', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			// the conversation is not shown when the mailbox is refreshed...
+			await act(async () => clearHiddenConversationsStatus());
+			const { result: status } = renderHook(() => useConversationStatus('1'));
+			expect(status.current).toBeUndefined();
+			// ...then it is shown and loaded again before the list is searched again
+			await act(async () => {
+				updateConversations([generateConversation({ id: '1', messageIds: ['12', '11'] })]);
+				updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			});
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '1', messageIds: ['11'] })],
+					[],
+					false,
+					['1']
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12', '11']);
+		});
+
+		it('should keep the conversations of the pages loaded while the list was searched again', async () => {
+			const loadedConversations = ['1', '2', '3'].map((id) =>
+				generateConversation({ id, messageIds: [`${id}0`] })
+			);
+			setConversationsInEmailStore(loadedConversations, true);
+
+			// the list had 2 conversations when it was searched again, then a third one was loaded by scrolling
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '4' }), generateConversation({ id: '1' })],
+					[],
+					true,
+					['1', '2']
+				)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['4', '1', '3']);
+			expect(index.current.more).toBe(true);
 		});
 
 		it('should keep the open messages of a conversation complete', async () => {
@@ -358,7 +468,8 @@ describe('conversation-index-slice', () => {
 				refreshConversationsInEmailStore(
 					[generateConversation({ id: '1', messageIds: ['10'] })],
 					[listFields],
-					false
+					false,
+					['1']
 				)
 			);
 

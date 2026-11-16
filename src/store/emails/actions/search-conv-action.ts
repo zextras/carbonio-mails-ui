@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { map, pick } from 'lodash';
+import { map, noop, pick } from 'lodash';
 
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -71,4 +71,26 @@ export async function searchConvEmailStoreAction({
 	}
 	handleSearchConvResponse(conversationId, response, html);
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+}
+
+/**
+ * Repeats the search of a shown conversation after a mailbox refresh without changing its status,
+ * so it is updated in place instead of being reloaded. A failed search leaves it as it is.
+ */
+export async function refreshConvEmailStoreAction({
+	conversationId,
+	folderId,
+	html
+}: {
+	conversationId: string;
+	folderId?: string;
+	html: boolean;
+}): Promise<void> {
+	const response = await searchConvSoapApi({ conversationId, fetch: 'all', folderId, html }).catch(
+		noop
+	);
+	if (!response || 'Fault' in response) {
+		return;
+	}
+	handleSearchConvResponse(conversationId, response, html);
 }

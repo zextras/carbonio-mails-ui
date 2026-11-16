@@ -17,6 +17,7 @@ import {
 	searchEmailStoreAction
 } from 'store/emails/actions/search-action';
 import {
+	getConversationListIndex,
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
@@ -27,6 +28,7 @@ vi.mock('store/emails/actions/search-action', () => ({
 	searchEmailStoreAction: vi.fn()
 }));
 vi.mock('store/emails/store', () => ({
+	getConversationListIndex: vi.fn(),
 	updateConversationsResultsLoadingStatus: vi.fn(),
 	useConversationIndexSlice: vi.fn(),
 	useConversationsIdsByFolder: vi.fn()
@@ -47,6 +49,7 @@ describe('useConversationListByFolder', () => {
 		(useUserSettings as Mock).mockReturnValue({ prefs: mockPrefs });
 		(useConversationIndexSlice as Mock).mockReturnValue({});
 		(useConversationsIdsByFolder as Mock).mockReturnValue([]);
+		(getConversationListIndex as Mock).mockReturnValue([]);
 		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'DESC'
@@ -66,7 +69,7 @@ describe('useConversationListByFolder', () => {
 
 		expect(searchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({
-				abortSignal: expect.anything(),
+				abortSignal: expect.objectContaining({ aborted: false }),
 				limit: 100,
 				locale: 'en_US',
 				offset: 0,
@@ -109,21 +112,28 @@ describe('useConversationListByFolder', () => {
 		});
 
 		rerender('456');
-		expect(abortSpy).toHaveBeenCalled();
+		expect(abortSpy).toHaveBeenCalledTimes(1);
 	});
 
-	it('repeats the search without resetting the store when the mailbox is refreshed', () => {
+	it('repeats the search without resetting the store when the mailbox is refreshed', async () => {
+		(getConversationListIndex as Mock).mockReturnValue(['1', '2']);
 		renderHook(() => useConversationListByFolder('123'));
+		await waitFor(() => {
+			expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
+				API_REQUEST_STATUS.fulfilled
+			);
+		});
 		vi.mocked(updateConversationsResultsLoadingStatus).mockClear();
 
 		act(() => {
 			window.dispatchEvent(new MailboxRefreshedEvent());
 		});
 
+		expect(refreshSearchEmailStoreAction).toHaveBeenCalledTimes(1);
 		expect(refreshSearchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({
-				abortSignal: expect.anything(),
-				limit: 100,
+				abortSignal: expect.objectContaining({ aborted: false }),
+				searchedListIndex: ['1', '2'],
 				locale: 'en_US',
 				query: 'mockQuery',
 				sortBy: 'dateDESC',
@@ -131,12 +141,10 @@ describe('useConversationListByFolder', () => {
 			})
 		);
 		expect(searchEmailStoreAction).toHaveBeenCalledTimes(1);
-		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalledWith(
-			API_REQUEST_STATUS.pending
-		);
+		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalled();
 	});
 
-	it('aborts the search of the folder when the mailbox is refreshed while it is in progress', () => {
+	it('loads the folder again when the mailbox is refreshed while the folder is loading', () => {
 		(searchEmailStoreAction as Mock).mockReturnValue(new Promise(noop));
 		renderHook(() => useConversationListByFolder('123'));
 		const { abortSignal } = (searchEmailStoreAction as Mock).mock.calls[0][0];
@@ -146,6 +154,8 @@ describe('useConversationListByFolder', () => {
 		});
 
 		expect(abortSignal.aborted).toBe(true);
+		expect(searchEmailStoreAction).toHaveBeenCalledTimes(2);
+		expect(refreshSearchEmailStoreAction).not.toHaveBeenCalled();
 	});
 
 	it('does not repeat the search when the mailbox is refreshed after unmount', () => {

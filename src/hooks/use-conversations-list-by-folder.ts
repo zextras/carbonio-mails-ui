@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import { useFolderListSearch } from 'hooks/use-folder-list-search';
 import {
+	getConversationListIndex,
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
@@ -24,7 +25,8 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 	useFolderListSearch({
 		folderId,
 		types: 'conversation',
-		updateLoadingStatus: updateConversationsResultsLoadingStatus
+		updateLoadingStatus: updateConversationsResultsLoadingStatus,
+		getListIndex: getConversationListIndex
 	});
 
 	return useMemo(

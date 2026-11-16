@@ -29,6 +29,7 @@ import {
 	normalizePartialIncompleteMessageFromSoapNotify
 } from 'normalizations/normalize-message';
 import {
+	clearHiddenConversationsStatus,
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
 	handleNotifyDeleted,
@@ -234,6 +235,8 @@ export const useSyncDataHandler = (): void => {
 		const timeout = setTimeout(() => {
 			// the server leaves out the tags of an account without tags
 			tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags ?? { tag: [] } });
+			// the shown conversations repeat their search on the event, the others are loaded again when shown
+			clearHiddenConversationsStatus();
 			publishEvent(new MailboxRefreshedEvent());
 		}, MAILBOX_REFRESH_DELAY);
 		return () => {

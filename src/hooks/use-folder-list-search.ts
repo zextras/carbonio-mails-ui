@@ -23,17 +23,18 @@ type UseFolderListSearchParams = {
 	folderId: string;
 	types: 'message' | 'conversation';
 	updateLoadingStatus: (status: SearchRequestStatus) => void;
+	getListIndex: () => Array<string>;
 };
 
 /**
  * Searches the messages or conversations of a folder when the folder (or the sorting) changes,
- * and repeats the search when the mailbox is refreshed. Each search aborts the one in progress,
- * so a refresh received while the folder is loading replaces its search.
+ * and repeats the search when the mailbox is refreshed. Each search aborts the one in progress.
  */
 export const useFolderListSearch = ({
 	folderId,
 	types,
-	updateLoadingStatus
+	updateLoadingStatus,
+	getListIndex
 }: UseFolderListSearchParams): void => {
 	const { prefs } = useUserSettings();
 	const prefLocale = useMemo(() => prefs.zimbraPrefLocale, [prefs.zimbraPrefLocale]);
@@ -48,45 +49,61 @@ export const useFolderListSearch = ({
 	const sortBy = useMemo<SortBy>(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const controllerRef = useRef<AbortController>();
+	const isLoadingRef = useRef(false);
 
 	const search = useCallback(
 		(isRefresh: boolean): void => {
 			controllerRef.current?.abort();
 			const controller = new AbortController();
 			controllerRef.current = controller;
-			const params = {
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy,
-				query: getFilterQuery(filterType, folderId),
-				types,
-				abortSignal: controller.signal,
-				locale: prefLocale
-			};
+			const query = getFilterQuery(filterType, folderId);
 
-			if (isRefresh) {
-				// the list is replaced without resetting the open item, and a failed refresh leaves it as it is
-				refreshSearchEmailStoreAction(params).catch(noop);
+			// a refresh received while the folder is still loading repeats the loading search instead
+			if (isRefresh && !isLoadingRef.current) {
+				// the pages loaded by scrolling are searched again too, and a failed refresh leaves the list as it is
+				refreshSearchEmailStoreAction({
+					searchedListIndex: getListIndex(),
+					sortBy,
+					query,
+					types,
+					abortSignal: controller.signal,
+					locale: prefLocale
+				}).catch(noop);
 				return;
 			}
 
+			isLoadingRef.current = true;
 			updateLoadingStatus(API_REQUEST_STATUS.pending);
-			searchEmailStoreAction({ ...params, offset: 0 })
+			searchEmailStoreAction({
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy,
+				query,
+				types,
+				offset: 0,
+				abortSignal: controller.signal,
+				locale: prefLocale
+			})
 				.catch(() => {
 					if (!controller.signal.aborted) {
 						updateLoadingStatus(API_REQUEST_STATUS.error);
 					}
 				})
 				.finally(() => {
-					updateLoadingStatus(API_REQUEST_STATUS.fulfilled);
+					// the status of an aborted search is left to the search that replaced it
+					if (!controller.signal.aborted) {
+						isLoadingRef.current = false;
+						updateLoadingStatus(API_REQUEST_STATUS.fulfilled);
+					}
 				});
 		},
-		[filterType, folderId, prefLocale, sortBy, types, updateLoadingStatus]
+		[filterType, folderId, getListIndex, prefLocale, sortBy, types, updateLoadingStatus]
 	);
 
 	useEffect(() => {
 		search(false);
 		return () => {
 			controllerRef.current?.abort();
+			controllerRef.current = undefined;
 		};
 	}, [search]);
 

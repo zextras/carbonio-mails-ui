@@ -13,7 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { searchSoapApi } from 'api/search-soap-api';
-import { API_REQUEST_STATUS } from 'constants/index';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
 import { normalizeConversations } from 'normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
@@ -84,6 +84,10 @@ export async function searchEmailStoreAction({
 		locale,
 		abortSignal
 	});
+	// the results of an aborted search (replaced by another one) are never applied
+	if (abortSignal?.aborted) {
+		return searchResponse;
+	}
 	// Reset state before handling new results
 	resetMessagesAndPopulatedItems();
 
@@ -94,18 +98,21 @@ export async function searchEmailStoreAction({
 /**
  * Repeats the search of the open list without resetting the store: the list is replaced while
  * the populated items are merged, so the open message or conversation is not reloaded.
- * A failed search leaves the list as it is.
+ * The pages loaded by scrolling (`searchedListIndex` is the list when the search starts) are searched
+ * again too. A failed search leaves the list as it is.
  */
 export async function refreshSearchEmailStoreAction({
-	limit,
+	searchedListIndex,
 	types,
 	sortBy,
 	query,
 	locale,
 	abortSignal
-}: Omit<SearchSoapApiParams, 'offset'>): Promise<void> {
+}: Omit<SearchSoapApiParams, 'offset' | 'limit'> & {
+	searchedListIndex: Array<string>;
+}): Promise<void> {
 	const searchResponse = await searchSoapApi({
-		limit,
+		limit: Math.max(LIST_LIMIT.INITIAL_LIMIT, searchedListIndex.length),
 		types,
 		sortBy,
 		query,
@@ -113,7 +120,8 @@ export async function refreshSearchEmailStoreAction({
 		locale,
 		abortSignal
 	});
-	if ('Fault' in searchResponse) {
+	// an aborted search rejects already, the check makes it explicit that its results are never applied
+	if (abortSignal?.aborted || 'Fault' in searchResponse) {
 		return;
 	}
 
@@ -121,7 +129,7 @@ export async function refreshSearchEmailStoreAction({
 		const messages = (searchResponse.m ?? []).map((msg) =>
 			normalizeMailMessageFromSoap({ m: msg, isComplete: false, html: true })
 		);
-		refreshMessagesInEmailStore(messages, !!searchResponse.more);
+		refreshMessagesInEmailStore(messages, !!searchResponse.more, searchedListIndex);
 		return;
 	}
 
@@ -129,6 +137,7 @@ export async function refreshSearchEmailStoreAction({
 	refreshConversationsInEmailStore(
 		normalizeConversations(conversationHits),
 		extractConvMessage(conversationHits),
-		!!searchResponse.more
+		!!searchResponse.more,
+		searchedListIndex
 	);
 }

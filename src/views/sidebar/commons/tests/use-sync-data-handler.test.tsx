@@ -43,6 +43,8 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/generators/api';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { showConversation } from 'store/emails/shown-conversations';
 import {
 	getConversationById,
 	getMessageById,
@@ -50,8 +52,10 @@ import {
 	setConversationsInEmailStore,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
+	updateConversationStatus,
 	useConversationById,
 	useConversationIndexSlice,
+	useConversationStatus,
 	useConversationsByIds,
 	useMessageById,
 	useSearchResults
@@ -909,6 +913,32 @@ describe('sync data handler', () => {
 
 			expect(listener).toHaveBeenCalledTimes(1);
 			expect(tagsWorker.postMessage).toHaveBeenCalledTimes(1);
+		});
+
+		it('should load again the loaded conversations which are not shown when a following refresh is received', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1' }), generateConversation({ id: '2' })],
+				false
+			);
+			await act(async () => {
+				updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+				updateConversationStatus('2', API_REQUEST_STATUS.fulfilled);
+			});
+			const hideShownConversation = showConversation('2');
+			mockSoapRefresh(mailboxNumber);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+			rerender();
+			await act(async () => {
+				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
+			});
+			hideShownConversation();
+
+			const { result: hiddenStatus } = renderHook(() => useConversationStatus('1'));
+			const { result: shownStatus } = renderHook(() => useConversationStatus('2'));
+			expect(hiddenStatus.current).toBeUndefined();
+			expect(shownStatus.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 
 		it('should clear the tags when the refresh of an account without tags is received', () => {

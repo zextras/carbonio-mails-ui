@@ -17,6 +17,7 @@ import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import { useRefreshConversationOnMailboxRefresh } from 'store/emails/hooks/hooks';
 import {
 	useConversationById,
 	useConversationMessages,
@@ -113,6 +114,11 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			searchConvEmailStoreAction({ conversationId, html });
 		}
 	}, [shouldFetchConversation, conversationId]);
+
+	useRefreshConversationOnMailboxRefresh({
+		conversationId,
+		enabled: isConversationExpanded && conversationStatus === API_REQUEST_STATUS.fulfilled
+	});
 
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {

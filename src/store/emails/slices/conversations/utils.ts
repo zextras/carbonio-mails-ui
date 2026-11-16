@@ -7,12 +7,12 @@
 /* eslint-disable no-param-reassign */
 import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
-import { filter, union } from 'lodash';
+import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
-import { mergeListMessages } from 'store/emails/slices/messages/utils';
+import { getRefreshedListIndex, mergeListMessages } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
@@ -40,30 +40,63 @@ function setConversationsInEmailStore(
 	);
 }
 
+/**
+ * Clears the loaded status of the loaded conversations which are not shown when the mailbox is refreshed,
+ * so they are loaded again when they are shown next. The shown ones repeat their own search
+ * (see useRefreshConversationOnMailboxRefresh).
+ */
+function clearHiddenConversationsStatus(
+	shownConversationIds: Set<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			Object.keys(populatedItemsSlice.conversationsStatus).forEach((conversationId) => {
+				if (
+					populatedItemsSlice.conversationsStatus[conversationId] ===
+						API_REQUEST_STATUS.fulfilled &&
+					!shownConversationIds.has(conversationId)
+				) {
+					delete populatedItemsSlice.conversationsStatus[conversationId];
+				}
+			});
+		})
+	);
+}
+
 function refreshConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
+	searchedListIndex: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce((store: EmailsStoreState) => {
-			store.conversationIndexSlice.conversationListIndex = conversations.map((conv) => conv.id);
-			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
-			store.conversationIndexSlice.offset = 0;
-			store.conversationIndexSlice.more = more;
+		produce(({ conversationIndexSlice, populatedItemsSlice }: EmailsStoreState) => {
+			const refreshedIndex = getRefreshedListIndex(
+				conversationIndexSlice.conversationListIndex,
+				conversations.map((conv) => conv.id),
+				searchedListIndex
+			);
+			conversationIndexSlice.conversationListIndex = refreshedIndex.listIndex;
+			conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			conversationIndexSlice.offset = 0;
+			conversationIndexSlice.more = refreshedIndex.keepsLaterPages
+				? conversationIndexSlice.more
+				: more;
+
 			conversations.forEach((conversation) => {
-				const existingConversation = store.populatedItemsSlice.conversations[conversation.id];
-				// the open conversation can list messages the search hit leaves out, so its ids are kept
-				store.populatedItemsSlice.conversations[conversation.id] = existingConversation
-					? {
-							...existingConversation,
-							...conversation,
-							messageIds: union(existingConversation.messageIds, conversation.messageIds)
-						}
-					: conversation;
+				const existingConversation = populatedItemsSlice.conversations[conversation.id];
+				// a conversation still loaded was shown when the mailbox was refreshed, and its own search is
+				// repeated, or it was loaded after: its messages come from that search, whatever arrives first
+				const isLoaded =
+					populatedItemsSlice.conversationsStatus[conversation.id] === API_REQUEST_STATUS.fulfilled;
+				populatedItemsSlice.conversations[conversation.id] =
+					existingConversation && isLoaded
+						? { ...conversation, messageIds: existingConversation.messageIds }
+						: conversation;
 			});
-			mergeListMessages(store.populatedItemsSlice.messages, messages);
+			mergeListMessages(populatedItemsSlice.messages, messages);
 		})
 	);
 }
@@ -138,6 +171,7 @@ function appendConversationsToConversationIndexSlice(
 export const conversationIndexSliceUtils = {
 	setConversationsInEmailStore,
 	refreshConversationsInEmailStore,
+	clearHiddenConversationsStatus,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
