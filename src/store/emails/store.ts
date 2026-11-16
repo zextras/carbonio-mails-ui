@@ -11,6 +11,7 @@ import { devtools } from 'zustand/middleware';
 
 import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { getShownConversationIds } from 'store/emails/shown-conversations';
 import { createConversationIndexSlice } from 'store/emails/slices/conversations/conversations-index-slice';
 import { conversationIndexSliceUtils } from 'store/emails/slices/conversations/utils';
@@ -480,18 +481,21 @@ export function setMessagesInEmailStore(
  * Replaces the list of messages in the `messageIndexSlice` with the results of a repeated search,
  * merging the messages into the `populatedItemsSlice` instead of replacing them,
  * so that the open message keeps what is loaded only when it is opened.
- * The items of the pages loaded by scrolling while the search was in progress are kept.
+ * The items of the pages loaded by scrolling while the search was in progress are kept, and the messages
+ * notified meanwhile keep what was notified.
  */
 export function refreshMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
-	searchedListIndex: Array<string>
+	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems
 ): void {
 	addTask(() => {
 		messageIndexSliceUtils.refreshMessagesInEmailStore(
 			messages,
 			more,
 			searchedListIndex,
+			notifiedItems,
 			useEmailsStore
 		);
 		return Promise.resolve();
@@ -659,13 +663,14 @@ export function clearHiddenConversationsStatus(): void {
  * Replaces the list of conversations in the `conversationIndexSlice` with the results of a repeated search,
  * merging the conversations and their messages into the `populatedItemsSlice` instead of replacing them,
  * so that a shown conversation keeps its messages. The items of the pages loaded by scrolling while
- * the search was in progress are kept.
+ * the search was in progress are kept, and the items notified meanwhile keep what was notified.
  */
 export function refreshConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
-	searchedListIndex: Array<string>
+	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems
 ): void {
 	addTask(() => {
 		conversationIndexSliceUtils.refreshConversationsInEmailStore(
@@ -673,6 +678,7 @@ export function refreshConversationsInEmailStore(
 			messages,
 			more,
 			searchedListIndex,
+			notifiedItems,
 			useEmailsStore
 		);
 		return Promise.resolve();

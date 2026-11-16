@@ -44,6 +44,7 @@ import { generateConversationFromAPI, generateMessageFromAPI } from '__test__/ge
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { trackNotifiedItems } from 'store/emails/notified-items';
 import { showConversation } from 'store/emails/shown-conversations';
 import {
 	getConversationById,
@@ -68,6 +69,7 @@ import { notifyReplySent } from 'views/sidebar/commons/tests/fixtures/notify-rep
 import { SoapNotifyConversation } from 'views/sidebar/commons/types';
 import {
 	MAILBOX_REFRESH_DELAY,
+	MAILBOX_REFRESH_MAX_DELAY,
 	useSyncDataHandler
 } from 'views/sidebar/commons/use-sync-data-handler';
 
@@ -852,6 +854,28 @@ describe('sync data handler', () => {
 		});
 	});
 
+	describe('searches in progress', () => {
+		it('should record the items it processes for the searches in progress', () => {
+			const { notifiedItems, stop } = trackNotifiedItems();
+			mockShellSoapNotify({
+				seq: 3,
+				deleted: ['1'],
+				created: { m: [{ id: '2', l: FOLDERS.INBOX }] },
+				modified: {
+					mbx: [{ s: mailboxNumber }],
+					m: [{ id: '3', f: 'u' }],
+					c: [{ id: '4', f: 'u' }]
+				}
+			});
+
+			setupHook(useSyncDataHandler);
+			stop();
+
+			expect(notifiedItems.deletedIds).toEqual(new Set(['1']));
+			expect(notifiedItems.changedIds).toEqual(new Set(['2', '3', '4']));
+		});
+	});
+
 	describe('mailbox refresh', () => {
 		const listener = vi.fn();
 		const tags = { tag: [{ id: '1', name: 'tag' }] };
@@ -881,19 +905,20 @@ describe('sync data handler', () => {
 			expect(tagsWorker.postMessage).not.toHaveBeenCalled();
 		});
 
-		it('should announce a mailbox refresh and reload the tags when a following refresh is received', () => {
+		it('should reload the tags at once and announce a mailbox refresh when a following refresh is received', () => {
 			mockSoapRefresh(mailboxNumber);
 			const { rerender } = setupHook(useSyncDataHandler);
 
 			vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
 			rerender();
+			// the tags notified after the refresh must not be undone by its tags
+			expect(tagsWorker.postMessage).toHaveBeenCalledWith({ op: 'refresh', tags });
 			expect(listener).not.toHaveBeenCalled();
 			act(() => {
 				vi.advanceTimersByTime(MAILBOX_REFRESH_DELAY);
 			});
 
 			expect(listener).toHaveBeenCalledTimes(1);
-			expect(tagsWorker.postMessage).toHaveBeenCalledWith({ op: 'refresh', tags });
 		});
 
 		it('should announce the refreshes received in a row only once', () => {
@@ -912,7 +937,22 @@ describe('sync data handler', () => {
 			});
 
 			expect(listener).toHaveBeenCalledTimes(1);
-			expect(tagsWorker.postMessage).toHaveBeenCalledTimes(1);
+		});
+
+		it('should announce a mailbox refresh once in a while when refreshes keep arriving', () => {
+			mockSoapRefresh(mailboxNumber);
+			const { rerender } = setupHook(useSyncDataHandler);
+
+			// a refresh every second, which never leaves the delay to elapse
+			for (let elapsed = 0; elapsed < MAILBOX_REFRESH_MAX_DELAY; elapsed += 1000) {
+				vi.mocked(useInfoRefresh).mockReturnValue({ mbx: [{ s: mailboxNumber }], tags });
+				rerender();
+				act(() => {
+					vi.advanceTimersByTime(1000);
+				});
+			}
+
+			expect(listener).toHaveBeenCalledTimes(1);
 		});
 
 		it('should load again the loaded conversations which are not shown when a following refresh is received', async () => {

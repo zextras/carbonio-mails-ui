@@ -12,6 +12,7 @@ import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
 import { MAIL_HEADER_FIELDS } from 'normalizations/normalize-message';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import { IncompleteMessage, MailMessage } from 'types/messages';
@@ -83,12 +84,17 @@ export function getRefreshedListIndex(
 }
 
 // the messages of a list leave out what is loaded only when a message is opened (e.g. the body and the
-// headers), so they are merged into the stored ones, which stay complete and keep what the open message shows
+// headers), so they are merged into the stored ones, which stay complete and keep what the open message shows.
+// The messages notified while the list was searched keep what was notified, which is newer.
 export function mergeListMessages(
 	populatedMessages: Record<string, MailMessage | IncompleteMessage>,
-	messages: Array<MailMessage | IncompleteMessage>
+	messages: Array<MailMessage | IncompleteMessage>,
+	notifiedItems: NotifiedItems
 ): void {
 	messages.forEach((message) => {
+		if (notifiedItems.deletedIds.has(message.id) || notifiedItems.changedIds.has(message.id)) {
+			return;
+		}
 		const existingMessage = populatedMessages[message.id];
 		if (!existingMessage) {
 			populatedMessages[message.id] = message;
@@ -109,20 +115,21 @@ function refreshMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
 	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ messageIndexSlice, populatedItemsSlice }: EmailsStoreState) => {
 			const refreshedIndex = getRefreshedListIndex(
 				messageIndexSlice.messageListIndex,
-				messages.map((message) => message.id),
+				messages.map((message) => message.id).filter((id) => !notifiedItems.deletedIds.has(id)),
 				searchedListIndex
 			);
 			messageIndexSlice.messageListIndex = refreshedIndex.listIndex;
 			messageIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			messageIndexSlice.offset = 0;
 			messageIndexSlice.more = refreshedIndex.keepsLaterPages ? messageIndexSlice.more : more;
-			mergeListMessages(populatedItemsSlice.messages, messages);
+			mergeListMessages(populatedItemsSlice.messages, messages, notifiedItems);
 		})
 	);
 }

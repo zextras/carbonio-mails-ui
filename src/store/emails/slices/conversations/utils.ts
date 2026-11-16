@@ -11,6 +11,7 @@ import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { getRefreshedListIndex, mergeListMessages } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
@@ -69,13 +70,16 @@ function refreshConversationsInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
 	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ conversationIndexSlice, populatedItemsSlice }: EmailsStoreState) => {
+			const { deletedIds, changedIds } = notifiedItems;
+			const freshConversations = conversations.filter(({ id }) => !deletedIds.has(id));
 			const refreshedIndex = getRefreshedListIndex(
 				conversationIndexSlice.conversationListIndex,
-				conversations.map((conv) => conv.id),
+				freshConversations.map((conv) => conv.id),
 				searchedListIndex
 			);
 			conversationIndexSlice.conversationListIndex = refreshedIndex.listIndex;
@@ -85,8 +89,12 @@ function refreshConversationsInEmailStore(
 				? conversationIndexSlice.more
 				: more;
 
-			conversations.forEach((conversation) => {
+			freshConversations.forEach((conversation) => {
 				const existingConversation = populatedItemsSlice.conversations[conversation.id];
+				// a conversation notified while the list was searched keeps what was notified, which is newer
+				if (existingConversation && changedIds.has(conversation.id)) {
+					return;
+				}
 				// a conversation still loaded was shown when the mailbox was refreshed, and its own search is
 				// repeated, or it was loaded after: its messages come from that search, whatever arrives first
 				const isLoaded =
@@ -94,9 +102,12 @@ function refreshConversationsInEmailStore(
 				populatedItemsSlice.conversations[conversation.id] =
 					existingConversation && isLoaded
 						? { ...conversation, messageIds: existingConversation.messageIds }
-						: conversation;
+						: {
+								...conversation,
+								messageIds: conversation.messageIds.filter((id) => !deletedIds.has(id))
+							};
 			});
-			mergeListMessages(populatedItemsSlice.messages, messages);
+			mergeListMessages(populatedItemsSlice.messages, messages, notifiedItems);
 		})
 	);
 }

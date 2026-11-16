@@ -11,6 +11,7 @@ import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { showConversation } from 'store/emails/shown-conversations';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
@@ -32,6 +33,8 @@ import {
 	useMessageById
 } from 'store/emails/store';
 import { IncompleteMessage } from 'types/messages';
+
+const NO_NOTIFIED_ITEMS: NotifiedItems = { deletedIds: new Set(), changedIds: new Set() };
 
 describe('conversation-index-slice', () => {
 	describe('useConversationIndexSlice', () => {
@@ -340,7 +343,13 @@ describe('conversation-index-slice', () => {
 			const newConversation = generateConversation({ id: '2', messageIds: ['20'] });
 
 			await act(async () =>
-				refreshConversationsInEmailStore([newConversation, refreshedConversation], [], true, ['1'])
+				refreshConversationsInEmailStore(
+					[newConversation, refreshedConversation],
+					[],
+					true,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
 			);
 
 			const { result: index } = renderHook(() => useConversationIndexSlice());
@@ -367,7 +376,13 @@ describe('conversation-index-slice', () => {
 
 			await act(async () => clearHiddenConversationsStatus());
 			await act(async () =>
-				refreshConversationsInEmailStore([refreshedConversation], [], false, ['1'])
+				refreshConversationsInEmailStore(
+					[refreshedConversation],
+					[],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
 			);
 			hideConversation();
 
@@ -394,7 +409,13 @@ describe('conversation-index-slice', () => {
 
 			await act(async () => clearHiddenConversationsStatus());
 			await act(async () =>
-				refreshConversationsInEmailStore([refreshedConversation], [], false, ['1'])
+				refreshConversationsInEmailStore(
+					[refreshedConversation],
+					[],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
 			);
 
 			const { result: conversation } = renderHook(() => useConversationById('1'));
@@ -426,12 +447,50 @@ describe('conversation-index-slice', () => {
 					[generateConversation({ id: '1', messageIds: ['11'] })],
 					[],
 					false,
-					['1']
+					['1'],
+					NO_NOTIFIED_ITEMS
 				)
 			);
 
 			const { result: conversation } = renderHook(() => useConversationById('1'));
 			expect(conversation.current.messageIds).toEqual(['12', '11']);
+		});
+
+		it('should keep what is notified while the list is searched again', async () => {
+			setConversationsInEmailStore(
+				[
+					generateConversation({ id: '1', messageIds: ['10'] }),
+					generateConversation({ id: '2', messageIds: ['20'], subject: 'notified' }),
+					generateConversation({ id: '3', messageIds: ['30', '31'] })
+				],
+				false
+			);
+			// conversation 1 and message 31 were deleted, conversation 2 was changed
+			const notifiedItems: NotifiedItems = {
+				deletedIds: new Set(['1', '31']),
+				changedIds: new Set(['2'])
+			};
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[
+						generateConversation({ id: '1', messageIds: ['10'] }),
+						generateConversation({ id: '2', messageIds: ['20'], subject: 'stale' }),
+						generateConversation({ id: '3', messageIds: ['30', '31'] })
+					],
+					[],
+					false,
+					['1', '2', '3'],
+					notifiedItems
+				)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['2', '3']);
+			const { result: changed } = renderHook(() => useConversationById('2'));
+			expect(changed.current.subject).toBe('notified');
+			const { result: refreshed } = renderHook(() => useConversationById('3'));
+			expect(refreshed.current.messageIds).toEqual(['30']);
 		});
 
 		it('should keep the conversations of the pages loaded while the list was searched again', async () => {
@@ -446,7 +505,8 @@ describe('conversation-index-slice', () => {
 					[generateConversation({ id: '4' }), generateConversation({ id: '1' })],
 					[],
 					true,
-					['1', '2']
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
 				)
 			);
 
@@ -469,7 +529,8 @@ describe('conversation-index-slice', () => {
 					[generateConversation({ id: '1', messageIds: ['10'] })],
 					[listFields],
 					false,
-					['1']
+					['1'],
+					NO_NOTIFIED_ITEMS
 				)
 			);
 

@@ -28,6 +28,7 @@ import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from 'normalizations/normalize-message';
+import { recordNotifiedItems } from 'store/emails/notified-items';
 import {
 	clearHiddenConversationsStatus,
 	handleNotifyConversationsCreated,
@@ -187,6 +188,16 @@ function processNotifications({
 		// the shell types the conversations and messages of a notification as unknown: the server sends
 		// the summaries of ToXML.encodeItem, which MailsSoapNotify describes
 		const mailsNotify = notify as MailsSoapNotify;
+		// the searches in progress must not undo what is notified (see refreshSearchEmailStoreAction)
+		recordNotifiedItems({
+			deletedIds: notify.deleted,
+			changedIds: [
+				...(mailsNotify.created?.c ?? []),
+				...(mailsNotify.created?.m ?? []),
+				...(mailsNotify.modified?.c ?? []),
+				...(mailsNotify.modified?.m ?? [])
+			].map(({ id }) => id)
+		});
 		if (mailsNotify.created) {
 			processCreatedNotifications(mailsNotify, navigate);
 		}
@@ -205,6 +216,8 @@ function processNotifications({
 }
 
 export const MAILBOX_REFRESH_DELAY = 1500;
+// the longest a reload waits while refreshes keep arriving
+export const MAILBOX_REFRESH_MAX_DELAY = 10000;
 
 export const useSyncDataHandler = (): void => {
 	const notifyList = useSync();
@@ -214,6 +227,7 @@ export const useSyncDataHandler = (): void => {
 	const processedNotify = useRef<number>(-1);
 	const refresh = useInfoRefresh();
 	const previousRefresh = useRef(refresh);
+	const pendingReloadSince = useRef<number>();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
@@ -231,14 +245,24 @@ export const useSyncDataHandler = (): void => {
 			return undefined;
 		}
 
-		// refreshes received in a row (e.g. during a long import) reload the mailbox only once
+		// the tags of the refresh are applied at once, so that the tags notified after it are not undone.
+		// The server leaves out the tags of an account without tags
+		tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags ?? { tag: [] } });
+
+		// refreshes received in a row (e.g. during a long import) reload the mailbox once,
+		// or once in a while if they keep arriving
+		const now = Date.now();
+		pendingReloadSince.current ??= now;
+		const delay = Math.min(
+			MAILBOX_REFRESH_DELAY,
+			Math.max(0, pendingReloadSince.current + MAILBOX_REFRESH_MAX_DELAY - now)
+		);
 		const timeout = setTimeout(() => {
-			// the server leaves out the tags of an account without tags
-			tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags ?? { tag: [] } });
+			pendingReloadSince.current = undefined;
 			// the shown conversations repeat their search on the event, the others are loaded again when shown
 			clearHiddenConversationsStatus();
 			publishEvent(new MailboxRefreshedEvent());
-		}, MAILBOX_REFRESH_DELAY);
+		}, delay);
 		return () => {
 			clearTimeout(timeout);
 		};

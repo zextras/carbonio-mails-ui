@@ -32,9 +32,11 @@ const refreshedConversations = new WeakMap<Event, Set<string>>();
 
 /**
  * Updates a shown conversation in place when the mailbox is refreshed, repeating its search with the
- * same folder it was loaded with. Its messages could have changed while their notifications were
- * dropped (e.g. new, moved or deleted messages). The loaded conversations which are not shown are
- * loaded again when they are shown next (see clearHiddenConversationsStatus).
+ * folder of the view that shows it (none for the reading panel, which shows all its folders). Its messages
+ * could have changed while their notifications were dropped (e.g. new, moved or deleted messages).
+ * A conversation shown by more views is searched again once, with the folder of the first one.
+ * The loaded conversations which are not shown are loaded again when they are shown next
+ * (see clearHiddenConversationsStatus).
  */
 export function useRefreshConversationOnMailboxRefresh({
 	conversationId,

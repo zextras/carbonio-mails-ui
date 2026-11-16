@@ -16,6 +16,7 @@ import {
 	refreshSearchEmailStoreAction,
 	searchEmailStoreAction
 } from 'store/emails/actions/search-action';
+import { recordNotifiedItems } from 'store/emails/notified-items';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
@@ -159,7 +160,8 @@ describe('refreshSearchEmailStoreAction', () => {
 		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith(
 			[expect.objectContaining({ id: '1' })],
 			true,
-			['1']
+			['1'],
+			expect.anything()
 		);
 		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
 		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
@@ -193,7 +195,8 @@ describe('refreshSearchEmailStoreAction', () => {
 				})
 			],
 			false,
-			['1']
+			['1'],
+			expect.anything()
 		);
 	});
 
@@ -209,7 +212,8 @@ describe('refreshSearchEmailStoreAction', () => {
 			expect.any(Array),
 			[expect.objectContaining({ id: '10', read: true, flagged: false })],
 			false,
-			['1']
+			['1'],
+			expect.anything()
 		);
 	});
 
@@ -218,7 +222,7 @@ describe('refreshSearchEmailStoreAction', () => {
 
 		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
 
-		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith([], false, ['1']);
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith([], false, ['1'], expect.anything());
 	});
 
 	it('merges the conversations of the list and their messages without resetting the store', async () => {
@@ -233,7 +237,8 @@ describe('refreshSearchEmailStoreAction', () => {
 			[expect.objectContaining({ id: '1' })],
 			[expect.objectContaining({ id: '10' })],
 			false,
-			['1']
+			['1'],
+			expect.anything()
 		);
 		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
 		expect(setConversationsInEmailStore).not.toHaveBeenCalled();
@@ -253,6 +258,19 @@ describe('refreshSearchEmailStoreAction', () => {
 		});
 
 		expect(refreshMessagesInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('passes the items notified while the search is in progress, and only those', async () => {
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			recordNotifiedItems({ deletedIds: ['1'], changedIds: ['2'] });
+			return { m: [{ id: '1' }, { id: '2' }], more: false };
+		});
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+		recordNotifiedItems({ deletedIds: ['3'], changedIds: ['4'] });
+
+		const notifiedItems = vi.mocked(refreshMessagesInEmailStore).mock.calls[0][3];
+		expect(notifiedItems).toEqual({ deletedIds: new Set(['1']), changedIds: new Set(['2']) });
 	});
 
 	it('leaves the list as it is when the search fails', async () => {

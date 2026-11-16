@@ -9,6 +9,7 @@ import { ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateMessage } from '__test__/generators/generateMessage';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { getRefreshedListIndex } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
@@ -27,6 +28,8 @@ import {
 } from 'store/emails/store';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
+
+const NO_NOTIFIED_ITEMS: NotifiedItems = { deletedIds: new Set(), changedIds: new Set() };
 
 describe('message-slice-utils', () => {
 	describe('useMessagesSlice', () => {
@@ -293,7 +296,9 @@ describe('message-slice-utils', () => {
 		it('should replace the list and keep the messages that are no longer in it', async () => {
 			setMessagesInEmailStore([message1, message2], true);
 
-			await act(async () => refreshMessagesInEmailStore([message3], false, ['1', '2']));
+			await act(async () =>
+				refreshMessagesInEmailStore([message3], false, ['1', '2'], NO_NOTIFIED_ITEMS)
+			);
 
 			const { result: index } = renderHook(() => useMessageIndexSlice());
 			expect(index.current).toEqual({
@@ -333,7 +338,9 @@ describe('message-slice-utils', () => {
 				html: true
 			});
 
-			await act(async () => refreshMessagesInEmailStore([listMessage], false, ['1']));
+			await act(async () =>
+				refreshMessagesInEmailStore([listMessage], false, ['1'], NO_NOTIFIED_ITEMS)
+			);
 
 			const { result } = renderHook(() => useMessageById('1'));
 			expect(result.current).toEqual(
@@ -355,7 +362,12 @@ describe('message-slice-utils', () => {
 			setMessagesInEmailStore([message1, message2, message3], true);
 
 			await act(async () =>
-				refreshMessagesInEmailStore([generateMessage({ id: '4' }), message1], true, ['1', '2'])
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '4' }), message1],
+					true,
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
+				)
 			);
 
 			const { result: index } = renderHook(() => useMessageIndexSlice());
@@ -368,7 +380,9 @@ describe('message-slice-utils', () => {
 			// a third one was loaded by scrolling
 			setMessagesInEmailStore([message1, message3], true);
 
-			await act(async () => refreshMessagesInEmailStore([message1], true, ['1', '2']));
+			await act(async () =>
+				refreshMessagesInEmailStore([message1], true, ['1', '2'], NO_NOTIFIED_ITEMS)
+			);
 
 			const { result: index } = renderHook(() => useMessageIndexSlice());
 			expect(index.current.messageListIndex).toEqual(['1', '3']);
@@ -379,7 +393,12 @@ describe('message-slice-utils', () => {
 			setMessagesInEmailStore([generateMessage({ id: '9' }), message1, message2], true);
 
 			await act(async () =>
-				refreshMessagesInEmailStore([generateMessage({ id: '9' }), message1], false, ['1', '2'])
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '9' }), message1],
+					false,
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
+				)
 			);
 
 			const { result: index } = renderHook(() => useMessageIndexSlice());
@@ -395,7 +414,9 @@ describe('message-slice-utils', () => {
 				html: true
 			});
 
-			await act(async () => refreshMessagesInEmailStore([listMessage], false, ['1']));
+			await act(async () =>
+				refreshMessagesInEmailStore([listMessage], false, ['1'], NO_NOTIFIED_ITEMS)
+			);
 
 			const { result } = renderHook(() => useMessageById('1'));
 			expect(result.current).toEqual(expect.objectContaining({ isComplete: false, read: true }));
