@@ -13,7 +13,7 @@ import {
 	FolderActionsType,
 	allowedActionOnSharedAccount
 } from '@zextras/carbonio-ui-commons';
-import { noOp } from '@zextras/carbonio-ui-soap-lib';
+import { noOp as requestNotifications } from '@zextras/carbonio-ui-soap-lib';
 import { noop, startsWith } from 'lodash';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
@@ -65,7 +65,7 @@ async function importArchiveAndRequestNotifications(
 	});
 	if (response.ok) {
 		// the import is a REST call, so its notifications are only delivered with the next SOAP response
-		noOp();
+		requestNotifications();
 	}
 	return response;
 }
