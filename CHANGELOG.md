@@ -1,3 +1,7 @@
+## <small>1.51.19 (2026-11-16)</small>
+
+* fix(CO-4713): paste inline image in body not working (#1428) ([04ae43a](https://github.com/zextras/carbonio-mails-ui/commit/04ae43a)), closes [#1428](https://github.com/zextras/carbonio-mails-ui/issues/1428)
+
 ## <small>1.51.18 (2026-11-13)</small>
 
 * fix(CO-4725): allow moving inline images by drag and drop in composer (#1432) ([cdd6d78](https://github.com/zextras/carbonio-mails-ui/commit/cdd6d78)), closes [#1432](https://github.com/zextras/carbonio-mails-ui/issues/1432)
