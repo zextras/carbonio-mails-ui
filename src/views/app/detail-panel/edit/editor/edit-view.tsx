@@ -38,6 +38,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
+import { INLINE_IMAGE_DRAG_TYPE } from './plugins/nodes/image-types';
 import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
 import { GapContainer, GapRow } from 'commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS } from 'constants/index';
@@ -229,9 +230,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const processDragOver = useCallback(
 		(event: React.DragEvent): void => {
 			const eventType = event.dataTransfer?.types;
-			// Only show drop zone for file attachments, not for text, contacts, or other content
+			// Only show drop zone for file attachments, not for text, contacts, or other content.
+			// An inline image moved inside the body is not an attachment either, even if
+			// the browser lists it as a file.
 			if (
 				eventType?.includes('contact') ||
+				eventType?.includes(INLINE_IMAGE_DRAG_TYPE) ||
 				(!eventType?.includes('Files') &&
 					(!eventType?.includes('mail-attachment') || !isUploadFromFiles))
 			) {

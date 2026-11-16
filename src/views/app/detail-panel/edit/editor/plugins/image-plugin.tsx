@@ -17,6 +17,7 @@ import {
 	type LexicalEditor
 } from 'lexical';
 
+import { registerImageDragAndDrop } from './image-drag-drop';
 import {
 	$createImageNode,
 	$isImageNode,
@@ -150,6 +151,9 @@ function $applyImageAlignment(alignment: ImageAlignment | undefined): void {
  * handle used to later replace that preview with the real download url
  * ({@link REPLACE_INLINE_IMAGE_SRC_COMMAND}) or to drop the image altogether if
  * its upload fails ({@link REMOVE_INLINE_IMAGE_COMMAND}).
+ *
+ * It also lets an inline image be moved inside the editor by drag and drop
+ * ({@link registerImageDragAndDrop}).
  */
 export const ImagePlugin = (): null => {
 	const [editor] = useLexicalComposerContext();
@@ -193,7 +197,8 @@ export const ImagePlugin = (): null => {
 						return true;
 					},
 					COMMAND_PRIORITY_EDITOR
-				)
+				),
+				registerImageDragAndDrop(editor)
 			),
 		[editor]
 	);

@@ -6,6 +6,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import { mergeRegister } from '@lexical/utils';
 import {
@@ -14,7 +15,6 @@ import {
 	$isNodeSelection,
 	CLICK_COMMAND,
 	COMMAND_PRIORITY_LOW,
-	DRAGSTART_COMMAND,
 	KEY_BACKSPACE_COMMAND,
 	KEY_DELETE_COMMAND,
 	type NodeKey
@@ -40,6 +40,10 @@ function dimensionToStyle(value: ImageDimension): number | undefined {
  * React view for an inline image node. Makes the image selectable (click to
  * select, Delete/Backspace to remove) and, while selected, renders the
  * {@link ImageResizer} drag handles. Mirrors the Lexical playground behavior.
+ *
+ * While the editor is editable the image is natively draggable, so that it can
+ * be moved to another position of the body; the drag and the drop are handled by
+ * the `ImagePlugin`.
  *
  * Resize is committed back to the node through the `onResize` callback provided
  * by the node's `decorate()`, so this component does not depend on the node
@@ -101,24 +105,14 @@ export const ImageComponent = ({
 					},
 					COMMAND_PRIORITY_LOW
 				),
-				editor.registerCommand(
-					DRAGSTART_COMMAND,
-					(event: DragEvent) => {
-						if (event.target === imageRef.current) {
-							event.preventDefault();
-							return true;
-						}
-						return false;
-					},
-					COMMAND_PRIORITY_LOW
-				),
 				editor.registerCommand(KEY_DELETE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
 				editor.registerCommand(KEY_BACKSPACE_COMMAND, onDelete, COMMAND_PRIORITY_LOW)
 			),
 		[clearSelection, editor, isSelected, onDelete, setSelected]
 	);
 
-	const resizable = isSelected && editor.isEditable();
+	const isEditable = useLexicalEditable();
+	const resizable = isSelected && isEditable;
 
 	return (
 		<span
@@ -128,7 +122,7 @@ export const ImageComponent = ({
 				ref={imageRef}
 				src={src}
 				alt={altText}
-				draggable={false}
+				draggable={isEditable}
 				onDoubleClick={onDoubleClick}
 				style={{
 					width: dimensionToStyle(width),

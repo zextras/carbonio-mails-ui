@@ -1,3 +1,8 @@
+## <small>1.51.18 (2026-11-13)</small>
+
+* fix(CO-4725): allow moving inline images by drag and drop in composer (#1432) ([cdd6d78](https://github.com/zextras/carbonio-mails-ui/commit/cdd6d78)), closes [#1432](https://github.com/zextras/carbonio-mails-ui/issues/1432)
+* chore: simplify delete modal warning message for clarity ([3befad3](https://github.com/zextras/carbonio-mails-ui/commit/3befad3))
+
 ## <small>1.51.17 (2026-11-12)</small>
 
 * fix(CO-4715): show font preview in the font selector of the lexical editor (#1430) ([0ad6385](https://github.com/zextras/carbonio-mails-ui/commit/0ad6385)), closes [#1430](https://github.com/zextras/carbonio-mails-ui/issues/1430)

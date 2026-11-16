@@ -5,11 +5,11 @@
  */
 
 /**
- * Helpers shared by the two places where an inline image can enter an editor
+ * Helpers shared by the places where an inline image can enter an editor
  * without going through an upload: the signature editor (which embeds the
  * picked file as a `data:` URI, since a signature has no draft to attach to)
- * and the mail composer (which turns those `data:` URIs back into real files to
- * upload as inline attachments).
+ * and the mail composer (which turns those `data:` URIs, and the images pasted
+ * from other messages, back into real files to upload as inline attachments).
  */
 
 /** Matches `data:<mime>;base64,<payload>` restricted to image mime types. */
@@ -66,11 +66,73 @@ export const dataUriToFile = (dataUri: string, fileName: string): File | undefin
 };
 
 /**
- * Returns a plausible file name for an image extracted from a `data:` URI,
- * which carries no name of its own.
+ * Returns a plausible file name for an inline image, which carries no name of
+ * its own (extracted from a `data:` URI, or downloaded from another message).
  */
-export const getDataUriFileName = (dataUri: string, index: number): string => {
-	const mimeType = DATA_IMAGE_URI_REGEXP.exec(dataUri)?.[1] ?? 'image/png';
+export const getInlineImageFileName = (mimeType: string, index: number): string => {
 	const extension = mimeType.replace('image/', '').replace('+xml', '');
 	return `inline-image-${index}.${extension}`;
+};
+
+/**
+ * Returns a plausible file name for an image extracted from a `data:` URI.
+ */
+export const getDataUriFileName = (dataUri: string, index: number): string =>
+	getInlineImageFileName(DATA_IMAGE_URI_REGEXP.exec(dataUri)?.[1] ?? 'image/png', index);
+
+const DOWNLOAD_SERVICE_PATH = '/service/home/~/';
+
+/**
+ * Returns the url the download service serves a message part of the current
+ * account at, when `src` is one on this very origin, rebuilt out of nothing but
+ * the message id and the part name. Any other url (another host, another
+ * account's path, no id or part) gives `undefined`: the session credentials
+ * must only ever be sent along to download a part of the user's own messages.
+ */
+export const getOwnMessagePartUrl = (src: string): string | undefined => {
+	let url: URL;
+	try {
+		url = new URL(src, window.location.origin);
+	} catch {
+		return undefined;
+	}
+	const id = url.searchParams.get('id');
+	const part = url.searchParams.get('part');
+	if (
+		url.origin !== window.location.origin ||
+		url.pathname !== DOWNLOAD_SERVICE_PATH ||
+		!id ||
+		!part
+	) {
+		return undefined;
+	}
+	return `${DOWNLOAD_SERVICE_PATH}?${new URLSearchParams({ auth: 'co', id, part }).toString()}`;
+};
+
+/**
+ * Downloads an image (with the credentials of the current session) and wraps it
+ * into a {@link File}, so it can be uploaded as a regular inline attachment.
+ *
+ * @param getFileName - builds the file name out of the mime type the server
+ * answered with.
+ * @returns the file, or `undefined` if the download fails or the response is
+ * not an image.
+ */
+export const fetchImageAsFile = async (
+	url: string,
+	getFileName: (mimeType: string) => string
+): Promise<File | undefined> => {
+	try {
+		const response = await fetch(url, { credentials: 'same-origin' });
+		if (!response.ok) {
+			return undefined;
+		}
+		const blob = await response.blob();
+		if (!blob.type.startsWith('image/')) {
+			return undefined;
+		}
+		return new File([blob], getFileName(blob.type), { type: blob.type });
+	} catch {
+		return undefined;
+	}
 };
