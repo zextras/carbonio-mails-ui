@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { map, noop, pick } from 'lodash';
+import { noop, pick } from 'lodash';
 
 import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
@@ -29,7 +29,7 @@ function normalizeSearchConvMessages(
 	response: SearchConvResponse,
 	html: boolean
 ): Array<MailMessage> {
-	return map(response?.m ?? [], (msg) => {
+	return (response?.m ?? []).map((msg) => {
 		const message = normalizeCompleteMailMessageFromSoap(msg, html);
 		// the messages outside the query (e.g. replies in Sent) come without headers: keep what was known
 		const stored = msg._attrs ? undefined : getMessageById(msg.id);
@@ -48,7 +48,7 @@ function handleSearchConvResponse(
 	const updatedConversation: NormalizedConversation = {
 		...conversation,
 		id: conversationId,
-		messageIds: map(messages, (message) => message.id)
+		messageIds: messages.map((message) => message.id)
 	};
 	updateConversations([updatedConversation]);
 }
