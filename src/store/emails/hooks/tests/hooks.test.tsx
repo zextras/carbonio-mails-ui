@@ -230,16 +230,58 @@ describe('Searches store hooks', () => {
 				})
 			);
 
-			act(() => {
+			await act(async () => {
 				window.dispatchEvent(new MailboxRefreshedEvent());
 			});
 			expect(searchConvSpy).toHaveBeenCalledTimes(1);
 
 			// and once again on the next refresh
-			act(() => {
+			await act(async () => {
 				window.dispatchEvent(new MailboxRefreshedEvent());
 			});
 			expect(searchConvSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it.each([
+			['the reading panel first', [undefined, '2']],
+			['the list first', ['2', undefined]],
+			['two lists of different folders', ['2', '5']]
+		])('should search a conversation shown with %s in all its folders', async (_, folderIds) => {
+			await setupLoadedConversation();
+			const searchConvSpy = vi.spyOn(searchConvApi, 'searchConvSoapApi');
+			folderIds.forEach((folderId) =>
+				renderHook(() =>
+					useRefreshConversationOnMailboxRefresh({ conversationId: '123', folderId, enabled: true })
+				)
+			);
+
+			await act(async () => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+
+			expect(searchConvSpy).toHaveBeenCalledTimes(1);
+			expect(searchConvSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ conversationId: '123', folderId: undefined })
+			);
+		});
+
+		it('should search a conversation shown by views of the same folder in that folder', async () => {
+			await setupLoadedConversation();
+			const searchConvSpy = vi.spyOn(searchConvApi, 'searchConvSoapApi');
+			['2', '2'].forEach((folderId) =>
+				renderHook(() =>
+					useRefreshConversationOnMailboxRefresh({ conversationId: '123', folderId, enabled: true })
+				)
+			);
+
+			await act(async () => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+
+			expect(searchConvSpy).toHaveBeenCalledTimes(1);
+			expect(searchConvSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ conversationId: '123', folderId: '2' })
+			);
 		});
 
 		it('should not search a conversation which is not shown', async () => {

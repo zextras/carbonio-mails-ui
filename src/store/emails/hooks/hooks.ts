@@ -11,6 +11,7 @@ import { debounce, noop } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { useEventSubscribe } from 'event-bus/use-event-subscribe';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
 import {
 	refreshConvEmailStoreAction,
@@ -27,14 +28,28 @@ import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { SearchRequestStatus } from 'types/search';
 
-// the conversations searched again for each mailbox refresh, which more views can show at once
-const refreshedConversations = new WeakMap<Event, Set<string>>();
+// the conversations to search again for the mailbox refresh being handled, with the folders of the views
+// which show them (undefined for a view of all its folders): more views can show a conversation at once
+const conversationsToRefresh = new Map<string, Set<string | undefined>>();
+
+function refreshConversations(): void {
+	const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+	conversationsToRefresh.forEach((folderIds, conversationId) => {
+		// the search of a folder leaves the headers out of the messages of the other folders: a conversation
+		// shown with different folders, or with all of them, is searched in all its folders
+		const folderId = folderIds.size === 1 ? [...folderIds][0] : undefined;
+		// a failed refresh leaves the conversation as it is
+		refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
+	});
+	conversationsToRefresh.clear();
+}
 
 /**
  * Updates a shown conversation in place when the mailbox is refreshed, repeating its search with the
  * folder of the view that shows it (none for the reading panel, which shows all its folders). Its messages
  * could have changed while their notifications were dropped (e.g. new, moved or deleted messages).
- * A conversation shown by more views is searched again once, with the folder of the first one.
+ * A conversation shown by more views is searched again once, after every view has handled the event,
+ * in all its folders unless every view shows the same folder.
  * The loaded conversations which are not shown are loaded again when they are shown next
  * (see clearHiddenConversationsStatus).
  */
@@ -47,30 +62,27 @@ export function useRefreshConversationOnMailboxRefresh({
 	folderId?: string;
 	enabled: boolean;
 }): void {
+	const subscribeBusEvent = useEventSubscribe();
+
 	useEffect(() => {
 		if (!enabled) {
 			return undefined;
 		}
 		const hideConversation = showConversation(conversationId);
-		const handler = (event: Event): void => {
-			const refreshed = refreshedConversations.get(event) ?? new Set<string>();
-			refreshedConversations.set(event, refreshed);
-			// a conversation shown by more views is searched again once
-			if (refreshed.has(conversationId)) {
-				return;
+		const unsubscribe = subscribeBusEvent(MailboxRefreshedEvent.EventName, () => {
+			// the listeners run one after the other while the event is dispatched: the searches start after it
+			if (conversationsToRefresh.size === 0) {
+				queueMicrotask(refreshConversations);
 			}
-			refreshed.add(conversationId);
-			const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
-			// a failed refresh leaves the conversation as it is
-			refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
-		};
-
-		window.addEventListener(MailboxRefreshedEvent.EventName, handler);
+			const folderIds = conversationsToRefresh.get(conversationId) ?? new Set<string | undefined>();
+			folderIds.add(folderId);
+			conversationsToRefresh.set(conversationId, folderIds);
+		});
 		return () => {
-			window.removeEventListener(MailboxRefreshedEvent.EventName, handler);
+			unsubscribe();
 			hideConversation();
 		};
-	}, [conversationId, enabled, folderId]);
+	}, [conversationId, enabled, folderId, subscribeBusEvent]);
 }
 
 type ConversationWithStatus = {
