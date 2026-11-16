@@ -34,7 +34,7 @@ export const useSendHandlers = (
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 	const { saveDraft } = useEditorDraftSave(editorId);
 	const { send: sendMessage } = useEditorSend(editorId);
-	const { savedStandardAttachments } = useEditorAttachments(editorId);
+	const { hasStandardAttachments } = useEditorAttachments(editorId);
 	const createSnackbar = useSnackbar();
 	const { createModal, closeModal } = useModal();
 
@@ -132,7 +132,7 @@ export const useSendHandlers = (
 		};
 		checkSubjectAndAttachment({
 			editorId,
-			hasAttachments: savedStandardAttachments.length > 0,
+			hasAttachments: hasStandardAttachments,
 			onConfirmCallback,
 			createModal,
 			closeModal
@@ -142,11 +142,11 @@ export const useSendHandlers = (
 		closeModal,
 		createModal,
 		editorId,
+		hasStandardAttachments,
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
 		onSendStart,
-		savedStandardAttachments.length,
 		sendMessage
 	]);
 
@@ -160,21 +160,13 @@ export const useSendHandlers = (
 			};
 			checkSubjectAndAttachment({
 				editorId,
-				hasAttachments: savedStandardAttachments.length > 0,
+				hasAttachments: hasStandardAttachments,
 				onConfirmCallback,
 				createModal,
 				closeModal
 			});
 		},
-		[
-			close,
-			closeModal,
-			createModal,
-			editorId,
-			savedStandardAttachments.length,
-			saveDraft,
-			setAutoSendTime
-		]
+		[close, closeModal, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
 	);
 
 	return { onSendClick, onSendLaterClick };
