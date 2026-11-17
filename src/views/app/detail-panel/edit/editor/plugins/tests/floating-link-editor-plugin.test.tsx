@@ -107,17 +107,25 @@ async function editLinkText(user: TestUser, link: HTMLElement, text: string): Pr
 	await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 }
 
+/** Parses the exported rich text and returns the text of its removed links. */
+function removedLinksOf(editorId: string): Array<string | null> {
+	const doc = new DOMParser().parseFromString(richTextOf(editorId), 'text/html');
+	return Array.from(doc.getElementsByClassName(UNLINKED_AUTO_LINK_CLASS)).map(
+		(element) => element.textContent
+	);
+}
+
 /**
  * Renders the editor on a paragraph with the given content, holding a link (written
- * in it, or auto-detected from its text) named `text`, and removes that link.
+ * in it, or auto-detected from its text) named `name`, and removes that link.
  */
 async function setupWithRemovedLink(
 	innerHtml: string,
-	text: string
+	name: string | RegExp
 ): Promise<{ editorId: string; user: TestUser; editorElement: HTMLElement }> {
 	const { editorId, user } = setupEditor(`<p>${innerHtml}</p>`);
 	const editorElement = screen.getByTestId(EDITOR_TESTID);
-	await user.click(await within(editorElement).findByRole('link', { name: text }));
+	await user.click(await within(editorElement).findByRole('link', { name }));
 	await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
 	await waitFor(() => {
 		expect(richTextOf(editorId)).not.toContain('<a');
@@ -275,9 +283,42 @@ describe('FloatingLinkEditorPlugin', () => {
 		expect(richTextOf(editorId).match(new RegExp(UNLINKED_AUTO_LINK_CLASS, 'g'))).toHaveLength(2);
 	});
 
-	it('restores a removed link whose text is a URL as a link opening in a new window', async () => {
+	it.each([
+		['starts the text of the link', `<a href="${LINK_URL}">${LINK_URL} docs</a>`],
+		['is partly in bold', `<a href="${LINK_URL}">docs: <b>https://</b>custom-link.com</a>`],
+		['starts before the link', `docs: https://<a href="${LINK_URL}">custom-link.com</a>`]
+	])(
+		'keeps a URL that %s from being linked again when the link is removed',
+		async (_case, innerHtml) => {
+			const { editorId, editorElement } = await setupWithRemovedLink(innerHtml, /custom-link/);
+
+			expect(within(editorElement).queryByRole('link')).not.toBeInTheDocument();
+			expect(removedLinksOf(editorId)).toEqual([LINK_URL]);
+		}
+	);
+
+	it.each([
+		['before it', `docs${LINK_URL}`],
+		['after it', `${LINK_URL}!`]
+	])(
+		'does not keep as a removed link a URL glued to the text %s, which is never linked',
+		async (_case, linkText) => {
+			const { editorId, editorElement } = await setupWithRemovedLink(
+				`<a href="${LINK_URL}">${linkText}</a>`,
+				linkText
+			);
+
+			expect(within(editorElement).queryByRole('link')).not.toBeInTheDocument();
+			expect(removedLinksOf(editorId)).toEqual([]);
+			expect(within(editorElement).getByText(linkText)).toBeInTheDocument();
+		}
+	);
+
+	it('restores a removed link whose text is a URL as a link to that URL, opening in a new window', async () => {
+		// A removed link has no URL of its own, it is derived from its text: the
+		// former href and title are not kept.
 		const { user, editorElement } = await setupWithRemovedLink(
-			`<a href="${LINK_URL}">${LINK_URL}</a>`,
+			`<a href="https://tracking.custom-link.com/redirect" title="${LINK_TEXT}">${LINK_URL}</a>`,
 			LINK_URL
 		);
 
@@ -285,6 +326,8 @@ describe('FloatingLinkEditorPlugin', () => {
 		await user.click(await screen.findByRole('button', { name: RESTORE_LINK_LABEL }));
 
 		const link = await within(editorElement).findByRole('link', { name: LINK_URL });
+		expect(link).toHaveAttribute('href', LINK_URL);
+		expect(link).not.toHaveAttribute('title');
 		expect(link).toHaveAttribute('target', '_blank');
 		expect(link).toHaveAttribute('rel', 'noopener noreferrer');
 	});

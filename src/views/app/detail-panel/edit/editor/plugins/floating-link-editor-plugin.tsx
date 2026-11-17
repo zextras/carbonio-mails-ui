@@ -11,17 +11,22 @@ import {
 	$isAutoLinkNode,
 	$isLinkNode,
 	type AutoLinkNode,
-	type LinkMatcher,
 	type LinkNode
 } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $findMatchingParent, $unwrapNode } from '@lexical/utils';
+import { $findMatchingParent, $unwrapNode, $wrapNodeInElement } from '@lexical/utils';
 import { Button, Link, Row } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNearestNodeFromDOMNode, $getNodeByKey, $isTextNode, type TextNode } from 'lexical';
+import {
+	$getNearestNodeFromDOMNode,
+	$getNodeByKey,
+	$isTextNode,
+	type LexicalNode,
+	type TextNode
+} from 'lexical';
 import { createPortal } from 'react-dom';
 
-import { matchFirstAutoLink, matchWholeAutoLink } from './auto-link-plugin';
+import { $matchAutoLinks, type AutoLinkMatch, matchWholeAutoLink } from './auto-link-plugin';
 import { LinkModal } from './link-modal';
 
 type LinkInfo = {
@@ -66,54 +71,88 @@ const UrlLink = styled(Link)`
 `;
 
 /** A removed auto-link for the match: restored, it opens like any auto-link. */
-function $createRemovedAutoLinkNode(match: NonNullable<ReturnType<LinkMatcher>>): AutoLinkNode {
+function $createRemovedAutoLinkNode(match: AutoLinkMatch): AutoLinkNode {
 	return $createAutoLinkNode(match.url, { ...match.attributes, isUnlinked: true });
 }
 
-/**
- * Wraps each URL or email address in the text node into a removed auto-link, so
- * that the auto-link plugin does not turn it into a link.
- */
-function $keepAutoLinksRemoved(textNode: TextNode): void {
-	const match = textNode.isSimpleText() ? matchFirstAutoLink(textNode.getTextContent()) : null;
-	if (!match) {
-		return;
+const $isSimpleTextNode = (node: LexicalNode | null): node is TextNode =>
+	$isTextNode(node) && node.isSimpleText();
+
+/** The adjacent simple text nodes around `node`: the text the auto-link plugin matches links in. */
+function $getSimpleTextRun(node: TextNode): Array<TextNode> {
+	const run = [node];
+	for (let previous = node.getPreviousSibling(); $isSimpleTextNode(previous); ) {
+		run.unshift(previous);
+		previous = previous.getPreviousSibling();
 	}
-	// No empty part is returned: the match comes first when it starts the text.
-	const parts = textNode.splitText(match.index, match.index + match.length);
-	const matchIndex = match.index === 0 ? 0 : 1;
-	const linkText = parts[matchIndex];
-	const autoLink = $createRemovedAutoLinkNode(match);
-	linkText.replace(autoLink);
-	autoLink.append(linkText);
-	// The first matcher that matches decides, not the first link in the text: the
-	// text before the match can hold one as well as the text after it.
-	parts.filter((_part, index) => index !== matchIndex).forEach($keepAutoLinksRemoved);
+	for (let next = node.getNextSibling(); $isSimpleTextNode(next); ) {
+		run.push(next);
+		next = next.getNextSibling();
+	}
+	return run;
+}
+
+/**
+ * Wraps each URL or email address the auto-link plugin would link in the run (a
+ * whole run of adjacent simple text nodes) into a removed auto-link. The nodes are
+ * first split at the edges of the matches, so that each match is made of whole
+ * nodes, which keep their formatting.
+ */
+function $keepAutoLinksRemoved(run: Array<TextNode>): void {
+	const matches = $matchAutoLinks(run);
+	const edges = matches.flatMap(({ index, length }) => [index, index + length]);
+	// The nodes of the run once split, with their index in the text of the run.
+	const parts: Array<{ node: TextNode; index: number }> = [];
+	let index = 0;
+	run.forEach((node) => {
+		const offsets = edges
+			.filter((edge) => edge > index && edge < index + node.getTextContentSize())
+			.map((edge) => edge - index);
+		(offsets.length > 0 ? node.splitText(...offsets) : [node]).forEach((part) => {
+			parts.push({ node: part, index });
+			index += part.getTextContentSize();
+		});
+	});
+	matches.forEach((match) => {
+		const [first, ...rest] = parts
+			.filter((part) => part.index >= match.index && part.index < match.index + match.length)
+			.map((part) => part.node);
+		$wrapNodeInElement(first, () => $createRemovedAutoLinkNode(match)).append(...rest);
+	});
 }
 
 /**
  * Removes the link, keeping its text and inline formatting. Once unwrapped, the
  * auto-link plugin would immediately turn a URL or an email address in that text
- * into a link again, so it is kept as a removed auto-link instead: an auto-detected
- * link is flagged as removed, a regular link whose whole text is one becomes a
- * removed auto-link (as every link of a draft that is loaded again, or of a quoted
- * message, is), and in any other link the ones within its text are wrapped. A
- * removed auto-link is saved with its marker, so it stays removed when the draft
- * is reopened, and it can be restored from the card.
+ * into a link again, alone or joined with the text around the link (e.g. a URL
+ * partly in bold, or whose `https://` comes before the link), so it is kept as a
+ * removed auto-link instead: an auto-detected link is flagged as removed, and a
+ * regular link is unwrapped and each link the plugin would make in the text runs
+ * it leaves is wrapped. A removed auto-link is saved with its marker, so it stays
+ * removed when the draft is reopened, and it can be restored from the card.
+ *
+ * A removed auto-link has no URL of its own: as for every link of a draft that is
+ * loaded again, or of a quoted message, it is derived from its text. A regular link
+ * whose text is a URL, once removed and restored, opens that URL, not its former
+ * `href`, and has no title.
  */
 function $removeLink(node: LinkNode): void {
 	if ($isAutoLinkNode(node)) {
 		node.setIsUnlinked(true);
 		return;
 	}
-	const match = matchWholeAutoLink(node.getTextContent());
-	if (match) {
-		node.replace($createRemovedAutoLinkNode(match), true);
-		return;
-	}
-	const textNodes = node.getChildren().filter($isTextNode);
+	const textNodes = node.getChildren().filter($isSimpleTextNode);
 	$unwrapNode(node);
-	textNodes.forEach($keepAutoLinksRemoved);
+	// The text of the link spans more than one run when something else (e.g. a
+	// line break) splits it.
+	const runs = textNodes.reduce<Array<Array<TextNode>>>(
+		(found, textNode) =>
+			found.some((run) => run.some((runNode) => runNode.is(textNode)))
+				? found
+				: [...found, $getSimpleTextRun(textNode)],
+		[]
+	);
+	runs.forEach($keepAutoLinksRemoved);
 }
 
 /**
