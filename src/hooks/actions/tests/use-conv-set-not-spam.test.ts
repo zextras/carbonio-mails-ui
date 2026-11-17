@@ -17,6 +17,8 @@ import {
 } from 'hooks/actions/use-conv-set-not-spam';
 import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 
+const FOLDER_ROUTE_PATH = '/folder/:folderId/*';
+
 describe('useConvSetNotSpam', () => {
 	describe('Descriptor', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
@@ -122,6 +124,34 @@ describe('useConvSetNotSpam', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
+
+			it.each`
+				route                        | path                 | tcon
+				${`/folder/${FOLDERS.SPAM}`} | ${FOLDER_ROUTE_PATH} | ${'j'}
+				${'/search'}                 | ${'/*'}              | ${undefined}
+			`(
+				'should limit the action to the messages of the folder group open in $route (tcon $tcon)',
+				async ({ route, path, tcon }) => {
+					const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+						'ConvAction',
+						{ action: { id: ids.join(','), op: '!spam' } }
+					);
+					const {
+						result: { current: functions }
+					} = setupHook(useConvSetNotSpamFn, {
+						initialProps: [{ ids, folderId: FOLDERS.SPAM }],
+						initialEntries: [route],
+						path
+					});
+
+					await act(async () => {
+						functions.execute();
+					});
+
+					const requestParameter = await apiInterceptor;
+					expect(requestParameter.action.tcon).toBe(tcon);
+				}
+			);
 
 			it('should call onActionComplete when provided after the conversation is marked as not spam', async () => {
 				const onActionComplete = vi.fn();

@@ -31,6 +31,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { folderActionSoapApi } from 'api/folder-action-soap-api';
 import { isDraft } from 'helpers/folders';
+import { useConvActionTargetConstraint } from 'hooks/use-conv-action-target-constraint';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
@@ -78,6 +79,7 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 	const { displayName, name } = useUserAccount();
 	const accountName = displayName ?? name;
 	const { folderId } = useParams<{ folderId: string }>();
+	const convActionTargetConstraint = useConvActionTargetConstraint();
 	const navigate = useNavigate();
 	const { createSnackbar } = useUiUtilities();
 
@@ -121,7 +123,8 @@ export const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder })
 			convActionEmailStoreAction({
 				operation: `move`,
 				ids: convMsgsIds,
-				parent: folder.id
+				parent: folder.id,
+				tcon: convActionTargetConstraint
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					navigate(`../folder/${folderId}`, { replace: true });

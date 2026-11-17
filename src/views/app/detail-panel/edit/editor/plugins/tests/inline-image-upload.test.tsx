@@ -10,7 +10,9 @@ import { act, waitFor } from '@testing-library/react';
 import {
 	CID_URL,
 	DOWNLOAD_SERVICE_URL,
+	MESSAGE_ID,
 	mockInlineImageUpload,
+	PART_NAME,
 	PREVIEW_SRC,
 	saveInlineAttachment,
 	stubObjectUrls
@@ -98,6 +100,52 @@ describe('Inline image upload from the toolbar', () => {
 			expect(richTextOf(editorId)).toContain(escapedDownloadUrl);
 		});
 		expect(richTextOf(editorId)).not.toContain(PREVIEW_SRC);
+	});
+
+	it('shows the new image, not the removed one, when an image of the draft is replaced', async () => {
+		mockInlineImageUpload();
+		const { editorId, user } = renderEditor();
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		await user.upload(
+			screen.getByTestId(FILE_INPUT_TESTID),
+			new File(['a'], 'first.png', { type: 'image/png' })
+		);
+		await within(editorElement).findByRole('img');
+		act(() => {
+			saveInlineAttachment(editorId);
+		});
+		await waitFor(() => {
+			expect(within(editorElement).getByRole('img')).not.toHaveAttribute('src', PREVIEW_SRC);
+		});
+		const removedImageSrc = within(editorElement).getByRole('img').getAttribute('src');
+
+		await user.click(within(editorElement).getByRole('img'));
+		await user.keyboard('{Delete}');
+		await waitFor(() => {
+			expect(within(editorElement).queryByRole('img')).not.toBeInTheDocument();
+		});
+
+		await user.upload(
+			screen.getByTestId(FILE_INPUT_TESTID),
+			new File(['b'], 'second.png', { type: 'image/png' })
+		);
+		await within(editorElement).findByRole('img');
+		// The draft keeps its id and the new image takes the part of the removed one.
+		act(() => {
+			saveInlineAttachment(editorId, 'upload-2@carbonio');
+		});
+
+		await waitFor(() => {
+			expect(within(editorElement).getByRole('img')).not.toHaveAttribute('src', PREVIEW_SRC);
+		});
+		// The browser would show the removed image again if the url were the same.
+		const newImage = within(editorElement).getByRole('img');
+		expect(newImage).not.toHaveAttribute('src', removedImageSrc);
+		expect(newImage).toHaveAttribute(
+			'src',
+			`/service/home/~/?auth=co&id=${MESSAGE_ID}&ci=upload-2%40carbonio&part=${PART_NAME}`
+		);
 	});
 
 	it('inserts one image per picked file', async () => {
