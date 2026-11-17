@@ -16,6 +16,7 @@ import { MAILS_ROUTE } from 'constants/index';
 import { isRoot } from 'helpers/folders';
 import { useUiUtilities } from 'hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { ConvActionTargetConstraint } from 'types/soap';
 import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type MoveMessageProps = {
@@ -24,6 +25,7 @@ type MoveMessageProps = {
 	onClose: () => void;
 	folderId: string;
 	onMoveComplete?: (conversationsIds: Array<string>) => void;
+	tcon?: ConvActionTargetConstraint;
 };
 
 export const MoveConversation = ({
@@ -31,7 +33,8 @@ export const MoveConversation = ({
 	isRestore,
 	onClose,
 	folderId,
-	onMoveComplete
+	onMoveComplete,
+	tcon
 }: MoveMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -52,7 +55,8 @@ export const MoveConversation = ({
 			convActionEmailStoreAction({
 				operation: `move`,
 				ids: selectedIDs,
-				parent: id
+				parent: id,
+				tcon
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					onMoveComplete && onMoveComplete(selectedIDs);
@@ -83,7 +87,7 @@ export const MoveConversation = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, createSnackbar, isRestore, t, navigate, onMoveComplete]
+		[selectedIDs, tcon, onCloseModal, createSnackbar, isRestore, t, navigate, onMoveComplete]
 	);
 
 	const hasSameName = useMemo(

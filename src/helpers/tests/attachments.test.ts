@@ -11,6 +11,7 @@ import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import {
 	buildSavedAttachments,
+	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
 	getFlattenedAttachmentParts,
 	getReferredContentIds,
@@ -1331,6 +1332,29 @@ describe('attachments', () => {
 			['no content type and no filename', undefined, undefined, false]
 		])('should return %s for %s', (_desc, contentType, filename, expected) => {
 			expect(isCalendarAttachment(contentType, filename)).toBe(expected);
+		});
+	});
+
+	describe('composeAttachmentDownloadUrl', () => {
+		const savedAttachment = {
+			messageId: '42',
+			partName: '2',
+			filename: 'image.png',
+			contentType: 'image/png',
+			size: 10,
+			contentId: 'upload@carbonio'
+		};
+
+		test('adds the content id to the url of an inline attachment', () => {
+			expect(composeAttachmentDownloadUrl({ ...savedAttachment, isInline: true })).toBe(
+				'/service/home/~/?auth=co&id=42&ci=upload%40carbonio&part=2'
+			);
+		});
+
+		test('does not alter the url of a standard attachment', () => {
+			expect(composeAttachmentDownloadUrl({ ...savedAttachment, isInline: false })).toBe(
+				'/service/home/~/?auth=co&id=42&part=2'
+			);
 		});
 	});
 });

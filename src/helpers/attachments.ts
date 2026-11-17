@@ -15,6 +15,7 @@ import {
 	removeAngleBrackets
 } from 'commons/content-id-utils';
 import { calcColor } from 'commons/utilities';
+import { composeMessagePartUrl } from 'helpers/inline-images';
 import { AbstractAttachment, SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { EditorAttachmentFiles } from 'types/editor';
 import { MailMessage, MailMessagePart, MailMessagePartWithDisposition } from 'types/messages';
@@ -360,8 +361,18 @@ export const isDownloadServicedUrl = (url: string): boolean =>
  */
 export const isBlobUrl = (url: string): boolean => url.startsWith('blob:');
 
+/**
+ * The download url of a saved attachment. An inline one carries its content id,
+ * so that replacing an image of a draft never reuses the url of the old one
+ * (see {@link composeMessagePartUrl}); the url of a standard attachment is left
+ * as is.
+ */
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
-	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+	composeMessagePartUrl({
+		messageId: attachment.messageId,
+		partName: attachment.partName,
+		contentId: attachment.isInline ? attachment.contentId : undefined
+	});
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getFlattenedAttachmentParts(message);

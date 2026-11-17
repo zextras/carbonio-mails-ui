@@ -70,8 +70,12 @@ export const useConvActions = ({
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 		}) ?? messages?.[0];
 
-	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
+	// The folder of the first message not in Trash or Drafts, for the actions on a message of the conversation
+	// (reply, reply all, forward, forward as attachment, print, show original)
 	const folderId = getParentFolderId(firstConversationMessage.parent);
+	// The actions on the conversation depend on the folder open in the route: a conversation can have messages
+	// in Junk and in Sent at the same time. In search no folder is open: the first message's folder is used
+	const openFolderId = routeFolderId ?? folderId;
 
 	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
@@ -95,44 +99,44 @@ export const useConvActions = ({
 	});
 	const moveToTrashDescriptor = useConvMoveToTrashDescriptor({
 		ids: [conversation.id],
-		folderId
+		folderId: openFolderId
 	});
 	const deletePermanentlyDescriptor = useConvDeletePermanentlyDescriptor({
 		ids: [conversation.id],
-		folderId
+		folderId: openFolderId
 	});
 	const setAsReadDescriptor = useConvSetReadDescriptor({
 		ids: [conversation.id],
-		folderId,
+		folderId: openFolderId,
 		isConversationRead: conversation.read
 	});
 	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
-		folderId,
+		folderId: openFolderId,
 		isConversationRead: conversation.read
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
 	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);
 	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
-		folderId
+		folderId: openFolderId
 	});
 	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
 		ids: [conversation.id],
-		folderId
+		folderId: openFolderId
 	});
 
 	const applyTagDescriptor = useConvApplyTagDescriptor({
 		ids: [conversation.id],
 		conversationTags: conversation.tags,
-		folderId
+		folderId: openFolderId
 	});
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
-		folderId,
+		folderId: openFolderId,
 		ids: [conversation.id]
 	});
 	const restoreFolderDescriptor = useConvRestoreDescriptor({
-		folderId,
+		folderId: openFolderId,
 		conversationId: conversation.id
 	});
 	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
@@ -144,12 +148,12 @@ export const useConvActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,
-		folderId
+		folderId: openFolderId
 	});
 
 	const archiveDescriptor = useConvArchiveDescriptor({
 		conversationIds: [conversation.id],
-		folderId: routeFolderId ?? folderId
+		folderId: openFolderId
 	});
 
 	return useMemo(

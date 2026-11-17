@@ -19,8 +19,10 @@ import {
 	useConvMoveToTrashDescriptor,
 	useConvMoveToTrashFn
 } from 'hooks/actions/use-conv-move-to-trash';
-import { ConvActionRequest } from 'types/soap/conv-action';
+import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 import { MsgActionRequest, MsgActionResponse } from 'types/soap/msg-action';
+
+const FOLDER_ROUTE_PATH = '/folder/:folderId/*';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -111,6 +113,36 @@ describe('useConMoveToTrash', () => {
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
+
+			it.each`
+				route                         | path                 | tcon
+				${`/folder/${FOLDERS.INBOX}`} | ${FOLDER_ROUTE_PATH} | ${'o'}
+				${`/folder/${FOLDERS.SENT}`}  | ${FOLDER_ROUTE_PATH} | ${'s'}
+				${`/folder/${FOLDERS.SPAM}`}  | ${FOLDER_ROUTE_PATH} | ${'j'}
+				${'/search'}                  | ${'/*'}              | ${undefined}
+			`(
+				'should limit the action to the messages of the folder group open in $route (tcon $tcon)',
+				async ({ route, path, tcon }) => {
+					const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+						'ConvAction',
+						{ action: { id: conversationsId.join(','), op: 'trash' } }
+					);
+					const {
+						result: { current: functions }
+					} = setupHook(useConvMoveToTrashFn, {
+						initialProps: [{ ids: conversationsId, folderId: FOLDERS.INBOX }],
+						initialEntries: [route],
+						path
+					});
+
+					await act(async () => {
+						functions.execute();
+					});
+
+					const requestParameter = await apiInterceptor;
+					expect(requestParameter.action.tcon).toBe(tcon);
+				}
+			);
 
 			it('should not call the API if the action cannot be executed', async () => {
 				const apiCallSpy = vi.fn();

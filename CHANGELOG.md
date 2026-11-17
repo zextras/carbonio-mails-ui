@@ -1,3 +1,17 @@
+## 1.52.0 (2026-11-17)
+
+* feat(CO-4739): enable native context menu on composer subject field (#1434) ([e28d919](https://github.com/zextras/carbonio-mails-ui/commit/e28d919)), closes [#1434](https://github.com/zextras/carbonio-mails-ui/issues/1434)
+* fix(CO-4765): show the right inline image after replacing it in a draft (#1437) ([3c4452a](https://github.com/zextras/carbonio-mails-ui/commit/3c4452a)), closes [#1437](https://github.com/zextras/carbonio-mails-ui/issues/1437)
+
+## <small>1.51.20 (2026-11-16)</small>
+
+* fix(CO-4577): limit conversation actions to the messages of the open folder (#1425) ([a43c4cd](https://github.com/zextras/carbonio-mails-ui/commit/a43c4cd)), closes [#1425](https://github.com/zextras/carbonio-mails-ui/issues/1425)
+* fix(CO-4673): count uploaded attachments not saved yet in the missing attachment check (#1431) ([0677723](https://github.com/zextras/carbonio-mails-ui/commit/0677723)), closes [#1431](https://github.com/zextras/carbonio-mails-ui/issues/1431)
+
+## <small>1.51.19 (2026-11-16)</small>
+
+* fix(CO-4713): paste inline image in body not working (#1428) ([04ae43a](https://github.com/zextras/carbonio-mails-ui/commit/04ae43a)), closes [#1428](https://github.com/zextras/carbonio-mails-ui/issues/1428)
+
 ## <small>1.51.18 (2026-11-13)</small>
 
 * fix(CO-4725): allow moving inline images by drag and drop in composer (#1432) ([cdd6d78](https://github.com/zextras/carbonio-mails-ui/commit/cdd6d78)), closes [#1432](https://github.com/zextras/carbonio-mails-ui/issues/1432)
