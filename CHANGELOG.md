@@ -1,3 +1,8 @@
+## 1.52.0 (2026-11-17)
+
+* feat(CO-4739): enable native context menu on composer subject field (#1434) ([e28d919](https://github.com/zextras/carbonio-mails-ui/commit/e28d919)), closes [#1434](https://github.com/zextras/carbonio-mails-ui/issues/1434)
+* fix(CO-4765): show the right inline image after replacing it in a draft (#1437) ([3c4452a](https://github.com/zextras/carbonio-mails-ui/commit/3c4452a)), closes [#1437](https://github.com/zextras/carbonio-mails-ui/issues/1437)
+
 ## <small>1.51.20 (2026-11-16)</small>
 
 * fix(CO-4577): limit conversation actions to the messages of the open folder (#1425) ([a43c4cd](https://github.com/zextras/carbonio-mails-ui/commit/a43c4cd)), closes [#1425](https://github.com/zextras/carbonio-mails-ui/issues/1425)
