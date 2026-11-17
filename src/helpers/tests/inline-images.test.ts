@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
+	composeMessagePartUrl,
 	dataUriToFile,
 	getDataUriFileName,
 	getOwnMessagePartUrl,
@@ -81,6 +82,66 @@ describe('inline-images', () => {
 
 		it('should fall back to png when the mime type cannot be read', () => {
 			expect(getDataUriFileName('not a data uri', 3)).toBe('inline-image-3.png');
+		});
+	});
+
+	describe('composeMessagePartUrl', () => {
+		const parseUrl = (url: string): URL => new URL(url, window.location.origin);
+
+		it('should not add a content id to the url of a part without one', () => {
+			expect(composeMessagePartUrl({ messageId: '42', partName: '2' })).toBe(
+				'/service/home/~/?auth=co&id=42&part=2'
+			);
+		});
+
+		it('should add the content id before the part, which stays the last parameter', () => {
+			expect(
+				composeMessagePartUrl({ messageId: '42', partName: '2.2', contentId: 'upload@carbonio' })
+			).toBe('/service/home/~/?auth=co&id=42&ci=upload%40carbonio&part=2.2');
+		});
+
+		it('should give a different url to two images saved in turn at the same part of the same draft', () => {
+			const first = composeMessagePartUrl({
+				messageId: '42',
+				partName: '2',
+				contentId: 'first@carbonio'
+			});
+			const second = composeMessagePartUrl({
+				messageId: '42',
+				partName: '2',
+				contentId: 'second@carbonio'
+			});
+
+			expect(first).not.toBe(second);
+		});
+
+		it('should not let a content id coming from a message add parameters or a fragment', () => {
+			const contentId = 'x&part=1.1&view=html&auth=qp#frag';
+
+			const url = parseUrl(composeMessagePartUrl({ messageId: '42', partName: '2', contentId }));
+
+			expect(Array.from(url.searchParams.keys())).toEqual(['auth', 'id', 'ci', 'part']);
+			expect(url.searchParams.get('ci')).toBe(contentId);
+			expect(url.searchParams.get('part')).toBe('2');
+			expect(url.searchParams.get('auth')).toBe('co');
+			expect(url.hash).toBe('');
+			expect(url.pathname).toBe('/service/home/~/');
+		});
+
+		it('should not throw on a malformed content id', () => {
+			expect(() =>
+				composeMessagePartUrl({ messageId: '42', partName: '2', contentId: '\uD800@carbonio' })
+			).not.toThrow();
+		});
+
+		it('should still be recognised as a part of the own messages', () => {
+			const url = composeMessagePartUrl({
+				messageId: '42',
+				partName: '2',
+				contentId: 'upload@carbonio'
+			});
+
+			expect(getOwnMessagePartUrl(url)).toBe('/service/home/~/?auth=co&id=42&part=2');
 		});
 	});
 
