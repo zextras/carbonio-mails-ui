@@ -7,6 +7,7 @@ import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
 import moment from 'moment';
 
+import { composeMessagePartUrl } from 'helpers/inline-images';
 import { MailMessagePart } from 'types/messages';
 
 // retrieves locale from preferences, fallbacks to "en" if no locale found.
@@ -137,7 +138,10 @@ export function updateImageSrc(
 	const ci = match[1];
 	if (imgMap[ci]) {
 		img.setAttribute('pnsrc', img.getAttribute('src') ?? '');
-		img.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${imgMap[ci].name}`);
+		img.setAttribute(
+			'src',
+			composeMessagePartUrl({ messageId: msgId, partName: imgMap[ci].name, contentId: ci })
+		);
 	}
 }
 

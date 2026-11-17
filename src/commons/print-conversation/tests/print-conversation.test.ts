@@ -122,6 +122,37 @@ describe('getContentForPrint', () => {
 			expect(result).toContain('world');
 		});
 
+		it('points each inline image at its part, telling apart the images by their content id', () => {
+			const conv = generateConversation({ id: '1', subject: 'Inline image' });
+			const msg = generateMessage({
+				id: '42',
+				cid: '1',
+				subject: 'Inline image',
+				parts: [
+					{
+						name: '2',
+						contentType: 'image/png',
+						size: 10,
+						ci: '<second@carbonio>',
+						disposition: 'inline',
+						filename: 'second.png'
+					}
+				]
+			});
+			msg.body = {
+				content: '<p><img src="cid:second@carbonio"></p>',
+				contentType: 'text/html',
+				truncated: false
+			};
+
+			const result = getContentForPrint({ messages: [msg], conversations: [conv], isMsg: false });
+
+			// The serialized html escapes the query separators.
+			expect(result).toContain(
+				'src="/service/home/~/?auth=co&amp;id=42&amp;ci=second%40carbonio&amp;part=2"'
+			);
+		});
+
 		it('renders "No Content" placeholder for unknown content types', () => {
 			const conv = generateConversation({ id: '1', subject: 'Unknown type' });
 			const msg = generateMessage({ cid: '1', subject: 'Unknown type' });

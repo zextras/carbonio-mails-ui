@@ -83,6 +83,35 @@ export const getDataUriFileName = (dataUri: string, index: number): string =>
 const DOWNLOAD_SERVICE_PATH = '/service/home/~/';
 
 /**
+ * Returns the url the download service serves a part of a message at.
+ *
+ * Pass the `contentId` of an inline image: a draft keeps its message id across
+ * saves and the part name only depends on the position in the mime tree, so an
+ * image removed and replaced by another one leaves both at the same `id` and
+ * `part`. Browsers reuse the image already loaded at a url for the whole life of
+ * the page, regardless of the `Cache-Control: no-store` the download service
+ * answers with, and would keep showing the old image. The content id, unique per
+ * upload and ignored by the download service, tells the two urls apart.
+ *
+ * The content id can come from a received message, so it is escaped through
+ * `URLSearchParams`: it cannot add parameters of its own and, unlike
+ * `encodeURIComponent`, a malformed string does not make it throw. `part` stays
+ * the last parameter, since some readers split the url on `&part=`.
+ */
+export const composeMessagePartUrl = ({
+	messageId,
+	partName,
+	contentId
+}: {
+	messageId: string;
+	partName: string;
+	contentId?: string;
+}): string => {
+	const contentIdParam = contentId ? `&${new URLSearchParams({ ci: contentId }).toString()}` : '';
+	return `${DOWNLOAD_SERVICE_PATH}?auth=co&id=${messageId}${contentIdParam}&part=${partName}`;
+};
+
+/**
  * Returns the url the download service serves a message part of the current
  * account at, when `src` is one on this very origin, rebuilt out of nothing but
  * the message id and the part name. Any other url (another host, another

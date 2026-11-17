@@ -11,6 +11,7 @@ import { getMsgSoapApi } from 'api/get-msg-soap-api';
 import { areContentIdsEqual } from 'commons/content-id-utils';
 import {
 	buildSavedAttachments,
+	composeAttachmentDownloadUrl,
 	composeEmlFilename,
 	composeForwardedMessageAttachment,
 	getAttachmentExtension,
@@ -1356,9 +1357,13 @@ describe('attachments', () => {
 				'Quarterly report.eml'
 			],
 			['replaces the other control characters', 'a\u0000b\u007Fc\u0085d', 'a b c d.eml'],
-			['removes the bidi override characters', 'invoice‮fdp.exe', 'invoicefdp.exe.eml'],
-			['removes the bidi isolate and mark characters', '⁦a⁩‎b‏؜c', 'abc.eml'],
-			['collapses consecutive whitespaces', 'a    b  c', 'a b c.eml'],
+			['removes the bidi override characters', 'invoice\u202Efdp.exe', 'invoicefdp.exe.eml'],
+			[
+				'removes the bidi isolate and mark characters',
+				'\u2066a\u2069\u200Eb\u200F\u061Cc',
+				'abc.eml'
+			],
+			['collapses consecutive whitespaces', 'a    b\u00A0\u00A0c', 'a b c.eml'],
 			[
 				'removes leading and trailing whitespaces',
 				' \t Quarterly report \n',
@@ -1368,7 +1373,7 @@ describe('attachments', () => {
 			['falls back to the message id when the subject is empty', '', '1234.eml'],
 			[
 				'falls back to the message id when the subject has no usable characters',
-				' ‮\n ',
+				' \u202E\n ',
 				'1234.eml'
 			]
 		])('%s', (_desc, subject, expected) => {
@@ -1403,6 +1408,29 @@ describe('attachments', () => {
 				size: 0,
 				isInline: false
 			});
+		});
+	});
+
+	describe('composeAttachmentDownloadUrl', () => {
+		const savedAttachment = {
+			messageId: '42',
+			partName: '2',
+			filename: 'image.png',
+			contentType: 'image/png',
+			size: 10,
+			contentId: 'upload@carbonio'
+		};
+
+		test('adds the content id to the url of an inline attachment', () => {
+			expect(composeAttachmentDownloadUrl({ ...savedAttachment, isInline: true })).toBe(
+				'/service/home/~/?auth=co&id=42&ci=upload%40carbonio&part=2'
+			);
+		});
+
+		test('does not alter the url of a standard attachment', () => {
+			expect(composeAttachmentDownloadUrl({ ...savedAttachment, isInline: false })).toBe(
+				'/service/home/~/?auth=co&id=42&part=2'
+			);
 		});
 	});
 });
