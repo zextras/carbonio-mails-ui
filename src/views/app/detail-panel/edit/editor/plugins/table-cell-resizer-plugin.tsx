@@ -106,7 +106,7 @@ function withTableWidth(style: string, widthPx: number): string {
 function $syncPinnedTableWidth(tableNode: TableNode): void {
 	const colWidths = tableNode.getColWidths();
 	const style = getStyleObjectFromCSS(tableNode.getStyle());
-	const pinnedWidth = style.width?.endsWith('px') ? parseFloat(style.width) : undefined;
+	const pinnedWidth = style.width?.endsWith('px') ? Number.parseFloat(style.width) : undefined;
 	if (
 		colWidths === undefined ||
 		colWidths.length === 0 ||
