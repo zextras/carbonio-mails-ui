@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable max-classes-per-file -- two minimal Event stubs cover a jsdom gap (see below) */
-/* eslint-disable jest-dom/prefer-to-have-style -- the width assertions are on the exported HTML, a detached document parsed from a string that toHaveStyle cannot compute styles of */
+/* eslint-disable jest-dom/prefer-to-have-style, jest-dom/prefer-to-have-attribute -- the width assertions are on the exported HTML, a detached document parsed from a string that toHaveStyle/toHaveAttribute cannot check */
 import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -18,6 +18,7 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 type TestUser = ReturnType<typeof setupTest>['user'];
 
 const COLUMN_RESIZE_HANDLE_NAME = 'lexical-label.table_resize_column';
+const ROW_RESIZE_HANDLE_NAME = 'lexical-label.table_resize_row';
 const EDITOR_TESTID = 'edit-view-editor';
 const RESIZED_WIDTH_STYLE = 'width: 200px';
 const COLUMNS_SELECTOR = 'colgroup col';
@@ -81,13 +82,18 @@ async function setupEditorWithTable(): Promise<{
 	return { editorId: editor.id, user, cells };
 }
 
+/** Renders an editor whose body is `richText`. */
+function setupEditorWith(richText: string): { editorId: string; user: TestUser } {
+	const editor = generateNewMessageEditor();
+	editor.text = { plainText: '', richText };
+	setupEditorStore({ editors: [editor] });
+	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+	return { editorId: editor.id, user };
+}
+
 /** Renders an editor with an empty body and returns its id. */
 function setupEmptyEditor(): string {
-	const editor = generateNewMessageEditor();
-	editor.text = { plainText: '', richText: '<p></p>' };
-	setupEditorStore({ editors: [editor] });
-	setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
-	return editor.id;
+	return setupEditorWith('<p></p>').editorId;
 }
 
 /** Pastes `html` in the editor and returns the rendered table. */
@@ -153,9 +159,7 @@ describe('TableCellResizerPlugin', () => {
 		expect(
 			await screen.findByRole('button', { name: COLUMN_RESIZE_HANDLE_NAME })
 		).toBeInTheDocument();
-		expect(
-			screen.getByRole('button', { name: 'lexical-label.table_resize_row' })
-		).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: ROW_RESIZE_HANDLE_NAME })).toBeInTheDocument();
 	});
 
 	it('persists the new column width after dragging the column handle', async () => {
@@ -181,7 +185,7 @@ describe('TableCellResizerPlugin', () => {
 		const { editorId, cells } = await setupEditorWithTable();
 
 		hoverCell(cells[0]);
-		const rowHandle = await screen.findByRole('button', { name: 'lexical-label.table_resize_row' });
+		const rowHandle = await screen.findByRole('button', { name: ROW_RESIZE_HANDLE_NAME });
 
 		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
 		fireEvent.mouseDown(rowHandle, { clientX: 0, clientY: 0 });
@@ -325,5 +329,75 @@ describe('TableCellResizerPlugin', () => {
 		expect(exportedColWidths(editorId)).toEqual(['150px', '200px']);
 		// the header spanning the resized column keeps spanning both of them
 		expect(exportedCellOf(editorId, 'H')?.style.width).toBe('350px');
+	});
+
+	it('resizes the last column covered by a cell spanning more columns', async () => {
+		const editorId = setupEmptyEditor();
+		const table = await pasteTable(
+			'<table><tbody><tr><td colspan="2" style="width:300px">H</td></tr>' +
+				'<tr><td style="width:100px">A</td><td style="width:200px">B</td></tr></tbody></table>'
+		);
+
+		await dragColumnBorder(within(table).getByRole('cell', { name: 'H' }), 350);
+
+		await waitFor(() => {
+			expect(exportedTableOf(editorId).style.width).toBe('350px');
+		});
+		// the first column keeps its width, the last one takes the rest of the cell
+		expect(exportedColWidths(editorId)).toEqual(['100px', '250px']);
+		expect(exportedCellOf(editorId, 'A')?.style.width).toBe('100px');
+		expect(exportedCellOf(editorId, 'B')?.style.width).toBe('250px');
+		expect(exportedCellOf(editorId, 'H')?.style.width).toBe('350px');
+	});
+
+	it('resizes a row of a table imported with its own size', async () => {
+		const { editorId } = setupEditorWith(
+			'<table width="480" border="0"><tbody><tr><td>A</td><td>B</td></tr><tr><td>C</td><td>D</td></tr></tbody></table>'
+		);
+		const table = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('table');
+
+		hoverCell(within(table).getByRole('cell', { name: 'A' }));
+		const rowHandle = await screen.findByRole('button', { name: ROW_RESIZE_HANDLE_NAME });
+		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+		fireEvent.mouseDown(rowHandle, { clientX: 0, clientY: 0 });
+		fireEvent.mouseMove(document, { clientX: 0, clientY: 120 });
+		fireEvent.mouseUp(document, { clientX: 0, clientY: 120 });
+		/* eslint-enable testing-library/prefer-user-event */
+
+		await waitFor(() => {
+			// eslint-disable-next-line testing-library/no-node-access -- parsing the exported HTML string, not the rendered DOM
+			expect(parse(richTextOf(editorId)).querySelector('tr')?.style.height).toBe('120px');
+		});
+		expect(exportedTableOf(editorId).getAttribute('width')).toBe('480');
+	});
+
+	it('keeps the table as wide as its columns when a column is added or deleted after a resize', async () => {
+		const { editorId, user } = setupEditorWith('<p></p>');
+		const table = await pasteTable(
+			'<table><colgroup><col style="width:100px"><col style="width:150px"></colgroup>' +
+				'<tbody><tr><td>A</td><td>B</td></tr><tr><td>C</td><td>D</td></tr></tbody></table>'
+		);
+		await dragColumnBorder(within(table).getByRole('cell', { name: 'A' }), 120);
+		await waitFor(() => {
+			expect(exportedTableOf(editorId).style.width).toBe('270px');
+		});
+
+		hoverCell(within(table).getByRole('cell', { name: 'B' }));
+		await user.click(await screen.findByRole('button', { name: 'lexical-label.table_add_column' }));
+
+		await waitFor(() => {
+			// the new column copies the width of the one it is added after
+			expect(exportedTableOf(editorId).style.width).toBe('420px');
+		});
+		expect(exportedColWidths(editorId)).toEqual(['120px', '150px', '150px']);
+
+		// the caret is in B, whose column is deleted
+		await user.click(await screen.findByRoleWithIcon('button', { icon: 'icon: ChevronDown' }));
+		await user.click(await screen.findByText('lexical-label.table_delete_column'));
+
+		await waitFor(() => {
+			expect(exportedTableOf(editorId).style.width).toBe('270px');
+		});
+		expect(exportedColWidths(editorId)).toEqual(['120px', '150px']);
 	});
 });

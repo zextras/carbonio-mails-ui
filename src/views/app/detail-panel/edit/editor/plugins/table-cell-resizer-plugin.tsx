@@ -98,6 +98,30 @@ function withTableWidth(style: string, widthPx: number): string {
 }
 
 /**
+ * Keeps the width a column drag pinned on the table (see {@link withTableWidth})
+ * equal to the sum of its columns when they change afterwards: when a column is
+ * inserted or deleted (cell menu, hover "+"), the remaining columns would
+ * otherwise stretch to the old width, or the sent table would keep it.
+ */
+function $syncPinnedTableWidth(tableNode: TableNode): void {
+	const colWidths = tableNode.getColWidths();
+	const style = getStyleObjectFromCSS(tableNode.getStyle());
+	const pinnedWidth = style.width?.endsWith('px') ? parseFloat(style.width) : undefined;
+	if (
+		colWidths === undefined ||
+		colWidths.length === 0 ||
+		pinnedWidth === undefined ||
+		style['table-layout'] !== 'fixed'
+	) {
+		return;
+	}
+	const tableWidth = sum(colWidths);
+	if (tableWidth !== pinnedWidth) {
+		tableNode.setStyle(withTableWidth(tableNode.getStyle(), tableWidth));
+	}
+}
+
+/**
  * Gives the column whose right border is at `cellNode` (its last one, when the
  * cell spans more columns) the width the user dragged it to. The table is then
  * as wide as the sum of its columns: the theme stylesheet makes it 100% wide,
@@ -202,6 +226,8 @@ export const TableCellResizerPlugin = (): React.JSX.Element | null => {
 			}),
 		[editor, onPointerMove]
 	);
+
+	useEffect(() => editor.registerNodeTransform(TableNode, $syncPinnedTableWidth), [editor]);
 
 	const onDragMove = useCallback(
 		(event: MouseEvent): void => {

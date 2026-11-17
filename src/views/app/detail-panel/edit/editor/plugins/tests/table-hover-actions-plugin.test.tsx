@@ -14,6 +14,7 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const ADD_ROW_LABEL = 'lexical-label.table_add_row';
 const ADD_COLUMN_LABEL = 'lexical-label.table_add_column';
+const EDITOR_TESTID = 'edit-view-editor';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -37,11 +38,11 @@ async function setupEditorWithTable(): Promise<{
 	setupEditorStore({ editors: [editor] });
 	const { user } = setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
 
-	await user.click(screen.getByTestId('edit-view-editor'));
+	await user.click(screen.getByTestId(EDITOR_TESTID));
 	await user.click(screen.getByRole('button', { name: 'lexical-label.table' }));
 	await user.click(await screen.findByTestId('table-grid-cell-2-2'));
 
-	const editorElement = screen.getByTestId('edit-view-editor');
+	const editorElement = screen.getByTestId(EDITOR_TESTID);
 	const table = (await within(editorElement).findByRole('table')) as HTMLTableElement;
 	// Row-major order for a 2x2 table: [r0c0, r0c1, r1c0, r1c1].
 	const cells = within(table).getAllByRole('cell');
@@ -55,7 +56,7 @@ async function setupEditorWithTable(): Promise<{
  * `window.getSelection()`.
  */
 function caretCellIndex(table: HTMLElement): number {
-	screen.getByTestId('edit-view-editor').focus();
+	screen.getByTestId(EDITOR_TESTID).focus();
 	const anchorNode = window.getSelection()?.anchorNode ?? null;
 	return within(table)
 		.getAllByRole('cell')
@@ -122,6 +123,32 @@ describe('TableHoverActionsPlugin', () => {
 		});
 
 		expect(caretCellIndex(table)).toBe(1);
+	});
+
+	it('appends a row and a column to a table imported with its own size', async () => {
+		const editor = generateNewMessageEditor();
+		editor.text = {
+			plainText: '',
+			richText:
+				'<table width="480" border="0"><tbody><tr><td>A</td><td>B</td></tr><tr><td>C</td><td>D</td></tr></tbody></table>'
+		};
+		setupEditorStore({ editors: [editor] });
+		const { user } = setupTest(
+			<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />
+		);
+		const table = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('table');
+
+		hoverCell(within(table).getByRole('cell', { name: 'C' }));
+		await user.click(await screen.findByRole('button', { name: ADD_ROW_LABEL }));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(3);
+		});
+
+		hoverCell(within(table).getByRole('cell', { name: 'B' }));
+		await user.click(await screen.findByRole('button', { name: ADD_COLUMN_LABEL }));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(9);
+		});
 	});
 
 	it('hides the hover affordance when the pointer leaves the table cells', async () => {

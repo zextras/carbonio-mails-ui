@@ -5,6 +5,7 @@
  */
 /* eslint-disable max-classes-per-file -- the three table nodes are replaced and registered together */
 import {
+	$isTableNode,
 	TableCellNode,
 	TableNode,
 	TableRowNode,
@@ -50,8 +51,34 @@ import {
  *
  * The subclasses replace the stock nodes (see {@link TABLE_NODES}), so tables
  * the user inserts with the toolbar are instances of them too, but those carry
- * no attributes and keep the stock look.
+ * no attributes and keep the stock look. The same goes for a table created in
+ * the editor that comes back from its own HTML (draft reopened, identity
+ * switched, source edited, ...): see {@link isEditorTableElement}.
  */
+
+/** The class the editor theme gives the tables created in the editor. */
+export const EDITOR_TABLE_CLASS = 'mails-lexical-table';
+
+/**
+ * Table attributes the editor never writes. Earlier versions exported
+ * {@link EDITOR_TABLE_CLASS} on imported tables too, so the class alone does not
+ * tell a table created in the editor from one of an older reply or draft.
+ */
+const FOREIGN_TABLE_ATTRIBUTES = [
+	'width',
+	'height',
+	'border',
+	'cellpadding',
+	'cellspacing',
+	'align',
+	'bgcolor'
+];
+
+/** Whether `table` is the export of a table created in the editor. */
+const isEditorTableElement = (table: Element | null): boolean =>
+	table !== null &&
+	table.classList.contains(EDITOR_TABLE_CLASS) &&
+	FOREIGN_TABLE_ATTRIBUTES.every((name) => !table.hasAttribute(name));
 
 type WithAttributes = { attributes: PreservedAttributes; imported: boolean };
 
@@ -64,8 +91,49 @@ const copyAttributes = (target: AttributesCarrier, source: AttributesCarrier): v
 	Object.assign(target, { __attributes: source.__attributes, __imported: source.__imported });
 };
 
+/** Marks `node` as imported from an element whose `attributes` it keeps. */
+function markImported(node: AttributesCarrier, attributes: PreservedAttributes): void {
+	Object.assign(node, { __attributes: attributes, __imported: true });
+}
+
+/**
+ * The attributes of an imported table, without {@link EDITOR_TABLE_CLASS}: the
+ * theme class is an editor concern that earlier versions exported on imported
+ * tables, it must not reach the sent message.
+ */
+function extractTableAttributes(element: HTMLElement): PreservedAttributes {
+	const attributes = extractPreservedAttributes(element);
+	const classNames = (attributes.class ?? '').split(/\s+/);
+	if (!classNames.includes(EDITOR_TABLE_CLASS)) {
+		return attributes;
+	}
+	const { class: _themeClass, ...rest } = attributes;
+	const ownClassNames = classNames.filter((name) => name !== '' && name !== EDITOR_TABLE_CLASS);
+	return ownClassNames.length > 0 ? { ...rest, class: ownClassNames.join(' ') } : rest;
+}
+
+/** Rows and cells are imported unless their table was created in the editor. */
+function $importTablePart(node: AttributesCarrier, element: HTMLElement): void {
+	if (!isEditorTableElement(element.closest('table'))) {
+		markImported(node, extractPreservedAttributes(element));
+	}
+}
+
+function $importTable(node: AttributesCarrier, element: HTMLElement): void {
+	if (!isEditorTableElement(element)) {
+		markImported(node, extractTableAttributes(element));
+	} else if ($isTableNode(node)) {
+		// The inline style of a table created in the editor is the node's own (the
+		// width the column resizer pinned, the layout of the theme class).
+		node.setStyle(element.getAttribute('style') ?? '');
+	}
+}
+
 const wrapConversion =
-	(stockConversion: ((node: HTMLElement) => DOMConversion | null) | undefined) =>
+	(
+		stockConversion: ((node: HTMLElement) => DOMConversion | null) | undefined,
+		$import: (node: AttributesCarrier, element: HTMLElement) => void
+	) =>
 	(domNode: HTMLElement): DOMConversion | null => {
 		const stock = stockConversion?.(domNode);
 		if (!stock) {
@@ -76,9 +144,7 @@ const wrapConversion =
 				const output = stock.conversion(element);
 				const node = output && !Array.isArray(output.node) ? output.node : null;
 				if (carriesAttributes(node)) {
-					const writable = node.getWritable();
-					writable.__attributes = extractPreservedAttributes(element);
-					writable.__imported = true;
+					$import(node.getWritable(), element);
 				}
 				return output;
 			},
@@ -147,7 +213,10 @@ export class ExtendedTableCellNode extends TableCellNode {
 
 	static override importDOM(): DOMConversionMap | null {
 		const stock = TableCellNode.importDOM();
-		return { td: wrapConversion(stock?.td), th: wrapConversion(stock?.th) };
+		return {
+			td: wrapConversion(stock?.td, $importTablePart),
+			th: wrapConversion(stock?.th, $importTablePart)
+		};
 	}
 
 	static override importJSON(
@@ -233,7 +302,7 @@ export class ExtendedTableRowNode extends TableRowNode {
 	}
 
 	static override importDOM(): DOMConversionMap | null {
-		return { tr: wrapConversion(TableRowNode.importDOM()?.tr) };
+		return { tr: wrapConversion(TableRowNode.importDOM()?.tr, $importTablePart) };
 	}
 
 	static override importJSON(serializedNode: SerializedExtendedTableRowNode): ExtendedTableRowNode {
@@ -294,7 +363,7 @@ export class ExtendedTableNode extends TableNode {
 	}
 
 	static override importDOM(): DOMConversionMap | null {
-		return { table: wrapConversion(TableNode.importDOM()?.table) };
+		return { table: wrapConversion(TableNode.importDOM()?.table, $importTable) };
 	}
 
 	static override importJSON(serializedNode: SerializedExtendedTableNode): ExtendedTableNode {
