@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act } from 'react';
-
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
@@ -16,8 +14,6 @@ import {
 	useConvForwardAsAttachmentDescriptor,
 	useConvForwardAsAttachmentFn
 } from 'hooks/actions/use-conv-forward-as-attachment';
-import { updateMessages } from 'store/emails/store';
-import { MailMessage } from 'types/messages';
 
 describe('useConvForwardAsAttachment', () => {
 	const msg = generateMessage();
@@ -75,20 +71,12 @@ describe('useConvForwardAsAttachment', () => {
 		});
 
 		describe('execute', () => {
-			it('should create a board with the name and size of the first message', async () => {
-				const storedMsg: MailMessage = {
-					...generateMessage({ subject: 'Quarterly report' }),
-					size: 4096
-				};
-				act(() => {
-					updateMessages([storedMsg]);
-				});
+			// the editor completes the attachment from the full message (edit-view-controller.test.tsx)
+			it('should create a board forwarding the first message as attachment', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvForwardAsAttachmentFn, {
-					initialProps: [
-						{ firstMessageId: storedMsg.id, folderId: FOLDERS.INBOX, messagesLength: 1 }
-					]
+					initialProps: [{ firstMessageId: msg.id, folderId: FOLDERS.INBOX, messagesLength: 1 }]
 				});
 
 				functions.execute();
@@ -102,42 +90,14 @@ describe('useConvForwardAsAttachment', () => {
 								attachments: [
 									{
 										contentType: 'message/rfc822',
-										filename: 'Quarterly report.eml',
-										isInline: false,
-										mid: storedMsg.id,
-										size: 4096
-									}
-								]
-							},
-							originActionTargetId: storedMsg.id
-						})
-					})
-				);
-			});
-
-			it('should use the message id as filename and 0 as size if the message is not in the store', async () => {
-				const {
-					result: { current: functions }
-				} = setupHook(useConvForwardAsAttachmentFn, {
-					initialProps: [{ firstMessageId: msg.id, folderId: FOLDERS.INBOX, messagesLength: 1 }]
-				});
-
-				functions.execute();
-
-				expect(addBoard).toHaveBeenCalledWith(
-					expect.objectContaining({
-						context: expect.objectContaining({
-							compositionData: {
-								attachments: [
-									{
-										contentType: 'message/rfc822',
 										filename: `${msg.id}.eml`,
 										isInline: false,
 										mid: msg.id,
 										size: 0
 									}
 								]
-							}
+							},
+							originActionTargetId: msg.id
 						})
 					})
 				);

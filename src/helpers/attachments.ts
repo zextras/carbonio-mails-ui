@@ -7,7 +7,7 @@
 import { useMemo } from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
-import { reduce, trim } from 'lodash';
+import { reduce } from 'lodash';
 
 import {
 	areContentIdsEqual,
@@ -17,7 +17,12 @@ import {
 import { calcColor } from 'commons/utilities';
 import { AbstractAttachment, SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { EditorAttachmentFiles } from 'types/editor';
-import { MailMessage, MailMessagePart, MailMessagePartWithDisposition } from 'types/messages';
+import {
+	IncompleteMessage,
+	MailMessage,
+	MailMessagePart,
+	MailMessagePartWithDisposition
+} from 'types/messages';
 
 /**
  * Content disposition types for email attachments
@@ -286,12 +291,6 @@ export function getFlattenedAttachmentParts(
 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
 }
 
-/**
- * Maximum number of characters (Unicode code points) kept from a file name base built from
- * untrusted text, so that the full name, extension included, stays below the 255 limit
- * of common file systems.
- */
-const MAX_FILENAME_BASE_LENGTH = 200;
 /** Control characters (C0, DEL and C1), e.g. the tabs and line breaks of folded headers */
 const CONTROL_CHARS_REGEX = /\p{Cc}/gu;
 /**
@@ -299,50 +298,53 @@ const CONTROL_CHARS_REGEX = /\p{Cc}/gu;
  * which can be used to spoof the displayed name and extension of a file
  */
 const BIDI_CONTROL_CHARS_REGEX = /\p{Bidi_Control}/gu;
-/** Characters reserved in file names by Windows, macOS or Linux */
-const RESERVED_FILENAME_CHARS_REGEX = /[/\\:*?"<>|]/g;
-/**
- * Characters removed from the start and the end of a file name base (leading dots make hidden
- * files, trailing dots and spaces are rejected by Windows). Whitespaces are already collapsed
- * into plain spaces when they are removed, so the space is the only whitespace to handle.
- */
-const FILENAME_BASE_EDGE_CHARS = ' .';
 
 /**
- * Turns untrusted text (e.g. a message subject) into a safe file name base, without extension:
- * - removes the bidirectional formatting characters
- * - replaces the control characters with a space
- * - replaces the characters reserved by the file systems with an underscore
- * - collapses consecutive whitespaces
- * - truncates the result to {@link MAX_FILENAME_BASE_LENGTH} characters
- * - removes leading and trailing whitespaces and dots
+ * Composes the file name displayed in the composer for a message attached as .eml.
  *
- * @param text - The untrusted text
- * @returns The sanitized file name base, or an empty string if no usable character remains
- */
-export const sanitizeFilenameBase = (text: string): string => {
-	const normalized = text
-		.replace(BIDI_CONTROL_CHARS_REGEX, '')
-		.replace(CONTROL_CHARS_REGEX, ' ')
-		.replace(RESERVED_FILENAME_CHARS_REGEX, '_')
-		.replace(/\s+/g, ' ');
-	// Array.from splits by code point, so surrogate pairs (e.g. emoji) are never cut in half
-	const truncated = Array.from(normalized).slice(0, MAX_FILENAME_BASE_LENGTH).join('');
-	// lodash trim runs in linear time, unlike a /[\s.]+$/ regex that backtracks on long runs
-	return trim(truncated, FILENAME_BASE_EDGE_CHARS);
-};
-
-/**
- * Composes the file name of a message attached as .eml, based on its subject.
+ * The server names the attached message `<subject>.eml`, keeping every character of the
+ * subject, so the subject is kept as it is, apart from the characters that alter how the
+ * name is displayed:
+ * - the bidirectional formatting characters are removed
+ * - the control characters are replaced with a space
+ * - consecutive whitespaces are collapsed, leading and trailing ones are removed
+ *
+ * Long names are not truncated here: the composer ellipsizes them.
  *
  * @param subject - The subject of the message
  * @param messageId - The id of the message, used when the subject is missing or has no usable characters
- * @returns The file name, e.g. "Quarterly report.eml"
+ * @returns The file name, e.g. "Re: Quarterly report.eml"
  */
 export const composeEmlFilename = (subject: string | undefined, messageId: string): string => {
-	const base = subject ? sanitizeFilenameBase(subject) : '';
+	const base = (subject ?? '')
+		.replace(BIDI_CONTROL_CHARS_REGEX, '')
+		.replace(CONTROL_CHARS_REGEX, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 	return `${base || messageId}.eml`;
 };
+
+/**
+ * Composes the attachment that forwards an existing message as .eml.
+ *
+ * The message is attached by reference (`mid`), so filename and size are only displayed in the
+ * composer. They fall back to the message id and 0 when the message, or its subject and size,
+ * are not available.
+ *
+ * @param messageId - The id of the forwarded message
+ * @param message - The forwarded message, if available
+ * @returns The unsaved attachment
+ */
+export const composeForwardedMessageAttachment = (
+	messageId: string,
+	message?: Pick<IncompleteMessage, 'subject' | 'size'>
+): UnsavedAttachment => ({
+	mid: messageId,
+	filename: composeEmlFilename(message?.subject, messageId),
+	contentType: MIMETYPE_EML,
+	size: message?.size ?? 0,
+	isInline: false
+});
 
 export const getAttachmentExtension = (
 	contentType: string | undefined,

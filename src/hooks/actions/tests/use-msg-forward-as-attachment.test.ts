@@ -143,7 +143,7 @@ describe('useMsgForwardAsAttachment', () => {
 				]);
 			});
 
-			it('should sanitize the subject used as filename', async () => {
+			it('should remove the bidi characters from the subject used as filename', async () => {
 				const storedMsg = generateMessage({ subject: 'Re: Q1/Q2\u202Etxt.exe' });
 				act(() => {
 					updateMessages([storedMsg]);
@@ -156,7 +156,7 @@ describe('useMsgForwardAsAttachment', () => {
 
 				functions.execute();
 
-				expectComposedAttachments([expect.objectContaining({ filename: 'Re_ Q1_Q2txt.exe.eml' })]);
+				expectComposedAttachments([expect.objectContaining({ filename: 'Re: Q1/Q2txt.exe.eml' })]);
 			});
 
 			it('should use the message id as filename if the message has no subject', async () => {

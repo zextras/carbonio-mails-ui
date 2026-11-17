@@ -15,6 +15,7 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { EditViewActions, PROCESS_STATUS } from 'constants/index';
 import { getDefaultIdentity, getFolderOwnerIdentity } from 'helpers/identities';
 import { generateEditor, resumeEditor } from 'store/editor/editor-generators';
+import { UnsavedAttachment } from 'types/attachments';
 import { EditViewActionsType, MailsEditorV2 } from 'types/editor';
 import { MailMessage } from 'types/messages';
 
@@ -312,6 +313,47 @@ describe('generateEditor', () => {
 
 				expect(resumedEditor?.isUrgent).toBe(true);
 			});
+		});
+	});
+
+	describe('FORWARD_AS_ATTACHMENT action', () => {
+		it('should complete the attachment of the original message with its subject and size', () => {
+			const originalMessage: MailMessage = {
+				...message,
+				subject: 'Re: Quarterly report',
+				size: 4096
+			};
+			// the attachments built from the list, where the original message can lack the subject
+			const originalMessageAttachment: UnsavedAttachment = {
+				mid: originalMessage.id,
+				filename: `${originalMessage.id}.eml`,
+				contentType: 'message/rfc822',
+				size: 2048,
+				isInline: false
+			};
+			const otherMessageAttachment: UnsavedAttachment = {
+				mid: 'other-message-id',
+				filename: 'Other.eml',
+				contentType: 'message/rfc822',
+				size: 100,
+				isInline: false
+			};
+
+			const editor = generateEditor({
+				action: EditViewActions.FORWARD_AS_ATTACHMENT,
+				id: originalMessage.id,
+				message: originalMessage,
+				compositionData: { attachments: [originalMessageAttachment, otherMessageAttachment] }
+			});
+
+			expect(editor?.unsavedAttachments).toEqual([
+				{
+					...originalMessageAttachment,
+					filename: 'Re: Quarterly report.eml',
+					size: 4096
+				},
+				otherMessageAttachment
+			]);
 		});
 	});
 });
