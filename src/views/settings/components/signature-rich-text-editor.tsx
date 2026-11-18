@@ -32,7 +32,10 @@ import { ImagePlugin } from 'views/app/detail-panel/edit/editor/plugins/image-pl
 import { GenericContainerNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/generic-container-node';
 import { ImageNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/image-node';
 import { StyledParagraphNode } from 'views/app/detail-panel/edit/editor/plugins/nodes/styled-paragraph-node';
-import { TABLE_NODES } from 'views/app/detail-panel/edit/editor/plugins/nodes/table-nodes';
+import {
+	EDITOR_TABLE_CLASS,
+	TABLE_NODES
+} from 'views/app/detail-panel/edit/editor/plugins/nodes/table-nodes';
 import { PastePlugin } from 'views/app/detail-panel/edit/editor/plugins/paste-plugin';
 import {
 	RichToolbarPlugin,
@@ -196,7 +199,7 @@ export const SignatureRichTextEditor = ({
 				},
 				link: 'mails-lexical-link',
 				image: 'mails-lexical-image',
-				table: 'mails-lexical-table',
+				table: EDITOR_TABLE_CLASS,
 				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
 			html: {

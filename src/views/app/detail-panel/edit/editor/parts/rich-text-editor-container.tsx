@@ -35,7 +35,7 @@ import { ImageNode } from '../plugins/nodes/image-node';
 import { QuotedSeparatorNode } from '../plugins/nodes/quoted-separator-node';
 import { SignatureNode } from '../plugins/nodes/signature-node';
 import { StyledParagraphNode } from '../plugins/nodes/styled-paragraph-node';
-import { TABLE_NODES } from '../plugins/nodes/table-nodes';
+import { EDITOR_TABLE_CLASS, TABLE_NODES } from '../plugins/nodes/table-nodes';
 import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
@@ -389,7 +389,7 @@ export const RichTextEditorContainer = ({
 				list: { nested: { listitem: 'mails-lexical-nested-listitem' } },
 				link: 'mails-lexical-link',
 				image: 'mails-lexical-image',
-				table: 'mails-lexical-table',
+				table: EDITOR_TABLE_CLASS,
 				tableCellSelected: 'mails-lexical-table-cell-selected'
 			},
 			html: {

@@ -1,3 +1,7 @@
+## <small>1.52.1 (2026-11-18)</small>
+
+* fix(CO-4788): keep removed auto-links plain when text is glued after them (#1440) ([f57db5e](https://github.com/zextras/carbonio-mails-ui/commit/f57db5e)), closes [#1440](https://github.com/zextras/carbonio-mails-ui/issues/1440)
+
 ## 1.52.0 (2026-11-17)
 
 * feat(CO-4739): enable native context menu on composer subject field (#1434) ([e28d919](https://github.com/zextras/carbonio-mails-ui/commit/e28d919)), closes [#1434](https://github.com/zextras/carbonio-mails-ui/issues/1434)
