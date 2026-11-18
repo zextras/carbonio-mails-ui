@@ -35,6 +35,7 @@ import {
 	getDeclaredStyleProperties,
 	mergeStyleDeclarations,
 	TABLE_EDITOR_VIEW_ATTRIBUTES,
+	withoutEditorViewForbiddenStyles,
 	type PreservedAttributes
 } from './preserved-attributes';
 
@@ -124,8 +125,9 @@ function $importTable(node: AttributesCarrier, element: HTMLElement): void {
 		markImported(node, extractTableAttributes(element));
 	} else if ($isTableNode(node)) {
 		// The inline style of a table created in the editor is the node's own (the
-		// width the column resizer pinned, the layout of the theme class).
-		node.setStyle(element.getAttribute('style') ?? '');
+		// width the column resizer pinned, the layout of the theme class), shown as
+		// is: the class can also come with pasted HTML, positioning must not.
+		node.setStyle(withoutEditorViewForbiddenStyles(element.getAttribute('style') ?? ''));
 	}
 }
 

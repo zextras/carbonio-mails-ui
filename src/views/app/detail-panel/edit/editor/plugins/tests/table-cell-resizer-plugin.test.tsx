@@ -371,6 +371,23 @@ describe('TableCellResizerPlugin', () => {
 		expect(exportedTableOf(editorId).getAttribute('width')).toBe('480');
 	});
 
+	it('ignores a stored column width that is not a finite number', async () => {
+		const editorId = setupEmptyEditor();
+		// A width attribute of 400 digits is read as an infinite width.
+		const table = await pasteTable(
+			`<table><colgroup><col width="${'9'.repeat(400)}"><col width="160"></colgroup>` +
+				'<tbody><tr><td>A</td><td>B</td></tr></tbody></table>'
+		);
+
+		await dragColumnBorder(within(table).getByRole('cell', { name: 'B' }), 200);
+
+		await waitFor(() => {
+			// jsdom lays nothing out, so the first column measures 0px
+			expect(exportedTableOf(editorId).style.width).toBe('200px');
+		});
+		expect(richTextOf(editorId)).not.toContain('Infinity');
+	});
+
 	it('keeps the table as wide as its columns when a column is added or deleted after a resize', async () => {
 		const { editorId, user } = setupEditorWith('<p></p>');
 		const table = await pasteTable(

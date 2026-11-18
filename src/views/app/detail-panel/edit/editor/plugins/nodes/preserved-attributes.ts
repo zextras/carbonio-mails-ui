@@ -132,6 +132,16 @@ function parseStyle(style: string): CSSStyleDeclaration {
 	return holder.style;
 }
 
+/**
+ * `style` without the properties that would let content escape its place in the
+ * editor (see EDITOR_VIEW_FORBIDDEN_STYLES), for a style the editor uses as is.
+ */
+export function withoutEditorViewForbiddenStyles(style: string): string {
+	const declarations = parseStyle(style);
+	EDITOR_VIEW_FORBIDDEN_STYLES.forEach((property) => declarations.removeProperty(property));
+	return declarations.cssText;
+}
+
 /** The properties `style` declares, named as `CSSStyleDeclaration` names them. */
 export function getDeclaredStyleProperties(style: string): string[] {
 	return style.trim() === '' ? [] : Array.from(parseStyle(style));
