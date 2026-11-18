@@ -15,6 +15,10 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const CHEVRON_ICON = 'icon: ChevronDown';
 const EDITOR_TESTID = 'edit-view-editor';
+const INSERT_COLUMN_RIGHT_LABEL = 'lexical-label.table_insert_column_right';
+const INSERT_ROW_BELOW_LABEL = 'lexical-label.table_insert_row_below';
+const DELETE_ROW_LABEL = 'lexical-label.table_delete_row';
+const DELETE_COLUMN_LABEL = 'lexical-label.table_delete_column';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -66,7 +70,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('cell')).toHaveLength(4);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('lexical-label.table_insert_column_right'));
+		await user.click(await screen.findByText(INSERT_COLUMN_RIGHT_LABEL));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(6);
@@ -79,7 +83,7 @@ describe('TableActionMenuPlugin', () => {
 		const { user, table } = await setupEditorWithTable();
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('lexical-label.table_insert_column_right'));
+		await user.click(await screen.findByText(INSERT_COLUMN_RIGHT_LABEL));
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(6);
 		});
@@ -117,7 +121,7 @@ describe('TableActionMenuPlugin', () => {
 		const { user, table } = await setupEditorWithTable();
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('lexical-label.table_insert_row_below'));
+		await user.click(await screen.findByText(INSERT_ROW_BELOW_LABEL));
 		await waitFor(() => {
 			expect(within(table).getAllByRole('row')).toHaveLength(3);
 		});
@@ -130,7 +134,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('row')).toHaveLength(2);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('lexical-label.table_delete_row'));
+		await user.click(await screen.findByText(DELETE_ROW_LABEL));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('row')).toHaveLength(1);
@@ -142,7 +146,7 @@ describe('TableActionMenuPlugin', () => {
 		expect(within(table).getAllByRole('cell')).toHaveLength(4);
 
 		await openCellMenu(user);
-		await user.click(await screen.findByText('lexical-label.table_delete_column'));
+		await user.click(await screen.findByText(DELETE_COLUMN_LABEL));
 
 		await waitFor(() => {
 			expect(within(table).getAllByRole('cell')).toHaveLength(2);
@@ -190,6 +194,42 @@ describe('TableActionMenuPlugin', () => {
 
 		await waitFor(() => {
 			expect(richTextOf(editorId)).toContain('background-color: rgb(255, 0, 0)');
+		});
+	});
+
+	it('inserts and deletes rows and columns of a table imported with its own size', async () => {
+		const editor = generateNewMessageEditor();
+		editor.text = {
+			plainText: '',
+			richText:
+				'<table width="480" border="0"><tbody><tr><td>A</td><td>B</td></tr><tr><td>C</td><td>D</td></tr></tbody></table>'
+		};
+		setupEditorStore({ editors: [editor] });
+		const { user } = setupTest(
+			<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />
+		);
+		const table = await within(screen.getByTestId(EDITOR_TESTID)).findByRole('table');
+		await user.click(within(table).getByText('A'));
+
+		await openCellMenu(user);
+		await user.click(await screen.findByText(INSERT_ROW_BELOW_LABEL));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(3);
+		});
+		await openCellMenu(user);
+		await user.click(await screen.findByText(INSERT_COLUMN_RIGHT_LABEL));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(9);
+		});
+		await openCellMenu(user);
+		await user.click(await screen.findByText(DELETE_ROW_LABEL));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('row')).toHaveLength(2);
+		});
+		await openCellMenu(user);
+		await user.click(await screen.findByText(DELETE_COLUMN_LABEL));
+		await waitFor(() => {
+			expect(within(table).getAllByRole('cell')).toHaveLength(4);
 		});
 	});
 
