@@ -10,7 +10,11 @@ import { cleanup, waitFor } from '@testing-library/react';
 import { installRangeRectPolyfill, LINK_LABEL } from './rich-toolbar-plugin-test-utils';
 import { setupTest, screen, within } from '@test-setup';
 import { setupEditorStore } from '__test__/generators/editor-store';
-import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { generateMessage } from '__test__/generators/generateMessage';
+import {
+	generateEditAsDraftEditor,
+	generateNewMessageEditor
+} from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
 import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/parts/rich-text-editor-container';
 
@@ -32,6 +36,19 @@ const UNSAFE_URL_REPLACEMENT = 'about:blank';
 
 // Attributes the saved HTML can do without: the import relies only on these three.
 const ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF = /\s(?!(?:class|style|href)=)[\w-]+="[^"]*"/g;
+
+// Body of a saved draft as the mailbox returns it (GetMsg with html=1), after its HTML
+// sanitizer: it keeps the class of a span (the removed links) but not the class of a
+// link, and encodes some characters as entities.
+const MAILBOX_DRAFT_HTML =
+	'<html><body><p style="margin:0;padding:0"><span style="white-space:pre-wrap">Docs at </span>' +
+	'<span class="mails-unlinked-auto-link"><span style="white-space:pre-wrap">https://custom-link.com/docs</span></span>' +
+	'<span style="white-space:pre-wrap">, mail </span>' +
+	'<span class="mails-unlinked-auto-link"><span style="white-space:pre-wrap">someone&#64;custom-link.com</span></span>' +
+	'<span style="white-space:pre-wrap">, and </span>' +
+	'<a href="https://still-linked.com" rel="noopener noreferrer nofollow" style="color:#2b73d2;text-decoration:underline" target="_blank">' +
+	'<span style="white-space:pre-wrap">https://still-linked.com</span></a>' +
+	'<span style="white-space:pre-wrap"> stays linked.</span></p></body></html>';
 
 type TestUser = ReturnType<typeof setupTest>['user'];
 
@@ -201,18 +218,38 @@ describe('FloatingLinkEditorPlugin', () => {
 		}
 	);
 
-	it('keeps an auto-detected link removed, with its formatting, after the saved HTML is loaded again', async () => {
-		const { editorId } = await setupWithRemovedAutoLink(`<b>${LINK_URL}</b>`, LINK_URL);
-		const savedHtml = richTextOf(editorId).replaceAll(ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF, '');
-		expect(savedHtml).toContain(UNLINKED_AUTO_LINK_CLASS);
-		cleanup();
+	it.each([
+		['URL', LINK_URL],
+		['email address', LINK_EMAIL]
+	])(
+		'keeps an auto-detected %s removed, with its formatting, after the saved HTML is loaded again',
+		async (_case, text) => {
+			const { editorId } = await setupWithRemovedAutoLink(`<b>${text}</b>`, text);
+			const savedHtml = richTextOf(editorId).replaceAll(ATTRIBUTES_OTHER_THAN_CLASS_STYLE_HREF, '');
+			expect(savedHtml).toContain(UNLINKED_AUTO_LINK_CLASS);
+			cleanup();
 
-		const { editorId: reloadedEditorId } = setupEditor(savedHtml);
-		const reloadedEditor = screen.getByTestId(EDITOR_TESTID);
-		const text = await within(reloadedEditor).findByText(LINK_URL);
-		expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
-		expect(text).toHaveClass('mails-lexical-bold');
-		expect(richTextOf(reloadedEditorId)).not.toContain('<a');
+			const { editorId: reloadedEditorId } = setupEditor(savedHtml);
+			const reloadedEditor = screen.getByTestId(EDITOR_TESTID);
+			const reloadedText = await within(reloadedEditor).findByText(text);
+			expect(within(reloadedEditor).queryByRole('link')).not.toBeInTheDocument();
+			expect(reloadedText).toHaveClass('mails-lexical-bold');
+			expect(richTextOf(reloadedEditorId)).not.toContain('<a');
+		}
+	);
+
+	it('keeps the removed links removed when a draft is reopened from the body the mailbox returns', async () => {
+		const editor = generateEditAsDraftEditor(generateMessage({ body: MAILBOX_DRAFT_HTML }));
+		setupEditorStore({ editors: [editor] });
+		setupTest(<RichTextEditorContainer editorId={editor.id} onDragOver={vi.fn()} />);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+
+		const keptLink = await within(editorElement).findByRole('link', {
+			name: 'https://still-linked.com'
+		});
+		expect(within(editorElement).getAllByRole('link')).toEqual([keptLink]);
+		expect(within(editorElement).getByText('https://custom-link.com/docs')).toBeVisible();
+		expect(within(editorElement).getByText(LINK_EMAIL)).toBeVisible();
 	});
 
 	it('restores the link of an auto-detected URL that was removed', async () => {

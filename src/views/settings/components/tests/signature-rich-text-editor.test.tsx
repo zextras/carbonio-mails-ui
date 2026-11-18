@@ -6,15 +6,18 @@
 /* eslint-disable max-classes-per-file -- two minimal Event stubs cover a jsdom gap (see below) */
 import React from 'react';
 
-import { fireEvent, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, waitFor } from '@testing-library/react';
 
 import { setupTest, screen, within } from '@test-setup';
 import { INLINE_IMAGE_FILE_INPUT_TESTID } from 'views/app/detail-panel/edit/editor/plugins/rich-toolbar-plugin';
+import { installRangeRectPolyfill } from 'views/app/detail-panel/edit/editor/plugins/tests/rich-toolbar-plugin-test-utils';
 import { SignatureRichTextEditor } from 'views/settings/components/signature-rich-text-editor';
 
 const CONTENT_TESTID = 'signature-editor-content-editable';
 const IMAGE_LABEL = 'lexical-label.image';
 const IMAGE_FROM_URL_LABEL = 'lexical-label.insert_image_url';
+const REMOVE_LINK_LABEL = 'lexical-label.remove_link';
+const UNLINKED_AUTO_LINK_CLASS = 'mails-unlinked-auto-link';
 
 /** A 1x1 transparent PNG, small enough to keep the expected data URI readable. */
 const PNG_BASE64 =
@@ -74,6 +77,8 @@ describe('SignatureRichTextEditor', () => {
 	beforeAll(() => {
 		globalScope.DragEvent = originalDragEvent ?? StubDragEvent;
 		globalScope.ClipboardEvent = originalClipboardEvent ?? StubClipboardEvent;
+		// Clicking a link puts the caret in it, and Lexical then measures a `Range`.
+		installRangeRectPolyfill();
 	});
 
 	afterAll(() => {
@@ -123,6 +128,31 @@ describe('SignatureRichTextEditor', () => {
 		const image = await within(screen.getByTestId(CONTENT_TESTID)).findByRole('img');
 		expect(image).toHaveAttribute('src', PNG_DATA_URI);
 	});
+
+	it.each([
+		['URL', 'https://custom-link.com'],
+		['email address', 'someone@custom-link.com']
+	])(
+		'keeps an auto-detected %s removed after the saved signature is loaded again',
+		async (_case, text) => {
+			const { user, onChange } = renderSignatureEditor(`<p>${text}</p>`);
+			const content = screen.getByTestId(CONTENT_TESTID);
+			await user.click(await within(content).findByRole('link', { name: text }));
+			await user.click(await screen.findByRole('button', { name: REMOVE_LINK_LABEL }));
+			await waitFor(() => {
+				expect(onChange).toHaveBeenLastCalledWith(
+					expect.stringContaining(UNLINKED_AUTO_LINK_CLASS)
+				);
+			});
+			const savedHtml: string = onChange.mock.lastCall?.[0];
+			cleanup();
+
+			renderSignatureEditor(savedHtml);
+			const reloadedContent = screen.getByTestId(CONTENT_TESTID);
+			expect(await within(reloadedContent).findByText(text)).toBeVisible();
+			expect(within(reloadedContent).queryByRole('link')).not.toBeInTheDocument();
+		}
+	);
 
 	it('ignores a picked file which is not an image', async () => {
 		const { user } = renderSignatureEditor();
