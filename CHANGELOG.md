@@ -1,3 +1,7 @@
+## <small>1.52.3 (2026-11-18)</small>
+
+* fix(CO-4768): show subject and size of the .eml in forward as attachment (#1438) ([461b217](https://github.com/zextras/carbonio-mails-ui/commit/461b217)), closes [#1438](https://github.com/zextras/carbonio-mails-ui/issues/1438)
+
 ## <small>1.52.2 (2026-11-18)</small>
 
 * fix(CO-4742): keep the size of imported tables and let column resize change the table width (#1436) ([9752a55](https://github.com/zextras/carbonio-mails-ui/commit/9752a55)), closes [#1436](https://github.com/zextras/carbonio-mails-ui/issues/1436)

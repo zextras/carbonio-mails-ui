@@ -18,7 +18,12 @@ import { calcColor } from 'commons/utilities';
 import { composeMessagePartUrl } from 'helpers/inline-images';
 import { AbstractAttachment, SavedAttachment, UnsavedAttachment } from 'types/attachments';
 import { EditorAttachmentFiles } from 'types/editor';
-import { MailMessage, MailMessagePart, MailMessagePartWithDisposition } from 'types/messages';
+import {
+	IncompleteMessage,
+	MailMessage,
+	MailMessagePart,
+	MailMessagePartWithDisposition
+} from 'types/messages';
 
 /**
  * Content disposition types for email attachments
@@ -286,6 +291,61 @@ export function getFlattenedAttachmentParts(
 	const referredCIDS = getReferredContentIds(mailMessageParts);
 	return flattenAndAddDisposition(mailMessageParts, referredCIDS);
 }
+
+/** Control characters (C0, DEL and C1), e.g. the tabs and line breaks of folded headers */
+const CONTROL_CHARS_REGEX = /\p{Cc}/gu;
+/**
+ * Unicode bidirectional formatting characters (e.g. U+202E RIGHT-TO-LEFT OVERRIDE),
+ * which can be used to spoof the displayed name and extension of a file
+ */
+const BIDI_CONTROL_CHARS_REGEX = /\p{Bidi_Control}/gu;
+
+/**
+ * Composes the file name displayed in the composer for a message attached as .eml.
+ *
+ * The server names the attached message `<subject>.eml`, keeping every character of the
+ * subject, so the subject is kept as it is, apart from the characters that alter how the
+ * name is displayed:
+ * - the bidirectional formatting characters are removed
+ * - the control characters are replaced with a space
+ * - consecutive whitespaces are collapsed, leading and trailing ones are removed
+ *
+ * Long names are not truncated here: the composer ellipsizes them.
+ *
+ * @param subject - The subject of the message
+ * @param messageId - The id of the message, used when the subject is missing or has no usable characters
+ * @returns The file name, e.g. "Re: Quarterly report.eml"
+ */
+export const composeEmlFilename = (subject: string | undefined, messageId: string): string => {
+	const base = (subject ?? '')
+		.replace(BIDI_CONTROL_CHARS_REGEX, '')
+		.replace(CONTROL_CHARS_REGEX, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
+	return `${base || messageId}.eml`;
+};
+
+/**
+ * Composes the attachment that forwards an existing message as .eml.
+ *
+ * The message is attached by reference (`mid`), so filename and size are only displayed in the
+ * composer. They fall back to the message id and 0 when the message, or its subject and size,
+ * are not available.
+ *
+ * @param messageId - The id of the forwarded message
+ * @param message - The forwarded message, if available
+ * @returns The unsaved attachment
+ */
+export const composeForwardedMessageAttachment = (
+	messageId: string,
+	message?: Pick<IncompleteMessage, 'subject' | 'size'>
+): UnsavedAttachment => ({
+	mid: messageId,
+	filename: composeEmlFilename(message?.subject, messageId),
+	contentType: MIMETYPE_EML,
+	size: message?.size ?? 0,
+	isInline: false
+});
 
 export const getAttachmentExtension = (
 	contentType: string | undefined,
