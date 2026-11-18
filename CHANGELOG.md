@@ -1,3 +1,7 @@
+## <small>1.52.2 (2026-11-18)</small>
+
+* fix(CO-4742): keep the size of imported tables and let column resize change the table width (#1436) ([9752a55](https://github.com/zextras/carbonio-mails-ui/commit/9752a55)), closes [#1436](https://github.com/zextras/carbonio-mails-ui/issues/1436)
+
 ## <small>1.52.1 (2026-11-18)</small>
 
 * fix(CO-4788): keep removed auto-links plain when text is glued after them (#1440) ([f57db5e](https://github.com/zextras/carbonio-mails-ui/commit/f57db5e)), closes [#1440](https://github.com/zextras/carbonio-mails-ui/issues/1440)
