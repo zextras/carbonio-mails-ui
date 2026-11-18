@@ -7,8 +7,9 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, waitFor } from '@testing-library/react';
+import { act, waitFor, within } from '@testing-library/react';
 import { Board, getBoardContextById } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-ui-soap-lib';
 import { http, HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
@@ -16,8 +17,9 @@ import { create } from 'zustand';
 
 import { getSetupServer } from '../../../../../../__test__/vitest-setup';
 import { updateMessages } from '../../../../../../store/emails/store';
-import { setupTest, screen } from '@test-setup';
+import { setupHook, setupTest, screen } from '@test-setup';
 import {
+	addBoard,
 	updateBoardContext,
 	useBoard,
 	getUserSettings,
@@ -34,7 +36,9 @@ import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { ASSERTIONS } from '__test__/constants';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
+import { searchConversationsResponse } from 'api/tests/fixtures/search-conversations-response';
 import { EditViewActions, LOCAL_STORAGE_LEGACY_EDITOR } from 'constants/index';
+import { useConvForwardAsAttachmentFn } from 'hooks/actions/use-conv-forward-as-attachment';
 import { useEditorsStore } from 'store/editor';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
@@ -42,6 +46,7 @@ import { GetMsgRequest, GetMsgResponse } from 'types/soap/get-msg';
 import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
 import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
 import { FileNode } from 'views/app/detail-panel/edit/editor/edit-utils-hooks/use-upload-from-files';
+import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),
@@ -319,6 +324,37 @@ describe('EditViewController', () => {
 		await getMsgInterceptor;
 
 		expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+	});
+
+	it('should show the subject and size of the message forwarded as attachment from the conversation list', async () => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: { zimbraPrefComposeFormat: 'html', zimbraPrefMessageViewHtmlPreferred: 'TRUE' }
+		});
+		// the conversation list stores only a stub of the messages, without subject
+		const [conversation] = searchConversationsResponse.c;
+		const [stub] = extractConvMessage([conversation]);
+		act(() => {
+			updateMessages([stub]);
+		});
+		const {
+			result: { current: forwardAsAttachment }
+		} = setupHook(useConvForwardAsAttachmentFn, {
+			initialProps: [{ firstMessageId: stub.id, folderId: FOLDERS.INBOX, messagesLength: 1 }]
+		});
+		forwardAsAttachment.execute();
+		const { context } = addBoard.mock.calls[0][0] as { context: EditViewBoardContext };
+		useBoard.mockReturnValue(createBoardMock(context));
+		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: [getSoapMailMessage(stub.id, { su: conversation.su, s: 2475 })]
+		});
+
+		await act(async () => setupTest(<EditViewController />));
+
+		const attachment = await screen.findByTestId('attachment-container-Sent between users.eml');
+		expect(within(attachment).getByText('Sent between users.eml')).toBeVisible();
+		expect(within(attachment).getByText('2.42 KB')).toBeVisible();
 	});
 
 	describe('Files nodes passed when the board is opened', () => {

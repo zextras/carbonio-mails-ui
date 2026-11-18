@@ -8,11 +8,11 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
-import { MIMETYPE_EML } from 'helpers/attachments';
+import { composeForwardedMessageAttachment } from 'helpers/attachments';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { isDraft, isSpam } from 'helpers/folders';
+import { getMessageById } from 'store/emails/store';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
-import { UnsavedAttachment } from 'types/attachments';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgForwardAsAttachmentFn = (
@@ -26,13 +26,13 @@ export const useMsgForwardAsAttachmentFn = (
 
 	const execute = useCallback(() => {
 		if (canExecute()) {
-			const attachments: Array<UnsavedAttachment> = messageIds.map((messageId) => ({
-				mid: messageId,
-				filename: `${messageId}.eml`,
-				contentType: MIMETYPE_EML,
-				size: 0,
-				isInline: false
-			}));
+			/*
+			 * The editor completes the attachment of the first message from the full message it
+			 * loads; the other ones take subject and size from the messages of the list
+			 */
+			const attachments = messageIds.map((messageId) =>
+				composeForwardedMessageAttachment(messageId, getMessageById(messageId))
+			);
 			createEditBoard({
 				action: EditViewActions.FORWARD_AS_ATTACHMENT,
 				actionTargetId: messageIds[0],

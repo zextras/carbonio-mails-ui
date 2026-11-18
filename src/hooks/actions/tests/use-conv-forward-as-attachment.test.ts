@@ -8,12 +8,12 @@ import { addBoard } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 import { setupHook } from '@test-setup';
+import { generateMessage } from '__test__/generators/generateMessage';
 import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvForwardAsAttachmentDescriptor,
 	useConvForwardAsAttachmentFn
 } from 'hooks/actions/use-conv-forward-as-attachment';
-import { generateMessage } from '__test__/generators/generateMessage';
 
 describe('useConvForwardAsAttachment', () => {
 	const msg = generateMessage();
@@ -71,7 +71,8 @@ describe('useConvForwardAsAttachment', () => {
 		});
 
 		describe('execute', () => {
-			it('should create a board with specific parameters', async () => {
+			// the editor completes the attachment from the full message (edit-view-controller.test.tsx)
+			it('should create a board forwarding the first message as attachment', async () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvForwardAsAttachmentFn, {

@@ -132,6 +132,11 @@ function parseStyle(style: string): CSSStyleDeclaration {
 	return holder.style;
 }
 
+/** The properties `style` declares, named as `CSSStyleDeclaration` names them. */
+export function getDeclaredStyleProperties(style: string): string[] {
+	return style.trim() === '' ? [] : Array.from(parseStyle(style));
+}
+
 /**
  * Copies the declarations of `style` onto `element`, over whatever the element
  * already has. Properties listed in `skip` are left as they are.

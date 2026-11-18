@@ -9,10 +9,9 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors, EditViewActions } from 'constants/index';
-import { MIMETYPE_EML } from 'helpers/attachments';
+import { composeForwardedMessageAttachment } from 'helpers/attachments';
 import { useMsgForwardAsAttachmentFn } from 'hooks/actions/use-msg-forward-as-attachment';
 import { ActionFn, UIActionDescriptor } from 'types/actions';
-import { UnsavedAttachment } from 'types/attachments';
 import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 type ConvForwardAsAttachmentAction = {
@@ -33,21 +32,16 @@ export const useConvForwardAsAttachmentFn = ({
 	);
 
 	const execute = useCallback(() => {
-		const attachments: Array<UnsavedAttachment> = [
-			{
-				mid: firstMessageId,
-				filename: `${firstMessageId}.eml`,
-				contentType: MIMETYPE_EML,
-				size: 0,
-				isInline: false
-			}
-		];
 		if (canExecute()) {
 			createEditBoard({
 				action: EditViewActions.FORWARD_AS_ATTACHMENT,
 				actionTargetId: firstMessageId,
 				compositionData: {
-					attachments
+					/*
+					 * The conversation list holds only a stub of the message, without subject: the
+					 * editor completes the attachment from the full message it loads
+					 */
+					attachments: [composeForwardedMessageAttachment(firstMessageId)]
 				}
 			});
 		}

@@ -5,6 +5,7 @@
  */
 /* eslint-disable max-classes-per-file -- the three table nodes are replaced and registered together */
 import {
+	$isTableNode,
 	TableCellNode,
 	TableNode,
 	TableRowNode,
@@ -12,6 +13,7 @@ import {
 	type SerializedTableNode,
 	type SerializedTableRowNode
 } from '@lexical/table';
+import { removeClassNamesFromElement } from '@lexical/utils';
 import {
 	type DOMConversion,
 	type DOMConversionOutput,
@@ -30,6 +32,7 @@ import {
 	applyEditorViewAttributes,
 	areAttributesEqual,
 	extractPreservedAttributes,
+	getDeclaredStyleProperties,
 	mergeStyleDeclarations,
 	TABLE_EDITOR_VIEW_ATTRIBUTES,
 	type PreservedAttributes
@@ -48,8 +51,34 @@ import {
  *
  * The subclasses replace the stock nodes (see {@link TABLE_NODES}), so tables
  * the user inserts with the toolbar are instances of them too, but those carry
- * no attributes and keep the stock look.
+ * no attributes and keep the stock look. The same goes for a table created in
+ * the editor that comes back from its own HTML (draft reopened, identity
+ * switched, source edited, ...): see {@link isEditorTableElement}.
  */
+
+/** The class the editor theme gives the tables created in the editor. */
+export const EDITOR_TABLE_CLASS = 'mails-lexical-table';
+
+/**
+ * Table attributes the editor never writes. Earlier versions exported
+ * {@link EDITOR_TABLE_CLASS} on imported tables too, so the class alone does not
+ * tell a table created in the editor from one of an older reply or draft.
+ */
+const FOREIGN_TABLE_ATTRIBUTES = [
+	'width',
+	'height',
+	'border',
+	'cellpadding',
+	'cellspacing',
+	'align',
+	'bgcolor'
+];
+
+/** Whether `table` is the export of a table created in the editor. */
+const isEditorTableElement = (table: Element | null): boolean =>
+	table !== null &&
+	table.classList.contains(EDITOR_TABLE_CLASS) &&
+	FOREIGN_TABLE_ATTRIBUTES.every((name) => !table.hasAttribute(name));
 
 type WithAttributes = { attributes: PreservedAttributes; imported: boolean };
 
@@ -62,8 +91,49 @@ const copyAttributes = (target: AttributesCarrier, source: AttributesCarrier): v
 	Object.assign(target, { __attributes: source.__attributes, __imported: source.__imported });
 };
 
+/** Marks `node` as imported from an element whose `attributes` it keeps. */
+function markImported(node: AttributesCarrier, attributes: PreservedAttributes): void {
+	Object.assign(node, { __attributes: attributes, __imported: true });
+}
+
+/**
+ * The attributes of an imported table, without {@link EDITOR_TABLE_CLASS}: the
+ * theme class is an editor concern that earlier versions exported on imported
+ * tables, it must not reach the sent message.
+ */
+function extractTableAttributes(element: HTMLElement): PreservedAttributes {
+	const attributes = extractPreservedAttributes(element);
+	const classNames = (attributes.class ?? '').split(/\s+/);
+	if (!classNames.includes(EDITOR_TABLE_CLASS)) {
+		return attributes;
+	}
+	const { class: _themeClass, ...rest } = attributes;
+	const ownClassNames = classNames.filter((name) => name !== '' && name !== EDITOR_TABLE_CLASS);
+	return ownClassNames.length > 0 ? { ...rest, class: ownClassNames.join(' ') } : rest;
+}
+
+/** Rows and cells are imported unless their table was created in the editor. */
+function $importTablePart(node: AttributesCarrier, element: HTMLElement): void {
+	if (!isEditorTableElement(element.closest('table'))) {
+		markImported(node, extractPreservedAttributes(element));
+	}
+}
+
+function $importTable(node: AttributesCarrier, element: HTMLElement): void {
+	if (!isEditorTableElement(element)) {
+		markImported(node, extractTableAttributes(element));
+	} else if ($isTableNode(node)) {
+		// The inline style of a table created in the editor is the node's own (the
+		// width the column resizer pinned, the layout of the theme class).
+		node.setStyle(element.getAttribute('style') ?? '');
+	}
+}
+
 const wrapConversion =
-	(stockConversion: ((node: HTMLElement) => DOMConversion | null) | undefined) =>
+	(
+		stockConversion: ((node: HTMLElement) => DOMConversion | null) | undefined,
+		$import: (node: AttributesCarrier, element: HTMLElement) => void
+	) =>
 	(domNode: HTMLElement): DOMConversion | null => {
 		const stock = stockConversion?.(domNode);
 		if (!stock) {
@@ -74,9 +144,7 @@ const wrapConversion =
 				const output = stock.conversion(element);
 				const node = output && !Array.isArray(output.node) ? output.node : null;
 				if (carriesAttributes(node)) {
-					const writable = node.getWritable();
-					writable.__attributes = extractPreservedAttributes(element);
-					writable.__imported = true;
+					$import(node.getWritable(), element);
 				}
 				return output;
 			},
@@ -110,6 +178,10 @@ function applyExportedAttributes(
 	}
 }
 
+/** The `<table>` of a table node's DOM, which can be wrapped in a scrollable `<div>`. */
+const findTableElement = (dom: HTMLElement): HTMLTableElement | null =>
+	dom instanceof HTMLTableElement ? dom : dom.querySelector('table');
+
 /** Same layout the `mails-lexical-table` theme class gives the table in the editor. */
 const EDITOR_TABLE_EXPORT_STYLES: Record<string, string> = {
 	'border-collapse': 'collapse',
@@ -141,7 +213,10 @@ export class ExtendedTableCellNode extends TableCellNode {
 
 	static override importDOM(): DOMConversionMap | null {
 		const stock = TableCellNode.importDOM();
-		return { td: wrapConversion(stock?.td), th: wrapConversion(stock?.th) };
+		return {
+			td: wrapConversion(stock?.td, $importTablePart),
+			th: wrapConversion(stock?.th, $importTablePart)
+		};
 	}
 
 	static override importJSON(
@@ -227,7 +302,7 @@ export class ExtendedTableRowNode extends TableRowNode {
 	}
 
 	static override importDOM(): DOMConversionMap | null {
-		return { tr: wrapConversion(TableRowNode.importDOM()?.tr) };
+		return { tr: wrapConversion(TableRowNode.importDOM()?.tr, $importTablePart) };
 	}
 
 	static override importJSON(serializedNode: SerializedExtendedTableRowNode): ExtendedTableRowNode {
@@ -288,7 +363,7 @@ export class ExtendedTableNode extends TableNode {
 	}
 
 	static override importDOM(): DOMConversionMap | null {
-		return { table: wrapConversion(TableNode.importDOM()?.table) };
+		return { table: wrapConversion(TableNode.importDOM()?.table, $importTable) };
 	}
 
 	static override importJSON(serializedNode: SerializedExtendedTableNode): ExtendedTableNode {
@@ -310,23 +385,61 @@ export class ExtendedTableNode extends TableNode {
 
 	override createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
 		const dom = super.createDOM(config, editor);
-		const table = dom instanceof HTMLTableElement ? dom : dom.querySelector('table');
+		const table = findTableElement(dom);
 		if (table) {
-			applyEditorViewAttributes(table, this.__attributes, TABLE_EDITOR_VIEW_ATTRIBUTES);
+			if (this.__imported) {
+				// The theme class gives tables created here the editor look (full width,
+				// fixed layout, bordered and padded cells). Its rules would override the
+				// size and look an imported table declares (`width="480"`, `cellpadding`,
+				// `border="0"`, ...), so the table is shown the way its author made it.
+				removeClassNamesFromElement(table, config.theme.table);
+				if (table.classList.length === 0) {
+					table.removeAttribute('class');
+				}
+			}
+			this.applyImportedViewAttributes(table);
 		}
 		return dom;
 	}
 
 	override updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
-		return (
+		if (
 			super.updateDOM(prevNode, dom, config) ||
 			!areAttributesEqual(prevNode.__attributes, this.__attributes)
+		) {
+			return true;
+		}
+		const table = prevNode.__style === this.__style ? null : findTableElement(dom);
+		if (table) {
+			// The stock update removes the declarations the node no longer has (e.g. the
+			// width pinned by the resizer, after an undo), which the imported element
+			// may declare as well: restore them.
+			this.applyImportedViewAttributes(table);
+		}
+		return false;
+	}
+
+	/**
+	 * Style properties the node declares itself (the column resizer pins `width`
+	 * and `table-layout`), which win over the ones carried from the imported element.
+	 */
+	private getOwnedStyles(): string[] {
+		return getDeclaredStyleProperties(this.__style);
+	}
+
+	private applyImportedViewAttributes(table: HTMLTableElement): void {
+		applyEditorViewAttributes(
+			table,
+			this.__attributes,
+			TABLE_EDITOR_VIEW_ATTRIBUTES,
+			this.getOwnedStyles()
 		);
 	}
 
 	override exportDOM(editor: LexicalEditor): DOMExportOutput {
 		const output = super.exportDOM(editor);
 		const stockAfter = output.after;
+		const ownedStyles = this.getOwnedStyles();
 		return {
 			...output,
 			after: (generatedElement): ReturnType<NonNullable<DOMExportOutput['after']>> => {
@@ -334,13 +447,18 @@ export class ExtendedTableNode extends TableNode {
 				if (result instanceof HTMLTableElement) {
 					if (this.__imported) {
 						// The theme class is an editor concern; the original class replaces it.
-						applyExportedAttributes(result, this.__attributes);
+						applyExportedAttributes(result, this.__attributes, ownedStyles);
+						if (ownedStyles.includes('width')) {
+							// The width the user gave the table replaces the original one, so the
+							// message does not carry two conflicting widths.
+							result.removeAttribute('width');
+						}
 					} else {
 						// The layout of a table created in the editor comes from the theme class,
 						// which the displayer doesn't have: inline it or the table collapses.
-						Object.entries(EDITOR_TABLE_EXPORT_STYLES).forEach(([property, value]) =>
-							result.style.setProperty(property, value)
-						);
+						Object.entries(EDITOR_TABLE_EXPORT_STYLES)
+							.filter(([property]) => !ownedStyles.includes(property))
+							.forEach(([property, value]) => result.style.setProperty(property, value));
 					}
 				}
 				return result;

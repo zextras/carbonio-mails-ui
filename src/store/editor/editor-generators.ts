@@ -7,7 +7,10 @@ import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { v4 as uuid } from 'uuid';
 
-import { buildSavedAttachments } from '../../helpers/attachments';
+import {
+	buildSavedAttachments,
+	composeForwardedMessageAttachment
+} from '../../helpers/attachments';
 import { convertHtmlToPlainText } from 'commons/utilities';
 import { EditViewActions, NO_ACCOUNT_NAME, PROCESS_STATUS } from 'constants/index';
 import {
@@ -402,11 +405,20 @@ export const generateForwardAsAttachmentMsgEditor = (
 	const prefs = userSettings?.prefs ?? {};
 	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
 	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
+	/*
+	 * The attachment of the original message is rebuilt from the full message, because it can
+	 * come from a list item without subject (e.g. the message stub of a conversation)
+	 */
+	const unsavedAttachments = attachments.map((attachment) =>
+		attachment.mid === originalMessage.id
+			? composeForwardedMessageAttachment(originalMessage.id, originalMessage)
+			: attachment
+	);
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.FORWARD_AS_ATTACHMENT,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
-		unsavedAttachments: attachments,
+		unsavedAttachments,
 		savedAttachments: [],
 		isDirty: false,
 		isRichText,

@@ -12,6 +12,8 @@ import { areContentIdsEqual } from 'commons/content-id-utils';
 import {
 	buildSavedAttachments,
 	composeAttachmentDownloadUrl,
+	composeEmlFilename,
+	composeForwardedMessageAttachment,
 	getAttachmentExtension,
 	getFlattenedAttachmentParts,
 	getReferredContentIds,
@@ -1332,6 +1334,80 @@ describe('attachments', () => {
 			['no content type and no filename', undefined, undefined, false]
 		])('should return %s for %s', (_desc, contentType, filename, expected) => {
 			expect(isCalendarAttachment(contentType, filename)).toBe(expected);
+		});
+	});
+
+	describe('composeEmlFilename', () => {
+		test.each([
+			['uses the subject', 'Quarterly report', 'Quarterly report.eml'],
+			['keeps unicode letters and emoji', 'Résumé 😀 報告', 'Résumé 😀 報告.eml'],
+			[
+				'keeps the characters reserved by the file systems, as the server does',
+				'Re: Q1/Q2 <a>|"b"*?\\c',
+				'Re: Q1/Q2 <a>|"b"*?\\c.eml'
+			],
+			[
+				'keeps leading and trailing dots, as the server does',
+				'..v1.2 notes..',
+				'..v1.2 notes...eml'
+			],
+			[
+				'replaces line breaks and tabs with a space',
+				'Quarterly\r\n\treport',
+				'Quarterly report.eml'
+			],
+			['replaces the other control characters', 'a\u0000b\u007Fc\u0085d', 'a b c d.eml'],
+			['removes the bidi override characters', 'invoice\u202Efdp.exe', 'invoicefdp.exe.eml'],
+			[
+				'removes the bidi isolate and mark characters',
+				'\u2066a\u2069\u200Eb\u200F\u061Cc',
+				'abc.eml'
+			],
+			['collapses consecutive whitespaces', 'a    b\u00A0\u00A0c', 'a b c.eml'],
+			[
+				'removes leading and trailing whitespaces',
+				' \t Quarterly report \n',
+				'Quarterly report.eml'
+			],
+			['falls back to the message id when the subject is undefined', undefined, '1234.eml'],
+			['falls back to the message id when the subject is empty', '', '1234.eml'],
+			[
+				'falls back to the message id when the subject has no usable characters',
+				' \u202E\n ',
+				'1234.eml'
+			]
+		])('%s', (_desc, subject, expected) => {
+			expect(composeEmlFilename(subject, '1234')).toBe(expected);
+		});
+
+		it('does not truncate long subjects', () => {
+			const subject = '😀'.repeat(300);
+
+			expect(composeEmlFilename(subject, '1234')).toBe(`${subject}.eml`);
+		});
+	});
+
+	describe('composeForwardedMessageAttachment', () => {
+		it('uses the subject and the size of the message', () => {
+			expect(
+				composeForwardedMessageAttachment('1234', { subject: 'Re: Quarterly report', size: 4096 })
+			).toEqual({
+				mid: '1234',
+				filename: 'Re: Quarterly report.eml',
+				contentType: 'message/rfc822',
+				size: 4096,
+				isInline: false
+			});
+		});
+
+		it('falls back to the message id and 0 when the message is not available', () => {
+			expect(composeForwardedMessageAttachment('1234')).toEqual({
+				mid: '1234',
+				filename: '1234.eml',
+				contentType: 'message/rfc822',
+				size: 0,
+				isInline: false
+			});
 		});
 	});
 
