@@ -7,6 +7,8 @@ import React from 'react';
 
 import {
 	$getNodeByKey,
+	$getSelection,
+	$isNodeSelection,
 	DecoratorNode,
 	type DOMConversionMap,
 	type DOMConversionOutput,
@@ -309,4 +311,17 @@ export function $createImageNode(
 
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
 	return node instanceof ImageNode;
+}
+
+/**
+ * The image the current selection is made of, when it is exactly one image
+ * (as selected by clicking it); null for any other selection.
+ */
+export function $getSelectedImageNode(): ImageNode | null {
+	const selection = $getSelection();
+	if (!$isNodeSelection(selection)) {
+		return null;
+	}
+	const nodes = selection.getNodes();
+	return nodes.length === 1 && $isImageNode(nodes[0]) ? nodes[0] : null;
 }
