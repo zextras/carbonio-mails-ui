@@ -23,4 +23,6 @@ export const ApiManager = {
 
 export const legacyXmlSoapFetch = vi.fn();
 
+export const noOp = vi.fn();
+
 export const legacySoapFetch = getSoapFetch('test-environment');

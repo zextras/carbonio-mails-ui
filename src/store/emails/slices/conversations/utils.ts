@@ -5,15 +5,19 @@
  */
 
 /* eslint-disable no-param-reassign */
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
 import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
+import { getRefreshedListIndex, mergeListMessages } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import { NormalizedConversation } from 'types/conversations';
+import { IncompleteMessage, MailMessage } from 'types/messages';
 import { EmailsStoreState, SearchRequestStatus } from 'types/search';
 
 function setConversationsInEmailStore(
@@ -34,6 +38,118 @@ function setConversationsInEmailStore(
 				},
 				{} as Record<string, NormalizedConversation>
 			);
+		})
+	);
+}
+
+/**
+ * Clears the loaded status of the loaded conversations which are not shown when the mailbox is refreshed,
+ * so they are loaded again when they are shown next. The shown ones repeat their own search
+ * (see useRefreshConversationOnMailboxRefresh).
+ */
+function clearHiddenConversationsStatus(
+	shownConversationIds: Set<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			Object.keys(populatedItemsSlice.conversationsStatus).forEach((conversationId) => {
+				if (
+					populatedItemsSlice.conversationsStatus[conversationId] ===
+						API_REQUEST_STATUS.fulfilled &&
+					!shownConversationIds.has(conversationId)
+				) {
+					delete populatedItemsSlice.conversationsStatus[conversationId];
+				}
+			});
+		})
+	);
+}
+
+function refreshConversationsInEmailStore(
+	conversations: Array<NormalizedConversation>,
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean,
+	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ conversationIndexSlice, populatedItemsSlice }: EmailsStoreState) => {
+			const { deletedIds, changedIds } = notifiedItems;
+			const freshConversations = conversations.filter(({ id }) => !deletedIds.has(id));
+			const refreshedIndex = getRefreshedListIndex(
+				conversationIndexSlice.conversationListIndex,
+				freshConversations.map((conv) => conv.id),
+				searchedListIndex
+			);
+			conversationIndexSlice.conversationListIndex = refreshedIndex.listIndex;
+			conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			conversationIndexSlice.offset = 0;
+			conversationIndexSlice.more = refreshedIndex.keepsLaterPages
+				? conversationIndexSlice.more
+				: more;
+
+			freshConversations.forEach((conversation) => {
+				const existingConversation = populatedItemsSlice.conversations[conversation.id];
+				// a conversation notified while the list was searched keeps what was notified, which is newer
+				if (existingConversation && changedIds.has(conversation.id)) {
+					return;
+				}
+				// a conversation still loaded was shown when the mailbox was refreshed, and its own search is
+				// repeated, or it was loaded after: its messages come from that search, whatever arrives first
+				const isLoaded =
+					populatedItemsSlice.conversationsStatus[conversation.id] === API_REQUEST_STATUS.fulfilled;
+				populatedItemsSlice.conversations[conversation.id] =
+					existingConversation && isLoaded
+						? { ...conversation, messageIds: existingConversation.messageIds }
+						: {
+								...conversation,
+								messageIds: conversation.messageIds.filter((id) => !deletedIds.has(id))
+							};
+			});
+			mergeListMessages(populatedItemsSlice.messages, messages, notifiedItems);
+		})
+	);
+}
+
+// the search of a shown conversation, repeated after a mailbox refresh: what was notified meanwhile is newer.
+// The messages created meanwhile stay in the conversation even if the search came back before them, on the side
+// of the newest messages (see getOrderedMessagesForConversation).
+function refreshConversationInEmailStore(
+	conversationId: string,
+	messages: Array<MailMessage>,
+	notifiedItems: NotifiedItems,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			const { deletedIds, changedIds } = notifiedItems;
+			if (deletedIds.has(conversationId)) {
+				return;
+			}
+			const searchedMessages = messages.filter(({ id }) => !deletedIds.has(id));
+			searchedMessages.forEach((message) => {
+				if (changedIds.has(message.id) && populatedItemsSlice.messages[message.id]) {
+					return;
+				}
+				populatedItemsSlice.messages[message.id] = message;
+				populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
+			});
+			const searchedIds = searchedMessages.map(({ id }) => id);
+			const storedConversation = populatedItemsSlice.conversations[conversationId];
+			const notifiedIds = (storedConversation?.messageIds ?? []).filter(
+				(id) => changedIds.has(id) && !deletedIds.has(id) && !searchedIds.includes(id)
+			);
+			const newestFirst =
+				(getUserSettings()?.prefs?.zimbraPrefConversationOrder ?? 'dateDesc') === 'dateDesc';
+			populatedItemsSlice.conversations[conversationId] = {
+				...storedConversation,
+				id: conversationId,
+				messageIds: newestFirst
+					? [...notifiedIds, ...searchedIds]
+					: [...searchedIds, ...notifiedIds]
+			};
 		})
 	);
 }
@@ -107,6 +223,9 @@ function appendConversationsToConversationIndexSlice(
 
 export const conversationIndexSliceUtils = {
 	setConversationsInEmailStore,
+	refreshConversationsInEmailStore,
+	refreshConversationInEmailStore,
+	clearHiddenConversationsStatus,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,

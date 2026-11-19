@@ -20,6 +20,7 @@ import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
 import { useMarkAsReadOnClick } from 'hooks/use-mark-as-read-on-click';
 import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import { useRefreshConversationOnMailboxRefresh } from 'store/emails/hooks/hooks';
 import { useConversationMessages, useConversationStatus } from 'store/emails/store';
 import { NormalizedConversation } from 'types/conversations';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
@@ -110,6 +111,12 @@ export const ConversationListItem = memo(function ConversationListItem({
 			searchConvEmailStoreAction({ conversationId, folderId: folderParent, html });
 		}
 	}, [shouldFetchConversation, conversationId, folderParent]);
+
+	useRefreshConversationOnMailboxRefresh({
+		conversationId,
+		folderId: folderParent,
+		enabled: isConversationExpanded && conversationStatus === API_REQUEST_STATUS.fulfilled
+	});
 
 	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {

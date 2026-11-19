@@ -15,6 +15,7 @@ import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOpt
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
 import {
 	resetMessagesAndPopulatedItems,
@@ -28,7 +29,7 @@ vi.mock('../../store/emails/store', async () => ({
 	setMessagesInEmailStore: vi.fn(),
 	resetMessagesAndPopulatedItems: vi.fn(),
 	updateMessagesResultsLoadingStatus: vi.fn(),
-	useMessagesIdsByFolder: vi.fn(),
+	useMessagesIdsByFolder: vi.fn(() => []),
 	useMessagesSlice: vi.fn()
 }));
 vi.mock('../../helpers/sorting', async () => ({
@@ -96,6 +97,36 @@ describe('useMessageListByFolder', () => {
 		await waitFor(() => {
 			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
 		});
+	});
+
+	it('should search the messages again without resetting the store when the mailbox is refreshed', async () => {
+		(parseMessageSortingOptions as Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
+		});
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', { more: false });
+		renderHook(() => useFetchMessagesByFolder(folder.id));
+		await waitFor(() => {
+			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
+		});
+		vi.mocked(resetMessagesAndPopulatedItems).mockClear();
+		vi.mocked(updateMessagesResultsLoadingStatus).mockClear();
+
+		const refreshSearchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+			'Search',
+			{ more: false }
+		);
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		await act(async () => {
+			expect(await refreshSearchInterceptor).toEqual(
+				expect.objectContaining({ limit: 100, offset: 0, query: 'inId:"2"', types: 'message' })
+			);
+		});
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(updateMessagesResultsLoadingStatus).not.toHaveBeenCalledWith(API_REQUEST_STATUS.pending);
 	});
 
 	// FIXME: failing test

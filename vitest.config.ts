@@ -95,7 +95,6 @@ export default defineConfig({
 						...configDefaults.exclude,
 						'**/*.browser-test.*',
 						'**/app.test.tsx',
-						'**/use-conversations-list-by-folder.test.ts',
 						'**/certificate-utils.test.ts',
 						'**/recover-messages.test.tsx',
 						'**/rich-text-editor-container.test.tsx',

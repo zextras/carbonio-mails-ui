@@ -4,15 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook } from '@testing-library/react';
-import { useFolderStore } from '@zextras/carbonio-ui-commons';
+import { ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { generateMessage } from '__test__/generators/generateMessage';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
+import { getRefreshedListIndex } from 'store/emails/slices/messages/utils';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendMessagesToMessagesSlice,
 	getUseEmailStoreAndHooksForTesting,
 	resetMessagesAndPopulatedItems,
+	refreshMessagesInEmailStore,
 	setMessagesInEmailStore,
 	updateMessages,
 	updateMessagesResultsLoadingStatus,
@@ -21,9 +26,10 @@ import {
 	useMessagesByIds,
 	useMessagesIdsByFolder
 } from 'store/emails/store';
-import { generateMessage } from '__test__/generators/generateMessage';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
+
+const NO_NOTIFIED_ITEMS: NotifiedItems = { deletedIds: new Set(), changedIds: new Set() };
 
 describe('message-slice-utils', () => {
 	describe('useMessagesSlice', () => {
@@ -282,6 +288,212 @@ describe('message-slice-utils', () => {
 				await act(async () => appendMessagesToMessagesSlice([updatedMessage1], 555, false));
 				const { result } = renderHook(() => usePopulatedItemsSlice());
 				expect(result.current.messages).toEqual({ '1': updatedMessage1 });
+			});
+		});
+	});
+
+	describe('refreshMessagesInEmailStore', () => {
+		it('should replace the list and keep the messages that are no longer in it', async () => {
+			setMessagesInEmailStore([message1, message2], true);
+
+			await act(async () =>
+				refreshMessagesInEmailStore([message3], false, ['1', '2'], NO_NOTIFIED_ITEMS)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current).toEqual({
+				messageListIndex: ['3'],
+				more: false,
+				offset: 0,
+				status: 'fulfilled'
+			});
+			const { result: populated } = renderHook(() => usePopulatedItemsSlice());
+			expect(Object.keys(populated.current.messages)).toEqual(['1', '2', '3']);
+		});
+
+		it('should keep an open message complete while updating what the list carries', async () => {
+			const generatedMessage = generateMessage({ id: '1', isComplete: true, isRead: false });
+			const openMessage = {
+				...generatedMessage,
+				participants: [
+					...(generatedMessage.participants ?? []),
+					{ type: ParticipantRole.CARBON_COPY, address: 'cc@example.com', fullName: 'Cc' }
+				],
+				messageIsFromExternalDomain: true,
+				messageIsFromDistributionList: true,
+				isReadReceiptRequested: true,
+				html: false
+			};
+			setMessagesInEmailStore([openMessage], false);
+			// a message of a list has no body, no headers (_attrs) and only the sender and the first recipient
+			const listMessage = normalizeMailMessageFromSoap({
+				m: {
+					id: '1',
+					l: openMessage.parent,
+					f: '',
+					e: [{ a: 'from@example.com', d: 'From', t: 'f' }],
+					d: openMessage.date
+				},
+				isComplete: false,
+				html: true
+			});
+
+			await act(async () =>
+				refreshMessagesInEmailStore([listMessage], false, ['1'], NO_NOTIFIED_ITEMS)
+			);
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(
+				expect.objectContaining({
+					isComplete: true,
+					read: true,
+					body: openMessage.body,
+					participants: openMessage.participants,
+					messageIsFromExternalDomain: true,
+					messageIsFromDistributionList: true,
+					isReadReceiptRequested: true,
+					html: false
+				})
+			);
+		});
+
+		it('should keep the messages of the pages loaded while the list was searched again', async () => {
+			// the list had 2 messages when it was searched again, then a third one was loaded by scrolling
+			setMessagesInEmailStore([message1, message2, message3], true);
+
+			await act(async () =>
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '4' }), message1],
+					true,
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current.messageListIndex).toEqual(['4', '1', '3']);
+			expect(index.current.more).toBe(true);
+		});
+
+		it('should keep the messages of the pages loaded while a searched message was deleted', async () => {
+			// the list had 2 messages when it was searched again, then the second one was deleted and
+			// a third one was loaded by scrolling
+			setMessagesInEmailStore([message1, message3], true);
+
+			await act(async () =>
+				refreshMessagesInEmailStore([message1], true, ['1', '2'], NO_NOTIFIED_ITEMS)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current.messageListIndex).toEqual(['1', '3']);
+		});
+
+		it('should not keep the messages pushed down by the new ones while the list was searched again', async () => {
+			// the list had 2 messages when it was searched again, then a new one was notified at the top
+			setMessagesInEmailStore([generateMessage({ id: '9' }), message1, message2], true);
+
+			await act(async () =>
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '9' }), message1],
+					false,
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current.messageListIndex).toEqual(['9', '1']);
+			expect(index.current.more).toBe(false);
+		});
+
+		it('should update an incomplete message with what the list carries', async () => {
+			setMessagesInEmailStore([generateMessage({ id: '1', isRead: false })], false);
+			const listMessage = normalizeMailMessageFromSoap({
+				m: { id: '1', l: '2', f: '', e: [] },
+				isComplete: false,
+				html: true
+			});
+
+			await act(async () =>
+				refreshMessagesInEmailStore([listMessage], false, ['1'], NO_NOTIFIED_ITEMS)
+			);
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(expect.objectContaining({ isComplete: false, read: true }));
+		});
+
+		it('should keep what was notified for a stored message while the list was searched again', async () => {
+			setMessagesInEmailStore([generateMessage({ id: '1', isRead: true })], false);
+			const notifiedItems: NotifiedItems = { deletedIds: new Set(), changedIds: new Set(['1']) };
+
+			await act(async () =>
+				refreshMessagesInEmailStore(
+					[generateMessage({ id: '1', isRead: false })],
+					false,
+					['1'],
+					notifiedItems
+				)
+			);
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(expect.objectContaining({ read: true }));
+		});
+
+		it('should store a searched message whose change was notified before it was stored', async () => {
+			setMessagesInEmailStore([], false);
+			const notifiedItems: NotifiedItems = { deletedIds: new Set(), changedIds: new Set(['1']) };
+
+			await act(async () =>
+				refreshMessagesInEmailStore([generateMessage({ id: '1' })], false, [], notifiedItems)
+			);
+
+			const { result: index } = renderHook(() => useMessageIndexSlice());
+			expect(index.current.messageListIndex).toEqual(['1']);
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current).toEqual(expect.objectContaining({ id: '1' }));
+		});
+	});
+
+	describe('getRefreshedListIndex', () => {
+		it('should take the searched items as the search returns them', () => {
+			expect(getRefreshedListIndex(['1', '2'], ['3', '1'], ['1', '2'])).toEqual({
+				listIndex: ['3', '1'],
+				keepsLaterPages: false
+			});
+		});
+
+		it('should keep the items of the pages loaded by scrolling meanwhile', () => {
+			expect(getRefreshedListIndex(['1', '2', '3'], ['4', '1'], ['1', '2'])).toEqual({
+				listIndex: ['4', '1', '3'],
+				keepsLaterPages: true
+			});
+		});
+
+		it('should keep the items of the pages loaded by scrolling after a searched item was deleted', () => {
+			expect(getRefreshedListIndex(['1', '3'], ['1'], ['1', '2'])).toEqual({
+				listIndex: ['1', '3'],
+				keepsLaterPages: true
+			});
+		});
+
+		it('should keep at the top the items notified meanwhile which the search does not return', () => {
+			expect(getRefreshedListIndex(['9', '1', '2'], ['1', '2'], ['1', '2'])).toEqual({
+				listIndex: ['9', '1', '2'],
+				keepsLaterPages: false
+			});
+		});
+
+		it('should not keep the searched items pushed down by the notified ones', () => {
+			expect(getRefreshedListIndex(['9', '1', '2'], ['9', '1'], ['1', '2'])).toEqual({
+				listIndex: ['9', '1'],
+				keepsLaterPages: false
+			});
+		});
+
+		it('should keep the items notified into a list which was empty, without pages loaded by scrolling', () => {
+			expect(getRefreshedListIndex(['9'], ['1', '2'], [])).toEqual({
+				listIndex: ['9', '1', '2'],
+				keepsLaterPages: false
 			});
 		});
 	});

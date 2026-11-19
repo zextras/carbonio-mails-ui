@@ -12,13 +12,19 @@ import type { Mock } from 'vitest';
 
 import { searchSoapApi } from 'api/search-soap-api';
 import { API_REQUEST_STATUS } from 'constants/index';
-import { searchEmailStoreAction } from 'store/emails/actions/search-action';
+import {
+	refreshSearchEmailStoreAction,
+	searchEmailStoreAction
+} from 'store/emails/actions/search-action';
+import { recordNotifiedItems } from 'store/emails/notified-items';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
 	setConversationsInEmailStore,
 	resetMessagesAndPopulatedItems,
-	updateConversationsResultsLoadingStatus
+	updateConversationsResultsLoadingStatus,
+	refreshMessagesInEmailStore,
+	refreshConversationsInEmailStore
 } from 'store/emails/store';
 import { SearchSoapApiParams } from 'types/conversations';
 import { SORT_BY } from 'types/sorting';
@@ -60,6 +66,19 @@ describe('searchEmailStoreAction', () => {
 			expect(resetMessagesAndPopulatedItems).toHaveBeenCalledTimes(1);
 		}
 	);
+
+	it('does not apply the results of an aborted search', async () => {
+		const controller = new AbortController();
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			controller.abort();
+			return mockSearchResponseTypeMessage;
+		});
+
+		await searchEmailStoreAction({ ...searchParams, abortSignal: controller.signal });
+
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
+	});
 
 	it('handles successful message search response', async () => {
 		(searchSoapApi as Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
@@ -115,5 +134,151 @@ describe('searchEmailStoreAction', () => {
 		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalledWith(
 			API_REQUEST_STATUS.fulfilled
 		);
+	});
+});
+
+describe('refreshSearchEmailStoreAction', () => {
+	const refreshParams = {
+		searchedListIndex: ['1'],
+		limit: 100,
+		sortBy: SORT_BY.dateDesc,
+		query: 'inId:"2"',
+		locale: 'en',
+		abortSignal: new AbortController().signal
+	};
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it('merges the messages of the list without resetting the store', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ m: [{ id: '1' }], more: true });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+
+		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ offset: 0 }));
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith(
+			[expect.objectContaining({ id: '1' })],
+			true,
+			['1'],
+			expect.anything()
+		);
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(setMessagesInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('searches from the first item as many items as requested', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, limit: 150, types: 'message' });
+
+		expect(searchSoapApi).toHaveBeenCalledWith(expect.objectContaining({ limit: 150, offset: 0 }));
+	});
+
+	it('sets the flags and the tags a message has not, to overwrite the stored ones', async () => {
+		// the server leaves out the flags and the tags of a message which has none
+		(searchSoapApi as Mock).mockResolvedValueOnce({ m: [{ id: '1', l: '2' }], more: false });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith(
+			[
+				expect.objectContaining({
+					id: '1',
+					read: true,
+					flagged: false,
+					urgent: false,
+					isReplied: false,
+					isForwarded: false,
+					hasAttachment: false,
+					tags: []
+				})
+			],
+			false,
+			['1'],
+			expect.anything()
+		);
+	});
+
+	it('sets the flags the messages of a conversation have not, to overwrite the stored ones', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({
+			c: [{ id: '1', m: [{ id: '10' }] }],
+			more: false
+		});
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'conversation' });
+
+		expect(refreshConversationsInEmailStore).toHaveBeenCalledWith(
+			expect.any(Array),
+			[expect.objectContaining({ id: '10', read: true, flagged: false })],
+			false,
+			['1'],
+			expect.anything()
+		);
+	});
+
+	it('empties the list of messages when the folder has no more messages', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ more: false });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+
+		expect(refreshMessagesInEmailStore).toHaveBeenCalledWith([], false, ['1'], expect.anything());
+	});
+
+	it('merges the conversations of the list and their messages without resetting the store', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({
+			c: [{ id: '1', m: [{ id: '10' }] }],
+			more: false
+		});
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'conversation' });
+
+		expect(refreshConversationsInEmailStore).toHaveBeenCalledWith(
+			[expect.objectContaining({ id: '1' })],
+			[expect.objectContaining({ id: '10' })],
+			false,
+			['1'],
+			expect.anything()
+		);
+		expect(resetMessagesAndPopulatedItems).not.toHaveBeenCalled();
+		expect(setConversationsInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('does not apply the results of an aborted refresh', async () => {
+		const controller = new AbortController();
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			controller.abort();
+			return { m: [{ id: '1' }], more: false };
+		});
+
+		await refreshSearchEmailStoreAction({
+			...refreshParams,
+			types: 'message',
+			abortSignal: controller.signal
+		});
+
+		expect(refreshMessagesInEmailStore).not.toHaveBeenCalled();
+	});
+
+	it('passes the items notified while the search is in progress, and only those', async () => {
+		(searchSoapApi as Mock).mockImplementationOnce(async () => {
+			recordNotifiedItems({ deletedIds: ['1'], changedIds: ['2'] });
+			return { m: [{ id: '1' }, { id: '2' }], more: false };
+		});
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'message' });
+		recordNotifiedItems({ deletedIds: ['3'], changedIds: ['4'] });
+
+		const notifiedItems = vi.mocked(refreshMessagesInEmailStore).mock.calls[0][3];
+		expect(notifiedItems).toEqual({ deletedIds: new Set(['1']), changedIds: new Set(['2']) });
+	});
+
+	it('leaves the list as it is when the search fails', async () => {
+		(searchSoapApi as Mock).mockResolvedValueOnce({ Fault: {} });
+
+		await refreshSearchEmailStoreAction({ ...refreshParams, types: 'conversation' });
+
+		expect(refreshConversationsInEmailStore).not.toHaveBeenCalled();
+		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalled();
 	});
 });
