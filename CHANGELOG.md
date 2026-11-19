@@ -1,3 +1,7 @@
+## <small>1.53.1 (2026-11-19)</small>
+
+* fix(CO-4801): keep the image ratio on resize and highlight the edit image button (#1442) ([c686177](https://github.com/zextras/carbonio-mails-ui/commit/c686177)), closes [#1442](https://github.com/zextras/carbonio-mails-ui/issues/1442)
+
 ## 1.53.0 (2026-11-19)
 
 * feat(CO-4799): resize a whole table by dragging its corner (#1441) ([1c38256](https://github.com/zextras/carbonio-mails-ui/commit/1c38256)), closes [#1441](https://github.com/zextras/carbonio-mails-ui/issues/1441)
