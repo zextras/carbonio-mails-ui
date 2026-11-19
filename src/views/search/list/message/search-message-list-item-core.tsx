@@ -7,17 +7,17 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { resolveTagColorHex, Tag, useFolder, useTags } from '@zextras/carbonio-ui-commons';
-import { find, includes, reduce } from 'lodash';
+import { useFolder } from '@zextras/carbonio-ui-commons';
+import { find } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
+import { LineWithTags } from '../../../app/folder-panel/parts/line-with-tags';
 import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subject-row';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage } from 'types/messages';
-import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -38,7 +38,6 @@ export const SearchMessageListItemCore = ({
 	folderId
 }: SearchMessageListItemCoreProps): React.JSX.Element => {
 	const [t] = useTranslation();
-	const tagsFromStore = useTags();
 	const messageFolder = useFolder(completeMessage.parent);
 
 	const accounts = useUserAccounts();
@@ -90,36 +89,6 @@ export const SearchMessageListItemCore = ({
 		return [false, '', '', '', ''];
 	}, [completeMessage, t]);
 
-	const tags = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					if (includes(completeMessage.tags, v.id))
-						acc.push({
-							...v,
-							// casting type to avoid tsignore
-							color: resolveTagColorHex(v) as unknown as number
-						});
-					return acc;
-				},
-				[] as Array<Tag>
-			),
-		[completeMessage.tags, tagsFromStore]
-	);
-
-	const isTagInStore = useTagExist(tags);
-	const showTagIcon = useMemo(
-		() =>
-			completeMessage.tags &&
-			completeMessage.tags.length !== 0 &&
-			completeMessage.tags?.[0] !== '' &&
-			isTagInStore,
-		[isTagInStore, completeMessage.tags]
-	);
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-
 	const scheduledTime = useMemo(
 		() =>
 			t('message.schedule_time', {
@@ -155,15 +124,6 @@ export const SearchMessageListItemCore = ({
 				<Container orientation="horizontal" height="fit" width="fill">
 					<ParticipantsString item={completeMessage} />
 					<Row>
-						{showTagIcon && (
-							<Padding left="small">
-								<Icon
-									data-testid="TagIcon"
-									icon={tagIcon}
-									color={tagIconColor as unknown as string}
-								/>
-							</Padding>
-						)}
 						{completeMessage.hasAttachment && (
 							<Padding left="small">
 								<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
@@ -193,7 +153,7 @@ export const SearchMessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start" crossAlignment="center">
+					<LineWithTags tagIds={completeMessage.tags}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">
@@ -206,7 +166,7 @@ export const SearchMessageListItemCore = ({
 							read={completeMessage.read}
 							fragment={completeMessage.fragment}
 						/>
-					</Row>
+					</LineWithTags>
 					<Row>
 						{completeMessage.urgent && (
 							<Padding left="extrasmall">

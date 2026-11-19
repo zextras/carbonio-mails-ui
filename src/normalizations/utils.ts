@@ -8,13 +8,39 @@ import { getTags } from '@zextras/carbonio-ui-commons';
 import { filter, find, isNil } from 'lodash';
 
 /**
+ * Splits the `tn` attribute into tag names. The server escapes a comma in a name as `\,` and a
+ * backslash as `\\` (TagUtil.encodeTags in carbonio-mailbox), so a plain split would cut those names.
+ */
+const decodeTagNames = (encoded: string): Array<string> => {
+	const names: Array<string> = [];
+	let current = '';
+	let i = 0;
+	while (i < encoded.length) {
+		const char = encoded[i];
+		if (char === '\\' && i + 1 < encoded.length) {
+			current += encoded[i + 1];
+			i += 2;
+		} else {
+			if (char === ',') {
+				names.push(current);
+				current = '';
+			} else {
+				current += char;
+			}
+			i += 1;
+		}
+	}
+	names.push(current);
+	return names;
+};
+
+/**
  * Converts the list of string tag names from soapResponse into an array of tag IDs.
  * If a tag name exists, the ID is returned; otherwise, returns 'nil:tagName'.
  */
 const getTagIdsFromName = (names: string): Array<string> => {
 	const tags = getTags();
-	return names
-		.split(',')
+	return decodeTagNames(names)
 		.map((name) => name.trim())
 		.filter((name) => name)
 		.map((name) => {

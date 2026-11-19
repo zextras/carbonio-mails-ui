@@ -23,7 +23,7 @@ import {
 	DeleteTagModal,
 	resolveTagColorHex
 } from '@zextras/carbonio-ui-commons';
-import { filter, find, map, reduce, some } from 'lodash';
+import { filter, map, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { UIActionDescriptor } from 'types/actions';
@@ -165,28 +165,6 @@ const useTagsArrayFromStore = (): Array<ItemType> => {
 				[]
 			),
 		[tagsFromStore]
-	);
-};
-
-export const useTagExist = (tags: Array<Tag>): boolean => {
-	const tagsArrayFromStore = useTagsArrayFromStore();
-
-	return useMemo(
-		() =>
-			reduce(
-				tags,
-				(acc: boolean, v: Tag) => {
-					let tmp = false;
-					if (
-						find(tagsArrayFromStore, { id: v?.id }) ||
-						(tags?.length > 0 && some(tags, (tag) => tag.id.includes('nil:')))
-					)
-						tmp = true;
-					return tmp;
-				},
-				false
-			),
-		[tags, tagsArrayFromStore]
 	);
 };
 

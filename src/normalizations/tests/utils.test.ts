@@ -51,4 +51,26 @@ describe('getTagIds utility function', () => {
 		// @ts-expect-error Testing with null even though it's not in the function's type
 		expect(getTagIds(null, 'tag1,tag2')).toEqual(['1', '2']);
 	});
+	describe('tag names from tn, escaped by the server', () => {
+		beforeEach(() => {
+			useTagStore.setState({
+				tags: {
+					1: { id: '1', name: 'Clients, EU' },
+					2: { id: '2', name: String.raw`a\b` }
+				}
+			});
+		});
+
+		it('keeps a comma that is part of a tag name', () => {
+			expect(getTagIds(undefined, String.raw`Clients\, EU,Urgent`)).toEqual(['1', 'nil:Urgent']);
+		});
+
+		it('keeps a backslash that is part of a tag name', () => {
+			expect(getTagIds(undefined, String.raw`a\\b`)).toEqual(['2']);
+		});
+
+		it('keeps a comma in the name of a tag not in the user list', () => {
+			expect(getTagIds(undefined, String.raw`Q1\, Q2`)).toEqual(['nil:Q1, Q2']);
+		});
+	});
 });

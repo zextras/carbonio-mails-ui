@@ -80,7 +80,8 @@ describe('conversation-list-item component', () => {
 					/>
 				);
 				expect(await screen.findByText('No tags')).toBeVisible();
-				expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+				expect(screen.queryByTestId('tag-pill')).not.toBeInTheDocument();
+				expect(screen.queryByText(/Tags:/)).not.toBeInTheDocument();
 			});
 
 			test('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {

@@ -6,12 +6,11 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { resolveTagColorHex, Tag, useTags } from '@zextras/carbonio-ui-commons';
-import { filter, forEach, includes, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
 import { ItemBadge } from '../parts/item-badge';
+import { LineWithTags } from '../parts/line-with-tags';
 import { ParticipantsString } from '../parts/participants-string';
 import { NormalizedConversation } from 'types/conversations';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
@@ -40,41 +39,6 @@ export const ConversationListItemCore = ({
 	index,
 	onSelect
 }: ConversationListItemCoreProps): React.JSX.Element => {
-	const tagsFromStore = useTags();
-	const tags = useMemo(
-		() =>
-			uniqBy(
-				reduce(
-					tagsFromStore,
-					(acc: Array<Tag>, v) => {
-						if (includes(conversation.tags, v.id)) {
-							acc.push({
-								...v,
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								color: resolveTagColorHex(v)
-							});
-						} else if ((conversation.tags?.length ?? 0) > 0 && !includes(conversation.tags, v.id)) {
-							forEach(
-								filter(conversation.tags, (tn) => tn.includes('nil:')),
-								(tagNotInList) => {
-									acc.push({
-										id: tagNotInList,
-										name: tagNotInList.split(':')[1],
-										color: 1
-									});
-								}
-							);
-						}
-						return acc;
-					},
-					[]
-				),
-				'id'
-			),
-		[conversation.tags, tagsFromStore]
-	);
-
 	const [t] = useTranslation();
 	/**
 	 * This is the number of messages to display in the conversation badge.
@@ -126,7 +90,7 @@ export const ConversationListItemCore = ({
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
 					<ParticipantsString item={conversation} />
-					<RowInfo item={conversation} tags={tags} />
+					<RowInfo item={conversation} />
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 					{renderBadge && (
@@ -136,11 +100,13 @@ export const ConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-					<ConversationSubjectRow
-						subject={conversation.subject}
-						read={conversation.read}
-						fragment={conversation.fragment}
-					/>
+					<LineWithTags tagIds={conversation.tags}>
+						<ConversationSubjectRow
+							subject={conversation.subject}
+							read={conversation.read}
+							fragment={conversation.fragment}
+						/>
+					</LineWithTags>
 					<Row>
 						{conversation.urgent && (
 							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />

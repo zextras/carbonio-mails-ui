@@ -7,21 +7,11 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
+import { FOLDERS, useTagStore, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
-
-vi.mock('@zextras/carbonio-ui-commons', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	useTags: vi.fn()
-}));
-
-vi.mock('../../../../../ui-actions/tag-actions', () => ({
-	useTagExist: vi.fn().mockReturnValue(true)
-}));
 
 const mockToggle = vi.fn();
 
@@ -39,8 +29,7 @@ describe('SearchMessageListItemCore', () => {
 				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject: subject2 }]
 			});
 
-			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
+			useTagStore.setState({ tags: { tag1: { id: 'tag1', name: 'Tag 1', color: 0 } } });
 
 			setupTest(
 				<SearchMessageListItemCore
@@ -57,13 +46,11 @@ describe('SearchMessageListItemCore', () => {
 			expect(subjectElement.innerHTML).toBe(subject2);
 		});
 	});
-	describe('Tag Icon', () => {
-		it('colors the tag icon with the custom color of the tag', async () => {
+	describe('tags', () => {
+		const renderWithTags = (messageTags: Array<string>): void => {
 			const generatedMessages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+				messageGeneratorParams: [{ id: '123', tags: messageTags, subject }]
 			});
-			(useTags as Mock).mockReturnValue([{ id: 'tag1', name: 'Tag 1', rgb: '#abcdef' }]);
-
 			setupTest(
 				<SearchMessageListItemCore
 					completeMessage={generatedMessages[0]}
@@ -74,101 +61,49 @@ describe('SearchMessageListItemCore', () => {
 					folderId={FOLDERS.INBOX}
 				/>
 			);
+		};
 
-			expect(screen.getByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+		it('tints the pill with the custom colour of the tag', () => {
+			useTagStore.setState({ tags: { tag1: { id: 'tag1', name: 'Tag 1', rgb: '#abcdef' } } });
+
+			renderWithTags(['tag1']);
+
+			expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
 		});
 
-		it('renders tag icon when tags are present and exist in store', async () => {
-			const generatedMessages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+		it('shows a pill named after the tag with its standard colour', () => {
+			useTagStore.setState({ tags: { tag1: { id: 'tag1', name: 'Tag 1', color: 0 } } });
+
+			renderWithTags(['tag1']);
+
+			expect(screen.getByTestId('tag-pill')).toHaveTextContent('Tag 1');
+			expect(screen.getByTestId('tag-dot')).toHaveStyle({
+				'background-color': ZIMBRA_STANDARD_COLORS[0].hex
 			});
-
-			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
-
-			setupTest(
-				<SearchMessageListItemCore
-					completeMessage={generatedMessages[0]}
-					selected={false}
-					selecting={false}
-					index={0}
-					onSelect={mockToggle}
-					folderId={FOLDERS.INBOX}
-				/>
-			);
-
-			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
 		});
 
-		it('does not render tag icon when tags are empty', async () => {
-			const generatedMessages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '123', tags: [], subject }]
-			});
+		it('shows no pill when the message has no tags', () => {
+			useTagStore.setState({ tags: {} });
 
-			const tagsFromStore: { color: number; name: string; id: string }[] = [];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
+			renderWithTags([]);
 
-			setupTest(
-				<SearchMessageListItemCore
-					completeMessage={generatedMessages[0]}
-					selected={false}
-					selecting={false}
-					index={0}
-					onSelect={mockToggle}
-					folderId={FOLDERS.INBOX}
-				/>
-			);
-
-			expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+			expect(screen.queryByTestId('tag-pill')).not.toBeInTheDocument();
 		});
 
-		it('renders tag icon with correct color when a single tag is present', async () => {
-			const generatedMessages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+		it('shows a pill for each tag, alphabetically', () => {
+			useTagStore.setState({
+				tags: {
+					tag1: { id: 'tag1', name: 'Zeta', color: 0 },
+					tag2: { id: 'tag2', name: 'Alpha', color: 1 }
+				}
 			});
 
-			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
+			renderWithTags(['tag1', 'tag2']);
 
-			setupTest(
-				<SearchMessageListItemCore
-					completeMessage={generatedMessages[0]}
-					selected={false}
-					selecting={false}
-					index={0}
-					onSelect={mockToggle}
-					folderId={FOLDERS.INBOX}
-				/>
-			);
-
-			const tagIcon = screen.getByTestId('TagIcon');
-			expect(tagIcon).toHaveStyle(`color: ${ZIMBRA_STANDARD_COLORS[0].hex}`);
-		});
-
-		it('renders tag icon with default color when multiple tags are present', async () => {
-			const generatedMessages = populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '123', tags: ['tag1', 'tag2'], subject }]
-			});
-
-			const tagsFromStore = [
-				{ id: 'tag1', name: 'Tag 1', color: 0 },
-				{ id: 'tag2', name: 'Tag 2', color: 1 }
-			];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
-
-			setupTest(
-				<SearchMessageListItemCore
-					completeMessage={generatedMessages[0]}
-					selected={false}
-					selecting={false}
-					index={0}
-					onSelect={mockToggle}
-					folderId={FOLDERS.INBOX}
-				/>
-			);
-
-			const tagIcon = screen.getByTestId('TagIcon');
-			expect(tagIcon).toHaveStyle('color: rgb(51,51,51)');
+			expect(screen.getAllByTestId('tag-pill').map((pill) => pill.textContent)).toEqual([
+				'Alpha',
+				'Zeta'
+			]);
 		});
 	});
 });
