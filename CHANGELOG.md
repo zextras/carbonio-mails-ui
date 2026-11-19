@@ -1,3 +1,8 @@
+## 1.53.0 (2026-11-19)
+
+* feat(CO-4799): resize a whole table by dragging its corner (#1441) ([1c38256](https://github.com/zextras/carbonio-mails-ui/commit/1c38256)), closes [#1441](https://github.com/zextras/carbonio-mails-ui/issues/1441)
+* fix(CO-4735): keep link formatting on rename and keep URL links removed (#1433) ([1c4167b](https://github.com/zextras/carbonio-mails-ui/commit/1c4167b)), closes [#1433](https://github.com/zextras/carbonio-mails-ui/issues/1433)
+
 ## <small>1.52.4 (2026-11-19)</small>
 
 * fix(CO-1857): show the recipients of a conversation created by a notification (#1439) ([d501144](https://github.com/zextras/carbonio-mails-ui/commit/d501144)), closes [#1439](https://github.com/zextras/carbonio-mails-ui/issues/1439)
