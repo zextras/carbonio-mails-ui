@@ -8,6 +8,7 @@ import { type MutableRefObject, useEffect, useRef, useState } from 'react';
 import { $getSelectionStyleValueForProperty } from '@lexical/selection';
 import { $getSelection, $isRangeSelection, type LexicalEditor, type RangeSelection } from 'lexical';
 
+import { $getSelectedImageNode } from '../nodes/image-node';
 import {
 	$getSelectionBlockType,
 	$readActiveFormatting,
@@ -19,6 +20,8 @@ import {
 
 type ToolbarSelectionSync = {
 	isImageSelected: boolean;
+	/** Whether the selection is exactly one image, which the image dialog then edits. */
+	isSingleImageSelected: boolean;
 	currentBlock: BlockType;
 	activeFormatting: ActiveFormatting;
 	currentFont: string;
@@ -29,13 +32,15 @@ type ToolbarSelectionSync = {
 };
 
 /**
- * Keeps the toolbar in sync with the formatting at the caret: whether a single
- * inline image is selected (to toggle the alignment control), the active
- * font / size / block style (to reflect them in the selectors) and which
- * toggle options (formats, alignment, direction, list) are active.
+ * Keeps the toolbar in sync with the formatting at the caret: whether inline
+ * images are selected (to toggle the alignment control) and whether a single one
+ * is (to highlight the image dialog button), the active font / size / block
+ * style (to reflect them in the selectors) and which toggle options (formats,
+ * alignment, direction, list) are active.
  */
 export function useToolbarSelectionSync(editor: LexicalEditor): ToolbarSelectionSync {
 	const [isImageSelected, setIsImageSelected] = useState(false);
+	const [isSingleImageSelected, setIsSingleImageSelected] = useState(false);
 	const [currentFont, setCurrentFont] = useState('');
 	const [currentFontSize, setCurrentFontSize] = useState('');
 	const [currentTextColor, setCurrentTextColor] = useState('');
@@ -50,6 +55,7 @@ export function useToolbarSelectionSync(editor: LexicalEditor): ToolbarSelection
 			editor.registerUpdateListener(({ editorState }) => {
 				editorState.read(() => {
 					setIsImageSelected($selectionHasImage());
+					setIsSingleImageSelected($getSelectedImageNode() !== null);
 					setCurrentBlock($getSelectionBlockType());
 					setActiveFormatting($readActiveFormatting());
 					const selection = $getSelection();
@@ -69,6 +75,7 @@ export function useToolbarSelectionSync(editor: LexicalEditor): ToolbarSelection
 
 	return {
 		isImageSelected,
+		isSingleImageSelected,
 		currentBlock,
 		activeFormatting,
 		currentFont,

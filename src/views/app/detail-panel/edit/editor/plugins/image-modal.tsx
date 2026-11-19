@@ -7,10 +7,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Button, Container, Input, Modal, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { $getNodeByKey, $getSelection, $isNodeSelection, type LexicalEditor } from 'lexical';
+import { $getNodeByKey, type LexicalEditor } from 'lexical';
 
 import { INSERT_INLINE_IMAGE_COMMAND } from './image-plugin';
-import { $isImageNode } from './nodes/image-node';
+import { $getSelectedImageNode, $isImageNode, type ImageNode } from './nodes/image-node';
 import { type ImageDimension } from './nodes/image-types';
 
 type ImageModalProps = {
@@ -19,9 +19,37 @@ type ImageModalProps = {
 	onClose: () => void;
 };
 
-/** Turns a stored {@link ImageDimension} into the string shown in the input. */
-function dimensionToInput(value: ImageDimension): string {
-	return value === 'inherit' ? '' : String(value);
+/** A dimension of the edited image and the text its input was pre-filled with. */
+type InitialDimension = {
+	value: ImageDimension;
+	input: string;
+};
+
+type InitialDimensions = {
+	width: InitialDimension;
+	height: InitialDimension;
+};
+
+/**
+ * Pre-fills the input of a stored {@link ImageDimension}; an 'inherit' dimension
+ * shows the size the image is currently rendered with.
+ */
+function initialDimension(
+	value: ImageDimension,
+	renderedSize: number | undefined
+): InitialDimension {
+	if (value !== 'inherit') {
+		return { value, input: String(value) };
+	}
+	return { value, input: renderedSize ? String(renderedSize) : '' };
+}
+
+function readInitialDimensions(editor: LexicalEditor, imageNode: ImageNode): InitialDimensions {
+	const rendered = editor.getElementByKey(imageNode.getKey())?.querySelector('img');
+	return {
+		width: initialDimension(imageNode.getWidth(), rendered?.clientWidth),
+		height: initialDimension(imageNode.getHeight(), rendered?.clientHeight)
+	};
 }
 
 /** Turns the input text back into an {@link ImageDimension} (empty/invalid -> 'inherit'). */
@@ -35,9 +63,20 @@ function inputToDimension(value: string): ImageDimension {
 }
 
 /**
+ * Dimension saved for an input. While the input still holds its pre-filled text
+ * the image keeps its own dimension: saving the dialog (e.g. to change the
+ * alternative text) must not pin an image sized by the browser to the size it
+ * happens to be rendered with.
+ */
+function toDimension(input: string, initial: InitialDimension | undefined): ImageDimension {
+	return initial !== undefined && input === initial.input ? initial.value : inputToDimension(input);
+}
+
+/**
  * Modal "Insert/Edit Image" dialog: it collects the image source URL, the
  * alternative description and the width/height. When a single image node is
- * selected the fields are pre-filled so the same dialog edits it in place;
+ * selected the fields are pre-filled so the same dialog edits it in place (the
+ * width/height of an image without explicit size show its rendered size);
  * otherwise a brand-new inline image is inserted at the caret.
  *
  * The width/height fields can be kept proportional through the aspect-ratio
@@ -52,6 +91,7 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 	const [height, setHeight] = useState('');
 	const [locked, setLocked] = useState(true);
 	const editImageKey = useRef<string | null>(null);
+	const initialDimensions = useRef<InitialDimensions | null>(null);
 	const naturalRatio = useRef<number | null>(null);
 
 	useEffect(() => {
@@ -60,29 +100,13 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 		}
 		naturalRatio.current = null;
 		editor.getEditorState().read(() => {
-			const selection = $getSelection();
-			editImageKey.current = null;
-			let nextSrc = '';
-			let nextAlt = '';
-			let nextWidth = '';
-			let nextHeight = '';
-
-			if ($isNodeSelection(selection)) {
-				const nodes = selection.getNodes();
-				const imageNode = nodes.length === 1 && $isImageNode(nodes[0]) ? nodes[0] : null;
-				if (imageNode) {
-					editImageKey.current = imageNode.getKey();
-					nextSrc = imageNode.getSrc();
-					nextAlt = imageNode.getAltText();
-					nextWidth = dimensionToInput(imageNode.getWidth());
-					nextHeight = dimensionToInput(imageNode.getHeight());
-				}
-			}
-
-			setSrc(nextSrc);
-			setAltText(nextAlt);
-			setWidth(nextWidth);
-			setHeight(nextHeight);
+			const imageNode = $getSelectedImageNode();
+			editImageKey.current = imageNode?.getKey() ?? null;
+			initialDimensions.current = imageNode ? readInitialDimensions(editor, imageNode) : null;
+			setSrc(imageNode?.getSrc() ?? '');
+			setAltText(imageNode?.getAltText() ?? '');
+			setWidth(initialDimensions.current?.width.input ?? '');
+			setHeight(initialDimensions.current?.height.input ?? '');
 		});
 		setLocked(true);
 	}, [editor, open]);
@@ -154,8 +178,9 @@ export const ImageModal = ({ editor, open, onClose }: ImageModalProps): React.JS
 		if (!src) {
 			return;
 		}
-		const nextWidth = inputToDimension(width);
-		const nextHeight = inputToDimension(height);
+		const initial = initialDimensions.current;
+		const nextWidth = toDimension(width, initial?.width);
+		const nextHeight = toDimension(height, initial?.height);
 		const key = editImageKey.current;
 		if (key) {
 			editor.update(() => {

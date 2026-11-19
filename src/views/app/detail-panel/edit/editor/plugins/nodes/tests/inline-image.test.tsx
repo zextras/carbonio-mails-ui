@@ -20,13 +20,23 @@ const EDITOR_TEST_ID = 'edit-view-editor';
 const IMAGE_HTML =
 	'<p><img src="https://example.com/inline.png" alt="pic" data-pnsrc="cid:abc@carbonio" /></p>';
 
+const INSERT_IMAGE_LABEL = 'lexical-label.insert_image_url';
+const EDIT_IMAGE_LABEL = 'lexical-label.edit_image';
+
+/** Exported size of a 200x100 image resized to 300px of width. */
+const RESIZED_WIDTH = 'width: 300px';
+const RESIZED_HEIGHT = 'height: 150px';
+const RESIZED_WIDTH_PX = '300px';
+
 function richTextOf(editorId: string): string {
 	return useEditorsStore.getState().editors[editorId]?.text.richText ?? '';
 }
 
+type TestUser = ReturnType<typeof setupTest>['user'];
+
 function setupEditorWithHtml(richText: string): {
 	editorId: string;
-	user: ReturnType<typeof setupTest>['user'];
+	user: TestUser;
 } {
 	const editor = generateNewMessageEditor();
 	editor.text = { plainText: 'pic', richText };
@@ -38,6 +48,41 @@ function setupEditorWithHtml(richText: string): {
 async function findEditorImage(): Promise<HTMLImageElement> {
 	const editorElement = screen.getByTestId(EDITOR_TEST_ID);
 	return (await within(editorElement).findByRole('img')) as HTMLImageElement;
+}
+
+type Size = { width: number; height: number };
+
+/**
+ * jsdom has no layout and loads no image: gives the images a natural size and
+ * the size they are rendered with.
+ */
+function mockImageGeometry(natural: Size, rendered: Size = natural): void {
+	vi.spyOn(HTMLImageElement.prototype, 'naturalWidth', 'get').mockReturnValue(natural.width);
+	vi.spyOn(HTMLImageElement.prototype, 'naturalHeight', 'get').mockReturnValue(natural.height);
+	vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue(
+		rendered as DOMRect
+	);
+}
+
+type Pointer = { clientX: number; clientY: number };
+
+/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+/** Drags a resize handle from the origin to `to` and releases it there. */
+function dragHandle(handle: Element, to: Pointer): void {
+	fireEvent.mouseDown(handle, { clientX: 0, clientY: 0 });
+	fireEvent.mouseMove(document, to);
+	fireEvent.mouseUp(document, to);
+}
+/* eslint-enable testing-library/prefer-user-event */
+
+/** Selects the image of the editor and drags its `handle` resize handle to `to`. */
+async function resizeImage(user: TestUser, handle: string, to: Pointer): Promise<void> {
+	await user.click(await findEditorImage());
+	dragHandle(await screen.findByTestId(`image-resizer-${handle}`), to);
+}
+
+function imageTagOf(editorId: string): string {
+	return /<img [^>]*>/.exec(richTextOf(editorId))?.[0] ?? '';
 }
 
 /**
@@ -163,9 +208,10 @@ const MOVABLE_IMAGE_HTML =
 
 describe('Inline image editing', () => {
 	afterEach(() => {
-		// Remove the mocks installed by mockDropPosition
+		// Remove the mocks installed by mockDropPosition and mockImageGeometry
 		Reflect.deleteProperty(document, 'caretPositionFromPoint');
 		Reflect.deleteProperty(document, 'caretRangeFromPoint');
+		vi.restoreAllMocks();
 	});
 
 	it('renders an inline image from existing draft HTML', async () => {
@@ -186,23 +232,186 @@ describe('Inline image editing', () => {
 		expect(screen.getByTestId('image-resizer-e')).toBeInTheDocument();
 	});
 
-	it('persists the new size after dragging a resize handle', async () => {
+	it('highlights the image dialog button, labelled as edit, only while a single image is selected', async () => {
+		const { user } = setupEditorWithHtml(
+			'<p><img src="https://example.com/a.png" alt="first" />' +
+				'<img src="https://example.com/b.png" alt="second" /></p>'
+		);
+		const editorElement = screen.getByTestId(EDITOR_TEST_ID);
+		const first = await within(editorElement).findByRole('img', { name: 'first' });
+
+		expect(screen.getByRole('button', { name: INSERT_IMAGE_LABEL, pressed: false })).toBeVisible();
+
+		await user.click(first);
+
+		expect(
+			await screen.findByRole('button', { name: EDIT_IMAGE_LABEL, pressed: true })
+		).toBeVisible();
+
+		// With two images selected the dialog would insert a new image, not edit one
+		await user.keyboard('{Shift>}');
+		await user.click(within(editorElement).getByRole('img', { name: 'second' }));
+		await user.keyboard('{/Shift}');
+
+		expect(
+			await screen.findByRole('button', { name: INSERT_IMAGE_LABEL, pressed: false })
+		).toBeVisible();
+		expect(screen.getByRole('button', { name: 'lexical-label.image_align' })).toBeVisible();
+	});
+
+	it('resizes freely, persisting the new size, when the size of the image cannot be read', async () => {
+		// jsdom: no natural nor rendered size
 		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
 
-		const image = await findEditorImage();
-		await user.click(image);
-
-		const handle = await screen.findByTestId('image-resizer-se');
-		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
-		fireEvent.mouseDown(handle, { clientX: 0, clientY: 0 });
-		fireEvent.mouseMove(document, { clientX: 120, clientY: 80 });
-		fireEvent.mouseUp(document, { clientX: 120, clientY: 80 });
-		/* eslint-enable testing-library/prefer-user-event */
+		await resizeImage(user, 'se', { clientX: 120, clientY: 80 });
 
 		await waitFor(() => {
 			expect(richTextOf(editorId)).toContain('width: 120px');
 		});
 		expect(richTextOf(editorId)).toContain('height: 80px');
+	});
+
+	// Side handles drive their own axis; corner handles follow the axis moved the most
+	it.each([
+		{ handle: 'e', to: { clientX: 100, clientY: 70 } },
+		{ handle: 'w', to: { clientX: -100, clientY: 70 } },
+		{ handle: 's', to: { clientX: 70, clientY: 50 } },
+		{ handle: 'n', to: { clientX: 70, clientY: -50 } },
+		{ handle: 'se', to: { clientX: 100, clientY: 10 } },
+		{ handle: 'nw', to: { clientX: -100, clientY: -5 } },
+		{ handle: 'ne', to: { clientX: 100, clientY: -5 } },
+		{ handle: 'sw', to: { clientX: -5, clientY: 50 } }
+	])('keeps the aspect ratio when dragging the $handle handle', async ({ handle, to }) => {
+		mockImageGeometry({ width: 200, height: 100 });
+		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+
+		await resizeImage(user, handle, to);
+
+		await waitFor(() => {
+			expect(imageTagOf(editorId)).toContain(RESIZED_WIDTH);
+		});
+		expect(imageTagOf(editorId)).toContain(RESIZED_HEIGHT);
+	});
+
+	it.each<[string, Size, Size]>([
+		[
+			'the natural ratio over the rendered one',
+			{ width: 200, height: 100 },
+			{ width: 200, height: 200 }
+		],
+		[
+			'the rendered ratio while the image is not loaded',
+			{ width: 0, height: 0 },
+			{ width: 200, height: 100 }
+		]
+	])('keeps %s', async (_, natural, rendered) => {
+		mockImageGeometry(natural, rendered);
+		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+
+		await resizeImage(user, 'e', { clientX: 100, clientY: 0 });
+
+		await waitFor(() => {
+			expect(imageTagOf(editorId)).toContain(RESIZED_WIDTH);
+		});
+		expect(imageTagOf(editorId)).toContain(RESIZED_HEIGHT);
+	});
+
+	it.each([
+		{ shape: 'wide', size: { width: 200, height: 100 }, expected: { width: 80, height: 40 } },
+		{ shape: 'tall', size: { width: 100, height: 200 }, expected: { width: 40, height: 80 } }
+	])(
+		'stops shrinking a $shape image when its smaller side reaches 40px, keeping the ratio',
+		async ({ size, expected }) => {
+			mockImageGeometry(size);
+			const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+
+			await resizeImage(user, 'se', { clientX: -500, clientY: -500 });
+
+			await waitFor(() => {
+				expect(imageTagOf(editorId)).toContain(`width: ${expected.width}px`);
+			});
+			expect(imageTagOf(editorId)).toContain(`height: ${expected.height}px`);
+		}
+	);
+
+	it('does not enlarge an image already thinner than the minimum to reach it', async () => {
+		// A 600x10 divider: reaching 40px of height would make it 2400px wide
+		mockImageGeometry({ width: 600, height: 10 });
+		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+
+		await resizeImage(user, 'e', { clientX: -300, clientY: 0 });
+
+		await waitFor(() => {
+			expect(imageTagOf(editorId)).toContain('width: 600px');
+		});
+		expect(imageTagOf(editorId)).toContain('height: 10px');
+	});
+
+	it('previews the size while dragging and commits it only on mouse up', async () => {
+		mockImageGeometry({ width: 200, height: 100 });
+		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+		const image = await findEditorImage();
+		await user.click(image);
+		const handle = await screen.findByTestId('image-resizer-e');
+
+		/* eslint-disable testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates */
+		fireEvent.mouseDown(handle, { clientX: 0, clientY: 0 });
+		fireEvent.mouseMove(document, { clientX: 100, clientY: 0 });
+
+		// The height follows the ratio, so a container narrower than the image can't distort it
+		expect(image).toHaveStyle({ width: RESIZED_WIDTH_PX, height: 'auto' });
+		// eslint-disable-next-line jest-dom/prefer-to-have-style -- jsdom's CSS parser drops aspect-ratio, so toHaveStyle can't see it
+		expect(image.style.aspectRatio).toBe('300 / 150');
+		expect(imageTagOf(editorId)).not.toContain('width:');
+
+		fireEvent.mouseUp(document, { clientX: 100, clientY: 0 });
+		/* eslint-enable testing-library/prefer-user-event */
+
+		await waitFor(() => {
+			expect(imageTagOf(editorId)).toContain(RESIZED_WIDTH);
+		});
+	});
+
+	it('renders an image with both sizes set with the height following their ratio', async () => {
+		const { editorId } = setupEditorWithHtml(
+			'<p><img src="https://example.com/inline.png" alt="pic" style="width: 300px; height: 150px;" /></p>'
+		);
+
+		const image = await findEditorImage();
+
+		expect(image).toHaveStyle({ width: RESIZED_WIDTH_PX, height: 'auto', maxWidth: '100%' });
+		// eslint-disable-next-line jest-dom/prefer-to-have-style -- jsdom's CSS parser drops aspect-ratio, so toHaveStyle can't see it
+		expect(image.style.aspectRatio).toBe('300 / 150');
+		// The exported HTML keeps both sizes
+		await waitFor(() => {
+			expect(imageTagOf(editorId)).toContain(RESIZED_WIDTH);
+		});
+		expect(imageTagOf(editorId)).toContain(RESIZED_HEIGHT);
+	});
+
+	it('stops following the pointer when the image is deleted while resizing', async () => {
+		const addListener = vi.spyOn(document, 'addEventListener');
+		const removeListener = vi.spyOn(document, 'removeEventListener');
+		const { editorId, user } = setupEditorWithHtml(IMAGE_HTML);
+		await user.click(await findEditorImage());
+		const handle = await screen.findByTestId('image-resizer-se');
+
+		addListener.mockClear();
+		// eslint-disable-next-line testing-library/prefer-user-event -- simulating a pointer drag with explicit coordinates
+		fireEvent.mouseDown(handle, { clientX: 0, clientY: 0 });
+		const dragListeners = addListener.mock.calls.filter(
+			([type]) => type === 'mousemove' || type === 'mouseup'
+		);
+		expect(dragListeners).toHaveLength(2);
+
+		await user.keyboard('{Delete}');
+
+		await waitFor(() => {
+			expect(richTextOf(editorId)).not.toContain('<img ');
+		});
+		dragListeners.forEach(([type, listener]) => {
+			expect(removeListener).toHaveBeenCalledWith(type, listener);
+		});
 	});
 
 	it('aligns the selected image from the toolbar control', async () => {
