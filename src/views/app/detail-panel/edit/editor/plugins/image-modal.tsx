@@ -69,7 +69,7 @@ function inputToDimension(value: string): ImageDimension {
  * happens to be rendered with.
  */
 function toDimension(input: string, initial: InitialDimension | undefined): ImageDimension {
-	return initial !== undefined && input === initial.input ? initial.value : inputToDimension(input);
+	return initial?.input === input ? initial.value : inputToDimension(input);
 }
 
 /**
