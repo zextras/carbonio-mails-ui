@@ -1,3 +1,7 @@
+## <small>1.52.4 (2026-11-19)</small>
+
+* fix(CO-1857): show the recipients of a conversation created by a notification (#1439) ([d501144](https://github.com/zextras/carbonio-mails-ui/commit/d501144)), closes [#1439](https://github.com/zextras/carbonio-mails-ui/issues/1439)
+
 ## <small>1.52.3 (2026-11-18)</small>
 
 * fix(CO-4768): show subject and size of the .eml in forward as attachment (#1438) ([461b217](https://github.com/zextras/carbonio-mails-ui/commit/461b217)), closes [#1438](https://github.com/zextras/carbonio-mails-ui/issues/1438)
