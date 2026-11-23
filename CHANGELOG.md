@@ -1,3 +1,7 @@
+## <small>1.53.2 (2026-11-23)</small>
+
+* fix(CO-4587): refresh the mailbox state after an archive import (#1435) ([941b124](https://github.com/zextras/carbonio-mails-ui/commit/941b124)), closes [#1435](https://github.com/zextras/carbonio-mails-ui/issues/1435)
+
 ## <small>1.53.1 (2026-11-19)</small>
 
 * fix(CO-4801): keep the image ratio on resize and highlight the edit image button (#1442) ([c686177](https://github.com/zextras/carbonio-mails-ui/commit/c686177)), closes [#1442](https://github.com/zextras/carbonio-mails-ui/issues/1442)
