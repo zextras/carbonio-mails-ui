@@ -1,3 +1,7 @@
+## <small>1.53.3 (2026-11-23)</small>
+
+* fix: show the notes of a share invitation as plain text (#1443) ([d146ca6](https://github.com/zextras/carbonio-mails-ui/commit/d146ca6)), closes [#1443](https://github.com/zextras/carbonio-mails-ui/issues/1443)
+
 ## <small>1.53.2 (2026-11-23)</small>
 
 * fix(CO-4587): refresh the mailbox state after an archive import (#1435) ([941b124](https://github.com/zextras/carbonio-mails-ui/commit/941b124)), closes [#1435](https://github.com/zextras/carbonio-mails-ui/issues/1435)
