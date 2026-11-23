@@ -86,6 +86,7 @@ export const RichToolbarPlugin = ({
 
 	const {
 		isImageSelected,
+		isSingleImageSelected,
 		currentBlock,
 		activeFormatting,
 		currentFont,
@@ -369,10 +370,16 @@ export const RichToolbarPlugin = ({
 					onClick={(): void => fileInputRef.current?.click()}
 				/>
 			)}
+			{/* The same dialog inserts an image from a URL or edits the selected one */}
 			<ToolbarIconButton
 				icon={editorIcon('edit-image')}
-				label={t('lexical-label.insert_image_url', 'Image from URL')}
+				label={
+					isSingleImageSelected
+						? t('lexical-label.edit_image', 'Edit image')
+						: t('lexical-label.insert_image_url', 'Image from URL')
+				}
 				onClick={openImageModal}
+				active={isSingleImageSelected}
 			/>
 			{isImageSelected && (
 				<Tooltip label={t('lexical-label.image_align', 'Align image')}>

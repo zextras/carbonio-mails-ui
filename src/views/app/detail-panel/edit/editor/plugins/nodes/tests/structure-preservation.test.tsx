@@ -435,6 +435,23 @@ describe('structure preservation of imported HTML', () => {
 			expect(exported.style.position).toBe('fixed');
 		});
 
+		it('does not let a table that looks created in the editor bring positioning styles', async () => {
+			// Pasted from a web page: the editor class and no attribute of a foreign table
+			const editor = await mountWith(
+				`<table class="${EDITOR_TABLE_CLASS}" style="position: fixed; top: 0; left: 0; z-index: 99999; ${RESIZED_TABLE_STYLE}">` +
+					'<tbody><tr><td>overlay</td></tr></tbody></table>'
+			);
+
+			const live = liveTable();
+			expect(live.style.position).toBe('');
+			expect(live.style.zIndex).toBe('');
+			expect(live.style.top).toBe('');
+			// the size the editor pins on its tables is kept
+			expect(live.style.width).toBe('300px');
+			expect(live.style.tableLayout).toBe('fixed');
+			expect(exportedTableOf(editor).style.position).toBe('');
+		});
+
 		it('does not apply the id of an external message to the live editor element', async () => {
 			await mountWith('<div id="root-container"><p>Hello</p></div>');
 			const editorElement = screen.getByTestId(EDITOR_TESTID);

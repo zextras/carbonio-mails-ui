@@ -15,7 +15,7 @@ import {
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
-import { flatten, forEach, isEmpty, isNil, map, sortBy } from 'lodash';
+import { flatten, forEach, isEmpty, isNil, map, sortBy, uniqBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
@@ -26,6 +26,7 @@ import {
 } from 'normalizations/normalize-conversation';
 import {
 	normalizeMailMessageFromSoap,
+	normalizeParticipantsFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from 'normalizations/normalize-message';
 import { recordNotifiedItems } from 'store/emails/notified-items';
@@ -39,12 +40,14 @@ import {
 	updateMessages
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
+import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage } from 'types/messages';
 import { SearchConversationHit } from 'types/soap/search';
 import {
 	HandleFoldersNotifyProps,
 	HandleTagsNotifyProps,
-	MailsSoapNotify
+	MailsSoapNotify,
+	SoapNotifyMessage
 } from 'views/sidebar/commons/types';
 
 export function extractConvMessage(
@@ -102,6 +105,26 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 	});
 }
 
+/**
+ * A conversation of a notification lists only its senders (ToXML.encodeItem): add the 'To' recipients of its
+ * messages created in the same notification, as a search with recip does for the conversations it returns.
+ */
+function addRecipientsOfCreatedMessages(
+	conversation: NormalizedConversation,
+	createdMessages: Array<SoapNotifyMessage>
+): NormalizedConversation {
+	const recipients = createdMessages
+		.filter((message) => message.cid === conversation.id)
+		.flatMap((message) => message.e ?? [])
+		.filter((participant) => participant.t === 't')
+		.map(normalizeParticipantsFromSoap);
+	const participants = uniqBy(
+		[...conversation.participants, ...recipients],
+		(participant) => `${participant.type}:${participant.address}`
+	);
+	return { ...conversation, participants };
+}
+
 function processCreatedNotifications(notify: MailsSoapNotify, navigate: NavigateFunction): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
 	const newConversations = createdConversations ?? [];
@@ -110,7 +133,10 @@ function processCreatedNotifications(notify: MailsSoapNotify, navigate: Navigate
 	// in case of created, we have SoapConversation
 	if (createdConversations && createdMessages) {
 		const conversationsWithMessageIds = map(newConversations, (conversation) =>
-			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
+			addRecipientsOfCreatedMessages(
+				mapToNormalizedConversation({ conversation, messages: allReceivedMessages }),
+				newMessages
+			)
 		);
 		handleNotifyConversationsCreated(conversationsWithMessageIds);
 		// modified messages are partial: processModifiedNotifications updates them without defaults

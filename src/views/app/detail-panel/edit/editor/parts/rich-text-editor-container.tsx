@@ -40,6 +40,7 @@ import { PastePlugin } from '../plugins/paste-plugin';
 import { RichToolbarPlugin } from '../plugins/rich-toolbar-plugin';
 import { TableActionMenuPlugin } from '../plugins/table-action-menu-plugin';
 import { TableCellResizerPlugin } from '../plugins/table-cell-resizer-plugin';
+import { TableCornerResizerPlugin } from '../plugins/table-corner-resizer-plugin';
 import { TableHoverActionsPlugin } from '../plugins/table-hover-actions-plugin';
 import {
 	UNLINKED_AUTO_LINK_HTML_EXPORT,
@@ -317,6 +318,39 @@ export const LexicalWrapper = styled.div<{
 		height: 0.0625rem;
 	}
 
+	/* Above the "+" buttons, which end under the corner of the table. */
+	.mails-lexical-table-corner-resizer {
+		position: absolute;
+		z-index: 4;
+		width: 0.625rem;
+		height: 0.625rem;
+		padding: 0;
+		border: 0.0625rem solid ${({ theme }): string => theme.palette.primary.regular};
+		background: ${({ theme }): string => theme.palette.gray6.regular};
+		transform: translate(-50%, -50%);
+		cursor: nwse-resize;
+		appearance: none;
+	}
+
+	.mails-lexical-table-corner-resizer:hover {
+		background: ${({ theme }): string => theme.palette.primary.regular};
+	}
+
+	.mails-lexical-table-corner-resizer-outline {
+		position: absolute;
+		z-index: 4;
+		box-sizing: border-box;
+		border: 0.0625rem dashed ${({ theme }): string => theme.palette.primary.regular};
+		pointer-events: none;
+	}
+
+	.mails-lexical-table-corner-resizer-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 5;
+		cursor: nwse-resize;
+	}
+
 	.mails-lexical-table-hover-action {
 		position: absolute;
 		z-index: 3;
@@ -441,6 +475,7 @@ export const RichTextEditorContainer = ({
 					<TablePlugin hasCellMerge hasCellBackgroundColor hasTabHandler />
 					<TableActionMenuPlugin />
 					<TableCellResizerPlugin />
+					<TableCornerResizerPlugin />
 					<TableHoverActionsPlugin />
 					<ImagePlugin />
 					<PastePlugin onResolveInlineImages={onResolveInlineImages} />

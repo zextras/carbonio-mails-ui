@@ -1,3 +1,16 @@
+## <small>1.53.1 (2026-11-19)</small>
+
+* fix(CO-4801): keep the image ratio on resize and highlight the edit image button (#1442) ([c686177](https://github.com/zextras/carbonio-mails-ui/commit/c686177)), closes [#1442](https://github.com/zextras/carbonio-mails-ui/issues/1442)
+
+## 1.53.0 (2026-11-19)
+
+* feat(CO-4799): resize a whole table by dragging its corner (#1441) ([1c38256](https://github.com/zextras/carbonio-mails-ui/commit/1c38256)), closes [#1441](https://github.com/zextras/carbonio-mails-ui/issues/1441)
+* fix(CO-4735): keep link formatting on rename and keep URL links removed (#1433) ([1c4167b](https://github.com/zextras/carbonio-mails-ui/commit/1c4167b)), closes [#1433](https://github.com/zextras/carbonio-mails-ui/issues/1433)
+
+## <small>1.52.4 (2026-11-19)</small>
+
+* fix(CO-1857): show the recipients of a conversation created by a notification (#1439) ([d501144](https://github.com/zextras/carbonio-mails-ui/commit/d501144)), closes [#1439](https://github.com/zextras/carbonio-mails-ui/issues/1439)
+
 ## <small>1.52.3 (2026-11-18)</small>
 
 * fix(CO-4768): show subject and size of the .eml in forward as attachment (#1438) ([461b217](https://github.com/zextras/carbonio-mails-ui/commit/461b217)), closes [#1438](https://github.com/zextras/carbonio-mails-ui/issues/1438)

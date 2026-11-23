@@ -37,6 +37,18 @@ function dimensionToStyle(value: ImageDimension): number | undefined {
 }
 
 /**
+ * Inline style of the rendered image. With both dimensions set, the height
+ * follows their ratio instead of being fixed: a fixed height would distort the
+ * image once `max-width: 100%` caps its width in a narrow editor.
+ */
+function imageStyle(width: ImageDimension, height: ImageDimension): React.CSSProperties {
+	if (width !== 'inherit' && height !== 'inherit') {
+		return { width, height: 'auto', aspectRatio: `${width} / ${height}`, maxWidth: '100%' };
+	}
+	return { width: dimensionToStyle(width), height: dimensionToStyle(height), maxWidth: '100%' };
+}
+
+/**
  * React view for an inline image node. Makes the image selectable (click to
  * select, Delete/Backspace to remove) and, while selected, renders the
  * {@link ImageResizer} drag handles. Mirrors the Lexical playground behavior.
@@ -124,11 +136,7 @@ export const ImageComponent = ({
 				alt={altText}
 				draggable={isEditable}
 				onDoubleClick={onDoubleClick}
-				style={{
-					width: dimensionToStyle(width),
-					height: dimensionToStyle(height),
-					maxWidth: '100%'
-				}}
+				style={imageStyle(width, height)}
 			/>
 			{resizable && (
 				<ImageResizer

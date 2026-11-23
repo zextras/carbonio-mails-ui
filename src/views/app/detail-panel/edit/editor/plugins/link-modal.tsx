@@ -23,7 +23,8 @@ import {
 	$getSelection,
 	$isRangeSelection,
 	type LexicalEditor,
-	type RangeSelection
+	type RangeSelection,
+	type TextNode
 } from 'lexical';
 
 type LinkModalProps = {
@@ -33,6 +34,22 @@ type LinkModalProps = {
 };
 
 type LinkTarget = 'self' | 'blank';
+
+/**
+ * A text node with the given text and the formatting (bold, italic, ...) and inline
+ * style (colour, font, ...) of the first text run of the link, so that renaming a
+ * link keeps its look. When the link is made of several runs, the new text takes
+ * the formatting of the first one.
+ */
+function $createLinkTextNode(linkNode: LinkNode, text: string): TextNode {
+	const textNode = $createTextNode(text);
+	const [firstRun] = linkNode.getAllTextNodes();
+	if (firstRun) {
+		textNode.setFormat(firstRun.getFormat());
+		textNode.setStyle(firstRun.getStyle());
+	}
+	return textNode;
+}
 
 /**
  * Updates an existing link node, replacing its text only when changed. An auto-link
@@ -55,7 +72,7 @@ function $updateLinkNode(
 	if (text && text !== linkNode.getTextContent()) {
 		// Swap the children in a single splice: removing them one by one would also
 		// remove the link itself, since a link cannot be left empty.
-		linkNode.splice(0, linkNode.getChildrenSize(), [$createTextNode(text)]);
+		linkNode.splice(0, linkNode.getChildrenSize(), [$createLinkTextNode(linkNode, text)]);
 	}
 }
 

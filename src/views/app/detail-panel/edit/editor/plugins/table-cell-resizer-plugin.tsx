@@ -6,7 +6,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { getCSSFromStyleObject } from '@lexical/selection';
 import {
 	$computeTableMap,
 	$getTableCellNodeFromLexicalNode,
@@ -15,87 +14,20 @@ import {
 	$isTableCellNode,
 	getDOMCellFromTarget,
 	TableCellNode,
-	TableMapType,
-	TableMapValueType,
 	TableNode
 } from '@lexical/table';
 import { t } from '@zextras/carbonio-shell-ui';
 import { $getNearestNodeFromDOMNode, getStyleObjectFromCSS, LexicalEditor } from 'lexical';
 import { createPortal } from 'react-dom';
 
-const MIN_COLUMN_WIDTH = 40;
-const MIN_ROW_HEIGHT = 24;
-
-const TABLE_WIDTH_PROPERTIES = new Set(['width', 'table-layout']);
-
-const sum = (values: ReadonlyArray<number>): number =>
-	values.reduce((total, value) => total + value, 0);
-
-/**
- * The distinct cells covering `columnIndex`, in row order. A cell spanning more
- * rows appears once.
- */
-function cellsOfColumn(tableMap: TableMapType, columnIndex: number): Array<TableMapValueType> {
-	const seen = new Set<string>();
-	return tableMap.flatMap((row) => {
-		const value = row[columnIndex];
-		if (!value || seen.has(value.cell.getKey())) {
-			return [];
-		}
-		seen.add(value.cell.getKey());
-		return [value];
-	});
-}
-
-/**
- * The width of each column. Tables pasted from sources like Excel define them
- * via <colgroup><col>, which "table-layout: fixed" prioritizes over the <td>
- * width; otherwise the width of a cell covering only that column is used, and
- * then its on-screen width: defaulting to MIN_COLUMN_WIDTH would visibly
- * collapse the column, since most tables (anything not pasted with per-cell
- * widths) have no colWidths/cell width to fall back on. A cell spanning more
- * columns doesn't tell the width of each one, so it is only the last resort.
- */
-function $getColumnWidths(
-	editor: LexicalEditor,
-	tableNode: TableNode,
-	tableMap: TableMapType
-): Array<number> {
-	const existingColWidths = tableNode.getColWidths();
-	return Array.from({ length: tableNode.getColumnCount() }, (_, index) => {
-		const existingWidth = existingColWidths?.[index];
-		if (existingWidth) {
-			return existingWidth;
-		}
-		const cells = cellsOfColumn(tableMap, index).map(({ cell }) => cell);
-		const singleColumnCells = cells.filter((cell) => cell.getColSpan() === 1);
-		const cellWidth = singleColumnCells.find((cell) => cell.getWidth())?.getWidth();
-		if (cellWidth) {
-			return cellWidth;
-		}
-		const measuredCell = singleColumnCells[0] ?? cells[0];
-		const measuredElement = measuredCell ? editor.getElementByKey(measuredCell.getKey()) : null;
-		return measuredElement
-			? Math.round(measuredElement.getBoundingClientRect().width / measuredCell.getColSpan())
-			: MIN_COLUMN_WIDTH;
-	});
-}
-
-/**
- * Returns `style` with its `width` and `table-layout` declarations replaced so
- * the table is exactly `widthPx` wide (an auto-layout table would instead widen
- * to fit its content), keeping every other declaration.
- */
-function withTableWidth(style: string, widthPx: number): string {
-	const others = Object.entries(getStyleObjectFromCSS(style)).filter(
-		([property]) => !TABLE_WIDTH_PROPERTIES.has(property.toLowerCase())
-	);
-	return getCSSFromStyleObject({
-		...Object.fromEntries(others),
-		width: `${widthPx}px`,
-		'table-layout': 'fixed'
-	});
-}
+import {
+	$applyColumnWidths,
+	$getColumnWidths,
+	MIN_COLUMN_WIDTH,
+	MIN_ROW_HEIGHT,
+	sum,
+	withTableWidth
+} from './table-resize-helpers';
 
 /**
  * Keeps the width a column drag pinned on the table (see {@link withTableWidth})
@@ -124,9 +56,7 @@ function $syncPinnedTableWidth(tableNode: TableNode): void {
 /**
  * Gives the column whose right border is at `cellNode` (its last one, when the
  * cell spans more columns) the width the user dragged it to. The table is then
- * as wide as the sum of its columns: the theme stylesheet makes it 100% wide,
- * and with "table-layout: fixed" the browser would rescale the columns to fill
- * it, so the drag could neither shrink nor grow the table.
+ * as wide as the sum of its columns (see {@link $applyColumnWidths}).
  */
 function $resizeColumn(
 	editor: LexicalEditor,
@@ -145,16 +75,7 @@ function $resizeColumn(
 	const startWidth = startCellWidth - sum(colWidths.slice(startColumn, columnIndex));
 	const newWidth = Math.max(MIN_COLUMN_WIDTH, Math.round(startWidth + delta));
 	const newColWidths = colWidths.map((width, index) => (index === columnIndex ? newWidth : width));
-
-	cellsOfColumn(tableMap, columnIndex).forEach(({ cell, startColumn: cellStartColumn }) => {
-		if (cell.getColSpan() === 1) {
-			cell.setWidth(newWidth);
-		} else if (cell.getWidth()) {
-			cell.setWidth(sum(newColWidths.slice(cellStartColumn, cellStartColumn + cell.getColSpan())));
-		}
-	});
-	tableNode.setColWidths(newColWidths);
-	tableNode.setStyle(withTableWidth(tableNode.getStyle(), sum(newColWidths)));
+	$applyColumnWidths(tableNode, tableMap, newColWidths, [columnIndex]);
 }
 
 type HoveredCell = {

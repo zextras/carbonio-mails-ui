@@ -280,6 +280,61 @@ describe('sync data handler', () => {
 			);
 		});
 
+		it('should take the recipients of a new conversation from its message in the same notification', async () => {
+			// a new conversation never seen by a search: the notification lists only its senders
+			populateFoldersStore();
+			const sender = { t: 'f' as const, a: 'sender@example.com', p: 'Sender' };
+			const recipient = { t: 't' as const, a: 'to@example.com', p: 'To' };
+			mockShellSoapNotify({
+				created: {
+					m: [getSoapMessage('262', { cid: '-262', l: FOLDERS.SENT, e: [recipient, sender] })],
+					c: [
+						{
+							...omit(getSoapConversation('-262'), ['m', 'fr']),
+							e: [sender]
+						} satisfies SoapNotifyConversation
+					]
+				},
+				modified: { mbx: [{ s: 0 }] }
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getConversationById('-262')).toBeDefined());
+			expect(getConversationById('-262').participants).toEqual([
+				expect.objectContaining({ type: sender.t, address: sender.a }),
+				expect.objectContaining({ type: recipient.t, address: recipient.a })
+			]);
+		});
+
+		it('should add a recipient of several messages of a new conversation only once', async () => {
+			populateFoldersStore();
+			const sender = { t: 'f' as const, a: 'sender@example.com', p: 'Sender' };
+			const recipient = { t: 't' as const, a: 'to@example.com', p: 'To' };
+			mockShellSoapNotify({
+				created: {
+					m: ['300', '301'].map((id) =>
+						getSoapMessage(id, { cid: '302', l: FOLDERS.SENT, e: [recipient, sender] })
+					),
+					c: [
+						{
+							...omit(getSoapConversation('302'), ['m', 'fr']),
+							e: [sender]
+						} satisfies SoapNotifyConversation
+					]
+				},
+				modified: { mbx: [{ s: 0 }] }
+			});
+
+			setupHook(() => useSyncDataHandler());
+
+			await waitFor(() => expect(getConversationById('302')).toBeDefined());
+			expect(getConversationById('302').participants).toEqual([
+				expect.objectContaining({ type: sender.t, address: sender.a }),
+				expect.objectContaining({ type: recipient.t, address: recipient.a })
+			]);
+		});
+
 		it('should keep the recipients of a conversation when a modify notification lists only its senders', async () => {
 			populateFoldersStore();
 			const recipient = { type: 't' as const, address: 'recipient@example.com' };
