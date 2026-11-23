@@ -5,17 +5,22 @@
  */
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { Route, Routes, useParams } from 'react-router-dom';
 
 import { SearchConversationPanel } from '../search-conversation-panel';
 import { setupTest } from '@test-setup';
 import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
 import {
+	handleNotifyConversationsCreated,
 	handleNotifyDeleted,
+	handleNotifyMessagesCreated,
+	handleNotifyMessagesModified,
 	setSearchResultsByConversation,
 	updateConversationStatus,
-	updateConversations
+	updateConversations,
+	updateMessages
 } from 'store/emails/store';
 import { SearchListPanelRouteParams } from 'types/routes';
 
@@ -69,5 +74,35 @@ describe('SearchConversationPanel', () => {
 
 		expect(screen.queryByTestId('active-item--5')).not.toBeInTheDocument();
 		expect(screen.queryByTestId(/SearchConversationPanel/)).not.toBeInTheDocument();
+	});
+
+	it('should keep the message being read open, without reloading the panel, when the first reply arrives', async () => {
+		updateMessages([generateMessage({ id: '5', cid: '-5', folderId: '2' })]);
+		setSearchResultsByConversation(
+			[generateConversation({ id: '-5', messageIds: ['5'], receiveDate: Date.now() - 60_000 })],
+			false
+		);
+		updateConversationStatus('-5', 'fulfilled');
+		setupTest(<SearchViewRoutes />, {
+			initialEntries: ['/search/mails/conversation/-5'],
+			path: '/search/mails/*'
+		});
+		const messageBeingRead = await screen.findByTestId('MailPreview-5');
+		expect(within(messageBeingRead).getByTestId('MailMessageRendererCollapse')).toBeVisible();
+
+		// the notification of the first reply: the server replaces the virtual conversation with a new one
+		await act(async () => {
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '500', messageIds: ['5', '501'], receiveDate: Date.now() })
+			]);
+			handleNotifyMessagesCreated([generateMessage({ id: '501', cid: '500', folderId: '2' })]);
+			handleNotifyMessagesModified([{ id: '5', conversation: '500' }]);
+			handleNotifyDeleted(['-5']);
+		});
+
+		expect(await screen.findByTestId('active-item-500')).toBeVisible();
+		expect(await screen.findByTestId('MailPreview-501')).toBeInTheDocument();
+		expect(screen.getByTestId('MailPreview-5')).toBe(messageBeingRead);
+		expect(within(messageBeingRead).getByTestId('MailMessageRendererCollapse')).toBeVisible();
 	});
 });

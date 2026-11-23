@@ -11,6 +11,7 @@ import { filter, find, forEach, orderBy, toLower } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { parseMessageSortingOptions } from '../../../helpers/parseMessageSortingOptions';
+import { API_REQUEST_STATUS } from 'constants/index';
 import { getConversationDateInFolder, getMessagesParentForFolder } from 'helpers/conversations';
 import { NormalizedPartialConversation } from 'normalizations/normalize-conversation';
 import { NormalizedConversation } from 'types/conversations';
@@ -34,6 +35,12 @@ function keepKnownRecipients(
 			!find(notifiedParticipants, { type: known.type, address: known.address })
 	);
 	return [...notifiedParticipants, ...recipients];
+}
+
+// the messages of a conversation are shown newest first unless the user chose otherwise
+function isConversationOrderDesc(): boolean {
+	const order = getUserSettings()?.prefs?.zimbraPrefConversationOrder;
+	return !order || order === 'dateDesc';
 }
 
 /**
@@ -260,8 +267,7 @@ function handleNotifyMessagesCreated(
 		convMessagesIds: Array<string>,
 		message: IncompleteMessage
 	): Array<string> {
-		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
-		if (sortOrder === 'dateDesc') {
+		if (isConversationOrderDesc()) {
 			return Array.from(new Set([message.id, ...convMessagesIds]));
 		}
 		return Array.from(new Set([...convMessagesIds, message.id]));
@@ -355,6 +361,44 @@ function handleNotifyMessagesCreated(
 	);
 }
 
+// the virtual id of a single-message conversation, also of a shared account (<zid>:-<id>)
+const VIRTUAL_CONVERSATION_ID = /(^|:)-\d+$/;
+
+/**
+ * When a single-message conversation (virtual negative id) receives its first reply, the server replaces
+ * it with a new conversation. If the replaced one was loaded, the new one takes over its loaded state,
+ * with the reply placed by the conversation order, so a view showing it keeps its messages as they are
+ * (open or closed, scroll position) instead of loading it again: as when a reply joins any other
+ * conversation. Returns the message ids of the new conversation in that order, or undefined when it
+ * must be loaded again.
+ */
+function getMessageIdsTakingOverLoadedConversation(
+	conversation: NormalizedConversation,
+	storedConversations: Array<NormalizedConversation>,
+	conversationsStatus: EmailsStoreState['populatedItemsSlice']['conversationsStatus']
+): Array<string> | undefined {
+	const replaced = storedConversations.find(
+		(stored) =>
+			VIRTUAL_CONVERSATION_ID.test(stored.id) &&
+			conversationsStatus[stored.id] === API_REQUEST_STATUS.fulfilled &&
+			stored.messageIds.some((messageId) => conversation.messageIds.includes(messageId))
+	);
+	if (!replaced) {
+		return undefined;
+	}
+	const replies = conversation.messageIds.filter(
+		(messageId) => !replaced.messageIds.includes(messageId)
+	);
+	// the dates of the replies are not stored yet: only a single reply newer than the replaced message
+	// has a known place, anything else (an older message threaded with it) is loaded in the server's order
+	if (replies.length !== 1 || conversation.date <= replaced.date) {
+		return undefined;
+	}
+	return isConversationOrderDesc()
+		? [...replies, ...replaced.messageIds]
+		: [...replaced.messageIds, ...replies];
+}
+
 /**
  * Handles the creation of notify conversations by updating the application's email store state.
  * This function processes incoming conversations and updates the conversation slice and index
@@ -381,12 +425,34 @@ function handleNotifyConversationsCreated(
 			);
 		return acc;
 	}, {});
+	const { conversationsStatus } = useEmailsStore.getState().populatedItemsSlice;
+	const takenOverMessageIdsById = conversations.reduce<Record<string, Array<string>>>(
+		(acc, conversation) => {
+			const messageIds = getMessageIdsTakingOverLoadedConversation(
+				conversation,
+				storedConversations,
+				conversationsStatus
+			);
+			if (messageIds) {
+				acc[conversation.id] = messageIds;
+			}
+			return acc;
+		},
+		{}
+	);
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = { ...conversation, participants: participantsById[conversation.id] };
+				acc[conversation.id] = {
+					...conversation,
+					participants: participantsById[conversation.id],
+					messageIds: takenOverMessageIdsById[conversation.id] ?? conversation.messageIds
+				};
 				return acc;
 			}, populatedItemsSlice.conversations);
+			Object.keys(takenOverMessageIdsById).forEach((conversationId) => {
+				populatedItemsSlice.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
+			});
 			conversationIndexSlice.conversationListIndex = Array.from(
 				new Set([...newConversationIds, ...conversationIndexSlice.conversationListIndex])
 			);
