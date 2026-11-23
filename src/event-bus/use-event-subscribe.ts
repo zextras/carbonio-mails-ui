@@ -10,7 +10,7 @@ import { EventsBusEvents, EventsBusEventsName, EventsBusEventsPayload } from './
 export type EventsBusSubscriber = (
 	eventType: EventsBusEventsName,
 	listener: (payload: EventsBusEventsPayload) => void
-) => void;
+) => () => void;
 
 export const useEventSubscribe = (): EventsBusSubscriber =>
 	useCallback<EventsBusSubscriber>((eventType, listener) => {

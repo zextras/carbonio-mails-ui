@@ -25,6 +25,7 @@ import {
 import { generateMessage } from '__test__/generators/generateMessage';
 import { getTimeLabel } from 'commons/utils';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
 import {
 	setConversationsInEmailStore,
@@ -32,6 +33,7 @@ import {
 	updateConversationStatus
 } from 'store/emails/store';
 import { ConvActionRequest } from 'types/soap/conv-action';
+import { SearchConvRequest } from 'types/soap/search-conv';
 import {
 	ConversationListItem,
 	ConversationListItemProps
@@ -852,6 +854,40 @@ describe('conversation-list-item component', () => {
 			});
 
 			// No SearchConv API call should be triggered since data is already loaded
+		});
+
+		it('should search an expanded conversation again, in its folder, when the mailbox is refreshed', async () => {
+			const conversationId = '-202';
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: conversationId, folderId: FOLDERS.INBOX },
+					conversationMessagesNumber: 3
+				})
+			);
+			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				activeItemId: '',
+				isSearchModule: false,
+				folderId: FOLDERS.INBOX,
+				index: 0,
+				onSelect: noop,
+				isConversationExpanded: true
+			};
+			setupTest(<ConversationListItem {...props} />);
+			await screen.findByTestId('ToggleExpand');
+
+			const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
+			act(() => {
+				window.dispatchEvent(new MailboxRefreshedEvent());
+			});
+
+			expect(await interceptor).toEqual(
+				expect.objectContaining({ cid: conversationId, query: `inId: "${FOLDERS.INBOX}"` })
+			);
 		});
 
 		it('should not trigger fetch when toggling from expanded to collapsed', async () => {

@@ -3,24 +3,32 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import type { Mock } from 'vitest';
 
 import { parseMessageSortingOptions } from '../../helpers/parseMessageSortingOptions';
 import { API_REQUEST_STATUS } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
 import { useConversationListByFolder } from 'hooks/use-conversations-list-by-folder';
-import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
+	refreshSearchEmailStoreAction,
+	searchEmailStoreAction
+} from 'store/emails/actions/search-action';
+import {
+	getConversationListIndex,
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from 'store/emails/store';
 
 vi.mock('store/emails/actions/search-action', () => ({
+	refreshSearchEmailStoreAction: vi.fn(),
 	searchEmailStoreAction: vi.fn()
 }));
 vi.mock('store/emails/store', () => ({
+	getConversationListIndex: vi.fn(),
 	updateConversationsResultsLoadingStatus: vi.fn(),
 	useConversationIndexSlice: vi.fn(),
 	useConversationsIdsByFolder: vi.fn()
@@ -31,6 +39,7 @@ vi.mock('helpers/sorting', () => ({
 vi.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: vi.fn()
 }));
+vi.mock('../../helpers/parseMessageSortingOptions');
 
 // TODO: refactor this test and remove all mocks
 describe('useConversationListByFolder', () => {
@@ -40,11 +49,13 @@ describe('useConversationListByFolder', () => {
 		(useUserSettings as Mock).mockReturnValue({ prefs: mockPrefs });
 		(useConversationIndexSlice as Mock).mockReturnValue({});
 		(useConversationsIdsByFolder as Mock).mockReturnValue([]);
+		(getConversationListIndex as Mock).mockReturnValue([]);
 		(parseMessageSortingOptions as Mock).mockReturnValue({
 			sortType: 'date',
 			sortDirection: 'DESC'
 		});
 		(searchEmailStoreAction as Mock).mockResolvedValue({});
+		(refreshSearchEmailStoreAction as Mock).mockResolvedValue(undefined);
 	});
 
 	afterEach(() => {
@@ -58,7 +69,7 @@ describe('useConversationListByFolder', () => {
 
 		expect(searchEmailStoreAction).toHaveBeenCalledWith(
 			expect.objectContaining({
-				abortSignal: expect.any(AbortSignal),
+				abortSignal: expect.objectContaining({ aborted: false }),
 				limit: 100,
 				locale: 'en_US',
 				offset: 0,
@@ -92,7 +103,9 @@ describe('useConversationListByFolder', () => {
 	it('aborts previous request when folderId changes', () => {
 		const controller = new AbortController();
 		const abortSpy = vi.spyOn(controller, 'abort');
-		vi.spyOn(global, 'AbortController').mockImplementation(() => controller);
+		vi.spyOn(global, 'AbortController').mockImplementation(function mockAbortController() {
+			return controller;
+		});
 
 		const { rerender } = renderHook((id: string) => useConversationListByFolder(id), {
 			initialProps: '123'
@@ -100,6 +113,60 @@ describe('useConversationListByFolder', () => {
 
 		rerender('456');
 		expect(abortSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('repeats the search without resetting the store when the mailbox is refreshed', async () => {
+		(getConversationListIndex as Mock).mockReturnValue(['1', '2']);
+		renderHook(() => useConversationListByFolder('123'));
+		await waitFor(() => {
+			expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(
+				API_REQUEST_STATUS.fulfilled
+			);
+		});
+		vi.mocked(updateConversationsResultsLoadingStatus).mockClear();
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(refreshSearchEmailStoreAction).toHaveBeenCalledTimes(1);
+		expect(refreshSearchEmailStoreAction).toHaveBeenCalledWith(
+			expect.objectContaining({
+				abortSignal: expect.objectContaining({ aborted: false }),
+				searchedListIndex: ['1', '2'],
+				locale: 'en_US',
+				query: 'mockQuery',
+				sortBy: 'dateDESC',
+				types: 'conversation'
+			})
+		);
+		expect(searchEmailStoreAction).toHaveBeenCalledTimes(1);
+		expect(updateConversationsResultsLoadingStatus).not.toHaveBeenCalled();
+	});
+
+	it('loads the folder again when the mailbox is refreshed while the folder is loading', () => {
+		(searchEmailStoreAction as Mock).mockReturnValue(new Promise(noop));
+		renderHook(() => useConversationListByFolder('123'));
+		const { abortSignal } = (searchEmailStoreAction as Mock).mock.calls[0][0];
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(abortSignal.aborted).toBe(true);
+		expect(searchEmailStoreAction).toHaveBeenCalledTimes(2);
+		expect(refreshSearchEmailStoreAction).not.toHaveBeenCalled();
+	});
+
+	it('does not repeat the search when the mailbox is refreshed after unmount', () => {
+		const { unmount } = renderHook(() => useConversationListByFolder('123'));
+		unmount();
+
+		act(() => {
+			window.dispatchEvent(new MailboxRefreshedEvent());
+		});
+
+		expect(refreshSearchEmailStoreAction).not.toHaveBeenCalled();
 	});
 
 	it('handles search errors correctly', async () => {

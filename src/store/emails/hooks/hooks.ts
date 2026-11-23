@@ -7,11 +7,17 @@
 import { useEffect, useMemo } from 'react';
 
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce } from 'lodash';
+import { debounce, noop } from 'lodash';
 
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { useEventSubscribe } from 'event-bus/use-event-subscribe';
 import { getMessageEmailStoreAction } from 'store/emails/actions/get-message';
-import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import {
+	refreshConvEmailStoreAction,
+	searchConvEmailStoreAction
+} from 'store/emails/actions/search-conv-action';
+import { showConversation } from 'store/emails/shown-conversations';
 import {
 	useConversationById,
 	useConversationStatus,
@@ -21,6 +27,65 @@ import {
 import { NormalizedConversation } from 'types/conversations';
 import { IncompleteMessage, MailMessage } from 'types/messages';
 import { SearchRequestStatus } from 'types/search';
+
+// the conversations to search again for the mailbox refresh being handled, with the folders of the views
+// which show them (undefined for a view of all its folders): more views can show a conversation at once
+const conversationsToRefresh = new Map<string, Set<string | undefined>>();
+
+function refreshConversations(): void {
+	const conversations = [...conversationsToRefresh];
+	// cleared first, so a failure cannot keep the next refreshes from being scheduled
+	conversationsToRefresh.clear();
+	const html = getUserSettings()?.prefs?.zimbraPrefMessageViewHtmlPreferred === 'TRUE';
+	conversations.forEach(([conversationId, folderIds]) => {
+		// the search of a folder leaves the headers out of the messages of the other folders: a conversation
+		// shown with different folders, or with all of them, is searched in all its folders
+		const folderId = folderIds.size === 1 ? [...folderIds][0] : undefined;
+		// a failed refresh leaves the conversation as it is
+		refreshConvEmailStoreAction({ conversationId, folderId, html }).catch(noop);
+	});
+}
+
+/**
+ * Updates a shown conversation in place when the mailbox is refreshed, repeating its search with the
+ * folder of the view that shows it (none for the reading panel, which shows all its folders). Its messages
+ * could have changed while their notifications were dropped (e.g. new, moved or deleted messages).
+ * A conversation shown by more views is searched again once, after every view has handled the event,
+ * in all its folders unless every view shows the same folder.
+ * The loaded conversations which are not shown are loaded again when they are shown next
+ * (see clearHiddenConversationsStatus).
+ */
+export function useRefreshConversationOnMailboxRefresh({
+	conversationId,
+	folderId,
+	enabled
+}: {
+	conversationId: string;
+	folderId?: string;
+	enabled: boolean;
+}): void {
+	const subscribeBusEvent = useEventSubscribe();
+
+	useEffect(() => {
+		if (!enabled) {
+			return undefined;
+		}
+		const hideConversation = showConversation(conversationId);
+		const unsubscribe = subscribeBusEvent(MailboxRefreshedEvent.EventName, () => {
+			// the listeners run one after the other while the event is dispatched: the searches start after it
+			if (conversationsToRefresh.size === 0) {
+				queueMicrotask(refreshConversations);
+			}
+			const folderIds = conversationsToRefresh.get(conversationId) ?? new Set<string | undefined>();
+			folderIds.add(folderId);
+			conversationsToRefresh.set(conversationId, folderIds);
+		});
+		return () => {
+			unsubscribe();
+			hideConversation();
+		};
+	}, [conversationId, enabled, folderId, subscribeBusEvent]);
+}
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;
@@ -71,6 +136,12 @@ export function useCompleteConversationOrFetch({
 			requestDebouncedConversation.cancel();
 		};
 	}, [requestDebouncedConversation]);
+
+	useRefreshConversationOnMailboxRefresh({
+		conversationId,
+		folderId,
+		enabled: conversationStatus === API_REQUEST_STATUS.fulfilled
+	});
 
 	return {
 		conversation,

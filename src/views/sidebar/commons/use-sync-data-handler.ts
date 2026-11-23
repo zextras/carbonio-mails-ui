@@ -18,7 +18,8 @@ import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 import { flatten, forEach, isEmpty, isNil, map, sortBy, uniqBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { publishQuotaChangedEvent } from 'event-bus/publish-event';
+import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
+import { publishEvent, publishQuotaChangedEvent } from 'event-bus/publish-event';
 import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
@@ -28,7 +29,9 @@ import {
 	normalizeParticipantsFromSoap,
 	normalizePartialIncompleteMessageFromSoapNotify
 } from 'normalizations/normalize-message';
+import { recordNotifiedItems } from 'store/emails/notified-items';
 import {
+	clearHiddenConversationsStatus,
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
 	handleNotifyDeleted,
@@ -211,6 +214,16 @@ function processNotifications({
 		// the shell types the conversations and messages of a notification as unknown: the server sends
 		// the summaries of ToXML.encodeItem, which MailsSoapNotify describes
 		const mailsNotify = notify as MailsSoapNotify;
+		// the searches in progress must not undo what is notified (see refreshSearchEmailStoreAction)
+		recordNotifiedItems({
+			deletedIds: notify.deleted,
+			changedIds: [
+				...(mailsNotify.created?.c ?? []),
+				...(mailsNotify.created?.m ?? []),
+				...(mailsNotify.modified?.c ?? []),
+				...(mailsNotify.modified?.m ?? [])
+			].map(({ id }) => id)
+		});
 		if (mailsNotify.created) {
 			processCreatedNotifications(mailsNotify, navigate);
 		}
@@ -228,6 +241,10 @@ function processNotifications({
 	});
 }
 
+export const MAILBOX_REFRESH_DELAY = 1500;
+// the longest a reload waits while refreshes keep arriving
+export const MAILBOX_REFRESH_MAX_DELAY = 10000;
+
 export const useSyncDataHandler = (): void => {
 	const notifyList = useSync();
 	const navigate = useNavigate();
@@ -235,11 +252,47 @@ export const useSyncDataHandler = (): void => {
 	const [initialized, setInitialized] = useState(false);
 	const processedNotify = useRef<number>(-1);
 	const refresh = useInfoRefresh();
+	const previousRefresh = useRef(refresh);
+	const pendingReloadSince = useRef<number>();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
 		}
 	}, [initialized, refresh]);
+
+	useEffect(() => {
+		// the first refresh initializes the session, while the following ones come with a new session or
+		// replace the notifications the server dropped (e.g. after a bulk import), so the whole mailbox
+		// state must be reloaded
+		const isMailboxRefresh =
+			!isEmpty(previousRefresh.current) && !isEmpty(refresh) && refresh !== previousRefresh.current;
+		previousRefresh.current = refresh;
+		if (!isMailboxRefresh) {
+			return undefined;
+		}
+
+		// the tags of the refresh are applied at once, so that the tags notified after it are not undone.
+		// The server leaves out the tags of an account without tags
+		tagsWorker.postMessage({ op: 'refresh', tags: refresh.tags ?? { tag: [] } });
+
+		// refreshes received in a row (e.g. during a long import) reload the mailbox once,
+		// or once in a while if they keep arriving
+		const now = Date.now();
+		pendingReloadSince.current ??= now;
+		const delay = Math.min(
+			MAILBOX_REFRESH_DELAY,
+			Math.max(0, pendingReloadSince.current + MAILBOX_REFRESH_MAX_DELAY - now)
+		);
+		const timeout = setTimeout(() => {
+			pendingReloadSince.current = undefined;
+			// the shown conversations repeat their search on the event, the others are loaded again when shown
+			clearHiddenConversationsStatus();
+			publishEvent(new MailboxRefreshedEvent());
+		}, delay);
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [refresh]);
 
 	useEffect(() => {
 		if (initialized && notifyList.length > 0) {

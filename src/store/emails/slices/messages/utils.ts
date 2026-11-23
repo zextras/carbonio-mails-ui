@@ -7,9 +7,12 @@
 /* eslint-disable no-param-reassign */
 import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
+import { pick } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { API_REQUEST_STATUS } from 'constants/index';
+import { MAIL_HEADER_FIELDS } from 'normalizations/normalize-message';
+import { NotifiedItems } from 'store/emails/notified-items';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import { IncompleteMessage, MailMessage } from 'types/messages';
@@ -34,6 +37,103 @@ function setMessagesInEmailStore(
 				},
 				{} as Record<string, MailMessage | IncompleteMessage>
 			);
+		})
+	);
+}
+
+// a message of a list has no headers (_attrs), so these fields come with their default values,
+// and only the sender and the first recipient (recip: 2) among its participants
+const COMPLETE_MESSAGE_FIELDS: ReadonlyArray<keyof IncompleteMessage> = [
+	...MAIL_HEADER_FIELDS,
+	'isReadReceiptRequested',
+	'html',
+	'participants'
+];
+
+/**
+ * Returns the index of a list searched again, keeping the items added while the search was in progress
+ * that it may not return, compared with the items the list had when it was searched (`searchedListIndex`):
+ * - the ones notified meanwhile, which are added at the top of the list;
+ * - the ones of the pages loaded by scrolling meanwhile, which are appended after the searched ones.
+ */
+export function getRefreshedListIndex(
+	currentListIndex: Array<string>,
+	refreshedIds: Array<string>,
+	searchedListIndex: Array<string>
+): { listIndex: Array<string>; keepsLaterPages: boolean } {
+	const searchedIds = new Set(searchedListIndex);
+	const refreshedIdsSet = new Set(refreshedIds);
+	const isAddedMeanwhile = (id: string): boolean =>
+		!searchedIds.has(id) && !refreshedIdsSet.has(id);
+	const firstSearchedPosition = currentListIndex.findIndex((id) => searchedIds.has(id));
+	const lastSearchedPosition = currentListIndex.findLastIndex((id) => searchedIds.has(id));
+	// without searched items left (e.g. the list was empty) no page can have been loaded by scrolling
+	const notifiedIds = (
+		firstSearchedPosition === -1
+			? currentListIndex
+			: currentListIndex.slice(0, firstSearchedPosition)
+	).filter(isAddedMeanwhile);
+	const laterPagesIds =
+		lastSearchedPosition === -1
+			? []
+			: currentListIndex.slice(lastSearchedPosition + 1).filter(isAddedMeanwhile);
+	return {
+		listIndex: [...notifiedIds, ...refreshedIds, ...laterPagesIds],
+		keepsLaterPages: laterPagesIds.length > 0
+	};
+}
+
+// the messages of a list leave out what is loaded only when a message is opened (e.g. the body and the
+// headers), so they are merged into the stored ones, which stay complete and keep what the open message shows.
+// The messages notified while the list was searched keep what was notified, which is newer.
+export function mergeListMessages(
+	populatedMessages: Record<string, MailMessage | IncompleteMessage>,
+	messages: Array<MailMessage | IncompleteMessage>,
+	notifiedItems: NotifiedItems
+): void {
+	messages.forEach((message) => {
+		if (notifiedItems.deletedIds.has(message.id)) {
+			return;
+		}
+		const existingMessage = populatedMessages[message.id];
+		// a change notified for a message not stored yet is not kept anywhere: the searched one is the newest
+		if (existingMessage && notifiedItems.changedIds.has(message.id)) {
+			return;
+		}
+		if (!existingMessage) {
+			populatedMessages[message.id] = message;
+			return;
+		}
+		populatedMessages[message.id] = existingMessage.isComplete
+			? {
+					...existingMessage,
+					...message,
+					...pick(existingMessage, COMPLETE_MESSAGE_FIELDS),
+					isComplete: true
+				}
+			: { ...existingMessage, ...message };
+	});
+}
+
+function refreshMessagesInEmailStore(
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean,
+	searchedListIndex: Array<string>,
+	notifiedItems: NotifiedItems,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ messageIndexSlice, populatedItemsSlice }: EmailsStoreState) => {
+			const refreshedIndex = getRefreshedListIndex(
+				messageIndexSlice.messageListIndex,
+				messages.map((message) => message.id).filter((id) => !notifiedItems.deletedIds.has(id)),
+				searchedListIndex
+			);
+			messageIndexSlice.messageListIndex = refreshedIndex.listIndex;
+			messageIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			messageIndexSlice.offset = 0;
+			messageIndexSlice.more = refreshedIndex.keepsLaterPages ? messageIndexSlice.more : more;
+			mergeListMessages(populatedItemsSlice.messages, messages, notifiedItems);
 		})
 	);
 }
@@ -103,6 +203,7 @@ function appendMessagesToMessagesSlice(
 
 export const messageIndexSliceUtils = {
 	setMessagesInEmailStore,
+	refreshMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,

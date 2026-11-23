@@ -5,24 +5,38 @@
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 
+import { getUserSettings } from '@test-mocks/@zextras/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { generateConversation } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { NotifiedItems } from 'store/emails/notified-items';
+import { showConversation } from 'store/emails/shown-conversations';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendConversationsToConversationIndexSlice,
+	clearHiddenConversationsStatus,
 	getUseEmailStoreAndHooksForTesting,
+	refreshConversationInEmailStore,
+	refreshConversationsInEmailStore,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
 	updateConversations,
+	updateConversationStatus,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useConversationsIdsByFolder
+	useConversationStatus,
+	useConversationsIdsByFolder,
+	useMessageById
 } from 'store/emails/store';
+import { IncompleteMessage } from 'types/messages';
+
+const NO_NOTIFIED_ITEMS: NotifiedItems = { deletedIds: new Set(), changedIds: new Set() };
 
 describe('conversation-index-slice', () => {
 	describe('useConversationIndexSlice', () => {
@@ -314,6 +328,351 @@ describe('conversation-index-slice', () => {
 				);
 				expect(result.current.conversations).toEqual({ '1': updatedConversation1 });
 			});
+		});
+	});
+
+	describe('refreshConversationInEmailStore', () => {
+		const notified = (deletedIds: Array<string>, changedIds: Array<string>): NotifiedItems => ({
+			deletedIds: new Set(deletedIds),
+			changedIds: new Set(changedIds)
+		});
+
+		beforeEach(() => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'], subject: 'stored' })],
+				false
+			);
+			setMessagesInEmailStore([generateMessage({ id: '10', isRead: true })], false);
+		});
+
+		it('should take the messages of the conversation as the search returns them', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[
+						generateMessage({ id: '12', isComplete: true }),
+						generateMessage({ id: '10', isRead: false })
+					],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'stored', messageIds: ['12', '10'] })
+			);
+			const { result: message } = renderHook(() => useMessageById('10'));
+			expect(message.current).toEqual(expect.objectContaining({ read: false }));
+		});
+
+		it('should not bring back the messages deleted while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '12' }), generateMessage({ id: '11' })],
+					notified(['11'], [])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12']);
+			const { result: message } = renderHook(() => useMessageById('11'));
+			expect(message.current).toBeUndefined();
+		});
+
+		it('should keep what was notified for a stored message while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10', isRead: false })],
+					notified([], ['10'])
+				)
+			);
+
+			const { result: message } = renderHook(() => useMessageById('10'));
+			expect(message.current).toEqual(expect.objectContaining({ read: true }));
+		});
+
+		it('should store a searched message notified before it was stored', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore('1', [generateMessage({ id: '12' })], notified([], ['12']))
+			);
+
+			const { result: message } = renderHook(() => useMessageById('12'));
+			expect(message.current).toEqual(expect.objectContaining({ id: '12' }));
+		});
+
+		it('should update the messages of a conversation changed while the search was in progress', async () => {
+			// e.g. marked as read: a notified conversation never carries its messages
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '12' }), generateMessage({ id: '10' })],
+					notified([], ['1'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12', '10']);
+		});
+
+		it('should keep the messages created while the search was in progress', async () => {
+			// 13 was notified as created after the server answered the search
+			updateConversations([generateConversation({ id: '1', messageIds: ['13', '10', '11'] })]);
+
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10' }), generateMessage({ id: '11' })],
+					notified([], ['13'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['13', '10', '11']);
+		});
+
+		it('should keep the messages created meanwhile last when the oldest messages come first', async () => {
+			getUserSettings.mockReturnValueOnce({
+				attrs: {},
+				props: [],
+				prefs: { zimbraPrefConversationOrder: 'dateAsc' }
+			});
+			updateConversations([generateConversation({ id: '1', messageIds: ['10', '11', '13'] })]);
+
+			await act(async () =>
+				refreshConversationInEmailStore(
+					'1',
+					[generateMessage({ id: '10' }), generateMessage({ id: '11' })],
+					notified([], ['13'])
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['10', '11', '13']);
+		});
+
+		it('should leave out a conversation deleted while the search was in progress', async () => {
+			await act(async () =>
+				refreshConversationInEmailStore('1', [generateMessage({ id: '12' })], notified(['1'], []))
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['10', '11']);
+			const { result: message } = renderHook(() => useMessageById('12'));
+			expect(message.current).toBeUndefined();
+		});
+	});
+
+	describe('refreshConversationsInEmailStore', () => {
+		it('should replace the list and take the messages of a conversation as the search returns them', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
+			const refreshedConversation = generateConversation({
+				id: '1',
+				messageIds: ['12', '11'],
+				subject: 'refreshed'
+			});
+			const newConversation = generateConversation({ id: '2', messageIds: ['20'] });
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[newConversation, refreshedConversation],
+					[],
+					true,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['2', '1']);
+			expect(index.current.more).toBe(true);
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'refreshed', messageIds: ['12', '11'] })
+			);
+		});
+
+		it('should keep the messages of a shown conversation, which its own search updates', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			const hideConversation = showConversation('1');
+			const refreshedConversation = generateConversation({
+				id: '1',
+				messageIds: ['11'],
+				subject: 'refreshed'
+			});
+
+			await act(async () => clearHiddenConversationsStatus());
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[refreshedConversation],
+					[],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+			hideConversation();
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current).toEqual(
+				expect.objectContaining({ subject: 'refreshed', messageIds: ['10', '11'] })
+			);
+			const { result: status } = renderHook(() => useConversationStatus('1'));
+			expect(status.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+
+		it('should load a loaded conversation which is not shown again when it is shown next', async () => {
+			setConversationsInEmailStore(
+				[
+					generateConversation({ id: '1', messageIds: ['10', '11'] }),
+					generateConversation({ id: '2', messageIds: ['20'] })
+				],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			// a loaded conversation which is no more in the list is loaded again too
+			updateConversationStatus('2', API_REQUEST_STATUS.fulfilled);
+			const refreshedConversation = generateConversation({ id: '1', messageIds: ['11'] });
+
+			await act(async () => clearHiddenConversationsStatus());
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[refreshedConversation],
+					[],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['11']);
+			const { result: firstStatus } = renderHook(() => useConversationStatus('1'));
+			expect(firstStatus.current).toBeUndefined();
+			const { result: secondStatus } = renderHook(() => useConversationStatus('2'));
+			expect(secondStatus.current).toBeUndefined();
+		});
+
+		it('should keep the messages of a conversation loaded again after the mailbox refresh', async () => {
+			setConversationsInEmailStore(
+				[generateConversation({ id: '1', messageIds: ['10', '11'] })],
+				false
+			);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			// the conversation is not shown when the mailbox is refreshed...
+			await act(async () => clearHiddenConversationsStatus());
+			const { result: status } = renderHook(() => useConversationStatus('1'));
+			expect(status.current).toBeUndefined();
+			// ...then it is shown and loaded again before the list is searched again
+			await act(async () => {
+				updateConversations([generateConversation({ id: '1', messageIds: ['12', '11'] })]);
+				updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			});
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '1', messageIds: ['11'] })],
+					[],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: conversation } = renderHook(() => useConversationById('1'));
+			expect(conversation.current.messageIds).toEqual(['12', '11']);
+		});
+
+		it('should keep what is notified while the list is searched again', async () => {
+			setConversationsInEmailStore(
+				[
+					generateConversation({ id: '1', messageIds: ['10'] }),
+					generateConversation({ id: '2', messageIds: ['20'], subject: 'notified' }),
+					generateConversation({ id: '3', messageIds: ['30', '31'] })
+				],
+				false
+			);
+			// conversation 1 and message 31 were deleted, conversation 2 was changed
+			const notifiedItems: NotifiedItems = {
+				deletedIds: new Set(['1', '31']),
+				changedIds: new Set(['2'])
+			};
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[
+						generateConversation({ id: '1', messageIds: ['10'] }),
+						generateConversation({ id: '2', messageIds: ['20'], subject: 'stale' }),
+						generateConversation({ id: '3', messageIds: ['30', '31'] })
+					],
+					[],
+					false,
+					['1', '2', '3'],
+					notifiedItems
+				)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['2', '3']);
+			const { result: changed } = renderHook(() => useConversationById('2'));
+			expect(changed.current.subject).toBe('notified');
+			const { result: refreshed } = renderHook(() => useConversationById('3'));
+			expect(refreshed.current.messageIds).toEqual(['30']);
+		});
+
+		it('should keep the conversations of the pages loaded while the list was searched again', async () => {
+			const loadedConversations = ['1', '2', '3'].map((id) =>
+				generateConversation({ id, messageIds: [`${id}0`] })
+			);
+			setConversationsInEmailStore(loadedConversations, true);
+
+			// the list had 2 conversations when it was searched again, then a third one was loaded by scrolling
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '4' }), generateConversation({ id: '1' })],
+					[],
+					true,
+					['1', '2'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result: index } = renderHook(() => useConversationIndexSlice());
+			expect(index.current.conversationListIndex).toEqual(['4', '1', '3']);
+			expect(index.current.more).toBe(true);
+		});
+
+		it('should keep the open messages of a conversation complete', async () => {
+			const openMessage = generateMessage({ id: '10', isComplete: true, isRead: false });
+			setMessagesInEmailStore([openMessage]);
+			// a message of a list has no body
+			const listFields = omit(
+				generateMessage({ id: '10', isComplete: false, isRead: true }),
+				'body'
+			) as IncompleteMessage;
+
+			await act(async () =>
+				refreshConversationsInEmailStore(
+					[generateConversation({ id: '1', messageIds: ['10'] })],
+					[listFields],
+					false,
+					['1'],
+					NO_NOTIFIED_ITEMS
+				)
+			);
+
+			const { result } = renderHook(() => useMessageById('10'));
+			expect(result.current).toEqual(
+				expect.objectContaining({ isComplete: true, read: true, body: openMessage.body })
+			);
 		});
 	});
 });

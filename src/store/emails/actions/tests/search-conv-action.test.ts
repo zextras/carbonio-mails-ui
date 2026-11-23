@@ -9,11 +9,16 @@ import { searchConvSoapApi } from 'api/search-conv-soap-api';
 import { searchConvResponse } from 'api/tests/fixtures/search-conv-response';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { normalizeCompleteMailMessageFromSoap } from 'normalizations/normalize-message';
-import { searchConvEmailStoreAction } from 'store/emails/actions/search-conv-action';
+import {
+	refreshConvEmailStoreAction,
+	searchConvEmailStoreAction
+} from 'store/emails/actions/search-conv-action';
+import { recordNotifiedItems } from 'store/emails/notified-items';
 import {
 	updateMessages,
 	getConversationById,
 	getMessageById,
+	refreshConversationInEmailStore,
 	updateConversations,
 	updateConversationStatus
 } from 'store/emails/store';
@@ -180,5 +185,47 @@ describe('searchConvEmailStoreAction', () => {
 		expect(updateConversations).toHaveBeenCalledWith([
 			expect.objectContaining({ id: '259', messageIds: ['263', '260'] })
 		]);
+	});
+});
+
+describe('refreshConvEmailStoreAction', () => {
+	beforeEach(() => {
+		vi.resetAllMocks();
+		(normalizeCompleteMailMessageFromSoap as Mock).mockImplementation((msg: { id: string }) => ({
+			id: msg.id
+		}));
+	});
+
+	it('queues the searched messages with the items notified while the search is in progress', async () => {
+		(searchConvSoapApi as Mock).mockImplementationOnce(async () => {
+			recordNotifiedItems({ deletedIds: ['1'], changedIds: ['2'] });
+			return {
+				m: [
+					{ id: '1', _attrs: {} },
+					{ id: '2', _attrs: {} }
+				]
+			};
+		});
+
+		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
+		recordNotifiedItems({ deletedIds: ['3'], changedIds: ['4'] });
+
+		expect(updateConversationStatus).not.toHaveBeenCalled();
+		expect(refreshConversationInEmailStore).toHaveBeenCalledWith(
+			'conv',
+			[{ id: '1' }, { id: '2' }],
+			{
+				deletedIds: new Set(['1']),
+				changedIds: new Set(['2'])
+			}
+		);
+	});
+
+	it('leaves the conversation as it is when the search fails', async () => {
+		(searchConvSoapApi as Mock).mockResolvedValueOnce({ Fault: {} });
+
+		await refreshConvEmailStoreAction({ conversationId: 'conv', html: true });
+
+		expect(refreshConversationInEmailStore).not.toHaveBeenCalled();
 	});
 });
