@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { setupTest } from '@test-setup';
 import { generateMessage } from '__test__/generators/generateMessage';
@@ -58,5 +58,49 @@ describe('SharedCalendarResponse component', () => {
 
 		const folderNameInput = screen.getByRole('textbox', { name: /label.addressbook_name/i });
 		expect(folderNameInput).toHaveValue(`${name} label.of ${grantorName}`);
+	});
+
+	describe('notes', () => {
+		const sharedContent = `
+		<share action="new" version="0.2" xmlns="urn:zimbraShare">
+			<grantee name="user@demo.test.io" id="5194ecab-3452-42d7-8591-2ed1883abb49" email="user@demo.test.io"/>
+			<grantor name="grantor name" id="78d3a764-ffd5-49ed-b212-4fbaf688c471" email="user@demo.test.io"/>
+			<link view="message" perm="r" name="Inbox" id="2"/>
+		</share>`;
+
+		it('should show the notes written by the sharer', async () => {
+			const mailMsg = generateMessage({
+				id: '1',
+				body: '<div>Share details<hr /><p>Please have a look &amp; reply<br>Thanks<br></p></div>'
+			});
+			const { user } = setupTest(
+				<SharedCalendarResponse sharedContent={sharedContent} mailMsg={mailMsg} />
+			);
+
+			await user.click(screen.getByRole('button', { name: /label\.show_more_info/i }));
+
+			const notes = screen.getByText(/Please have a look & reply/);
+			expect(notes).toBeVisible();
+			expect(notes).toHaveTextContent(/^Please have a look & reply\nThanks$/, {
+				normalizeWhitespace: false
+			});
+		});
+
+		it('should show markup in the notes as plain text', async () => {
+			const mailMsg = generateMessage({
+				id: '1',
+				body: 'Share details<hr /><span data-testid="notes-markup">formatted</span> notes'
+			});
+			const { user } = setupTest(
+				<SharedCalendarResponse sharedContent={sharedContent} mailMsg={mailMsg} />
+			);
+
+			await user.click(screen.getByRole('button', { name: /label\.show_more_info/i }));
+
+			const notes = screen.getByText('formatted notes');
+			expect(notes).toBeVisible();
+			expect(within(notes).queryByTestId('notes-markup')).not.toBeInTheDocument();
+			expect(screen.queryByTestId('notes-markup')).not.toBeInTheDocument();
+		});
 	});
 });
