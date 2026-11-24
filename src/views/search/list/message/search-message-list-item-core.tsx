@@ -39,6 +39,7 @@ export const SearchMessageListItemCore = ({
 }: SearchMessageListItemCoreProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const messageFolder = useFolder(completeMessage.parent);
+	const folderIds = useMemo(() => [completeMessage.parent], [completeMessage.parent]);
 
 	const accounts = useUserAccounts();
 	const [date] = useMemo(() => {
@@ -153,7 +154,7 @@ export const SearchMessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<LineWithTags tagIds={completeMessage.tags}>
+					<LineWithTags tagIds={completeMessage.tags} folderIds={folderIds}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">

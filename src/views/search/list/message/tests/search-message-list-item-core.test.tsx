@@ -10,6 +10,12 @@ import { screen } from '@testing-library/react';
 import { FOLDERS, useTagStore, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
@@ -62,6 +68,30 @@ describe('SearchMessageListItemCore', () => {
 				/>
 			);
 		};
+
+		it('a tag from a shared folder says whose folder it comes from', async () => {
+			useTagStore.setState({ tags: {} });
+			populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+			const [message] = populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{ id: '123', tags: ['nil:Finance'], subject, folderId: SHARED_FOLDER_ID }
+				]
+			});
+			const { user } = setupTest(
+				<SearchMessageListItemCore
+					completeMessage={message}
+					selected={false}
+					selecting={false}
+					index={0}
+					onSelect={mockToggle}
+					folderId={SHARED_FOLDER_ID}
+				/>
+			);
+
+			await user.hover(screen.getByText('Finance'));
+
+			expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
+		});
 
 		it('tints the pill with the custom colour of the tag', () => {
 			useTagStore.setState({ tags: { tag1: { id: 'tag1', name: 'Tag 1', rgb: '#abcdef' } } });

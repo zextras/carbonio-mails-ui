@@ -45,6 +45,7 @@ export const MessageListItemCore = ({
 }: MessageListItemCoreProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
 	const messageFolder = useFolder(message.parent);
+	const folderIds = useMemo(() => [message.parent], [message.parent]);
 	const [date] = useMemo(() => {
 		if (message) {
 			const sender = find(message.participants, ['type', 'f']);
@@ -122,7 +123,11 @@ export const MessageListItemCore = ({
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
 					{isConvChildren ? (
-						<LineWithTags tagIds={message.tags} maxBudget={TAG_PILLS_CHILD_ROW_MAX_BUDGET}>
+						<LineWithTags
+							tagIds={message.tags}
+							folderIds={folderIds}
+							maxBudget={TAG_PILLS_CHILD_ROW_MAX_BUDGET}
+						>
 							<ParticipantsString item={message} />
 						</LineWithTags>
 					) : (
@@ -158,7 +163,7 @@ export const MessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<LineWithTags tagIds={isConvChildren ? undefined : message.tags}>
+					<LineWithTags tagIds={isConvChildren ? undefined : message.tags} folderIds={folderIds}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">

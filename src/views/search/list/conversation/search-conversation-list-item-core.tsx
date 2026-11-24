@@ -12,6 +12,7 @@ import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversa
 import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
 import { LineWithTags } from '../../../app/folder-panel/parts/line-with-tags';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
+import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
 import { NormalizedConversation } from 'types/conversations';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
@@ -64,6 +65,7 @@ export const SearchConversationListItemCore = ({
 	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
 	const avatarFolderId = conversation.messageIds.length === 1 ? parent : '';
+	const folderIds = useConversationFolderIds(conversationId, hasSharedTag(conversation.tags));
 
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
@@ -102,7 +104,7 @@ export const SearchConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-					<LineWithTags tagIds={conversation.tags}>
+					<LineWithTags tagIds={conversation.tags} folderIds={folderIds}>
 						<ConversationSubjectRow
 							subject={conversation.subject}
 							read={conversation.read}

@@ -11,7 +11,12 @@ import { useTheme } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, setupTest } from '@test-setup';
-import { populateFoldersStore } from '@test-utils/store/folders';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
@@ -225,6 +230,36 @@ describe('SearchConversationListItemCore', () => {
 
 			expect(screen.getByTestId('tag-pill')).toHaveTextContent('tag2');
 			expect(screen.getByTestId('icon: PeopleOutline')).toBeInTheDocument();
+		});
+
+		it('a tag from a shared folder says whose folder it comes from', async () => {
+			useTagStore.setState({ tags: {} });
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: '123',
+						tags: ['nil:Finance'],
+						folderId: SHARED_FOLDER_ID
+					}
+				})
+			);
+			populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+			const { user } = setupTest(
+				<SearchConversationListItemCore
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					open={false}
+					toggleCollapseElementCallback={vi.fn()}
+					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={vi.fn()}
+				/>
+			);
+
+			await user.hover(screen.getByText('Finance'));
+
+			expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
 		});
 
 		it('tints the pill with the custom colour of the tag', async () => {

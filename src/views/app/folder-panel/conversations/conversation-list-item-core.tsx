@@ -12,6 +12,7 @@ import { ConversationSubjectRow } from '../parts/conversation-subject-row';
 import { ItemBadge } from '../parts/item-badge';
 import { LineWithTags } from '../parts/line-with-tags';
 import { ParticipantsString } from '../parts/participants-string';
+import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
 import { NormalizedConversation } from 'types/conversations';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
@@ -61,6 +62,8 @@ export const ConversationListItemCore = ({
 		return conversation.messagesInConversation > 0 || conversation?.messageIds?.length > 0;
 	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
+	const folderIds = useConversationFolderIds(conversation.id, hasSharedTag(conversation.tags));
+
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
 		[open, t]
@@ -100,7 +103,7 @@ export const ConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-					<LineWithTags tagIds={conversation.tags}>
+					<LineWithTags tagIds={conversation.tags} folderIds={folderIds}>
 						<ConversationSubjectRow
 							subject={conversation.subject}
 							read={conversation.read}

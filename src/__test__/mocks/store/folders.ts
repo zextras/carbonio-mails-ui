@@ -56,3 +56,20 @@ export const populateFoldersStore = ({
 	};
 	useFolderStore.setState((state) => ({ ...state, ...initialStoreState }), true);
 };
+
+/** The owner of `SHARED_FOLDER_LINK`, named by the tooltip of the tags of its messages. */
+export const SHARED_FOLDER_OWNER = 'marta.rossi@example.com';
+
+/** The folder of a message in the folder mounted by `SHARED_FOLDER_LINK`: "<zid>:<rid>". */
+export const SHARED_FOLDER_ID = 'z3:257';
+
+/** A folder another account shares, mounted on its own: pass it as `additionalFolders`. */
+export const SHARED_FOLDER_LINK: Record<string, Folder> = {
+	'267': {
+		id: '267',
+		name: 'Shared projects',
+		zid: 'z3',
+		rid: '257',
+		owner: SHARED_FOLDER_OWNER
+	} as unknown as Folder
+};

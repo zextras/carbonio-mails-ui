@@ -62,7 +62,7 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 
 	return (
 		<Row wrap="nowrap" mainAlignment="flex-end">
-			{!open && <CollapsedCardTags tagIds={message.tags} />}
+			{!open && <CollapsedCardTags tagIds={message.tags} folderId={message.parent} />}
 			{message.hasAttachment && attachments.length > 0 && (
 				<Padding left="small">
 					<Icon icon="AttachOutline" />
