@@ -23,6 +23,13 @@ import { getConversationMessages } from 'store/emails/store';
 /** A quote inside the quoted tag name of a search, as the search grammar takes it. */
 const ESCAPED_QUOTE = String.raw`\"`;
 
+/**
+ * The search term of a tag, in quotes so that no part of the name is read as an operator. The search
+ * reads only the first line of a term: a line separator in the name becomes a space.
+ */
+const tagSearchValue = (name: string): string =>
+	`tag:"${name.replaceAll(/[\r\n\u2028\u2029]/g, ' ').replaceAll('"', ESCAPED_QUOTE)}"`;
+
 type UseReadingPaneTagsArgs = {
 	/** A message: its own tags. A conversation: the tags of all its messages. */
 	kind: 'message' | 'conversation';
@@ -64,7 +71,7 @@ export const useReadingPaneTags = ({
 				isGeneric: false,
 				isQueryFilter: true,
 				label: `tag:${tag.name}`,
-				value: `tag:"${tag.name.replaceAll('"', ESCAPED_QUOTE)}"`
+				value: tagSearchValue(tag.name)
 			};
 			runSearch?.([chip], 'mails');
 		},
