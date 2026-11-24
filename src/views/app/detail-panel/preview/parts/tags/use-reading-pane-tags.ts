@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import type { ReadingPaneTagsProps } from './reading-pane-tags';
 import { isSpam } from 'helpers/folders';
 import { useTagPillActions } from 'hooks/use-tag-pill-actions';
-import { useTagPillItems } from 'hooks/use-tag-pill-items';
+import { hasSharedTag, useConversationFolderIds, useTagPillItems } from 'hooks/use-tag-pill-items';
 import { getConversationMessages } from 'store/emails/store';
 
 /** A quote inside the quoted tag name of a search, as the search grammar takes it. */
@@ -47,7 +47,13 @@ export const useReadingPaneTags = ({
 	folderId
 }: UseReadingPaneTagsArgs): ReadingPaneTagsProps => {
 	const [t] = useTranslation();
-	const tags = useTagPillItems(tagIds);
+	const conversationFolderIds = useConversationFolderIds(
+		id,
+		kind === 'conversation' && hasSharedTag(tagIds)
+	);
+	const messageFolderIds = useMemo(() => [folderId], [folderId]);
+	const folderIds = kind === 'conversation' ? conversationFolderIds : messageFolderIds;
+	const tags = useTagPillItems(tagIds, folderIds);
 	const ids = useMemo(() => [id], [id]);
 	const { removeTag, toggleTag } = useTagPillActions({ kind, ids });
 	const runSearch = useRunSearchIntegration();

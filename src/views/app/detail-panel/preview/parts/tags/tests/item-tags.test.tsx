@@ -5,11 +5,17 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { convertSearchChipToString, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConvActionRequest } from 'types/soap/conv-action';
 import { MsgActionRequest } from 'types/soap/msg-action';
@@ -35,6 +41,8 @@ const showFirst = (visible: number): void => {
 	);
 };
 
+const SHARED_FINANCE = 'nil:Finance';
+const READING_PANE_TAGS = 'reading-pane-tags';
 const SHOW_MORE = 'Show 1 more tag';
 const REMOVE_CLIENT = 'Remove tag Client';
 const ESCAPED_QUOTE = String.raw`\"`;
@@ -56,7 +64,7 @@ describe('ItemTags', () => {
 			<ItemTags
 				kind="message"
 				id="10"
-				tagIds={['t1', 'nil:Finance', 't2']}
+				tagIds={['t1', SHARED_FINANCE, 't2']}
 				folderId={FOLDERS.INBOX}
 			/>
 		);
@@ -70,7 +78,7 @@ describe('ItemTags', () => {
 
 	test('shows nothing without tags', () => {
 		setupTest(<ItemTags kind="message" id="10" tagIds={[]} folderId={FOLDERS.INBOX} />);
-		expect(screen.queryByTestId('reading-pane-tags')).not.toBeInTheDocument();
+		expect(screen.queryByTestId(READING_PANE_TAGS)).not.toBeInTheDocument();
 	});
 
 	test('a click on a pill searches by its tag', async () => {
@@ -252,5 +260,42 @@ describe('ItemTags', () => {
 		);
 		await user.click(screen.getByRole('button', { name: 'Client' }));
 		expect(onCardClick).toHaveReturnedWith(true);
+	});
+	describe('a tag from a shared folder', () => {
+		beforeEach(() => {
+			populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+		});
+
+		test('on a message, says whose folder it comes from', async () => {
+			const { user } = setupTest(
+				<ItemTags kind="message" id="10" tagIds={[SHARED_FINANCE]} folderId={SHARED_FOLDER_ID} />
+			);
+
+			await user.hover(
+				within(screen.getByTestId(READING_PANE_TAGS)).getAllByText('Finance').at(-1) as HTMLElement
+			);
+
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
+		});
+
+		test('on a conversation, says whose folder from the folders of its messages', async () => {
+			populateConversationInEmailStore({
+				conversationParams: { id: '20', folderId: SHARED_FOLDER_ID },
+				conversationMessagesNumber: 2
+			});
+			const { user } = setupTest(
+				<ItemTags kind="conversation" id="20" tagIds={[SHARED_FINANCE]} folderId={FOLDERS.INBOX} />
+			);
+
+			await user.hover(
+				within(screen.getByTestId(READING_PANE_TAGS)).getAllByText('Finance').at(-1) as HTMLElement
+			);
+
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
+		});
 	});
 });

@@ -10,6 +10,12 @@ import { useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { PreviewHeaderActions } from '../parts/preview-header-actions';
 import { setupTest } from '@test-setup';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { TESTID_SELECTORS } from '__test__/constants';
 import { generateMessage } from '__test__/generators/generateMessage';
 
@@ -53,6 +59,18 @@ describe('PreviewHeaderActions', () => {
 			const tags = screen.getByTestId(COLLAPSED_TAGS);
 			expect(within(tags).getByTestId('tag-pill')).toHaveTextContent('Important');
 			expect(within(tags).getByText('+2')).toBeInTheDocument();
+		});
+
+		it('should say whose folder a tag from a shared folder comes from', async () => {
+			populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+			const message = generateMessage({ tags: ['nil:Finance'], folderId: SHARED_FOLDER_ID });
+
+			const { user } = setupTest(<PreviewHeaderActions message={message} open={false} isWide />);
+			await user.hover(within(screen.getByTestId(COLLAPSED_TAGS)).getByText('Finance'));
+
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
 		});
 
 		it('should not be interactive', () => {

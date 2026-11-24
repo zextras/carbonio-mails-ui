@@ -44,6 +44,8 @@ const names = (items: ReadonlyArray<TagPillItem>): string =>
 
 export type LineWithTagsProps = {
 	tagIds: ReadonlyArray<string> | undefined;
+	/** Folders of the item (its messages, for a conversation): whose folder a shared tag comes from. */
+	folderIds?: ReadonlyArray<string>;
 	/** Most px the tags may take: 200 on the subject line, 160 on a conversation child row. */
 	maxBudget?: number;
 	/** What the tags share the line with: the subject, or the sender in a child row. */
@@ -56,12 +58,13 @@ export type LineWithTagsProps = {
  */
 export const LineWithTags = ({
 	tagIds,
+	folderIds,
 	maxBudget,
 	children
 }: Readonly<LineWithTagsProps>): React.JSX.Element => {
 	const [t] = useTranslation();
 	const lineRef = useRef<HTMLDivElement>(null);
-	const items = useTagPillItems(tagIds);
+	const items = useTagPillItems(tagIds, folderIds);
 	const lineWidth = useElementWidth(lineRef, items.length > 0);
 	const own = items.filter((item) => !item.shared);
 	const shared = items.filter((item) => item.shared);

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { TagPill } from '@zextras/carbonio-ui-commons';
@@ -79,12 +79,15 @@ export const ItemTags = ({
  * click). Screen readers get every tag by name.
  */
 export const CollapsedCardTags = ({
-	tagIds
+	tagIds,
+	folderId
 }: Readonly<{
 	tagIds: ReadonlyArray<string> | undefined;
+	folderId: string;
 }>): React.JSX.Element | null => {
 	const [t] = useTranslation();
-	const items = useTagPillItems(tagIds);
+	const folderIds = useMemo(() => [folderId], [folderId]);
+	const items = useTagPillItems(tagIds, folderIds);
 	if (items.length === 0) {
 		return null;
 	}
@@ -99,6 +102,7 @@ export const CollapsedCardTags = ({
 					name={first.name}
 					color={first.color}
 					shared={first.shared}
+					tooltip={first.tooltip}
 					maxWidth={COLLAPSED_PILL_MAX_WIDTH}
 				/>
 				{items.length > 1 && <Counter>+{items.length - 1}</Counter>}

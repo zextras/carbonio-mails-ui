@@ -11,7 +11,12 @@ import { useTheme } from '@zextras/carbonio-design-system';
 import { useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, setupTest } from '@test-setup';
-import { populateFoldersStore } from '@test-utils/store/folders';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
@@ -285,5 +290,36 @@ describe('ConversationListItemCore', () => {
 		);
 
 		expect(await screen.findByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+	});
+	it('a tag from a shared folder says whose folder it comes from', async () => {
+		useTagStore.setState({ tags: {} });
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: {
+					id: '123',
+					tags: ['nil:Finance'],
+					folderId: SHARED_FOLDER_ID
+				}
+			})
+		);
+		populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+		const { user } = setupTest(
+			<ConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		await user.hover(screen.getByText('Finance'));
+
+		expect(
+			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+		).toBeVisible();
 	});
 });

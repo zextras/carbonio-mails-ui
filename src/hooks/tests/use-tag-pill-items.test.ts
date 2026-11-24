@@ -3,12 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useTagStore, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { act, waitFor } from '@testing-library/react';
+import {
+	Folder,
+	FOLDERS,
+	useFolderStore,
+	useTagStore,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 
 import { setupHook } from '@test-setup';
-import { useTagPillItems } from 'hooks/use-tag-pill-items';
+import { generateConversation } from '__test__/generators/generateConversation';
+import { generateMessage } from '__test__/generators/generateMessage';
+import { useConversationFolderIds, useTagPillItems } from 'hooks/use-tag-pill-items';
+import {
+	getConversationMessagesParents,
+	updateConversations,
+	updateMessages
+} from 'store/emails/store';
 
 const FINANCE = 'nil:Finance';
+/** The tooltip of a shared tag whose owner is not named: its name first. */
+const sharedTooltip = (name: string): string => `${name} · Tag from a shared folder`;
 
 describe('useTagPillItems', () => {
 	beforeEach(() => {
@@ -43,8 +59,13 @@ describe('useTagPillItems', () => {
 
 		expect(result.current).toEqual([
 			{ id: '1', name: 'urgent', color: ZIMBRA_STANDARD_COLORS[5].hex },
-			{ id: 'nil:Accounting', name: 'Accounting', shared: true },
-			{ id: FINANCE, name: 'Finance', shared: true }
+			{
+				id: 'nil:Accounting',
+				name: 'Accounting',
+				shared: true,
+				tooltip: sharedTooltip('Accounting')
+			},
+			{ id: FINANCE, name: 'Finance', shared: true, tooltip: sharedTooltip('Finance') }
 		]);
 	});
 
@@ -53,7 +74,84 @@ describe('useTagPillItems', () => {
 
 		const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE]] });
 
-		expect(result.current).toEqual([{ id: FINANCE, name: 'Finance', shared: true }]);
+		expect(result.current).toEqual([
+			{ id: FINANCE, name: 'Finance', shared: true, tooltip: sharedTooltip('Finance') }
+		]);
+	});
+
+	describe('tooltip of a shared tag', () => {
+		const MARTA = 'marta.rossi@example.com';
+		const LUCA = 'luca.bianchi@example.com';
+
+		beforeEach(() => {
+			useFolderStore.setState({
+				folders: {
+					'z1:1': { id: 'z1:1', name: 'USER_ROOT', owner: MARTA } as unknown as Folder,
+					'z2:1': { id: 'z2:1', name: 'USER_ROOT', owner: LUCA } as unknown as Folder
+				}
+			});
+		});
+
+		it('names the owner of the shared folder the item is in', () => {
+			const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE], ['z1:257']] });
+
+			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+		});
+
+		it('names the owner once when all the messages are in folders of the same owner', () => {
+			const { result } = setupHook(useTagPillItems, {
+				initialProps: [[FINANCE], ['z1:257', 'z1:300']]
+			});
+
+			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+		});
+
+		it('says "a shared folder" when the messages are in folders of different owners', () => {
+			const { result } = setupHook(useTagPillItems, {
+				initialProps: [[FINANCE], ['z1:257', 'z2:400', '2']]
+			});
+
+			expect(result.current[0].tooltip).toBe(sharedTooltip('Finance'));
+		});
+
+		it("names the owner when the other messages are in the user's own folders", () => {
+			// A tag from a shared folder can only come from the messages in that folder
+			const { result } = setupHook(useTagPillItems, {
+				initialProps: [[FINANCE], ['z1:257', FOLDERS.INBOX]]
+			});
+
+			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+		});
+
+		it('names the owner of a folder mounted on its own, whose account root is not loaded', () => {
+			useFolderStore.setState({
+				folders: {
+					'267': {
+						id: '267',
+						name: 'Shared projects',
+						zid: 'z3',
+						rid: '257',
+						owner: MARTA
+					} as unknown as Folder
+				}
+			});
+
+			const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE], ['z3:257']] });
+
+			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+		});
+
+		it('says "a shared folder" when the owner is not known', () => {
+			const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE]] });
+
+			expect(result.current[0].tooltip).toBe(sharedTooltip('Finance'));
+		});
+
+		it("gives no tooltip to the user's own tags", () => {
+			const { result } = setupHook(useTagPillItems, { initialProps: [['1'], ['z1:257']] });
+
+			expect(result.current[0].tooltip).toBeUndefined();
+		});
 	});
 
 	it('keeps a colon in the name of a shared tag', () => {
@@ -70,6 +168,45 @@ describe('useTagPillItems', () => {
 
 	it('returns no tags for an item without tags', () => {
 		const { result } = setupHook(useTagPillItems, { initialProps: [undefined] });
+
+		expect(result.current).toEqual([]);
+	});
+});
+
+describe('useConversationFolderIds', () => {
+	const CONVERSATION = '500';
+
+	beforeEach(async () => {
+		updateMessages([
+			generateMessage({ id: '501', cid: CONVERSATION, folderId: '2' }),
+			generateMessage({ id: '502', cid: CONVERSATION, folderId: 'z1:257' }),
+			generateMessage({ id: '503', cid: CONVERSATION, folderId: '2' })
+		]);
+		updateConversations([
+			generateConversation({ id: CONVERSATION, messageIds: ['501', '502', '503'] })
+		]);
+		await waitFor(() => expect(getConversationMessagesParents(CONVERSATION)).toHaveLength(3));
+	});
+
+	const getParents = (): Array<string> =>
+		setupHook(useConversationFolderIds, { initialProps: [CONVERSATION, true] }).result.current;
+
+	it('returns the folders of the messages of the conversation, each once', () => {
+		expect(getParents()).toEqual(['2', 'z1:257']);
+	});
+
+	it('follows a message moved to another folder', async () => {
+		const { result } = setupHook(useConversationFolderIds, { initialProps: [CONVERSATION, true] });
+
+		act(() => {
+			updateMessages([generateMessage({ id: '502', cid: CONVERSATION, folderId: 'z2:400' })]);
+		});
+
+		await waitFor(() => expect(result.current).toEqual(['2', 'z2:400']));
+	});
+
+	it('reads nothing when the conversation has no tag from a shared folder', () => {
+		const { result } = setupHook(useConversationFolderIds, { initialProps: [CONVERSATION, false] });
 
 		expect(result.current).toEqual([]);
 	});

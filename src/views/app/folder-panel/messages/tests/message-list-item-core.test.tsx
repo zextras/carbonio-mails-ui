@@ -9,7 +9,12 @@ import { screen } from '@testing-library/react';
 import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
-import { populateFoldersStore } from '@test-utils/store/folders';
+import {
+	populateFoldersStore,
+	SHARED_FOLDER_ID,
+	SHARED_FOLDER_LINK,
+	SHARED_FOLDER_OWNER
+} from '@test-utils/store/folders';
 import { populateTagsStore } from '@test-utils/store/tags';
 import { populateMessagesInEmailStore } from '__test__/generators/generateMessage';
 import { MessageListItemCore } from 'views/app/folder-panel/messages/message-list-item-core';
@@ -57,5 +62,29 @@ describe('MessageListItemCore tags', () => {
 
 		expect(screen.getAllByTestId('tag-pill')).toHaveLength(1);
 		expect(screen.getByTestId('tag-pill')).toHaveTextContent('child tag');
+	});
+	it('a tag from a shared folder says whose folder it comes from', async () => {
+		populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
+		populateTagsStore({});
+		const [message] = populateMessagesInEmailStore({
+			messageGeneratorParams: [{ id: '123', tags: ['nil:Finance'], folderId: SHARED_FOLDER_ID }]
+		});
+		const { user } = setupTest(
+			<MessageListItemCore
+				message={message}
+				selected={false}
+				selecting={false}
+				isConvChildren={false}
+				firstChildFolderId={SHARED_FOLDER_ID}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		await user.hover(screen.getByText('Finance'));
+
+		expect(
+			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+		).toBeVisible();
 	});
 });
