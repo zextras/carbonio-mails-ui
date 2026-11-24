@@ -11,19 +11,7 @@ import { ListTagPills, TagPillItem } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { useTagPillItems } from '../../../../hooks/use-tag-pill-items';
-
-/** Read by screen readers, not shown. */
-const VisuallyHidden = styled.span`
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	margin: -1px;
-	padding: 0;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-`;
+import { VisuallyHidden } from 'commons/visually-hidden';
 
 const Line = styled.div`
 	display: flex;

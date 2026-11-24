@@ -3,50 +3,33 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useMemo, useRef } from 'react';
 
-import {
-	Button,
-	Dropdown,
-	Icon,
-	Padding,
-	Row,
-	Tooltip,
-	Text
-} from '@zextras/carbonio-design-system';
-import { Tag } from '@zextras/carbonio-ui-soap-lib';
+import { Icon, Padding, Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
+import { CollapsedCardTags } from './tags/item-tags';
 import { getCompactDateLabel, getTimeLabel } from 'commons/utils';
 import { retrieveAttachmentsType } from 'store/editor-slice-utils';
 import { MailMessage } from 'types/messages';
 
 type PreviewHeaderActions = {
 	message: MailMessage;
-	tags: Tag[];
 	open: boolean;
 	isWide: boolean;
 };
 
 export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 	message,
-	tags,
 	open,
 	isWide
 }): ReactElement => {
 	const [t] = useTranslation();
 	const textRef = useRef<HTMLInputElement>(null);
-	const [showDropdown, setShowDropdown] = useState(false);
 
 	const attachments = retrieveAttachmentsType(message, 'attachment');
-
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-
-	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags[0].color : undefined), [tags]);
-
-	const showMultiTagIcon = useMemo(() => tags?.length > 1, [tags]);
 
 	const scheduledTime = useMemo(
 		() =>
@@ -77,54 +60,9 @@ export const PreviewHeaderActions: FC<PreviewHeaderActions> = ({
 		[message, scheduledTime, isWide]
 	);
 
-	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
-		ev.stopPropagation();
-		setShowDropdown((o) => !o);
-	}, []);
-
-	const onDropdownClose = useCallback((): void => {
-		setShowDropdown(false);
-	}, []);
-
-	const showTagsInHeader = useMemo(() => {
-		if (tags.length === 0) return null;
-		if (showMultiTagIcon) {
-			return (
-				<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
-					<Padding left="small">
-						<Button
-							data-testid={tagIcon}
-							icon={tagIcon}
-							type="ghost"
-							color={'gray0'}
-							onClick={onIconClick}
-							aria-label={t('label.tags', 'Tags')}
-						/>
-					</Padding>
-				</Dropdown>
-			);
-		}
-		return (
-			<Padding left="small">
-				<Tooltip label={tags?.[0]?.name} disabled={showMultiTagIcon}>
-					<Icon icon={tagIcon} color={`${tagIconColor}`} />
-				</Tooltip>
-			</Padding>
-		);
-	}, [
-		tags,
-		showMultiTagIcon,
-		tagIcon,
-		tagIconColor,
-		showDropdown,
-		onDropdownClose,
-		onIconClick,
-		t
-	]);
-
 	return (
 		<Row wrap="nowrap" mainAlignment="flex-end">
-			{showTagsInHeader}
+			{!open && <CollapsedCardTags tagIds={message.tags} />}
 			{message.hasAttachment && attachments.length > 0 && (
 				<Padding left="small">
 					<Icon icon="AttachOutline" />

@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { screen, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { generateMessage } from '__test__/generators/generateMessage';
@@ -95,6 +95,39 @@ describe('Mail preview', () => {
 		const content = shadowRoot?.innerHTML.toString();
 
 		expect(content).toContain('table');
+	});
+
+	describe('Tags', () => {
+		const READING_PANE_TAGS = 'reading-pane-tags';
+
+		beforeEach(() => {
+			useTagStore.setState({ tags: { t1: { id: 't1', name: 'Client', color: 1 } } });
+		});
+
+		it('shows the tags of a message opened alone', () => {
+			const message = generateMessage({ tags: ['t1'], isComplete: true });
+
+			setupTest(<MailPreview message={message} expanded isAlone isMessageView />);
+
+			expect(screen.getByTestId(READING_PANE_TAGS)).toHaveTextContent('Client');
+		});
+
+		it('shows the tags of a card in a conversation of several messages', () => {
+			const message = generateMessage({ tags: ['t1'], isComplete: true });
+
+			setupTest(<MailPreview message={message} expanded isAlone={false} isMessageView={false} />);
+
+			expect(screen.getByTestId(READING_PANE_TAGS)).toHaveTextContent('Client');
+		});
+
+		it('shows no tags on the card of a single-message conversation: they are under the subject', () => {
+			const message = generateMessage({ tags: ['t1'], isComplete: true });
+
+			setupTest(<MailPreview message={message} expanded isAlone isMessageView={false} />);
+
+			expect(screen.queryByTestId(READING_PANE_TAGS)).not.toBeInTheDocument();
+			expect(screen.queryByTestId('collapsed-card-tags')).not.toBeInTheDocument();
+		});
 	});
 
 	describe('Actions', () => {

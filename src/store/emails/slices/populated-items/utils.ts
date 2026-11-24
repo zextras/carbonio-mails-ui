@@ -70,6 +70,23 @@ function getConversationMessagesParents(
 		.filter(Boolean);
 }
 
+/**
+ * The folders of the messages of a conversation, each once, joined by a new line: a string, so the
+ * component re-renders only when they change, not at every change of the store.
+ */
+function useConversationMessagesParentsKey(
+	conversationId: string,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): string {
+	return useEmailsStore(({ populatedItemsSlice }) => {
+		const messageIds = populatedItemsSlice.conversations[conversationId]?.messageIds ?? [];
+		const parents = messageIds
+			.map((messageId) => populatedItemsSlice.messages[messageId]?.parent)
+			.filter(Boolean);
+		return [...new Set(parents)].join('\n');
+	});
+}
+
 // TODO: check this implementation. We found out the merge was handling data incorrectly.
 //  we decided to just override the data and not handle any complex logic in the store
 //  Check also updateMessages method as it may have the same issues
@@ -328,6 +345,7 @@ export const populatedItemsSliceUtils = {
 	useConversationMessages,
 	getConversationMessages,
 	getConversationMessagesParents,
+	useConversationMessagesParentsKey,
 	useMessagesByIds,
 	useConversationsByIds,
 	deleteMessagesFromConversation,

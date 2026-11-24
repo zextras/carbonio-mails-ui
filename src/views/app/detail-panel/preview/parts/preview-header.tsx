@@ -12,14 +12,13 @@ import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { TagsInExpandedHeader } from './header-tags';
 import { PreviewHeaderActions } from './preview-header-actions';
+import { ItemTags } from './tags/item-tags';
 import { useContainerWidth } from './utils';
 import type { DetailPanelRoutesParams } from '../../../../../types/routes';
 import { participantToString } from 'commons/utils';
 import { getNoIdentityPlaceholder } from 'helpers/identities';
 import { MailMessage } from 'types/messages';
-import { useGetTagsList } from 'ui-actions/tag-actions';
 import { ContactChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
 import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
 import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
@@ -39,6 +38,8 @@ type PreviewHeaderProps = {
 	onClick: (e: SyntheticEvent) => void;
 	open: boolean;
 	isEml?: boolean;
+	/** False for the only message of a conversation: its tags are under the conversation subject. */
+	showTags?: boolean;
 };
 
 const fallbackContact = {
@@ -52,7 +53,8 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	message,
 	onClick,
 	open,
-	isEml
+	isEml,
+	showTags = true
 }): ReactElement => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const accounts = useUserAccounts();
@@ -60,7 +62,6 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const isWide = useContainerWidth(containerRef, 550);
-	const tags = useGetTagsList(message.tags);
 
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const senderContact = find(message.participants, ['type', 's']);
@@ -155,13 +156,18 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 										<OnBehalfOfDisplayer compProps={{ senderContact, message, mainContact }} />
 									)}
 								</Row>
-								{!isEml && (
-									<PreviewHeaderActions message={message} tags={tags} open={open} isWide={isWide} />
-								)}
+								{!isEml && <PreviewHeaderActions message={message} open={open} isWide={isWide} />}
 							</Container>
 						</Row>
 					</Container>
-					<TagsInExpandedHeader isEml={isEml} tags={tags} open={open} isWide={isWide} />
+					{!isEml && open && showTags && (
+						<ItemTags
+							kind="message"
+							id={message.id}
+							tagIds={message.tags}
+							folderId={message.parent}
+						/>
+					)}
 				</Container>
 				<Container
 					orientation="horizontal"

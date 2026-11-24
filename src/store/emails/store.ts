@@ -236,6 +236,11 @@ export function getConversationMessagesParents(conversationId: string): Array<st
 	return populatedItemsSliceUtils.getConversationMessagesParents(conversationId, useEmailsStore);
 }
 
+/** The folders of the messages of a conversation, each once, joined by a new line. */
+export function useConversationMessagesParentsKey(conversationId: string): string {
+	return populatedItemsSliceUtils.useConversationMessagesParentsKey(conversationId, useEmailsStore);
+}
+
 /**
  * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
  * and updates the emails store state.
