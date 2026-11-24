@@ -1,3 +1,7 @@
+## <small>1.31.9 (2026-11-24)</small>
+
+* fix: [CO-4815] show the notes of a share invitation as plain text (#1448) ([d14f5f0](https://github.com/zextras/carbonio-mails-ui/commit/d14f5f0)), closes [#1448](https://github.com/zextras/carbonio-mails-ui/issues/1448)
+
 ## <small>1.31.8 (2026-10-29)</small>
 
 * fix(CO-4620): show text body parts merged into an HTML body as text (#1406) ([e856107](https://github.com/zextras/carbonio-mails-ui/commit/e856107)), closes [#1406](https://github.com/zextras/carbonio-mails-ui/issues/1406)
