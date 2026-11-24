@@ -15,19 +15,10 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import {
-	Tag,
-	TagsActionsType,
-	useTags,
-	ZIMBRA_STANDARD_COLORS,
-	DeleteTagModal,
-	resolveTagColorHex
-} from '@zextras/carbonio-ui-commons';
-import { filter, map, reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { TagsActionsType, DeleteTagModal, resolveTagColorHex } from '@zextras/carbonio-ui-commons';
 
 import { UIActionDescriptor } from 'types/actions';
-import { ArgumentType, ItemType, TagActionsReturnType } from 'types/tags';
+import { ArgumentType, TagActionsReturnType } from 'types/tags';
 import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
@@ -150,60 +141,4 @@ export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturn
 			] as Array<TagActionsReturnType>,
 		[closeModal, createModal, tag]
 	);
-};
-
-const useTagsArrayFromStore = (): Array<ItemType> => {
-	const tagsFromStore = useTags();
-	return useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc: Array<ItemType>, v: any) => {
-					acc.push(v);
-					return acc;
-				},
-				[]
-			),
-		[tagsFromStore]
-	);
-};
-
-export const useGetTagsList = (msgTags?: string[]): Tag[] => {
-	const [t] = useTranslation();
-	const tagsFromStore = useTagsArrayFromStore();
-
-	const tagsInList = reduce(
-		tagsFromStore,
-		(acc: Tag[], tag) => {
-			if (msgTags?.includes(tag.id)) {
-				acc.push({
-					...tag,
-					// TODO: align the use of the property with the type exposed by the shell
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					color: resolveTagColorHex(tag),
-					label: tag.name
-				});
-			}
-			return acc;
-		},
-		[]
-	);
-
-	const tagsNotInList = map(
-		filter(msgTags, (tagName) => tagName?.includes('nil:')),
-		(tagNotInList: string): Tag => ({
-			id: tagNotInList,
-			name: t('label.not_in_list', {
-				name: tagNotInList.split(':')[1],
-				defaultValue: '{{name}} - Not in your tag list'
-			}),
-			// TODO: align the use of the property with the type exposed by the shell
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			color: ZIMBRA_STANDARD_COLORS[0].hex
-		})
-	);
-
-	return [...tagsInList, ...tagsNotInList];
 };
