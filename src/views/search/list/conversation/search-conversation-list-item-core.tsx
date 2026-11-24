@@ -8,8 +8,8 @@ import React, { useCallback, useMemo } from 'react';
 import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { ConversationBadge } from '../../../app/folder-panel/parts/conversation-badge';
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
-import { ItemBadge } from '../../../app/folder-panel/parts/item-badge';
 import { LineWithTags } from '../../../app/folder-panel/parts/line-with-tags';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
@@ -97,9 +97,10 @@ export const SearchConversationListItemCore = ({
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
-								<ItemBadge
-									itemReadValue={conversation.read}
-									value={badgeTotalConversationMessages()}
+								<ConversationBadge
+									messages={badgeTotalConversationMessages()}
+									read={conversation.read}
+									unread={conversation.unreadCount}
 								/>
 							</Padding>
 						</Row>

@@ -8,8 +8,8 @@ import React, { useCallback, useMemo } from 'react';
 import { Button, Container, Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { ConversationBadge } from '../parts/conversation-badge';
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
-import { ItemBadge } from '../parts/item-badge';
 import { LineWithTags } from '../parts/line-with-tags';
 import { ParticipantsString } from '../parts/participants-string';
 import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
@@ -99,7 +99,11 @@ export const ConversationListItemCore = ({
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
-								<ItemBadge itemReadValue={conversation.read} value={getmsgToDisplayCount()} />
+								<ConversationBadge
+									messages={getmsgToDisplayCount()}
+									read={conversation.read}
+									unread={conversation.unreadCount}
+								/>
 							</Padding>
 						</Row>
 					)}

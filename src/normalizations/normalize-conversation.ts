@@ -44,7 +44,9 @@ export const mapToNormalizedConversation = ({
 		flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : false,
 		urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : false,
 		// Number of (nondeleted) messages. messages in trash or spam are in the count
-		messagesInConversation: conversation.n
+		messagesInConversation: conversation.n,
+		// Unread messages, counted the same way
+		unreadCount: conversation.u
 	};
 };
 
@@ -74,7 +76,9 @@ const mapToNormalizedPartialConversation = ({
 			flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : undefined,
 			urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : undefined,
 			// Number of (nondeleted) messages. messages in trash or spam are in the count
-			messagesInConversation: conversation.n
+			messagesInConversation: conversation.n,
+			// Sent when it changes, e.g. a message read elsewhere (ToXML.encodeConversationSummary)
+			unreadCount: conversation.u
 		},
 		isNil
 	);
