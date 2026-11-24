@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
+import { convertSearchChipToString, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
@@ -37,6 +37,7 @@ const showFirst = (visible: number): void => {
 
 const SHOW_MORE = 'Show 1 more tag';
 const REMOVE_CLIENT = 'Remove tag Client';
+const ESCAPED_QUOTE = String.raw`\"`;
 
 describe('ItemTags', () => {
 	beforeEach(() => {
@@ -78,20 +79,55 @@ describe('ItemTags', () => {
 		);
 		await user.click(screen.getByRole('button', { name: 'Client' }));
 		expect(mockRunSearch).toHaveBeenCalledWith(
-			[expect.objectContaining({ label: 'tag:Client', value: 'tag:"Client"' })],
+			[expect.objectContaining({ label: 'tag:Client' })],
 			'mails'
 		);
 	});
 
-	test('a quote in the name of the tag stays inside the search for it', async () => {
-		useTagStore.setState({ tags: { q: { id: 'q', name: 'Q1 "draft"', color: 1 } } });
+	// What the search sends to the server: the chip goes through the same helper as every search chip
+	test.each([
+		['Client', 'tag:"Client"'],
+		['Customer escalation', 'tag:"Customer escalation"'],
+		['Q1 "draft"', String.raw`tag:"Q1 \"draft\""`],
+		['Q1"draft', String.raw`tag:"Q1\"draft"`]
+	])('the search for the tag %s is %s', async (name, query) => {
+		useTagStore.setState({ tags: { q: { id: 'q', name, color: 1 } } });
 		const { user } = setupTest(
 			<ItemTags kind="message" id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />
 		);
-		await user.click(screen.getByRole('button', { name: 'Q1 "draft"' }));
-		expect(mockRunSearch).toHaveBeenCalledWith(
-			[expect.objectContaining({ value: 'tag:"Q1 \\"draft\\""' })],
-			'mails'
+		await user.click(screen.getByRole('button', { name }));
+		expect(mockRunSearch).toHaveBeenCalledTimes(1);
+		const [chips] = mockRunSearch.mock.calls[0];
+		expect(convertSearchChipToString(chips[0])).toBe(query);
+	});
+
+	// Spaces and line separators the server keeps in a name must not let a part of it become an operator
+	test.each([
+		'(a)or(b)\u00a0',
+		'\u00a0(a)or(b)',
+		'(a)or(b)\u2028 z',
+		'x "y"\u2028(a)or(b)',
+		'(a)or(b)"\u00a0',
+		'\u00a0(a)or(b)"',
+		'"(a)or(b)\u3000',
+		'Q1"draft\u2028'
+	])('the search for the tag %j stays one quoted term', async (name) => {
+		useTagStore.setState({ tags: { q: { id: 'q', name, color: 1 } } });
+		const { user } = setupTest(
+			<ItemTags kind="message" id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />
+		);
+		// The pill, not its "Remove tag …" button (the accessible name drops the special spaces)
+		const pill = screen
+			.getAllByRole('button')
+			.find((button) => !button.getAttribute('aria-label')?.startsWith('Remove tag'));
+		await user.click(pill as HTMLElement);
+		expect(mockRunSearch).toHaveBeenCalledTimes(1);
+		const [chips] = mockRunSearch.mock.calls[0];
+		const query = convertSearchChipToString(chips[0]);
+		expect(query).toMatch(/^tag:"(?:[^"\\]|\\")*"$/);
+		// …and that term is the whole name
+		expect(query.slice('tag:"'.length, -1).replaceAll(ESCAPED_QUOTE, '"')).toBe(
+			name.replaceAll(/[\r\n\u2028\u2029]/g, ' ')
 		);
 	});
 
