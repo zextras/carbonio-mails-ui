@@ -30,6 +30,10 @@ const InviteContainer = styled(Container)`
 	margin: ${({ theme }): string => theme.sizes.padding.extrasmall};
 `;
 
+const NotesText = styled(Text)`
+	white-space: pre-line;
+`;
+
 type SharedCalendarResponseReturnType = {
 	sharedContent: string;
 	mailMsg: MailMessage;
@@ -69,14 +73,16 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 		[sharedContent]
 	);
 
-	const notes = useMemo(
-		() =>
-			mailMsg?.body?.content
-				?.substring(Number(mailMsg?.body?.content?.lastIndexOf('<hr />')) + 6)
-				.replace(/<p>/gi, '')
-				.replace(/<\/p>/gi, ''),
-		[mailMsg?.body?.content]
-	);
+	const notes = useMemo(() => {
+		const content = mailMsg?.body?.content;
+		if (!content) {
+			return '';
+		}
+		const notesMarkup = content
+			.substring(content.lastIndexOf('<hr />') + 6)
+			.replace(/<br\s*\/?>/gi, '\n');
+		return new DOMParser().parseFromString(notesMarkup, 'text/html').body.textContent.trim();
+	}, [mailMsg?.body?.content]);
 
 	const [folderType, folderIcon] = useMemo(() => {
 		switch (view) {
@@ -174,7 +180,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 										<Icon icon="MessageSquareOutline" />
 									</Row>
 									<Row takeAvailableSpace mainAlignment="flex-start" display="flex">
-										<Text overflow="break-word" dangerouslySetInnerHTML={{ __html: notes }}></Text>
+										<NotesText overflow="break-word">{notes}</NotesText>
 									</Row>
 								</Row>
 							</Container>
