@@ -29,6 +29,8 @@ export type NormalizedConversation = {
 	urgent: boolean;
 	tags?: string[];
 	messagesInConversation: number;
+	/** Unread messages, as the server counts them: in every response; optional for the test generators */
+	unreadCount?: number;
 };
 
 export type ConvActionParameters = {

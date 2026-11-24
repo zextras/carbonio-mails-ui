@@ -322,4 +322,27 @@ describe('ConversationListItemCore', () => {
 			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
 		).toBeVisible();
 	});
+	it('tells screen readers how many messages the conversation has and how many are unread', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', isRead: false },
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<ConversationListItemCore
+				conversation={{ ...conversation, messagesInConversation: 3, unreadCount: 2 }}
+				selected={false}
+				selecting={false}
+				folderParent="inbox"
+				open={false}
+				toggleCollapseElementCallback={mockToggleOpen}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(screen.getByText('3 messages, 2 unread')).toBeInTheDocument();
+	});
 });

@@ -188,6 +188,30 @@ describe('SearchConversationListItemCore', () => {
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
 
+	it('tells screen readers how many messages the conversation has and how many are unread', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', isRead: false },
+				conversationMessagesNumber: 3
+			})
+		);
+		populateFoldersStore();
+		setupTest(
+			<SearchConversationListItemCore
+				conversation={{ ...conversation, messagesInConversation: 3, unreadCount: 2 }}
+				selected={false}
+				selecting={false}
+				open={false}
+				toggleCollapseElementCallback={vi.fn()}
+				parent={FOLDERS.INBOX}
+				index={0}
+				onSelect={vi.fn()}
+			/>
+		);
+
+		expect(screen.getByText('3 messages, 2 unread')).toBeInTheDocument();
+	});
+
 	describe('tags', () => {
 		const renderWithTags = async (conversationTags: Array<string>): Promise<void> => {
 			const { conversation } = await waitFor(() =>

@@ -17,9 +17,11 @@ import {
 	populateConversationInEmailStore
 } from '__test__/generators/generateConversation';
 import { generateMessage } from '__test__/generators/generateMessage';
+import { normalizePartialConversations } from 'normalizations/normalize-conversation';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
 	appendConversationsToConversationIndexSlice,
+	handleNotifyConversationsModified,
 	handleNotifyMessagesCreated,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
@@ -279,5 +281,23 @@ describe('triggerNotification', () => {
 		}));
 		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).toHaveBeenCalled();
+	});
+});
+
+describe('handleNotifyConversationsModified', () => {
+	it('keeps the number of unread messages of a conversation as the server updates it', async () => {
+		populateConversationInEmailStore({ conversationParams: { id: '1' } });
+		const { result } = setupHook(useConversationById, { initialProps: ['1'] });
+
+		handleNotifyConversationsModified(normalizePartialConversations([{ id: '1', u: 2 }]));
+		await waitFor(() => expect(result.current.unreadCount).toBe(2));
+
+		handleNotifyConversationsModified(normalizePartialConversations([{ id: '1', u: 1 }]));
+		await waitFor(() => expect(result.current.unreadCount).toBe(1));
+
+		// a change that does not touch it (e.g. a new subject) leaves it as it was
+		handleNotifyConversationsModified(normalizePartialConversations([{ id: '1', su: 'Renamed' }]));
+		await waitFor(() => expect(result.current.subject).toBe('Renamed'));
+		expect(result.current.unreadCount).toBe(1);
 	});
 });

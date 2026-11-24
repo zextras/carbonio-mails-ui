@@ -45,6 +45,7 @@ describe('Normalize conversation', () => {
 			fr: 'Fragment',
 			f: 'uaf!',
 			n: 5,
+			u: 2,
 			e: [{ a: 'test@test.com', p: 'personal name', t: 't' }],
 			t: 'tag1,tag2',
 			tn: 'tag1,tag2'
@@ -71,6 +72,7 @@ describe('Normalize conversation', () => {
 			flagged: true,
 			urgent: true,
 			messagesInConversation: 5,
+			unreadCount: 2,
 			participants: expectedParticipants,
 			tags: ['tag1', 'tag2'],
 			messageIds: []
@@ -254,7 +256,8 @@ describe('Normalize partial conversation', () => {
 			hasAttachment: true,
 			flagged: true,
 			urgent: true,
-			messagesInConversation: 2
+			messagesInConversation: 2,
+			unreadCount: 1
 		});
 	});
 
