@@ -83,6 +83,8 @@ describe('MessageListItemCore tags', () => {
 
 		await user.hover(screen.getByText('Finance'));
 
-		expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
+		expect(
+			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+		).toBeVisible();
 	});
 });

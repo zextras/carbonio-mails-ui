@@ -239,7 +239,9 @@ describe('ItemTags', () => {
 				within(screen.getByTestId(READING_PANE_TAGS)).getAllByText('Finance').at(-1) as HTMLElement
 			);
 
-			expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
 		});
 
 		test('on a conversation, says whose folder from the folders of its messages', async () => {
@@ -255,7 +257,9 @@ describe('ItemTags', () => {
 				within(screen.getByTestId(READING_PANE_TAGS)).getAllByText('Finance').at(-1) as HTMLElement
 			);
 
-			expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
 		});
 	});
 });

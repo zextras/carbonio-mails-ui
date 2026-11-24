@@ -68,7 +68,9 @@ describe('PreviewHeaderActions', () => {
 			const { user } = setupTest(<PreviewHeaderActions message={message} open={false} isWide />);
 			await user.hover(within(screen.getByTestId(COLLAPSED_TAGS)).getByText('Finance'));
 
-			expect(await screen.findByText(`Tag from ${SHARED_FOLDER_OWNER}'s folder`)).toBeVisible();
+			expect(
+				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+			).toBeVisible();
 		});
 
 		it('should not be interactive', () => {

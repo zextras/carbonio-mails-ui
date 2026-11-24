@@ -165,7 +165,7 @@ describe('ReadingPaneTags', () => {
 				id: 'nil:Finance',
 				name: 'Finance',
 				shared: true,
-				tooltip: 'Tag from a shared folder'
+				tooltip: 'Finance · Tag from a shared folder'
 			};
 			const { user } = setup({ tags: [client, finance] });
 			await user.click(screen.getByRole('button', { name: SHOW_1 }));

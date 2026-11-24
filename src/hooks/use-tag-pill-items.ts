@@ -83,24 +83,25 @@ export const useTagPillItems = (
 	const tags = useTags();
 	const owners = useSharedFolderOwners(folderIds, hasSharedTag(tagIds));
 	return useMemo(() => {
-		// One owner: name them. Folders of different owners, or none known: say only that it is shared.
-		const sharedTooltip =
+		// The name first, as a pill cut short or shown as an icon would hide it, then whose folder: one
+		// owner by name; folders of different owners, or none known, only that it is shared.
+		const sharedTooltip = (name: string): string =>
 			owners.length === 1
 				? t('label.tag_from_owner_folder', {
+						name,
 						owner: owners[0],
-						defaultValue: "Tag from {{owner}}'s folder"
+						defaultValue: "{{name}} · Tag from {{owner}}'s folder"
 					})
-				: t('label.tag_from_shared_folder', 'Tag from a shared folder');
+				: t('label.tag_from_shared_folder', {
+						name,
+						defaultValue: '{{name}} · Tag from a shared folder'
+					});
 		const own: Array<TagPillItem> = [];
 		const shared: Array<TagPillItem> = [];
 		new Set(tagIds ?? []).forEach((id) => {
 			if (id.startsWith(SHARED_TAG_PREFIX)) {
-				shared.push({
-					id,
-					name: id.slice(SHARED_TAG_PREFIX.length),
-					shared: true,
-					tooltip: sharedTooltip
-				});
+				const name = id.slice(SHARED_TAG_PREFIX.length);
+				shared.push({ id, name, shared: true, tooltip: sharedTooltip(name) });
 				return;
 			}
 			const tag = tags[id];
