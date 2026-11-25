@@ -17,9 +17,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { getAttachmentsLink } from '../preview/utils';
+import { getAttachmentsDownloadLink, getAttachmentsLink } from '../preview/utils';
 import {
-	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
 	getSizeDescription,
 	useAttachmentIconColor
@@ -171,7 +170,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 					label={
 						isUnsavedAttachment(attachment)
 							? t('action.save_to_preview', 'Save to preview')
-							: t('action.preview', 'Click to preview')
+							: t('action.click_download', 'Click to download')
 					}
 				>
 					<Row
@@ -240,7 +239,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							rel="noopener"
 							ref={inputRef2}
 							target="_blank"
-							href={composeAttachmentDownloadUrl(attachment)}
+							href={getAttachmentsDownloadLink({
+								messageId: attachment.messageId,
+								messageSubject: subject,
+								attachments: [attachment.partName]
+							})}
 						/>
 						<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
 					</>
