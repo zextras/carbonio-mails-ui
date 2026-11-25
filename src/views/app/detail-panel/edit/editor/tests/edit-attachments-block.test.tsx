@@ -90,6 +90,52 @@ describe('Attachments visualization', () => {
 		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
 		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
 	});
+	describe('Opening a saved attachment', () => {
+		afterEach(() => {
+			vi.restoreAllMocks();
+		});
+
+		const addDraftWithAttachment = (filename: string, contentType: string): string => {
+			setupEditorStore({ editors: [] });
+			const message = generateMessage({
+				id: '10',
+				parts: [{ name: '2', filename, disposition: 'attachment' as const, contentType, size: 200 }]
+			});
+			const editor = generateEditor({
+				action: EditViewActions.EDIT_AS_DRAFT,
+				id: 'test-id',
+				message
+			}) as MailsEditorV2;
+			addEditor({ id: editor.id, editor });
+			return editor.id;
+		};
+
+		it.each`
+			filename              | contentType
+			${'report.xsl'}       | ${'text/xsl'}
+			${'any-document.pdf'} | ${'application/pdf'}
+		`(
+			'should download a $contentType attachment instead of opening it in a tab',
+			async ({ filename, contentType }) => {
+				const editorId = addDraftWithAttachment(filename, contentType);
+				const clickSpy = vi
+					.spyOn(HTMLAnchorElement.prototype, 'click')
+					.mockImplementation(() => undefined);
+				const { user } = setupTest(<EditAttachmentsBlock editorId={editorId} />);
+
+				await user.hover(await screen.findByText(filename));
+				expect(await screen.findByText('action.click_download')).toBeVisible();
+				await user.click(screen.getByText(filename));
+
+				const openedUrls = clickSpy.mock.contexts.map(
+					(anchor) => (anchor as HTMLAnchorElement).href
+				);
+				expect(openedUrls).toEqual([
+					`${window.location.origin}/service/home/~/?auth=co&id=10&part=2&disp=a`
+				]);
+			}
+		);
+	});
 	describe('Upload status indicator', () => {
 		const uploadStatusTestId = 'attachmentuploadstatus-container';
 		const baseAttachment: UnsavedAttachment = {
