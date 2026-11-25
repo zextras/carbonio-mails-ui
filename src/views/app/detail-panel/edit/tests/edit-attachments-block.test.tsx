@@ -10,12 +10,12 @@ import { screen, within } from '@testing-library/react';
 
 import { EditViewActions } from '../../../../../constants';
 import { generateEditor } from '../../../../../store/editor/editor-generators';
-import { generateMessage } from '__test__/generators/generateMessage';
 import type { MailsEditorV2 } from '../../../../../types';
 import { setupTest } from '@test-setup';
-import { addEditor } from 'store/editor/index';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateEditorV2Case } from '__test__/generators/editors';
+import { generateMessage } from '__test__/generators/generateMessage';
+import { addEditor } from 'store/editor/index';
 import { EditAttachmentsBlock } from 'views/app/detail-panel/edit/edit-attachments-block';
 
 describe('Attachments visualization', () => {
@@ -84,6 +84,52 @@ describe('Attachments visualization', () => {
 
 		const editAttachmentsBlock = await screen.findByTestId('edit-attachments-block');
 		expect(await within(editAttachmentsBlock).findByText('file-with-no-content-id')).toBeVisible();
+	});
+	describe('Opening a saved attachment', () => {
+		afterEach(() => {
+			vi.restoreAllMocks();
+		});
+
+		const addDraftWithAttachment = (filename: string, contentType: string): string => {
+			setupEditorStore({ editors: [] });
+			const message = generateMessage({
+				id: '10',
+				parts: [{ name: '2', filename, disposition: 'attachment' as const, contentType, size: 200 }]
+			});
+			const editor = generateEditor({
+				action: EditViewActions.EDIT_AS_DRAFT,
+				id: 'test-id',
+				message
+			}) as MailsEditorV2;
+			addEditor({ id: editor.id, editor });
+			return editor.id;
+		};
+
+		it.each`
+			filename              | contentType
+			${'report.xsl'}       | ${'text/xsl'}
+			${'any-document.pdf'} | ${'application/pdf'}
+		`(
+			'should download a $contentType attachment instead of opening it in a tab',
+			async ({ filename, contentType }) => {
+				const editorId = addDraftWithAttachment(filename, contentType);
+				const clickSpy = vi
+					.spyOn(HTMLAnchorElement.prototype, 'click')
+					.mockImplementation(() => undefined);
+				const { user } = setupTest(<EditAttachmentsBlock editorId={editorId} />);
+
+				await user.hover(await screen.findByText(filename));
+				expect(await screen.findByText('action.click_download')).toBeVisible();
+				await user.click(screen.getByText(filename));
+
+				const openedUrls = clickSpy.mock.contexts.map(
+					(anchor) => (anchor as HTMLAnchorElement).href
+				);
+				expect(openedUrls).toEqual([
+					`${window.location.origin}/service/home/~/?auth=co&id=10&part=2&disp=a`
+				]);
+			}
+		);
 	});
 	it('should NOT display inline attachments with Content-ID', async () => {
 		setupEditorStore({ editors: [] });
