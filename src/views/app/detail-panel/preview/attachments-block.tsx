@@ -279,8 +279,13 @@ const Attachment = ({
 
 	const isContentTypeDocument = isDocument(att.contentType);
 	const isPDFDocument = pType === 'pdf' && !isContentTypeDocument;
+	// the previews fetch the file themselves and show it from a blob: only a file converted by the
+	// preview service has a content type the app chose, not the one of the sender (CO-4816)
+	const isConvertedByPreviewService = link.startsWith(`${getLocationOrigin()}/service/preview/`);
 	const isPreviewedByCarbonioPreview =
-		(isPDFDocument || pType === 'image') && isCarbonioPreviewAvailable;
+		(isPDFDocument || pType === 'image') &&
+		isCarbonioPreviewAvailable &&
+		isConvertedByPreviewService;
 
 	const isPreviewedByCarbonioDocsEditor =
 		pType === 'pdf' && isContentTypeDocument && isCarbonioDocsEditorAvailable;
@@ -293,7 +298,11 @@ const Attachment = ({
 		if (isEML) {
 			return t('action.click_open', 'Click to open');
 		}
-		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor || isPreviewedByBrowser) {
+		// a pdf the browser opened is now downloaded (CO-4816), carbonio-preview cannot show it
+		if (
+			(isPreviewedByCarbonioPreview && !isPreviewedByBrowser) ||
+			isPreviewedByCarbonioDocsEditor
+		) {
 			return t('action.click_preview', 'Click to preview');
 		}
 		return t('action.click_download', 'Click to download');
@@ -468,12 +477,7 @@ const Attachment = ({
 					)}
 				</AttachmentHoverBarContainer>
 			</Row>
-			<AttachmentLink
-				rel="noopener"
-				ref={inputRef2}
-				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
-			/>
+			<AttachmentLink rel="noopener" ref={inputRef2} target="_blank" href={downloadlink} />
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
 	);

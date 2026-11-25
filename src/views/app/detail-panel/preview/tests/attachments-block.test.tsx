@@ -14,6 +14,8 @@ import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 import { getMessageById } from 'store/emails/store';
 import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
 
+const CLICK_TO_DOWNLOAD = 'Click to download';
+
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
@@ -60,9 +62,9 @@ describe('attachments-block', () => {
 
 		await user.hover(screen.getByText('random.txt'));
 
-		expect(await screen.findByText('Click to download')).toBeVisible();
+		expect(await screen.findByText(CLICK_TO_DOWNLOAD)).toBeVisible();
 	});
-	test('carbonio-preview not available, file is a pdf, tooltip says click to preview', async () => {
+	test('carbonio-preview not available, file is a pdf, tooltip says click to download', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: [] });
 
 		const messageAttachments = [
@@ -84,7 +86,7 @@ describe('attachments-block', () => {
 
 		await user.hover(screen.getByText('any-document.pdf'));
 
-		expect(await screen.findByText('Click to preview')).toBeVisible();
+		expect(await screen.findByText(CLICK_TO_DOWNLOAD)).toBeVisible();
 	});
 	test('carbonio-preview available, file is a pdf, onclick call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
@@ -108,7 +110,11 @@ describe('attachments-block', () => {
 
 		await user.click(screen.getByText('any-document.pdf'));
 
-		expect(previewContextMock.createPreview).toHaveBeenCalled();
+		expect(previewContextMock.createPreview).toHaveBeenCalledWith(
+			expect.objectContaining({
+				src: `${window.location.origin}/service/preview/pdf/1/test/?first_page=1`
+			})
+		);
 	});
 	test('carbonio-docs-editor available, file is a document, onclick call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
@@ -158,7 +164,7 @@ describe('attachments-block', () => {
 
 		expect(await screen.findByText('Click to preview')).toBeVisible();
 	});
-	test('carbonio-docs-editor available, file is a pdf, tooltip says click to preview', async () => {
+	test('carbonio-docs-editor available without carbonio-preview, file is a pdf, tooltip says click to download', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
 
 		const messageAttachments = [
@@ -180,7 +186,7 @@ describe('attachments-block', () => {
 
 		await user.hover(screen.getByText('document.pdf'));
 
-		expect(await screen.findByText('Click to preview')).toBeVisible();
+		expect(await screen.findByText(CLICK_TO_DOWNLOAD)).toBeVisible();
 	});
 	test('carbonio-docs-editor not available, file is a document, onclick wont call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: [] });
@@ -206,6 +212,50 @@ describe('attachments-block', () => {
 
 		expect(previewContextMock.createPreview).not.toHaveBeenCalled();
 	});
+});
+
+describe('Opening an attachment', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	test.each`
+		case                                                            | servicesCatalog         | part       | filename              | contentType
+		${'an attachment without a preview of its own'}                 | ${[]}                   | ${'2'}     | ${'report.xsl'}       | ${'text/xsl'}
+		${'a pdf without carbonio-preview'}                             | ${[]}                   | ${'2'}     | ${'any-document.pdf'} | ${'application/pdf'}
+		${'an image without carbonio-preview'}                          | ${[]}                   | ${'2'}     | ${'picture.png'}      | ${'image/png'}
+		${'a pdf in a nested part, which carbonio-preview cannot show'} | ${['carbonio-preview']} | ${'2.1.2'} | ${'nested.pdf'}       | ${'application/pdf'}
+		${'a pdf the preview service does not convert'}                 | ${['carbonio-preview']} | ${'2'}     | ${'other.pdf'}        | ${'application/x-pdf'}
+		${'an image the preview service does not convert'}              | ${['carbonio-preview']} | ${'2'}     | ${'vector.svg'}       | ${'image/svg+xml'}
+	`(
+		'$case is downloaded, not opened in a tab',
+		async ({ servicesCatalog, part, filename, contentType }) => {
+			useAppContext.mockReturnValue({ servicesCatalog });
+			const clickSpy = vi
+				.spyOn(HTMLAnchorElement.prototype, 'click')
+				.mockImplementation(() => undefined);
+			const messageAttachments = [
+				{ cd: 'attachment' as const, name: part, filename, size: 123, contentType }
+			];
+			const { user } = setupTest(
+				<AttachmentsBlock
+					messageId={'1'}
+					messageSubject={'test'}
+					messageAttachments={messageAttachments}
+				/>
+			);
+
+			await user.hover(screen.getByText(filename));
+			expect(await screen.findByText(CLICK_TO_DOWNLOAD)).toBeVisible();
+			await user.click(screen.getByText(filename));
+
+			const openedUrls = clickSpy.mock.contexts.map((anchor) => (anchor as HTMLAnchorElement).href);
+			expect(openedUrls).toEqual([
+				`${window.location.origin}/service/home/~/?auth=co&id=1&part=${part}&disp=a`
+			]);
+			expect(previewContextMock.createPreview).not.toHaveBeenCalled();
+		}
+	);
 });
 
 describe('Attachments visualization', () => {
