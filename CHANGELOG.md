@@ -1,3 +1,7 @@
+## <small>1.47.4 (2026-11-25)</small>
+
+* fix(CO-4816): download attachments instead of opening them inline on the app origin (#1456) ([78b4a11](https://github.com/zextras/carbonio-mails-ui/commit/78b4a11)), closes [#1456](https://github.com/zextras/carbonio-mails-ui/issues/1456)
+
 ## <small>1.47.3 (2026-11-24)</small>
 
 * fix: [CO-4815] show the notes of a share invitation as plain text (#1446) ([e1dac0d](https://github.com/zextras/carbonio-mails-ui/commit/e1dac0d)), closes [#1446](https://github.com/zextras/carbonio-mails-ui/issues/1446)
