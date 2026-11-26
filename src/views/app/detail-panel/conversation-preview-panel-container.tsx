@@ -20,6 +20,7 @@ import { Spinner } from 'assets/spinner';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { isFocusModeMailView } from 'helpers/external-tabs';
 import { getFolderIdParts } from 'helpers/folders';
+import { useConversationWideTagIds } from 'hooks/use-tag-pill-items';
 import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import { useConversationMessages, useMessageById } from 'store/emails/store';
@@ -48,6 +49,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		shouldMarkAsRead: zimbraPrefMarkMsgRead
 	});
 	const messages = useConversationMessages(conversationId);
+	const conversationTagIds = useConversationWideTagIds(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
@@ -116,13 +118,14 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 						subject={conversation.subject}
 						isRead={conversation.read}
 						folderId={folderId}
-					/>
-					<ItemTags
-						kind="conversation"
-						id={conversation.id}
-						tagIds={conversation.tags}
-						folderId={folderId}
-					/>
+					>
+						<ItemTags
+							kind="conversation"
+							id={conversation.id}
+							tagIds={conversationTagIds}
+							folderId={folderId}
+						/>
+					</PreviewPanelHeader>
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 						<ConversationPreviewPanel conversation={conversation} />

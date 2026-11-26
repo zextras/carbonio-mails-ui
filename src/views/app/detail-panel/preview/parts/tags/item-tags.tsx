@@ -34,7 +34,11 @@ const Counter = styled.span`
 /** Most a collapsed card's pill takes, as a pill after the first in a list row. */
 const COLLAPSED_PILL_MAX_WIDTH = '7.5rem';
 
-const PADDING = { conversation: '0.5rem 1rem', message: '0 0.5rem 0.5rem 3rem' } as const;
+/**
+ * Under the conversation subject, in its block, the header gives where the subject starts. On a message
+ * card the tags start with the sender and the recipients, after the avatar column.
+ */
+const PADDING = { conversation: '0 0.5rem 0.75rem 0', message: '0 0.5rem 0.5rem 2rem' } as const;
 
 type ItemTagsProps = {
 	kind: 'message' | 'conversation';
@@ -44,8 +48,8 @@ type ItemTagsProps = {
 };
 
 /**
- * The tags of the conversation under its subject (removing one removes it from every message), or of
- * an expanded message card (from that message only).
+ * The tags of the conversation under its subject, those on every message of it (removing one removes it
+ * from every message), or of an expanded message card (from that message only).
  */
 export const ItemTags = ({
 	kind,
@@ -59,6 +63,7 @@ export const ItemTags = ({
 	return (
 		// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 		<div
+			data-testid="item-tags"
 			onClick={keepCardState}
 			// The whole width of the pane: in a column that aligns its items to the start, the row would
 			// otherwise be as wide as the pills it shows, and fewer pills would fit at each resize.

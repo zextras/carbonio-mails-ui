@@ -81,6 +81,14 @@ describe('ItemTags', () => {
 		expect(screen.queryByTestId(READING_PANE_TAGS)).not.toBeInTheDocument();
 	});
 
+	test('on a message card the tags start where the sender and the recipients start', () => {
+		setupTest(<ItemTags kind="message" id="10" tagIds={['t1']} folderId={FOLDERS.INBOX} />);
+		// The avatar column: 0.5rem, the 1rem avatar, 0.5rem
+		expect(screen.getByTestId('item-tags')).toHaveStyle({
+			'padding-left': '2rem'
+		});
+	});
+
 	test('a click on a pill searches by its tag', async () => {
 		const { user } = setupTest(
 			<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />

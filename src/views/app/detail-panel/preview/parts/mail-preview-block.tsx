@@ -27,7 +27,6 @@ type MailPreviewBlockType = {
 	open: boolean;
 	onClick: () => void;
 	isEml?: boolean;
-	showTags?: boolean;
 };
 
 const ExternalMessageDisclaimer = ({ isEml }: { isEml: boolean }): React.JSX.Element | null => {
@@ -96,20 +95,11 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	isEml = false,
-	showTags = true
+	isEml = false
 }) => (
 	<>
 		<SpamInfoBanner message={message} />
-		{message && (
-			<PreviewHeader
-				message={message}
-				open={open}
-				onClick={onClick}
-				isEml={isEml}
-				showTags={showTags}
-			/>
-		)}
+		{message && <PreviewHeader message={message} open={open} onClick={onClick} isEml={isEml} />}
 		<ExternalMessageDisclaimer isEml={isEml} />
 	</>
 );

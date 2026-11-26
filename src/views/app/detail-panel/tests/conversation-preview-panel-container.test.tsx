@@ -6,8 +6,9 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 import { NavigateFunction } from 'react-router-dom';
 
 import { setupTest } from '@test-setup';
@@ -138,6 +139,52 @@ describe('ConversationPreviewPanelContainer', () => {
 			});
 
 			expect(mockNavigateSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('tags under the subject', () => {
+		const openConversation = async (
+			messages: Array<{ id: string; tags: Array<string> }>
+		): Promise<HTMLElement> => {
+			vi.mocked(shell).IS_FOCUS_MODE = false;
+			useTagStore.setState({
+				tags: {
+					t1: { id: 't1', name: 'Client', color: 1 },
+					t2: { id: 't2', name: 'Urgent', color: 2 }
+				}
+			});
+			const { conversation } = await act(() =>
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: '1',
+						folderId: '2',
+						// The server's conversation tags: those of any of its messages
+						tags: [...new Set(messages.flatMap((message) => message.tags))]
+					},
+					messageGeneratorParams: messages.map((message) => ({ ...message, folderId: '2' }))
+				})
+			);
+			await act(() => updateConversationStatus(conversation.id, 'fulfilled'));
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: ['/folder/2/conversation/1'],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+			return screen.getByTestId('PreviewPanelHeader');
+		};
+
+		it('are only those of the whole conversation, on every message of it, in the header', async () => {
+			const header = await openConversation([
+				{ id: '10', tags: ['t1', 't2'] },
+				{ id: '11', tags: ['t1'] }
+			]);
+			const tags = await within(header).findByTestId('reading-pane-tags');
+			expect(tags).toHaveTextContent('Client');
+			expect(tags).not.toHaveTextContent('Urgent');
+		});
+
+		it('are none for a conversation of one message: its tags are on its card', async () => {
+			const header = await openConversation([{ id: '10', tags: ['t1'] }]);
+			expect(within(header).queryByTestId('reading-pane-tags')).not.toBeInTheDocument();
 		});
 	});
 });

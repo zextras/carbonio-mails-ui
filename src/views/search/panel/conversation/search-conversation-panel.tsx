@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { isSpam } from 'helpers/folders';
+import { useConversationWideTagIds } from 'hooks/use-tag-pill-items';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
 	getConversationIdByMessageIds,
@@ -41,6 +42,8 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	const spamFolderId = useConversationMessagesParentsKey(conversationId)
 		.split('\n')
 		.find((folderId) => isSpam(folderId));
+
+	const conversationTagIds = useConversationWideTagIds(conversationId);
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
@@ -83,13 +86,14 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 			data-testid={`SearchConversationPanel-${conversationId}`}
 		>
 			<>
-				<SearchPanelHeader item={conversation} />
-				<ItemTags
-					kind="conversation"
-					id={conversation.id}
-					tagIds={conversation.tags}
-					folderId={spamFolderId ?? ''}
-				/>
+				<SearchPanelHeader item={conversation}>
+					<ItemTags
+						kind="conversation"
+						id={conversation.id}
+						tagIds={conversationTagIds}
+						folderId={spamFolderId ?? ''}
+					/>
+				</SearchPanelHeader>
 				<Container
 					style={{ overflowY: 'auto' }}
 					height="fill"

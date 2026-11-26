@@ -38,8 +38,6 @@ type PreviewHeaderProps = {
 	onClick: (e: SyntheticEvent) => void;
 	open: boolean;
 	isEml?: boolean;
-	/** False for the only message of a conversation: its tags are under the conversation subject. */
-	showTags?: boolean;
 };
 
 const fallbackContact = {
@@ -53,8 +51,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 	message,
 	onClick,
 	open,
-	isEml,
-	showTags = true
+	isEml
 }): ReactElement => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const accounts = useUserAccounts();
@@ -160,7 +157,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 							</Container>
 						</Row>
 					</Container>
-					{!isEml && open && showTags && (
+					{!isEml && open && (
 						<ItemTags
 							kind="message"
 							id={message.id}

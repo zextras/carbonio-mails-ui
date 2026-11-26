@@ -77,7 +77,7 @@ describe('ReadingPaneTags', () => {
 	beforeEach(() => showAll());
 
 	describe('pills', () => {
-		test('shows every tag when they fit in two lines, without "+N"', () => {
+		test('shows every tag when they fit in one line, without "+N"', () => {
 			setup();
 			expect(pillNames()).toEqual(allSix.map((item) => item.name));
 			expect(screen.queryByRole('button', { name: /more tag/ })).not.toBeInTheDocument();
@@ -140,12 +140,22 @@ describe('ReadingPaneTags', () => {
 	});
 
 	describe('"+N"', () => {
-		test('when the tags need more than two lines, the rest becomes a "+N" button', () => {
+		test('when the tags need more than one line, the rest becomes a "+N" button', () => {
 			showFirst(3);
 			setup();
 			expect(pillNames()).toEqual(['Client', CUSTOMER_ESCALATION, 'Partners']);
 			const more = screen.getByRole('button', { name: SHOW_3 });
 			expect(more).toHaveTextContent('+3');
+		});
+
+		test('the tags stay on one line, a long first pill leaving room for "+N"', () => {
+			showFirst(1);
+			setup();
+			expect(screen.getByTestId('reading-pane-tags')).toHaveStyle({ flexWrap: 'nowrap' });
+			// The measuring copies come first: the last pill is the one shown
+			const shown = screen.getAllByTestId('tag-pill').at(-1);
+			// "+5": 8px for the "+" and for the digit, 8px of padding; 6px of gap; 18px at the line end
+			expect(shown).toHaveStyle({ maxWidth: 'calc(100% - 3rem)' });
 		});
 
 		test('a click opens the hidden tags with their "×", focus on the first "×"', async () => {

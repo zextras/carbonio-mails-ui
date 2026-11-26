@@ -55,8 +55,6 @@ const MailPreview: FC<MailPreviewProps> = ({
 				message={message}
 				open={isMailPreviewOpen}
 				isEml={isEml}
-				// The only message of a conversation: its tags are already under the subject
-				showTags={isMessageView || !isAlone}
 			/>
 
 			<Container

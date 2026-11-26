@@ -20,7 +20,7 @@ import { MoreTagsButton } from './more-tags-button';
 const Row = styled.div`
 	position: relative;
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
 	gap: ${READING_PANE_TAGS_GAP / 16}rem;
 	min-width: 0;
@@ -52,6 +52,14 @@ const MeasureLayer = styled.div`
 const counterWidth = (hiddenCount: number): number =>
 	Math.ceil(8 * (1 + String(hiddenCount).length)) + 8;
 
+/** Most a pill takes: the line, less its free end and, when there is one, "+N" after it. */
+const pillMaxWidth = (hiddenCount: number): string => {
+	const reserved =
+		READING_PANE_TAGS_LINE_END +
+		(hiddenCount > 0 ? READING_PANE_TAGS_GAP + counterWidth(hiddenCount) : 0);
+	return `calc(100% - ${reserved / 16}rem)`;
+};
+
 /** After a removal, `removedId` is the tag that must leave the list first: the store may render before. */
 type PendingFocus =
 	| { on: 'pill'; index: number; removedId: string }
@@ -77,8 +85,8 @@ export type ReadingPaneTagsProps = {
 };
 
 /**
- * The tags of a message or conversation in the reading pane: every tag as a pill, wrapping on up to
- * two lines, then "+N", which opens the rest with a click. A click on a pill runs `onSearch`, its "×"
+ * The tags of a message or conversation in the reading pane: every tag as a pill on one line, then
+ * "+N", which opens the rest with a click. A click on a pill runs `onSearch`, its "×"
  * `onRemove`. Tags of a shared folder's owner can be neither clicked nor removed.
  */
 export const ReadingPaneTags = ({
@@ -267,7 +275,7 @@ export const ReadingPaneTags = ({
 					color={tag.color}
 					shared={tag.shared}
 					tooltip={tag.tooltip}
-					maxWidth={`calc(100% - ${READING_PANE_TAGS_LINE_END / 16}rem)`}
+					maxWidth={pillMaxWidth(hidden.length)}
 					onClick={onSearch && ((): void => onSearch(tag))}
 					onRemove={
 						onRemove && ((): void => removeTag(tag, { on: 'pill', index, removedId: tag.id }))

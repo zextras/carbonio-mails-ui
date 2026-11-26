@@ -14,22 +14,22 @@ describe('fitTagsInLines', () => {
 		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [60, 70, 80], counterWidth })).toBe(3);
 	});
 
-	test('shows every tag when they need exactly two lines', () => {
-		// line 1: 130 + 6 + 130 = 266; line 2: 130 + 6 + 130 = 266
-		expect(
-			fitTagsInLines({ lineWidth: LINE, pillWidths: [130, 130, 130, 130], counterWidth })
-		).toBe(4);
+	test('shows every tag when they fill exactly one line', () => {
+		// 130 + 6 + 146 = 282
+		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [130, 146], counterWidth })).toBe(2);
 	});
 
-	test('keeps the 18px line end free: a pill that would end inside it wraps', () => {
-		// 140 + 6 + 140 = 286 > 282: the second pill goes to line 2, the third does not fit
-		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [140, 140, 140], counterWidth })).toBe(2);
+	test('keeps the 18px line end free: a pill that would end inside it goes behind "+N"', () => {
+		// 140 + 6 + 140 = 286 > 282: the second pill goes, "+1" takes its place
+		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [140, 140], counterWidth })).toBe(1);
 	});
 
-	test('when the tags need more than two lines, leaves room for "+N" on the second line', () => {
-		// line 1: 130, 130; line 2: 130, 130 would be 266 + 6 + 20 = 292 > 282 with "+N"
+	test('when the tags need more than one line, leaves room for "+N" on it', () => {
+		// 130 + 6 + 130 = 266, + 6 + 20 for "+N" = 292 > 282: one pill and "+2"
+		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [130, 130, 130], counterWidth })).toBe(1);
+		// four pills: 258, + 6 + 20 = 284 > 282; three: 192 + 26 = 218, so three pills and "+2"
 		expect(
-			fitTagsInLines({ lineWidth: LINE, pillWidths: [130, 130, 130, 130, 130], counterWidth })
+			fitTagsInLines({ lineWidth: LINE, pillWidths: [60, 60, 60, 60, 60], counterWidth })
 		).toBe(3);
 	});
 
@@ -40,14 +40,13 @@ describe('fitTagsInLines', () => {
 			pillWidths: Array(14).fill(60),
 			counterWidth: widthOf
 		});
-		// 4 pills of 60 per line; "+7" does not fit after 4 pills on line 2, it does after 3
-		expect(visible).toBe(7);
-		expect(widthOf).toHaveBeenLastCalledWith(7);
+		// 4 pills of 60 fit on the line (258); "+10" (40) does not fit after 4, nor after 3 (238 + 46)
+		expect(visible).toBe(3);
+		expect(widthOf).toHaveBeenLastCalledWith(11);
 	});
 
-	test('a pill wider than a line takes a whole line, truncated', () => {
-		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [500, 60], counterWidth })).toBe(2);
-		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [500, 500, 60], counterWidth })).toBe(1);
+	test('a first pill wider than the line is shown alone, truncated, with "+N"', () => {
+		expect(fitTagsInLines({ lineWidth: LINE, pillWidths: [500, 60], counterWidth })).toBe(1);
 	});
 
 	test('always shows the first tag', () => {

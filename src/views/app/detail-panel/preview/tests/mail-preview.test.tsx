@@ -120,13 +120,12 @@ describe('Mail preview', () => {
 			expect(screen.getByTestId(READING_PANE_TAGS)).toHaveTextContent('Client');
 		});
 
-		it('shows no tags on the card of a single-message conversation: they are under the subject', () => {
+		it("shows the tags on the card of a single-message conversation: they are its message's", () => {
 			const message = generateMessage({ tags: ['t1'], isComplete: true });
 
 			setupTest(<MailPreview message={message} expanded isAlone isMessageView={false} />);
 
-			expect(screen.queryByTestId(READING_PANE_TAGS)).not.toBeInTheDocument();
-			expect(screen.queryByTestId('collapsed-card-tags')).not.toBeInTheDocument();
+			expect(screen.getByTestId(READING_PANE_TAGS)).toHaveTextContent('Client');
 		});
 	});
 

@@ -242,6 +242,14 @@ export function useConversationMessagesParentsKey(conversationId: string): strin
 }
 
 /**
+ * The tags of the conversation as a whole: those every message of it has, joined by a new line. None
+ * for a conversation of one message (its tags are the message's) or while a message is not loaded.
+ */
+export function useConversationWideTagsKey(conversationId: string): string {
+	return populatedItemsSliceUtils.useConversationWideTagsKey(conversationId, useEmailsStore);
+}
+
+/**
  * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
  * and updates the emails store state.
  */

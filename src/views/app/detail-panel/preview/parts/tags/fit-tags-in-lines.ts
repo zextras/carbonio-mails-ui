@@ -8,8 +8,8 @@
 export const READING_PANE_TAGS_GAP = 6;
 /** Kept free at the end of each line, so a hovered pill can grow by its "×" without wrapping. */
 export const READING_PANE_TAGS_LINE_END = 18;
-/** Lines of tags before the rest goes to "+N". */
-export const READING_PANE_TAGS_MAX_LINES = 2;
+/** Lines of tags before the rest goes to "+N": one, to keep the header of the mail short. */
+export const READING_PANE_TAGS_MAX_LINES = 1;
 
 type FitTagsInLinesArgs = {
 	/** Width of the tags row, in px. */
@@ -21,8 +21,9 @@ type FitTagsInLinesArgs = {
 };
 
 /**
- * How many tags the reading pane shows: all of them, wrapping, while they fit in two lines; otherwise
- * as many as fit with "+N" after the last one on the second line. The first tag is always shown.
+ * How many tags the reading pane shows: all of them while they fit in `READING_PANE_TAGS_MAX_LINES`;
+ * otherwise as many as fit with "+N" after the last one on the last line. The first tag is always
+ * shown, truncated when even it and "+N" don't fit.
  */
 export const fitTagsInLines = ({
 	lineWidth,
