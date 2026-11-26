@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 
 import styled from '@emotion/styled';
 import { Button, Divider, Icon, Portal, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { TagDot, TagPillItem } from '@zextras/carbonio-ui-commons';
+import { TagIcon, TagMark, TagPillItem } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { VisuallyHidden } from 'commons/visually-hidden';
@@ -126,6 +126,15 @@ const nextTabbableAfter = (
 	return all[all.indexOf(anchor) + 1];
 };
 
+/** Moves the focus to the "×" of a hidden tag in the open card, if it is there. */
+export const focusHiddenTagRemove = (tagId: string): void => {
+	document
+		.querySelector<HTMLButtonElement>(
+			`[data-testid="hidden-tags-popover"] [data-tag-id="${CSS.escape(tagId)}"] button`
+		)
+		?.focus();
+};
+
 export type TagMenu = {
 	/** Every tag of the user, in the order of the tag menu. */
 	allTags: ReadonlyArray<TagPillItem>;
@@ -148,8 +157,8 @@ export type HiddenTagsPopoverProps = {
 };
 
 /**
- * The tags that don't fit in the reading pane, opened by a click on "+N": each with its "×", and ADD
- * TAGS, which turns the card into the tag menu. Closed by Esc, a click outside or Tab out, never by
+ * The tags that don't fit in the reading pane or in a list row, opened by a click on "+N": each with
+ * its "×", and MANAGE TAGS, which turns the card into the tag menu. Closed by Esc, a click outside or Tab out, never by
  * moving the pointer away. Not the DS Popover: its Popper keeps the Tab key inside it.
  */
 export const HiddenTagsPopover = ({
@@ -299,11 +308,7 @@ export const HiddenTagsPopover = ({
 						<Title size="small">{title}</Title>
 						{hiddenTags.map((tag, index) => (
 							<HiddenRow key={tag.id} data-testid="hidden-tag-row" data-tag-id={tag.id}>
-								{tag.shared ? (
-									<Icon icon="PeopleOutline" size="small" color="text" />
-								) : (
-									tag.color && <TagDot color={tag.color} />
-								)}
+								<TagMark shared={tag.shared} color={tag.color} size="medium" />
 								<Tooltip
 									label={tag.tooltip ?? tag.name}
 									overflowTooltip={tag.tooltip === undefined}
@@ -330,7 +335,7 @@ export const HiddenTagsPopover = ({
 									<Button
 										type="ghost"
 										size="small"
-										label={t('label.add_tags', 'Add tags')}
+										label={t('label.manage_tags', 'Manage tags')}
 										onClick={onShowMenu}
 									/>
 								</div>
@@ -360,7 +365,7 @@ export const HiddenTagsPopover = ({
 										color={checked ? 'primary' : 'text'}
 									/>
 									<Text overflow="ellipsis">{tag.name}</Text>
-									{tag.color && <TagDot color={tag.color} />}
+									{tag.color && <TagIcon color={tag.color} size="medium" />}
 								</MenuItem>
 							);
 						})}

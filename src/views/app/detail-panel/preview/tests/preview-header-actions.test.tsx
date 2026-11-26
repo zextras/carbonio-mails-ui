@@ -69,7 +69,7 @@ describe('PreviewHeaderActions', () => {
 			await user.hover(within(screen.getByTestId(COLLAPSED_TAGS)).getByText('Finance'));
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
 		});
 

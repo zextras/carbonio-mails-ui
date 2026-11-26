@@ -284,8 +284,44 @@ describe('SearchConversationListItemCore', () => {
 			await user.hover(screen.getByText('Finance'));
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
+		});
+
+		it('when a message other than the first is in Spam, the hidden tags can be neither removed nor managed', async () => {
+			const manyTags = Array.from({ length: 10 }, (_, index) => `t${index}`);
+			useTagStore.setState({
+				tags: Object.fromEntries(
+					manyTags.map((id, index) => [id, { id, name: `Tag ${index}`, color: index }])
+				)
+			});
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: manyTags },
+					messageGeneratorParams: [
+						{ id: '100', folderId: FOLDERS.INBOX },
+						{ id: '101', folderId: FOLDERS.SPAM }
+					]
+				})
+			);
+			const { user } = setupTest(
+				<SearchConversationListItemCore
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					open={false}
+					toggleCollapseElementCallback={vi.fn()}
+					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={vi.fn()}
+				/>
+			);
+
+			await user.click(screen.getByRole('button', { name: /^Show \d+ more tags$/ }));
+
+			expect(screen.getByRole('dialog')).toBeVisible();
+			expect(screen.queryByRole('button', { name: /^Remove tag/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
 		});
 
 		it('tints the pill with the custom colour of the tag', async () => {
@@ -293,7 +329,7 @@ describe('SearchConversationListItemCore', () => {
 
 			await renderWithTags(['t1']);
 
-			expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+			expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 		});
 	});
 });

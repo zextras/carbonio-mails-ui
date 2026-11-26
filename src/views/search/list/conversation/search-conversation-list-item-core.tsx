@@ -12,8 +12,9 @@ import { ConversationBadge } from '../../../app/folder-panel/parts/conversation-
 import { ConversationSubjectRow } from '../../../app/folder-panel/parts/conversation-subject-row';
 import { LineWithTags } from '../../../app/folder-panel/parts/line-with-tags';
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
-import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
+import { useConversationTagFolders } from 'hooks/use-tag-pill-items';
 import { NormalizedConversation } from 'types/conversations';
+import { TagTarget } from 'views/app/detail-panel/preview/parts/tags/use-reading-pane-tags';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
@@ -65,7 +66,14 @@ export const SearchConversationListItemCore = ({
 	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
 	const avatarFolderId = conversation.messageIds.length === 1 ? parent : '';
-	const folderIds = useConversationFolderIds(conversationId, hasSharedTag(conversation.tags));
+	// Search results come from many folders: any message in Spam keeps the tags as they are, as in the
+	// reading pane, not only the first one.
+	const { folderIds, spamFolderId } = useConversationTagFolders(conversationId, conversation.tags);
+	const tagFolderId = spamFolderId ?? parent;
+	const tagTarget = useMemo<TagTarget>(
+		() => ({ kind: 'conversation', id: conversationId, folderId: tagFolderId }),
+		[conversationId, tagFolderId]
+	);
 
 	return (
 		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
@@ -105,7 +113,7 @@ export const SearchConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-					<LineWithTags tagIds={conversation.tags} folderIds={folderIds}>
+					<LineWithTags target={tagTarget} tagIds={conversation.tags} folderIds={folderIds}>
 						<ConversationSubjectRow
 							subject={conversation.subject}
 							read={conversation.read}

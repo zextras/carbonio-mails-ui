@@ -228,17 +228,17 @@ describe('ItemTags', () => {
 		);
 		expect(screen.queryByRole('button', { name: /Remove tag/ })).not.toBeInTheDocument();
 		await user.click(screen.getByRole('button', { name: SHOW_MORE }));
-		expect(screen.queryByRole('button', { name: /add tags/i })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
 	});
 
-	test('ADD TAGS lists every tag of the user and applies a check at once', async () => {
+	test('MANAGE TAGS lists every tag of the user and applies a check at once', async () => {
 		showFirst(1);
 		const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const { user } = setupTest(
 			<ItemTags kind="message" id="10" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />
 		);
 		await user.click(screen.getByRole('button', { name: SHOW_MORE }));
-		await user.click(screen.getByRole('button', { name: /add tags/i }));
+		await user.click(screen.getByRole('button', { name: /manage tags/i }));
 		expect(screen.getAllByRole('menuitemcheckbox').map((item) => item.textContent)).toEqual([
 			'Client',
 			'Personal',
@@ -276,7 +276,7 @@ describe('ItemTags', () => {
 			);
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
 		});
 
@@ -294,7 +294,7 @@ describe('ItemTags', () => {
 			);
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
 		});
 	});

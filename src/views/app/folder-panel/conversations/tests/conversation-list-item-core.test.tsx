@@ -289,7 +289,7 @@ describe('ConversationListItemCore', () => {
 			/>
 		);
 
-		expect(await screen.findByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+		expect(await screen.findByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 	});
 	it('a tag from a shared folder says whose folder it comes from', async () => {
 		useTagStore.setState({ tags: {} });
@@ -318,9 +318,7 @@ describe('ConversationListItemCore', () => {
 
 		await user.hover(screen.getByText('Finance'));
 
-		expect(
-			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
-		).toBeVisible();
+		expect(await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)).toBeVisible();
 	});
 	it('tells screen readers how many messages the conversation has and how many are unread', async () => {
 		const { conversation } = await waitFor(() =>

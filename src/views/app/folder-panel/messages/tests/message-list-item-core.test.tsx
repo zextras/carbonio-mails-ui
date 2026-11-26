@@ -45,16 +45,14 @@ describe('MessageListItemCore tags', () => {
 	it('tints the pill with the custom colour of the tag', () => {
 		renderWithTag({ id: 't1', name: 'custom', rgb: '#abcdef' });
 
-		expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+		expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 	});
 
 	it('shows a pill with the standard colour of the tag', () => {
 		renderWithTag({ id: 't1', name: 'standard', color: 4 });
 
 		expect(screen.getByTestId('tag-pill')).toHaveTextContent('standard');
-		expect(screen.getByTestId('tag-dot')).toHaveStyle({
-			'background-color': ZIMBRA_STANDARD_COLORS[4].hex
-		});
+		expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: ZIMBRA_STANDARD_COLORS[4].hex });
 	});
 
 	it('in a conversation child row shows the tags of the message once', () => {
@@ -83,8 +81,6 @@ describe('MessageListItemCore tags', () => {
 
 		await user.hover(screen.getByText('Finance'));
 
-		expect(
-			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
-		).toBeVisible();
+		expect(await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)).toBeVisible();
 	});
 });

@@ -14,7 +14,8 @@ import {
 	READING_PANE_TAGS_GAP,
 	READING_PANE_TAGS_LINE_END
 } from './fit-tags-in-lines';
-import { HiddenTagsPopover, TagMenu } from './hidden-tags-popover';
+import { focusHiddenTagRemove, HiddenTagsPopover, TagMenu } from './hidden-tags-popover';
+import { MoreTagsButton } from './more-tags-button';
 
 const Row = styled.div`
 	position: relative;
@@ -47,23 +48,6 @@ const MeasureLayer = styled.div`
 	white-space: nowrap;
 `;
 
-const MoreButton = styled.button`
-	height: 1.5rem;
-	padding: 0 0.25rem;
-	border: none;
-	border-radius: ${({ theme }): string => theme.borderRadius};
-	background: transparent;
-	color: ${({ theme }): string => theme.palette.secondary.active};
-	font: inherit;
-	/* As the text of the reading pane pills: no font size of the theme is 13px. */
-	font-size: 0.8125rem;
-	cursor: pointer;
-
-	&:hover {
-		text-decoration: underline;
-	}
-`;
-
 /** "+N" at 13px: the "+", each digit, and the button's padding. */
 const counterWidth = (hiddenCount: number): number =>
 	Math.ceil(8 * (1 + String(hiddenCount).length)) + 8;
@@ -88,7 +72,7 @@ export type ReadingPaneTagsProps = {
 	onRemove?: (tag: TagPillItem, options: { onUndo: () => void; onError: () => void }) => void;
 	/** Accessible name of the "×". Default: "Remove tag {name}". */
 	removeLabel?: (tag: TagPillItem) => string;
-	/** Without it, no ADD TAGS. */
+	/** Without it, no MANAGE TAGS. */
 	menu?: TagMenu;
 };
 
@@ -211,12 +195,7 @@ export const ReadingPaneTags = ({
 		}
 		if (hidden.length > 0) {
 			pendingFocus.current = undefined;
-			const next = hidden[Math.min(pending.index, hidden.length - 1)];
-			document
-				.querySelector<HTMLButtonElement>(
-					`[data-testid="hidden-tags-popover"] [data-tag-id="${CSS.escape(next.id)}"] button`
-				)
-				?.focus();
+			focusHiddenTagRemove(hidden[Math.min(pending.index, hidden.length - 1)].id);
 		}
 	}, [appliedIds, focusPill, hidden, visible]);
 
@@ -297,20 +276,12 @@ export const ReadingPaneTags = ({
 				/>
 			))}
 			{hidden.length > 0 && (
-				<MoreButton
+				<MoreTagsButton
 					ref={moreRef}
-					type="button"
-					aria-label={t('label.show_more_tags', {
-						count: hidden.length,
-						defaultValue_one: 'Show {{count}} more tag',
-						defaultValue_other: 'Show {{count}} more tags'
-					})}
-					aria-expanded={open !== undefined}
-					aria-haspopup="dialog"
+					hiddenCount={hidden.length}
+					open={open !== undefined}
 					onClick={openCard}
-				>
-					+{hidden.length}
-				</MoreButton>
+				/>
 			)}
 			{open && hidden.length > 0 && (
 				<HiddenTagsPopover

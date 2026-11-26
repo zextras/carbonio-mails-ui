@@ -18,6 +18,7 @@ import { MessageSubjectRow } from '../../../app/folder-panel/parts/message-subje
 import { ParticipantsString } from '../../../app/folder-panel/parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { MailMessage } from 'types/messages';
+import { TagTarget } from 'views/app/detail-panel/preview/parts/tags/use-reading-pane-tags';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -40,6 +41,10 @@ export const SearchMessageListItemCore = ({
 	const [t] = useTranslation();
 	const messageFolder = useFolder(completeMessage.parent);
 	const folderIds = useMemo(() => [completeMessage.parent], [completeMessage.parent]);
+	const tagTarget = useMemo<TagTarget>(
+		() => ({ kind: 'message', id: completeMessage.id, folderId: completeMessage.parent }),
+		[completeMessage.id, completeMessage.parent]
+	);
 
 	const accounts = useUserAccounts();
 	const [date] = useMemo(() => {
@@ -154,7 +159,7 @@ export const SearchMessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<LineWithTags tagIds={completeMessage.tags} folderIds={folderIds}>
+					<LineWithTags target={tagTarget} tagIds={completeMessage.tags} folderIds={folderIds}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">
