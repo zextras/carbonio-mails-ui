@@ -143,6 +143,7 @@ describe('LineWithTags', () => {
 	describe('"+N" in the list', () => {
 		const FIVE = ['1', '2', '3', '4', '5'];
 		const SHOW_1 = 'Show 1 more tag';
+		const ONE_MORE_TAG = '1 more tag';
 		const REMOVE_EEEE = 'Remove tag Eeee from conversation';
 
 		/** On a 482px line five short tags show as two pills, three icons... but for the last one: "+1". */
@@ -216,7 +217,7 @@ describe('LineWithTags', () => {
 
 			await user.click(screen.getByRole('button', { name: SHOW_1 }));
 
-			const card = screen.getByRole('dialog', { name: '1 more tag' });
+			const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
 			expect(within(card).getByText('Eeee')).toBeVisible();
 			expect(within(card).getByRole('button', { name: REMOVE_EEEE })).toHaveFocus();
 			expect(within(card).getByRole('button', { name: /manage tags/i })).toBeVisible();
@@ -283,6 +284,109 @@ describe('LineWithTags', () => {
 
 			await user.keyboard('{Escape}');
 			expect(screen.getAllByTestId(ICON_PILL).length).toBeGreaterThan(1);
+		});
+
+		describe('when the list moves under the open card', () => {
+			/** jsdom has no DOMRect. */
+			const rect = (x: number, y: number, width: number, height: number): DOMRect =>
+				({
+					x,
+					y,
+					left: x,
+					top: y,
+					right: x + width,
+					bottom: y + height,
+					width,
+					height,
+					toJSON: noop
+				}) as DOMRect;
+			/** Where "+N" is: `top` px from the top of the window, in a list that shows 0 to 600px. */
+			const placeMore = (more: HTMLElement, top: number): void => {
+				vi.spyOn(more, 'getBoundingClientRect').mockReturnValue(rect(400, top, 24, 20));
+			};
+			const showListUpTo = (bottom: number): void => {
+				const list = screen.getByTestId('row');
+				list.style.overflowY = 'auto';
+				vi.spyOn(list, 'getBoundingClientRect').mockReturnValue(rect(0, 0, 800, bottom));
+			};
+			const nextFrames = (): void => {
+				act(() => {
+					vi.advanceTimersByTime(50);
+				});
+			};
+
+			it('stays open when the list scrolls but "+N" stays where it is (a new mail above it)', async () => {
+				const { user } = setupRow();
+				const more = screen.getByRole('button', { name: SHOW_1 });
+				showListUpTo(600);
+				placeMore(more, 100);
+				await user.click(more);
+
+				act(() => {
+					screen.getByTestId('row').dispatchEvent(new Event('scroll'));
+				});
+				nextFrames();
+
+				expect(screen.getByRole('dialog', { name: ONE_MORE_TAG })).toBeVisible();
+			});
+
+			it('follows "+N" when its row moves', async () => {
+				const { user } = setupRow();
+				const more = screen.getByRole('button', { name: SHOW_1 });
+				showListUpTo(600);
+				placeMore(more, 100);
+				await user.click(more);
+				const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
+				expect(card).toHaveStyle({ top: '124px' });
+
+				placeMore(more, 164);
+				nextFrames();
+
+				expect(card).toHaveStyle({ top: '188px' });
+			});
+
+			it('stays on the side of "+N" where it opened while there is room for it', async () => {
+				const { user } = setupRow();
+				const more = screen.getByRole('button', { name: SHOW_1 });
+				showListUpTo(700);
+				placeMore(more, 100);
+				await user.click(more);
+
+				// Now there is more room above "+N", but the card still fits below
+				placeMore(more, 400);
+				nextFrames();
+
+				expect(screen.getByRole('dialog', { name: ONE_MORE_TAG })).toHaveStyle({ top: '424px' });
+			});
+
+			it('moves to the other side of "+N" when it no longer fits on its own', async () => {
+				const { user } = setupRow();
+				const more = screen.getByRole('button', { name: SHOW_1 });
+				showListUpTo(768);
+				placeMore(more, 100);
+				await user.click(more);
+				const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
+				vi.spyOn(card, 'offsetHeight', 'get').mockReturnValue(200);
+
+				// 44px left below "+N", for a card of 200px
+				placeMore(more, 700);
+				nextFrames();
+
+				expect(card).toHaveStyle({ bottom: '72px' });
+			});
+
+			it('closes when "+N" leaves the visible part of the list', async () => {
+				const { user } = setupRow();
+				const more = screen.getByRole('button', { name: SHOW_1 });
+				showListUpTo(600);
+				placeMore(more, 100);
+				await user.click(more);
+
+				placeMore(more, 640);
+				nextFrames();
+
+				expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+			});
 		});
 
 		it('in Spam the hidden tags can be neither removed nor managed', async () => {
