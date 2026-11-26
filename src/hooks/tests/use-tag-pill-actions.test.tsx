@@ -51,6 +51,66 @@ describe('useTagPillActions', () => {
 		await vi.waitFor(() => expect(onUndo).toHaveBeenCalledTimes(1));
 	});
 
+	describe('the Undo snackbar', () => {
+		const REMOVED = '"Urgent" tag removed';
+		const advance = (ms: number): void => {
+			act(() => {
+				vi.advanceTimersByTime(ms);
+			});
+		};
+		const removeUrgent = async (): Promise<ReturnType<typeof setupHook>['user']> => {
+			createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const { result, user } = setupHook(useTagPillActions, {
+				initialProps: [{ kind: 'message', ids: ['10'] }]
+			});
+			act(() => result.current.removeTag('Urgent'));
+			await screen.findByText(REMOVED);
+			return user;
+		};
+
+		test('goes after 5 seconds', async () => {
+			await removeUrgent();
+
+			advance(5100);
+
+			expect(screen.queryByText(REMOVED)).not.toBeInTheDocument();
+		});
+
+		test('waits while the pointer is on it, then gives 5 more seconds', async () => {
+			const user = await removeUrgent();
+
+			await user.hover(screen.getByText(REMOVED));
+			advance(10000);
+			expect(screen.getByRole('button', { name: /undo/i })).toBeVisible();
+
+			await user.unhover(screen.getByText(REMOVED));
+			advance(4000);
+			expect(screen.getByText(REMOVED)).toBeInTheDocument();
+			advance(1100);
+			expect(screen.queryByText(REMOVED)).not.toBeInTheDocument();
+		});
+
+		test('waits while UNDO has the focus', async () => {
+			await removeUrgent();
+
+			act(() => screen.getByRole('button', { name: /undo/i }).focus());
+			advance(10000);
+
+			expect(screen.getByRole('button', { name: /undo/i })).toHaveFocus();
+		});
+
+		test('the pointer leaving does not start the time while UNDO still has the focus', async () => {
+			const user = await removeUrgent();
+
+			await user.hover(screen.getByText(REMOVED));
+			act(() => screen.getByRole('button', { name: /undo/i }).focus());
+			await user.unhover(screen.getByText(REMOVED));
+			advance(10000);
+
+			expect(screen.getByRole('button', { name: /undo/i })).toBeVisible();
+		});
+	});
+
 	test('an Undo that fails shows the error and does not call back', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const onUndo = vi.fn();
