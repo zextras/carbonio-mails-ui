@@ -1,3 +1,10 @@
+## <small>1.53.4 (2026-11-26)</small>
+
+* fix(CO-4816): download attachments instead of opening them inline on the app origin (#1455) ([71a20da](https://github.com/zextras/carbonio-mails-ui/commit/71a20da)), closes [#1455](https://github.com/zextras/carbonio-mails-ui/issues/1455)
+* chore: [CO-4815] add release/v1.31.x and release/v1.34.x to the semantic-release branches (#1449) ([c93afd5](https://github.com/zextras/carbonio-mails-ui/commit/c93afd5)), closes [#1449](https://github.com/zextras/carbonio-mails-ui/issues/1449)
+* chore(deps): update dependency @semantic-release/github to v12.0.11 (#1461) ([7b61b38](https://github.com/zextras/carbonio-mails-ui/commit/7b61b38)), closes [#1461](https://github.com/zextras/carbonio-mails-ui/issues/1461)
+* chore(deps): update dependency zextras/jenkins-lib-common to v5.5.4 (#1459) ([c61a0d0](https://github.com/zextras/carbonio-mails-ui/commit/c61a0d0)), closes [#1459](https://github.com/zextras/carbonio-mails-ui/issues/1459)
+
 ## <small>1.53.3 (2026-11-23)</small>
 
 * fix: show the notes of a share invitation as plain text (#1443) ([d146ca6](https://github.com/zextras/carbonio-mails-ui/commit/d146ca6)), closes [#1443](https://github.com/zextras/carbonio-mails-ui/issues/1443)
