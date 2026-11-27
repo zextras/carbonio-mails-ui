@@ -14,6 +14,7 @@ import {
 	$readActiveFormatting,
 	$selectionHasImage,
 	ActiveFormatting,
+	areActiveFormattingEqual,
 	BlockType,
 	DEFAULT_ACTIVE_FORMATTING
 } from '../rich-toolbar-plugin-model';
@@ -57,7 +58,12 @@ export function useToolbarSelectionSync(editor: LexicalEditor): ToolbarSelection
 					setIsImageSelected($selectionHasImage());
 					setIsSingleImageSelected($getSelectedImageNode() !== null);
 					setCurrentBlock($getSelectionBlockType());
-					setActiveFormatting($readActiveFormatting());
+					// A new object on every update (each keystroke) would re-render the whole
+					// toolbar even though nothing it shows has changed.
+					const nextFormatting = $readActiveFormatting();
+					setActiveFormatting((previous) =>
+						areActiveFormattingEqual(previous, nextFormatting) ? previous : nextFormatting
+					);
 					const selection = $getSelection();
 					if ($isRangeSelection(selection)) {
 						setCurrentFont($getSelectionStyleValueForProperty(selection, 'font-family', ''));
