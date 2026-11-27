@@ -7,6 +7,7 @@ import React, { forwardRef, useMemo } from 'react';
 
 import styled from '@emotion/styled';
 import { Tooltip } from '@zextras/carbonio-design-system';
+import { LIST_TAG_PILLS_COUNTER_MIN_WIDTH } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 /** reading pane: 13px, as its pills (no font size of the theme is 13px); list: 12px, as its pills. */
@@ -17,11 +18,11 @@ const SIZES = {
 
 /**
  * In a list row "+N" sits next to other targets (the expand arrow of a conversation, the hover actions):
- * the 24px of the target are its own width, and it stays above the hover actions, which cover the top of
- * the line.
+ * the 24px of the target are its own width, as the fit of the list's tags counts it, and it stays above
+ * the hover actions, which cover the top of the line.
  */
 const LIST_TARGET = `
-	min-width: 1.5rem;
+	min-width: ${LIST_TAG_PILLS_COUNTER_MIN_WIDTH / 16}rem;
 	z-index: 1;
 `;
 

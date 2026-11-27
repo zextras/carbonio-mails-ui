@@ -123,11 +123,14 @@ describe('LineWithTags', () => {
 
 	describe('"+N" in the list', () => {
 		const FIVE = ['1', '2', '3', '4', '5'];
-		const SHOW_1 = 'Show 1 more tag';
-		const ONE_MORE_TAG = '1 more tag';
+		const SHOW_2 = 'Show 2 more tags';
+		const TWO_MORE_TAGS = '2 more tags';
 		const REMOVE_EEEE = 'Remove tag Eeee from conversation';
 
-		/** On a 482px line five short tags show as two pills, three icons... but for the last one: "+1". */
+		/**
+		 * On a 482px line five short tags show as two pills, an icon and "+2" (Dddd, Eeee). Never "+1":
+		 * "+N" is 24px, wider than the icon the last tag would take.
+		 */
 		const setupRow = (
 			props: Partial<LineWithTagsProps> = {}
 		): ReturnType<typeof setupTest> & {
@@ -188,9 +191,9 @@ describe('LineWithTags', () => {
 			const { user } = setupRow();
 
 			expect(screen.getAllByTestId('tag-pill')).toHaveLength(2);
-			expect(screen.getAllByTestId(ICON_PILL)).toHaveLength(2);
-			const more = screen.getByRole('button', { name: SHOW_1 });
-			expect(more).toHaveTextContent('+1');
+			expect(screen.getAllByTestId(ICON_PILL)).toHaveLength(1);
+			const more = screen.getByRole('button', { name: SHOW_2 });
+			expect(more).toHaveTextContent('+2');
 			await user.tab();
 			expect(more).toHaveFocus();
 		});
@@ -198,19 +201,22 @@ describe('LineWithTags', () => {
 		it('has the tooltip "Show N more tags" on hover', async () => {
 			const { user } = setupRow();
 
-			await user.hover(screen.getByRole('button', { name: SHOW_1 }));
+			await user.hover(screen.getByRole('button', { name: SHOW_2 }));
 
-			expect(await screen.findByText(SHOW_1)).toBeVisible();
+			expect(await screen.findByText(SHOW_2)).toBeVisible();
 		});
 
 		it('a click opens the hidden tags, each with its "×", and MANAGE TAGS, without opening the item', async () => {
 			const { user, onRowClick } = setupRow();
 
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 
-			const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
+			const card = screen.getByRole('dialog', { name: TWO_MORE_TAGS });
+			expect(within(card).getByText('Dddd')).toBeVisible();
 			expect(within(card).getByText('Eeee')).toBeVisible();
-			expect(within(card).getByRole('button', { name: REMOVE_EEEE })).toHaveFocus();
+			expect(
+				within(card).getByRole('button', { name: 'Remove tag Dddd from conversation' })
+			).toHaveFocus();
 			expect(within(card).getByRole('button', { name: /manage tags/i })).toBeVisible();
 			await user.click(within(card).getByText('Eeee'));
 			expect(onRowClick).not.toHaveBeenCalled();
@@ -218,14 +224,14 @@ describe('LineWithTags', () => {
 
 		it('Enter opens it too, without opening the item; Esc gives the focus back to "+N"', async () => {
 			const { user, onRowClick } = setupRow();
-			act(() => screen.getByRole('button', { name: SHOW_1 }).focus());
+			act(() => screen.getByRole('button', { name: SHOW_2 }).focus());
 
 			await user.keyboard('{Enter}');
 			expect(screen.getByRole('dialog')).toBeVisible();
 			await user.keyboard('{Escape}');
 
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-			expect(screen.getByRole('button', { name: SHOW_1 })).toHaveFocus();
+			expect(screen.getByRole('button', { name: SHOW_2 })).toHaveFocus();
 			expect(onRowClick).not.toHaveBeenCalled();
 		});
 
@@ -240,7 +246,7 @@ describe('LineWithTags', () => {
 			const row = screen.getByTestId('row');
 			row.addEventListener('keydown', onRowKey);
 			row.addEventListener('keyup', onRowKey);
-			act(() => screen.getByRole('button', { name: SHOW_1 }).focus());
+			act(() => screen.getByRole('button', { name: SHOW_2 }).focus());
 
 			await user.keyboard('{Enter}');
 			expect(screen.getByRole('dialog')).toBeVisible();
@@ -255,7 +261,7 @@ describe('LineWithTags', () => {
 			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupRow();
 
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 			await user.click(screen.getByRole('button', { name: REMOVE_EEEE }));
 
 			expect((await interceptor).action).toEqual(
@@ -265,16 +271,16 @@ describe('LineWithTags', () => {
 
 		it('the row does not reflow while the hidden tags are open, and recalculates on close', async () => {
 			const { user, rerenderWith } = setupRow({ tagIds: [...FIVE, SHARED_FINANCE] });
-			await user.click(screen.getByRole('button', { name: 'Show 2 more tags' }));
+			await user.click(screen.getByRole('button', { name: 'Show 3 more tags' }));
 
-			// Dddd, shown as an icon, is removed from another client: the row keeps its place
+			// Cccc, shown as an icon, is removed from another client: the row keeps its place
 			lineWidth(2000);
-			rerenderWith({ tagIds: ['1', '2', '3', '5', SHARED_FINANCE] });
-			expect(screen.getAllByTestId(ICON_PILL)).toHaveLength(1);
+			rerenderWith({ tagIds: ['1', '2', '4', '5', SHARED_FINANCE] });
+			expect(screen.queryAllByTestId(ICON_PILL)).toHaveLength(0);
 			expect(within(screen.getByRole('dialog')).getByText('Eeee')).toBeVisible();
 
 			await user.keyboard('{Escape}');
-			expect(screen.getAllByTestId(ICON_PILL).length).toBeGreaterThan(1);
+			expect(screen.getAllByTestId(ICON_PILL).length).toBeGreaterThan(0);
 		});
 
 		describe('when the list moves under the open card', () => {
@@ -308,7 +314,7 @@ describe('LineWithTags', () => {
 
 			it('stays open when the list scrolls but "+N" stays where it is (a new mail above it)', async () => {
 				const { user } = setupRow();
-				const more = screen.getByRole('button', { name: SHOW_1 });
+				const more = screen.getByRole('button', { name: SHOW_2 });
 				showListUpTo(600);
 				placeMore(more, 100);
 				await user.click(more);
@@ -318,16 +324,16 @@ describe('LineWithTags', () => {
 				});
 				nextFrames();
 
-				expect(screen.getByRole('dialog', { name: ONE_MORE_TAG })).toBeVisible();
+				expect(screen.getByRole('dialog', { name: TWO_MORE_TAGS })).toBeVisible();
 			});
 
 			it('follows "+N" when its row moves', async () => {
 				const { user } = setupRow();
-				const more = screen.getByRole('button', { name: SHOW_1 });
+				const more = screen.getByRole('button', { name: SHOW_2 });
 				showListUpTo(600);
 				placeMore(more, 100);
 				await user.click(more);
-				const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
+				const card = screen.getByRole('dialog', { name: TWO_MORE_TAGS });
 				expect(card).toHaveStyle({ top: '124px' });
 
 				placeMore(more, 164);
@@ -338,7 +344,7 @@ describe('LineWithTags', () => {
 
 			it('stays on the side of "+N" where it opened while there is room for it', async () => {
 				const { user } = setupRow();
-				const more = screen.getByRole('button', { name: SHOW_1 });
+				const more = screen.getByRole('button', { name: SHOW_2 });
 				showListUpTo(700);
 				placeMore(more, 100);
 				await user.click(more);
@@ -347,16 +353,16 @@ describe('LineWithTags', () => {
 				placeMore(more, 400);
 				nextFrames();
 
-				expect(screen.getByRole('dialog', { name: ONE_MORE_TAG })).toHaveStyle({ top: '424px' });
+				expect(screen.getByRole('dialog', { name: TWO_MORE_TAGS })).toHaveStyle({ top: '424px' });
 			});
 
 			it('moves to the other side of "+N" when it no longer fits on its own', async () => {
 				const { user } = setupRow();
-				const more = screen.getByRole('button', { name: SHOW_1 });
+				const more = screen.getByRole('button', { name: SHOW_2 });
 				showListUpTo(768);
 				placeMore(more, 100);
 				await user.click(more);
-				const card = screen.getByRole('dialog', { name: ONE_MORE_TAG });
+				const card = screen.getByRole('dialog', { name: TWO_MORE_TAGS });
 				vi.spyOn(card, 'offsetHeight', 'get').mockReturnValue(200);
 
 				// 44px left below "+N", for a card of 200px
@@ -368,7 +374,7 @@ describe('LineWithTags', () => {
 
 			it('closes when "+N" leaves the visible part of the list', async () => {
 				const { user } = setupRow();
-				const more = screen.getByRole('button', { name: SHOW_1 });
+				const more = screen.getByRole('button', { name: SHOW_2 });
 				showListUpTo(600);
 				placeMore(more, 100);
 				await user.click(more);
@@ -383,7 +389,7 @@ describe('LineWithTags', () => {
 		it('in Spam the hidden tags can be neither removed nor managed', async () => {
 			const { user } = setupRow({ target: { ...CONVERSATION, folderId: FOLDERS.SPAM } });
 
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 
 			expect(screen.queryByRole('button', { name: REMOVE_EEEE })).not.toBeInTheDocument();
 			expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
@@ -393,7 +399,7 @@ describe('LineWithTags', () => {
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			const { user } = setupRow({ target: { kind: 'message', id: '7', folderId: FOLDERS.INBOX } });
 
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 			await user.click(screen.getByRole('button', { name: 'Remove tag Eeee' }));
 
 			expect((await interceptor).action).toEqual(
@@ -437,7 +443,7 @@ describe('LineWithTags', () => {
 		it('after Undo of a tag that comes back as a pill, a later "+N" leaves the focus alone', async () => {
 			const removal = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user, rerenderWith } = setupRow();
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 			await user.click(screen.getByRole('button', { name: REMOVE_EEEE }));
 			await removal;
 			rerenderWith({ tagIds: ['1', '2', '3', '4'] });
@@ -447,44 +453,62 @@ describe('LineWithTags', () => {
 			await undo;
 			// Two other tags went meanwhile (another client): Eeee comes back as a pill, there is no "+N"
 			rerenderWith({ tagIds: ['1', '2', '5'] });
-			expect(screen.queryByRole('button', { name: SHOW_1 })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: SHOW_2 })).not.toBeInTheDocument();
 
 			// Later they are back: the new "+N" leaves the focus where it is
 			rerenderWith({ tagIds: FIVE });
-			expect(screen.getByRole('button', { name: SHOW_1 })).not.toHaveFocus();
+			expect(screen.getByRole('button', { name: SHOW_2 })).not.toHaveFocus();
 		});
 
 		it('when every tag goes while the tag menu is open, nothing stays open', async () => {
 			const { user, rerenderWith } = setupRow();
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 
 			rerenderWith({ tagIds: [] });
 			rerenderWith({ tagIds: FIVE });
 
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-			expect(screen.getByRole('button', { name: SHOW_1 })).toHaveAttribute(
+			expect(screen.getByRole('button', { name: SHOW_2 })).toHaveAttribute(
 				'aria-expanded',
 				'false'
 			);
 		});
 
-		it('removing the last hidden tag closes it; after Undo the tag comes back as "+1" with the focus', async () => {
+		it('removing the last hidden tag closes it', async () => {
+			const { user, rerenderWith } = setupRow();
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
+
+			const first = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			await user.click(screen.getByRole('button', { name: REMOVE_EEEE }));
+			await first;
+			rerenderWith({ tagIds: ['1', '2', '3', '4'] });
+			expect(screen.getByRole('dialog', { name: '1 more tag' })).toBeVisible();
+
+			const second = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			await user.click(screen.getByRole('button', { name: 'Remove tag Dddd from conversation' }));
+			await second;
+			rerenderWith({ tagIds: ['1', '2', '3'] });
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+			expect(
+				screen.queryByRole('button', { name: /^Show \d more tags?$/ })
+			).not.toBeInTheDocument();
+		});
+
+		it('after Undo the tag comes back behind "+N", which takes the focus', async () => {
 			const removal = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user, rerenderWith } = setupRow();
-			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: SHOW_2 }));
 			await user.click(screen.getByRole('button', { name: REMOVE_EEEE }));
 			await removal;
 			rerenderWith({ tagIds: ['1', '2', '3', '4'] });
-			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-			expect(screen.queryByRole('button', { name: SHOW_1 })).not.toBeInTheDocument();
 
 			const undo = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			await user.click(await screen.findByRole('button', { name: /undo/i }));
 			await undo;
 			rerenderWith({ tagIds: FIVE });
 
-			expect(await screen.findByRole('button', { name: SHOW_1 })).toHaveFocus();
+			expect(await screen.findByRole('button', { name: SHOW_2 })).toHaveFocus();
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 		});
 	});
