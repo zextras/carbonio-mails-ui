@@ -63,6 +63,19 @@ export const DEFAULT_ACTIVE_FORMATTING: ActiveFormatting = {
 	list: null
 };
 
+export function areActiveFormattingEqual(a: ActiveFormatting, b: ActiveFormatting): boolean {
+	return (
+		a === b ||
+		(a.formats.bold === b.formats.bold &&
+			a.formats.italic === b.formats.italic &&
+			a.formats.underline === b.formats.underline &&
+			a.formats.strikethrough === b.formats.strikethrough &&
+			a.align === b.align &&
+			a.direction === b.direction &&
+			a.list === b.list)
+	);
+}
+
 /**
  * Reads, for the current caret/selection, which toggle toolbar options are
  * active: the inline text formats, the paragraph alignment, the text direction

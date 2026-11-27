@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
+import { $generateNodesFromDOM } from '@lexical/html';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -26,9 +26,8 @@ import {
 } from 'lexical';
 
 import { parseHtmlForImport } from './parse-html-for-import';
-import { editorUtils } from '../parts/editor-utils';
-import { TINYMCE_BASE_CONTENT_STYLES } from 'constants/tinymce-content-styles';
-import { applyUserPreferenceStyles, UserPreferenceStyle } from 'helpers/user-preference-styles';
+import { createSerializedHtmlCache } from './serialized-html-cache';
+import { UserPreferenceStyle } from 'helpers/user-preference-styles';
 import { replaceCidUrlWithServiceUrl } from 'store/editor/editor-transformations';
 import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
 import { useEditorSetDirty } from 'store/editor/hooks/statuses';
@@ -166,35 +165,30 @@ export const ControlledContentPlugin = ({
 	const lastEmittedHtmlRef = useRef<string>();
 	const currentHtmlRef = useRef<string>();
 
+	// Keeps the processed HTML of the top-level nodes that did not change.
+	const serializedHtmlCache = useMemo(() => createSerializedHtmlCache(), []);
+
 	// Up: editor -> store
 	const onChange = useCallback(
 		(editorState: EditorState, currentEditor: LexicalEditor): void => {
-			// Read through the editor (not the bare editor state) so that the active
-			// editor context is set: `$generateHtmlFromNodes` -> `exportDOM` needs it.
-			editorState.read(
-				() => {
-					const plainText = $getRoot().getTextContent();
-					const style = getUserPreferenceStyle(prefs);
-					const richText = applyUserPreferenceStyles(
-						$generateHtmlFromNodes(currentEditor, null),
-						style,
-						TINYMCE_BASE_CONTENT_STYLES
-					);
-
-					lastEmittedHtmlRef.current = richText;
-					currentHtmlRef.current = richText;
-
-					const { usedCids } = editorUtils.retrieveCIdsFromContent({ htmlContent: richText });
-					keepOnlyInlineAttachments(usedCids);
-
-					useEditorsStore.getState().setText(editorId, { plainText, richText });
-					setDirty();
-					debouncedSaveDraft();
-				},
-				{ editor: currentEditor }
+			// Only the top-level nodes that changed are exported again: doing it for
+			// the whole document on every keystroke made long threads unusable.
+			const { richText, plainText, usedCids } = serializedHtmlCache.serialize(
+				currentEditor,
+				editorState,
+				getUserPreferenceStyle(prefs)
 			);
+
+			lastEmittedHtmlRef.current = richText;
+			currentHtmlRef.current = richText;
+
+			keepOnlyInlineAttachments(usedCids);
+
+			useEditorsStore.getState().setText(editorId, { plainText, richText });
+			setDirty();
+			debouncedSaveDraft();
 		},
-		[debouncedSaveDraft, editorId, keepOnlyInlineAttachments, prefs, setDirty]
+		[debouncedSaveDraft, editorId, keepOnlyInlineAttachments, prefs, serializedHtmlCache, setDirty]
 	);
 
 	// Down: store -> editor

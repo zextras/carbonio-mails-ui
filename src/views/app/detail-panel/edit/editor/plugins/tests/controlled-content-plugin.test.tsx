@@ -16,6 +16,8 @@ import { RichTextEditorContainer } from 'views/app/detail-panel/edit/editor/part
 
 const EDITOR_TESTID = 'edit-view-editor';
 const HELLO_WORLD = 'hello world';
+const QUOTED_TEXT = 'quoted text';
+const REPLY_WITH_QUOTE = `<p>my reply</p><hr id="zwchr"><div><p>Alice wrote:</p><blockquote><p>${QUOTED_TEXT}</p></blockquote></div>`;
 
 /** Reads the Lexical editor instance Lexical attaches to its root DOM element. */
 function getEditor(element: HTMLElement): LexicalEditor {
@@ -160,6 +162,50 @@ describe('ControlledContentPlugin', () => {
 		const { richText, plainText } = editorState(editorId);
 		expect(richText).toContain('font-weight: bold');
 		expect(plainText).toBe(HELLO_WORLD);
+	});
+
+	it('keeps the quoted thread in the store when the compose area is edited', async () => {
+		const { editorId } = setupEditor(REPLY_WITH_QUOTE);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await within(editorElement).findByText('my reply');
+		const editor = getEditor(editorElement);
+
+		act(() => {
+			editor.update(() => {
+				const [composeText] = $getRoot().getAllTextNodes();
+				composeText.setTextContent('my reply, edited');
+			});
+		});
+
+		await waitFor(() => {
+			expect(editorState(editorId).richText).toContain('my reply, edited');
+		});
+		const { richText, plainText } = editorState(editorId);
+		expect(richText).toContain(QUOTED_TEXT);
+		// juice adds the inlined styles to the separator, so only its start is stable.
+		expect(richText).toContain('<hr id="zwchr"');
+		expect(plainText).toContain(QUOTED_TEXT);
+	});
+
+	it('stores the edit made inside the quoted thread', async () => {
+		const { editorId } = setupEditor(REPLY_WITH_QUOTE);
+		const editorElement = screen.getByTestId(EDITOR_TESTID);
+		await within(editorElement).findByText(QUOTED_TEXT);
+		const editor = getEditor(editorElement);
+
+		act(() => {
+			editor.update(() => {
+				const quoted = $getRoot()
+					.getAllTextNodes()
+					.find((node) => node.getTextContent() === QUOTED_TEXT);
+				quoted?.setTextContent(`${QUOTED_TEXT}, annotated`);
+			});
+		});
+
+		await waitFor(() => {
+			expect(editorState(editorId).richText).toContain(`${QUOTED_TEXT}, annotated`);
+		});
+		expect(editorState(editorId).richText).toContain('my reply');
 	});
 
 	it('ignores its own echo and does not duplicate the content', async () => {
