@@ -158,12 +158,7 @@ export const PreviewHeader: FC<PreviewHeaderProps> = ({
 						</Row>
 					</Container>
 					{!isEml && open && (
-						<ItemTags
-							kind="message"
-							id={message.id}
-							tagIds={message.tags}
-							folderId={message.parent}
-						/>
+						<ItemTags id={message.id} tagIds={message.tags} folderId={message.parent} />
 					)}
 				</Container>
 				<Container

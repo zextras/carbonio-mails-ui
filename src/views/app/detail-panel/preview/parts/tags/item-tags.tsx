@@ -34,30 +34,18 @@ const Counter = styled.span`
 /** Most a collapsed card's pill takes, as a pill after the first in a list row. */
 const COLLAPSED_PILL_MAX_WIDTH = '7.5rem';
 
-/**
- * Under the conversation subject, in its block, the header gives where the subject starts. On a message
- * card the tags start with the sender and the recipients, after the avatar column.
- */
-const PADDING = { conversation: '0 0.5rem 0.75rem 0', message: '0 0.5rem 0.5rem 2rem' } as const;
+/** The tags start with the sender and the recipients, after the avatar column. */
+const PADDING = '0 0.5rem 0.5rem 2rem';
 
 type ItemTagsProps = {
-	kind: 'message' | 'conversation';
 	id: string;
 	tagIds: ReadonlyArray<string> | undefined;
 	folderId: string;
 };
 
-/**
- * The tags of the conversation under its subject, those of all its messages (removing one removes it
- * from every message), or of an expanded message card (from that message only).
- */
-export const ItemTags = ({
-	kind,
-	id,
-	tagIds,
-	folderId
-}: Readonly<ItemTagsProps>): React.JSX.Element => {
-	const props = useReadingPaneTags({ kind, id, tagIds, folderId });
+/** The tags of an expanded message card: removing one removes it from that message only. */
+export const ItemTags = ({ id, tagIds, folderId }: Readonly<ItemTagsProps>): React.JSX.Element => {
+	const props = useReadingPaneTags({ id, tagIds, folderId });
 	const hasTags = props.tags.length > 0;
 	// Mounted also without tags: after removing the only one, Undo gives it the focus back.
 	return (
@@ -70,7 +58,7 @@ export const ItemTags = ({
 			style={{
 				boxSizing: 'border-box',
 				width: '100%',
-				padding: hasTags ? PADDING[kind] : 0
+				padding: hasTags ? PADDING : 0
 			}}
 		>
 			{/* A new item starts afresh: a focus waiting for the previous one must not land here */}

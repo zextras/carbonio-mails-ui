@@ -88,7 +88,10 @@ const succeeded = (request: Promise<unknown>): Promise<boolean> =>
 		() => false
 	);
 
-/** What the tag pills of the reading pane do to the message or conversation they belong to. */
+/**
+ * What tag pills do to the item they belong to: a message card of the reading pane, or a list row's
+ * message or conversation (all its messages).
+ */
 export const useTagPillActions = ({ kind, ids }: TagPillActionsTarget): TagPillActions => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();

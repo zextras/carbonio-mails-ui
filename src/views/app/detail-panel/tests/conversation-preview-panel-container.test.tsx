@@ -142,7 +142,7 @@ describe('ConversationPreviewPanelContainer', () => {
 		});
 	});
 
-	describe('tags under the subject', () => {
+	describe('tags', () => {
 		const openConversation = async (
 			messages: Array<{ id: string; tags: Array<string> }>
 		): Promise<HTMLElement> => {
@@ -172,14 +172,18 @@ describe('ConversationPreviewPanelContainer', () => {
 			return screen.getByTestId('PreviewPanelHeader');
 		};
 
-		it('are those of all its messages, as in the list', async () => {
+		it('are only on the cards of its messages, each with its own, not under the subject', async () => {
 			const header = await openConversation([
 				{ id: '10', tags: ['t2'] },
 				{ id: '11', tags: ['t1'] }
 			]);
-			const tags = await within(header).findByTestId('reading-pane-tags');
-			expect(tags).toHaveTextContent('Client');
-			expect(tags).toHaveTextContent('Urgent');
+			const first = await screen.findByTestId('open-message-10');
+			const second = screen.getByTestId('open-message-11');
+			expect(within(first).getAllByText('Urgent').length).toBeGreaterThan(0);
+			expect(within(first).queryByText('Client')).not.toBeInTheDocument();
+			expect(within(second).getAllByText('Client').length).toBeGreaterThan(0);
+			expect(within(second).queryByText('Urgent')).not.toBeInTheDocument();
+			expect(within(header).queryByText(/Client|Urgent/)).not.toBeInTheDocument();
 		});
 	});
 });

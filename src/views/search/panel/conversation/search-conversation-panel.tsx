@@ -11,17 +11,12 @@ import { map } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
-import { isSpam } from 'helpers/folders';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import {
-	getConversationIdByMessageIds,
-	useConversationMessagesParentsKey
-} from 'store/emails/store';
+import { getConversationIdByMessageIds } from 'store/emails/store';
 import {
 	SearchDetailPanelConversationRouteParams,
 	SearchDetailPanelRouteParams
 } from 'types/routes';
-import { ItemTags } from 'views/app/detail-panel/preview/parts/tags/item-tags';
 import { SearchConversationMessagePanel } from 'views/search/panel/conversation/search-conversation-message-panel';
 import { SearchPanelHeader } from 'views/search/parts/search-panel-header';
 
@@ -36,11 +31,6 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 		conversationId,
 		shouldMarkAsRead: zimbraPrefMarkMsgRead
 	});
-
-	// Search results come from many folders: a conversation in Spam keeps its tags as they are, as there
-	const spamFolderId = useConversationMessagesParentsKey(conversationId)
-		.split('\n')
-		.find((folderId) => isSpam(folderId));
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
@@ -83,14 +73,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 			data-testid={`SearchConversationPanel-${conversationId}`}
 		>
 			<>
-				<SearchPanelHeader item={conversation}>
-					<ItemTags
-						kind="conversation"
-						id={conversation.id}
-						tagIds={conversation.tags}
-						folderId={spamFolderId ?? ''}
-					/>
-				</SearchPanelHeader>
+				<SearchPanelHeader item={conversation} />
 				<Container
 					style={{ overflowY: 'auto' }}
 					height="fill"

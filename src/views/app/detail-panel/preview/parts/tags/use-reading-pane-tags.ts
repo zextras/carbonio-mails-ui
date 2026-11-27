@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import type { ReadingPaneTagsProps } from './reading-pane-tags';
 import { isSpam } from 'helpers/folders';
 import { useTagPillActions } from 'hooks/use-tag-pill-actions';
-import { hasSharedTag, useConversationFolderIds, useTagPillItems } from 'hooks/use-tag-pill-items';
+import { useTagPillItems } from 'hooks/use-tag-pill-items';
 import { getConversationMessages } from 'store/emails/store';
 
 /** A quote inside the quoted tag name of a search, as the search grammar takes it. */
@@ -123,24 +123,18 @@ export const useTagEditing = ({ kind, id, folderId }: TagTarget): TagEditing => 
 	);
 };
 
-type UseReadingPaneTagsArgs = TagTarget & {
+type UseReadingPaneTagsArgs = Omit<TagTarget, 'kind'> & {
 	tagIds: ReadonlyArray<string> | undefined;
 };
 
-/** The props of `ReadingPaneTags` for a message or a conversation of the reading pane. */
+/** The props of `ReadingPaneTags` for a message card of the reading pane. */
 export const useReadingPaneTags = ({
-	kind,
 	id,
 	tagIds,
 	folderId
 }: UseReadingPaneTagsArgs): ReadingPaneTagsProps => {
-	const conversationFolderIds = useConversationFolderIds(
-		id,
-		kind === 'conversation' && hasSharedTag(tagIds)
-	);
-	const messageFolderIds = useMemo(() => [folderId], [folderId]);
-	const folderIds = kind === 'conversation' ? conversationFolderIds : messageFolderIds;
+	const folderIds = useMemo(() => [folderId], [folderId]);
 	const tags = useTagPillItems(tagIds, folderIds);
-	const editing = useTagEditing({ kind, id, folderId });
+	const editing = useTagEditing({ kind: 'message', id, folderId });
 	return useMemo(() => ({ tags, ...editing }), [editing, tags]);
 };

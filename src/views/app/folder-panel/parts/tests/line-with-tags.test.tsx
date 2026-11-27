@@ -12,6 +12,7 @@ import { noop } from 'lodash';
 import { LineWithTags, LineWithTagsProps } from '../line-with-tags';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConvActionRequest } from 'types/soap/conv-action';
 import { MsgActionRequest } from 'types/soap/msg-action';
 
@@ -259,6 +260,31 @@ describe('LineWithTags', () => {
 
 			expect((await interceptor).action).toEqual(
 				expect.objectContaining({ id: '20', op: '!tag', tn: 'Eeee' })
+			);
+		});
+
+		it('Undo of "×" tags again only the messages of the conversation that had the tag', async () => {
+			await act(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '20' },
+					messageGeneratorParams: [
+						{ id: '1', tags: ['5'] },
+						{ id: '2', tags: ['1'] },
+						{ id: '3', tags: ['1', '5'] }
+					]
+				})
+			);
+			const removal = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			const { user } = setupRow();
+			await user.click(screen.getByRole('button', { name: SHOW_1 }));
+			await user.click(screen.getByRole('button', { name: REMOVE_EEEE }));
+			await removal;
+
+			const undoButton = await screen.findByRole('button', { name: /undo/i });
+			const undo = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			await user.click(undoButton);
+			expect((await undo).action).toEqual(
+				expect.objectContaining({ id: '1,3', op: 'tag', tn: 'Eeee' })
 			);
 		});
 

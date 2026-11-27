@@ -85,7 +85,7 @@ export type ReadingPaneTagsProps = {
 };
 
 /**
- * The tags of a message or conversation in the reading pane: every tag as a pill on one line, then
+ * The tags of a message card in the reading pane: every tag as a pill on one line, then
  * "+N", which opens the rest with a click. A click on a pill runs `onSearch`, its "×"
  * `onRemove`. Tags of a shared folder's owner can be neither clicked nor removed.
  */
