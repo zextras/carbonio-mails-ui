@@ -15,6 +15,13 @@ import { useTagPillItems } from '../../../../hooks/use-tag-pill-items';
 import { VisuallyHidden } from 'commons/visually-hidden';
 import { TagTarget } from 'views/app/detail-panel/preview/parts/tags/use-reading-pane-tags';
 
+/**
+ * Before the expand arrow of a conversation row, when it follows the tags line: the 24px target of "+N"
+ * reaches 3.2px past its text and must not cover the arrow. Outside the line, so the fit of the tags
+ * already has it.
+ */
+export const ROW_END_PADDING = { left: '0.2rem' } as const;
+
 const Line = styled.div`
 	display: flex;
 	flex: 1 1 auto;

@@ -16,12 +16,10 @@ const SIZES = {
 } as const;
 
 /**
- * In a list row "+N" sits next to other targets (the expand arrow of a conversation, the hover actions):
- * the 24px of the target are its own width, and it stays above the hover actions, which cover the top of
- * the line.
+ * In a list row "+N" stays above the hover actions, which cover the top of the line: its 24px target
+ * (below) takes their bottom edge. The row keeps the room around it (see `ROW_END_PADDING`).
  */
 const LIST_TARGET = `
-	min-width: 1.5rem;
 	z-index: 1;
 `;
 

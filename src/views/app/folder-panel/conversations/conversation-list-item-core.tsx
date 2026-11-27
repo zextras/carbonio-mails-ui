@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationBadge } from '../parts/conversation-badge';
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
-import { LineWithTags } from '../parts/line-with-tags';
+import { LineWithTags, ROW_END_PADDING } from '../parts/line-with-tags';
 import { ParticipantsString } from '../parts/participants-string';
 import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
 import { NormalizedConversation } from 'types/conversations';
@@ -52,6 +52,7 @@ export const ConversationListItemCore = ({
 		[conversation]
 	);
 
+	const showToggle = conversation.messagesInConversation > 1;
 	const badge: 'read' | 'unread' = useMemo(() => {
 		if (conversation.read === undefined) return 'read';
 		return conversation.read ? 'read' : 'unread';
@@ -119,11 +120,14 @@ export const ConversationListItemCore = ({
 							fragment={conversation.fragment}
 						/>
 					</LineWithTags>
-					<Row>
+					<Row
+						data-testid="conversation-row-end"
+						padding={showToggle && !conversation.urgent ? ROW_END_PADDING : undefined}
+					>
 						{conversation.urgent && (
 							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 						)}
-						{conversation.messagesInConversation > 1 && (
+						{showToggle && (
 							<Tooltip label={toggleExpandButtonLabel}>
 								<Button
 									data-testid="ToggleExpand"

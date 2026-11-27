@@ -28,6 +28,45 @@ describe('SearchConversationListItemCore', () => {
 		vi.clearAllMocks();
 	});
 
+	// The 24px target of "+N" reaches 3.2px past its text: it must not cover the expand arrow
+	it.each([
+		{ messages: 3, urgent: false, padded: true },
+		// the urgent icon, not interactive, is between them
+		{ messages: 3, urgent: true, padded: false },
+		// no arrow
+		{ messages: 1, urgent: false, padded: false }
+	])(
+		'keeps 3.2px before the expand arrow, unless the urgent icon is between ($messages messages, urgent $urgent)',
+		async ({ messages, urgent, padded }) => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: [tagsArray[0].name] },
+					conversationMessagesNumber: messages
+				})
+			);
+			populateFoldersStore();
+			setupTest(
+				<SearchConversationListItemCore
+					conversation={{ ...conversation, messagesInConversation: messages, urgent }}
+					selected={false}
+					selecting={false}
+					open={false}
+					toggleCollapseElementCallback={vi.fn()}
+					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={vi.fn()}
+				/>
+			);
+
+			const rowEnd = await screen.findByTestId('conversation-row-end');
+			if (padded) {
+				expect(rowEnd).toHaveStyle({ paddingLeft: '0.2rem' });
+			} else {
+				expect(rowEnd).not.toHaveStyle({ paddingLeft: '0.2rem' });
+			}
+		}
+	);
+
 	it('renders a conversation without tags (GetConv leaves tn out)', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({ conversationParams: { id: '123', subject: 'No tags' } })

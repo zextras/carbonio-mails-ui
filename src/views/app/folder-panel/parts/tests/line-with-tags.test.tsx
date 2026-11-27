@@ -127,7 +127,7 @@ describe('LineWithTags', () => {
 		const ONE_MORE_TAG = '1 more tag';
 		const REMOVE_EEEE = 'Remove tag Eeee from conversation';
 
-		/** On a 482px line five short tags show as two pills, three icons... but for the last one: "+1". */
+		/** On a 482px line five short tags show as two pills, two icons and "+1" (Eeee). */
 		const setupRow = (
 			props: Partial<LineWithTagsProps> = {}
 		): ReturnType<typeof setupTest> & {
@@ -162,14 +162,13 @@ describe('LineWithTags', () => {
 			};
 		};
 
-		// Next to the expand arrow and under the hover actions, a target only drawn bigger loses to them
-		it('takes 24px of the line and stays above the hover actions', () => {
+		// Its 24px target is drawn around it without taking room in the line, as the fit counts it
+		it('stays above the hover actions, as wide as its text', () => {
 			setupRow();
 
-			expect(screen.getByTestId('more-tags-button')).toHaveStyle({
-				minWidth: '1.5rem',
-				zIndex: '1'
-			});
+			const more = screen.getByTestId('more-tags-button');
+			expect(more).toHaveStyle({ zIndex: '1' });
+			expect(more).not.toHaveStyle({ minWidth: '1.5rem' });
 		});
 
 		beforeEach(() => {
@@ -447,7 +446,9 @@ describe('LineWithTags', () => {
 			await undo;
 			// Two other tags went meanwhile (another client): Eeee comes back as a pill, there is no "+N"
 			rerenderWith({ tagIds: ['1', '2', '5'] });
-			expect(screen.queryByRole('button', { name: SHOW_1 })).not.toBeInTheDocument();
+			expect(
+				screen.queryByRole('button', { name: /^Show \d+ more tags?$/ })
+			).not.toBeInTheDocument();
 
 			// Later they are back: the new "+N" leaves the focus where it is
 			rerenderWith({ tagIds: FIVE });
@@ -477,7 +478,9 @@ describe('LineWithTags', () => {
 			await removal;
 			rerenderWith({ tagIds: ['1', '2', '3', '4'] });
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-			expect(screen.queryByRole('button', { name: SHOW_1 })).not.toBeInTheDocument();
+			expect(
+				screen.queryByRole('button', { name: /^Show \d+ more tags?$/ })
+			).not.toBeInTheDocument();
 
 			const undo = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			await user.click(await screen.findByRole('button', { name: /undo/i }));
