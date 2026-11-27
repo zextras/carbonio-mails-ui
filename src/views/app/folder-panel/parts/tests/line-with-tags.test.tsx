@@ -129,7 +129,7 @@ describe('LineWithTags', () => {
 
 		/**
 		 * On a 482px line five short tags show as two pills, an icon and "+2" (Dddd, Eeee). Never "+1":
-		 * "+N" is 24px, wider than the icon the last tag would take.
+		 * a single tag left is shown as an icon.
 		 */
 		const setupRow = (
 			props: Partial<LineWithTagsProps> = {}
@@ -453,7 +453,9 @@ describe('LineWithTags', () => {
 			await undo;
 			// Two other tags went meanwhile (another client): Eeee comes back as a pill, there is no "+N"
 			rerenderWith({ tagIds: ['1', '2', '5'] });
-			expect(screen.queryByRole('button', { name: SHOW_2 })).not.toBeInTheDocument();
+			expect(
+				screen.queryByRole('button', { name: /^Show \d+ more tags?$/ })
+			).not.toBeInTheDocument();
 
 			// Later they are back: the new "+N" leaves the focus where it is
 			rerenderWith({ tagIds: FIVE });
@@ -491,7 +493,7 @@ describe('LineWithTags', () => {
 			rerenderWith({ tagIds: ['1', '2', '3'] });
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 			expect(
-				screen.queryByRole('button', { name: /^Show \d more tags?$/ })
+				screen.queryByRole('button', { name: /^Show \d+ more tags?$/ })
 			).not.toBeInTheDocument();
 		});
 
