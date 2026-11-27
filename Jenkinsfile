@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 library(
-    identifier: 'jenkins-lib-common@v5.5.4',
+    identifier: 'jenkins-lib-common@v5.5.5',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-lib-common.git',
