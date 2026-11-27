@@ -17,7 +17,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { getFolderIdParts, isSpam } from 'helpers/folders';
-import { useConversationMessagesParentsKey, useConversationWideTagsKey } from 'store/emails/store';
+import { useConversationMessagesParentsKey } from 'store/emails/store';
 
 /** Prefix of a tag known only by name: one set by the owner of a shared folder (see getTagIds). */
 const SHARED_TAG_PREFIX = 'nil:';
@@ -67,12 +67,6 @@ export const useConversationFolderIds = (
 	enabled: boolean
 ): Array<string> => {
 	const key = useConversationMessagesParentsKey(enabled ? conversationId : '');
-	return useMemo(() => (key ? key.split('\n') : []), [key]);
-};
-
-/** The tags of a conversation as a whole, for its header: those every message of it has. */
-export const useConversationWideTagIds = (conversationId: string): Array<string> => {
-	const key = useConversationWideTagsKey(conversationId);
 	return useMemo(() => (key ? key.split('\n') : []), [key]);
 };
 

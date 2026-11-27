@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { TAG_PILLS_CHILD_ROW_MAX_BUDGET, useFolder } from '@zextras/carbonio-ui-commons';
+import { useFolder } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import moment from 'moment/moment';
 
@@ -127,18 +127,7 @@ export const MessageListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					{isConvChildren ? (
-						<LineWithTags
-							target={tagTarget}
-							tagIds={message.tags}
-							folderIds={folderIds}
-							maxBudget={TAG_PILLS_CHILD_ROW_MAX_BUDGET}
-						>
-							<ParticipantsString item={message} />
-						</LineWithTags>
-					) : (
-						<ParticipantsString item={message} />
-					)}
+					<ParticipantsString item={message} />
 					<Row>
 						{message.hasAttachment && (
 							<Padding left="small">
@@ -169,11 +158,7 @@ export const MessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<LineWithTags
-						target={tagTarget}
-						tagIds={isConvChildren ? undefined : message.tags}
-						folderIds={folderIds}
-					>
+					<LineWithTags target={tagTarget} tagIds={message.tags} folderIds={folderIds}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">

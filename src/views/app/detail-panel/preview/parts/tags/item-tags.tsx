@@ -48,7 +48,7 @@ type ItemTagsProps = {
 };
 
 /**
- * The tags of the conversation under its subject, those on every message of it (removing one removes it
+ * The tags of the conversation under its subject, those of all its messages (removing one removes it
  * from every message), or of an expanded message card (from that message only).
  */
 export const ItemTags = ({

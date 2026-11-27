@@ -87,23 +87,6 @@ function useConversationMessagesParentsKey(
 	});
 }
 
-function useConversationWideTagsKey(
-	conversationId: string,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): string {
-	return useEmailsStore(({ populatedItemsSlice }) => {
-		const messageIds = populatedItemsSlice.conversations[conversationId]?.messageIds ?? [];
-		const messages = messageIds.map((messageId) => populatedItemsSlice.messages[messageId]);
-		if (messages.length < 2 || messages.some((message) => !message)) {
-			return '';
-		}
-		const [first, ...others] = messages;
-		return (first.tags ?? [])
-			.filter((tagId) => others.every((message) => message.tags?.includes(tagId)))
-			.join('\n');
-	});
-}
-
 // TODO: check this implementation. We found out the merge was handling data incorrectly.
 //  we decided to just override the data and not handle any complex logic in the store
 //  Check also updateMessages method as it may have the same issues
@@ -363,7 +346,6 @@ export const populatedItemsSliceUtils = {
 	getConversationMessages,
 	getConversationMessagesParents,
 	useConversationMessagesParentsKey,
-	useConversationWideTagsKey,
 	useMessagesByIds,
 	useConversationsByIds,
 	deleteMessagesFromConversation,

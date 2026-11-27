@@ -75,7 +75,7 @@ describe('SearchConversationPanel', () => {
 		expect(screen.queryByTestId(/SearchConversationPanel/)).not.toBeInTheDocument();
 	});
 
-	it('shows under the subject only the tags on every message of the conversation', async () => {
+	it('shows under the subject the tags of all the messages of the conversation', async () => {
 		useTagStore.setState({
 			tags: {
 				t1: { id: 't1', name: 'Client', color: 1 },
@@ -86,7 +86,7 @@ describe('SearchConversationPanel', () => {
 			populateConversationInEmailStore({
 				conversationParams: { id: '20', tags: ['t1', 't2'] },
 				messageGeneratorParams: [
-					{ id: '21', tags: ['t1', 't2'] },
+					{ id: '21', tags: ['t2'] },
 					{ id: '22', tags: ['t1'] }
 				]
 			});
@@ -100,6 +100,6 @@ describe('SearchConversationPanel', () => {
 		const header = screen.getByTestId('PreviewPanelHeader');
 		const tags = await within(header).findByTestId('reading-pane-tags');
 		expect(tags).toHaveTextContent('Client');
-		expect(tags).not.toHaveTextContent('Urgent');
+		expect(tags).toHaveTextContent('Urgent');
 	});
 });

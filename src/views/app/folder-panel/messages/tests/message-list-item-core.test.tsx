@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -22,7 +22,7 @@ import { MessageListItemCore } from 'views/app/folder-panel/messages/message-lis
 const renderWithTag = (
 	tag: { id: string; name: string; color?: number; rgb?: string },
 	isConvChildren = false
-): void => {
+): ReturnType<typeof populateMessagesInEmailStore>[number] => {
 	populateFoldersStore();
 	populateTagsStore({ [tag.id]: tag });
 	const [message] = populateMessagesInEmailStore({
@@ -39,6 +39,7 @@ const renderWithTag = (
 			onSelect={vi.fn()}
 		/>
 	);
+	return message;
 };
 
 describe('MessageListItemCore tags', () => {
@@ -60,6 +61,16 @@ describe('MessageListItemCore tags', () => {
 
 		expect(screen.getAllByTestId('tag-pill')).toHaveLength(1);
 		expect(screen.getByTestId('tag-pill')).toHaveTextContent('child tag');
+	});
+
+	// On the sender's line the hover actions would cover "+N"
+	it('in a conversation child row puts the tags on the line of the fragment, not of the sender', () => {
+		const { fragment } = renderWithTag({ id: 't1', name: 'child tag', color: 4 }, true);
+
+		const line = screen.getByTestId('line-with-tags');
+		expect(within(line).getByTestId('list-tag-pills')).toBeVisible();
+		expect(line).toHaveTextContent(fragment as string);
+		expect(within(line).queryByTestId('DateLabel')).not.toBeInTheDocument();
 	});
 	it('a tag from a shared folder says whose folder it comes from', async () => {
 		populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });

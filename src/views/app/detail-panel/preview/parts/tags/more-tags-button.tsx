@@ -15,6 +15,16 @@ const SIZES = {
 	small: { height: '1.25rem', fontSize: '0.75rem', padding: '0 0.125rem' }
 } as const;
 
+/**
+ * In a list row "+N" sits next to other targets (the expand arrow of a conversation, the hover actions):
+ * the 24px of the target are its own width, and it stays above the hover actions, which cover the top of
+ * the line.
+ */
+const LIST_TARGET = `
+	min-width: 1.5rem;
+	z-index: 1;
+`;
+
 const Button = styled.button<{ $size: keyof typeof SIZES }>`
 	position: relative;
 	flex: none;
@@ -29,6 +39,8 @@ const Button = styled.button<{ $size: keyof typeof SIZES }>`
 	font-size: ${({ $size }): string => SIZES[$size].fontSize};
 	line-height: 1;
 	cursor: pointer;
+
+	${({ $size }): string => ($size === 'small' ? LIST_TARGET : '')}
 
 	&:hover {
 		text-decoration: underline;

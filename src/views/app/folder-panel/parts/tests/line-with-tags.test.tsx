@@ -86,25 +86,6 @@ describe('LineWithTags', () => {
 		});
 	});
 
-	it('fits fewer pills in the smaller budget of a conversation child row', () => {
-		lineWidth(400);
-		const { unmount } = setupTest(
-			<LineWithTags target={CONVERSATION} tagIds={['1', '2']}>
-				{SUBJECT}
-			</LineWithTags>
-		);
-		expect(screen.getAllByTestId('tag-pill')).toHaveLength(2);
-		unmount();
-
-		setupTest(
-			<LineWithTags target={CONVERSATION} tagIds={['1', '2']} maxBudget={120}>
-				<span>Sender</span>
-			</LineWithTags>
-		);
-		expect(screen.getAllByTestId('tag-pill')).toHaveLength(1);
-		expect(screen.getAllByTestId(ICON_PILL)).toHaveLength(1);
-	});
-
 	it('still names the tags for screen readers before the line has a width', () => {
 		lineWidth(0);
 		setupTest(
@@ -180,6 +161,16 @@ describe('LineWithTags', () => {
 				rerenderWith: (next): void => result.rerender(row(next))
 			};
 		};
+
+		// Next to the expand arrow and under the hover actions, a target only drawn bigger loses to them
+		it('takes 24px of the line and stays above the hover actions', () => {
+			setupRow();
+
+			expect(screen.getByTestId('more-tags-button')).toHaveStyle({
+				minWidth: '1.5rem',
+				zIndex: '1'
+			});
+		});
 
 		beforeEach(() => {
 			useTagStore.setState({

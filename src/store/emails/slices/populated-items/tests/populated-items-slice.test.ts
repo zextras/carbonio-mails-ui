@@ -43,7 +43,6 @@ import {
 	useConversationIndexSlice,
 	useConversationMessages,
 	useConversationsByIds,
-	useConversationWideTagsKey,
 	useConversationStatus,
 	useMessageById,
 	useMessagesByFolder,
@@ -515,68 +514,6 @@ describe('store-populated-items-slice', () => {
 			expect(messagesParents).toHaveLength(0);
 		});
 	});
-	describe('useConversationWideTagsKey', () => {
-		/** Waits for the store: its writes are queued. */
-		const populate = async (
-			messages: Array<{ id: string; tags?: Array<string> }>,
-			notLoadedIds: Array<string> = []
-		): Promise<void> => {
-			const { conversation } = populateConversationInEmailStore({
-				conversationParams: { id: '1' },
-				messageGeneratorParams: messages.map((message) => ({ ...message, isComplete: true }))
-			});
-			updateConversations([
-				{ ...conversation, messageIds: [...conversation.messageIds, ...notLoadedIds] }
-			]);
-			await waitFor(() =>
-				expect(
-					getUseEmailStoreAndHooksForTesting().useEmailsStore.getState().populatedItemsSlice
-						.conversations['1']?.messageIds
-				).toHaveLength(messages.length + notLoadedIds.length)
-			);
-		};
-
-		it('gives the tags that every message of the conversation has', async () => {
-			await populate([
-				{ id: '10', tags: ['a', 'b', 'c'] },
-				{ id: '11', tags: ['c', 'a'] },
-				{ id: '12', tags: ['a', 'c', 'd'] }
-			]);
-			const { result } = renderHook(() => useConversationWideTagsKey('1'));
-			expect(result.current).toBe('a\nc');
-		});
-
-		it("gives none for a conversation of one message: its tags are the message's", async () => {
-			await populate([{ id: '10', tags: ['a'] }]);
-			const { result } = renderHook(() => useConversationWideTagsKey('1'));
-			expect(result.current).toBe('');
-		});
-
-		it('gives none while a message of the conversation is not loaded', async () => {
-			await populate(
-				[
-					{ id: '10', tags: ['a'] },
-					{ id: '11', tags: ['a'] }
-				],
-				['12']
-			);
-			const { result } = renderHook(() => useConversationWideTagsKey('1'));
-			expect(result.current).toBe('');
-		});
-
-		it('follows a tag removed from one message', async () => {
-			await populate([
-				{ id: '10', tags: ['a', 'b'] },
-				{ id: '11', tags: ['a', 'b'] }
-			]);
-			const { result } = renderHook(() => useConversationWideTagsKey('1'));
-			act(() =>
-				updateMessages([generateMessage({ id: '11', cid: '1', tags: ['a'], isComplete: true })])
-			);
-			await waitFor(() => expect(result.current).toBe('a'));
-		});
-	});
-
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messageIds: [] })], false);

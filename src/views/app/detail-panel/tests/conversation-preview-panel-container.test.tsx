@@ -172,19 +172,14 @@ describe('ConversationPreviewPanelContainer', () => {
 			return screen.getByTestId('PreviewPanelHeader');
 		};
 
-		it('are only those of the whole conversation, on every message of it, in the header', async () => {
+		it('are those of all its messages, as in the list', async () => {
 			const header = await openConversation([
-				{ id: '10', tags: ['t1', 't2'] },
+				{ id: '10', tags: ['t2'] },
 				{ id: '11', tags: ['t1'] }
 			]);
 			const tags = await within(header).findByTestId('reading-pane-tags');
 			expect(tags).toHaveTextContent('Client');
-			expect(tags).not.toHaveTextContent('Urgent');
-		});
-
-		it('are none for a conversation of one message: its tags are on its card', async () => {
-			const header = await openConversation([{ id: '10', tags: ['t1'] }]);
-			expect(within(header).queryByTestId('reading-pane-tags')).not.toBeInTheDocument();
+			expect(tags).toHaveTextContent('Urgent');
 		});
 	});
 });
