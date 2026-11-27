@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS, SEARCH_ROUTE } from 'constants/index';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
-import { getConversationIdByMessageIds } from 'store/emails/store';
+import { getConversationIdByMessageIds, useConversationById } from 'store/emails/store';
 import {
 	SearchDetailPanelConversationRouteParams,
 	SearchDetailPanelRouteParams
@@ -27,8 +27,16 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
+	const lastMessageIds = useRef<Array<string>>([]);
+	const routeConversation = useConversationById(conversationId);
+	// a single-message conversation (negative id) is replaced by a new one when it gets a reply:
+	// the new one is shown before the route follows it, so the panel is not emptied in between
+	const replacingConversationId = routeConversation
+		? undefined
+		: getConversationIdByMessageIds(lastMessageIds.current, conversationId);
+
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
-		conversationId,
+		conversationId: replacingConversationId ?? conversationId,
 		shouldMarkAsRead: zimbraPrefMarkMsgRead
 	});
 
@@ -45,21 +53,18 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 		[convSortOrder, conversation?.messageIds]
 	);
 
-	const lastMessageIds = useRef<Array<string>>([]);
 	if (conversation) {
 		lastMessageIds.current = conversation.messageIds;
 	}
 
+	useEffect(() => {
+		if (replacingConversationId) {
+			navigate(`../conversation/${replacingConversationId}`, { replace: true });
+		}
+	}, [navigate, replacingConversationId]);
+
 	if (!conversation) {
-		// a single-message conversation (negative id) is replaced by a new one when it gets a reply
-		const replacingConversationId = getConversationIdByMessageIds(
-			lastMessageIds.current,
-			conversationId
-		);
-		navigate(
-			replacingConversationId ? `../conversation/${replacingConversationId}` : `/${SEARCH_ROUTE}`,
-			{ replace: true }
-		);
+		navigate(`/${SEARCH_ROUTE}`, { replace: true });
 		return <></>;
 	}
 

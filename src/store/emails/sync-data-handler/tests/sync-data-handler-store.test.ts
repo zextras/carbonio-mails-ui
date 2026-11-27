@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, RenderHookResult, waitFor } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
 
@@ -20,15 +20,19 @@ import { generateMessage } from '__test__/generators/generateMessage';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import {
 	appendConversationsToConversationIndexSlice,
+	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
+	updateConversationStatus,
 	useConversationById,
 	useConversationIndexSlice,
+	useConversationStatus,
 	useMessageById,
 	useMessageIndexSlice
 } from 'store/emails/store';
 import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
+import { SearchRequestStatus } from 'types/search';
 
 beforeEach(() => {
 	window.history.pushState({}, '', `/folder/${FOLDERS.INBOX}`);
@@ -279,5 +283,124 @@ describe('triggerNotification', () => {
 		}));
 		triggerNotification([generateMessage({ id: 'id-1' })], vi.fn());
 		expect(mockedMultipleNotify).toHaveBeenCalled();
+	});
+});
+
+describe('handleNotifyConversationsCreated', () => {
+	const readAt = Date.now() - 60_000;
+	const repliedAt = Date.now();
+	const setupLoadedSingleMessageConversation = (id = '-1'): void => {
+		setMessagesInEmailStore([generateMessage({ id: '1', cid: id, receiveDate: readAt })], false);
+		setConversationsInEmailStore(
+			[generateConversation({ id, messageIds: ['1'], receiveDate: readAt })],
+			false
+		);
+		updateConversationStatus(id, 'fulfilled');
+	};
+	const setConversationOrder = (order: string): void => {
+		getUserSettings.mockReturnValue({
+			attrs: {},
+			props: [],
+			prefs: { zimbraPrefConversationOrder: order }
+		});
+	};
+	const renderConversationWithStatus = (
+		id: string
+	): RenderHookResult<{ status: SearchRequestStatus; messageIds?: Array<string> }, unknown> =>
+		renderHook(() => ({
+			status: useConversationStatus(id),
+			messageIds: useConversationById(id)?.messageIds
+		}));
+
+	describe('when the first reply replaces a loaded single-message conversation', () => {
+		it('should keep the new conversation loaded, so it is not loaded again from scratch', async () => {
+			setConversationOrder('dateDesc');
+			setupLoadedSingleMessageConversation();
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['1', '3'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+		});
+
+		it('should put the reply before the replaced message when the conversation order is dateDesc', async () => {
+			setConversationOrder('dateDesc');
+			setupLoadedSingleMessageConversation();
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['1', '3'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.messageIds).toEqual(['3', '1']));
+		});
+
+		it('should put the reply after the replaced message when the conversation order is dateAsc', async () => {
+			setConversationOrder('dateAsc');
+			setupLoadedSingleMessageConversation();
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['3', '1'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.messageIds).toEqual(['1', '3']));
+		});
+
+		it('should also keep loaded the conversation of a shared account', async () => {
+			setConversationOrder('dateDesc');
+			setupLoadedSingleMessageConversation('zid:-1');
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: 'zid:2', messageIds: ['1', '3'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('zid:2');
+			await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+		});
+	});
+
+	describe('should leave the new conversation to be loaded again in the server order', () => {
+		it('when the replaced one was not loaded', async () => {
+			setMessagesInEmailStore([generateMessage({ id: '1', cid: '-1' })], false);
+			setConversationsInEmailStore(
+				[generateConversation({ id: '-1', messageIds: ['1'], receiveDate: readAt })],
+				false
+			);
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['1', '3'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.messageIds).toBeDefined());
+			expect(result.current.status).toBeUndefined();
+		});
+
+		it('when the added message is older than the replaced one', async () => {
+			setupLoadedSingleMessageConversation();
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['1', '3'], receiveDate: readAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.messageIds).toBeDefined());
+			expect(result.current.status).toBeUndefined();
+		});
+
+		it('when more than one message is added', async () => {
+			setupLoadedSingleMessageConversation();
+
+			handleNotifyConversationsCreated([
+				generateConversation({ id: '2', messageIds: ['1', '3', '4'], receiveDate: repliedAt })
+			]);
+
+			const { result } = renderConversationWithStatus('2');
+			await waitFor(() => expect(result.current.messageIds).toBeDefined());
+			expect(result.current.status).toBeUndefined();
+		});
 	});
 });

@@ -42,22 +42,6 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		useParams<DetailPanelRoutesParams>() as DetailPanelConversationRouteParams;
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
-		conversationId,
-		shouldMarkAsRead: zimbraPrefMarkMsgRead
-	});
-	const messages = useConversationMessages(conversationId);
-
-	const onConversationIdChange = useCallback(
-		(newConversationId: string): void => {
-			navigate(`../${newConversationId}`, {
-				replace: true,
-				relative: 'path'
-			});
-		},
-		[navigate]
-	);
-
 	/*
 	 * When a message is added to a single-message conversation, the backend replaces
 	 * the virtual negative id with a new one. The route must follow the new id,
@@ -68,6 +52,24 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		singleMessage?.conversation && singleMessage.conversation !== conversationId
 			? singleMessage.conversation
 			: undefined;
+	// the new conversation is shown before the route follows it, so the panel is not emptied in between
+	const shownConversationId = updatedConversationId ?? conversationId;
+
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch({
+		conversationId: shownConversationId,
+		shouldMarkAsRead: zimbraPrefMarkMsgRead
+	});
+	const messages = useConversationMessages(shownConversationId);
+
+	const onConversationIdChange = useCallback(
+		(newConversationId: string): void => {
+			navigate(`../${newConversationId}`, {
+				replace: true,
+				relative: 'path'
+			});
+		},
+		[navigate]
+	);
 
 	useEffect(() => {
 		if (updatedConversationId) {
