@@ -12,6 +12,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { BASE_64_CONVERSION_RATE } from './constants';
 import { SmartlinkFromLocalModal } from '../parts/smartlink-modal/smartlink-from-local-modal';
 import { useEditorAttachments, useEditorsStore } from 'store/editor';
+import { selectUnsavedAttachmentsSize } from 'store/editor/store-selectors';
 
 type UseLocalAttachmentOrSmartlinkArgs = {
 	editorId: string;
@@ -50,7 +51,9 @@ export const useLocalAttachmentOrSmartlink = ({
 	const addLocalFiles = useCallback(
 		(files: File[]): void => {
 			const filesSize = files.reduce((acc, file) => acc + file.size, 0);
-			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const unsavedAttachmentsSize = selectUnsavedAttachmentsSize(editor);
+			const calculatedEditorSizeWithFiles =
+				editor.size + (unsavedAttachmentsSize + filesSize) * BASE_64_CONVERSION_RATE;
 			const modalId = 'smartlink-from-local-modal';
 
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
@@ -76,7 +79,7 @@ export const useLocalAttachmentOrSmartlink = ({
 				);
 			}
 		},
-		[addStandardAttachments, closeModal, createModal, editor.size, editorId, maxAllowedMailSize]
+		[addStandardAttachments, closeModal, createModal, editor, editorId, maxAllowedMailSize]
 	);
 
 	return {

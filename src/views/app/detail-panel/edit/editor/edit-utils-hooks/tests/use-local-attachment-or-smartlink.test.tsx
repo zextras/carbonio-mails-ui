@@ -15,6 +15,7 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 import { setupEditorStore } from '__test__/generators/editor-store';
 import { generateNewMessageEditor } from 'store/editor/editor-generators';
 import { useEditorsStore } from 'store/editor/store';
+import { MailsEditorV2 } from 'types/editor';
 
 const MAX_MESSAGE_SIZE = 10485760; // 10MB
 const SMARTLINK_MODAL_TESTID = 'convert-to-smartlink-modal';
@@ -43,7 +44,15 @@ const HookProbe = ({ editorId, files }: { editorId: string; files: File[] }): Re
 	);
 };
 
-function setupHook({ editorSize = 0, files }: { editorSize?: number; files: File[] }): {
+function setupHook({
+	editorSize = 0,
+	unsavedAttachments = [],
+	files
+}: {
+	editorSize?: number;
+	unsavedAttachments?: MailsEditorV2['unsavedAttachments'];
+	files: File[];
+}): {
 	user: ReturnType<typeof setupTest>['user'];
 	editorId: string;
 } {
@@ -54,6 +63,7 @@ function setupHook({ editorSize = 0, files }: { editorSize?: number; files: File
 
 	const editor = generateNewMessageEditor();
 	editor.size = editorSize;
+	editor.unsavedAttachments = unsavedAttachments;
 	setupEditorStore({ editors: [editor] });
 
 	const { user } = setupTest(<HookProbe editorId={editor.id} files={files} />);
@@ -107,6 +117,41 @@ describe('useLocalAttachmentOrSmartlink', () => {
 
 		expect(await screen.findByTestId(SMARTLINK_MODAL_TESTID)).toBeInTheDocument();
 		expect(unsavedAttachmentFilenames(editorId)).toEqual([]);
+	});
+
+	it('accounts for attachments uploaded but not yet saved when deciding to open the modal', async () => {
+		// Neither the file nor the unsaved attachment exceeds the limit alone, but together they do
+		const unsavedAttachment = {
+			filename: 'uploaded.pdf',
+			contentType: 'application/pdf',
+			size: 5000000,
+			isInline: false,
+			uploadStatus: { status: 'completed' as const }
+		};
+		const files = [createFileWithSize('medium.pdf', 4000000, 'application/pdf')];
+		const { user, editorId } = setupHook({ unsavedAttachments: [unsavedAttachment], files });
+
+		await user.click(screen.getByRole('button', { name: TRIGGER_LABEL }));
+
+		expect(await screen.findByTestId(SMARTLINK_MODAL_TESTID)).toBeInTheDocument();
+		expect(unsavedAttachmentFilenames(editorId)).toEqual(['uploaded.pdf']);
+	});
+
+	it('ignores unsaved attachments whose upload was aborted', async () => {
+		const abortedAttachment = {
+			filename: 'failed.pdf',
+			contentType: 'application/pdf',
+			size: 5000000,
+			isInline: false,
+			uploadStatus: { status: 'aborted' as const }
+		};
+		const files = [createFileWithSize('medium.pdf', 4000000, 'application/pdf')];
+		const { user, editorId } = setupHook({ unsavedAttachments: [abortedAttachment], files });
+
+		await user.click(screen.getByRole('button', { name: TRIGGER_LABEL }));
+
+		expect(unsavedAttachmentFilenames(editorId)).toEqual(['failed.pdf', 'medium.pdf']);
+		expect(screen.queryByTestId(SMARTLINK_MODAL_TESTID)).not.toBeInTheDocument();
 	});
 
 	it('closes the modal without attaching when the user cancels', async () => {

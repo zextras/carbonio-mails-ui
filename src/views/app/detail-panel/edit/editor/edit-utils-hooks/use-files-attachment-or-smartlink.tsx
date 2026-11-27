@@ -13,6 +13,7 @@ import { BASE_64_CONVERSION_RATE } from './constants';
 import { FileNode } from './use-upload-from-files';
 import { SmartlinkFromFilesModal } from '../parts/smartlink-modal/smartlink-from-files-modal';
 import { useEditorsStore } from 'store/editor';
+import { selectUnsavedAttachmentsSize } from 'store/editor/store-selectors';
 
 type UseFilesAttachmentOrSmartlinkArgs = {
 	editorId: string;
@@ -51,7 +52,9 @@ export const useFilesAttachmentOrSmartlink = ({
 	const addFilesFromFiles = useCallback(
 		(fileNodes: FileNode[]): Promise<null> | void => {
 			const filesSize = fileNodes.reduce((acc, file) => acc + file.size, 0);
-			const calculatedEditorSizeWithFiles = editor.size + filesSize * BASE_64_CONVERSION_RATE;
+			const unsavedAttachmentsSize = selectUnsavedAttachmentsSize(editor);
+			const calculatedEditorSizeWithFiles =
+				editor.size + (unsavedAttachmentsSize + filesSize) * BASE_64_CONVERSION_RATE;
 			const modalId = 'smartlink-from-files-modal';
 
 			if (calculatedEditorSizeWithFiles < maxAllowedMailSize) {
@@ -78,7 +81,7 @@ export const useFilesAttachmentOrSmartlink = ({
 			);
 			return Promise.resolve(null);
 		},
-		[closeModal, createModal, editor.size, editorId, maxAllowedMailSize, onUploadFiles]
+		[closeModal, createModal, editor, editorId, maxAllowedMailSize, onUploadFiles]
 	);
 
 	return {
