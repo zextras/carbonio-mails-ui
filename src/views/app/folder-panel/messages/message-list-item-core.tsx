@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { TAG_PILLS_CHILD_ROW_MAX_BUDGET, useFolder } from '@zextras/carbonio-ui-commons';
+import { useFolder } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import moment from 'moment/moment';
 
@@ -19,6 +19,7 @@ import { MessageSubjectRow } from '../parts/message-subject-row';
 import { ParticipantsString } from '../parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage } from 'types/messages';
+import { TagTarget } from 'views/app/detail-panel/preview/parts/tags/use-reading-pane-tags';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -46,6 +47,10 @@ export const MessageListItemCore = ({
 	const accounts = useUserAccounts();
 	const messageFolder = useFolder(message.parent);
 	const folderIds = useMemo(() => [message.parent], [message.parent]);
+	const tagTarget = useMemo<TagTarget>(
+		() => ({ kind: 'message', id: message.id, folderId: message.parent }),
+		[message.id, message.parent]
+	);
 	const [date] = useMemo(() => {
 		if (message) {
 			const sender = find(message.participants, ['type', 'f']);
@@ -122,17 +127,7 @@ export const MessageListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					{isConvChildren ? (
-						<LineWithTags
-							tagIds={message.tags}
-							folderIds={folderIds}
-							maxBudget={TAG_PILLS_CHILD_ROW_MAX_BUDGET}
-						>
-							<ParticipantsString item={message} />
-						</LineWithTags>
-					) : (
-						<ParticipantsString item={message} />
-					)}
+					<ParticipantsString item={message} />
 					<Row>
 						{message.hasAttachment && (
 							<Padding left="small">
@@ -163,7 +158,7 @@ export const MessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<LineWithTags tagIds={isConvChildren ? undefined : message.tags} folderIds={folderIds}>
+					<LineWithTags target={tagTarget} tagIds={message.tags} folderIds={folderIds}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">

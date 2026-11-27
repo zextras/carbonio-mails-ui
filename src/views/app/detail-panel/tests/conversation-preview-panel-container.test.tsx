@@ -6,8 +6,9 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 import { NavigateFunction } from 'react-router-dom';
 
 import { setupTest } from '@test-setup';
@@ -138,6 +139,51 @@ describe('ConversationPreviewPanelContainer', () => {
 			});
 
 			expect(mockNavigateSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('tags', () => {
+		const openConversation = async (
+			messages: Array<{ id: string; tags: Array<string> }>
+		): Promise<HTMLElement> => {
+			vi.mocked(shell).IS_FOCUS_MODE = false;
+			useTagStore.setState({
+				tags: {
+					t1: { id: 't1', name: 'Client', color: 1 },
+					t2: { id: 't2', name: 'Urgent', color: 2 }
+				}
+			});
+			const { conversation } = await act(() =>
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: '1',
+						folderId: '2',
+						// The server's conversation tags: those of any of its messages
+						tags: [...new Set(messages.flatMap((message) => message.tags))]
+					},
+					messageGeneratorParams: messages.map((message) => ({ ...message, folderId: '2' }))
+				})
+			);
+			await act(() => updateConversationStatus(conversation.id, 'fulfilled'));
+			setupTest(<ConversationPreviewPanelContainer />, {
+				initialEntries: ['/folder/2/conversation/1'],
+				path: '/folder/:folderId/conversation/:conversationId'
+			});
+			return screen.getByTestId('PreviewPanelHeader');
+		};
+
+		it('are only on the cards of its messages, each with its own, not under the subject', async () => {
+			const header = await openConversation([
+				{ id: '10', tags: ['t2'] },
+				{ id: '11', tags: ['t1'] }
+			]);
+			const first = await screen.findByTestId('open-message-10');
+			const second = screen.getByTestId('open-message-11');
+			expect(within(first).getAllByText('Urgent').length).toBeGreaterThan(0);
+			expect(within(first).queryByText('Client')).not.toBeInTheDocument();
+			expect(within(second).getAllByText('Client').length).toBeGreaterThan(0);
+			expect(within(second).queryByText('Urgent')).not.toBeInTheDocument();
+			expect(within(header).queryByText(/Client|Urgent/)).not.toBeInTheDocument();
 		});
 	});
 });

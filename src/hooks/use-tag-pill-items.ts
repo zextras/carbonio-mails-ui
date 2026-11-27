@@ -16,7 +16,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { getFolderIdParts } from 'helpers/folders';
+import { getFolderIdParts, isSpam } from 'helpers/folders';
 import { useConversationMessagesParentsKey } from 'store/emails/store';
 
 /** Prefix of a tag known only by name: one set by the owner of a shared folder (see getTagIds). */
@@ -70,6 +70,25 @@ export const useConversationFolderIds = (
 	return useMemo(() => (key ? key.split('\n') : []), [key]);
 };
 
+const NO_FOLDERS: Array<string> = [];
+
+/**
+ * For the tags of a conversation in search results, which come from many folders, with one
+ * subscription and only when it has tags: the folders of its messages when a tag comes from a shared
+ * folder (as `useConversationFolderIds`), and the Spam folder when any of its messages is there.
+ */
+export const useConversationTagFolders = (
+	conversationId: string,
+	tagIds: ReadonlyArray<string> | undefined
+): { folderIds: Array<string>; spamFolderId: string | undefined } => {
+	const key = useConversationMessagesParentsKey(tagIds?.length ? conversationId : '');
+	const shared = hasSharedTag(tagIds);
+	return useMemo(() => {
+		const all = key ? key.split('\n') : NO_FOLDERS;
+		return { folderIds: shared ? all : NO_FOLDERS, spamFolderId: all.find(isSpam) };
+	}, [key, shared]);
+};
+
 /**
  * The tags of a message or conversation as pills: the user's tags in alphabetical order with their
  * colour, then the tags set by the owner of a shared folder, with whose folder they come from.
@@ -90,11 +109,11 @@ export const useTagPillItems = (
 				? t('label.tag_from_owner_folder', {
 						name,
 						owner: owners[0],
-						defaultValue: "{{name}} · Tag from {{owner}}'s folder"
+						defaultValue: "{{name}} (from {{owner}}'s folder)"
 					})
 				: t('label.tag_from_shared_folder', {
 						name,
-						defaultValue: '{{name}} · Tag from a shared folder'
+						defaultValue: '{{name}} (from a shared folder)'
 					});
 		const own: Array<TagPillItem> = [];
 		const shared: Array<TagPillItem> = [];

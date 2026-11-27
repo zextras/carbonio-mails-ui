@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 
 import { setupTest } from '@test-setup';
@@ -22,7 +22,7 @@ import { MessageListItemCore } from 'views/app/folder-panel/messages/message-lis
 const renderWithTag = (
 	tag: { id: string; name: string; color?: number; rgb?: string },
 	isConvChildren = false
-): void => {
+): ReturnType<typeof populateMessagesInEmailStore>[number] => {
 	populateFoldersStore();
 	populateTagsStore({ [tag.id]: tag });
 	const [message] = populateMessagesInEmailStore({
@@ -39,22 +39,21 @@ const renderWithTag = (
 			onSelect={vi.fn()}
 		/>
 	);
+	return message;
 };
 
 describe('MessageListItemCore tags', () => {
 	it('tints the pill with the custom colour of the tag', () => {
 		renderWithTag({ id: 't1', name: 'custom', rgb: '#abcdef' });
 
-		expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+		expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 	});
 
 	it('shows a pill with the standard colour of the tag', () => {
 		renderWithTag({ id: 't1', name: 'standard', color: 4 });
 
 		expect(screen.getByTestId('tag-pill')).toHaveTextContent('standard');
-		expect(screen.getByTestId('tag-dot')).toHaveStyle({
-			'background-color': ZIMBRA_STANDARD_COLORS[4].hex
-		});
+		expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: ZIMBRA_STANDARD_COLORS[4].hex });
 	});
 
 	it('in a conversation child row shows the tags of the message once', () => {
@@ -62,6 +61,16 @@ describe('MessageListItemCore tags', () => {
 
 		expect(screen.getAllByTestId('tag-pill')).toHaveLength(1);
 		expect(screen.getByTestId('tag-pill')).toHaveTextContent('child tag');
+	});
+
+	// On the sender's line the hover actions would cover "+N"
+	it('in a conversation child row puts the tags on the line of the fragment, not of the sender', () => {
+		const { fragment } = renderWithTag({ id: 't1', name: 'child tag', color: 4 }, true);
+
+		const line = screen.getByTestId('line-with-tags');
+		expect(within(line).getByTestId('list-tag-pills')).toBeVisible();
+		expect(line).toHaveTextContent(fragment as string);
+		expect(within(line).queryByTestId('DateLabel')).not.toBeInTheDocument();
 	});
 	it('a tag from a shared folder says whose folder it comes from', async () => {
 		populateFoldersStore({ additionalFolders: SHARED_FOLDER_LINK });
@@ -83,8 +92,6 @@ describe('MessageListItemCore tags', () => {
 
 		await user.hover(screen.getByText('Finance'));
 
-		expect(
-			await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
-		).toBeVisible();
+		expect(await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)).toBeVisible();
 	});
 });

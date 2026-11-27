@@ -91,7 +91,7 @@ describe('SearchMessageListItemCore', () => {
 			await user.hover(screen.getByText('Finance'));
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
 		});
 
@@ -100,7 +100,7 @@ describe('SearchMessageListItemCore', () => {
 
 			renderWithTags(['tag1']);
 
-			expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+			expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 		});
 
 		it('shows a pill named after the tag with its standard colour', () => {
@@ -109,9 +109,7 @@ describe('SearchMessageListItemCore', () => {
 			renderWithTags(['tag1']);
 
 			expect(screen.getByTestId('tag-pill')).toHaveTextContent('Tag 1');
-			expect(screen.getByTestId('tag-dot')).toHaveStyle({
-				'background-color': ZIMBRA_STANDARD_COLORS[0].hex
-			});
+			expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: ZIMBRA_STANDARD_COLORS[0].hex });
 		});
 
 		it('shows no pill when the message has no tags', () => {

@@ -28,6 +28,45 @@ describe('SearchConversationListItemCore', () => {
 		vi.clearAllMocks();
 	});
 
+	// The 24px target of "+N" reaches 3.2px past its text: it must not cover the expand arrow
+	it.each([
+		{ messages: 3, urgent: false, padded: true },
+		// the urgent icon, not interactive, is between them
+		{ messages: 3, urgent: true, padded: false },
+		// no arrow
+		{ messages: 1, urgent: false, padded: false }
+	])(
+		'keeps 3.2px before the expand arrow, unless the urgent icon is between ($messages messages, urgent $urgent)',
+		async ({ messages, urgent, padded }) => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: [tagsArray[0].name] },
+					conversationMessagesNumber: messages
+				})
+			);
+			populateFoldersStore();
+			setupTest(
+				<SearchConversationListItemCore
+					conversation={{ ...conversation, messagesInConversation: messages, urgent }}
+					selected={false}
+					selecting={false}
+					open={false}
+					toggleCollapseElementCallback={vi.fn()}
+					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={vi.fn()}
+				/>
+			);
+
+			const rowEnd = await screen.findByTestId('conversation-row-end');
+			if (padded) {
+				expect(rowEnd).toHaveStyle({ paddingLeft: '0.2rem' });
+			} else {
+				expect(rowEnd).not.toHaveStyle({ paddingLeft: '0.2rem' });
+			}
+		}
+	);
+
 	it('renders a conversation without tags (GetConv leaves tn out)', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({ conversationParams: { id: '123', subject: 'No tags' } })
@@ -284,8 +323,44 @@ describe('SearchConversationListItemCore', () => {
 			await user.hover(screen.getByText('Finance'));
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
+		});
+
+		it('when a message other than the first is in Spam, the hidden tags can be neither removed nor managed', async () => {
+			const manyTags = Array.from({ length: 10 }, (_, index) => `t${index}`);
+			useTagStore.setState({
+				tags: Object.fromEntries(
+					manyTags.map((id, index) => [id, { id, name: `Tag ${index}`, color: index }])
+				)
+			});
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: manyTags },
+					messageGeneratorParams: [
+						{ id: '100', folderId: FOLDERS.INBOX },
+						{ id: '101', folderId: FOLDERS.SPAM }
+					]
+				})
+			);
+			const { user } = setupTest(
+				<SearchConversationListItemCore
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					open={false}
+					toggleCollapseElementCallback={vi.fn()}
+					parent={FOLDERS.INBOX}
+					index={0}
+					onSelect={vi.fn()}
+				/>
+			);
+
+			await user.click(screen.getByRole('button', { name: /^Show \d+ more tags$/ }));
+
+			expect(screen.getByRole('dialog')).toBeVisible();
+			expect(screen.queryByRole('button', { name: /^Remove tag/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
 		});
 
 		it('tints the pill with the custom colour of the tag', async () => {
@@ -293,7 +368,7 @@ describe('SearchConversationListItemCore', () => {
 
 			await renderWithTags(['t1']);
 
-			expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+			expect(screen.getByTestId('icon: Tag')).toHaveStyle({ color: '#abcdef' });
 		});
 	});
 });

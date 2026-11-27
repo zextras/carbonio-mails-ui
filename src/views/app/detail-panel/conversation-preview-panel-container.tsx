@@ -24,7 +24,6 @@ import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from 'store/emails/hooks/hooks';
 import { useConversationMessages, useMessageById } from 'store/emails/store';
 import { ConversationPreviewPanel } from 'views/app/detail-panel/conversation-preview-panel';
-import { ItemTags } from 'views/app/detail-panel/preview/parts/tags/item-tags';
 import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
 /*
@@ -115,12 +114,6 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 						itemType={'conversation'}
 						subject={conversation.subject}
 						isRead={conversation.read}
-						folderId={folderId}
-					/>
-					<ItemTags
-						kind="conversation"
-						id={conversation.id}
-						tagIds={conversation.tags}
 						folderId={folderId}
 					/>
 

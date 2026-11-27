@@ -5,12 +5,16 @@
  */
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 import { Route, Routes, useParams } from 'react-router-dom';
 
 import { SearchConversationPanel } from '../search-conversation-panel';
 import { setupTest } from '@test-setup';
-import { generateConversation } from '__test__/generators/generateConversation';
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '__test__/generators/generateConversation';
 import {
 	handleNotifyDeleted,
 	setSearchResultsByConversation,
@@ -69,5 +73,37 @@ describe('SearchConversationPanel', () => {
 
 		expect(screen.queryByTestId('active-item--5')).not.toBeInTheDocument();
 		expect(screen.queryByTestId(/SearchConversationPanel/)).not.toBeInTheDocument();
+	});
+
+	it('shows the tags only on the cards of its messages, each with its own, not under the subject', async () => {
+		useTagStore.setState({
+			tags: {
+				t1: { id: 't1', name: 'Client', color: 1 },
+				t2: { id: 't2', name: 'Urgent', color: 2 }
+			}
+		});
+		await act(async () => {
+			populateConversationInEmailStore({
+				conversationParams: { id: '20', tags: ['t1', 't2'] },
+				messageGeneratorParams: [
+					{ id: '21', tags: ['t2'] },
+					{ id: '22', tags: ['t1'] }
+				]
+			});
+			updateConversationStatus('20', 'fulfilled');
+		});
+		setupTest(<SearchViewRoutes />, {
+			initialEntries: ['/search/mails/conversation/20'],
+			path: '/search/mails/*'
+		});
+
+		const first = await screen.findByTestId('open-message-21');
+		const second = screen.getByTestId('open-message-22');
+		expect(within(first).getAllByText('Urgent').length).toBeGreaterThan(0);
+		expect(within(first).queryByText('Client')).not.toBeInTheDocument();
+		expect(within(second).getAllByText('Client').length).toBeGreaterThan(0);
+		expect(within(second).queryByText('Urgent')).not.toBeInTheDocument();
+		const header = screen.getByTestId('PreviewPanelHeader');
+		expect(within(header).queryByText(/Client|Urgent/)).not.toBeInTheDocument();
 	});
 });

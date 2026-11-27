@@ -10,10 +10,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationBadge } from '../parts/conversation-badge';
 import { ConversationSubjectRow } from '../parts/conversation-subject-row';
-import { LineWithTags } from '../parts/line-with-tags';
+import { LineWithTags, ROW_END_PADDING } from '../parts/line-with-tags';
 import { ParticipantsString } from '../parts/participants-string';
 import { hasSharedTag, useConversationFolderIds } from 'hooks/use-tag-pill-items';
 import { NormalizedConversation } from 'types/conversations';
+import { TagTarget } from 'views/app/detail-panel/preview/parts/tags/use-reading-pane-tags';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
@@ -51,6 +52,7 @@ export const ConversationListItemCore = ({
 		[conversation]
 	);
 
+	const showToggle = conversation.messagesInConversation > 1;
 	const badge: 'read' | 'unread' = useMemo(() => {
 		if (conversation.read === undefined) return 'read';
 		return conversation.read ? 'read' : 'unread';
@@ -63,6 +65,10 @@ export const ConversationListItemCore = ({
 	}, [conversation?.messageIds?.length, conversation.messagesInConversation, badge]);
 
 	const folderIds = useConversationFolderIds(conversation.id, hasSharedTag(conversation.tags));
+	const tagTarget = useMemo<TagTarget>(
+		() => ({ kind: 'conversation', id: conversation.id, folderId: folderParent }),
+		[conversation.id, folderParent]
+	);
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
@@ -107,18 +113,21 @@ export const ConversationListItemCore = ({
 							</Padding>
 						</Row>
 					)}
-					<LineWithTags tagIds={conversation.tags} folderIds={folderIds}>
+					<LineWithTags target={tagTarget} tagIds={conversation.tags} folderIds={folderIds}>
 						<ConversationSubjectRow
 							subject={conversation.subject}
 							read={conversation.read}
 							fragment={conversation.fragment}
 						/>
 					</LineWithTags>
-					<Row>
+					<Row
+						data-testid="conversation-row-end"
+						padding={showToggle && !conversation.urgent ? ROW_END_PADDING : undefined}
+					>
 						{conversation.urgent && (
 							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 						)}
-						{conversation.messagesInConversation > 1 && (
+						{showToggle && (
 							<Tooltip label={toggleExpandButtonLabel}>
 								<Button
 									data-testid="ToggleExpand"

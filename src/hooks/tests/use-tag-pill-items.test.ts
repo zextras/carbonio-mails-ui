@@ -24,7 +24,7 @@ import {
 
 const FINANCE = 'nil:Finance';
 /** The tooltip of a shared tag whose owner is not named: its name first. */
-const sharedTooltip = (name: string): string => `${name} · Tag from a shared folder`;
+const sharedTooltip = (name: string): string => `${name} (from a shared folder)`;
 
 describe('useTagPillItems', () => {
 	beforeEach(() => {
@@ -95,7 +95,7 @@ describe('useTagPillItems', () => {
 		it('names the owner of the shared folder the item is in', () => {
 			const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE], ['z1:257']] });
 
-			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+			expect(result.current[0].tooltip).toBe(`Finance (from ${MARTA}'s folder)`);
 		});
 
 		it('names the owner once when all the messages are in folders of the same owner', () => {
@@ -103,7 +103,7 @@ describe('useTagPillItems', () => {
 				initialProps: [[FINANCE], ['z1:257', 'z1:300']]
 			});
 
-			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+			expect(result.current[0].tooltip).toBe(`Finance (from ${MARTA}'s folder)`);
 		});
 
 		it('says "a shared folder" when the messages are in folders of different owners', () => {
@@ -120,7 +120,7 @@ describe('useTagPillItems', () => {
 				initialProps: [[FINANCE], ['z1:257', FOLDERS.INBOX]]
 			});
 
-			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+			expect(result.current[0].tooltip).toBe(`Finance (from ${MARTA}'s folder)`);
 		});
 
 		it('names the owner of a folder mounted on its own, whose account root is not loaded', () => {
@@ -138,7 +138,7 @@ describe('useTagPillItems', () => {
 
 			const { result } = setupHook(useTagPillItems, { initialProps: [[FINANCE], ['z3:257']] });
 
-			expect(result.current[0].tooltip).toBe(`Finance · Tag from ${MARTA}'s folder`);
+			expect(result.current[0].tooltip).toBe(`Finance (from ${MARTA}'s folder)`);
 		});
 
 		it('says "a shared folder" when the owner is not known', () => {

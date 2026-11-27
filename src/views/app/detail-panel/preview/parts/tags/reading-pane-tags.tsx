@@ -14,12 +14,13 @@ import {
 	READING_PANE_TAGS_GAP,
 	READING_PANE_TAGS_LINE_END
 } from './fit-tags-in-lines';
-import { HiddenTagsPopover, TagMenu } from './hidden-tags-popover';
+import { focusHiddenTagRemove, HiddenTagsPopover, TagMenu } from './hidden-tags-popover';
+import { MoreTagsButton } from './more-tags-button';
 
 const Row = styled.div`
 	position: relative;
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
 	gap: ${READING_PANE_TAGS_GAP / 16}rem;
 	min-width: 0;
@@ -47,26 +48,17 @@ const MeasureLayer = styled.div`
 	white-space: nowrap;
 `;
 
-const MoreButton = styled.button`
-	height: 1.5rem;
-	padding: 0 0.25rem;
-	border: none;
-	border-radius: ${({ theme }): string => theme.borderRadius};
-	background: transparent;
-	color: ${({ theme }): string => theme.palette.secondary.active};
-	font: inherit;
-	/* As the text of the reading pane pills: no font size of the theme is 13px. */
-	font-size: 0.8125rem;
-	cursor: pointer;
-
-	&:hover {
-		text-decoration: underline;
-	}
-`;
-
 /** "+N" at 13px: the "+", each digit, and the button's padding. */
 const counterWidth = (hiddenCount: number): number =>
 	Math.ceil(8 * (1 + String(hiddenCount).length)) + 8;
+
+/** Most a pill takes: the line, less its free end and, when there is one, "+N" after it. */
+const pillMaxWidth = (hiddenCount: number): string => {
+	const reserved =
+		READING_PANE_TAGS_LINE_END +
+		(hiddenCount > 0 ? READING_PANE_TAGS_GAP + counterWidth(hiddenCount) : 0);
+	return `calc(100% - ${reserved / 16}rem)`;
+};
 
 /** After a removal, `removedId` is the tag that must leave the list first: the store may render before. */
 type PendingFocus =
@@ -88,13 +80,13 @@ export type ReadingPaneTagsProps = {
 	onRemove?: (tag: TagPillItem, options: { onUndo: () => void; onError: () => void }) => void;
 	/** Accessible name of the "×". Default: "Remove tag {name}". */
 	removeLabel?: (tag: TagPillItem) => string;
-	/** Without it, no ADD TAGS. */
+	/** Without it, no MANAGE TAGS. */
 	menu?: TagMenu;
 };
 
 /**
- * The tags of a message or conversation in the reading pane: every tag as a pill, wrapping on up to
- * two lines, then "+N", which opens the rest with a click. A click on a pill runs `onSearch`, its "×"
+ * The tags of a message card in the reading pane: every tag as a pill on one line, then
+ * "+N", which opens the rest with a click. A click on a pill runs `onSearch`, its "×"
  * `onRemove`. Tags of a shared folder's owner can be neither clicked nor removed.
  */
 export const ReadingPaneTags = ({
@@ -211,12 +203,7 @@ export const ReadingPaneTags = ({
 		}
 		if (hidden.length > 0) {
 			pendingFocus.current = undefined;
-			const next = hidden[Math.min(pending.index, hidden.length - 1)];
-			document
-				.querySelector<HTMLButtonElement>(
-					`[data-testid="hidden-tags-popover"] [data-tag-id="${CSS.escape(next.id)}"] button`
-				)
-				?.focus();
+			focusHiddenTagRemove(hidden[Math.min(pending.index, hidden.length - 1)].id);
 		}
 	}, [appliedIds, focusPill, hidden, visible]);
 
@@ -288,7 +275,7 @@ export const ReadingPaneTags = ({
 					color={tag.color}
 					shared={tag.shared}
 					tooltip={tag.tooltip}
-					maxWidth={`calc(100% - ${READING_PANE_TAGS_LINE_END / 16}rem)`}
+					maxWidth={pillMaxWidth(hidden.length)}
 					onClick={onSearch && ((): void => onSearch(tag))}
 					onRemove={
 						onRemove && ((): void => removeTag(tag, { on: 'pill', index, removedId: tag.id }))
@@ -297,20 +284,12 @@ export const ReadingPaneTags = ({
 				/>
 			))}
 			{hidden.length > 0 && (
-				<MoreButton
+				<MoreTagsButton
 					ref={moreRef}
-					type="button"
-					aria-label={t('label.show_more_tags', {
-						count: hidden.length,
-						defaultValue_one: 'Show {{count}} more tag',
-						defaultValue_other: 'Show {{count}} more tags'
-					})}
-					aria-expanded={open !== undefined}
-					aria-haspopup="dialog"
+					hiddenCount={hidden.length}
+					open={open !== undefined}
 					onClick={openCard}
-				>
-					+{hidden.length}
-				</MoreButton>
+				/>
 			)}
 			{open && hidden.length > 0 && (
 				<HiddenTagsPopover

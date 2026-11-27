@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import type { ReadingPaneTagsProps } from './reading-pane-tags';
 import { isSpam } from 'helpers/folders';
 import { useTagPillActions } from 'hooks/use-tag-pill-actions';
-import { hasSharedTag, useConversationFolderIds, useTagPillItems } from 'hooks/use-tag-pill-items';
+import { useTagPillItems } from 'hooks/use-tag-pill-items';
 import { getConversationMessages } from 'store/emails/store';
 
 /** A quote inside the quoted tag name of a search, as the search grammar takes it. */
@@ -30,30 +30,25 @@ const ESCAPED_QUOTE = String.raw`\"`;
 const tagSearchValue = (name: string): string =>
 	`tag:"${name.replaceAll(/[\r\n\u2028\u2029]/g, ' ').replaceAll('"', ESCAPED_QUOTE)}"`;
 
-type UseReadingPaneTagsArgs = {
+export type TagTarget = {
 	/** A message: its own tags. A conversation: the tags of all its messages. */
 	kind: 'message' | 'conversation';
 	id: string;
-	tagIds: ReadonlyArray<string> | undefined;
 	/** Tags can't be changed in Spam, as in the Tag menu of the actions. */
 	folderId: string;
 };
 
-/** The props of `ReadingPaneTags` for a message or a conversation of the reading pane. */
-export const useReadingPaneTags = ({
-	kind,
-	id,
-	tagIds,
-	folderId
-}: UseReadingPaneTagsArgs): ReadingPaneTagsProps => {
+export type TagEditing = Pick<
+	ReadingPaneTagsProps,
+	'onSearch' | 'onRemove' | 'removeLabel' | 'menu'
+>;
+
+/**
+ * What can be done with the tags of a message or a conversation: search by a tag, remove one (from
+ * every message of a conversation, with Undo), and the tag menu. Neither removal nor the menu in Spam.
+ */
+export const useTagEditing = ({ kind, id, folderId }: TagTarget): TagEditing => {
 	const [t] = useTranslation();
-	const conversationFolderIds = useConversationFolderIds(
-		id,
-		kind === 'conversation' && hasSharedTag(tagIds)
-	);
-	const messageFolderIds = useMemo(() => [folderId], [folderId]);
-	const folderIds = kind === 'conversation' ? conversationFolderIds : messageFolderIds;
-	const tags = useTagPillItems(tagIds, folderIds);
 	const ids = useMemo(() => [id], [id]);
 	const { removeTag, toggleTag } = useTagPillActions({ kind, ids });
 	const runSearch = useRunSearchIntegration();
@@ -119,12 +114,27 @@ export const useReadingPaneTags = ({
 
 	return useMemo(
 		() => ({
-			tags,
 			onSearch,
 			onRemove: editable ? onRemove : undefined,
 			removeLabel,
 			menu: editable ? menu : undefined
 		}),
-		[editable, menu, onRemove, onSearch, removeLabel, tags]
+		[editable, menu, onRemove, onSearch, removeLabel]
 	);
+};
+
+type UseReadingPaneTagsArgs = Omit<TagTarget, 'kind'> & {
+	tagIds: ReadonlyArray<string> | undefined;
+};
+
+/** The props of `ReadingPaneTags` for a message card of the reading pane. */
+export const useReadingPaneTags = ({
+	id,
+	tagIds,
+	folderId
+}: UseReadingPaneTagsArgs): ReadingPaneTagsProps => {
+	const folderIds = useMemo(() => [folderId], [folderId]);
+	const tags = useTagPillItems(tagIds, folderIds);
+	const editing = useTagEditing({ kind: 'message', id, folderId });
+	return useMemo(() => ({ tags, ...editing }), [editing, tags]);
 };

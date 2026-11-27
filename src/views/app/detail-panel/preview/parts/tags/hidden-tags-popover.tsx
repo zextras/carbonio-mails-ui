@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 
 import styled from '@emotion/styled';
 import { Button, Divider, Icon, Portal, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { TagDot, TagPillItem } from '@zextras/carbonio-ui-commons';
+import { TagIcon, TagMark, TagPillItem } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { VisuallyHidden } from 'commons/visually-hidden';
@@ -102,18 +102,50 @@ const MenuItem = styled.button`
 
 type Position = { left: number; top?: number; bottom?: number; maxHeight: number };
 
-/** Below "+N", or above it when there is more room there; always inside the window. */
-const positionFor = (anchor: DOMRect): Position => {
+/**
+ * Below "+N", or above it when there is more room there; always inside the window. Following "+N",
+ * the card keeps the side it has (`keep`) while it still fits there: it never jumps under the pointer.
+ */
+const positionFor = (anchor: DOMRect, keep?: { below: boolean; height: number }): Position => {
 	const left = Math.max(
 		VIEWPORT_MARGIN_PX,
 		Math.min(anchor.left, globalThis.innerWidth - CARD_WIDTH_PX - VIEWPORT_MARGIN_PX)
 	);
 	const below = globalThis.innerHeight - anchor.bottom - CARD_OFFSET_PX - VIEWPORT_MARGIN_PX;
 	const above = anchor.top - CARD_OFFSET_PX - VIEWPORT_MARGIN_PX;
-	return below >= above
+	const keepsSide = keep !== undefined && (keep.below ? below : above) >= keep.height;
+	return (keepsSide ? keep.below : below >= above)
 		? { left, top: anchor.bottom + CARD_OFFSET_PX, maxHeight: below }
 		: { left, bottom: globalThis.innerHeight - anchor.top + CARD_OFFSET_PX, maxHeight: above };
 };
+
+/** The ancestors of `element` that cut what overflows them, such as the scrolling list. */
+const clippingAncestors = (element: HTMLElement): Array<HTMLElement> => {
+	const ancestors: Array<HTMLElement> = [];
+	for (
+		let node = element.parentElement;
+		node && node !== document.body;
+		node = node.parentElement
+	) {
+		if (getComputedStyle(node).overflowY !== 'visible') {
+			ancestors.push(node);
+		}
+	}
+	return ancestors;
+};
+
+/** Whether "+N" can still be seen: in the page, in the window and in each ancestor that clips it. */
+const isShown = (
+	anchor: HTMLElement,
+	rect: DOMRect,
+	clippers: ReadonlyArray<HTMLElement>
+): boolean =>
+	anchor.isConnected &&
+	[
+		{ top: 0, bottom: globalThis.innerHeight },
+		// An ancestor with no height has no layout of its own to cut by (e.g. a wrapper of the row)
+		...clippers.map((clipper) => clipper.getBoundingClientRect()).filter((box) => box.height > 0)
+	].every((box) => rect.bottom >= box.top && rect.top <= box.bottom);
 
 /** The next element the Tab key would reach after `anchor`, outside `container`. */
 const nextTabbableAfter = (
@@ -124,6 +156,15 @@ const nextTabbableAfter = (
 		(element) => !container.contains(element)
 	);
 	return all[all.indexOf(anchor) + 1];
+};
+
+/** Moves the focus to the "×" of a hidden tag in the open card, if it is there. */
+export const focusHiddenTagRemove = (tagId: string): void => {
+	document
+		.querySelector<HTMLButtonElement>(
+			`[data-testid="hidden-tags-popover"] [data-tag-id="${CSS.escape(tagId)}"] button`
+		)
+		?.focus();
 };
 
 export type TagMenu = {
@@ -148,9 +189,10 @@ export type HiddenTagsPopoverProps = {
 };
 
 /**
- * The tags that don't fit in the reading pane, opened by a click on "+N": each with its "×", and ADD
- * TAGS, which turns the card into the tag menu. Closed by Esc, a click outside or Tab out, never by
- * moving the pointer away. Not the DS Popover: its Popper keeps the Tab key inside it.
+ * The tags that don't fit in the reading pane or in a list row, opened by a click on "+N": each with
+ * its "×", and MANAGE TAGS, which turns the card into the tag menu. Closed by Esc, a click outside or Tab out, never by
+ * moving the pointer away; it follows "+N" while the list moves. Not the DS Popover: its Popper keeps the Tab key
+ * inside it.
  */
 export const HiddenTagsPopover = ({
 	anchorRef,
@@ -175,13 +217,38 @@ export const HiddenTagsPopover = ({
 		}
 	}, [anchorRef]);
 
-	// The card is fixed: when what is behind it scrolls or the window changes, it would be left behind.
+	// The card is fixed: it follows "+N" when the list moves under it (a scroll, a new mail above the
+	// row), and closes once "+N" is gone or out of sight. A scroll alone is no reason to close: the
+	// browser scrolls the list by itself to keep the rows in place when a mail arrives above them.
 	useEffect(() => {
-		const onScroll = (event: Event): void => {
-			if (!cardRef.current?.contains(event.target as Node)) {
+		const anchor = anchorRef.current;
+		if (!anchor) {
+			return undefined;
+		}
+		const clippers = clippingAncestors(anchor);
+		let last = anchor.getBoundingClientRect();
+		let frame = 0;
+		const follow = (): void => {
+			const rect = anchor.getBoundingClientRect();
+			if (!isShown(anchor, rect, clippers)) {
 				onClose(false);
+				return;
 			}
+			if (rect.top !== last.top || rect.left !== last.left) {
+				last = rect;
+				const height = cardRef.current?.offsetHeight ?? 0;
+				setPosition((current) =>
+					positionFor(rect, current && { below: current.top !== undefined, height })
+				);
+			}
+			frame = requestAnimationFrame(follow);
 		};
+		frame = requestAnimationFrame(follow);
+		return (): void => cancelAnimationFrame(frame);
+	}, [anchorRef, onClose]);
+
+	// A click outside closes it; so does a change of the window, which moves the whole layout.
+	useEffect(() => {
 		const onResize = (): void => onClose(false);
 		const onPointerDown = (event: PointerEvent | MouseEvent): void => {
 			const target = event.target as Node;
@@ -189,11 +256,9 @@ export const HiddenTagsPopover = ({
 				onClose(false);
 			}
 		};
-		globalThis.addEventListener('scroll', onScroll, true);
 		globalThis.addEventListener('resize', onResize);
 		document.addEventListener('mousedown', onPointerDown);
 		return (): void => {
-			globalThis.removeEventListener('scroll', onScroll, true);
 			globalThis.removeEventListener('resize', onResize);
 			document.removeEventListener('mousedown', onPointerDown);
 		};
@@ -299,11 +364,7 @@ export const HiddenTagsPopover = ({
 						<Title size="small">{title}</Title>
 						{hiddenTags.map((tag, index) => (
 							<HiddenRow key={tag.id} data-testid="hidden-tag-row" data-tag-id={tag.id}>
-								{tag.shared ? (
-									<Icon icon="PeopleOutline" size="small" color="text" />
-								) : (
-									tag.color && <TagDot color={tag.color} />
-								)}
+								<TagMark shared={tag.shared} color={tag.color} size="medium" />
 								<Tooltip
 									label={tag.tooltip ?? tag.name}
 									overflowTooltip={tag.tooltip === undefined}
@@ -330,7 +391,7 @@ export const HiddenTagsPopover = ({
 									<Button
 										type="ghost"
 										size="small"
-										label={t('label.add_tags', 'Add tags')}
+										label={t('label.manage_tags', 'Manage tags')}
 										onClick={onShowMenu}
 									/>
 								</div>
@@ -360,7 +421,7 @@ export const HiddenTagsPopover = ({
 										color={checked ? 'primary' : 'text'}
 									/>
 									<Text overflow="ellipsis">{tag.name}</Text>
-									{tag.color && <TagDot color={tag.color} />}
+									{tag.color && <TagIcon color={tag.color} size="medium" />}
 								</MenuItem>
 							);
 						})}

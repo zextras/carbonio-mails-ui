@@ -16,8 +16,6 @@ import {
 	SHARED_FOLDER_LINK,
 	SHARED_FOLDER_OWNER
 } from '@test-utils/store/folders';
-import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
-import { ConvActionRequest } from 'types/soap/conv-action';
 import { MsgActionRequest } from 'types/soap/msg-action';
 import { fitTagsInLines } from 'views/app/detail-panel/preview/parts/tags/fit-tags-in-lines';
 import { ItemTags } from 'views/app/detail-panel/preview/parts/tags/item-tags';
@@ -60,14 +58,7 @@ describe('ItemTags', () => {
 	});
 
 	test('shows the tags of a message in alphabetical order, the shared ones last', () => {
-		setupTest(
-			<ItemTags
-				kind="message"
-				id="10"
-				tagIds={['t1', SHARED_FINANCE, 't2']}
-				folderId={FOLDERS.INBOX}
-			/>
-		);
+		setupTest(<ItemTags id="10" tagIds={['t1', SHARED_FINANCE, 't2']} folderId={FOLDERS.INBOX} />);
 		expect(screen.getByRole('button', { name: 'Client' })).toBeInTheDocument();
 		const names = screen
 			.getAllByRole('button')
@@ -77,14 +68,20 @@ describe('ItemTags', () => {
 	});
 
 	test('shows nothing without tags', () => {
-		setupTest(<ItemTags kind="message" id="10" tagIds={[]} folderId={FOLDERS.INBOX} />);
+		setupTest(<ItemTags id="10" tagIds={[]} folderId={FOLDERS.INBOX} />);
 		expect(screen.queryByTestId(READING_PANE_TAGS)).not.toBeInTheDocument();
 	});
 
+	test('on a message card the tags start where the sender and the recipients start', () => {
+		setupTest(<ItemTags id="10" tagIds={['t1']} folderId={FOLDERS.INBOX} />);
+		// The avatar column: 0.5rem, the 1rem avatar, 0.5rem
+		expect(screen.getByTestId('item-tags')).toHaveStyle({
+			'padding-left': '2rem'
+		});
+	});
+
 	test('a click on a pill searches by its tag', async () => {
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />);
 		await user.click(screen.getByRole('button', { name: 'Client' }));
 		expect(mockRunSearch).toHaveBeenCalledWith(
 			[expect.objectContaining({ label: 'tag:Client' })],
@@ -100,9 +97,7 @@ describe('ItemTags', () => {
 		['Q1"draft', String.raw`tag:"Q1\"draft"`]
 	])('the search for the tag %s is %s', async (name, query) => {
 		useTagStore.setState({ tags: { q: { id: 'q', name, color: 1 } } });
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />);
 		await user.click(screen.getByRole('button', { name }));
 		expect(mockRunSearch).toHaveBeenCalledTimes(1);
 		const [chips] = mockRunSearch.mock.calls[0];
@@ -121,9 +116,7 @@ describe('ItemTags', () => {
 		'Q1"draft\u2028'
 	])('the search for the tag %j stays one quoted term', async (name) => {
 		useTagStore.setState({ tags: { q: { id: 'q', name, color: 1 } } });
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['q']} folderId={FOLDERS.INBOX} />);
 		// The pill, not its "Remove tag …" button (the accessible name drops the special spaces)
 		const pill = screen
 			.getAllByRole('button')
@@ -141,61 +134,25 @@ describe('ItemTags', () => {
 
 	test('the "×" of a message card removes the tag from that message only', async () => {
 		const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />);
 		await user.click(screen.getByRole('button', { name: REMOVE_CLIENT }));
 		expect((await interceptor).action).toEqual(
 			expect.objectContaining({ id: '10', op: '!tag', tn: 'Client' })
 		);
 	});
 
-	test('the "×" of the conversation removes the tag from the whole conversation', async () => {
-		const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-		const { user } = setupTest(
-			<ItemTags kind="conversation" id="20" tagIds={['t2']} folderId={FOLDERS.INBOX} />
-		);
-		await user.click(screen.getByRole('button', { name: 'Remove tag Client from conversation' }));
-		expect((await interceptor).action).toEqual(
-			expect.objectContaining({ id: '20', op: '!tag', tn: 'Client' })
-		);
-	});
-
-	test('Undo of a conversation removal tags again only the messages that had the tag', async () => {
-		populateConversationInEmailStore({
-			conversationParams: { id: '20' },
-			messageGeneratorParams: [
-				{ id: '1', tags: ['t2'] },
-				{ id: '2', tags: ['t1'] },
-				{ id: '3', tags: ['t1', 't2'] }
-			]
-		});
-		const removal = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
-		const { user } = setupTest(
-			<ItemTags kind="conversation" id="20" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />
-		);
-		await user.click(screen.getByRole('button', { name: 'Remove tag Client from conversation' }));
-		await removal;
-
-		const undo = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-		await user.click(await screen.findByRole('button', { name: /undo/i }));
-		expect((await undo).action).toEqual(
-			expect.objectContaining({ id: '1,3', op: 'tag', tn: 'Client' })
-		);
-	});
-
 	test('after Undo of the only tag the focus is on it again', async () => {
 		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		const { user, rerender } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
+			<ItemTags id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
 		);
 		await user.click(screen.getByRole('button', { name: REMOVE_CLIENT }));
-		rerender(<ItemTags kind="message" id="10" tagIds={[]} folderId={FOLDERS.INBOX} />);
+		rerender(<ItemTags id="10" tagIds={[]} folderId={FOLDERS.INBOX} />);
 
 		const undo = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		await user.click(await screen.findByRole('button', { name: /undo/i }));
 		await undo;
-		rerender(<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />);
+		rerender(<ItemTags id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />);
 		await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Client' })).toHaveFocus());
 	});
 
@@ -204,7 +161,7 @@ describe('ItemTags', () => {
 		const { user, rerender } = setupTest(
 			<>
 				<input aria-label="List" />
-				<ItemTags kind="message" id="10" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />
+				<ItemTags id="10" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />
 			</>
 		);
 		await user.click(screen.getByRole('button', { name: REMOVE_CLIENT }));
@@ -214,7 +171,7 @@ describe('ItemTags', () => {
 		rerender(
 			<>
 				<input aria-label="List" />
-				<ItemTags kind="message" id="11" tagIds={['t1', 't3']} folderId={FOLDERS.INBOX} />
+				<ItemTags id="11" tagIds={['t1', 't3']} folderId={FOLDERS.INBOX} />
 			</>
 		);
 
@@ -223,22 +180,18 @@ describe('ItemTags', () => {
 
 	test('in Spam the tags can be neither removed nor added', async () => {
 		showFirst(1);
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['t1', 't2']} folderId={FOLDERS.SPAM} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['t1', 't2']} folderId={FOLDERS.SPAM} />);
 		expect(screen.queryByRole('button', { name: /Remove tag/ })).not.toBeInTheDocument();
 		await user.click(screen.getByRole('button', { name: SHOW_MORE }));
-		expect(screen.queryByRole('button', { name: /add tags/i })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
 	});
 
-	test('ADD TAGS lists every tag of the user and applies a check at once', async () => {
+	test('MANAGE TAGS lists every tag of the user and applies a check at once', async () => {
 		showFirst(1);
 		const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-		const { user } = setupTest(
-			<ItemTags kind="message" id="10" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />
-		);
+		const { user } = setupTest(<ItemTags id="10" tagIds={['t1', 't2']} folderId={FOLDERS.INBOX} />);
 		await user.click(screen.getByRole('button', { name: SHOW_MORE }));
-		await user.click(screen.getByRole('button', { name: /add tags/i }));
+		await user.click(screen.getByRole('button', { name: /manage tags/i }));
 		expect(screen.getAllByRole('menuitemcheckbox').map((item) => item.textContent)).toEqual([
 			'Client',
 			'Personal',
@@ -255,7 +208,7 @@ describe('ItemTags', () => {
 		const { user } = setupTest(
 			// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 			<div onClick={onCardClick}>
-				<ItemTags kind="message" id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
+				<ItemTags id="10" tagIds={['t2']} folderId={FOLDERS.INBOX} />
 			</div>
 		);
 		await user.click(screen.getByRole('button', { name: 'Client' }));
@@ -268,7 +221,7 @@ describe('ItemTags', () => {
 
 		test('on a message, says whose folder it comes from', async () => {
 			const { user } = setupTest(
-				<ItemTags kind="message" id="10" tagIds={[SHARED_FINANCE]} folderId={SHARED_FOLDER_ID} />
+				<ItemTags id="10" tagIds={[SHARED_FINANCE]} folderId={SHARED_FOLDER_ID} />
 			);
 
 			await user.hover(
@@ -276,25 +229,7 @@ describe('ItemTags', () => {
 			);
 
 			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
-			).toBeVisible();
-		});
-
-		test('on a conversation, says whose folder from the folders of its messages', async () => {
-			populateConversationInEmailStore({
-				conversationParams: { id: '20', folderId: SHARED_FOLDER_ID },
-				conversationMessagesNumber: 2
-			});
-			const { user } = setupTest(
-				<ItemTags kind="conversation" id="20" tagIds={[SHARED_FINANCE]} folderId={FOLDERS.INBOX} />
-			);
-
-			await user.hover(
-				within(screen.getByTestId(READING_PANE_TAGS)).getAllByText('Finance').at(-1) as HTMLElement
-			);
-
-			expect(
-				await screen.findByText(`Finance · Tag from ${SHARED_FOLDER_OWNER}'s folder`)
+				await screen.findByText(`Finance (from ${SHARED_FOLDER_OWNER}'s folder)`)
 			).toBeVisible();
 		});
 	});

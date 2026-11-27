@@ -16,6 +16,48 @@ import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-actio
 /** How long the snackbar of a removed tag offers Undo, as the other snackbars with Undo. */
 const UNDO_SNACKBAR_TIMEOUT = 5000;
 
+/** Each Undo snackbar has its own key: closing one late never closes the one that replaced it. */
+let undoSnackbarCount = 0;
+
+type HoldReason = 'pointer' | 'focus';
+
+/**
+ * Calls `onEnd` after `ms`, but not while something holds it (the pointer on the snackbar, the focus
+ * in it): released, it starts again from `ms`, so there is always time to reach Undo.
+ */
+const holdableTimeout = (
+	ms: number,
+	onEnd: () => void
+): {
+	hold: (reason: HoldReason) => void;
+	release: (reason: HoldReason) => void;
+	cancel: () => void;
+} => {
+	const holds = new Set<HoldReason>();
+	let timeout: ReturnType<typeof setTimeout> | undefined = setTimeout(onEnd, ms);
+	let cancelled = false;
+	const stop = (): void => {
+		clearTimeout(timeout);
+		timeout = undefined;
+	};
+	return {
+		hold: (reason): void => {
+			holds.add(reason);
+			stop();
+		},
+		release: (reason): void => {
+			holds.delete(reason);
+			if (holds.size === 0 && timeout === undefined && !cancelled) {
+				timeout = setTimeout(onEnd, ms);
+			}
+		},
+		cancel: (): void => {
+			cancelled = true;
+			stop();
+		}
+	};
+};
+
 type TagPillActionsTarget = {
 	/** A message: the tag changes on it only. A conversation: on every message of it. */
 	kind: 'message' | 'conversation';
@@ -46,7 +88,10 @@ const succeeded = (request: Promise<unknown>): Promise<boolean> =>
 		() => false
 	);
 
-/** What the tag pills of the reading pane do to the message or conversation they belong to. */
+/**
+ * What tag pills do to the item they belong to: a message card of the reading pane, or a list row's
+ * message or conversation (all its messages).
+ */
 export const useTagPillActions = ({ kind, ids }: TagPillActionsTarget): TagPillActions => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -95,18 +140,27 @@ export const useTagPillActions = ({ kind, ids }: TagPillActionsTarget): TagPillA
 					options?.onError?.();
 					return;
 				}
-				createSnackbar({
-					key: 'tag',
+				// The snackbar's own timer doesn't wait for the pointer or the focus: this one does.
+				undoSnackbarCount += 1;
+				let close = (): void => undefined;
+				const timer = holdableTimeout(UNDO_SNACKBAR_TIMEOUT, () => close());
+				close = createSnackbar({
+					key: `tag-undo-${undoSnackbarCount}`,
 					replace: true,
 					severity: 'info',
 					label: t('snackbar.tag_removed', {
 						tag: tagName,
 						defaultValue: '"{{tag}}" tag removed'
 					}),
-					autoHideTimeout: UNDO_SNACKBAR_TIMEOUT,
+					disableAutoHide: true,
 					hideButton: false,
 					actionLabel: t('label.undo', 'Undo'),
+					onMouseEnter: () => timer.hold('pointer'),
+					onMouseLeave: () => timer.release('pointer'),
+					onFocus: () => timer.hold('focus'),
+					onBlur: () => timer.release('focus'),
 					onActionClick: () => {
+						timer.cancel();
 						undoRemoval(tagName, options?.undoMessageIds, options?.onUndo);
 					}
 				});

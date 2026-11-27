@@ -77,7 +77,7 @@ describe('ReadingPaneTags', () => {
 	beforeEach(() => showAll());
 
 	describe('pills', () => {
-		test('shows every tag when they fit in two lines, without "+N"', () => {
+		test('shows every tag when they fit in one line, without "+N"', () => {
 			setup();
 			expect(pillNames()).toEqual(allSix.map((item) => item.name));
 			expect(screen.queryByRole('button', { name: /more tag/ })).not.toBeInTheDocument();
@@ -140,12 +140,22 @@ describe('ReadingPaneTags', () => {
 	});
 
 	describe('"+N"', () => {
-		test('when the tags need more than two lines, the rest becomes a "+N" button', () => {
+		test('when the tags need more than one line, the rest becomes a "+N" button', () => {
 			showFirst(3);
 			setup();
 			expect(pillNames()).toEqual(['Client', CUSTOMER_ESCALATION, 'Partners']);
 			const more = screen.getByRole('button', { name: SHOW_3 });
 			expect(more).toHaveTextContent('+3');
+		});
+
+		test('the tags stay on one line, a long first pill leaving room for "+N"', () => {
+			showFirst(1);
+			setup();
+			expect(screen.getByTestId('reading-pane-tags')).toHaveStyle({ flexWrap: 'nowrap' });
+			// The measuring copies come first: the last pill is the one shown
+			const shown = screen.getAllByTestId('tag-pill').at(-1);
+			// "+5": 8px for the "+" and for the digit, 8px of padding; 6px of gap; 18px at the line end
+			expect(shown).toHaveStyle({ maxWidth: 'calc(100% - 3rem)' });
 		});
 
 		test('a click opens the hidden tags with their "×", focus on the first "×"', async () => {
@@ -165,14 +175,39 @@ describe('ReadingPaneTags', () => {
 				id: 'nil:Finance',
 				name: 'Finance',
 				shared: true,
-				tooltip: 'Finance · Tag from a shared folder'
+				tooltip: 'Finance (from a shared folder)'
 			};
 			const { user } = setup({ tags: [client, finance] });
 			await user.click(screen.getByRole('button', { name: SHOW_1 }));
 			const row = within(screen.getByRole('dialog')).getByTestId('hidden-tag-row');
 			expect(row).toHaveTextContent('Finance');
-			expect(row).not.toHaveTextContent('Tag from a shared folder');
+			expect(row).not.toHaveTextContent('(from a shared folder)');
 			expect(within(row).queryByRole('button')).not.toBeInTheDocument();
+		});
+
+		test('hovering "+N" shows the tooltip "Show N more tags"', async () => {
+			showFirst(3);
+			const { user } = setup();
+			await user.hover(screen.getByRole('button', { name: SHOW_3 }));
+			expect(await screen.findByText(SHOW_3)).toBeVisible();
+		});
+
+		test('the tooltip shows on focus too', async () => {
+			showFirst(3);
+			setup();
+			act(() => screen.getByRole('button', { name: SHOW_3 }).focus());
+			expect(await screen.findByText(SHOW_3)).toBeVisible();
+		});
+
+		test('the tooltip is hidden while the hidden tags are open', async () => {
+			showFirst(3);
+			const { user } = setup();
+			await user.click(screen.getByRole('button', { name: SHOW_3 }));
+			await user.hover(screen.getByRole('button', { name: SHOW_3 }));
+			act(() => {
+				vi.advanceTimersByTime(1000);
+			});
+			expect(screen.queryByText(SHOW_3)).not.toBeInTheDocument();
 		});
 
 		test('Enter on "+N" opens it too', async () => {
@@ -321,7 +356,7 @@ describe('ReadingPaneTags', () => {
 		});
 	});
 
-	describe('ADD TAGS', () => {
+	describe('MANAGE TAGS', () => {
 		const menu = {
 			allTags: [
 				client,
@@ -339,7 +374,7 @@ describe('ReadingPaneTags', () => {
 			showFirst(3);
 			const { user } = setup({ menu });
 			await user.click(screen.getByRole('button', { name: SHOW_3 }));
-			await user.click(screen.getByRole('button', { name: /add tags/i }));
+			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 
 			expect(screen.queryByRole('button', { name: REMOVE_PROJECT })).not.toBeInTheDocument();
 			expect(screen.getByRole('menuitemcheckbox', { name: 'Client' })).toBeChecked();
@@ -352,7 +387,7 @@ describe('ReadingPaneTags', () => {
 			const onToggle = vi.fn();
 			const { user } = setup({ menu: { ...menu, onToggle } });
 			await user.click(screen.getByRole('button', { name: SHOW_3 }));
-			await user.click(screen.getByRole('button', { name: /add tags/i }));
+			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 
 			await user.click(screen.getByRole('menuitemcheckbox', { name: 'Personal' }));
 			expect(onToggle).toHaveBeenCalledWith(expect.objectContaining({ name: 'Personal' }), true);
@@ -368,7 +403,7 @@ describe('ReadingPaneTags', () => {
 			showFirst(3);
 			const { user } = setup({ menu });
 			await user.click(screen.getByRole('button', { name: SHOW_3 }));
-			await user.click(screen.getByRole('button', { name: /add tags/i }));
+			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 			const items = screen.getAllByRole('menuitemcheckbox');
 			expect(items[0]).toHaveFocus();
 
@@ -388,7 +423,7 @@ describe('ReadingPaneTags', () => {
 			showFirst(3);
 			const { user } = setup({ menu });
 			await user.click(screen.getByRole('button', { name: SHOW_3 }));
-			await user.click(screen.getByRole('button', { name: /add tags/i }));
+			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 			await user.keyboard('{Escape}');
 			expect(screen.queryByRole('menu')).not.toBeInTheDocument();
 			expect(screen.getByRole('button', { name: SHOW_3 })).toHaveFocus();
@@ -399,7 +434,7 @@ describe('ReadingPaneTags', () => {
 			const onToggle = vi.fn();
 			const { user, rerenderWith } = setup({ menu: { ...menu, onToggle } });
 			await user.click(screen.getByRole('button', { name: SHOW_1 }));
-			await user.click(screen.getByRole('button', { name: /add tags/i }));
+			await user.click(screen.getByRole('button', { name: /manage tags/i }));
 			await user.click(screen.getByRole('menuitemcheckbox', { name: 'Urgent' }));
 
 			rerenderWith({
@@ -418,11 +453,11 @@ describe('ReadingPaneTags', () => {
 			);
 		});
 
-		test('without a menu there is no ADD TAGS', async () => {
+		test('without a menu there is no MANAGE TAGS', async () => {
 			showFirst(3);
 			const { user } = setup({ menu: undefined });
 			await user.click(screen.getByRole('button', { name: SHOW_3 }));
-			expect(screen.queryByRole('button', { name: /add tags/i })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /manage tags/i })).not.toBeInTheDocument();
 		});
 	});
 });

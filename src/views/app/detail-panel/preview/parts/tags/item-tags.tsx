@@ -34,38 +34,31 @@ const Counter = styled.span`
 /** Most a collapsed card's pill takes, as a pill after the first in a list row. */
 const COLLAPSED_PILL_MAX_WIDTH = '7.5rem';
 
-const PADDING = { conversation: '0.5rem 1rem', message: '0 0.5rem 0.5rem 3rem' } as const;
+/** The tags start with the sender and the recipients, after the avatar column. */
+const PADDING = '0 0.5rem 0.5rem 2rem';
 
 type ItemTagsProps = {
-	kind: 'message' | 'conversation';
 	id: string;
 	tagIds: ReadonlyArray<string> | undefined;
 	folderId: string;
 };
 
-/**
- * The tags of the conversation under its subject (removing one removes it from every message), or of
- * an expanded message card (from that message only).
- */
-export const ItemTags = ({
-	kind,
-	id,
-	tagIds,
-	folderId
-}: Readonly<ItemTagsProps>): React.JSX.Element => {
-	const props = useReadingPaneTags({ kind, id, tagIds, folderId });
+/** The tags of an expanded message card: removing one removes it from that message only. */
+export const ItemTags = ({ id, tagIds, folderId }: Readonly<ItemTagsProps>): React.JSX.Element => {
+	const props = useReadingPaneTags({ id, tagIds, folderId });
 	const hasTags = props.tags.length > 0;
 	// Mounted also without tags: after removing the only one, Undo gives it the focus back.
 	return (
 		// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 		<div
+			data-testid="item-tags"
 			onClick={keepCardState}
 			// The whole width of the pane: in a column that aligns its items to the start, the row would
 			// otherwise be as wide as the pills it shows, and fewer pills would fit at each resize.
 			style={{
 				boxSizing: 'border-box',
 				width: '100%',
-				padding: hasTags ? PADDING[kind] : 0
+				padding: hasTags ? PADDING : 0
 			}}
 		>
 			{/* A new item starts afresh: a focus waiting for the previous one must not land here */}
