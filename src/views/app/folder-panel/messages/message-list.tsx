@@ -30,7 +30,7 @@ export const MessageList = (): React.JSX.Element => {
 	const dragImageRef = useRef(null);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-	const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+	const [anchorId, setAnchorId] = useState<string | null>(null);
 
 	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
 	const { messageListIndex, status } = messageIndexSlice;
@@ -51,8 +51,9 @@ export const MessageList = (): React.JSX.Element => {
 		selectAllModeOff,
 		selectRange
 	} = useMultipleSelection({
-		lastSelectedIndex,
-		setLastSelectedIndex,
+		anchorId,
+		setAnchorId,
+		resetAnchorKey: `${folderId}|${sortOrder}`,
 		selectedItems,
 		setSelectedItems,
 		allAvailableItems: messageListIndex

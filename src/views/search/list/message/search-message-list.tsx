@@ -35,7 +35,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
 	const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
-	const [lastSelectedIndex, setLastSelectedIndex] = React.useState<number | null>(null);
+	const [anchorId, setAnchorId] = React.useState<string | null>(null);
 
 	const {
 		deselectAll,
@@ -49,8 +49,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		allAvailableItems: messageIds,
 		selectedItems,
 		setSelectedItems,
-		lastSelectedIndex,
-		setLastSelectedIndex
+		anchorId,
+		setAnchorId
 	});
 
 	const displayerTitle = useMemo(() => {
