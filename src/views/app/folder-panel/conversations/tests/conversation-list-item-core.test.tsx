@@ -8,8 +8,7 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useTheme } from '@zextras/carbonio-design-system';
-import { useTags } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
+import { useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
@@ -17,17 +16,12 @@ import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
 import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-vi.mock('@zextras/carbonio-ui-commons', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	useTags: vi.fn()
-}));
-
 const mockToggleOpen = vi.fn();
 const tagsArray = Object.values(tags);
 
 describe('ConversationListItemCore', () => {
 	beforeEach(() => {
-		(useTags as Mock).mockReturnValue(tags);
+		useTagStore.setState({ tags });
 	});
 
 	it('renders conversation details correctly', async () => {
@@ -75,7 +69,7 @@ describe('ConversationListItemCore', () => {
 		);
 
 		expect(await screen.findByText('No tags')).toBeInTheDocument();
-		expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+		expect(screen.queryByTestId('tag-pill')).not.toBeInTheDocument();
 	});
 
 	it('displays unread status correctly', async () => {
@@ -268,8 +262,8 @@ describe('ConversationListItemCore', () => {
 		expect(await screen.findByText('Test RE: FWD: Subject')).toBeInTheDocument();
 	});
 
-	it('colors the tag icon with the custom color of the tag', async () => {
-		(useTags as Mock).mockReturnValue({ t1: { id: 't1', name: 'custom', rgb: '#abcdef' } });
+	it('tints the pill with the custom colour of the tag', async () => {
+		useTagStore.setState({ tags: { t1: { id: 't1', name: 'custom', rgb: '#abcdef' } } });
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({
 				conversationParams: { id: '123', tags: ['t1'], subject: 'Test Subject' },
@@ -290,6 +284,6 @@ describe('ConversationListItemCore', () => {
 			/>
 		);
 
-		expect(await screen.findByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+		expect(await screen.findByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
 	});
 });

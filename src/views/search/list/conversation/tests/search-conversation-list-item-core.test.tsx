@@ -8,23 +8,13 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useTheme } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
-import type { Mock } from 'vitest';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 
 import { setupHook, setupTest } from '@test-setup';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { tags } from '@test-utils/tags/tags';
 import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
-import { useTagExist } from 'ui-actions/tag-actions';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
-
-vi.mock('@zextras/carbonio-ui-commons', async () => ({
-	...(await vi.importActual('@zextras/carbonio-ui-commons')),
-	useTags: vi.fn()
-}));
-vi.mock('../../../../../ui-actions/tag-actions', () => ({
-	useTagExist: vi.fn()
-}));
 
 const tagsArray = Object.values(tags);
 
@@ -53,7 +43,7 @@ describe('SearchConversationListItemCore', () => {
 		);
 
 		expect(await screen.findByText('No tags')).toBeInTheDocument();
-		expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+		expect(screen.queryByTestId('tag-pill')).not.toBeInTheDocument();
 	});
 
 	it('renders conversation details correctly', async () => {
@@ -193,23 +183,14 @@ describe('SearchConversationListItemCore', () => {
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
 
-	describe('Tag Icon', () => {
-		it('adds tag with color from ZIMBRA_STANDARD_COLORS when tag id is included in conversation tags and tag exists in store', async () => {
+	describe('tags', () => {
+		const renderWithTags = async (conversationTags: Array<string>): Promise<void> => {
 			const { conversation } = await waitFor(() =>
 				populateConversationInEmailStore({
-					conversationParams: { id: '123', tags: ['tag1'], subject: 'Test Subject' },
+					conversationParams: { id: '123', tags: conversationTags, subject: 'Test Subject' },
 					conversationMessagesNumber: 3
 				})
 			);
-
-			(useTagExist as Mock).mockReturnValue(true);
-
-			const tagsFromStore = [
-				{ id: 'tag1', name: 'Tag 1', color: 0 },
-				{ id: 'tag2', name: 'Tag 2', color: 0 }
-			];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
-
 			setupTest(
 				<SearchConversationListItemCore
 					conversation={conversation}
@@ -222,63 +203,36 @@ describe('SearchConversationListItemCore', () => {
 					onSelect={vi.fn()}
 				/>
 			);
+		};
 
-			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+		it('shows a pill for each tag of the conversation that is in the store', async () => {
+			useTagStore.setState({
+				tags: {
+					tag1: { id: 'tag1', name: 'Tag 1', color: 1 },
+					tag2: { id: 'tag2', name: 'Tag 2', color: 5 }
+				}
+			});
+
+			await renderWithTags(['tag1']);
+
+			expect(screen.getAllByTestId('tag-pill').map((pill) => pill.textContent)).toEqual(['Tag 1']);
 		});
 
-		it('adds tag with default color when tag id is not included in conversation tags but has nil: prefix', async () => {
-			const { conversation } = await waitFor(() =>
-				populateConversationInEmailStore({
-					conversationParams: { id: '123', tags: ['nil:tag2'], subject: 'Test Subject' },
-					conversationMessagesNumber: 3
-				})
-			);
+		it('shows a tag set by the owner of a shared folder as a shared pill', async () => {
+			useTagStore.setState({ tags: { tag1: { id: 'tag1', name: 'Tag 1', color: 0 } } });
 
-			(useTagExist as Mock).mockReturnValue(true);
+			await renderWithTags(['nil:tag2']);
 
-			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-			(useTags as Mock).mockReturnValue(tagsFromStore);
-
-			setupTest(
-				<SearchConversationListItemCore
-					conversation={conversation}
-					selected={false}
-					selecting={false}
-					open={false}
-					toggleCollapseElementCallback={vi.fn()}
-					parent={FOLDERS.INBOX}
-					index={0}
-					onSelect={vi.fn()}
-				/>
-			);
-
-			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+			expect(screen.getByTestId('tag-pill')).toHaveTextContent('tag2');
+			expect(screen.getByTestId('icon: PeopleOutline')).toBeInTheDocument();
 		});
-	});
 
-	it('colors the tag icon with the custom color of the tag', async () => {
-		(useTags as Mock).mockReturnValue({ t1: { id: 't1', name: 'custom', rgb: '#abcdef' } });
-		(useTagExist as Mock).mockReturnValue(true);
-		const { conversation } = await waitFor(() =>
-			populateConversationInEmailStore({
-				conversationParams: { id: '123', tags: ['t1'], subject: 'Test Subject' },
-				conversationMessagesNumber: 1
-			})
-		);
-		populateFoldersStore();
-		setupTest(
-			<SearchConversationListItemCore
-				conversation={conversation}
-				selected={false}
-				selecting={false}
-				open={false}
-				toggleCollapseElementCallback={vi.fn()}
-				parent={FOLDERS.INBOX}
-				index={0}
-				onSelect={vi.fn()}
-			/>
-		);
+		it('tints the pill with the custom colour of the tag', async () => {
+			useTagStore.setState({ tags: { t1: { id: 't1', name: 'custom', rgb: '#abcdef' } } });
 
-		expect(await screen.findByTestId('TagIcon')).toHaveStyleRule('color', '#abcdef');
+			await renderWithTags(['t1']);
+
+			expect(screen.getByTestId('tag-dot')).toHaveStyle({ 'background-color': '#abcdef' });
+		});
 	});
 });

@@ -131,7 +131,7 @@ describe('MessageListItem Component', () => {
 		expect(screen.getByTestId('UrgentIcon')).toBeInTheDocument();
 	});
 
-	it('should display the tag icon if the message has tags', () => {
+	it('should display the tag pill if the message has tags', () => {
 		const props = {
 			...defaultProps,
 			message: { ...defaultProps.message, tags: [Object.entries(mockTags)[0][0]] }
@@ -139,7 +139,7 @@ describe('MessageListItem Component', () => {
 
 		useTagStore.setState({ tags: mockTags });
 		setupTest(<MessageListItem {...props} />);
-		expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+		expect(screen.getByTestId('tag-pill')).toHaveTextContent(Object.values(mockTags)[0].name);
 	});
 
 	it('in search module it should display the correct folder badge if the message is in a different folder', () => {

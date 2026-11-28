@@ -8,17 +8,17 @@ import React, { useMemo } from 'react';
 
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { resolveTagColorHex, Tag, useFolder, useTags } from '@zextras/carbonio-ui-commons';
-import { find, includes, noop, reduce } from 'lodash';
+import { TAG_PILLS_CHILD_ROW_MAX_BUDGET, useFolder } from '@zextras/carbonio-ui-commons';
+import { find, noop } from 'lodash';
 import moment from 'moment/moment';
 
 import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { ItemBadge } from '../parts/item-badge';
+import { LineWithTags } from '../parts/line-with-tags';
 import { MessageSubjectRow } from '../parts/message-subject-row';
 import { ParticipantsString } from '../parts/participants-string';
 import { getTimeLabel, participantToString } from 'commons/utils';
 import { IncompleteMessage } from 'types/messages';
-import { useTagExist } from 'ui-actions/tag-actions';
 import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
 import { getFolderTranslatedName } from 'views/sidebar/utils';
 
@@ -44,7 +44,6 @@ export const MessageListItemCore = ({
 	onSelect
 }: MessageListItemCoreProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
-	const tagsFromStore = useTags();
 	const messageFolder = useFolder(message.parent);
 	const [date] = useMemo(() => {
 		if (message) {
@@ -88,30 +87,6 @@ export const MessageListItemCore = ({
 		}
 		return [false, '', '', '', ''];
 	}, [message]);
-	const tags = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					if (includes(message.tags, v.id))
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						acc.push({ ...v, color: resolveTagColorHex(v) });
-					return acc;
-				},
-				[] as Array<Tag & { color: string }>
-			),
-		[message.tags, tagsFromStore]
-	);
-
-	const isTagInStore = useTagExist(tags);
-	const showTagIcon = useMemo(
-		() => message.tags && message.tags.length !== 0 && message.tags?.[0] !== '' && isTagInStore,
-		[isTagInStore, message.tags]
-	);
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-
 	const scheduledTime = useMemo(
 		() =>
 			t('message.schedule_time', {
@@ -146,13 +121,14 @@ export const MessageListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<ParticipantsString item={message} />
+					{isConvChildren ? (
+						<LineWithTags tagIds={message.tags} maxBudget={TAG_PILLS_CHILD_ROW_MAX_BUDGET}>
+							<ParticipantsString item={message} />
+						</LineWithTags>
+					) : (
+						<ParticipantsString item={message} />
+					)}
 					<Row>
-						{showTagIcon && (
-							<Padding left="small">
-								<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
-							</Padding>
-						)}
 						{message.hasAttachment && (
 							<Padding left="small">
 								<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
@@ -182,7 +158,7 @@ export const MessageListItemCore = ({
 					</Row>
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-					<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start" crossAlignment="center">
+					<LineWithTags tagIds={isConvChildren ? undefined : message.tags}>
 						{showIcon && (
 							<Tooltip label={iconTooltip} placement="bottom">
 								<Padding right="extrasmall">
@@ -196,7 +172,7 @@ export const MessageListItemCore = ({
 							fragment={message.fragment}
 							isConvChildren={isConvChildren}
 						/>
-					</Row>
+					</LineWithTags>
 					<Row>
 						{message.urgent && (
 							<Padding left="extrasmall">

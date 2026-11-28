@@ -15,8 +15,7 @@ import {
 	editTag,
 	TagsDropdownItem,
 	useGetTagsActions,
-	useGetTagsList,
-	useTagExist
+	useGetTagsList
 } from '../tag-actions';
 import { ProvidersWrapper, setupTest } from '@test-setup';
 import { populateTagsStore } from '@test-utils/store/tags';
@@ -227,26 +226,6 @@ describe('Tag Actions', () => {
 			expect(result.current[0].icon).toBe('TagOutline');
 			expect(result.current[1].icon).toBe('Edit2Outline');
 			expect(result.current[2].icon).toBe('Untag');
-		});
-	});
-
-	describe('useTagExist', () => {
-		it('should return false for empty tags array', () => {
-			const { result } = renderHook(() => useTagExist([]), {
-				wrapper: ProvidersWrapper
-			});
-
-			expect(result.current).toBe(false);
-		});
-
-		it('should return true if tag has nil: prefix', () => {
-			const tagsWithNil = [{ id: 'nil:custom-tag', name: 'Custom Tag' }] as any;
-
-			const { result } = renderHook(() => useTagExist(tagsWithNil), {
-				wrapper: ProvidersWrapper
-			});
-
-			expect(result.current).toBe(true);
 		});
 	});
 
