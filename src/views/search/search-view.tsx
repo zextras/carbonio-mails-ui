@@ -19,6 +19,7 @@ import SearchPanel from 'views/search/panel/search-panel';
 import { AdvancedFilterButton } from 'views/search/parts/advanced-filter-button';
 import { useIsMessageView, useRunSearch } from 'views/search/search-view-hooks';
 import { Query } from 'views/search/types/types';
+import { getQueryChipText } from 'views/search/utils';
 
 const specialChars = [
 	'~',
@@ -103,28 +104,38 @@ const SearchView = ({ useQuery, ResultsHeader }: SearchViewProps): React.JSX.Ele
 		() =>
 			query.some(
 				(ch) =>
-					ch.value !== undefined &&
-					containsSpecialCharacters(ch.value) &&
-					!('queryChipsToAdvancedFiltersValue' in ch)
+					!('queryChipsToAdvancedFiltersValue' in ch) &&
+					containsSpecialCharacters(getQueryChipText(ch))
 			),
 		[query]
 	);
 
-	const resultLabelType = containsSpecialCharacter ? 'warning' : undefined;
-
-	const resultLabel = useMemo(() => {
-		if (containsSpecialCharacter) {
-			return invalidQueryTooltip;
+	const { resultLabel, resultLabelType } = useMemo((): {
+		resultLabel: string;
+		resultLabelType?: 'warning' | 'error';
+	} => {
+		if (!query.length) {
+			return { resultLabel: '' };
 		}
-		if (!query.length) return '';
+		if (searchResults.status === API_REQUEST_STATUS.error) {
+			return {
+				resultLabel: isInvalidQuery
+					? t('label.search_invalid_query', 'Unable to run the search, edit these keywords:')
+					: t('label.search_failed', 'Unable to complete the search for:'),
+				resultLabelType: 'error'
+			};
+		}
+		if (containsSpecialCharacter) {
+			return { resultLabel: invalidQueryTooltip, resultLabelType: 'warning' };
+		}
 		if (searchResults.status === API_REQUEST_STATUS.fulfilled) {
-			return t('label.results_for', 'Results for: ');
+			return { resultLabel: t('label.results_for', 'Results for: ') };
 		}
 		if (searchResults.status === API_REQUEST_STATUS.pending) {
-			return t('label.loading_results', 'Loading Results...');
+			return { resultLabel: t('label.loading_results', 'Loading Results...') };
 		}
-		return '';
-	}, [searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter]);
+		return { resultLabel: '' };
+	}, [searchResults.status, query, invalidQueryTooltip, containsSpecialCharacter, isInvalidQuery]);
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 

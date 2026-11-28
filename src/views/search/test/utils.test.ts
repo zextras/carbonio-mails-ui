@@ -15,6 +15,7 @@ import { Query } from 'views/search/types/types';
 import {
 	generateQueryString,
 	getAdvancedFiltersDefaultValues,
+	getQueryChipText,
 	updateQueryChips,
 	getQueryToBe
 } from 'views/search/utils';
@@ -87,6 +88,72 @@ describe('generateQueryString', () => {
 		const result = generateQueryString(queryWithAdvancedFilters, isSharedFolderIncluded, folders);
 
 		expect(result).toBe('yuliya');
+	});
+
+	describe('terms made only of special characters', () => {
+		const toKeywordChip = (label: string): QueryChip => ({ id: label, label, hasAvatar: false });
+
+		it.each(['+', '-', '!', '(', ')', ':', '?', '{', '}', '+-', '&&', '||'])(
+			'should quote the term %s, which the search parser rejects or ignores',
+			(term) => {
+				expect(generateQueryString([toKeywordChip(term)], false, {})).toBe(`"${term}"`);
+			}
+		);
+
+		it('should drop quotes and backslashes from the term, which would break the quoting', () => {
+			expect(generateQueryString([toKeywordChip('"')], false, {})).toBe('""');
+			expect(generateQueryString([toKeywordChip('\\')], false, {})).toBe('""');
+			expect(generateQueryString([toKeywordChip('"+"')], false, {})).toBe('"+"');
+		});
+
+		it('should quote the term after a search prefix', () => {
+			const subjectChip: QueryChip = {
+				id: 'subject',
+				label: 'Subject:+',
+				value: 'Subject:+',
+				hasAvatar: false
+			};
+
+			expect(generateQueryString([subjectChip], false, {})).toBe('Subject:"+"');
+		});
+
+		it('should quote the term next to the other keywords and the shared folders', () => {
+			const result = generateQueryString(
+				[toKeywordChip('cheques'), toKeywordChip('+')],
+				true,
+				folders
+			);
+
+			expect(result).toBe('(cheques "+") (inid:"101" OR is:local)');
+		});
+
+		it('should quote a term with spaces only once', () => {
+			expect(generateQueryString([toKeywordChip('+ -')], false, {})).toBe('"+ -"');
+		});
+
+		it.each(['Fine?', 'test+', '-spam', '2+2', 'città', 'Привет', '日本', 'in:"/Inbox"', 'is:'])(
+			'should not change the term %s, which has letters or numbers or no term at all',
+			(term) => {
+				expect(generateQueryString([toKeywordChip(term)], false, {})).toBe(term);
+			}
+		);
+	});
+});
+
+describe('getQueryChipText', () => {
+	it('should return the value of the chip', () => {
+		expect(getQueryChipText({ label: 'Subject:hello', value: 'subject:"hello"' })).toBe(
+			'subject:"hello"'
+		);
+	});
+
+	it('should return the label of a chip without a value, like a keyword', () => {
+		expect(getQueryChipText({ label: 'Fine?' })).toBe('Fine?');
+		expect(getQueryChipText({ label: 'Fine?', value: '' })).toBe('Fine?');
+	});
+
+	it('should return an empty text for a chip without value and label', () => {
+		expect(getQueryChipText({})).toBe('');
 	});
 });
 

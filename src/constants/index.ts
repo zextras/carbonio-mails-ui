@@ -498,6 +498,7 @@ export const TIMEOUTS = {
 	DRAFT_INFO_HIDING_DELAY: 3000,
 	COMPLETED_UPLOAD_NOTIFICATION_VISIBILITY: 3000,
 	INVALID_EMAIL_RECIPIENT_TIMEOUT: 5000,
+	SEARCH_ERROR: 7000,
 	/**
 	 * How long the send waits for the inline `data:` images to be converted into
 	 * inline attachments before giving up and sending the message as it is.

@@ -6,13 +6,14 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 
+import { useSnackbar } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { type ErrorSoapBodyResponse, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { getTags, Tags, useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 
 import { searchSoapApi } from 'api/search-soap-api';
-import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { API_REQUEST_STATUS, LIST_LIMIT, TIMEOUTS } from 'constants/index';
 import { mapToNormalizedConversation } from 'normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
@@ -130,6 +131,7 @@ export function useRunSearch({
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
+	const createSnackbar = useSnackbar();
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 
 	const searchResults = useSearchResults();
@@ -155,19 +157,40 @@ export function useRunSearch({
 				offset: 0,
 				locale: prefLocale,
 				abortSignal
-			});
-			if (
-				'Fault' in searchResponse &&
-				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-			) {
-				setIsInvalidQuery(true);
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
-			} else {
-				setIsInvalidQuery(false);
-				handleSearchResults({ searchResponse });
+			}).catch(() => undefined);
+			if (abortSignal.aborted) {
+				// a newer search replaced this one, or the search view was closed
+				return;
 			}
+			if (!searchResponse || 'Fault' in searchResponse) {
+				const isQueryParseError =
+					searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR';
+				setIsInvalidQuery(isQueryParseError);
+				// the results of the previous search can refer to items that are no longer in the store
+				resetSearchAndPopulatedItems();
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
+				createSnackbar({
+					key: 'search-error',
+					replace: true,
+					severity: 'error',
+					label: isQueryParseError
+						? t(
+								'messages.snackbar.search_invalid_query',
+								'Unable to run the search, edit the keywords and try again'
+							)
+						: t(
+								'label.error_try_again_search',
+								'Something went wrong with your search, please try again'
+							),
+					autoHideTimeout: TIMEOUTS.SEARCH_ERROR,
+					hideButton: true
+				});
+				return;
+			}
+			setIsInvalidQuery(false);
+			handleSearchResults({ searchResponse });
 		},
-		[isMessageView, prefLocale, queryToString]
+		[createSnackbar, isMessageView, prefLocale, queryToString]
 	);
 
 	return {

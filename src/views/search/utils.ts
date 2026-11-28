@@ -10,7 +10,8 @@ import {
 	ContactInputItem,
 	convertSearchChipToString,
 	Folder,
-	Folders
+	Folders,
+	SEARCH_QUERY_PREFIXES
 } from '@zextras/carbonio-ui-commons';
 import { concat, filter, map, reduce } from 'lodash';
 import moment from 'moment';
@@ -106,6 +107,41 @@ function generateFoldersArray(folders: { [key: string]: Folder }): string[] {
 	);
 }
 
+const PREFIX_AND_TERM_REGEX = new RegExp(
+	`^(?:(${Object.values(SEARCH_QUERY_PREFIXES).join('|')}):)?(.*)$`,
+	'is'
+);
+
+const LETTER_OR_NUMBER_REGEX = /[\p{L}\p{N}]/u;
+
+/**
+ * Returns the text that a query chip searches for: its value or, when it has none, its label.
+ * The keywords typed in the search bar or in the advanced filters have only a label.
+ */
+export function getQueryChipText(chip: Pick<QueryChip, 'label' | 'value'>): string {
+	if (typeof chip.value === 'string' && chip.value !== '') {
+		return chip.value;
+	}
+	return typeof chip.label === 'string' ? chip.label : '';
+}
+
+/**
+ * Converts a query chip into the text of the search query.
+ *
+ * The search parser reads characters like + - ! ( ) : " as operators, so it rejects a term made only of special
+ * characters, such as "+". The index drops these characters, so such a term is sent quoted: the server ignores
+ * it, as it does in a term like "test +", and a search for "+" alone finds nothing.
+ */
+function convertQueryChipToString(chip: QueryChip): string {
+	const [, prefix, term = ''] = PREFIX_AND_TERM_REGEX.exec(getQueryChipText(chip).trim()) ?? [];
+	if (term.trim() === '' || LETTER_OR_NUMBER_REGEX.test(term)) {
+		return convertSearchChipToString(chip);
+	}
+	// quotes and backslashes would break the quoting, and the index drops them anyway
+	const quotedTerm = `"${term.trim().replace(/["\\]/g, '')}"`;
+	return prefix ? `${prefix}:${quotedTerm}` : quotedTerm;
+}
+
 export function generateQueryString(
 	query: QueryChip[],
 	isSharedFolderIncluded: boolean,
@@ -115,7 +151,7 @@ export function generateQueryString(
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
 	const filteredQuery = query.filter((c) => !('queryChipsToAdvancedFiltersValue' in c));
-	const queryString = filteredQuery.map((c) => convertSearchChipToString(c)).join(' ');
+	const queryString = filteredQuery.map((c) => convertQueryChipToString(c)).join(' ');
 
 	return isSharedFolderIncluded && foldersArray?.length > 0
 		? `(${queryString}) ${foldersToSearchInQuery}`

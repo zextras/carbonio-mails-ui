@@ -23,6 +23,7 @@ import {
 	useConversationMessages,
 	useConversationStatus
 } from 'store/emails/store';
+import { NormalizedConversation } from 'types/conversations';
 import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
 import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
@@ -42,7 +43,10 @@ type SearchConversationListItemProps = {
 	isConversationExpanded: boolean;
 };
 
-export const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
+const SearchConversationListItemContent: FC<
+	SearchConversationListItemProps & { conversation: NormalizedConversation }
+> = ({
+	conversation,
 	conversationId,
 	selecting,
 	active,
@@ -53,11 +57,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	onToggleExpanded,
 	isConversationExpanded
 }) => {
-	const conversation = useConversationById(conversationId);
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
-	const { parent } = messages[0];
+	const parent = messages[0]?.parent ?? '';
 	const navigate = useNavigate();
 
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
@@ -68,7 +71,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
 		isConversationRead: conversation.read,
-		folderId: parent ?? ''
+		folderId: parent
 	});
 
 	// unified mark-as-read handler (preference + unread handled inside hook)
@@ -150,7 +153,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						selecting={selecting}
 						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
-						parent={messages[0].parent}
+						parent={parent}
 						index={index}
 						onSelect={onSelect}
 					/>
@@ -163,7 +166,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						selecting={selecting}
 						open={isConversationExpanded}
 						toggleCollapseElementCallback={toggleCollapseElementCallback}
-						parent={messages[0].parent}
+						parent={parent}
 						index={index}
 						onSelect={onSelect}
 					/>
@@ -186,4 +189,12 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			)}
 		</Container>
 	);
+};
+
+export const SearchConversationListItem: FC<SearchConversationListItemProps> = (props) => {
+	const conversation = useConversationById(props.conversationId);
+	// the results of a search can refer to a conversation that is no longer in the store
+	return conversation ? (
+		<SearchConversationListItemContent {...props} conversation={conversation} />
+	) : null;
 };

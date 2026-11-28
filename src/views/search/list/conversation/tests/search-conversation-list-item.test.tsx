@@ -16,11 +16,14 @@ import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
-import { populateConversationInEmailStore } from '__test__/generators/generateConversation';
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '__test__/generators/generateConversation';
 import { CONVACTIONS } from 'commons/utilities';
 import { API_REQUEST_STATUS } from 'constants/index';
 import { MailboxRefreshedEvent } from 'event-bus/events/mailbox-refreshed';
-import { updateConversationStatus } from 'store/emails/store';
+import { setSearchResultsByConversation, updateConversationStatus } from 'store/emails/store';
 import { ConvActionRequest, ConvActionResponse } from 'types/soap/conv-action';
 import { SearchConvRequest } from 'types/soap/search-conv';
 import { SearchConversationListItem } from 'views/search/list/conversation/search-conversation-list-item';
@@ -556,5 +559,45 @@ describe('SearchConversationListItem', () => {
 		expect(request).toEqual(expect.objectContaining({ cid: conversationId }));
 		// the search view loads a conversation in all its folders
 		expect(request.query).toBeUndefined();
+	});
+
+	describe('when the store does not have the data of the conversation', () => {
+		beforeEach(() => {
+			useUserSettings.mockReturnValue(
+				generateSettings({ prefs: { zimbraPrefGroupMailBy: 'conversation' } })
+			);
+		});
+
+		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+		const setupListItem = () =>
+			setupTest(
+				<SearchConversationListItem
+					conversationId={conversationId}
+					selecting={false}
+					active={false}
+					activeItemId={''}
+					selected={false}
+					index={0}
+					onSelect={vi.fn()}
+					onToggleExpanded={vi.fn()}
+					isConversationExpanded={false}
+				/>
+			);
+
+		it('should render nothing when the conversation is not in the store', () => {
+			setupListItem();
+
+			expect(
+				screen.queryByTestId(`ConversationListItem-${conversationId}`)
+			).not.toBeInTheDocument();
+		});
+
+		it('should render the conversation when its messages are not in the store', async () => {
+			setSearchResultsByConversation([generateConversation({ id: conversationId })], false);
+
+			setupListItem();
+
+			expect(await screen.findByTestId(`ConversationListItem-${conversationId}`)).toBeVisible();
+		});
 	});
 });
